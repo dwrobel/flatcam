@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets, QtCore
 
-from appGUI.GUIElements import RadioSet, FCSpinner, FCLabel, FCGridLayout
+from appGUI.GUIElements import RadioSet, FCSpinner, FCLabel, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -20,16 +20,21 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # Plot options
-        self.export_options_label = FCLabel("<b>%s:</b>" % _("Export Options"))
+        # #############################################################################################################
+        # Export Frame
+        # #############################################################################################################
+        self.export_options_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _("Export Options"))
         self.export_options_label.setToolTip(
             _("The parameters set here are used in the file exported\n"
               "when using the File -> Export -> Export Excellon menu entry.")
         )
         self.layout.addWidget(self.export_options_label)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        exp_frame = FCFrame()
+        self.layout.addWidget(exp_frame)
+
+        exp_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        exp_frame.setLayout(exp_grid)
 
         # Excellon Units
         self.excellon_units_label = FCLabel('%s:' % _('Units'))
@@ -43,8 +48,8 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
             _("The units used in the Excellon file.")
         )
 
-        grid0.addWidget(self.excellon_units_label, 0, 0)
-        grid0.addWidget(self.excellon_units_radio, 0, 1)
+        exp_grid.addWidget(self.excellon_units_label, 0, 0)
+        exp_grid.addWidget(self.excellon_units_radio, 0, 1)
 
         # Excellon non-decimal format
         self.digits_label = FCLabel("%s:" % _("Int/Decimals"))
@@ -80,8 +85,8 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         hlay1.addWidget(self.format_dec_entry, QtCore.Qt.AlignmentFlag.AlignLeft)
         hlay1.addStretch()
 
-        grid0.addWidget(self.digits_label, 2, 0)
-        grid0.addLayout(hlay1, 2, 1)
+        exp_grid.addWidget(self.digits_label, 2, 0)
+        exp_grid.addLayout(hlay1, 2, 1)
 
         # Select the Excellon Format
         self.format_label = FCLabel("%s:" % _("Format"))
@@ -104,8 +109,8 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
               "or TZ = trailing zeros are kept.")
         )
 
-        grid0.addWidget(self.format_label, 4, 0)
-        grid0.addWidget(self.format_radio, 4, 1)
+        exp_grid.addWidget(self.format_label, 4, 0)
+        exp_grid.addWidget(self.format_radio, 4, 1)
 
         # Excellon Zeros
         self.zeros_label = FCLabel('%s:' % _('Zeros'))
@@ -128,8 +133,8 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
               "and Leading Zeros are removed.")
         )
 
-        grid0.addWidget(self.zeros_label, 6, 0)
-        grid0.addWidget(self.zeros_radio, 6, 1)
+        exp_grid.addWidget(self.zeros_label, 6, 0)
+        exp_grid.addWidget(self.zeros_radio, 6, 1)
 
         # Slot type
         self.slot_type_label = FCLabel('%s:' % _('Slot type'))
@@ -152,8 +157,8 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
               "using the Drilled slot command (G85).")
         )
 
-        grid0.addWidget(self.slot_type_label, 8, 0)
-        grid0.addWidget(self.slot_type_radio, 8, 1)
+        exp_grid.addWidget(self.slot_type_label, 8, 0)
+        exp_grid.addWidget(self.slot_type_radio, 8, 1)
 
         self.layout.addStretch(1)
 

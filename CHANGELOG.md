@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+1.10.2021
+
+- clicking the splash screen will close it; also if an error is triggered, the error message will pop over the splash screen
+- the Aperture Table in the Gerber Editor is no longer extended to show all apertures at once
+- in Preferences: Excellon, Geometry and CNCJob tabs, updated the UI to the new design
+
 29.09.2021
 
 - more UI changes in the Preferences to align them to the new app look

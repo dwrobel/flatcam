@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets, QtCore
 
-from appGUI.GUIElements import FCLabel, FCComboBox, FCGridLayout
+from appGUI.GUIElements import FCLabel, FCComboBox, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -20,16 +20,21 @@ class GeometryExpPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # Plot options
-        self.export_options_label = FCLabel("<b>%s:</b>" % _("Export Options"))
+        # #############################################################################################################
+        # Export Frame
+        # #############################################################################################################
+        self.export_options_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _("Export Options"))
         self.export_options_label.setToolTip(
             _("The parameters set here are used in the file exported\n"
               "when using the File -> Export -> Export DXF menu entry.")
         )
         self.layout.addWidget(self.export_options_label)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        export_frame = FCFrame()
+        self.layout.addWidget(export_frame)
+
+        export_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        export_frame.setLayout(export_grid)
 
         # Excellon non-decimal format
         self.dxf_format_label = FCLabel("%s:" % _("Format"))
@@ -40,5 +45,7 @@ class GeometryExpPrefGroupUI(OptionsGroupUI):
         self.dxf_format_combo = FCComboBox()
         self.dxf_format_combo.addItems(['R12', 'R2000', 'R2004', 'R2007', 'R2010', 'R2013', 'R2018'])
 
-        grid0.addWidget(self.dxf_format_label, 0, 0)
-        grid0.addWidget(self.dxf_format_combo, 0, 1)
+        export_grid.addWidget(self.dxf_format_label, 0, 0)
+        export_grid.addWidget(self.dxf_format_combo, 0, 1)
+
+        self.layout.addStretch()

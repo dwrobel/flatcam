@@ -1,7 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCLabel, NumericalEvalTupleEntry, \
-    NumericalEvalEntry, FCComboBox2, FCGridLayout
+from appGUI.GUIElements import FCDoubleSpinner, FCLabel, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -22,10 +21,10 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # ------------------------------
-        # ## Advanced Options
-        # ------------------------------
-        self.geo_label = FCLabel('<b>%s:</b>' % _('Advanced Options'))
+        # #############################################################################################################
+        # Advanced Options Frame
+        # #############################################################################################################
+        self.geo_label = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _('Advanced Options'))
         self.geo_label.setToolTip(
             _("A list of advanced parameters.\n"
               "Those parameters are available only for\n"
@@ -33,8 +32,11 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.geo_label)
 
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid1)
+        adv_frame = FCFrame()
+        self.layout.addWidget(adv_frame)
+
+        adv_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        adv_frame.setLayout(adv_grid)
 
         # Size of trace segment on X axis
         segx_label = FCLabel('%s:' % _("Segment X size"))
@@ -49,8 +51,8 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         self.segx_entry.setSingleStep(0.1)
         self.segx_entry.setWrapping(True)
 
-        grid1.addWidget(segx_label, 0, 0)
-        grid1.addWidget(self.segx_entry, 0, 1)
+        adv_grid.addWidget(segx_label, 0, 0)
+        adv_grid.addWidget(self.segx_entry, 0, 1)
 
         # Size of trace segment on Y axis
         segy_label = FCLabel('%s:' % _("Segment Y size"))
@@ -65,8 +67,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         self.segy_entry.setSingleStep(0.1)
         self.segy_entry.setWrapping(True)
 
-        grid1.addWidget(segy_label, 2, 0)
-        grid1.addWidget(self.segy_entry, 2, 1)
+        adv_grid.addWidget(segy_label, 2, 0)
+        adv_grid.addWidget(self.segy_entry, 2, 1)
 
-
-        self.layout.addStretch()
+        # self.layout.addStretch()

@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCCheckBox, FCSpinner, FCEntry, FCColorEntry, RadioSet, FCLabel, FCGridLayout
+from appGUI.GUIElements import FCCheckBox, FCSpinner, FCColorEntry, RadioSet, FCLabel, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import platform
@@ -23,29 +23,31 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # ## Plot options
-        self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))
+        # #############################################################################################################
+        # Plot Frame
+        # #############################################################################################################
+        self.plot_options_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Plot Options"))
         self.layout.addWidget(self.plot_options_label)
 
-        plot_hlay = QtWidgets.QHBoxLayout()
-        self.layout.addLayout(plot_hlay)
+        plot_frame = FCFrame()
+        self.layout.addWidget(plot_frame)
+
+        plot_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        plot_frame.setLayout(plot_grid)
 
         # Plot CB
         self.plot_cb = FCCheckBox(label=_('Plot'))
         self.plot_cb.setToolTip(
             _("Plot (show) this object.")
         )
-        plot_hlay.addWidget(self.plot_cb)
+        plot_grid.addWidget(self.plot_cb, 0, 0)
 
         # Multicolored CB
         self.multicolored_cb = FCCheckBox(label=_('M-Color'))
         self.multicolored_cb.setToolTip(
             _("Draw polygons in different colors.")
         )
-        plot_hlay.addWidget(self.multicolored_cb)
-
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        plot_grid.addWidget(self.multicolored_cb, 0, 1)
 
         # Number of circle steps for circular aperture linear approximation
         self.circle_steps_label = FCLabel('%s:' % _("Circle Steps"))
@@ -56,16 +58,25 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         self.circle_steps_entry = FCSpinner()
         self.circle_steps_entry.set_range(0, 999)
 
-        grid0.addWidget(self.circle_steps_label, 1, 0)
-        grid0.addWidget(self.circle_steps_entry, 1, 1)
+        plot_grid.addWidget(self.circle_steps_label, 2, 0)
+        plot_grid.addWidget(self.circle_steps_entry, 2, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 9, 0, 1, 2)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # grid0.addWidget(separator_line, 9, 0, 1, 2)
 
-        self.opt_label = FCLabel("<b>%s:</b>" % _("Path Optimization"))
-        grid0.addWidget(self.opt_label, 10, 0, 1, 2)
+        # #############################################################################################################
+        # Optimization Frame
+        # #############################################################################################################
+        self.opt_label = FCLabel('<span style="color:teal;"><b>%s</b></span>' % _("Path Optimization"))
+        self.layout.addWidget(self.opt_label)
+
+        opt_frame = FCFrame()
+        self.layout.addWidget(opt_frame)
+
+        opt_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        opt_frame.setLayout(opt_grid)
 
         self.opt_algorithm_label = FCLabel(_('Algorithm:'))
         self.opt_algorithm_label.setToolTip(
@@ -87,8 +98,8 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
                 {'label': _('TSA'), 'value': 'T'}
             ], orientation='vertical', compact=True)
 
-        grid0.addWidget(self.opt_algorithm_label, 12, 0)
-        grid0.addWidget(self.opt_algorithm_radio, 12, 1)
+        opt_grid.addWidget(self.opt_algorithm_label, 0, 0)
+        opt_grid.addWidget(self.opt_algorithm_radio, 0, 1)
 
         self.optimization_time_label = FCLabel('%s:' % _('Duration'))
         self.optimization_time_label.setToolTip(
@@ -102,33 +113,39 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         self.optimization_time_entry = FCSpinner()
         self.optimization_time_entry.set_range(0, 999)
 
-        grid0.addWidget(self.optimization_time_label, 14, 0)
-        grid0.addWidget(self.optimization_time_entry, 14, 1)
+        opt_grid.addWidget(self.optimization_time_label, 2, 0)
+        opt_grid.addWidget(self.optimization_time_entry, 2, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 16, 0, 1, 2)
+        # #############################################################################################################
+        # Fuse Frame
+        # #############################################################################################################
+        self.join_geo_label = FCLabel('<span style="color:magenta;"><b>%s</b></span>' % _('Join Option'))
+        self.layout.addWidget(self.join_geo_label)
 
-        # Fuse Tools
-        self.join_geo_label = FCLabel('<b>%s</b>:' % _('Join Option'))
-        grid0.addWidget(self.join_geo_label, 18, 0, 1, 2)
+        fuse_frame = FCFrame()
+        self.layout.addWidget(fuse_frame)
+
+        fuse_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        fuse_frame.setLayout(fuse_grid)
 
         self.fuse_tools_cb = FCCheckBox(_("Fuse Tools"))
         self.fuse_tools_cb.setToolTip(
             _("When checked, the tools will be merged\n"
               "but only if they share some of their attributes.")
         )
-        grid0.addWidget(self.fuse_tools_cb, 20, 0, 1, 2)
+        fuse_grid.addWidget(self.fuse_tools_cb, 0, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 22, 0, 1, 2)
+        # #############################################################################################################
+        # Object Color Frame
+        # #############################################################################################################
+        self.gerber_color_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _('Object Color'))
+        self.layout.addWidget(self.gerber_color_label)
 
-        # Geometry Object Color
-        self.gerber_color_label = FCLabel('<b>%s</b>:' % _('Object Color'))
-        grid0.addWidget(self.gerber_color_label, 24, 0, 1, 2)
+        obj_frame = FCFrame()
+        self.layout.addWidget(obj_frame)
+
+        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        obj_frame.setLayout(obj_grid)
 
         # Plot Line Color
         self.line_color_label = FCLabel('%s:' % _('Outline'))
@@ -137,8 +154,10 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         )
         self.line_color_entry = FCColorEntry()
 
-        grid0.addWidget(self.line_color_label, 26, 0)
-        grid0.addWidget(self.line_color_entry, 26, 1)
+        obj_grid.addWidget(self.line_color_label, 0, 0)
+        obj_grid.addWidget(self.line_color_entry, 0, 1)
+
+        FCGridLayout.set_common_column_size([plot_grid, opt_grid, obj_grid, fuse_grid], 0)
 
         self.layout.addStretch()
 

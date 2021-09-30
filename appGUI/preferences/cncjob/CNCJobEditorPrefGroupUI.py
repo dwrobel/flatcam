@@ -1,7 +1,7 @@
 from PyQt6 import QtGui
 from PyQt6.QtCore import QSettings
 
-from appGUI.GUIElements import FCTextArea, FCLabel
+from appGUI.GUIElements import FCTextArea, FCLabel, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -22,8 +22,10 @@ class CNCJobEditorPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # Editor Parameters
-        self.param_label = FCLabel("<b>%s:</b>" % _("Parameters"))
+        # #############################################################################################################
+        # PARAMETERS Frame
+        # #############################################################################################################
+        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
         self.param_label.setToolTip(
             _("A list of Editor parameters.")
         )

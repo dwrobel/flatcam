@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCCheckBox, FCLabel, FCGridLayout
+from appGUI.GUIElements import FCCheckBox, FCLabel, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -21,11 +21,10 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # #######################
-        # ## ADVANCED OPTIONS ###
-        # #######################
-
-        self.exc_label = FCLabel('<b>%s:</b>' % _('Advanced Options'))
+        # #############################################################################################################
+        # PARAMETERS Frame
+        # #############################################################################################################
+        self.exc_label = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _('Advanced Options'))
         self.exc_label.setToolTip(
             _("A list of advanced parameters.\n"
               "Those parameters are available only for\n"
@@ -33,15 +32,18 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.exc_label)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        param_frame = FCFrame()
+        self.layout.addWidget(param_frame)
+
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_frame.setLayout(param_grid)
 
         # Table Visibility CB
         self.table_visibility_cb = FCCheckBox(label=_('Table Show/Hide'))
         self.table_visibility_cb.setToolTip(
             _("Toggle the display of the Tools Table.")
         )
-        grid0.addWidget(self.table_visibility_cb, 0, 0, 1, 2)
+        param_grid.addWidget(self.table_visibility_cb, 0, 0, 1, 2)
 
         # Auto Load Tools from DB
         self.autoload_db_cb = FCCheckBox('%s' % _("Auto load from DB"))
@@ -49,6 +51,6 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
             _("Automatic replacement of the tools from related application tools\n"
               "with tools from DB that have a close diameter value.")
         )
-        grid0.addWidget(self.autoload_db_cb, 1, 0, 1, 2)
+        param_grid.addWidget(self.autoload_db_cb, 2, 0, 1, 2)
 
-        self.layout.addStretch()
+        # self.layout.addStretch()

@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCComboBox, FCSpinner, FCColorEntry, FCLabel, FCGridLayout
+from appGUI.GUIElements import FCSpinner, FCColorEntry, FCLabel, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -20,16 +20,21 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
 
         self.setTitle(str(_("CNC Job Adv. Options")))
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
-
-        # ## Export G-Code
-        self.export_gcode_label = FCLabel("<b>%s:</b>" % _("Parameters"))
+        # #############################################################################################################
+        # PARAMETERS Frame
+        # #############################################################################################################
+        self.export_gcode_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
         self.export_gcode_label.setToolTip(
             _("Export and save G-Code to\n"
               "make this object to a file.")
         )
-        grid0.addWidget(self.export_gcode_label, 0, 0, 1, 2)
+        self.layout.addWidget(self.export_gcode_label)
+
+        param_frame = FCFrame()
+        self.layout.addWidget(param_frame)
+
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_frame.setLayout(param_grid)
 
         # Annotation Font Size
         self.annotation_fontsize_label = FCLabel('%s:' % _("Annotation Size"))
@@ -39,8 +44,8 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         self.annotation_fontsize_sp = FCSpinner()
         self.annotation_fontsize_sp.set_range(0, 9999)
 
-        grid0.addWidget(self.annotation_fontsize_label, 2, 0)
-        grid0.addWidget(self.annotation_fontsize_sp, 2, 1)
+        param_grid.addWidget(self.annotation_fontsize_label, 0, 0)
+        param_grid.addWidget(self.annotation_fontsize_sp, 0, 1)
 
         # Annotation Font Color
         self.annotation_color_label = FCLabel('%s:' % _('Annotation Color'))
@@ -49,8 +54,8 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.annotation_fontcolor_entry = FCColorEntry()
 
-        grid0.addWidget(self.annotation_color_label, 4, 0)
-        grid0.addWidget(self.annotation_fontcolor_entry, 4, 1)
+        param_grid.addWidget(self.annotation_color_label, 2, 0)
+        param_grid.addWidget(self.annotation_fontcolor_entry, 2, 1)
 
         self.layout.addStretch(1)
 

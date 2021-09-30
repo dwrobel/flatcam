@@ -1,7 +1,7 @@
-from PyQt6 import QtWidgets, QtGui
+from PyQt6 import QtGui
 from PyQt6.QtCore import QSettings
 
-from appGUI.GUIElements import RadioSet, FCCheckBox, FCLabel, FCGridLayout
+from appGUI.GUIElements import RadioSet, FCCheckBox, FCLabel, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -22,8 +22,10 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # ## Export G-Code
-        self.export_gcode_label = FCLabel("<b>%s:</b>" % _("Export G-Code"))
+        # #############################################################################################################
+        # GCode Frame
+        # #############################################################################################################
+        self.export_gcode_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _("Export G-Code"))
         self.export_gcode_label.setToolTip(
             _("Export and save G-Code to\n"
               "make this object to a file.")
@@ -38,8 +40,11 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
         font = QtGui.QFont()
         font.setPointSize(tb_fsize)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        gcode_frame = FCFrame()
+        self.layout.addWidget(gcode_frame)
+
+        gcode_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        gcode_frame.setLayout(gcode_grid)
 
         # Plot Kind
         self.cncplot_method_label = FCLabel('%s:' % _("Plot kind"))
@@ -54,11 +59,10 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
             {"label": _("All"), "value": "all"},
             {"label": _("Travel"), "value": "travel"},
             {"label": _("Cut"), "value": "cut"}
-        ], orientation='vertical', compact=True)
+        ], orientation='vertical')
 
-        grid0.addWidget(self.cncplot_method_label, 1, 0)
-        grid0.addWidget(self.cncplot_method_radio, 1, 1)
-        grid0.addWidget(FCLabel(''), 1, 2)
+        gcode_grid.addWidget(self.cncplot_method_label, 0, 0)
+        gcode_grid.addWidget(self.cncplot_method_radio, 0, 1)
 
         # Display Annotation
         self.annotation_cb = FCCheckBox(_("Display Annotation"))
@@ -69,6 +73,6 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
               )
         )
 
-        grid0.addWidget(self.annotation_cb, 2, 0, 1, 3)
+        gcode_grid.addWidget(self.annotation_cb, 2, 0, 1, 2)
 
-        self.layout.addStretch()
+        # self.layout.addStretch()

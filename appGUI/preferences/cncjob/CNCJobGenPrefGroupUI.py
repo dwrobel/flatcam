@@ -1,7 +1,7 @@
 from PyQt6 import QtWidgets
 
 from appGUI.GUIElements import FCCheckBox, RadioSet, FCSpinner, FCDoubleSpinner, FCSliderWithSpinner, FCColorEntry, \
-    FCLabel, FCGridLayout
+    FCLabel, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -21,17 +21,22 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # ## Plot options
-        self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))
+        # #############################################################################################################
+        # Plot Frame
+        # #############################################################################################################
+        self.plot_options_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Plot Options"))
         self.layout.addWidget(self.plot_options_label)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        plot_frame = FCFrame()
+        self.layout.addWidget(plot_frame)
+
+        plot_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        plot_frame.setLayout(plot_grid)
 
         # Plot CB
         self.plot_cb = FCCheckBox(_('Plot Object'))
         self.plot_cb.setToolTip(_("Plot (show) this object."))
-        grid0.addWidget(self.plot_cb, 0, 0, 1, 2)
+        plot_grid.addWidget(self.plot_cb, 0, 0, 1, 2)
 
         # ###################################################################
         # Number of circle steps for circular aperture linear approximation #
@@ -41,10 +46,12 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
             _("The number of circle steps for <b>GCode</b> \n"
               "circle and arc shapes linear approximation.")
         )
-        grid0.addWidget(self.steps_per_circle_label, 3, 0)
+
         self.steps_per_circle_entry = FCSpinner()
         self.steps_per_circle_entry.set_range(0, 99999)
-        grid0.addWidget(self.steps_per_circle_entry, 3, 1)
+
+        plot_grid.addWidget(self.steps_per_circle_label, 2, 0)
+        plot_grid.addWidget(self.steps_per_circle_entry, 2, 1)
 
         # Tool dia for plot
         tdlabel = FCLabel('%s:' % _('Travel dia'))
@@ -58,11 +65,19 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         self.tooldia_entry.setSingleStep(0.1)
         self.tooldia_entry.setWrapping(True)
 
-        grid0.addWidget(tdlabel, 4, 0)
-        grid0.addWidget(self.tooldia_entry, 4, 1)
+        plot_grid.addWidget(tdlabel, 4, 0)
+        plot_grid.addWidget(self.tooldia_entry, 4, 1)
 
-        # add a space
-        grid0.addWidget(FCLabel('<b>%s:</b>' % _("G-code Decimals")), 5, 0, 1, 2)
+        # #############################################################################################################
+        # Decimals Frame
+        # #############################################################################################################
+        self.layout.addWidget(FCLabel('<span style="color:teal;"><b>%s</b></span>' % _("G-code Decimals")))
+
+        dec_frame = FCFrame()
+        self.layout.addWidget(dec_frame)
+
+        dec_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        dec_frame.setLayout(dec_grid)
 
         # Number of decimals to use in GCODE coordinates
         cdeclabel = FCLabel('%s:' % _('Coordinates'))
@@ -74,8 +89,8 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         self.coords_dec_entry.set_range(0, 9)
         self.coords_dec_entry.setWrapping(True)
 
-        grid0.addWidget(cdeclabel, 6, 0)
-        grid0.addWidget(self.coords_dec_entry, 6, 1)
+        dec_grid.addWidget(cdeclabel, 0, 0)
+        dec_grid.addWidget(self.coords_dec_entry, 0, 1)
 
         # Number of decimals to use in GCODE feedrate
         frdeclabel = FCLabel('%s:' % _('Feedrate'))
@@ -87,8 +102,8 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         self.fr_dec_entry.set_range(0, 9)
         self.fr_dec_entry.setWrapping(True)
 
-        grid0.addWidget(frdeclabel, 7, 0)
-        grid0.addWidget(self.fr_dec_entry, 7, 1)
+        dec_grid.addWidget(frdeclabel, 2, 0)
+        dec_grid.addWidget(self.fr_dec_entry, 2, 1)
 
         # The type of coordinates used in the Gcode: Absolute or Incremental
         coords_type_label = FCLabel('%s:' % _('Coordinates type'))
@@ -102,8 +117,8 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
             {"label": _("Absolute"), "value": "G90"},
             {"label": _("Incremental"), "value": "G91"}
         ], orientation='vertical', compact=True)
-        grid0.addWidget(coords_type_label, 8, 0)
-        grid0.addWidget(self.coords_type_radio, 8, 1)
+        dec_grid.addWidget(coords_type_label, 4, 0)
+        dec_grid.addWidget(self.coords_type_radio, 4, 1)
 
         # hidden for the time being, until implemented
         coords_type_label.hide()
@@ -116,16 +131,24 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
               "(\\r\\n) on non-Windows OS's.")
         )
 
-        grid0.addWidget(self.line_ending_cb, 9, 0, 1, 3)
+        dec_grid.addWidget(self.line_ending_cb, 6, 0, 1, 3)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 12, 0, 1, 2)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # plot_grid.addWidget(separator_line, 12, 0, 1, 2)
 
-        # Travel Line Color
-        self.travel_color_label = FCLabel('<b>%s</b>' % _('Travel Line Color'))
-        grid0.addWidget(self.travel_color_label, 13, 0, 1, 2)
+        # #############################################################################################################
+        # Travel Frame
+        # #############################################################################################################
+        self.travel_color_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Travel Line Color'))
+        self.layout.addWidget(self.travel_color_label)
+
+        travel_frame = FCFrame()
+        self.layout.addWidget(travel_frame)
+
+        travel_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        travel_frame.setLayout(travel_grid)
 
         # Plot Line Color
         self.tline_color_label = FCLabel('%s:' % _('Outline'))
@@ -134,8 +157,8 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         )
         self.tline_color_entry = FCColorEntry()
 
-        grid0.addWidget(self.tline_color_label, 14, 0)
-        grid0.addWidget(self.tline_color_entry, 14, 1)
+        travel_grid.addWidget(self.tline_color_label, 0, 0)
+        travel_grid.addWidget(self.tline_color_entry, 0, 1)
 
         # Plot Fill Color
         self.tfill_color_label = FCLabel('%s:' % _('Fill'))
@@ -146,8 +169,8 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         )
         self.tfill_color_entry = FCColorEntry()
 
-        grid0.addWidget(self.tfill_color_label, 15, 0)
-        grid0.addWidget(self.tfill_color_entry, 15, 1)
+        travel_grid.addWidget(self.tfill_color_label, 2, 0)
+        travel_grid.addWidget(self.tfill_color_entry, 2, 1)
 
         # Plot Fill Transparency Level
         self.cncjob_alpha_label = FCLabel('%s:' % _('Alpha'))
@@ -156,17 +179,25 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         )
         self.cncjob_alpha_entry = FCSliderWithSpinner(0, 255, 1)
 
-        grid0.addWidget(self.cncjob_alpha_label, 16, 0)
-        grid0.addWidget(self.cncjob_alpha_entry, 16, 1)
+        travel_grid.addWidget(self.cncjob_alpha_label, 4, 0)
+        travel_grid.addWidget(self.cncjob_alpha_entry, 4, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 17, 0, 1, 2)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # plot_grid.addWidget(separator_line, 17, 0, 1, 2)
 
-        # CNCJob Object Color
-        self.cnc_color_label = FCLabel('<b>%s</b>' % _('Object Color'))
-        grid0.addWidget(self.cnc_color_label, 18, 0, 1, 2)
+        # #############################################################################################################
+        # Object Color Frame
+        # #############################################################################################################
+        self.cnc_color_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _('Object Color'))
+        self.layout.addWidget(self.cnc_color_label)
+
+        obj_frame = FCFrame()
+        self.layout.addWidget(obj_frame)
+
+        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        obj_frame.setLayout(obj_grid)
 
         # Plot Line Color
         self.line_color_label = FCLabel('%s:' % _('Outline'))
@@ -175,8 +206,8 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         )
         self.line_color_entry = FCColorEntry()
 
-        grid0.addWidget(self.line_color_label, 19, 0)
-        grid0.addWidget(self.line_color_entry, 19, 1)
+        obj_grid.addWidget(self.line_color_label, 0, 0)
+        obj_grid.addWidget(self.line_color_entry, 0, 1)
 
         # Plot Fill Color
         self.fill_color_label = FCLabel('%s:' % _('Fill'))
@@ -187,8 +218,10 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         )
         self.fill_color_entry = FCColorEntry()
 
-        grid0.addWidget(self.fill_color_label, 20, 0)
-        grid0.addWidget(self.fill_color_entry, 20, 1)
+        obj_grid.addWidget(self.fill_color_label, 2, 0)
+        obj_grid.addWidget(self.fill_color_entry, 2, 1)
+
+        FCGridLayout.set_common_column_size([plot_grid, dec_grid, travel_grid, obj_grid], 0)
 
         self.layout.addStretch()
 

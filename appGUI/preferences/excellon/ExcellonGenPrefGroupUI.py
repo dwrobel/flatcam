@@ -2,7 +2,8 @@ import platform
 
 from PyQt6 import QtWidgets, QtCore
 
-from appGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCSliderWithSpinner, FCColorEntry, FCLabel, FCGridLayout
+from appGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCSliderWithSpinner, FCColorEntry, FCLabel, \
+    FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -23,44 +24,48 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # Plot options
-        self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))
+        # #############################################################################################################
+        # Plot Frame
+        # #############################################################################################################
+        self.plot_options_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Plot Options"))
         self.layout.addWidget(self.plot_options_label)
 
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid1)
+        plot_frame = FCFrame()
+        self.layout.addWidget(plot_frame)
+
+        plot_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        plot_frame.setLayout(plot_grid)
 
         # Plot CB
         self.plot_cb = FCCheckBox(label=_('Plot'))
         self.plot_cb.setToolTip(
             "Plot (show) this object."
         )
-        grid1.addWidget(self.plot_cb, 0, 0)
+        plot_grid.addWidget(self.plot_cb, 0, 0)
 
         # Solid CB
         self.solid_cb = FCCheckBox(label=_('Solid'))
         self.solid_cb.setToolTip(
             "Plot as solid circles."
         )
-        grid1.addWidget(self.solid_cb, 0, 1)
+        plot_grid.addWidget(self.solid_cb, 0, 1)
 
         # Multicolored CB
         self.multicolored_cb = FCCheckBox(label='%s' % _('M-Color'))
         self.multicolored_cb.setToolTip(
             _("Draw polygons in different colors.")
         )
-        grid1.addWidget(self.multicolored_cb, 0, 2)
+        plot_grid.addWidget(self.multicolored_cb, 0, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid1.addWidget(separator_line, 1, 0, 1, 3)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # plot_grid.addWidget(separator_line, 1, 0, 1, 3)
 
-        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid2)
-
-        # Excellon format
-        self.excellon_format_label = FCLabel("<b>%s:</b>" % _("Excellon Format"))
+        # #############################################################################################################
+        # Excellon Format Frame
+        # #############################################################################################################
+        self.excellon_format_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Excellon Format"))
         self.excellon_format_label.setToolTip(
             _("The NC drill files, usually named Excellon files\n"
               "are files that can be found in different formats.\n"
@@ -83,7 +88,13 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "\n"
               "KiCAD 3:5 INCH TZ")
         )
-        grid2.addWidget(self.excellon_format_label, 0, 0, 1, 2)
+        self.layout.addWidget(self.excellon_format_label)
+
+        format_frame = FCFrame()
+        self.layout.addWidget(format_frame)
+
+        format_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        format_frame.setLayout(format_grid)
 
         self.excellon_format_in_label = FCLabel('%s:' % _("INCH"))
         self.excellon_format_in_label.setToolTip(_("Default values for INCH are 2:4"))
@@ -98,7 +109,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         hlay1.addWidget(self.excellon_format_upper_in_entry)
 
-        excellon_separator_in_label = FCLabel(':')
+        excellon_separator_in_label = FCLabel(' : ')
         excellon_separator_in_label.setFixedWidth(5)
         hlay1.addWidget(excellon_separator_in_label)
 
@@ -111,8 +122,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         hlay1.addWidget(self.excellon_format_lower_in_entry)
 
-        grid2.addWidget(self.excellon_format_in_label, 1, 0)
-        grid2.addLayout(hlay1, 1, 1)
+        format_grid.addWidget(self.excellon_format_in_label, 1, 0)
+        format_grid.addLayout(hlay1, 1, 1)
 
         self.excellon_format_mm_label = FCLabel('%s:' % _("METRIC"))
         self.excellon_format_mm_label.setToolTip(_("Default values for METRIC are 3:3"))
@@ -127,7 +138,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         hlay2.addWidget(self.excellon_format_upper_mm_entry)
 
-        excellon_separator_mm_label = FCLabel(':')
+        excellon_separator_mm_label = FCLabel(' : ')
         excellon_separator_mm_label.setFixedWidth(5)
         hlay2.addWidget(excellon_separator_mm_label, QtCore.Qt.AlignmentFlag.AlignLeft)
 
@@ -140,8 +151,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         hlay2.addWidget(self.excellon_format_lower_mm_entry)
 
-        grid2.addWidget(self.excellon_format_mm_label, 2, 0)
-        grid2.addLayout(hlay2, 2, 1)
+        format_grid.addWidget(self.excellon_format_mm_label, 2, 0)
+        format_grid.addLayout(hlay2, 2, 1)
 
         self.excellon_zeros_label = FCLabel('%s:' % _('Zeros'))
         self.excellon_zeros_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
@@ -154,12 +165,12 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "This is used when there is no information\n"
               "stored in the Excellon file.")
         )
-        grid2.addWidget(self.excellon_zeros_label, 3, 0)
+        format_grid.addWidget(self.excellon_zeros_label, 3, 0)
 
         self.excellon_zeros_radio = RadioSet([{'label': _('LZ'), 'value': 'L'},
                                               {'label': _('TZ'), 'value': 'T'}])
 
-        grid2.addWidget(self.excellon_zeros_radio, 3, 1)
+        format_grid.addWidget(self.excellon_zeros_radio, 3, 1)
 
         self.excellon_units_label = FCLabel('%s:' % _('Units'))
         self.excellon_units_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
@@ -179,28 +190,32 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "therefore this parameter will be used.")
         )
 
-        grid2.addWidget(self.excellon_units_label, 4, 0)
-        grid2.addWidget(self.excellon_units_radio, 4, 1)
+        format_grid.addWidget(self.excellon_units_label, 4, 0)
+        format_grid.addWidget(self.excellon_units_radio, 4, 1)
 
         self.update_excellon_cb = FCCheckBox(label=_('Update Export settings'))
         self.update_excellon_cb.setToolTip(
             "If checked, the Excellon Export settings will be updated with the ones above."
         )
-        grid2.addWidget(self.update_excellon_cb, 5, 0, 1, 2)
+        format_grid.addWidget(self.update_excellon_cb, 5, 0, 1, 2)
 
         # Adding the Excellon Format Defaults Button
         self.excellon_defaults_button = QtWidgets.QPushButton()
         self.excellon_defaults_button.setText(str(_("Restore Defaults")))
         self.excellon_defaults_button.setMinimumWidth(80)
-        grid2.addWidget(self.excellon_defaults_button, 6, 0, 1, 2)
+        format_grid.addWidget(self.excellon_defaults_button, 6, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid2.addWidget(separator_line, 7, 0, 1, 2)
+        # #############################################################################################################
+        # Optimization Frame
+        # #############################################################################################################
+        self.excellon_general_label = FCLabel('<span style="color:teal;"><b>%s</b></span>' % _("Path Optimization"))
+        self.layout.addWidget(self.excellon_general_label)
 
-        self.excellon_general_label = FCLabel("<b>%s:</b>" % _("Path Optimization"))
-        grid2.addWidget(self.excellon_general_label, 8, 0, 1, 2)
+        opt_frame = FCFrame()
+        self.layout.addWidget(opt_frame)
+
+        opt_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        opt_frame.setLayout(opt_grid)
 
         self.excellon_optimization_label = FCLabel(_('Algorithm:'))
         self.excellon_optimization_label.setToolTip(
@@ -219,8 +234,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
                                                      {'label': _('TSA'), 'value': 'T'}],
                                                     orientation='vertical', compact=True)
 
-        grid2.addWidget(self.excellon_optimization_label, 9, 0)
-        grid2.addWidget(self.excellon_optimization_radio, 9, 1)
+        opt_grid.addWidget(self.excellon_optimization_label, 0, 0)
+        opt_grid.addWidget(self.excellon_optimization_radio, 0, 1)
 
         self.optimization_time_label = FCLabel('%s:' % _('Duration'))
         self.optimization_time_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
@@ -235,33 +250,40 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.optimization_time_entry = FCSpinner()
         self.optimization_time_entry.set_range(0, 999)
 
-        grid2.addWidget(self.optimization_time_label, 10, 0)
-        grid2.addWidget(self.optimization_time_entry, 10, 1)
+        opt_grid.addWidget(self.optimization_time_label, 2, 0)
+        opt_grid.addWidget(self.optimization_time_entry, 2, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid2.addWidget(separator_line, 11, 0, 1, 2)
-
+        # #############################################################################################################
+        # Fusing Frame
+        # #############################################################################################################
         # Fuse Tools
-        self.join_geo_label = FCLabel('<b>%s</b>:' % _('Join Option'))
-        grid2.addWidget(self.join_geo_label, 12, 0, 1, 2)
+        self.join_geo_label = FCLabel('<span style="color:magenta;"><b>%s</b></span>' % _('Join Option'))
+        self.layout.addWidget(self.join_geo_label)
+
+        fuse_frame = FCFrame()
+        self.layout.addWidget(fuse_frame)
+
+        fuse_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        fuse_frame.setLayout(fuse_grid)
 
         self.fuse_tools_cb = FCCheckBox(_("Fuse Tools"))
         self.fuse_tools_cb.setToolTip(
             _("When checked, the tools will be merged\n"
               "but only if they share some of their attributes.")
         )
-        grid2.addWidget(self.fuse_tools_cb, 13, 0, 1, 2)
+        fuse_grid.addWidget(self.fuse_tools_cb, 0, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid2.addWidget(separator_line, 14, 0, 1, 2)
+        # #############################################################################################################
+        # Object Color Frame
+        # #############################################################################################################
+        self.gerber_color_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _('Object Color'))
+        self.layout.addWidget(self.gerber_color_label)
 
-        # Excellon Object Color
-        self.gerber_color_label = FCLabel('<b>%s</b>' % _('Object Color'))
-        grid2.addWidget(self.gerber_color_label, 17, 0, 1, 2)
+        obj_frame = FCFrame()
+        self.layout.addWidget(obj_frame)
+
+        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        obj_frame.setLayout(obj_grid)
 
         # Plot Line Color
         self.line_color_label = FCLabel('%s:' % _('Outline'))
@@ -270,8 +292,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         self.line_color_entry = FCColorEntry()
 
-        grid2.addWidget(self.line_color_label, 19, 0)
-        grid2.addWidget(self.line_color_entry, 19, 1)
+        obj_grid.addWidget(self.line_color_label, 0, 0)
+        obj_grid.addWidget(self.line_color_entry, 0, 1)
 
         # Plot Fill Color
         self.fill_color_label = FCLabel('%s:' % _('Fill'))
@@ -282,8 +304,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         self.fill_color_entry = FCColorEntry()
 
-        grid2.addWidget(self.fill_color_label, 22, 0)
-        grid2.addWidget(self.fill_color_entry, 22, 1)
+        obj_grid.addWidget(self.fill_color_label, 2, 0)
+        obj_grid.addWidget(self.fill_color_entry, 2, 1)
 
         # Plot Fill Transparency Level
         self.excellon_alpha_label = FCLabel('%s:' % _('Alpha'))
@@ -292,8 +314,10 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         self.excellon_alpha_entry = FCSliderWithSpinner(0, 255, 1)
 
-        grid2.addWidget(self.excellon_alpha_label, 24, 0)
-        grid2.addWidget(self.excellon_alpha_entry, 24, 1)
+        obj_grid.addWidget(self.excellon_alpha_label, 4, 0)
+        obj_grid.addWidget(self.excellon_alpha_entry, 4, 1)
+
+        FCGridLayout.set_common_column_size([plot_grid, format_grid, opt_grid, obj_grid, fuse_grid], 0)
 
         self.layout.addStretch()
 

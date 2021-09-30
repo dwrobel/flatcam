@@ -884,7 +884,8 @@ class App(QtCore.QObject):
 
         if show_splash and self.cmd_line_headless != 1:
             splash_pix = QtGui.QPixmap(self.resource_location + '/splash.png')
-            self.splash = QtWidgets.QSplashScreen(splash_pix, Qt.WindowType.WindowStaysOnTopHint)
+            # self.splash = QtWidgets.QSplashScreen(splash_pix, Qt.WindowType.WindowStaysOnTopHint)
+            self.splash = QtWidgets.QSplashScreen(splash_pix)
             # self.splash.setMask(splash_pix.mask())
 
             # move splashscreen to the current monitor

@@ -1,8 +1,7 @@
 from PyQt6 import QtWidgets
 from PyQt6.QtCore import Qt
 
-from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, OptionalInputSection, FCSpinner, FCComboBox, \
-    NumericalEvalTupleEntry, FCLabel, FCGridLayout
+from appGUI.GUIElements import FCDoubleSpinner, FCLabel, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -23,19 +22,17 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # ------------------------------
-        # ## Create CNC Job
-        # ------------------------------
-        self.cncjob_label = FCLabel('<b>%s:</b>' % _('Create CNCJob'))
-        self.cncjob_label.setToolTip(
-            _("Create a CNC Job object\n"
-              "tracing the contours of this\n"
-              "Geometry object.")
-        )
+        # #############################################################################################################
+        # PARAMETERS Frame
+        # #############################################################################################################
+        self.cncjob_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
         self.layout.addWidget(self.cncjob_label)
 
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid1)
+        param_frame = FCFrame()
+        self.layout.addWidget(param_frame)
+
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_frame.setLayout(param_grid)
 
         # Cut Z
         cutzlabel = FCLabel('%s:' % _('Cut Z'))
@@ -50,7 +47,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         self.cutz_entry.setSingleStep(0.1)
         self.cutz_entry.setWrapping(True)
 
-        grid1.addWidget(cutzlabel, 0, 0)
-        grid1.addWidget(self.cutz_entry, 0, 1)
+        param_grid.addWidget(cutzlabel, 0, 0)
+        param_grid.addWidget(self.cutz_entry, 0, 1)
 
-        self.layout.addStretch()
+        # self.layout.addStretch()

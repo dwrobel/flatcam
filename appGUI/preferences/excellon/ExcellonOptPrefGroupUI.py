@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, FCLabel, FCGridLayout
+from appGUI.GUIElements import FCDoubleSpinner, FCLabel, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -21,23 +21,28 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # ## Create CNC Job
-        self.cncjob_label = FCLabel('<b>%s</b>' % _('Parameters'))
+        # #############################################################################################################
+        # PARAMETERS Frame
+        # #############################################################################################################
+        self.cncjob_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Parameters'))
         self.cncjob_label.setToolTip(
             _("Parameters used to create a CNC Job object\n"
               "for this drill object.")
         )
         self.layout.addWidget(self.cncjob_label)
 
-        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid2)
+        param_frame = FCFrame()
+        self.layout.addWidget(param_frame)
+
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_frame.setLayout(param_grid)
 
         # ### Milling Holes ## ##
         self.mill_hole_label = FCLabel('<b>%s</b>' % _('Mill Holes'))
         self.mill_hole_label.setToolTip(
             _("Create Geometry for milling holes.")
         )
-        grid2.addWidget(self.mill_hole_label, 16, 0, 1, 2)
+        param_grid.addWidget(self.mill_hole_label, 0, 0, 1, 2)
 
         tdlabel = FCLabel('%s:' % _('Drill Tool dia'))
         tdlabel.setToolTip(
@@ -48,8 +53,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.tooldia_entry.set_precision(self.decimals)
         self.tooldia_entry.set_range(0, 999.9999)
 
-        grid2.addWidget(tdlabel, 18, 0)
-        grid2.addWidget(self.tooldia_entry, 18, 1)
+        param_grid.addWidget(tdlabel, 2, 0)
+        param_grid.addWidget(self.tooldia_entry, 2, 1)
 
         stdlabel = FCLabel('%s:' % _('Slot Tool dia'))
         stdlabel.setToolTip(
@@ -60,7 +65,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.slot_tooldia_entry.set_precision(self.decimals)
         self.slot_tooldia_entry.set_range(0, 999.9999)
 
-        grid2.addWidget(stdlabel, 21, 0)
-        grid2.addWidget(self.slot_tooldia_entry, 21, 1)
+        param_grid.addWidget(stdlabel, 4, 0)
+        param_grid.addWidget(self.slot_tooldia_entry, 4, 1)
 
-        self.layout.addStretch()
+        # self.layout.addStretch()

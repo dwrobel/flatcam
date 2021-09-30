@@ -3687,7 +3687,6 @@ class AppGerberEditor(QtCore.QObject):
         vertical_header = self.ui.apertures_table.verticalHeader()
         # vertical_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
         vertical_header.hide()
-        self.ui.apertures_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         horizontal_header = self.ui.apertures_table.horizontalHeader()
         horizontal_header.setMinimumSectionSize(10)
@@ -3700,8 +3699,10 @@ class AppGerberEditor(QtCore.QObject):
         horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeMode.Stretch)
 
         self.ui.apertures_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        # self.ui.apertures_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+
         self.ui.apertures_table.setSortingEnabled(False)
-        self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
+        # self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
         self.ui.apertures_table.setMaximumHeight(self.ui.apertures_table.getHeight())
 
         # make sure no rows are selected so the user have to click the correct row, meaning selecting the correct tool

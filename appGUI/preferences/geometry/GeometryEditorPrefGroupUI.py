@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCSpinner, RadioSet, FCLabel, FCGridLayout
+from appGUI.GUIElements import FCSpinner, RadioSet, FCLabel, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -21,15 +21,20 @@ class GeometryEditorPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # Editor Parameters
-        self.param_label = FCLabel("<b>%s:</b>" % _("Parameters"))
+        # #############################################################################################################
+        # PARAMETERS Frame
+        # #############################################################################################################
+        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
         self.param_label.setToolTip(
             _("A list of Editor parameters.")
         )
         self.layout.addWidget(self.param_label)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        editor_frame = FCFrame()
+        self.layout.addWidget(editor_frame)
+
+        editor_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        editor_frame.setLayout(editor_grid)
 
         # Selection Limit
         self.sel_limit_label = FCLabel('%s:' % _("Selection limit"))
@@ -43,8 +48,8 @@ class GeometryEditorPrefGroupUI(OptionsGroupUI):
         self.sel_limit_entry = FCSpinner()
         self.sel_limit_entry.set_range(0, 9999)
 
-        grid0.addWidget(self.sel_limit_label, 0, 0)
-        grid0.addWidget(self.sel_limit_entry, 0, 1)
+        editor_grid.addWidget(self.sel_limit_label, 0, 0)
+        editor_grid.addWidget(self.sel_limit_entry, 0, 1)
 
         # Milling Type
         milling_type_label = FCLabel('%s:' % _('Milling Type'))
@@ -54,8 +59,8 @@ class GeometryEditorPrefGroupUI(OptionsGroupUI):
               "- conventional / useful when there is no backlash compensation")
         )
         self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
-                                            {'label': _('Conventional'), 'value': 'cv'}])
-        grid0.addWidget(milling_type_label, 1, 0)
-        grid0.addWidget(self.milling_type_radio, 1, 1)
+                                            {'label': _('Conventional'), 'value': 'cv'}], compact=True)
+        editor_grid.addWidget(milling_type_label, 2, 0)
+        editor_grid.addWidget(self.milling_type_radio, 2, 1)
 
         self.layout.addStretch()
