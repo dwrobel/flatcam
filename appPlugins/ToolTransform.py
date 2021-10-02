@@ -8,7 +8,7 @@
 from PyQt6 import QtWidgets, QtGui, QtCore
 from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCButton, OptionalInputSection, FCComboBox, \
-    NumericalEvalTupleEntry, FCLabel, VerticalScrollArea, FCGridLayout
+    NumericalEvalTupleEntry, FCLabel, VerticalScrollArea, FCGridLayout, FCFrame
 
 import numpy as np
 
@@ -596,11 +596,21 @@ class TransformUI:
         )
         self.layout.addWidget(title_label)
 
-        # ## Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
-        self.layout.addLayout(grid0)
+        # #############################################################################################################
+        # PARAMETERS
+        # #############################################################################################################
+        self.transform_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.layout.addWidget(self.transform_label)
 
-        # Reference
+        # #############################################################################################################
+        # Reference  Frame
+        # #############################################################################################################
+        ref_frame = FCFrame()
+        self.layout.addWidget(ref_frame)
+
+        ref_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        ref_frame.setLayout(ref_grid)
+
         ref_label = FCLabel('%s:' % _("Reference"))
         ref_label.setToolTip(
             _("The reference point for Rotate, Skew, Scale, Mirror.\n"
@@ -614,8 +624,8 @@ class TransformUI:
         self.ref_items = [_("Origin"), _("Selection"), _("Point"), _("Object")]
         self.ref_combo.addItems(self.ref_items)
 
-        grid0.addWidget(ref_label, 0, 0)
-        grid0.addWidget(self.ref_combo, 0, 1, 1, 2)
+        ref_grid.addWidget(ref_label, 0, 0)
+        ref_grid.addWidget(self.ref_combo, 0, 1, 1, 2)
 
         self.point_label = FCLabel('%s:' % _("Value"))
         self.point_label.setToolTip(
@@ -623,14 +633,14 @@ class TransformUI:
         )
         self.point_entry = NumericalEvalTupleEntry()
 
-        grid0.addWidget(self.point_label, 1, 0)
-        grid0.addWidget(self.point_entry, 1, 1, 1, 2)
+        ref_grid.addWidget(self.point_label, 2, 0)
+        ref_grid.addWidget(self.point_entry, 2, 1, 1, 2)
 
         self.point_button = FCButton(_("Add"))
         self.point_button.setToolTip(
             _("Add point coordinates from clipboard.")
         )
-        grid0.addWidget(self.point_button, 2, 0, 1, 3)
+        ref_grid.addWidget(self.point_button, 4, 0, 1, 3)
 
         # Type of object to be used as reference
         self.type_object_label = FCLabel('%s:' % _("Type"))
@@ -647,8 +657,8 @@ class TransformUI:
         self.type_obj_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/drill16.png"))
         self.type_obj_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
-        grid0.addWidget(self.type_object_label, 3, 0)
-        grid0.addWidget(self.type_obj_combo, 3, 1, 1, 2)
+        ref_grid.addWidget(self.type_object_label, 6, 0)
+        ref_grid.addWidget(self.type_obj_combo, 6, 1, 1, 2)
 
         # Object to be used as reference
         self.object_combo = FCComboBox()
@@ -660,16 +670,24 @@ class TransformUI:
             _("The object used as reference.\n"
               "The used point is the center of it's bounding box.")
         )
-        grid0.addWidget(self.object_combo, 4, 0, 1, 3)
+        ref_grid.addWidget(self.object_combo, 8, 0, 1, 3)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 5, 0, 1, 3)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # ref_grid.addWidget(separator_line, 10, 0, 1, 3)
 
-        # ## Rotate Title
-        rotate_title_label = FCLabel("<font size=3><b>%s</b></font>" % self.rotateName)
-        grid0.addWidget(rotate_title_label, 6, 0, 1, 3)
+        # #############################################################################################################
+        # Rotate Frame
+        # #############################################################################################################
+        rotate_title_lbl = FCLabel('<span style="color:tomato;"><b>%s</b></span>' % _("Rotate"))
+        self.layout.addWidget(rotate_title_lbl)
+
+        rot_frame = FCFrame()
+        self.layout.addWidget(rot_frame)
+
+        rot_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        rot_frame.setLayout(rot_grid)
 
         self.rotate_label = FCLabel('%s:' % _("Angle"))
         self.rotate_label.setToolTip(
@@ -695,26 +713,35 @@ class TransformUI:
         )
         self.rotate_button.setMinimumWidth(90)
 
-        grid0.addWidget(self.rotate_label, 7, 0)
-        grid0.addWidget(self.rotate_entry, 7, 1)
-        grid0.addWidget(self.rotate_button, 7, 2)
+        rot_grid.addWidget(self.rotate_label, 0, 0)
+        rot_grid.addWidget(self.rotate_entry, 0, 1)
+        rot_grid.addWidget(self.rotate_button, 0, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 8, 0, 1, 3)
+        # #############################################################################################################
+        # Skew Frame
+        # #############################################################################################################
+        s_t_lay = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(s_t_lay)
 
-        # ## Skew Title
-        skew_title_label = FCLabel("<font size=3><b>%s</b></font>" % self.skewName)
-        grid0.addWidget(skew_title_label, 9, 0, 1, 2)
+        skew_title_lbl = FCLabel('<span style="color:teal;"><b>%s</b></span>' % _("Skew"))
+        s_t_lay.addWidget(skew_title_lbl)
 
+        s_t_lay.addStretch()
+
+        # ## Link Skew factors
         self.skew_link_cb = FCCheckBox()
         self.skew_link_cb.setText(_("Link"))
         self.skew_link_cb.setToolTip(
             _("Link the Y entry to X entry and copy its content.")
         )
 
-        grid0.addWidget(self.skew_link_cb, 9, 2)
+        s_t_lay.addWidget(self.skew_link_cb)
+
+        skew_frame = FCFrame()
+        self.layout.addWidget(skew_frame)
+
+        skew_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        skew_frame.setLayout(skew_grid)
 
         self.skewx_label = FCLabel('%s:' % _("X angle"))
         self.skewx_label.setToolTip(
@@ -733,9 +760,9 @@ class TransformUI:
               "the bounding box for all selected objects."))
         self.skewx_button.setMinimumWidth(90)
 
-        grid0.addWidget(self.skewx_label, 10, 0)
-        grid0.addWidget(self.skewx_entry, 10, 1)
-        grid0.addWidget(self.skewx_button, 10, 2)
+        skew_grid.addWidget(self.skewx_label, 0, 0)
+        skew_grid.addWidget(self.skewx_entry, 0, 1)
+        skew_grid.addWidget(self.skewx_button, 0, 2)
 
         self.skewy_label = FCLabel('%s:' % _("Y angle"))
         self.skewy_label.setToolTip(
@@ -754,29 +781,36 @@ class TransformUI:
               "the bounding box for all selected objects."))
         self.skewy_button.setMinimumWidth(90)
 
-        grid0.addWidget(self.skewy_label, 12, 0)
-        grid0.addWidget(self.skewy_entry, 12, 1)
-        grid0.addWidget(self.skewy_button, 12, 2)
+        skew_grid.addWidget(self.skewy_label, 2, 0)
+        skew_grid.addWidget(self.skewy_entry, 2, 1)
+        skew_grid.addWidget(self.skewy_button, 2, 2)
 
         self.ois_sk = OptionalInputSection(self.skew_link_cb, [self.skewy_label, self.skewy_entry, self.skewy_button],
                                            logic=False)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 14, 0, 1, 3)
+        # #############################################################################################################
+        # Scale Frame
+        # #############################################################################################################
+        sc_t_lay = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(sc_t_lay)
 
-        # ## Scale Title
-        scale_title_label = FCLabel("<font size=3><b>%s</b></font>" % self.scaleName)
-        grid0.addWidget(scale_title_label, 15, 0, 1, 2)
+        scale_title_lbl = FCLabel('<span style="color:magenta;"><b>%s</b></span>' % _("Scale"))
+        sc_t_lay.addWidget(scale_title_lbl)
 
-        self.scale_link_cb = FCCheckBox()
-        self.scale_link_cb.setText(_("Link"))
+        sc_t_lay.addStretch()
+
+        # ## Link Scale factors
+        self.scale_link_cb = FCCheckBox(_("Link"))
         self.scale_link_cb.setToolTip(
             _("Link the Y entry to X entry and copy its content.")
         )
+        sc_t_lay.addWidget(self.scale_link_cb)
 
-        grid0.addWidget(self.scale_link_cb, 15, 2)
+        scale_frame = FCFrame()
+        self.layout.addWidget(scale_frame)
+
+        scale_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        scale_frame.setLayout(scale_grid)
 
         self.scalex_label = FCLabel('%s:' % _("X factor"))
         self.scalex_label.setToolTip(
@@ -794,9 +828,9 @@ class TransformUI:
               "the Scale reference checkbox state."))
         self.scalex_button.setMinimumWidth(90)
 
-        grid0.addWidget(self.scalex_label, 17, 0)
-        grid0.addWidget(self.scalex_entry, 17, 1)
-        grid0.addWidget(self.scalex_button, 17, 2)
+        scale_grid.addWidget(self.scalex_label, 0, 0)
+        scale_grid.addWidget(self.scalex_entry, 0, 1)
+        scale_grid.addWidget(self.scalex_button, 0, 2)
 
         self.scaley_label = FCLabel('%s:' % _("Y factor"))
         self.scaley_label.setToolTip(
@@ -814,9 +848,9 @@ class TransformUI:
               "the Scale reference checkbox state."))
         self.scaley_button.setMinimumWidth(90)
 
-        grid0.addWidget(self.scaley_label, 19, 0)
-        grid0.addWidget(self.scaley_entry, 19, 1)
-        grid0.addWidget(self.scaley_button, 19, 2)
+        scale_grid.addWidget(self.scaley_label, 2, 0)
+        scale_grid.addWidget(self.scaley_entry, 2, 1)
+        scale_grid.addWidget(self.scaley_button, 2, 2)
 
         self.ois_s = OptionalInputSection(self.scale_link_cb,
                                           [
@@ -825,14 +859,17 @@ class TransformUI:
                                               self.scaley_button
                                           ], logic=False)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 21, 0, 1, 3)
+        # #############################################################################################################
+        # Mirror Frame
+        # #############################################################################################################
+        flip_title_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % self.flipName)
+        self.layout.addWidget(flip_title_label)
 
-        # ## Flip Title
-        flip_title_label = FCLabel("<font size=3><b>%s</b></font>" % self.flipName)
-        grid0.addWidget(flip_title_label, 23, 0, 1, 3)
+        mirror_frame = FCFrame()
+        self.layout.addWidget(mirror_frame)
+
+        mirror_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        mirror_frame.setLayout(mirror_grid)
 
         self.flipx_button = FCButton(_("Flip on X"))
         self.flipx_button.setToolTip(
@@ -845,19 +882,22 @@ class TransformUI:
         )
 
         hlay0 = QtWidgets.QHBoxLayout()
-        grid0.addLayout(hlay0, 25, 0, 1, 3)
+        mirror_grid.addLayout(hlay0, 0, 0, 1, 3)
 
         hlay0.addWidget(self.flipx_button)
         hlay0.addWidget(self.flipy_button)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 27, 0, 1, 3)
+        # #############################################################################################################
+        # Offset Frame
+        # #############################################################################################################
+        offset_title_lbl = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Offset"))
+        self.layout.addWidget(offset_title_lbl)
 
-        # ## Offset Title
-        offset_title_label = FCLabel("<font size=3><b>%s</b></font>" % self.offsetName)
-        grid0.addWidget(offset_title_label, 29, 0, 1, 3)
+        off_frame = FCFrame()
+        self.layout.addWidget(off_frame)
+
+        off_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        off_frame.setLayout(off_grid)
 
         self.offx_label = FCLabel('%s:' % _("X val"))
         self.offx_label.setToolTip(
@@ -875,9 +915,9 @@ class TransformUI:
               "the bounding box for all selected objects.\n"))
         self.offx_button.setMinimumWidth(90)
 
-        grid0.addWidget(self.offx_label, 31, 0)
-        grid0.addWidget(self.offx_entry, 31, 1)
-        grid0.addWidget(self.offx_button, 31, 2)
+        off_grid.addWidget(self.offx_label, 0, 0)
+        off_grid.addWidget(self.offx_entry, 0, 1)
+        off_grid.addWidget(self.offx_button, 0, 2)
 
         self.offy_label = FCLabel('%s:' % _("Y val"))
         self.offy_label.setToolTip(
@@ -895,20 +935,23 @@ class TransformUI:
               "the bounding box for all selected objects.\n"))
         self.offy_button.setMinimumWidth(90)
 
-        grid0.addWidget(self.offy_label, 32, 0)
-        grid0.addWidget(self.offy_entry, 32, 1)
-        grid0.addWidget(self.offy_button, 32, 2)
+        off_grid.addWidget(self.offy_label, 2, 0)
+        off_grid.addWidget(self.offy_entry, 2, 1)
+        off_grid.addWidget(self.offy_button, 2, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 34, 0, 1, 3)
+        # #############################################################################################################
+        # Buffer Frame
+        # #############################################################################################################
+        b_t_lay = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(b_t_lay)
 
-        # ## Buffer Title
-        buffer_title_label = FCLabel("<font size=3><b>%s</b></font>" % self.bufferName)
-        grid0.addWidget(buffer_title_label, 35, 0, 1, 2)
+        buffer_title_lbl = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Buffer"))
+        b_t_lay.addWidget(buffer_title_lbl)
 
-        self.buffer_rounded_cb = FCCheckBox('%s' % _("Rounded"))
+        b_t_lay.addStretch()
+
+        self.buffer_rounded_cb = FCCheckBox()
+        self.buffer_rounded_cb.setText('%s' % _("Rounded"))
         self.buffer_rounded_cb.setToolTip(
             _("If checked then the buffer will surround the buffered shape,\n"
               "every corner will be rounded.\n"
@@ -916,7 +959,13 @@ class TransformUI:
               "of the buffered shape.")
         )
 
-        grid0.addWidget(self.buffer_rounded_cb, 35, 2)
+        b_t_lay.addWidget(self.buffer_rounded_cb)
+
+        buff_frame = FCFrame()
+        self.layout.addWidget(buff_frame)
+
+        buff_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        buff_frame.setLayout(buff_grid)
 
         self.buffer_label = FCLabel('%s:' % _("Distance"))
         self.buffer_label.setToolTip(
@@ -939,9 +988,9 @@ class TransformUI:
         )
         self.buffer_button.setMinimumWidth(90)
 
-        grid0.addWidget(self.buffer_label, 37, 0)
-        grid0.addWidget(self.buffer_entry, 37, 1)
-        grid0.addWidget(self.buffer_button, 37, 2)
+        buff_grid.addWidget(self.buffer_label, 0, 0)
+        buff_grid.addWidget(self.buffer_entry, 0, 1)
+        buff_grid.addWidget(self.buffer_button, 0, 2)
 
         self.buffer_factor_label = FCLabel('%s:' % _("Value"))
         self.buffer_factor_label.setToolTip(
@@ -965,11 +1014,12 @@ class TransformUI:
         )
         self.buffer_factor_button.setMinimumWidth(90)
 
-        grid0.addWidget(self.buffer_factor_label, 38, 0)
-        grid0.addWidget(self.buffer_factor_entry, 38, 1)
-        grid0.addWidget(self.buffer_factor_button, 38, 2)
+        buff_grid.addWidget(self.buffer_factor_label, 2, 0)
+        buff_grid.addWidget(self.buffer_factor_entry, 2, 1)
+        buff_grid.addWidget(self.buffer_factor_button, 2, 2)
 
-        grid0.addWidget(FCLabel(''), 42, 0, 1, 3)
+        FCGridLayout.set_common_column_size(
+            [ref_grid, rot_grid, skew_grid, scale_grid, mirror_grid, off_grid, buff_grid], 0)
 
         self.layout.addStretch()
 

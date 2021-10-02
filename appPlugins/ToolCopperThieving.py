@@ -1318,7 +1318,6 @@ class ThievingUI:
         tp_frame = FCFrame()
         self.tools_box.addWidget(tp_frame)
 
-        # ## Grid Layout
         grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         tp_frame.setLayout(grid_lay)
 

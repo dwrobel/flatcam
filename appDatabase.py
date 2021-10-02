@@ -527,7 +527,7 @@ class ToolsDB2UI:
         self.grid0.addWidget(separator_line, 38, 0, 1, 2)
 
         # Spindle Spped
-        self.spindle_label = FCLabel('%s:' % _("Spindle Speed"))
+        self.spindle_label = FCLabel('%s:' % _("Spindle speed"))
         self.spindle_label.setToolTip(
             _("Spindle Speed.\n"
               "If it's left empty it will not be used.\n"

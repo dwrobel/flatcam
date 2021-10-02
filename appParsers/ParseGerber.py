@@ -41,7 +41,7 @@ class Gerber(Geometry):
     +-----------+-----------------------------------+
     | others    | Depend on ``type``                |
     +-----------+-----------------------------------+
-    | solid_geometry      | (list)                  |
+    | geometry      | (list)                  |
     +-----------+-----------------------------------+
     * ``aperture_macros`` (dictionary): Are predefined geometrical structures
       that can be instantiated with different parameters in an aperture

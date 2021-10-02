@@ -10,7 +10,7 @@ from PyQt6 import QtGui, QtCore, QtWidgets
 from appTool import AppTool
 from appCommon.Common import LoudDict
 from appGUI.GUIElements import FCComboBox, FCEntry, FCTable, FCDoubleSpinner, FCSpinner, FCFileSaveDialog, \
-    FCInputSpinner, FCButton, VerticalScrollArea, FCGridLayout, FCLabel
+    FCInputSpinner, FCButton, VerticalScrollArea, FCGridLayout, FCLabel, FCFrame, FCComboBox2
 
 from camlib import distance
 from appEditors.AppTextEditor import AppTextEditor
@@ -19,7 +19,7 @@ from copy import deepcopy
 from datetime import datetime
 import re
 
-from shapely.geometry import Polygon, LineString
+from shapely.geometry import Polygon, LineString, MultiPolygon, MultiLineString, Point
 from shapely.ops import unary_union
 
 import traceback
@@ -373,29 +373,39 @@ class SolderPaste(AppTool):
     def ui_connect(self):
         # on any change to the widgets that matter it will be called self.gui_form_to_storage which will save the
         # changes in geometry UI
-        for i in range(self.ui.param_grid.count()):
-            if isinstance(self.ui.param_grid.itemAt(i).widget(), FCComboBox):
-                self.ui.param_grid.itemAt(i).widget().currentIndexChanged.connect(self.form_to_storage)
-            if isinstance(self.ui.param_grid.itemAt(i).widget(), FCEntry):
-                self.ui.param_grid.itemAt(i).widget().editingFinished.connect(self.form_to_storage)
+        for grid in self.ui.tools_box.parentWidget().findChildren(FCGridLayout):
+            for i in range(grid.count()):
+                wdg = grid.itemAt(i).widget()
+                if isinstance(wdg, (FCComboBox, FCComboBox2)):
+                    wdg.currentIndexChanged.connect(self.form_to_storage)
+                elif isinstance(wdg, FCEntry):
+                    wdg.editingFinished.connect(self.form_to_storage)
+                elif isinstance(wdg, FCDoubleSpinner):
+                    wdg.returnPressed.connect(self.form_to_storage)
 
         self.ui.tools_table.itemChanged.connect(self.on_tool_edit)
         self.ui.tools_table.currentItemChanged.connect(self.on_row_selection_change)
 
     def ui_disconnect(self):
         # if connected, disconnect the signal from the slot on item_changed as it creates issues
-
-        for i in range(self.ui.param_grid.count()):
-            if isinstance(self.ui.param_grid.itemAt(i).widget(), FCComboBox):
-                try:
-                    self.ui.param_grid.itemAt(i).widget().currentIndexChanged.disconnect()
-                except (TypeError, AttributeError):
-                    pass
-            if isinstance(self.ui.param_grid.itemAt(i).widget(), FCEntry):
-                try:
-                    self.ui.param_grid.itemAt(i).widget().editingFinished.disconnect()
-                except (TypeError, AttributeError):
-                    pass
+        for grid in self.ui.tools_box.parentWidget().findChildren(FCGridLayout):
+            for i in range(grid.count()):
+                wdg = grid.itemAt(i).widget()
+                if isinstance(wdg, (FCComboBox, FCComboBox2)):
+                    try:
+                        wdg.currentIndexChanged.disconnect()
+                    except (TypeError, AttributeError):
+                        pass
+                elif isinstance(wdg, FCEntry):
+                    try:
+                        wdg.editingFinished.disconnect()
+                    except (TypeError, AttributeError):
+                        pass
+                elif isinstance(wdg, FCDoubleSpinner):
+                    try:
+                        wdg.returnPressed.disconnect()
+                    except (TypeError, AttributeError):
+                        pass
 
         try:
             self.ui.tools_table.itemChanged.disconnect(self.on_tool_edit)
@@ -451,6 +461,7 @@ class SolderPaste(AppTool):
         :param tooluid: the uid of the tool to be updated in the obj.tools
         :return:
         """
+
         current_row = self.ui.tools_table.currentRow()
         uid = tooluid if tooluid else int(self.ui.tools_table.item(current_row, 2).text())
         for key in self.form_fields:
@@ -732,8 +743,7 @@ class SolderPaste(AppTool):
         sorted_tools.sort(reverse=True)
 
         if not sorted_tools:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("No Nozzle tools in the tool table."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No Nozzle tools in the tool table."))
             return 'fail'
 
         def flatten(geometry=None, reset=True, pathonly=False):
@@ -752,7 +762,10 @@ class SolderPaste(AppTool):
                 self.flat_geometry = []
             # ## If iterable, expand recursively.
             try:
-                for geo in geometry:
+                work_geo = geometry
+                if isinstance(geometry, (MultiPolygon, MultiLineString)):
+                    work_geo = geometry.geoms
+                for geo in work_geo:
                     if geo is not None:
                         flatten(geometry=geo,
                                 reset=False,
@@ -766,9 +779,19 @@ class SolderPaste(AppTool):
                     self.flat_geometry.append(geometry)
             return self.flat_geometry
 
-        # TODO when/if the Gerber files will have solid_geometry in the self.tools I will have to take care here
+        # get only the solid geometry for pads/flashes
+        tools_geometry = []
+        for ap_id in obj.tools:
+            for geo_el in obj.tools[ap_id]['geometry']:
+                if "follow" in geo_el and isinstance(geo_el["follow"], Point):
+                    tools_geometry.append(geo_el["solid"])
 
-        flatten(geometry=obj.solid_geometry, pathonly=True)
+        # flatten(geometry=obj.solid_geometry, pathonly=True)
+        flatten(tools_geometry, pathonly=True)
+        if not self.flat_geometry:
+            self.app.log.debug("Failed due of missing Gerber tools geometry.")
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+            return
 
         def geo_init(geo_obj, app_obj):
             geo_obj.options.update(self.options)
@@ -862,11 +885,11 @@ class SolderPaste(AppTool):
                         if not geo_obj.tools[tooluid_key]['solid_geometry']:
                             a += 1
                     if a == len(geo_obj.tools):
-                        msg = '[ERROR_NOTCL] %s' % '%s ...' % _('Cancelled. Empty file, it has no geometry')
+                        msg = '[ERROR_NOTCL] %s' % '%s ...' % _('Cancelled.')
                         self.app.inform.emit(msg)
                         return 'fail'
 
-                    app_obj.inform.emit('[success] %s...' % _("Solder Paste geometry generated successfully"))
+                    app_obj.inform.emit('[success] %s' % _("Done."))
                     return
 
             # if we still have geometry not processed at the end of the tools then we failed
@@ -1177,27 +1200,44 @@ class SolderUI:
         self.decimals = self.app.decimals
         self.layout = layout
 
+        self.tools_frame = QtWidgets.QFrame()
+        self.tools_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.tools_frame)
+
+        self.tools_box = QtWidgets.QVBoxLayout()
+        self.tools_box.setContentsMargins(0, 0, 0, 0)
+        self.tools_frame.setLayout(self.tools_box)
+
+        self.title_box = QtWidgets.QHBoxLayout()
+        self.tools_box.addLayout(self.title_box)
+
         # ## Title
         title_label = FCLabel("%s" % self.pluginName)
         title_label.setStyleSheet("""
-                               QLabel
-                               {
-                                   font-size: 16px;
-                                   font-weight: bold;
-                               }
-                               """)
+                                   QLabel
+                                   {
+                                       font-size: 16px;
+                                       font-weight: bold;
+                                   }
+                                   """)
         title_label.setToolTip(
             _("A plugin to help dispense solder paste on the PCB pads using a CNC machine.")
         )
-        self.layout.addWidget(title_label)
+        self.title_box.addWidget(title_label)
 
-        # ## Form Layout
-        obj_form_layout = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(obj_form_layout)
-
-        # ## Gerber Object to be used for solderpaste dispensing
-        self.object_label = FCLabel('<b>%s</b>:' % _("GERBER"))
+        # #############################################################################################################
+        # Source Object
+        # #############################################################################################################
+        self.object_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
         self.object_label.setToolTip(_("Gerber Solderpaste object."))
+        self.tools_box.addWidget(self.object_label)
+
+        source_frame = FCFrame()
+        self.tools_box.addWidget(source_frame)
+
+        # ## Grid Layout
+        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        source_frame.setLayout(obj_grid)
 
         self.obj_combo = FCComboBox(callback=solder_class.on_rmb_combo)
         self.obj_combo.setModel(self.app.collection)
@@ -1205,24 +1245,31 @@ class SolderUI:
         self.obj_combo.is_last = True
         self.obj_combo.obj_type = "Gerber"
 
-        obj_form_layout.addWidget(self.object_label, 0, 0, 1, 2)
-        obj_form_layout.addWidget(self.obj_combo, 2, 0, 1, 2)
+        obj_grid.addWidget(self.obj_combo, 0, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        obj_form_layout.addWidget(separator_line, 4, 0, 1, 2)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # obj_form_layout.addWidget(separator_line, 4, 0, 1, 2)
 
-        # ### Tools ## ##
-        self.tools_table_label = FCLabel('<b>%s</b>' % _('Tools Table'))
+        # #############################################################################################################
+        # Tool Table Frame
+        # #############################################################################################################
+        self.tools_table_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Tools Table'))
         self.tools_table_label.setToolTip(
             _("Tools pool from which the algorithm\n"
               "will pick the ones used for dispensing solder paste.")
         )
-        obj_form_layout.addWidget(self.tools_table_label, 6, 0, 1, 2)
+        self.tools_box.addWidget(self.tools_table_label)
+
+        tt_frame = FCFrame()
+        self.tools_box.addWidget(tt_frame)
+
+        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
+        tt_frame.setLayout(tool_grid)
 
         self.tools_table = FCTable()
-        obj_form_layout.addWidget(self.tools_table, 8, 0, 1, 2)
+        tool_grid.addWidget(self.tools_table, 0, 0, 1, 4)
 
         self.tools_table.setColumnCount(3)
         self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), ''])
@@ -1240,10 +1287,6 @@ class SolderUI:
         self.tools_table.horizontalHeaderItem(1).setToolTip(
             _("Tool Diameter. Its value\n"
               "is the width of the solder paste dispensed."))
-
-        # ### Add a new Tool ## ##
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
 
         self.addtool_entry_lbl = FCLabel('<b>%s:</b>' % _('New Tool'))
         self.addtool_entry_lbl.setToolTip(
@@ -1268,74 +1311,30 @@ class SolderUI:
               "by first selecting a row in the Tool Table.")
         )
 
-        grid0.addWidget(self.addtool_entry_lbl, 0, 0)
-        grid0.addWidget(self.addtool_entry, 0, 1)
-        grid0.addWidget(self.addtool_btn, 0, 2)
-        grid0.addWidget(self.deltool_btn, 0, 3)
+        tool_grid.addWidget(self.addtool_entry_lbl, 2, 0)
+        tool_grid.addWidget(self.addtool_entry, 2, 1)
+        tool_grid.addWidget(self.addtool_btn, 2, 2)
+        tool_grid.addWidget(self.deltool_btn, 2, 3)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 2, 0, 1, 4)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # grid0.addWidget(separator_line, 2, 0, 1, 4)
 
-        self.gcode_frame = QtWidgets.QFrame()
-        self.gcode_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.gcode_frame)
-
-        self.tool_box = QtWidgets.QVBoxLayout()
-        self.tool_box.setContentsMargins(0, 0, 0, 0)
-        self.gcode_frame.setLayout(self.tool_box)
-
-        # Parameter Layout
-        self.param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.tool_box.addLayout(self.param_grid)
-
-        step1_lbl = FCLabel("<b>%s:</b>" % _('Parameters'))
-        self.param_grid.addWidget(step1_lbl, 0, 0)
-
-        # Z dispense start
-        self.z_start_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.z_start_entry.set_range(0.0000001, 10000.0000)
-        self.z_start_entry.set_precision(self.decimals)
-        self.z_start_entry.setSingleStep(0.1)
-
-        self.z_start_label = FCLabel('%s:' % _("Z Dispense Start"))
-        self.z_start_label.setToolTip(
-            _("The height (Z) when solder paste dispensing starts.")
+        # #############################################################################################################
+        # Parameters Frame
+        # #############################################################################################################
+        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Parameters'))
+        self.param_label.setToolTip(
+            _("Parameters used for this tool.")
         )
-        self.param_grid.addWidget(self.z_start_label, 2, 0)
-        self.param_grid.addWidget(self.z_start_entry, 2, 1)
+        self.tools_box.addWidget(self.param_label)
 
-        # Z dispense
-        self.z_dispense_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.z_dispense_entry.set_range(0.0000001, 10000.0000)
-        self.z_dispense_entry.set_precision(self.decimals)
-        self.z_dispense_entry.setSingleStep(0.1)
+        par_frame = FCFrame()
+        self.tools_box.addWidget(par_frame)
 
-        self.z_dispense_label = FCLabel('%s:' % _("Z Dispense"))
-        self.z_dispense_label.setToolTip(
-            _("The height (Z) when doing solder paste dispensing.")
-        )
-        self.param_grid.addWidget(self.z_dispense_label, 4, 0)
-        self.param_grid.addWidget(self.z_dispense_entry, 4, 1)
-
-        # Z dispense stop
-        self.z_stop_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.z_stop_entry.set_range(0.0000001, 10000.0000)
-        self.z_stop_entry.set_precision(self.decimals)
-        self.z_stop_entry.setSingleStep(0.1)
-
-        self.z_stop_label = FCLabel('%s:' % _("Z Dispense Stop"))
-        self.z_stop_label.setToolTip(
-            _("The height (Z) when solder paste dispensing stops.")
-        )
-        self.param_grid.addWidget(self.z_stop_label, 6, 0)
-        self.param_grid.addWidget(self.z_stop_entry, 6, 1)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.param_grid.addWidget(separator_line, 7, 0, 1, 2)
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_frame.setLayout(param_grid)
 
         # Z travel
         self.z_travel_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -1348,8 +1347,81 @@ class SolderUI:
             _("The height (Z) for travel between pads\n"
               "(without dispensing solder paste).")
         )
-        self.param_grid.addWidget(self.z_travel_label, 8, 0)
-        self.param_grid.addWidget(self.z_travel_entry, 8, 1)
+        param_grid.addWidget(self.z_travel_label, 0, 0)
+        param_grid.addWidget(self.z_travel_entry, 0, 1)
+
+        # #############################################################################################################
+        # Dispense Frame
+        # #############################################################################################################
+        self.disp_lbl = FCLabel('<span style="color:tomato;"><b>%s</b></span>' % _('Dispense'))
+        self.tools_box.addWidget(self.disp_lbl)
+
+        disp_frame = FCFrame()
+        self.tools_box.addWidget(disp_frame)
+
+        disp_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        disp_frame.setLayout(disp_grid)
+
+        # Z dispense start
+        self.z_start_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.z_start_entry.set_range(0.0000001, 10000.0000)
+        self.z_start_entry.set_precision(self.decimals)
+        self.z_start_entry.setSingleStep(0.1)
+
+        self.z_start_label = FCLabel('%s:' % _("Z Start"))
+        self.z_start_label.setToolTip(
+            _("The height (Z) when solder paste dispensing starts.")
+        )
+        disp_grid.addWidget(self.z_start_label, 0, 0)
+        disp_grid.addWidget(self.z_start_entry, 0, 1)
+
+        # Z dispense
+        self.z_dispense_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.z_dispense_entry.set_range(0.0000001, 10000.0000)
+        self.z_dispense_entry.set_precision(self.decimals)
+        self.z_dispense_entry.setSingleStep(0.1)
+
+        self.z_dispense_label = FCLabel('%s:' % _("Z Action"))
+        self.z_dispense_label.setToolTip(
+            _("The height (Z) when doing solder paste dispensing.")
+        )
+        disp_grid.addWidget(self.z_dispense_label, 2, 0)
+        disp_grid.addWidget(self.z_dispense_entry, 2, 1)
+
+        # Z dispense stop
+        self.z_stop_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.z_stop_entry.set_range(0.0000001, 10000.0000)
+        self.z_stop_entry.set_precision(self.decimals)
+        self.z_stop_entry.setSingleStep(0.1)
+
+        self.z_stop_label = FCLabel('%s:' % _("Z Stop"))
+        self.z_stop_label.setToolTip(
+            _("The height (Z) when solder paste dispensing stops.")
+        )
+        disp_grid.addWidget(self.z_stop_label, 4, 0)
+        disp_grid.addWidget(self.z_stop_entry, 4, 1)
+
+        # #############################################################################################################
+        # Toolchange Frame
+        # #############################################################################################################
+        self.toolchnage_lbl = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Tool change"))
+        self.tools_box.addWidget(self.toolchnage_lbl)
+
+        tc_frame = FCFrame()
+        self.tools_box.addWidget(tc_frame)
+
+        tc_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tc_frame.setLayout(tc_grid)
+
+        # X,Y Toolchange location
+        self.xy_toolchange_entry = FCEntry()
+        self.xy_toolchange_label = FCLabel('%s:' % "X-Y")
+        self.xy_toolchange_label.setToolTip(
+            _("The X,Y location for tool (nozzle) change.\n"
+              "The format is (x, y) where x and y are real numbers.")
+        )
+        tc_grid.addWidget(self.xy_toolchange_label, 0, 0)
+        tc_grid.addWidget(self.xy_toolchange_entry, 0, 1)
 
         # Z toolchange location
         self.z_toolchange_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -1357,27 +1429,24 @@ class SolderUI:
         self.z_toolchange_entry.set_precision(self.decimals)
         self.z_toolchange_entry.setSingleStep(0.1)
 
-        self.z_toolchange_label = FCLabel('%s:' % _("Tool change Z"))
+        self.z_toolchange_label = FCLabel('%s:' % "Z")
         self.z_toolchange_label.setToolTip(
             _("The height (Z) for tool (nozzle) change.")
         )
-        self.param_grid.addWidget(self.z_toolchange_label, 10, 0)
-        self.param_grid.addWidget(self.z_toolchange_entry, 10, 1)
+        tc_grid.addWidget(self.z_toolchange_label, 2, 0)
+        tc_grid.addWidget(self.z_toolchange_entry, 2, 1)
 
-        # X,Y Toolchange location
-        self.xy_toolchange_entry = FCEntry()
-        self.xy_toolchange_label = FCLabel('%s:' % _("Toolchange X-Y"))
-        self.xy_toolchange_label.setToolTip(
-            _("The X,Y location for tool (nozzle) change.\n"
-              "The format is (x, y) where x and y are real numbers.")
-        )
-        self.param_grid.addWidget(self.xy_toolchange_label, 12, 0)
-        self.param_grid.addWidget(self.xy_toolchange_entry, 12, 1)
+        # #############################################################################################################
+        # Feedrate Frame
+        # #############################################################################################################
+        fr_lbl = FCLabel('<span style="color:red;"><b>%s</b></span>' % _("Feedrate"))
+        self.tools_box.addWidget(fr_lbl)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.param_grid.addWidget(separator_line, 13, 0, 1, 2)
+        fr_frame = FCFrame()
+        self.tools_box.addWidget(fr_frame)
+
+        fr_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        fr_frame.setLayout(fr_grid)
 
         # Feedrate X-Y
         self.frxy_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -1385,12 +1454,12 @@ class SolderUI:
         self.frxy_entry.set_precision(self.decimals)
         self.frxy_entry.setSingleStep(0.1)
 
-        self.frxy_label = FCLabel('%s:' % _("Feedrate X-Y"))
+        self.frxy_label = FCLabel('%s:' % "X-Y")
         self.frxy_label.setToolTip(
             _("Feedrate (speed) while moving on the X-Y plane.")
         )
-        self.param_grid.addWidget(self.frxy_label, 14, 0)
-        self.param_grid.addWidget(self.frxy_entry, 14, 1)
+        fr_grid.addWidget(self.frxy_label, 0, 0)
+        fr_grid.addWidget(self.frxy_entry, 0, 1)
 
         # Feedrate Z
         self.frz_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -1398,13 +1467,13 @@ class SolderUI:
         self.frz_entry.set_precision(self.decimals)
         self.frz_entry.setSingleStep(0.1)
 
-        self.frz_label = FCLabel('%s:' % _("Feedrate Z"))
+        self.frz_label = FCLabel('%s:' % "Z")
         self.frz_label.setToolTip(
             _("Feedrate (speed) while moving vertically\n"
               "(on Z plane).")
         )
-        self.param_grid.addWidget(self.frz_label, 16, 0)
-        self.param_grid.addWidget(self.frz_entry, 16, 1)
+        fr_grid.addWidget(self.frz_label, 2, 0)
+        fr_grid.addWidget(self.frz_entry, 2, 1)
 
         # Feedrate Z Dispense
         self.frz_dispense_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -1412,31 +1481,38 @@ class SolderUI:
         self.frz_dispense_entry.set_precision(self.decimals)
         self.frz_dispense_entry.setSingleStep(0.1)
 
-        self.frz_dispense_label = FCLabel('%s:' % _("Feedrate Z Dispense"))
+        self.frz_dispense_label = FCLabel('%s:' % _("Z Dispense"))
         self.frz_dispense_label.setToolTip(
             _("Feedrate (speed) while moving up vertically\n"
               "to Dispense position (on Z plane).")
         )
-        self.param_grid.addWidget(self.frz_dispense_label, 18, 0)
-        self.param_grid.addWidget(self.frz_dispense_entry, 18, 1)
+        fr_grid.addWidget(self.frz_dispense_label, 4, 0)
+        fr_grid.addWidget(self.frz_dispense_entry, 4, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.param_grid.addWidget(separator_line, 19, 0, 1, 2)
+        # #############################################################################################################
+        # Spindle Forward Frame
+        # #############################################################################################################
+        sp_fw_lbl = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Forward"))
+        self.tools_box.addWidget(sp_fw_lbl)
+
+        sp_fw_frame = FCFrame()
+        self.tools_box.addWidget(sp_fw_frame)
+
+        sp_fw_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        sp_fw_frame.setLayout(sp_fw_grid)
 
         # Spindle Speed Forward
         self.speedfwd_entry = FCSpinner(callback=self.confirmation_message_int)
         self.speedfwd_entry.set_range(0, 999999)
         self.speedfwd_entry.set_step(1000)
 
-        self.speedfwd_label = FCLabel('%s:' % _("Spindle Speed FWD"))
+        self.speedfwd_label = FCLabel('%s:' % _("Spindle speed"))
         self.speedfwd_label.setToolTip(
             _("The dispenser speed while pushing solder paste\n"
               "through the dispenser nozzle.")
         )
-        self.param_grid.addWidget(self.speedfwd_label, 20, 0)
-        self.param_grid.addWidget(self.speedfwd_entry, 20, 1)
+        sp_fw_grid.addWidget(self.speedfwd_label, 0, 0)
+        sp_fw_grid.addWidget(self.speedfwd_entry, 0, 1)
 
         # Dwell Forward
         self.dwellfwd_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -1444,25 +1520,36 @@ class SolderUI:
         self.dwellfwd_entry.set_precision(self.decimals)
         self.dwellfwd_entry.setSingleStep(0.1)
 
-        self.dwellfwd_label = FCLabel('%s:' % _("Dwell FWD"))
+        self.dwellfwd_label = FCLabel('%s:' % _("Dwell"))
         self.dwellfwd_label.setToolTip(
             _("Pause after solder dispensing.")
         )
-        self.param_grid.addWidget(self.dwellfwd_label, 22, 0)
-        self.param_grid.addWidget(self.dwellfwd_entry, 22, 1)
+        sp_fw_grid.addWidget(self.dwellfwd_label, 2, 0)
+        sp_fw_grid.addWidget(self.dwellfwd_entry, 2, 1)
 
-        # Spindle Speed Reverse
+        # #############################################################################################################
+        # Spindle Reverse Frame
+        # #############################################################################################################
+        sp_rev_lbl = FCLabel('<span style="color:teal;"><b>%s</b></span>' % _("Reverse"))
+        self.tools_box.addWidget(sp_rev_lbl)
+
+        sp_rev_frame = FCFrame()
+        self.tools_box.addWidget(sp_rev_frame)
+
+        sp_rev_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        sp_rev_frame.setLayout(sp_rev_grid)
+
         self.speedrev_entry = FCSpinner(callback=self.confirmation_message_int)
         self.speedrev_entry.set_range(0, 999999)
         self.speedrev_entry.set_step(1000)
 
-        self.speedrev_label = FCLabel('%s:' % _("Spindle Speed REV"))
+        self.speedrev_label = FCLabel('%s:' % _("Spindle speed"))
         self.speedrev_label.setToolTip(
             _("The dispenser speed while retracting solder paste\n"
               "through the dispenser nozzle.")
         )
-        self.param_grid.addWidget(self.speedrev_label, 24, 0)
-        self.param_grid.addWidget(self.speedrev_entry, 24, 1)
+        sp_rev_grid.addWidget(self.speedrev_label, 0, 0)
+        sp_rev_grid.addWidget(self.speedrev_entry, 0, 1)
 
         # Dwell Reverse
         self.dwellrev_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -1470,37 +1557,43 @@ class SolderUI:
         self.dwellrev_entry.set_precision(self.decimals)
         self.dwellrev_entry.setSingleStep(0.1)
 
-        self.dwellrev_label = FCLabel('%s:' % _("Dwell REV"))
+        self.dwellrev_label = FCLabel('%s:' % _("Dwell"))
         self.dwellrev_label.setToolTip(
             _("Pause after solder paste dispenser retracted,\n"
               "to allow pressure equilibrium.")
         )
-        self.param_grid.addWidget(self.dwellrev_label, 26, 0)
-        self.param_grid.addWidget(self.dwellrev_entry, 26, 1)
+        sp_rev_grid.addWidget(self.dwellrev_label, 2, 0)
+        sp_rev_grid.addWidget(self.dwellrev_entry, 2, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.param_grid.addWidget(separator_line, 27, 0, 1, 2)
+        # #############################################################################################################
+        # Preprocessors Frame
+        # #############################################################################################################
+        pp_frame = FCFrame()
+        self.tools_box.addWidget(pp_frame)
 
-        # Preprocessors
+        pp_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        pp_frame.setLayout(pp_grid)
+
         pp_label = FCLabel('%s:' % _('Preprocessor'))
         pp_label.setToolTip(
             _("Files that control the GCode generation.")
         )
 
         self.pp_combo = FCComboBox()
-        self.param_grid.addWidget(pp_label, 28, 0)
-        self.param_grid.addWidget(self.pp_combo, 28, 1)
+        pp_grid.addWidget(pp_label, 0, 0)
+        pp_grid.addWidget(self.pp_combo, 0, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.param_grid.addWidget(separator_line, 30, 0, 1, 2)
+        # #############################################################################################################
+        # Geometry Frame
+        # #############################################################################################################
+        geo_lbl = FCLabel('<span style="color:red;"><b>%s</b></span>' % _("Geometry"))
+        self.tools_box.addWidget(geo_lbl)
 
-        # Buttons Grid
-        self.button_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.tool_box.addLayout(self.button_grid)
+        geo_frame = FCFrame()
+        self.tools_box.addWidget(geo_frame)
+
+        geo_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        geo_frame.setLayout(geo_grid)
 
         # Generate Geometry
         self.soldergeo_btn = FCButton(_("Generate Geometry"))
@@ -1515,7 +1608,7 @@ class SolderUI:
                                                font-weight: bold;
                                            }
                                            """)
-        self.button_grid.addWidget(self.soldergeo_btn, 0, 0, 1, 2)
+        geo_grid.addWidget(self.soldergeo_btn, 0, 0, 1, 2)
 
         # Geometry Object to be used for Solderpaste dispensing
         self.geo_obj_combo = FCComboBox(callback=solder_class.on_rmb_combo)
@@ -1524,22 +1617,27 @@ class SolderUI:
         self.geo_obj_combo.is_last = True
         self.geo_obj_combo.obj_type = "Geometry"
 
-        self.geo_object_label = FCLabel('%s:' % _("Geometry"))
-        self.geo_object_label.setToolTip(
+        self.geo_obj_combo.setToolTip(
             _("Geometry Solder Paste object.\n"
               "The name of the object has to end in:\n"
               "'_solderpaste' as a protection.")
         )
-        self.button_grid.addWidget(self.geo_object_label, 2, 0)
-        self.button_grid.addWidget(self.geo_obj_combo, 2, 1)
+        geo_grid.addWidget(self.geo_obj_combo, 2, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.button_grid.addWidget(separator_line, 4, 0, 1, 2)
+        # #############################################################################################################
+        # CNCJob Frame
+        # #############################################################################################################
+        cnc_lbl = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _("CNCJob"))
+        self.tools_box.addWidget(cnc_lbl)
+
+        cnc_frame = FCFrame()
+        self.tools_box.addWidget(cnc_frame)
+
+        cnc_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        cnc_frame.setLayout(cnc_grid)
 
         # ## Buttons
-        self.solder_gcode_btn = FCButton(_("Generate CNCJob object"))
+        self.solder_gcode_btn = FCButton(_("Generate CNCJob"))
         self.solder_gcode_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/cnc16.png'))
         self.solder_gcode_btn.setToolTip(
             _("Generate GCode for Solder Paste dispensing\n"
@@ -1551,7 +1649,7 @@ class SolderUI:
                                    font-weight: bold;
                                }
                                """)
-        self.button_grid.addWidget(self.solder_gcode_btn, 6, 0, 1, 2)
+        cnc_grid.addWidget(self.solder_gcode_btn, 0, 0, 1, 2)
 
         # Gerber Object to be used for solderpaste dispensing
         self.cnc_obj_combo = FCComboBox(callback=solder_class.on_rmb_combo)
@@ -1560,20 +1658,13 @@ class SolderUI:
         self.cnc_obj_combo.is_last = True
         self.geo_obj_combo.obj_type = "CNCJob"
 
-        self.cnc_object_label = FCLabel('%s:' % _("CNCJob"))
-        self.cnc_object_label.setToolTip(
+        self.geo_obj_combo.setToolTip(
             _("CNCJob Solder paste object.\n"
               "In order to enable the GCode save section,\n"
               "the name of the object has to end in:\n"
               "'_solderpaste' as a protection.")
         )
-        self.button_grid.addWidget(self.cnc_object_label, 8, 0)
-        self.button_grid.addWidget(self.cnc_obj_combo, 8, 1)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.button_grid.addWidget(separator_line, 10, 0, 1, 2)
+        cnc_grid.addWidget(self.cnc_obj_combo, 2, 0, 1, 2)
 
         # Save and Review GCode
         buttons_hlay = QtWidgets.QHBoxLayout()
@@ -1596,7 +1687,11 @@ class SolderUI:
 
         buttons_hlay.addWidget(self.solder_gcode_save_btn)
         buttons_hlay.addWidget(self.solder_gcode_view_btn)
-        self.button_grid.addLayout(buttons_hlay, 12, 0, 1, 2)
+        self.tools_box.addLayout(buttons_hlay)
+
+        FCGridLayout.set_common_column_size(
+            [geo_grid, fr_grid, tc_grid, disp_grid, tool_grid, sp_fw_grid, sp_rev_grid, param_grid, obj_grid, cnc_grid,
+             pp_grid], 0)
 
         self.layout.addStretch(1)
 

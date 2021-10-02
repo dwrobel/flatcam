@@ -694,7 +694,6 @@ class DsidedUI:
         # #############################################################################################################
         # Source Object
         # #############################################################################################################
-        # Objects to be mirrored
         self.m_objects_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
         self.m_objects_label.setToolTip('%s.' % _("Objects to be mirrored"))
         self.tools_box.addWidget(self.m_objects_label)
@@ -703,8 +702,8 @@ class DsidedUI:
         self.tools_box.addWidget(source_frame)
 
         # ## Grid Layout
-        grid_obj = FCGridLayout(v_spacing=5, h_spacing=3)
-        source_frame.setLayout(grid_obj)
+        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        source_frame.setLayout(obj_grid)
 
         # Type of object to be cutout
         self.type_obj_combo_label = FCLabel('%s:' % _("Target"))
@@ -714,8 +713,8 @@ class DsidedUI:
 
         self.object_type_combo = FCComboBox2()
         self.object_type_combo.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
-        grid_obj.addWidget(self.type_obj_combo_label, 0, 0)
-        grid_obj.addWidget(self.object_type_combo, 0, 1)
+        obj_grid.addWidget(self.type_obj_combo_label, 0, 0)
+        obj_grid.addWidget(self.object_type_combo, 0, 1)
 
         # ## Gerber Object to mirror
         self.object_combo = FCComboBox()
@@ -723,13 +722,11 @@ class DsidedUI:
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.object_combo.is_last = True
 
-        grid_obj.addWidget(self.object_combo, 2, 0, 1, 2)
+        obj_grid.addWidget(self.object_combo, 2, 0, 1, 2)
 
         # #############################################################################################################
         # ##########    BOUNDS OPERATION    ###########################################################################
         # #############################################################################################################
-
-        # ## Title Bounds Values
         self.bv_label = FCLabel('<span style="color:purple;"><b>%s</b></span>' % _('Bounds Values'))
         self.bv_label.setToolTip(
             _("Select on canvas the object(s)\n"
@@ -1119,7 +1116,7 @@ class DsidedUI:
 
         grid4.addLayout(drill_hlay, 10, 0, 1, 2)
 
-        FCGridLayout.set_common_column_size([grid_obj, grid_bounds, grid_mirror, grid_box_ref, grid4], 0)
+        FCGridLayout.set_common_column_size([obj_grid, grid_bounds, grid_mirror, grid_box_ref, grid4], 0)
 
         # ## Buttons
         self.create_excellon_button = FCButton(_("Create Excellon Object"))

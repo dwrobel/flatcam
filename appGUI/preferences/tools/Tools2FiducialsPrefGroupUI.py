@@ -33,9 +33,8 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         par_frame = FCFrame()
         self.layout.addWidget(par_frame)
 
-        # ## Grid Layout
-        grid_par = FCGridLayout(v_spacing=5, h_spacing=3)
-        par_frame.setLayout(grid_par)
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_frame.setLayout(param_grid)
 
         # DIAMETER #
         self.dia_label = FCLabel('%s:' % _("Size"))
@@ -50,8 +49,8 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         self.dia_entry.setWrapping(True)
         self.dia_entry.setSingleStep(0.1)
 
-        grid_par.addWidget(self.dia_label, 2, 0)
-        grid_par.addWidget(self.dia_entry, 2, 1)
+        param_grid.addWidget(self.dia_label, 2, 0)
+        param_grid.addWidget(self.dia_entry, 2, 1)
 
         # MARGIN #
         self.margin_label = FCLabel('%s:' % _("Margin"))
@@ -63,8 +62,8 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         self.margin_entry.set_precision(self.decimals)
         self.margin_entry.setSingleStep(0.1)
 
-        grid_par.addWidget(self.margin_label, 4, 0)
-        grid_par.addWidget(self.margin_entry, 4, 1)
+        param_grid.addWidget(self.margin_label, 4, 0)
+        param_grid.addWidget(self.margin_entry, 4, 1)
 
         # Position for second fiducial #
         self.pos_radio = RadioSet([
@@ -79,13 +78,13 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
               "- 'Down' - the order is: bottom-left, bottom-right, top-right.\n"
               "- 'None' - there is no second fiducial. The order is: bottom-left, top-right.")
         )
-        grid_par.addWidget(self.pos_label, 6, 0)
-        grid_par.addWidget(self.pos_radio, 6, 1)
+        param_grid.addWidget(self.pos_label, 6, 0)
+        param_grid.addWidget(self.pos_radio, 6, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid_par.addWidget(separator_line, 8, 0, 1, 2)
+        param_grid.addWidget(separator_line, 8, 0, 1, 2)
 
         # Fiducial type #
         self.fid_type_label = FCLabel('%s:' % _("Fiducial Type"))
@@ -99,8 +98,8 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         self.fid_type_combo = FCComboBox2()
         self.fid_type_combo.addItems([_('Circular'), _("Cross"), _("Chess")])
 
-        grid_par.addWidget(self.fid_type_label, 10, 0)
-        grid_par.addWidget(self.fid_type_combo, 10, 1)
+        param_grid.addWidget(self.fid_type_label, 10, 0)
+        param_grid.addWidget(self.fid_type_combo, 10, 1)
 
         # Line Thickness #
         self.line_thickness_label = FCLabel('%s:' % _("Line thickness"))
@@ -112,8 +111,8 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         self.line_thickness_entry.set_precision(self.decimals)
         self.line_thickness_entry.setSingleStep(0.1)
 
-        grid_par.addWidget(self.line_thickness_label, 12, 0)
-        grid_par.addWidget(self.line_thickness_entry, 12, 1)
+        param_grid.addWidget(self.line_thickness_label, 12, 0)
+        param_grid.addWidget(self.line_thickness_entry, 12, 1)
 
         # #############################################################################################################
         # Selection Frame
@@ -141,6 +140,6 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         grid_sel.addWidget(self.mode_label, 0, 0)
         grid_sel.addWidget(self.mode_radio, 0, 1)
 
-        FCGridLayout.set_common_column_size([grid_par, grid_sel], 0)
+        FCGridLayout.set_common_column_size([param_grid, grid_sel], 0)
 
         self.layout.addStretch(1)
