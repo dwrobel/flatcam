@@ -1,6 +1,7 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry, FCLabel, FCGridLayout
+from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry, FCLabel, \
+    FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -21,18 +22,24 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # ## Grid Layout
-        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid_lay)
-
-        self.param_label = FCLabel('<b>%s:</b>' % _('Parameters'))
+        # #############################################################################################################
+        # Parameters Frame
+        # #############################################################################################################
+        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Parameters'))
         self.param_label.setToolTip(
             _("Parameters used for this tool.")
         )
-        grid_lay.addWidget(self.param_label, 0, 0, 1, 2)
+
+        par_frame = FCFrame()
+        self.layout.addWidget(par_frame)
+
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_frame.setLayout(param_grid)
+        
+        param_grid.addWidget(self.param_label, 0, 0, 1, 2)
 
         # Calibration source
-        self.cal_source_lbl = FCLabel("<b>%s:</b>" % _("Source Type"))
+        self.cal_source_lbl = FCLabel("%s:" % _("Source Type"))
         self.cal_source_lbl.setToolTip(_("The source of calibration points.\n"
                                          "It can be:\n"
                                          "- Object -> click a hole geo for Excellon or a pad for Gerber\n"
@@ -41,13 +48,13 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
                                           {'label': _('Free'), 'value': 'free'}],
                                          compact=True)
 
-        grid_lay.addWidget(self.cal_source_lbl, 1, 0)
-        grid_lay.addWidget(self.cal_source_radio, 1, 1, 1, 2)
+        param_grid.addWidget(self.cal_source_lbl, 2, 0)
+        param_grid.addWidget(self.cal_source_radio, 2, 1, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid_lay.addWidget(separator_line, 2, 0, 1, 2)
+        param_grid.addWidget(separator_line, 4, 0, 1, 2)
 
         # Travel Z entry
         travelz_lbl = FCLabel('%s:' % _("Travel Z"))
@@ -60,8 +67,8 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
         self.travelz_entry.set_precision(self.decimals)
         self.travelz_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(travelz_lbl, 3, 0)
-        grid_lay.addWidget(self.travelz_entry, 3, 1, 1, 2)
+        param_grid.addWidget(travelz_lbl, 6, 0)
+        param_grid.addWidget(self.travelz_entry, 6, 1, 1, 2)
 
         # Verification Z entry
         verz_lbl = FCLabel('%s:' % _("Verification Z"))
@@ -74,8 +81,8 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
         self.verz_entry.set_precision(self.decimals)
         self.verz_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(verz_lbl, 4, 0)
-        grid_lay.addWidget(self.verz_entry, 4, 1, 1, 2)
+        param_grid.addWidget(verz_lbl, 8, 0)
+        param_grid.addWidget(self.verz_entry, 8, 1, 1, 2)
 
         # Zero the Z of the verification tool
         self.zeroz_cb = FCCheckBox('%s' % _("Zero Z tool"))
@@ -84,34 +91,7 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
               "of the verification tool.")
         )
 
-        grid_lay.addWidget(self.zeroz_cb, 5, 0, 1, 3)
-
-        # Toochange Z entry
-        toolchangez_lbl = FCLabel('%s:' % _("Toolchange Z"))
-        toolchangez_lbl.setToolTip(
-            _("Height (Z) for mounting the verification probe.")
-        )
-
-        self.toolchangez_entry = FCDoubleSpinner()
-        self.toolchangez_entry.set_range(0.0000, 10000.0000)
-        self.toolchangez_entry.set_precision(self.decimals)
-        self.toolchangez_entry.setSingleStep(0.1)
-
-        grid_lay.addWidget(toolchangez_lbl, 6, 0)
-        grid_lay.addWidget(self.toolchangez_entry, 6, 1, 1, 2)
-
-        # Toolchange X-Y entry
-        toolchangexy_lbl = FCLabel('%s:' % _('Toolchange X-Y'))
-        toolchangexy_lbl.setToolTip(
-            _("Toolchange X,Y position.\n"
-              "If no value is entered then the current\n"
-              "(x, y) point will be used,")
-        )
-
-        self.toolchange_xy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
-
-        grid_lay.addWidget(toolchangexy_lbl, 7, 0)
-        grid_lay.addWidget(self.toolchange_xy_entry, 7, 1, 1, 2)
+        param_grid.addWidget(self.zeroz_cb, 10, 0, 1, 3)
 
         # Second point choice
         second_point_lbl = FCLabel('%s:' % _("Second point"))
@@ -124,7 +104,48 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
                                             {'label': _('Bottom Right'), 'value': 'br'}],
                                            orientation='vertical')
 
-        grid_lay.addWidget(second_point_lbl, 8, 0)
-        grid_lay.addWidget(self.second_point_radio, 8, 1, 1, 2)
+        param_grid.addWidget(second_point_lbl, 16, 0)
+        param_grid.addWidget(self.second_point_radio, 16, 1, 1, 2)
+
+        # #############################################################################################################
+        # Tool change Frame
+        # #############################################################################################################
+        tc_lbl = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _("Tool change"))
+        self.layout.addWidget(tc_lbl)
+
+        tc_frame = FCFrame()
+        self.layout.addWidget(tc_frame)
+
+        tc_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tc_frame.setLayout(tc_grid)
+
+        # Toolchange X-Y entry
+        toolchangexy_lbl = FCLabel('%s:' % "X-Y")
+        toolchangexy_lbl.setToolTip(
+            _("Toolchange X,Y position.\n"
+              "If no value is entered then the current\n"
+              "(x, y) point will be used,")
+        )
+
+        self.toolchange_xy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
+
+        tc_grid.addWidget(toolchangexy_lbl, 0, 0)
+        tc_grid.addWidget(self.toolchange_xy_entry, 0, 1)
+
+        # Toochange Z entry
+        toolchangez_lbl = FCLabel('%s:' % "Z")
+        toolchangez_lbl.setToolTip(
+            _("Height (Z) for mounting the verification probe.")
+        )
+
+        self.toolchangez_entry = FCDoubleSpinner()
+        self.toolchangez_entry.set_range(0.0000, 10000.0000)
+        self.toolchangez_entry.set_precision(self.decimals)
+        self.toolchangez_entry.setSingleStep(0.1)
+
+        tc_grid.addWidget(toolchangez_lbl, 2, 0)
+        tc_grid.addWidget(self.toolchangez_entry, 2, 1)
+
+        FCGridLayout.set_common_column_size([param_grid, tc_grid], 0)
 
         self.layout.addStretch()

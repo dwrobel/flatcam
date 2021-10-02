@@ -16,7 +16,8 @@ CHANGELOG for FlatCAM beta
 - for Transform and SolderPaste Plugins upgraded the UI
 - in SolderPaste Plugin now the paste is dispensed only on the pads/Gerber flashes
 - fixed Find Optimal Plugin: there was an error triggered after finding the minimum distance
-- upgraded the FInd Optimal Plugin UI
+- upgraded the Find Optimal Plugin UI
+- upgraded Optimal and Calibration Plugins Preferences UI
 
 1.10.2021
 

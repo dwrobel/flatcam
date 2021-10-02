@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCSpinner, FCLabel, FCGridLayout
+from appGUI.GUIElements import FCSpinner, FCLabel, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -21,16 +21,21 @@ class Tools2OptimalPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # ## Parameters
-        self.optlabel = FCLabel("<b>%s:</b>" % _("Parameters"))
+        # #############################################################################################################
+        # Parameters Frame
+        # #############################################################################################################
+        self.optlabel = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
         self.optlabel.setToolTip(
             _("A tool to find the minimum distance between\n"
               "every two Gerber geometric elements")
         )
         self.layout.addWidget(self.optlabel)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        par_frame = FCFrame()
+        self.layout.addWidget(par_frame)
+
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_frame.setLayout(param_grid)
 
         self.precision_sp = FCSpinner()
         self.precision_sp.set_range(2, 10)
@@ -42,7 +47,7 @@ class Tools2OptimalPrefGroupUI(OptionsGroupUI):
             _("Number of decimals for the distances and coordinates in this tool.")
         )
 
-        grid0.addWidget(self.precision_lbl, 0, 0)
-        grid0.addWidget(self.precision_sp, 0, 1)
+        param_grid.addWidget(self.precision_lbl, 0, 0)
+        param_grid.addWidget(self.precision_sp, 0, 1)
 
         self.layout.addStretch()

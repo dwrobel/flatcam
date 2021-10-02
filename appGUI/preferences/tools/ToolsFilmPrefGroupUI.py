@@ -208,8 +208,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         grid_par.addWidget(self.rounded_cb, 2, 1)
 
         # Polarity
-        self.film_type_radio = RadioSet([{'label': 'Pos', 'value': 'pos'},
-                                         {'label': 'Neg', 'value': 'neg'}], compact=True)
+        self.film_type_radio = RadioSet([{'label': _('Positive'), 'value': 'pos'},
+                                         {'label': _('Negative'), 'value': 'neg'}], compact=True)
         ftypelbl = FCLabel('%s:' % _('Polarity'))
         ftypelbl.setToolTip(
             _("Generate a Positive black film or a Negative film.")
