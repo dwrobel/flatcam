@@ -193,31 +193,31 @@ class GerberObjectUI(ObjectUI):
         self.custom_box.addWidget(gen_frame)
 
         # Plot options
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid0.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
-        gen_frame.setLayout(grid0)
+        plot_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        plot_grid.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        gen_frame.setLayout(plot_grid)
 
         self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))
 
-        grid0.addWidget(self.plot_options_label, 0, 0)
+        plot_grid.addWidget(self.plot_options_label, 0, 0)
 
         # Solid CB
         self.solid_cb = FCCheckBox(label=_('Solid'))
         self.solid_cb.setToolTip(
             _("Solid color polygons.")
         )
-        grid0.addWidget(self.solid_cb, 0, 1)
+        plot_grid.addWidget(self.solid_cb, 0, 1)
 
         # Multicolored CB
         self.multicolored_cb = FCCheckBox(label=_('Multi-Color'))
         self.multicolored_cb.setToolTip(
             _("Draw polygons in different colors.")
         )
-        grid0.addWidget(self.multicolored_cb, 0, 2)
+        plot_grid.addWidget(self.multicolored_cb, 0, 2)
 
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
-        grid0.addLayout(self.name_hlay, 1, 0, 1, 3)
+        plot_grid.addLayout(self.name_hlay, 1, 0, 1, 3)
 
         name_label = FCLabel("<b>%s:</b>" % _("Name"))
         self.name_entry = FCEntry()
@@ -230,15 +230,15 @@ class GerberObjectUI(ObjectUI):
         self.plot_lbl.setToolTip(_("Plot (show) this object."))
         self.plot_cb = FCCheckBox()
 
-        grid0.addWidget(self.plot_lbl, 2, 0)
-        grid0.addWidget(self.plot_cb, 2, 1)
+        plot_grid.addWidget(self.plot_lbl, 2, 0)
+        plot_grid.addWidget(self.plot_cb, 2, 1)
 
         # Generate 'Follow'
         self.follow_cb = FCCheckBox('%s' % _("Follow"))
         self.follow_cb.setToolTip(_("Generate a 'Follow' geometry.\n"
                                     "This means that it will cut through\n"
                                     "the middle of the trace."))
-        grid0.addWidget(self.follow_cb, 2, 2)
+        plot_grid.addWidget(self.follow_cb, 2, 2)
 
         # Editor
         self.editor_button = FCButton(_('Gerber Editor'))
@@ -292,8 +292,8 @@ class GerberObjectUI(ObjectUI):
         self.custom_box.addWidget(self.tt_frame)
 
         # Grid Layout
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.tt_frame.setLayout(grid1)
+        tt_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.tt_frame.setLayout(tt_grid)
 
         # ### Gerber Apertures ####
         self.apertures_table_label = FCLabel('%s' % _('Apertures'))
@@ -301,7 +301,7 @@ class GerberObjectUI(ObjectUI):
             _("Apertures Table for the Gerber Object.")
         )
 
-        grid1.addWidget(self.apertures_table_label, 0, 0)
+        tt_grid.addWidget(self.apertures_table_label, 0, 0)
 
         # Aperture Table Visibility CB
         self.aperture_table_visibility_cb = FCCheckBox()
@@ -309,10 +309,10 @@ class GerberObjectUI(ObjectUI):
             _("Toggle the display of the Tools Table.")
         )
         # self.aperture_table_visibility_cb.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        grid1.addWidget(self.aperture_table_visibility_cb, 0, 1)
+        tt_grid.addWidget(self.aperture_table_visibility_cb, 0, 1)
 
         hlay_plot = QtWidgets.QHBoxLayout()
-        grid1.addLayout(hlay_plot, 0, 2)
+        tt_grid.addLayout(hlay_plot, 0, 2)
 
         # Aperture Mark all CB
         self.mark_all_cb = FCCheckBox(_('Mark All'))
@@ -328,7 +328,7 @@ class GerberObjectUI(ObjectUI):
 
         # Apertures Table
         self.apertures_table = FCTable()
-        grid1.addWidget(self.apertures_table, 2, 0, 1, 3)
+        tt_grid.addWidget(self.apertures_table, 2, 0, 1, 3)
 
         self.apertures_table.setColumnCount(6)
         self.apertures_table.setHorizontalHeaderLabels(['#', _('Code'), _('Type'), _('Size'), _('Dim'), 'M'])
@@ -361,18 +361,25 @@ class GerberObjectUI(ObjectUI):
               "Clicking this will create the buffered geometry\n"
               "required for isolation.")
         )
-        grid1.addWidget(self.create_buffer_button, 4, 0, 1, 3)
+        tt_grid.addWidget(self.create_buffer_button, 4, 0, 1, 3)
 
         # separator_line1 = QtWidgets.QFrame()
         # separator_line1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         # separator_line1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        # grid0.addWidget(separator_line1, 13, 0, 1, 3)
+        # plot_grid.addWidget(separator_line1, 13, 0, 1, 3)
 
         # #############################################################################################################
-        # PLUGINS shortcuts
+        # PLUGINS Frame
         # #############################################################################################################
         self.tool_lbl = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Plugins"))
         self.custom_box.addWidget(self.tool_lbl)
+
+        plugins_frame = FCFrame()
+        self.custom_box.addWidget(plugins_frame)
+
+        # Grid Layout
+        plugins_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
+        plugins_frame.setLayout(plugins_grid)
 
         # Isolation Tool - will create isolation paths around the copper features
         self.iso_button = FCButton(_('Isolation Routing'))
@@ -387,7 +394,7 @@ class GerberObjectUI(ObjectUI):
                                           font-weight: bold;
                                       }
                                       """)
-        self.custom_box.addWidget(self.iso_button)
+        plugins_grid.addWidget(self.iso_button, 0, 0)
 
         # ## Board cutout
         self.generate_cutout_button = FCButton(_('Cutout'))
@@ -402,7 +409,7 @@ class GerberObjectUI(ObjectUI):
         #                     font-weight: bold;
         #                 }
         #                 """)
-        self.custom_box.addWidget(self.generate_cutout_button)
+        plugins_grid.addWidget(self.generate_cutout_button, 2, 0)
 
         # ## Film Plugin
         self.generate_film_button = FCButton(_("Film"))
@@ -416,7 +423,7 @@ class GerberObjectUI(ObjectUI):
         #                     font-weight: bold;
         #                 }
         #                 """)
-        self.custom_box.addWidget(self.generate_film_button)
+        plugins_grid.addWidget(self.generate_film_button, 4, 0)
 
         # ## Clear non-copper regions
         self.generate_ncc_button = FCButton(_('NCC'))
@@ -431,7 +438,7 @@ class GerberObjectUI(ObjectUI):
         #                     font-weight: bold;
         #                 }
         #                 """)
-        self.custom_box.addWidget(self.generate_ncc_button)
+        plugins_grid.addWidget(self.generate_ncc_button, 6, 0)
 
         # Follow Plugin
         self.generate_follow_button = FCButton(_('Follow'))
@@ -442,12 +449,12 @@ class GerberObjectUI(ObjectUI):
               "the middle of the trace."))
         # self.generate_cutout_button.setStyleSheet("""
 
-        self.custom_box.addWidget(self.generate_follow_button)
+        plugins_grid.addWidget(self.generate_follow_button, 8, 0)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.custom_box.addWidget(separator_line)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # self.custom_box.addWidget(separator_line)
 
         # UTILITIES BUTTON
         self.util_button = FCButton('%s' % _("Utilities").upper(), checkable=True)
@@ -605,9 +612,9 @@ class ExcellonObjectUI(ObjectUI):
         self.custom_box.addWidget(gen_frame)
 
         # Plot options
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid0.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
-        gen_frame.setLayout(grid0)
+        plot_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        plot_grid.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        gen_frame.setLayout(plot_grid)
 
         # Plot options
         self.plot_options_label = FCLabel("<b>%s: </b>" % _("Plot Options"))
@@ -624,9 +631,9 @@ class ExcellonObjectUI(ObjectUI):
             _("Draw polygons in different colors.")
         )
 
-        grid0.addWidget(self.plot_options_label, 0, 0)
-        grid0.addWidget(self.solid_cb, 0, 1)
-        grid0.addWidget(self.multicolored_cb, 0, 2)
+        plot_grid.addWidget(self.plot_options_label, 0, 0)
+        plot_grid.addWidget(self.solid_cb, 0, 1)
+        plot_grid.addWidget(self.multicolored_cb, 0, 2)
 
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
@@ -637,7 +644,7 @@ class ExcellonObjectUI(ObjectUI):
         self.name_hlay.addWidget(name_label)
         self.name_hlay.addWidget(self.name_entry)
 
-        grid0.addLayout(self.name_hlay, 2, 0, 1, 3)
+        plot_grid.addLayout(self.name_hlay, 2, 0, 1, 3)
 
         # Editor
         self.editor_button = FCButton(_('Excellon Editor'))
@@ -688,9 +695,9 @@ class ExcellonObjectUI(ObjectUI):
         self.tools_table_label.setToolTip(_("Tools/apertures in the loaded object."))
         self.custom_box.addWidget(self.tools_table_label)
 
-        grid_tt = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_tt.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
-        self.custom_box.addLayout(grid_tt)
+        tt_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tt_grid.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.custom_box.addLayout(tt_grid)
 
         # Table Visibility CB
         self.table_visibility_cb = FCCheckBox()
@@ -708,9 +715,9 @@ class ExcellonObjectUI(ObjectUI):
         hlay_plot.addStretch()
         hlay_plot.addWidget(self.plot_cb)
 
-        grid_tt.addWidget(self.tools_table_label, 0, 0)
-        grid_tt.addWidget(self.table_visibility_cb, 0, 1)
-        grid_tt.addLayout(hlay_plot, 0, 2)
+        tt_grid.addWidget(self.tools_table_label, 0, 0)
+        tt_grid.addWidget(self.table_visibility_cb, 0, 1)
+        tt_grid.addLayout(hlay_plot, 0, 2)
 
         # #############################################################################################################
         # #############################################################################################################
@@ -768,10 +775,16 @@ class ExcellonObjectUI(ObjectUI):
         self.tools_box.addWidget(self.autoload_db_cb)
 
         # #############################################################################################################
-        # ####################################### Plugins shortcuts ###################################################
+        # Plugins Frame
         # #############################################################################################################
         self.tool_lbl = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Plugins"))
         self.custom_box.addWidget(self.tool_lbl)
+
+        plugins_frame = FCFrame()
+        self.custom_box.addWidget(plugins_frame)
+
+        plugins_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
+        plugins_frame.setLayout(plugins_grid)
 
         # Drilling Tool - will create GCode for drill holes
         self.drill_button = FCButton(_('Drilling'))
@@ -785,7 +798,7 @@ class ExcellonObjectUI(ObjectUI):
                                           font-weight: bold;
                                       }
                                       """)
-        self.custom_box.addWidget(self.drill_button)
+        plugins_grid.addWidget(self.drill_button, 0, 2)
 
         # Milling Tool - will create GCode for slot holes
         self.milling_button = FCButton(_('Milling'))
@@ -799,12 +812,12 @@ class ExcellonObjectUI(ObjectUI):
         #                     font-weight: bold;
         #                 }
         #                 """)
-        self.custom_box.addWidget(self.milling_button)
+        plugins_grid.addWidget(self.milling_button, 2, 0)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.custom_box.addWidget(separator_line)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # self.custom_box.addWidget(separator_line)
 
         # UTILITIES BUTTON
         self.util_button = FCButton('%s' % _("Utilities").upper(), checkable=True)
@@ -936,14 +949,14 @@ class GeometryObjectUI(ObjectUI):
         self.custom_box.addWidget(gen_frame)
 
         # Plot options
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid0.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
-        gen_frame.setLayout(grid0)
+        plot_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        plot_grid.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        gen_frame.setLayout(plot_grid)
 
         self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))
         self.plot_options_label.setMinimumWidth(90)
 
-        grid0.addWidget(self.plot_options_label, 0, 0)
+        plot_grid.addWidget(self.plot_options_label, 0, 0)
 
         # Multicolored CB
         self.multicolored_cb = FCCheckBox(label=_('Multi-Color'))
@@ -951,11 +964,11 @@ class GeometryObjectUI(ObjectUI):
             _("Draw polygons in different colors.")
         )
         self.multicolored_cb.setMinimumWidth(55)
-        grid0.addWidget(self.multicolored_cb, 0, 2)
+        plot_grid.addWidget(self.multicolored_cb, 0, 2)
 
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
-        grid0.addLayout(self.name_hlay, 2, 0, 1, 3)
+        plot_grid.addLayout(self.name_hlay, 2, 0, 1, 3)
 
         name_label = FCLabel("<b>%s:</b>" % _("Name"))
         self.name_entry = FCEntry()
@@ -1016,8 +1029,8 @@ class GeometryObjectUI(ObjectUI):
         self.custom_box.addWidget(self.tt_frame)
 
         # Grid Layout
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.tt_frame.setLayout(grid1)
+        tt_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.tt_frame.setLayout(tt_grid)
 
         # ### Tools ####
         self.tools_table_label = FCLabel('<b>%s:</b>' % _('Tools Table'))
@@ -1035,7 +1048,7 @@ class GeometryObjectUI(ObjectUI):
               "grayed out and Cut Z is automatically calculated from the newly \n"
               "showed UI form entries named V-Tip Dia and V-Tip Angle.")
         )
-        grid1.addWidget(self.tools_table_label, 0, 0)
+        tt_grid.addWidget(self.tools_table_label, 0, 0)
 
         # Plot CB
         # self.plot_cb = QtWidgets.QCheckBox('Plot')
@@ -1044,10 +1057,10 @@ class GeometryObjectUI(ObjectUI):
             _("Plot (show) this object.")
         )
         self.plot_cb.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        grid1.addWidget(self.plot_cb, 0, 1)
+        tt_grid.addWidget(self.plot_cb, 0, 1)
 
         self.geo_tools_table = FCTable(drag_drop=True)
-        grid1.addWidget(self.geo_tools_table, 1, 0, 1, 2)
+        tt_grid.addWidget(self.geo_tools_table, 1, 0, 1, 2)
         self.geo_tools_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
 
         self.geo_tools_table.setColumnCount(7)
@@ -1086,10 +1099,16 @@ class GeometryObjectUI(ObjectUI):
               "Enable plot for the selected tool geometry."))
 
         # #############################################################################################################
-        # PLUGINS shortcuts
+        # PLUGINS Frame
         # #############################################################################################################
         self.tools_label = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _('Plugins'))
         self.custom_box.addWidget(self.tools_label)
+
+        plugins_frame = FCFrame()
+        self.custom_box.addWidget(plugins_frame)
+
+        plugins_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
+        plugins_frame.setLayout(plugins_grid)
 
         # Milling Tool - will create GCode for slot holes
         self.milling_button = FCButton(_('Milling'))
@@ -1103,7 +1122,7 @@ class GeometryObjectUI(ObjectUI):
                             font-weight: bold;
                         }
                         """)
-        self.custom_box.addWidget(self.milling_button)
+        plugins_grid.addWidget(self.milling_button, 0, 0)
 
         # Paint Button
         self.paint_tool_button = FCButton(_('Paint'))
@@ -1113,7 +1132,7 @@ class GeometryObjectUI(ObjectUI):
               "whole area of a polygon.")
         )
 
-        self.custom_box.addWidget(self.paint_tool_button)
+        plugins_grid.addWidget(self.paint_tool_button, 2, 0)
 
         # NCC Tool
         self.generate_ncc_button = FCButton(_('NCC'))
@@ -1128,12 +1147,12 @@ class GeometryObjectUI(ObjectUI):
         #                     font-weight: bold;
         #                 }
         #                 """)
-        self.custom_box.addWidget(self.generate_ncc_button)
+        plugins_grid.addWidget(self.generate_ncc_button, 4, 0)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.custom_box.addWidget(separator_line)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # self.custom_box.addWidget(separator_line)
 
         # UTILITIES BUTTON
         self.util_button = FCButton('%s' % _("Utilities").upper(), checkable=True)

@@ -298,7 +298,7 @@ class FlatCAMDefaults:
         # Geometry General
         "geometry_plot": True,
         "geometry_multicolored": False,
-        "geometry_circle_steps": 16,
+        "geometry_circle_steps": 32,
         "geometry_merge_fuse_tools": True,
         "geometry_plot_line": "#FF0000",
 

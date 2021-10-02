@@ -2330,7 +2330,6 @@ class DrillingUI:
         tt_frame = FCFrame()
         self.tools_box.addWidget(tt_frame)
 
-        # Grid Layout
         tool_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
         tt_frame.setLayout(tool_grid)
 
