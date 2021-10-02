@@ -16,7 +16,7 @@ from camlib import Geometry, FlatCAMRTreeStorage, grace
 from appGUI.GUIElements import FCTable, FCDoubleSpinner, FCCheckBox, FCInputDoubleSpinner, RadioSet, \
     FCButton, FCComboBox, FCLabel, FCComboBox2, VerticalScrollArea, FCGridLayout, FCFrame
 
-from shapely.geometry import base, Polygon, MultiPolygon, LinearRing, Point
+from shapely.geometry import base, Polygon, MultiPolygon, LinearRing, Point, MultiLineString, LineString
 from shapely.ops import unary_union, linemerge
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
@@ -1223,6 +1223,8 @@ class ToolPaint(AppTool, Gerber):
 
             # disconnect flags
             self.area_sel_disconnect_flag = True
+            # disable the "notebook" until the process is finished
+            self.app.ui.notebook.setDisabled(True)
 
         elif self.select_method == 3:   # _("Reference Object")
             self.bound_obj_name = self.reference_combo.currentText()
@@ -1437,6 +1439,7 @@ class ToolPaint(AppTool, Gerber):
 
             # disconnect flags
             self.area_sel_disconnect_flag = False
+            self.app.ui.notebook.setDisabled(False)
 
             if len(self.sel_rect) == 0:
                 return
@@ -1495,7 +1498,7 @@ class ToolPaint(AppTool, Gerber):
         #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
         self.app.ui.update_location_labels(self.app.dx, self.app.dy, curr_pos[0], curr_pos[1])
 
-        units = self.app.app_units.lower()
+        # units = self.app.app_units.lower()
         # self.app.plotcanvas.text_hud.text = \
         #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
         #         self.app.dx, units, self.app.dy, units, curr_pos[0], units, curr_pos[1], units)
@@ -1591,6 +1594,8 @@ class ToolPaint(AppTool, Gerber):
                                                                       self.app.on_mouse_click_release_over_plot)
                 self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
                                                                       self.app.on_mouse_click_over_plot)
+                self.app.ui.notebook.setDisabled(False)
+
             self.points = []
             self.poly_drawn = False
             self.poly_dict.clear()
@@ -1767,30 +1772,6 @@ class ToolPaint(AppTool, Gerber):
                             cpoly.insert(lin)
                 except TypeError:
                     cpoly.insert(lines_union)
-                # # determine the Gerber follow line
-                # for apid, apval in obj.tools.items():
-                #     for geo_el in apval['geometry']:
-                #         if 'solid' in geo_el:
-                #             if Point(inside_pt).within(geo_el['solid']):
-                #                 if not isinstance(geo_el['follow'], Point):
-                #                     line = geo_el['follow']
-                #
-                #                     if apval['type'] == 'C':
-                #                         aperture_size = apval['size']
-                #                     else:
-                #                         if apval['width'] > apval['height']:
-                #                             aperture_size = apval['height']
-                #                         else:
-                #                             aperture_size = apval['width']
-                #
-                # if line:
-                #     cpoly = self.fill_with_lines(line, aperture_size,
-                #                                  tooldia=tooldiameter,
-                #                                  steps_per_circle=self.circle_steps,
-                #                                  overlap=over,
-                #                                  contour=cont,
-                #                                  connect=conn,
-                #                                  prog_plot=prog_plot)
             except grace:
                 return "fail"
             except Exception as ee:
@@ -1853,7 +1834,8 @@ class ToolPaint(AppTool, Gerber):
         :param tools_storage:   whether to use the current tools_storage self.paints_tools or a different one.
                                 Usage of the different one is related to when this function is called
                                 from a TcL command.
-        :param plot:
+        :param plot:            if the geometry is plotted; bool
+        :param rest:            if rest machining apply here; bool
         :param run_threaded:
         :return: None
         """
@@ -2311,9 +2293,9 @@ class ToolPaint(AppTool, Gerber):
         def job_thread(app_obj):
             try:
                 if use_rest_strategy:
-                    ret = app_obj.app_obj.new_object("geometry", name, job_rest_clear, plot=plot)
+                    ret = app_obj.app_obj.new_object("geometry", name, job_rest_clear, plot=plot, autoselected=False)
                 else:
-                    ret = app_obj.app_obj.new_object("geometry", name, job_normal_clear, plot=plot)
+                    ret = app_obj.app_obj.new_object("geometry", name, job_normal_clear, plot=plot, autoselected=False)
             except grace:
                 proc.done()
                 return
@@ -2534,10 +2516,10 @@ class ToolPaint(AppTool, Gerber):
 
             # ## If iterable, expand recursively.
             try:
-                for geo in geometry:
+                multigeo = geometry.geoms if isinstance(geometry, (MultiPolygon, MultiLineString)) else geometry
+                for geo in multigeo:
                     if geo and not geo.is_empty and geo.is_valid:
                         recurse(geometry=geo, reset=False)
-
             # ## Not iterable, do the actual indexing and add.
             except TypeError:
                 if isinstance(geometry, LinearRing):
@@ -2549,7 +2531,8 @@ class ToolPaint(AppTool, Gerber):
             return self.flat_geometry
 
         # this is where heavy lifting is done and creating the geometry to be painted
-        target_geo = MultiPolygon(obj.solid_geometry)
+        target_geo = unary_union(obj.solid_geometry)
+
         if obj.kind == 'gerber':
             # I don't do anything here, like buffering when the Gerber is loaded without buffering????!!!!
             if self.app.defaults["gerber_buffering"] == 'no':
@@ -2567,16 +2550,45 @@ class ToolPaint(AppTool, Gerber):
             self.app.inform.emit('%s %s' % (_("Paint Tool."), _("Painting area task started.")))
 
         geo_to_paint = target_geo.intersection(sel_obj)
+        painted_area = recurse(geo_to_paint, reset=True)
+        try:
+            painted_area = linemerge(painted_area)
+        except Exception:
+            pass
+
+        if isinstance(painted_area, (MultiPolygon, MultiLineString)):
+            painted_area = painted_area.geoms
+
+        p_geo_list = []
+        try:
+            for paint_g_elem in painted_area:
+                if isinstance(paint_g_elem, Polygon):
+                    p_geo_list.append(paint_g_elem)
+                elif isinstance(paint_g_elem, (LinearRing, LineString)):
+                    if paint_g_elem.is_closed:
+                        p_geo_list.append(Polygon(paint_g_elem.coords))
+                    else:
+                        coords = list(paint_g_elem.coords)
+                        coords.append(coords[0])
+                        p_geo_list.append(Polygon(coords))
+        except TypeError:
+            if isinstance(painted_area, Polygon):
+                p_geo_list.append(painted_area)
+            elif isinstance(painted_area, (LinearRing, LineString)):
+                if painted_area.is_closed:
+                    p_geo_list.append(Polygon(painted_area.coords))
+                else:
+                    coords = list(painted_area.coords)
+                    coords.append(coords[0])
+                    p_geo_list.append(Polygon(coords))
 
         # No polygon?
-        if not geo_to_paint or geo_to_paint.is_empty:
-            self.app.log.warning('No polygon found.')
+        if not p_geo_list:
+            self.app.log.warning('ToolPaint.paint_poly_Area(). No geometry or the found geometry could not be painted.')
             self.app.inform.emit('[WARNING] %s' % _('No polygon found.'))
             return
 
-        painted_area = recurse(geo_to_paint, reset=True)
-
-        self.paint_geo(obj, painted_area, tooldia=tooldia, order=order, method=method, outname=outname,
+        self.paint_geo(obj, p_geo_list, tooldia=tooldia, order=order, method=method, outname=outname,
                        tools_storage=tools_storage, plot=plot, run_threaded=run_threaded)
 
     def paint_poly_ref(self, obj, sel_obj, tooldia=None, order=None, method=None, outname=None,
@@ -2971,7 +2983,7 @@ class PaintUI:
         self.obj_combo = FCComboBox()
         self.obj_combo.setModel(self.app.collection)
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.obj_combo.is_last = True
+        self.obj_combo.is_last = False
 
         obj_grid.addWidget(self.obj_combo, 2, 0, 1, 2)
 

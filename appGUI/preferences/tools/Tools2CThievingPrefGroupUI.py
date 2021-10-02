@@ -259,7 +259,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Robber Bar Parameters Frame
         # #############################################################################################################
-        self.robber_bar_label = FCLabel('<b>%s</b>' % _('Robber Bar Parameters'))
+        self.robber_bar_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _('Robber Bar Parameters'))
         self.robber_bar_label.setToolTip(
             _("Parameters used for the robber bar.\n"
               "Robber bar = copper border to help in pattern hole plating.")
@@ -302,7 +302,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # RPattern Plating Mask Parameters Frame
         # #############################################################################################################
-        self.patern_mask_label = FCLabel('<b>%s</b>' % _('Pattern Plating Mask'))
+        self.patern_mask_label = FCLabel('<span style="color:purple;"><b>%s</b></span>' % _('Pattern Plating Mask'))
         self.patern_mask_label.setToolTip(
             _("Generate a mask for pattern plating.")
         )
@@ -345,5 +345,8 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         self.ppm_choice_combo.addItems([_("Both"), _('Thieving'), _("Robber bar"), _("None")])
         grid_ppm.addWidget(self.ppm_choice_label, 4, 0)
         grid_ppm.addWidget(self.ppm_choice_combo, 4, 1)
+
+        FCGridLayout.set_common_column_size(
+            [grid_par, grid_ppm, grid_line, grid_dots, grid_robber, grid_square], 0)
 
         self.layout.addStretch()

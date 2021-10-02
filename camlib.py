@@ -1613,15 +1613,16 @@ class Geometry(object):
                 # geom_elems.append(path)
                 # geom_elems.insert(path)
                 # path can be a collection of paths.
+                path_geometry = path.geoms if isinstance(path, MultiLineString) else path
                 try:
-                    for p in path:
+                    for p in path_geometry:
                         geom_elems.insert(p)
                         if prog_plot:
                             self.plot_temp_shapes(p)
                 except TypeError:
-                    geom_elems.insert(path)
+                    geom_elems.insert(path_geometry)
                     if prog_plot:
-                        self.plot_temp_shapes(path)
+                        self.plot_temp_shapes(path_geometry)
 
                 if prog_plot:
                     self.temp_shapes.redraw()
@@ -1730,15 +1731,16 @@ class Geometry(object):
                 line = LineString([(left, y), (right, y)])
                 line = line.intersection(margin_poly)
 
+                lines_geometry = line.geoms if isinstance(line, MultiLineString) else line
                 try:
-                    for ll in line:
+                    for ll in lines_geometry:
                         lines_trimmed.append(ll)
                         if prog_plot:
                             self.plot_temp_shapes(ll)
                 except TypeError:
-                    lines_trimmed.append(line)
+                    lines_trimmed.append(lines_geometry)
                     if prog_plot:
-                        self.plot_temp_shapes(line)
+                        self.plot_temp_shapes(lines_geometry)
             except Exception as e:
                 log.error('camlib.Geometry.clear_polygon3() Processing poly --> %s' % str(e))
                 return None
@@ -1767,15 +1769,16 @@ class Geometry(object):
                 line = LineString([(x, top), (x, bot)])
                 line = line.intersection(margin_poly)
 
+                lines_geometry = line.geoms if isinstance(line, MultiLineString) else line
                 try:
-                    for ll in line:
+                    for ll in lines_geometry:
                         lines_trimmed.append(ll)
                         if prog_plot:
                             self.plot_temp_shapes(ll)
                 except TypeError:
-                    lines_trimmed.append(line)
+                    lines_trimmed.append(lines_geometry)
                     if prog_plot:
-                        self.plot_temp_shapes(line)
+                        self.plot_temp_shapes(lines_geometry)
             except Exception as e:
                 log.error('camlib.Geometry.clear_polygon3() Processing poly --> %s' % str(e))
                 return None
@@ -1909,28 +1912,30 @@ class Geometry(object):
             log.error('camlib.Geometry.fill_with_lines() Processing poly --> %s' % str(e))
             return None
 
+        lines_geometry = new_line.geoms if isinstance(new_line, MultiLineString) else new_line
         try:
-            for ll in new_line:
+            for ll in lines_geometry:
                 lines_trimmed.append(ll)
                 if prog_plot:
                     self.plot_temp_shapes(ll)
         except TypeError:
-            lines_trimmed.append(new_line)
+            lines_trimmed.append(lines_geometry)
             if prog_plot:
-                self.plot_temp_shapes(new_line)
+                self.plot_temp_shapes(lines_geometry)
 
         new_line = line.parallel_offset(distance=delta, side='right', resolution=int(steps_per_circle))
         new_line = new_line.intersection(margin_poly)
 
+        lines_geometry = new_line.geoms if isinstance(new_line, MultiLineString) else new_line
         try:
-            for ll in new_line:
+            for ll in lines_geometry:
                 lines_trimmed.append(ll)
                 if prog_plot:
                     self.plot_temp_shapes(ll)
         except TypeError:
-            lines_trimmed.append(new_line)
+            lines_trimmed.append(lines_geometry)
             if prog_plot:
-                self.plot_temp_shapes(new_line)
+                self.plot_temp_shapes(lines_geometry)
 
         if prog_plot:
             self.temp_shapes.redraw()
@@ -1938,15 +1943,16 @@ class Geometry(object):
         lines_trimmed = unary_union(lines_trimmed)
 
         # Add lines to storage
+        lines_geometry = lines_trimmed.geoms if isinstance(lines_trimmed, MultiLineString) else lines_trimmed
         try:
-            for line in lines_trimmed:
+            for line in lines_geometry:
                 if isinstance(line, LineString) or isinstance(line, LinearRing):
                     geoms.insert(line)
                 else:
                     log.debug("camlib.Geometry.fill_with_lines(). Not a line: %s" % str(type(line)))
         except TypeError:
             # in case lines_trimmed are not iterable (Linestring, LinearRing)
-            geoms.insert(lines_trimmed)
+            geoms.insert(lines_geometry)
 
         # Add margin (contour) to storage
         if contour:

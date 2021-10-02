@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCCheckBox, RadioSet, FCDoubleSpinner, FCLabel, FCGridLayout
+from appGUI.GUIElements import FCCheckBox, RadioSet, FCDoubleSpinner, FCLabel, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -21,24 +21,23 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # ## Grid Layout
-        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid_lay)
-
-        self.param_label = FCLabel('<b>%s:</b>' % _('Parameters'))
-        self.param_label.setToolTip(
-            _("Parameters used for this tool.")
-        )
-        grid_lay.addWidget(self.param_label, 0, 0, 1, 2)
-
-        self.padt_label = FCLabel("<b>%s:</b>" % _("Processed Pads Type"))
+        # #############################################################################################################
+        # Processed Pads Frame
+        # #############################################################################################################
+        self.padt_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Processed Pads Type"))
         self.padt_label.setToolTip(
             _("The type of pads shape to be processed.\n"
               "If the PCB has many SMD pads with rectangular pads,\n"
               "disable the Rectangular aperture.")
         )
 
-        grid_lay.addWidget(self.padt_label, 2, 0, 1, 2)
+        self.layout.addWidget(self.padt_label)
+
+        param_frame = FCFrame()
+        self.layout.addWidget(param_frame)
+
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_frame.setLayout(param_grid)
 
         # Circular Aperture Selection
         self.circular_cb = FCCheckBox('%s' % _("Circular"))
@@ -46,7 +45,7 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
             _("Process Circular Pads.")
         )
 
-        grid_lay.addWidget(self.circular_cb, 3, 0, 1, 2)
+        param_grid.addWidget(self.circular_cb, 3, 0, 1, 2)
 
         # Oblong Aperture Selection
         self.oblong_cb = FCCheckBox('%s' % _("Oblong"))
@@ -54,7 +53,7 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
             _("Process Oblong Pads.")
         )
 
-        grid_lay.addWidget(self.oblong_cb, 4, 0, 1, 2)
+        param_grid.addWidget(self.oblong_cb, 4, 0, 1, 2)
 
         # Square Aperture Selection
         self.square_cb = FCCheckBox('%s' % _("Square"))
@@ -62,7 +61,7 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
             _("Process Square Pads.")
         )
 
-        grid_lay.addWidget(self.square_cb, 5, 0, 1, 2)
+        param_grid.addWidget(self.square_cb, 5, 0, 1, 2)
 
         # Rectangular Aperture Selection
         self.rectangular_cb = FCCheckBox('%s' % _("Rectangular"))
@@ -70,7 +69,7 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
             _("Process Rectangular Pads.")
         )
 
-        grid_lay.addWidget(self.rectangular_cb, 6, 0, 1, 2)
+        param_grid.addWidget(self.rectangular_cb, 6, 0, 1, 2)
 
         # Others type of Apertures Selection
         self.other_cb = FCCheckBox('%s' % _("Others"))
@@ -78,14 +77,22 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
             _("Process pads not in the categories above.")
         )
 
-        grid_lay.addWidget(self.other_cb, 7, 0, 1, 2)
+        param_grid.addWidget(self.other_cb, 7, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid_lay.addWidget(separator_line, 8, 0, 1, 2)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # param_grid.addWidget(separator_line, 8, 0, 1, 2)
 
-        # ## Axis
+        # #############################################################################################################
+        # Method Frame
+        # #############################################################################################################
+        met_frame = FCFrame()
+        self.layout.addWidget(met_frame)
+
+        met_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        met_frame.setLayout(met_grid)
+
         self.hole_size_radio = RadioSet(
             [
                 {'label': _("Excellon"), 'value': 'exc'},
@@ -95,7 +102,7 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
             ],
             orientation='vertical',
             compact=True)
-        self.hole_size_label = FCLabel('<b>%s:</b>' % _("Method"))
+        self.hole_size_label = FCLabel('<span style="color:green;"><b>%s:</b></span>' % _("Method"))
         self.hole_size_label.setToolTip(
             _("The punch hole source can be:\n"
               "- Excellon Object-> the Excellon object drills center will serve as reference.\n"
@@ -103,19 +110,20 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
               "- Fixed Annular Ring -> will try to keep a set annular ring.\n"
               "- Proportional -> will make a Gerber punch hole having the diameter a percentage of the pad diameter.")
         )
-        grid_lay.addWidget(self.hole_size_label, 9, 0)
-        grid_lay.addWidget(self.hole_size_radio, 9, 1)
+        met_grid.addWidget(self.hole_size_label, 9, 0)
+        met_grid.addWidget(self.hole_size_radio, 9, 1)
 
-        # grid_lay1.addWidget(FCLabel(''))
+        # #############################################################################################################
+        # Fixed Diameter Frame
+        # #############################################################################################################
+        self.fixed_label = FCLabel('<span style="color:teal;"><b>%s</b></span>' % _("Fixed Diameter"))
+        self.layout.addWidget(self.fixed_label)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid_lay.addWidget(separator_line, 10, 0, 1, 2)
+        fix_frame = FCFrame()
+        self.layout.addWidget(fix_frame)
 
-        # Annular Ring
-        self.fixed_label = FCLabel('<b>%s</b>' % _("Fixed Diameter"))
-        grid_lay.addWidget(self.fixed_label, 11, 0, 1, 2)
+        fix_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        fix_frame.setLayout(fix_grid)
 
         # Diameter value
         self.dia_entry = FCDoubleSpinner()
@@ -127,17 +135,25 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
             _("Fixed hole diameter.")
         )
 
-        grid_lay.addWidget(self.dia_label, 12, 0)
-        grid_lay.addWidget(self.dia_entry, 12, 1)
+        fix_grid.addWidget(self.dia_label, 0, 0)
+        fix_grid.addWidget(self.dia_entry, 0, 1)
 
-        # Annular Ring value
-        self.ring_label = FCLabel('<b>%s</b>' % _("Fixed Annular Ring"))
+        # #############################################################################################################
+        # Annular ring Frame
+        # #############################################################################################################
+        self.ring_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Fixed Annular Ring"))
         self.ring_label.setToolTip(
             _("The size of annular ring.\n"
               "The copper sliver between the hole exterior\n"
               "and the margin of the copper pad.")
         )
-        grid_lay.addWidget(self.ring_label, 13, 0, 1, 2)
+        self.layout.addWidget(self.ring_label)
+
+        ring_frame = FCFrame()
+        self.layout.addWidget(ring_frame)
+
+        ring_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        ring_frame.setLayout(ring_grid)
 
         # Circular Annular Ring Value
         self.circular_ring_label = FCLabel('%s:' % _("Circular"))
@@ -149,8 +165,8 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
         self.circular_ring_entry.set_precision(self.decimals)
         self.circular_ring_entry.set_range(0.0000, 10000.0000)
 
-        grid_lay.addWidget(self.circular_ring_label, 14, 0)
-        grid_lay.addWidget(self.circular_ring_entry, 14, 1)
+        ring_grid.addWidget(self.circular_ring_label, 0, 0)
+        ring_grid.addWidget(self.circular_ring_entry, 0, 1)
 
         # Oblong Annular Ring Value
         self.oblong_ring_label = FCLabel('%s:' % _("Oblong"))
@@ -162,8 +178,8 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
         self.oblong_ring_entry.set_precision(self.decimals)
         self.oblong_ring_entry.set_range(0.0000, 10000.0000)
 
-        grid_lay.addWidget(self.oblong_ring_label, 15, 0)
-        grid_lay.addWidget(self.oblong_ring_entry, 15, 1)
+        ring_grid.addWidget(self.oblong_ring_label, 2, 0)
+        ring_grid.addWidget(self.oblong_ring_entry, 2, 1)
 
         # Square Annular Ring Value
         self.square_ring_label = FCLabel('%s:' % _("Square"))
@@ -175,8 +191,8 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
         self.square_ring_entry.set_precision(self.decimals)
         self.square_ring_entry.set_range(0.0000, 10000.0000)
 
-        grid_lay.addWidget(self.square_ring_label, 16, 0)
-        grid_lay.addWidget(self.square_ring_entry, 16, 1)
+        ring_grid.addWidget(self.square_ring_label, 4, 0)
+        ring_grid.addWidget(self.square_ring_entry, 4, 1)
 
         # Rectangular Annular Ring Value
         self.rectangular_ring_label = FCLabel('%s:' % _("Rectangular"))
@@ -188,8 +204,8 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
         self.rectangular_ring_entry.set_precision(self.decimals)
         self.rectangular_ring_entry.set_range(0.0000, 10000.0000)
 
-        grid_lay.addWidget(self.rectangular_ring_label, 17, 0)
-        grid_lay.addWidget(self.rectangular_ring_entry, 17, 1)
+        ring_grid.addWidget(self.rectangular_ring_label, 6, 0)
+        ring_grid.addWidget(self.rectangular_ring_entry, 6, 1)
 
         # Others Annular Ring Value
         self.other_ring_label = FCLabel('%s:' % _("Others"))
@@ -201,11 +217,20 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
         self.other_ring_entry.set_precision(self.decimals)
         self.other_ring_entry.set_range(0.0000, 10000.0000)
 
-        grid_lay.addWidget(self.other_ring_label, 18, 0)
-        grid_lay.addWidget(self.other_ring_entry, 18, 1)
+        ring_grid.addWidget(self.other_ring_label, 8, 0)
+        ring_grid.addWidget(self.other_ring_entry, 8, 1)
 
-        self.prop_label = FCLabel('<b>%s</b>' % _("Proportional Diameter"))
-        grid_lay.addWidget(self.prop_label, 19, 0, 1, 2)
+        # #############################################################################################################
+        # Proportional Diameter Frame
+        # #############################################################################################################
+        self.prop_label = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Proportional Diameter"))
+        self.layout.addWidget(self.prop_label)
+
+        prop_frame = FCFrame()
+        self.layout.addWidget(prop_frame)
+
+        prop_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        prop_frame.setLayout(prop_grid)
 
         # Factor value
         self.factor_entry = FCDoubleSpinner(suffix='%')
@@ -219,7 +244,10 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
               "The hole diameter will be a fraction of the pad size.")
         )
 
-        grid_lay.addWidget(self.factor_label, 20, 0)
-        grid_lay.addWidget(self.factor_entry, 20, 1)
+        prop_grid.addWidget(self.factor_label, 0, 0)
+        prop_grid.addWidget(self.factor_entry, 0, 1)
+
+        FCGridLayout.set_common_column_size(
+            [param_grid, ring_grid, prop_grid, met_grid, fix_grid], 0)
 
         self.layout.addStretch()

@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCSpinner, RadioSet, FCTextArea, FCLabel, FCColorEntry, FCGridLayout
+from appGUI.GUIElements import FCSpinner, RadioSet, FCTextArea, FCLabel, FCColorEntry, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -21,17 +21,22 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # ## Parameters
-        self.qrlabel = FCLabel("<b>%s:</b>" % _("Parameters"))
+        # #############################################################################################################
+        # Parameters Frame
+        # #############################################################################################################
+        self.qrlabel = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
         self.qrlabel.setToolTip(
             _("A tool to create a QRCode that can be inserted\n"
               "into a selected Gerber file, or it can be exported as a file.")
         )
         self.layout.addWidget(self.qrlabel)
 
+        par_frame = FCFrame()
+        self.layout.addWidget(par_frame)
+
         # ## Grid Layout
-        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid_lay)
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_frame.setLayout(param_grid)
 
         # VERSION #
         self.version_label = FCLabel('%s:' % _("Version"))
@@ -43,8 +48,8 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         self.version_entry.set_range(1, 40)
         self.version_entry.setWrapping(True)
 
-        grid_lay.addWidget(self.version_label, 1, 0)
-        grid_lay.addWidget(self.version_entry, 1, 1)
+        param_grid.addWidget(self.version_label, 0, 0)
+        param_grid.addWidget(self.version_entry, 0, 1)
 
         # ERROR CORRECTION #
         self.error_label = FCLabel('%s:' % _("Error correction"))
@@ -66,8 +71,8 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
               "Q = maximum 25%% errors can be corrected\n"
               "H = maximum 30%% errors can be corrected.")
         )
-        grid_lay.addWidget(self.error_label, 2, 0)
-        grid_lay.addWidget(self.error_radio, 2, 1)
+        param_grid.addWidget(self.error_label, 2, 0)
+        param_grid.addWidget(self.error_radio, 2, 1)
 
         # BOX SIZE #
         self.bsize_label = FCLabel('%s:' % _("Box Size"))
@@ -79,8 +84,8 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         self.bsize_entry.set_range(1, 9999)
         self.bsize_entry.setWrapping(True)
 
-        grid_lay.addWidget(self.bsize_label, 3, 0)
-        grid_lay.addWidget(self.bsize_entry, 3, 1)
+        param_grid.addWidget(self.bsize_label, 4, 0)
+        param_grid.addWidget(self.bsize_entry, 4, 1)
 
         # BORDER SIZE #
         self.border_size_label = FCLabel('%s:' % _("Border Size"))
@@ -92,8 +97,8 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         self.border_size_entry.set_range(1, 9999)
         self.border_size_entry.setWrapping(True)
 
-        grid_lay.addWidget(self.border_size_label, 4, 0)
-        grid_lay.addWidget(self.border_size_entry, 4, 1)
+        param_grid.addWidget(self.border_size_label, 6, 0)
+        param_grid.addWidget(self.border_size_entry, 6, 1)
 
         # Text box
         self.text_label = FCLabel('%s:' % _("QRCode Data"))
@@ -104,8 +109,8 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         self.text_data.setPlaceholderText(
             _("Add here the text to be included in the QRCode...")
         )
-        grid_lay.addWidget(self.text_label, 5, 0)
-        grid_lay.addWidget(self.text_data, 6, 0, 1, 2)
+        param_grid.addWidget(self.text_label, 8, 0)
+        param_grid.addWidget(self.text_data, 10, 0, 1, 2)
 
         # POLARITY CHOICE #
         self.pol_label = FCLabel('%s:' % _("Polarity"))
@@ -122,8 +127,8 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
               "be added as positive. If it is added to a Copper Gerber\n"
               "file then perhaps the QRCode can be added as negative.")
         )
-        grid_lay.addWidget(self.pol_label, 7, 0)
-        grid_lay.addWidget(self.pol_radio, 7, 1)
+        param_grid.addWidget(self.pol_label, 12, 0)
+        param_grid.addWidget(self.pol_radio, 12, 1)
 
         # BOUNDING BOX TYPE #
         self.bb_label = FCLabel('%s:' % _("Bounding Box"))
@@ -137,8 +142,8 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
             _("The bounding box, meaning the empty space that surrounds\n"
               "the QRCode geometry, can have a rounded or a square shape.")
         )
-        grid_lay.addWidget(self.bb_label, 8, 0)
-        grid_lay.addWidget(self.bb_radio, 8, 1)
+        param_grid.addWidget(self.bb_label, 14, 0)
+        param_grid.addWidget(self.bb_radio, 14, 1)
 
         # FILL COLOR #
         self.fill_color_label = FCLabel('%s:' % _('Fill Color'))
@@ -147,8 +152,8 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         )
         self.fill_color_entry = FCColorEntry()
 
-        grid_lay.addWidget(self.fill_color_label, 9, 0)
-        grid_lay.addWidget(self.fill_color_entry, 9, 1)
+        param_grid.addWidget(self.fill_color_label, 16, 0)
+        param_grid.addWidget(self.fill_color_entry, 16, 1)
 
         # BACK COLOR #
         self.back_color_label = FCLabel('%s:' % _('Back Color'))
@@ -157,8 +162,8 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         )
         self.back_color_entry = FCColorEntry()
 
-        grid_lay.addWidget(self.back_color_label, 10, 0)
-        grid_lay.addWidget(self.back_color_entry, 10, 1)
+        param_grid.addWidget(self.back_color_label, 18, 0)
+        param_grid.addWidget(self.back_color_entry, 18, 1)
 
         # Selection Limit
         self.sel_limit_label = FCLabel('%s:' % _("Selection limit"))
@@ -172,8 +177,8 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         self.sel_limit_entry = FCSpinner()
         self.sel_limit_entry.set_range(0, 9999)
 
-        grid_lay.addWidget(self.sel_limit_label, 11, 0)
-        grid_lay.addWidget(self.sel_limit_entry, 11, 1)
+        param_grid.addWidget(self.sel_limit_label, 20, 0)
+        param_grid.addWidget(self.sel_limit_entry, 20, 1)
         # self.layout.addStretch()
 
         # QRCode Tool

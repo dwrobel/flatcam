@@ -455,7 +455,7 @@ class AppObject(QtCore.QObject):
             }
 
             new_obj.tools[1]['data']['name'] = outname
-
+            new_obj.solid_geometry = []
             new_obj.source_file = ''
 
         self.new_object('geometry', outname, initialize, plot=False)

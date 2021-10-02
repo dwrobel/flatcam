@@ -1512,8 +1512,11 @@ class CutOut(AppTool):
                 int_list = []
                 for b_geo in buff_man_geo.geoms:
                     int_list += b_geo.interiors
-            else:
+            elif isinstance(buff_man_geo, Polygon):
                 int_list = buff_man_geo.interiors
+            else:
+                self.app.log.debug("Not supported geometry at the moment: %s" % type(buff_man_geo))
+                return
             self.mb_manual_solid_geo = self.flatten(int_list)
 
         self.cutting_gapsize = self.ui.gapsize.get_value()
@@ -1547,7 +1550,10 @@ class CutOut(AppTool):
         if self.ui.big_cursor_cb.get_value():
             self.old_cursor_type = self.app.defaults["global_cursor_type"]
             self.app.on_cursor_type(val="big")
+
         self.app.defaults['global_selection_shape'] = False
+        # disable the notebook until finished
+        self.app.ui.notebook.setDisabled(True)
 
     def on_manual_cutout(self, click_pos):
 
@@ -1833,6 +1839,7 @@ class CutOut(AppTool):
 
                     self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
+            self.app.ui.notebook.setDisabled(False)
             self.app.inform.emit('[success] %s' % _("Finished manual adding of gaps."))
 
     def on_mouse_move(self, event):
@@ -1903,32 +1910,24 @@ class CutOut(AppTool):
                 angle = 0
             return angle
 
+        r_man_geo = man_geo.geoms if isinstance(man_geo, (MultiPolygon, MultiLineString)) else man_geo
         try:
             rot_angle = 0
-            for geo_el in man_geo:
+            for geo_el in r_man_geo:
                 if isinstance(geo_el, Polygon):
                     work_geo = geo_el.exterior
-                    if cut_geo.intersects(work_geo):
-                        rot_angle = get_angle(geo=work_geo)
-                    else:
-                        rot_angle = 0
+                    rot_angle = get_angle(geo=work_geo) if cut_geo.intersects(work_geo) else 0
                 else:
-                    rot_angle = 0
-                    if cut_geo.intersects(geo_el):
-                        rot_angle = get_angle(geo=geo_el)
+                    rot_angle = get_angle(geo=geo_el) if cut_geo.intersects(geo_el) else 0
+
                 if rot_angle != 0:
                     break
         except TypeError:
-            if isinstance(man_geo, Polygon):
-                work_geo = man_geo.exterior
-                if cut_geo.intersects(work_geo):
-                    rot_angle = get_angle(geo=work_geo)
-                else:
-                    rot_angle = 0
+            if isinstance(r_man_geo, Polygon):
+                work_geo = r_man_geo.exterior
+                rot_angle = get_angle(geo=work_geo) if cut_geo.intersects(work_geo) else 0
             else:
-                rot_angle = 0
-                if cut_geo.intersects(man_geo):
-                    rot_angle = get_angle(geo=man_geo)
+                rot_angle = get_angle(geo=r_man_geo) if cut_geo.intersects(r_man_geo) else 0
 
         # rotate only if there is an angle to rotate to
         if rot_angle != 0:
@@ -2007,6 +2006,10 @@ class CutOut(AppTool):
             # Remove any previous utility shape
             self.app.geo_editor.tool_shape.clear(update=True)
             self.app.geo_editor.tool_shape.enabled = False
+
+            # restore the notebook state
+            self.app.ui.notebook.setDisabled(False)
+            self.app.inform.emit("[WARNING_NOTCL] %s" % _("Cancelled."))
 
         # Grid toggle
         if key == QtCore.Qt.Key.Key_G or key == 'G':

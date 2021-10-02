@@ -141,4 +141,6 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         grid_sel.addWidget(self.mode_label, 0, 0)
         grid_sel.addWidget(self.mode_radio, 0, 1)
 
+        FCGridLayout.set_common_column_size([grid_par, grid_sel], 0)
+
         self.layout.addStretch(1)

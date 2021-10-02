@@ -366,51 +366,6 @@ class NonCopperClear(AppTool, Gerber):
 
             if option.find('tools_') == 0:
                 self.default_data[option] = self.app.options[option]
-        # self.default_data = {
-        #     "name":                     '_ncc',
-        #     "plot":                     self.app.defaults["geometry_plot"],
-        #     "cutz":                     float(self.app.defaults["geometry_cutz"]),
-        #     "vtipdia":                  float(self.app.defaults["tools_mill_vtipdia"]),
-        #     "vtipangle":                float(self.app.defaults["tools_mill_vtipangle"]),
-        #     "travelz":                  self.app.defaults["geometry_travelz"],
-        #     "feedrate":                 self.app.defaults["geometry_feedrate"],
-        #     "feedrate_z":               self.app.defaults["geometry_feedrate_z"],
-        #     "feedrate_rapid":           self.app.defaults["geometry_feedrate_rapid"],
-        #     "dwell":                    self.app.defaults["geometry_dwell"],
-        #     "dwelltime":                self.app.defaults["geometry_dwelltime"],
-        #     "multidepth":               self.app.defaults["geometry_multidepth"],
-        #     "ppname_g":                 self.app.defaults["geometry_ppname_g"],
-        #     "depthperpass":             self.app.defaults["geometry_depthperpass"],
-        #     "extracut":                 self.app.defaults["geometry_extracut"],
-        #     "extracut_length":          self.app.defaults["geometry_extracut_length"],
-        #     "toolchange":               self.app.defaults["geometry_toolchange"],
-        #     "toolchangez":              self.app.defaults["geometry_toolchangez"],
-        #     "endz":                     self.app.defaults["geometry_endz"],
-        #     "endxy":                    self.app.defaults["geometry_endxy"],
-        #
-        #     "spindlespeed":             self.app.defaults["geometry_spindlespeed"],
-        #     "toolchangexy":             self.app.defaults["geometry_toolchangexy"],
-        #     "startz":                   self.app.defaults["geometry_startz"],
-        #
-        #     "area_exclusion":           self.app.defaults["geometry_area_exclusion"],
-        #     "area_shape":               self.app.defaults["geometry_area_shape"],
-        #     "area_strategy":            self.app.defaults["geometry_area_strategy"],
-        #     "area_overz":               float(self.app.defaults["geometry_area_overz"]),
-        #     "optimization_type":        self.app.defaults["geometry_optimization_type"],
-        #
-        #     "tools_ncc_operation":      self.app.defaults["tools_ncc_operation"],
-        #     "tools_ncc_margin":         self.app.defaults["tools_ncc_margin"],
-        #     "tools_ncc_method":         self.app.defaults["tools_ncc_method"],
-        #     "tools_ncc_connect":        self.app.defaults["tools_ncc_connect"],
-        #     "tools_ncc_contour":        self.app.defaults["tools_ncc_contour"],
-        #     "tools_ncc_overlap":        self.app.defaults["tools_ncc_overlap"],
-        #     "tools_ncc_rest":           self.app.defaults["tools_ncc_rest"],
-        #     "tools_ncc_ref":            self.app.defaults["tools_ncc_ref"],
-        #     "tools_ncc_offset_choice":  self.app.defaults["tools_ncc_offset_choice"],
-        #     "tools_ncc_offset_value":   self.app.defaults["tools_ncc_offset_value"],
-        #     "tools_ncc_milling_type":   self.app.defaults["tools_ncc_milling_type"],
-        #     "tools_ncc_check_valid":    self.app.defaults["tools_ncc_check_valid"],
-        # }
 
         try:
             dias = [float(self.app.defaults["tools_ncc_tools"])]
@@ -1643,6 +1598,8 @@ class NonCopperClear(AppTool, Gerber):
 
             # disconnect flags
             self.area_sel_disconnect_flag = True
+            # disable the "notebook UI" until finished
+            self.app.ui.notebook.setDisabled(True)
 
         elif self.select_method == 2:   # Reference Object
             self.bound_obj_name = self.ui.reference_combo.currentText()
@@ -1776,6 +1733,8 @@ class NonCopperClear(AppTool, Gerber):
             self.clear_copper(ncc_obj=self.ncc_obj, sel_obj=self.bound_obj, ncctooldia=self.ncc_dia_list,
                               isotooldia=self.iso_dia_list, outname=self.o_name)
 
+            self.app.ui.notebook.setDisabled(False)
+
     # called on mouse move
     def on_mouse_move(self, event):
         shape_type = self.ui.area_shape_radio.get_value()
@@ -1908,6 +1867,9 @@ class NonCopperClear(AppTool, Gerber):
                                                                       self.app.on_mouse_move_over_plot)
                 self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
                                                                       self.app.on_mouse_click_release_over_plot)
+
+                self.app.ui.notebook.setDisabled(False)
+
             self.points = []
             self.poly_drawn = False
 

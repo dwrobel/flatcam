@@ -12,6 +12,10 @@ CHANGELOG for FlatCAM beta
 - clicking the splash screen will close it; also if an error is triggered, the error message will pop over the splash screen
 - the Aperture Table in the Gerber Editor is no longer extended to show all apertures at once
 - in Preferences: Excellon, Geometry and CNCJob tabs, updated the UI to the new design
+- in Preferences, more Plugins preferences UI is upgraded to the new look
+- In Paint Plugin fixed the Area select mode to work with Geometry object created by the Geometry Editor
+- in Paint Plugin some changes in the way the source object is autoloaded
+- in Paint, NCC and Cutout Plugins when using a mode that require to be terminated (by mouse RMB or ESC key) the notebook UI element is disabled until this is done
 
 29.09.2021
 
