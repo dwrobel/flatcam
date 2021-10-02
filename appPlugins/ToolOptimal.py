@@ -9,7 +9,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import OptionalHideInputSection, FCTextArea, FCEntry, FCSpinner, FCCheckBox, FCComboBox, \
-    FCLabel, FCButton, VerticalScrollArea, FCGridLayout
+    FCLabel, FCButton, VerticalScrollArea, FCGridLayout, FCFrame
 from camlib import grace
 
 from shapely.geometry import MultiPolygon
@@ -129,10 +129,57 @@ class ToolOptimal(AppTool):
 
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
+    def disconnect_signals(self):
+        try:
+            self.update_text.disconnect(self.on_update_text)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.update_sec_distances.disconnect(self.on_update_sec_distances_txt)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.ui.calculate_button.clicked.disconnect(self.find_minimum_distance)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.ui.locate_button.clicked.disconnect(self.on_locate_position)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.ui.locations_textb.cursorPositionChanged.disconnect(self.on_textbox_clicked)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.ui.locate_sec_button.clicked.disconnect(self.on_locate_sec_position)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.ui.distances_textb.cursorPositionChanged.disconnect(self.on_distances_textb_clicked)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.ui.locations_sec_textb.cursorPositionChanged.disconnect(self.on_locations_sec_clicked)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.ui.reset_button.clicked.disconnect(self.set_tool_ui)
+        except (TypeError, AttributeError):
+            pass
+
     def set_tool_ui(self):
         self.clear_ui(self.layout)
         self.ui = OptimalUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
+        self.disconnect_signals()
         self.connect_signals_at_init()
 
         self.ui.result_entry.set_value(0.0)
@@ -182,7 +229,7 @@ class ToolOptimal(AppTool):
 
         proc = self.app.proc_container.new('%s...' % _("Working"))
 
-        def job_thread(app_obj):
+        def job_thread(app_obj, plugin_instance):
             app_obj.inform.emit(_("Optimal Tool. Started to search for the minimum distance between copper features."))
             try:
                 old_disp_number = 0
@@ -221,28 +268,28 @@ class ToolOptimal(AppTool):
                     '%s: %s' % (_("Optimal Tool. Finding the distances between each two elements. Iterations"),
                                 str(geo_len)))
 
-                self.min_dict = {}
+                plugin_instance.min_dict = {}
                 idx = 1
-                for geo in total_geo:
-                    for s_geo in total_geo[idx:]:
-                        if self.app.abort_flag:
+                for geo in total_geo.geoms:
+                    for s_geo in total_geo.geoms[idx:]:
+                        if app_obj.abort_flag:
                             # graceful abort requested by the user
                             raise grace
 
                         # minimize the number of distances by not taking into considerations those that are too small
                         dist = geo.distance(s_geo)
-                        dist = float('%.*f' % (self.decimals, dist))
+                        dist = app_obj.dec_format(dist, plugin_instance.decimals)
                         loc_1, loc_2 = nearest_points(geo, s_geo)
 
                         proc_loc = (
-                            (float('%.*f' % (self.decimals, loc_1.x)), float('%.*f' % (self.decimals, loc_1.y))),
-                            (float('%.*f' % (self.decimals, loc_2.x)), float('%.*f' % (self.decimals, loc_2.y)))
+                            (app_obj.dec_format(loc_1.x, self.decimals), app_obj.dec_format(loc_1.y, self.decimals)),
+                            (app_obj.dec_format(loc_2.x, self.decimals), app_obj.dec_format(loc_2.y, self.decimals))
                         )
 
-                        if dist in self.min_dict:
-                            self.min_dict[dist].append(proc_loc)
+                        if dist in plugin_instance.min_dict:
+                            plugin_instance.min_dict[dist].append(proc_loc)
                         else:
-                            self.min_dict[dist] = [proc_loc]
+                            plugin_instance.min_dict[dist] = [proc_loc]
 
                         pol_nr += 1
                         disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
@@ -254,29 +301,29 @@ class ToolOptimal(AppTool):
 
                 app_obj.inform.emit(_("Optimal Tool. Finding the minimum distance."))
 
-                min_list = list(self.min_dict.keys())
+                min_list = list(plugin_instance.min_dict.keys())
                 min_dist = min(min_list)
-                min_dist -= 10**-self.decimals  # make sure that this will work for isolation case
-                min_dist_string = '%.*f' % (self.decimals, float(min_dist))
-                self.ui.result_entry.set_value(min_dist_string)
+                rep_min_dist = min_dist - 10**-self.decimals  # make sure that this will work for isolation case
+                min_dist_string = str(app_obj.dec_format(rep_min_dist, self.decimals))
+                plugin_instance.ui.result_entry.set_value(min_dist_string)
 
-                freq = len(self.min_dict[min_dist])
+                freq = len(plugin_instance.min_dict[min_dist])
                 freq = '%d' % int(freq)
-                self.ui.freq_entry.set_value(freq)
+                plugin_instance.ui.freq_entry.set_value(freq)
 
-                min_locations = self.min_dict.pop(min_dist)
+                min_locations = plugin_instance.min_dict.pop(min_dist)
 
                 self.update_text.emit(min_locations)
-                self.update_sec_distances.emit(self.min_dict)
+                self.update_sec_distances.emit(plugin_instance.min_dict)
 
                 app_obj.inform.emit('[success] %s' % _("Optimal Tool. Finished successfully."))
             except Exception as ee:
                 proc.done()
-                log.error(str(ee))
+                app_obj.log.error(str(ee))
                 return
             proc.done()
 
-        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app, self]})
 
     def on_locate_position(self):
         # cursor = self.locations_textb.textCursor()
@@ -443,11 +490,16 @@ class OptimalUI:
                                 }
                                 """)
         self.layout.addWidget(title_label)
-        self.layout.addWidget(FCLabel(""))
+        # self.layout.addWidget(FCLabel(""))
 
-        # ## Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        # #############################################################################################################
+        # Gerber Source Object
+        # #############################################################################################################
+        self.obj_combo_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.obj_combo_label.setToolTip(
+            "Gerber object for which to find the minimum distance between copper features."
+        )
+        self.layout.addWidget(self.obj_combo_label)
 
         # ## Gerber Object to mirror
         self.gerber_object_combo = FCComboBox()
@@ -460,13 +512,25 @@ class OptimalUI:
         self.gerber_object_label.setToolTip(
             "Gerber object for which to find the minimum distance between copper features."
         )
-        grid0.addWidget(self.gerber_object_label, 0, 0, 1, 2)
-        grid0.addWidget(self.gerber_object_combo, 2, 0, 1, 2)
+        self.layout.addWidget(self.gerber_object_combo)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 4, 0, 1, 2)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # grid0.addWidget(separator_line, 4, 0, 1, 2)
+
+        # #############################################################################################################
+        # Parameters Frame
+        # #############################################################################################################
+        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Parameters'))
+        self.param_label.setToolTip(_("Parameters used for this tool."))
+        self.layout.addWidget(self.param_label)
+
+        par_frame = FCFrame()
+        self.layout.addWidget(par_frame)
+
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_frame.setLayout(param_grid)
 
         # Precision = nr of decimals
         self.precision_label = FCLabel('%s:' % _("Precision"))
@@ -475,13 +539,21 @@ class OptimalUI:
         self.precision_spinner = FCSpinner(callback=self.confirmation_message_int)
         self.precision_spinner.set_range(2, 10)
         self.precision_spinner.setWrapping(True)
-        grid0.addWidget(self.precision_label, 6, 0)
-        grid0.addWidget(self.precision_spinner, 6, 1)
+        param_grid.addWidget(self.precision_label, 0, 0)
+        param_grid.addWidget(self.precision_spinner, 0, 1)
 
-        # Results Title
-        self.title_res_label = FCLabel('<b>%s:</b>' % _("Minimum distance"))
-        self.title_res_label.setToolTip(_("Display minimum distance between copper features."))
-        grid0.addWidget(self.title_res_label, 8, 0, 1, 2)
+        # #############################################################################################################
+        # Results Frame
+        # #############################################################################################################
+        res_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Minimum distance"))
+        res_label.setToolTip(_("Display minimum distance between copper features."))
+        self.layout.addWidget(res_label)
+
+        res_frame = FCFrame()
+        self.layout.addWidget(res_frame)
+
+        res_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
+        res_frame.setLayout(res_grid)
 
         # Result value
         self.result_label = FCLabel('%s:' % _("Determined"))
@@ -491,25 +563,23 @@ class OptimalUI:
         self.units_lbl = FCLabel(self.units.lower())
         self.units_lbl.setDisabled(True)
 
-        hlay = QtWidgets.QHBoxLayout()
-        hlay.addWidget(self.result_entry)
-        hlay.addWidget(self.units_lbl)
-
-        grid0.addWidget(self.units_lbl, 10, 0)
-        grid0.addLayout(hlay, 10, 1)
+        res_grid.addWidget(self.result_label, 0, 0)
+        res_grid.addWidget(self.result_entry, 0, 1)
+        res_grid.addWidget(self.units_lbl, 0, 2)
 
         # Frequency of minimum encounter
         self.freq_label = FCLabel('%s:' % _("Occurring"))
         self.freq_label.setToolTip(_("How many times this minimum is found."))
         self.freq_entry = FCEntry()
         self.freq_entry.setReadOnly(True)
-        grid0.addWidget(self.freq_label, 12, 0)
-        grid0.addWidget(self.freq_entry, 12, 1)
+
+        res_grid.addWidget(self.freq_label, 2, 0)
+        res_grid.addWidget(self.freq_entry, 2, 1, 1, 2)
 
         # Control if to display the locations of where the minimum was found
         self.locations_cb = FCCheckBox(_("Minimum points coordinates"))
         self.locations_cb.setToolTip(_("Coordinates for points where minimum distance was found."))
-        grid0.addWidget(self.locations_cb, 14, 0, 1, 2)
+        res_grid.addWidget(self.locations_cb, 4, 0, 1, 3)
 
         # Locations where minimum was found
         self.locations_textb = FCTextArea()
@@ -524,7 +594,7 @@ class OptimalUI:
                              """
 
         self.locations_textb.setStyleSheet(stylesheet)
-        grid0.addWidget(self.locations_textb, 16, 0, 1, 2)
+        res_grid.addWidget(self.locations_textb, 6, 0, 1, 3)
 
         # Jump button
         self.locate_button = FCButton(_("Jump to selected position"))
@@ -534,24 +604,33 @@ class OptimalUI:
         )
         self.locate_button.setMinimumWidth(60)
         self.locate_button.setDisabled(True)
-        grid0.addWidget(self.locate_button, 18, 0, 1, 2)
+        res_grid.addWidget(self.locate_button, 8, 0, 1, 3)
 
-        # Other distances in Gerber
-        self.title_second_res_label = FCLabel('<b>%s:</b>' % _("Other distances"))
+        # #############################################################################################################
+        # Other Distances
+        # #############################################################################################################
+        self.title_second_res_label = FCLabel('<span style="color:magenta;"><b>%s</b></span>' % _("Other distances"))
         self.title_second_res_label.setToolTip(_("Will display other distances in the Gerber file ordered from\n"
                                                  "the minimum to the maximum, not including the absolute minimum."))
-        grid0.addWidget(self.title_second_res_label, 20, 0, 1, 2)
+        self.layout.addWidget(self.title_second_res_label)
+
+        other_frame = FCFrame()
+        self.layout.addWidget(other_frame)
+
+        other_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        other_frame.setLayout(other_grid)
 
         # Control if to display the locations of where the minimum was found
         self.sec_locations_cb = FCCheckBox(_("Other distances points coordinates"))
         self.sec_locations_cb.setToolTip(_("Other distances and the coordinates for points\n"
                                            "where the distance was found."))
-        grid0.addWidget(self.sec_locations_cb, 22, 0, 1, 2)
+        other_grid.addWidget(self.sec_locations_cb, 0, 0, 1, 2)
 
         # this way I can hide/show the frame
         self.sec_locations_frame = QtWidgets.QFrame()
         self.sec_locations_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.sec_locations_frame)
+        other_grid.addWidget(self.sec_locations_frame, 2, 0, 1, 2)
+
         self.distances_box = QtWidgets.QVBoxLayout()
         self.distances_box.setContentsMargins(0, 0, 0, 0)
         self.sec_locations_frame.setLayout(self.distances_box)
@@ -628,6 +707,8 @@ class OptimalUI:
                                 """)
         self.calculate_button.setMinimumWidth(60)
         self.layout.addWidget(self.calculate_button)
+
+        FCGridLayout.set_common_column_size([param_grid, res_grid], 0)
 
         self.layout.addStretch(1)
 

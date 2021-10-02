@@ -15,6 +15,8 @@ CHANGELOG for FlatCAM beta
 - in Paint, NCC and Cutout Plugins when using a mode that require to be terminated (by mouse RMB or ESC key) the notebook UI element is disabled until this is done
 - for Transform and SolderPaste Plugins upgraded the UI
 - in SolderPaste Plugin now the paste is dispensed only on the pads/Gerber flashes
+- fixed Find Optimal Plugin: there was an error triggered after finding the minimum distance
+- upgraded the FInd Optimal Plugin UI
 
 1.10.2021
 
