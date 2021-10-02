@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+3.10.2021
+
+- updated the language strings to the latest version
+
 2.10.2021
 
 - in Preferences, more Plugins preferences UI is upgraded to the new look

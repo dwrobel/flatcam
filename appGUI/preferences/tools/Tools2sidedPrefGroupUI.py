@@ -107,7 +107,7 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
               "- Point -> a set of coordinates (x,y) around which the object is mirrored\n"
               "- Box -> a set of coordinates (x, y) obtained from the center of the\n"
               "bounding box of another object selected below\n"
-              "- Snap-> a point defined by the center of a drill hone in a Excellon object")
+              "- Snap -> a point defined by the center of a drill hole in a Excellon object")
         )
 
         mirror_grid.addWidget(self.axloc_label, 2, 0)
