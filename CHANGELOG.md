@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - updated the language strings to the latest version
 - some changes in the Objects UI
+- removed some VisPy patches that now are incorporated in the v 0.9 of VisPy; bumped the VisPy requirement to 0.9.0
 
 2.10.2021
 

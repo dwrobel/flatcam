@@ -138,9 +138,9 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         # self.v_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 0.8), vertical=True,
         #                            parent=self.view.scene)
 
-        self.v_line = InfiniteLine(pos=0, color=axis_color, vertical=True,
+        self.v_line = InfiniteLine(pos=0, color=axis_color, vertical=True, line_width=1.5,
                                    parent=self.view.scene)
-        self.h_line = InfiniteLine(pos=0, color=axis_color, vertical=False,
+        self.h_line = InfiniteLine(pos=0, color=axis_color, vertical=False, line_width=1.5,
                                    parent=self.view.scene)
 
         self.line_parent = None

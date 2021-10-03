@@ -15,23 +15,23 @@ import numpy as np
 
 def apply_patches():
     # Patch MarkersVisual to have crossed lines marker
-    cross_lines = """
-    float cross(vec2 pointcoord, float size)
-    {
-        //vbar
-        float r1 = abs(pointcoord.x - 0.5)*size;
-        float r2 = abs(pointcoord.y - 0.5)*size - $v_size/2;
-        float vbar = max(r1,r2);
-        //hbar
-        float r3 = abs(pointcoord.y - 0.5)*size;
-        float r4 = abs(pointcoord.x - 0.5)*size - $v_size/2;
-        float hbar = max(r3,r4);
-        return min(vbar, hbar);
-    }
-    """
-
-    markers._marker_dict['++'] = cross_lines
-    markers.marker_types = tuple(sorted(list(markers._marker_dict.copy().keys())))
+    # cross_lines = """
+    # float cross(vec2 pointcoord, float size)
+    # {
+    #     //vbar
+    #     float r1 = abs(pointcoord.x - 0.5)*size;
+    #     float r2 = abs(pointcoord.y - 0.5)*size - $v_size/2;
+    #     float vbar = max(r1,r2);
+    #     //hbar
+    #     float r3 = abs(pointcoord.y - 0.5)*size;
+    #     float r4 = abs(pointcoord.x - 0.5)*size - $v_size/2;
+    #     float hbar = max(r3,r4);
+    #     return min(vbar, hbar);
+    # }
+    # """
+    #
+    # markers._marker_dict['++'] = cross_lines
+    # markers.marker_types = tuple(sorted(list(markers._marker_dict.copy().keys())))
 
     # # Add clear_data method to LineVisual to have possibility of clearing data
     # def clear_data(self):
@@ -57,25 +57,25 @@ def apply_patches():
     Grid._update_clipper = _update_clipper
 
     # Patch InfiniteLine visual to 1.5px width
-    def _prepare_draw(self, view=None):
-        """This method is called immediately before each draw.
-        The *view* argument indicates which view is about to be drawn.
-        """
-
-        self.update_gl_state(line_smooth=False)
-        px_scale = self.transforms.pixel_scale
-        width = px_scale * 1.5
-        self.update_gl_state(line_width=max(width, 1.0))
-
-        if self._changed['pos']:
-            self.pos_buf.set_data(self._pos)
-            self._changed['pos'] = False
-
-        if self._changed['color']:
-            self._program.vert['color'] = self._color
-            self._changed['color'] = False
-
-    InfiniteLineVisual._prepare_draw = _prepare_draw
+    # def _prepare_draw(self, view=None):
+    #     """This method is called immediately before each draw.
+    #     The *view* argument indicates which view is about to be drawn.
+    #     """
+    #
+    #     self.update_gl_state(line_smooth=False)
+    #     px_scale = self.transforms.pixel_scale
+    #     width = px_scale * 1.5
+    #     self.update_gl_state(line_width=max(width, 1.0))
+    #
+    #     if self._changed['pos']:
+    #         self.pos_buf.set_data(self._pos)
+    #         self._changed['pos'] = False
+    #
+    #     if self._changed['color']:
+    #         self._program.vert['color'] = self._color
+    #         self._changed['color'] = False
+    #
+    # InfiniteLineVisual._prepare_draw = _prepare_draw
 
     # Patch AxisVisual to have less axis labels
     def _get_tick_frac_labels(self):

@@ -29,7 +29,7 @@ pyserial>=3.4
 pikepdf>=2.0
 pywin32>2.0
 pyqt6>=6.1.0
-vispy>=0.8.1
+vispy>=0.9.0
 rasterio
 foronoi>=1.0.3
 networkx
