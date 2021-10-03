@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+4.10.2021
+
+- fixed a typo in the Object UI
+
 3.10.2021
 
 - updated the language strings to the latest version

@@ -798,7 +798,7 @@ class ExcellonObjectUI(ObjectUI):
                                           font-weight: bold;
                                       }
                                       """)
-        plugins_grid.addWidget(self.drill_button, 0, 2)
+        plugins_grid.addWidget(self.drill_button, 0, 0)
 
         # Milling Tool - will create GCode for slot holes
         self.milling_button = FCButton(_('Milling'))
