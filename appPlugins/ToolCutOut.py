@@ -2075,16 +2075,17 @@ class CutOut(AppTool):
         :param geometry: Shapely type or list or list of list of such.
         """
         flat_geo = []
+        work_geo = geometry.geoms if isinstance(geometry, (MultiPolygon, MultiLineString)) else geometry
         try:
-            for geo in geometry:
+            for geo in work_geo:
                 if geo:
                     flat_geo += CutOut.flatten(geometry=geo)
         except TypeError:
-            if isinstance(geometry, Polygon) and not geometry.is_empty:
-                flat_geo.append(geometry.exterior)
-                CutOut.flatten(geometry=geometry.interiors)
-            elif not geometry.is_empty:
-                flat_geo.append(geometry)
+            if isinstance(work_geo, Polygon) and not work_geo.is_empty:
+                flat_geo.append(work_geo.exterior)
+                CutOut.flatten(geometry=work_geo.interiors)
+            elif not work_geo.is_empty:
+                flat_geo.append(work_geo)
 
         return flat_geo
 
