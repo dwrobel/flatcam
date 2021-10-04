@@ -539,7 +539,7 @@ class FlatCAMDefaults:
         "tools_2sided_mirror_axis": "X",
         "tools_2sided_axis_loc": "point",
         "tools_2sided_drilldia": 3.125,
-        "tools_2sided_allign_axis": "X",
+        "tools_2sided_align_type": "X",
 
         # Film Tool
         "tools_film_shape": False,

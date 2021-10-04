@@ -160,7 +160,8 @@ class DblSidedTool(AppTool):
         self.on_toggle_pointbox(self.ui.axis_location.get_value())
 
         self.ui.drill_dia.set_value(self.app.defaults["tools_2sided_drilldia"])
-        self.ui.align_axis_radio.set_value(self.app.defaults["tools_2sided_allign_axis"])
+        self.ui.align_type_radio.set_value(self.app.defaults["tools_2sided_align_type"])
+        self.ui.on_align_type_changed(val=self.ui.align_type_radio.get_value())
 
         self.ui.xmin_entry.set_value(0.0)
         self.ui.ymin_entry.set_value(0.0)
@@ -231,10 +232,8 @@ class DblSidedTool(AppTool):
 
             self.ui.bv_label.hide()
             self.ui.bounds_frame.hide()
-
             self.ui.center_entry.hide()
             self.ui.center_btn.hide()
-
             self.ui.calculate_bb_button.hide()
         else:
             self.ui.level.setText('%s' % _('Advanced'))
@@ -247,10 +246,8 @@ class DblSidedTool(AppTool):
 
             self.ui.bv_label.show()
             self.ui.bounds_frame.show()
-
             self.ui.center_entry.show()
             self.ui.center_btn.show()
-
             self.ui.calculate_bb_button.show()
 
     def on_object_type(self, val):
@@ -291,57 +288,71 @@ class DblSidedTool(AppTool):
             self.app.log.error("DblSidedTool.on_object_selection_changed() --> %s" % str(err))
 
     def on_create_alignment_holes(self):
-        axis = self.ui.align_axis_radio.get_value()
+        align_type = self.ui.align_type_radio.get_value()
         mode = self.ui.axis_location.get_value()
 
-        if mode == "point":
-            try:
-                px, py = self.ui.point_entry.get_value()
-            except TypeError:
-                msg = '[WARNING_NOTCL] %s' % \
-                      _("'Point' reference is selected and 'Point' coordinates are missing. Add them and retry.")
+        if align_type in ["X", "Y"]:
+            if mode == "point":
+                try:
+                    px, py = self.ui.point_entry.get_value()
+                except TypeError:
+                    msg = '[WARNING_NOTCL] %s' % \
+                          _("'Point' reference is selected and 'Point' coordinates are missing.")
+                    self.app.inform.emit(msg)
+                    return
+            elif mode == 'box':
+                selection_index = self.ui.box_combo.currentIndex()
+                model_index = self.app.collection.index(selection_index, 0, self.ui.object_combo.rootModelIndex())
+                try:
+                    bb_obj = model_index.internalPointer().obj
+                except AttributeError:
+                    msg = '[WARNING_NOTCL] %s' % _("Box reference object is missing.")
+                    self.app.inform.emit(msg)
+                    return
+
+                xmin, ymin, xmax, ymax = bb_obj.bounds()
+                px = 0.5 * (xmin + xmax)
+                py = 0.5 * (ymin + ymax)
+            else:
+                msg = '[ERROR_NOTCL] %s' % _("Not supported.")
                 self.app.inform.emit(msg)
                 return
-        else:
-            selection_index = self.ui.box_combo.currentIndex()
-            model_index = self.app.collection.index(selection_index, 0, self.ui.object_combo.rootModelIndex())
-            try:
-                bb_obj = model_index.internalPointer().obj
-            except AttributeError:
-                msg = '[WARNING_NOTCL] %s' % _("There is no Box reference object loaded. Load one and retry.")
-                self.app.inform.emit(msg)
-                return
-
-            xmin, ymin, xmax, ymax = bb_obj.bounds()
-            px = 0.5 * (xmin + xmax)
-            py = 0.5 * (ymin + ymax)
-
-        xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
 
         dia = self.ui.drill_dia.get_value()
         if dia == '':
-            msg = '[WARNING_NOTCL] %s' % _("No value or wrong format in Drill Dia entry. Add it and retry.")
+            msg = '[WARNING_NOTCL] %s' % _("Drill diameter is missing.")
             self.app.inform.emit(msg)
             return
-
-        tools = {1: {}}
-        tools[1]["tooldia"] = dia
-        tools[1]['drills'] = []
-        tools[1]['solid_geometry'] = []
 
         # holes = self.alignment_holes.get_value()
         holes = eval('[{}]'.format(self.ui.alignment_holes.text()))
         if not holes:
-            msg = '[WARNING_NOTCL] %s' % _("There are no Alignment Drill Coordinates to use. Add them and retry.")
+            msg = '[WARNING_NOTCL] %s' % _("Alignment drill coordinates are missing.")
             self.app.inform.emit(msg)
             return
 
-        for hole in holes:
-            point = Point(hole)
-            point_mirror = affinity.scale(point, xscale, yscale, origin=(px, py))
+        tools = {
+            1: {
+                "tooldia":          dia,
+                "drills":           [],
+                "solid_geometry":   []
+            }
+        }
 
-            tools[1]['drills'] += [point, point_mirror]
-            tools[1]['solid_geometry'] += [point, point_mirror]
+        if align_type in ["X", "Y"]:
+            xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[align_type]
+
+            for hole in holes:
+                point = Point(hole)
+                point_mirror = affinity.scale(point, xscale, yscale, origin=(px, py))
+
+                tools[1]['drills'] += [point, point_mirror]
+                tools[1]['solid_geometry'] += [point, point_mirror]
+        elif align_type == "manual":
+            for hole in holes:
+                point = Point(hole)
+                tools[1]['drills'].append(point)
+                tools[1]['solid_geometry'].append(point.buffer(dia/2))
 
         def obj_init(obj_inst, app_inst):
             obj_inst.tools = deepcopy(tools)
@@ -351,7 +362,7 @@ class DblSidedTool(AppTool):
                                                                        filename=None,
                                                                        use_thread=False)
 
-        ret_val = self.app.app_obj.new_object("excellon", _("Alignment Drills"), obj_init)
+        ret_val = self.app.app_obj.new_object("excellon", _("Alignment Drills"), obj_init, autoselected=False)
         self.drill_values = ''
 
         if not ret_val == 'fail':
@@ -451,12 +462,11 @@ class DblSidedTool(AppTool):
 
     def on_mirror(self):
         selection_index = self.ui.object_combo.currentIndex()
-        # fcobj = self.app.collection.object_list[selection_index]
         model_index = self.app.collection.index(selection_index, 0, self.ui.object_combo.rootModelIndex())
         try:
             fcobj = model_index.internalPointer().obj
         except Exception:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
 
         if fcobj.kind not in ['gerber', 'geometry', 'excellon']:
@@ -508,70 +518,48 @@ class DblSidedTool(AppTool):
 
     def on_toggle_pointbox(self, val):
         if val == "point":
-            # self.ui.point_entry.show()
-            # self.ui.add_point_button.show()
-            # self.ui.box_type_radio.hide()
-            # self.ui.box_combo.hide()
-            #
-            # self.ui.exc_hole_lbl.hide()
-            # self.ui.exc_combo.hide()
-            # self.ui.pick_hole_button.hide()
             self.ui.pr_frame.show()
             self.ui.br_frame.hide()
             self.ui.sr_frame.hide()
-
             self.ui.align_ref_label_val.set_value(self.ui.point_entry.get_value())
         elif val == 'box':
-            # self.ui.point_entry.hide()
-            # self.ui.add_point_button.hide()
-            #
-            # self.ui.box_type_radio.show()
-            # self.ui.box_combo.show()
-            #
-            # self.ui.exc_hole_lbl.hide()
-            # self.ui.exc_combo.hide()
-            # self.ui.pick_hole_button.hide()
             self.ui.pr_frame.hide()
             self.ui.br_frame.show()
             self.ui.sr_frame.hide()
-
             self.ui.align_ref_label_val.set_value("Box centroid")
         elif val == 'hole':
-            # self.ui.point_entry.show()
-            # self.ui.add_point_button.hide()
-            #
-            # self.ui.box_type_radio.hide()
-            # self.ui.box_combo.hide()
-            #
-            # self.ui.exc_hole_lbl.show()
-            # self.ui.exc_combo.show()
-            # self.ui.pick_hole_button.show()
             self.ui.pr_frame.hide()
             self.ui.br_frame.hide()
             self.ui.sr_frame.show()
 
     def on_bbox_coordinates(self):
-
         xmin = Inf
         ymin = Inf
         xmax = -Inf
         ymax = -Inf
 
         obj_list = self.app.collection.get_selected()
-
         if not obj_list:
-            self.app.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed."), _("No object is selected.")))
-            return
-
-        for obj in obj_list:
+            selection_index = self.ui.object_combo.currentIndex()
+            model_index = self.app.collection.index(selection_index, 0, self.ui.object_combo.rootModelIndex())
             try:
-                gxmin, gymin, gxmax, gymax = obj.bounds()
-                xmin = min([xmin, gxmin])
-                ymin = min([ymin, gymin])
-                xmax = max([xmax, gxmax])
-                ymax = max([ymax, gymax])
-            except Exception as e:
-                log.error("Tried to get bounds of empty geometry in DblSidedTool. %s" % str(e))
+                fcobj = model_index.internalPointer().obj
+            except Exception:
+                self.app.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed."), _("No object is selected.")))
+                return
+            xmin, ymin, xmax, ymax = fcobj.bounds()
+        else:
+            for obj in obj_list:
+                try:
+                    gxmin, gymin, gxmax, gymax = obj.bounds()
+                    xmin = min([xmin, gxmin])
+                    ymin = min([ymin, gymin])
+                    xmax = max([xmax, gxmax])
+                    ymax = max([ymax, gymax])
+                except Exception as e:
+                    self.app.log.error("Tried to get bounds of empty geometry in DblSidedTool. %s" % str(e))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                    return
 
         self.ui.xmin_entry.set_value(xmin)
         self.ui.ymin_entry.set_value(ymin)
@@ -1035,21 +1023,25 @@ class DsidedUI:
         grid4.addWidget(self.dt_label, 2, 0)
         grid4.addWidget(self.drill_dia, 2, 1)
 
-        # ## Alignment Axis
-        self.align_ax_label = FCLabel('%s:' % _("Axis"))
-        self.align_ax_label.setToolTip(
-            _("Mirror vertically (X) or horizontally (Y).")
+        # ## Alignment Type
+        self.align_type_label = FCLabel('%s:' % _("Type"))
+        self.align_type_label.setToolTip(
+            _("The content of the Excellon file.\n"
+              "X - Pairs of drill holes mirrored vertically from reference point\n"
+              "Y - Pairs of drill holes mirrored horizontally from reference point\n"
+              "Manual - no mirroring; drill holes in place")
         )
-        self.align_axis_radio = RadioSet(
+        self.align_type_radio = RadioSet(
             [
-                {'label': 'X', 'value': 'X'},
-                {'label': 'Y', 'value': 'Y'}
+                {'label': 'X',          'value': 'X'},
+                {'label': 'Y',          'value': 'Y'},
+                {'label': _("Manual"),  'value': 'manual'}
             ],
             compact=True
         )
 
-        grid4.addWidget(self.align_ax_label, 4, 0)
-        grid4.addWidget(self.align_axis_radio, 4, 1)
+        grid4.addWidget(self.align_type_label, 4, 0)
+        grid4.addWidget(self.align_type_radio, 4, 1)
 
         # ## Alignment Reference Point
         self.align_ref_label = FCLabel('%s:' % _("Reference"))
@@ -1149,7 +1141,9 @@ class DsidedUI:
                                 }
                                 """)
         self.tools_box.addWidget(self.reset_button)
-
+        
+        
+        self.align_type_radio.activated_custom.connect(self.on_align_type_changed)
         # #################################### FINSIHED GUI ###########################
         # #############################################################################
 
@@ -1169,3 +1163,11 @@ class DsidedUI:
                                             (_("Edited value is out of range"), minval, maxval), False)
         else:
             self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)
+    
+    def on_align_type_changed(self, val):
+        if val in ["X", "Y"]:
+            self.align_ref_label.show()
+            self.align_ref_label_val.show()
+        else:
+            self.align_ref_label.hide()
+            self.align_ref_label_val.hide()

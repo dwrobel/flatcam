@@ -470,7 +470,7 @@ class PreferencesUIManager:
             "tools_2sided_mirror_axis": self.ui.plugin_eng_pref_form.tools_2sided_group.mirror_axis_radio,
             "tools_2sided_axis_loc":    self.ui.plugin_eng_pref_form.tools_2sided_group.axis_location_radio,
             "tools_2sided_drilldia":    self.ui.plugin_eng_pref_form.tools_2sided_group.drill_dia_entry,
-            "tools_2sided_allign_axis": self.ui.plugin_eng_pref_form.tools_2sided_group.align_axis_radio,
+            "tools_2sided_align_type": self.ui.plugin_eng_pref_form.tools_2sided_group.align_type_radio,
 
             # Film Tool
             "tools_film_shape": self.ui.plugin_pref_form.tools_film_group.convex_box_cb,

@@ -382,7 +382,7 @@ class ToolExtract(AppTool):
         try:
             fcobj = model_index.internalPointer().obj
         except Exception:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
         outname = "%s_%s" % (fcobj.options['name'].rpartition('.')[0], _("extracted"))
 
@@ -695,7 +695,7 @@ class ToolExtract(AppTool):
         try:
             obj = model_index.internalPointer().obj
         except Exception:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
         outname = '%s_esm' % obj.options['name'].rpartition('.')[0]
 
@@ -798,7 +798,7 @@ class ToolExtract(AppTool):
         try:
             obj = model_index.internalPointer().obj
         except Exception:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
 
         outname = '%s_ecut' % obj.options['name'].rpartition('.')[0]

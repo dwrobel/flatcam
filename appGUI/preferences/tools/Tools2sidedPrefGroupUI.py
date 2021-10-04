@@ -53,15 +53,24 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         param_grid.addWidget(self.drill_dia_entry, 0, 1)
 
         # ## Alignment Axis
-        self.align_ax_label = FCLabel('%s:' % _("Align Axis"))
-        self.align_ax_label.setToolTip(
-            _("Mirror vertically (X) or horizontally (Y).")
+        self.align_type_label = FCLabel('%s:' % _("Align Axis"))
+        self.align_type_label.setToolTip(
+            _("The content of the Excellon file.\n"
+              "X - Pairs of drill holes mirrored vertically from reference point\n"
+              "Y - Pairs of drill holes mirrored horizontally from reference point\n"
+              "Manual - no mirroring; drill holes in place")
         )
-        self.align_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
-                                          {'label': 'Y', 'value': 'Y'}], compact=True)
+        self.align_type_radio = RadioSet(
+            [
+                {'label': 'X', 'value': 'X'},
+                {'label': 'Y', 'value': 'Y'},
+                {'label': _("Manual"), 'value': 'manual'}
+            ],
+            compact=True
+        )
 
-        param_grid.addWidget(self.align_ax_label, 1, 0)
-        param_grid.addWidget(self.align_axis_radio, 1, 1)
+        param_grid.addWidget(self.align_type_label, 1, 0)
+        param_grid.addWidget(self.align_type_radio, 1, 1)
 
         # ## Axis
         self.mirror_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},

@@ -508,11 +508,11 @@ class ToolPunchGerber(AppTool, Gerber):
         try:
             self.grb_obj = model_index.internalPointer().obj
         except Exception:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
 
         if self.grb_obj is None:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
 
         name = self.grb_obj.options['name'].rpartition('.')[0]
