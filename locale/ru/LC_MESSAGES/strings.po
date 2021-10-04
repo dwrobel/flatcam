@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-10-04 20:56+0300\n"
+"POT-Creation-Date: 2021-10-05 02:56+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
@@ -115,8 +115,8 @@ msgstr "Закладки"
 #: appEditors/AppGerberEditor.py:4974 appEditors/AppGerberEditor.py:7201
 #: appEditors/AppTextEditor.py:262 appGUI/MainGUI.py:3419
 #: appGUI/MainGUI.py:3642 appGUI/MainGUI.py:3872
-#: appObjects/ObjectCollection.py:127 appPlugins/ToolCorners.py:510
-#: appPlugins/ToolCorners.py:605 appPlugins/ToolCutOut.py:2012
+#: appObjects/ObjectCollection.py:127 appPlugins/ToolCorners.py:520
+#: appPlugins/ToolCorners.py:629 appPlugins/ToolCutOut.py:2012
 #: appPlugins/ToolFilm.py:407 appPlugins/ToolFilm.py:546
 #: appPlugins/ToolImage.py:148 appPlugins/ToolLevelling.py:1586
 #: appPlugins/ToolMove.py:275 appPlugins/ToolPcbWizard.py:224
@@ -314,7 +314,7 @@ msgstr "Цель"
 #: appPlugins/ToolMilling.py:3656 appPlugins/ToolNCC.py:4146
 #: appPlugins/ToolPaint.py:3018 appPlugins/ToolPcbWizard.py:443
 #: appPlugins/ToolReport.py:443 appPlugins/ToolReport.py:509
-#: appPlugins/ToolSolderPaste.py:1275 tclCommands/TclCommandDrillcncjob.py:197
+#: appPlugins/ToolSolderPaste.py:1268 tclCommands/TclCommandDrillcncjob.py:197
 msgid "Diameter"
 msgstr "Диаметр"
 
@@ -600,7 +600,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:126
 #: appPlugins/ToolCalibration.py:794 appPlugins/ToolDrilling.py:1559
 #: appPlugins/ToolDrilling.py:2459 appPlugins/ToolMilling.py:3247
-#: appPlugins/ToolMilling.py:4178 appPlugins/ToolSolderPaste.py:1345
+#: appPlugins/ToolMilling.py:4178 appPlugins/ToolSolderPaste.py:1338
 msgid "Travel Z"
 msgstr "Отвод по Z"
 
@@ -704,7 +704,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:229
 #: appPlugins/ToolDrilling.py:1573 appPlugins/ToolDrilling.py:2515
 #: appPlugins/ToolMilling.py:3265 appPlugins/ToolMilling.py:4284
-#: appPlugins/ToolSolderPaste.py:1509 appPlugins/ToolSolderPaste.py:1546
+#: appPlugins/ToolSolderPaste.py:1502 appPlugins/ToolSolderPaste.py:1539
 msgid "Spindle speed"
 msgstr "Скорость вращения шпинделя"
 
@@ -719,8 +719,8 @@ msgstr ""
 "Скорость вращения шпинделя в об/мин."
 
 #: appDatabase.py:545 appDatabase.py:1030 appPlugins/ToolDrilling.py:2530
-#: appPlugins/ToolMilling.py:4299 appPlugins/ToolSolderPaste.py:1523
-#: appPlugins/ToolSolderPaste.py:1560
+#: appPlugins/ToolMilling.py:4299 appPlugins/ToolSolderPaste.py:1516
+#: appPlugins/ToolSolderPaste.py:1553
 msgid "Dwell"
 msgstr "Задержка"
 
@@ -861,7 +861,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:188
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:171
 #: appPlugins/ToolCopperThieving.py:1340 appPlugins/ToolCopperThieving.py:1629
-#: appPlugins/ToolCorners.py:929 appPlugins/ToolCutOut.py:2406
+#: appPlugins/ToolCorners.py:967 appPlugins/ToolCutOut.py:2406
 #: appPlugins/ToolCutOut.py:2725 appPlugins/ToolExtract.py:1351
 #: appPlugins/ToolFiducials.py:992 appPlugins/ToolInvertGerber.py:269
 #: appPlugins/ToolInvertGerber.py:277 appPlugins/ToolMilling.py:4039
@@ -875,7 +875,7 @@ msgstr "Отступ"
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:70
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:509
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:190
-#: appPlugins/ToolCopperThieving.py:1342 appPlugins/ToolCorners.py:931
+#: appPlugins/ToolCopperThieving.py:1342 appPlugins/ToolCorners.py:969
 #: appPlugins/ToolFiducials.py:994 appPlugins/ToolMilling.py:4041
 #: appPlugins/ToolNCC.py:4385 appPlugins/ToolNCC.py:4489
 msgid "Bounding box margin."
@@ -1343,7 +1343,7 @@ msgstr "Расстояние между отверстиями сверла пр
 
 #: appDatabase.py:1212 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:59
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:189
-#: appPlugins/ToolCutOut.py:2351 appPlugins/ToolFilm.py:1489
+#: appPlugins/ToolCutOut.py:2351 appPlugins/ToolFilm.py:1486
 msgid "Convex Shape"
 msgstr "Выпуклая форма"
 
@@ -1464,8 +1464,8 @@ msgstr "Отмена"
 #: appPlugins/ToolAlignObjects.py:584 appPlugins/ToolCalculators.py:1068
 #: appPlugins/ToolCalculators.py:1079 appPlugins/ToolCalibration.py:1420
 #: appPlugins/ToolCalibration.py:1431 appPlugins/ToolCopperThieving.py:1807
-#: appPlugins/ToolCopperThieving.py:1818 appPlugins/ToolCorners.py:1113
-#: appPlugins/ToolCorners.py:1124 appPlugins/ToolCutOut.py:2796
+#: appPlugins/ToolCopperThieving.py:1818 appPlugins/ToolCorners.py:1151
+#: appPlugins/ToolCorners.py:1162 appPlugins/ToolCutOut.py:2796
 #: appPlugins/ToolCutOut.py:2807 appPlugins/ToolDblSided.py:1147
 #: appPlugins/ToolDblSided.py:1158 appPlugins/ToolDistance.py:708
 #: appPlugins/ToolDistance.py:719 appPlugins/ToolDistanceMin.py:398
@@ -1473,8 +1473,8 @@ msgstr "Отмена"
 #: appPlugins/ToolDrilling.py:2931 appPlugins/ToolEtchCompensation.py:531
 #: appPlugins/ToolEtchCompensation.py:542 appPlugins/ToolExtract.py:1421
 #: appPlugins/ToolExtract.py:1432 appPlugins/ToolFiducials.py:1137
-#: appPlugins/ToolFiducials.py:1148 appPlugins/ToolFilm.py:1832
-#: appPlugins/ToolFilm.py:1843 appPlugins/ToolFollow.py:806
+#: appPlugins/ToolFiducials.py:1148 appPlugins/ToolFilm.py:1827
+#: appPlugins/ToolFilm.py:1838 appPlugins/ToolFollow.py:806
 #: appPlugins/ToolFollow.py:817 appPlugins/ToolImage.py:365
 #: appPlugins/ToolImage.py:376 appPlugins/ToolInvertGerber.py:338
 #: appPlugins/ToolInvertGerber.py:349 appPlugins/ToolIsolation.py:3713
@@ -1487,9 +1487,9 @@ msgstr "Отмена"
 #: appPlugins/ToolPanelize.py:1432 appPlugins/ToolPcbWizard.py:532
 #: appPlugins/ToolPcbWizard.py:543 appPlugins/ToolPunchGerber.py:2379
 #: appPlugins/ToolPunchGerber.py:2390 appPlugins/ToolQRCode.py:1056
-#: appPlugins/ToolQRCode.py:1067 appPlugins/ToolRulesCheck.py:1709
-#: appPlugins/ToolRulesCheck.py:1720 appPlugins/ToolSolderPaste.py:1721
-#: appPlugins/ToolSolderPaste.py:1732 appPlugins/ToolSub.py:988
+#: appPlugins/ToolQRCode.py:1067 appPlugins/ToolRulesCheck.py:1880
+#: appPlugins/ToolRulesCheck.py:1891 appPlugins/ToolSolderPaste.py:1714
+#: appPlugins/ToolSolderPaste.py:1725 appPlugins/ToolSub.py:988
 #: appPlugins/ToolSub.py:999 appPlugins/ToolTransform.py:1071
 #: appPlugins/ToolTransform.py:1082 appTool.py:300 appTool.py:311
 msgid "Edited value is out of range"
@@ -1502,8 +1502,8 @@ msgstr "Отредактированное значение находится �
 #: appPlugins/ToolAlignObjects.py:586 appPlugins/ToolCalculators.py:1074
 #: appPlugins/ToolCalculators.py:1081 appPlugins/ToolCalibration.py:1426
 #: appPlugins/ToolCalibration.py:1433 appPlugins/ToolCopperThieving.py:1813
-#: appPlugins/ToolCopperThieving.py:1820 appPlugins/ToolCorners.py:1119
-#: appPlugins/ToolCorners.py:1126 appPlugins/ToolCutOut.py:2802
+#: appPlugins/ToolCopperThieving.py:1820 appPlugins/ToolCorners.py:1157
+#: appPlugins/ToolCorners.py:1164 appPlugins/ToolCutOut.py:2802
 #: appPlugins/ToolCutOut.py:2809 appPlugins/ToolDblSided.py:1153
 #: appPlugins/ToolDblSided.py:1160 appPlugins/ToolDistance.py:714
 #: appPlugins/ToolDistance.py:721 appPlugins/ToolDistanceMin.py:404
@@ -1511,8 +1511,8 @@ msgstr "Отредактированное значение находится �
 #: appPlugins/ToolDrilling.py:2933 appPlugins/ToolEtchCompensation.py:537
 #: appPlugins/ToolEtchCompensation.py:544 appPlugins/ToolExtract.py:1427
 #: appPlugins/ToolExtract.py:1434 appPlugins/ToolFiducials.py:1143
-#: appPlugins/ToolFiducials.py:1150 appPlugins/ToolFilm.py:1838
-#: appPlugins/ToolFilm.py:1845 appPlugins/ToolFollow.py:812
+#: appPlugins/ToolFiducials.py:1150 appPlugins/ToolFilm.py:1833
+#: appPlugins/ToolFilm.py:1840 appPlugins/ToolFollow.py:812
 #: appPlugins/ToolFollow.py:819 appPlugins/ToolImage.py:371
 #: appPlugins/ToolImage.py:378 appPlugins/ToolInvertGerber.py:344
 #: appPlugins/ToolInvertGerber.py:351 appPlugins/ToolIsolation.py:3719
@@ -1525,9 +1525,9 @@ msgstr "Отредактированное значение находится �
 #: appPlugins/ToolPanelize.py:1434 appPlugins/ToolPcbWizard.py:538
 #: appPlugins/ToolPcbWizard.py:545 appPlugins/ToolPunchGerber.py:2385
 #: appPlugins/ToolPunchGerber.py:2392 appPlugins/ToolQRCode.py:1062
-#: appPlugins/ToolQRCode.py:1069 appPlugins/ToolRulesCheck.py:1715
-#: appPlugins/ToolRulesCheck.py:1722 appPlugins/ToolSolderPaste.py:1727
-#: appPlugins/ToolSolderPaste.py:1734 appPlugins/ToolSub.py:994
+#: appPlugins/ToolQRCode.py:1069 appPlugins/ToolRulesCheck.py:1886
+#: appPlugins/ToolRulesCheck.py:1893 appPlugins/ToolSolderPaste.py:1720
+#: appPlugins/ToolSolderPaste.py:1727 appPlugins/ToolSub.py:994
 #: appPlugins/ToolSub.py:1001 appPlugins/ToolTransform.py:1077
 #: appPlugins/ToolTransform.py:1084 appTool.py:306 appTool.py:313
 msgid "Edited value is within limits."
@@ -1738,9 +1738,9 @@ msgstr "Слишком много элементов для выбранного
 #: appEditors/AppGerberEditor.py:800 appEditors/AppGerberEditor.py:3873
 #: appEditors/AppGerberEditor.py:5913 appObjects/FlatCAMCNCJob.py:807
 #: appPlugins/ToolCopperThieving.py:351 appPlugins/ToolCopperThieving.py:946
-#: appPlugins/ToolCopperThieving.py:1158 appPlugins/ToolCorners.py:283
-#: appPlugins/ToolCorners.py:306 appPlugins/ToolCorners.py:595
-#: appPlugins/ToolCorners.py:698 appPlugins/ToolCutOut.py:856
+#: appPlugins/ToolCopperThieving.py:1158 appPlugins/ToolCorners.py:285
+#: appPlugins/ToolCorners.py:308 appPlugins/ToolCorners.py:619
+#: appPlugins/ToolCorners.py:736 appPlugins/ToolCutOut.py:856
 #: appPlugins/ToolCutOut.py:878 appPlugins/ToolCutOut.py:1007
 #: appPlugins/ToolCutOut.py:1223 appPlugins/ToolCutOut.py:1369
 #: appPlugins/ToolCutOut.py:1412 appPlugins/ToolCutOut.py:1430
@@ -1941,7 +1941,7 @@ msgstr "Редактор Excellon"
 
 #: appEditors/AppExcEditor.py:4027 appEditors/AppGeoEditor.py:3446
 #: appEditors/AppGerberEditor.py:6089 appEditors/appGCodeEditor.py:774
-#: appGUI/ObjectUI.py:72 appPlugins/ToolCorners.py:834
+#: appGUI/ObjectUI.py:72 appPlugins/ToolCorners.py:872
 #: appPlugins/ToolCutOut.py:2215 appPlugins/ToolDblSided.py:695
 #: appPlugins/ToolDrilling.py:2285 appPlugins/ToolFiducials.py:832
 #: appPlugins/ToolFilm.py:1230 appPlugins/ToolFollow.py:697
@@ -1966,7 +1966,7 @@ msgstr "Имя:"
 #: appGUI/ObjectUI.py:1435 appPlugins/ToolDrilling.py:2326
 #: appPlugins/ToolIsolation.py:3189 appPlugins/ToolMilling.py:3626
 #: appPlugins/ToolNCC.py:4126 appPlugins/ToolPaint.py:2999
-#: appPlugins/ToolSolderPaste.py:1258
+#: appPlugins/ToolSolderPaste.py:1251
 msgid "Tools Table"
 msgstr "Таблица инструментов"
 
@@ -2084,10 +2084,10 @@ msgstr "Добавляет массив свёрел (линейный или к
 #: appEditors/AppGerberEditor.py:6579 appGUI/ObjectUI.py:334
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:40
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:167
-#: appPlugins/ToolCopperThieving.py:1389 appPlugins/ToolCorners.py:888
+#: appPlugins/ToolCopperThieving.py:1389 appPlugins/ToolCorners.py:926
 #: appPlugins/ToolCutOut.py:2259 appPlugins/ToolCutOut.py:2445
 #: appPlugins/ToolDblSided.py:1042 appPlugins/ToolExtract.py:1062
-#: appPlugins/ToolFilm.py:1259 appPlugins/ToolIsolation.py:3591
+#: appPlugins/ToolFilm.py:1258 appPlugins/ToolIsolation.py:3591
 #: appPlugins/ToolMilling.py:3587 appPlugins/ToolNCC.py:4092
 #: appPlugins/ToolNCC.py:4558 appPlugins/ToolPaint.py:2965
 #: appPlugins/ToolPaint.py:3304 appPlugins/ToolPunchGerber.py:2089
@@ -2164,7 +2164,7 @@ msgstr ""
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:270
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:140
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:157
-#: appPlugins/ToolFilm.py:1456
+#: appPlugins/ToolFilm.py:1454
 msgid "X"
 msgstr "X"
 
@@ -2177,7 +2177,7 @@ msgstr "X"
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:271
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:141
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:158
-#: appPlugins/ToolFilm.py:1457
+#: appPlugins/ToolFilm.py:1455
 msgid "Y"
 msgstr "Y"
 
@@ -2291,7 +2291,7 @@ msgstr ""
 #: appEditors/AppExcEditor.py:4354 appEditors/AppGeoEditor.py:3559
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:186
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:81
-#: appObjects/FlatCAMObj.py:889 appPlugins/ToolCorners.py:916
+#: appObjects/FlatCAMObj.py:889 appPlugins/ToolCorners.py:954
 #: appPlugins/ToolReport.py:604
 msgid "Length"
 msgstr "Длина"
@@ -2591,7 +2591,7 @@ msgstr "Наклон/Сдвиг"
 #: appGUI/MainGUI.py:5325 appGUI/ObjectUI.py:121
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:42
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:171
-#: appPlugins/ToolFilm.py:1323 appPlugins/ToolTransform.py:575
+#: appPlugins/ToolFilm.py:1321 appPlugins/ToolTransform.py:575
 #: appPlugins/ToolTransform.py:797
 msgid "Scale"
 msgstr "Масштаб"
@@ -2616,7 +2616,7 @@ msgstr "Буфер"
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:133
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:42
 #: appPlugins/ToolDblSided.py:871 appPlugins/ToolDblSided.py:1062
-#: appPlugins/ToolFilm.py:1356 appPlugins/ToolFilm.py:1417
+#: appPlugins/ToolFilm.py:1354 appPlugins/ToolFilm.py:1415
 #: appPlugins/ToolPanelize.py:1172 appPlugins/ToolTransform.py:614
 msgid "Reference"
 msgstr "Ссылка"
@@ -2653,7 +2653,7 @@ msgstr "Источник"
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:310
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:257
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:52
-#: appPlugins/ToolCorners.py:984 appPlugins/ToolFiducials.py:1061
+#: appPlugins/ToolCorners.py:1022 appPlugins/ToolFiducials.py:1061
 #: appPlugins/ToolFollow.py:737 appPlugins/ToolIsolation.py:3573
 #: appPlugins/ToolNCC.py:4547 appPlugins/ToolPaint.py:3284
 #: appPlugins/ToolPunchGerber.py:2289 appPlugins/ToolTransform.py:624
@@ -2681,6 +2681,11 @@ msgstr "Минимальное расстояние"
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:296
 #: appPlugins/ToolExtract.py:1236 appPlugins/ToolExtract.py:1265
 #: appPlugins/ToolPunchGerber.py:2168 appPlugins/ToolPunchGerber.py:2276
+#: appPlugins/ToolRulesCheck.py:1494 appPlugins/ToolRulesCheck.py:1518
+#: appPlugins/ToolRulesCheck.py:1543 appPlugins/ToolRulesCheck.py:1568
+#: appPlugins/ToolRulesCheck.py:1605 appPlugins/ToolRulesCheck.py:1630
+#: appPlugins/ToolRulesCheck.py:1655 appPlugins/ToolRulesCheck.py:1693
+#: appPlugins/ToolRulesCheck.py:1730 appPlugins/ToolRulesCheck.py:1755
 #: appPlugins/ToolTransform.py:630 appPlugins/ToolTransform.py:995
 #: app_Main.py:8905
 msgid "Value"
@@ -2741,7 +2746,7 @@ msgstr "Соедините запись Y с записью X и скопиру�
 #: appEditors/AppGeoEditor.py:823 appEditors/AppGerberEditor.py:6834
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:114
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:143
-#: appPlugins/ToolFilm.py:1397 appPlugins/ToolTransform.py:746
+#: appPlugins/ToolFilm.py:1395 appPlugins/ToolTransform.py:746
 msgid "X angle"
 msgstr "Угол наклона X"
 
@@ -2775,7 +2780,7 @@ msgstr ""
 #: appEditors/AppGeoEditor.py:844 appEditors/AppGerberEditor.py:6855
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:123
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:157
-#: appPlugins/ToolFilm.py:1407 appPlugins/ToolTransform.py:767
+#: appPlugins/ToolFilm.py:1405 appPlugins/ToolTransform.py:767
 msgid "Y angle"
 msgstr "Угол наклона Y"
 
@@ -2787,7 +2792,7 @@ msgstr "Наклон Y"
 #: appEditors/AppGeoEditor.py:885 appEditors/AppGerberEditor.py:6896
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:62
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:194
-#: appPlugins/ToolFilm.py:1336 appPlugins/ToolTransform.py:815
+#: appPlugins/ToolFilm.py:1334 appPlugins/ToolTransform.py:815
 msgid "X factor"
 msgstr "Коэффициент X"
 
@@ -2817,7 +2822,7 @@ msgstr ""
 #: appEditors/AppGeoEditor.py:905 appEditors/AppGerberEditor.py:6916
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:72
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:207
-#: appPlugins/ToolFilm.py:1346 appPlugins/ToolTransform.py:835
+#: appPlugins/ToolFilm.py:1344 appPlugins/ToolTransform.py:835
 msgid "Y factor"
 msgstr "Коэффициент Y"
 
@@ -2900,7 +2905,7 @@ msgstr "Смещение Y"
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:139
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:200
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:263
-#: appPlugins/ToolFilm.py:1500 appPlugins/ToolInvertGerber.py:291
+#: appPlugins/ToolFilm.py:1497 appPlugins/ToolInvertGerber.py:291
 #: appPlugins/ToolQRCode.py:920 appPlugins/ToolTransform.py:954
 msgid "Rounded"
 msgstr "Закругленный"
@@ -3360,12 +3365,12 @@ msgstr "Выбор полигона"
 #: appGUI/preferences/tools/ToolsSubPrefGroupUI.py:24
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:28
 #: appPlugins/ToolAlignObjects.py:508 appPlugins/ToolCalibration.py:787
-#: appPlugins/ToolCopperThieving.py:1314 appPlugins/ToolCorners.py:877
+#: appPlugins/ToolCopperThieving.py:1314 appPlugins/ToolCorners.py:915
 #: appPlugins/ToolEtchCompensation.py:406 appPlugins/ToolFiducials.py:962
-#: appPlugins/ToolFilm.py:1477 appPlugins/ToolFollow.py:726
+#: appPlugins/ToolFilm.py:1475 appPlugins/ToolFollow.py:726
 #: appPlugins/ToolInvertGerber.py:257 appPlugins/ToolLevelling.py:1853
 #: appPlugins/ToolOptimal.py:525 appPlugins/ToolPanelize.py:1298
-#: appPlugins/ToolQRCode.py:821 appPlugins/ToolSolderPaste.py:1327
+#: appPlugins/ToolQRCode.py:821 appPlugins/ToolSolderPaste.py:1320
 #: appPlugins/ToolSub.py:814 appPlugins/ToolTransform.py:602
 msgid "Parameters"
 msgstr "Параметры"
@@ -3551,7 +3556,7 @@ msgstr "Нажмите на целевой точке."
 #: appEditors/AppGeoEditor.py:5696 appEditors/AppGeoEditor.py:5776
 #: appEditors/AppGeoEditor.py:5842 appEditors/AppGeoEditor.py:5910
 #: appPlugins/ToolCopperThieving.py:640 appPlugins/ToolFilm.py:899
-#: appPlugins/ToolFilm.py:1174 appPlugins/ToolRulesCheck.py:659
+#: appPlugins/ToolFilm.py:1174 appPlugins/ToolRulesCheck.py:658
 msgid "Working..."
 msgstr "Обработка…"
 
@@ -3847,7 +3852,7 @@ msgstr "Координаты скопированы в буфер обмена."
 #: appObjects/FlatCAMGerber.py:1002 appObjects/FlatCAMObj.py:266
 #: appObjects/FlatCAMObj.py:297 appObjects/FlatCAMObj.py:313
 #: appObjects/FlatCAMObj.py:393 appPlugins/ToolCopperThieving.py:1169
-#: appPlugins/ToolCorners.py:704 appPlugins/ToolFiducials.py:685
+#: appPlugins/ToolCorners.py:742 appPlugins/ToolFiducials.py:685
 #: appPlugins/ToolMove.py:235 appPlugins/ToolQRCode.py:559 app_Main.py:5209
 msgid "Plotting"
 msgstr "Прорисовка"
@@ -4465,6 +4470,7 @@ msgstr "Удалить"
 #: appGUI/MainGUI.py:590 appGUI/MainGUI.py:4811
 #: appObjects/ObjectCollection.py:1157 appObjects/ObjectCollection.py:1204
 #: appPlugins/ToolIsolation.py:3623 appPlugins/ToolPunchGerber.py:2316
+#: appPlugins/ToolRulesCheck.py:1199
 msgid "Select All"
 msgstr "Выбрать все"
 
@@ -4692,22 +4698,22 @@ msgstr "Создаёт новый пустой проект"
 msgid "New"
 msgstr "Создать"
 
-#: appGUI/MainGUI.py:102 appGUI/MainGUI.py:1673
+#: appGUI/MainGUI.py:102 appGUI/MainGUI.py:1533 appGUI/MainGUI.py:1673
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:76
 #: appObjects/ObjectCollection.py:238 appPlugins/ToolCalibration.py:206
 #: appPlugins/ToolCalibration.py:1351 appPlugins/ToolCalibration.py:1368
 #: appPlugins/ToolCopperThieving.py:209 appPlugins/ToolCopperThieving.py:1395
 #: appPlugins/ToolCopperThieving.py:1406 appPlugins/ToolCutOut.py:2256
 #: appPlugins/ToolCutOut.py:2678 appPlugins/ToolDblSided.py:725
-#: appPlugins/ToolDblSided.py:940 appPlugins/ToolFilm.py:1257
-#: appPlugins/ToolFilm.py:1280 appPlugins/ToolImage.py:175
+#: appPlugins/ToolDblSided.py:940 appPlugins/ToolFilm.py:1256
+#: appPlugins/ToolFilm.py:1279 appPlugins/ToolImage.py:175
 #: appPlugins/ToolImage.py:231 appPlugins/ToolIsolation.py:3543
 #: appPlugins/ToolIsolation.py:3594 appPlugins/ToolMilling.py:2689
 #: appPlugins/ToolMilling.py:3594 appPlugins/ToolNCC.py:4101
 #: appPlugins/ToolNCC.py:4564 appPlugins/ToolPaint.py:3310
 #: appPlugins/ToolPanelize.py:150 appPlugins/ToolPanelize.py:251
 #: appPlugins/ToolPanelize.py:1147 appPlugins/ToolPanelize.py:1198
-#: appPlugins/ToolSolderPaste.py:1589 appPlugins/ToolSub.py:899
+#: appPlugins/ToolSolderPaste.py:1582 appPlugins/ToolSub.py:899
 #: appPlugins/ToolTransform.py:160 appPlugins/ToolTransform.py:654
 msgid "Geometry"
 msgstr "Geometry"
@@ -4721,7 +4727,7 @@ msgstr "N"
 msgid "Will create a new, empty Geometry Object."
 msgstr "Создаёт новый объект Geometry."
 
-#: appGUI/MainGUI.py:107
+#: appGUI/MainGUI.py:107 appGUI/MainGUI.py:1513
 #: appGUI/preferences/tools/ToolsPanelizePrefGroupUI.py:94
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:74
 #: appObjects/ObjectCollection.py:236 appPlugins/ToolAlignObjects.py:448
@@ -4731,16 +4737,16 @@ msgstr "Создаёт новый объект Geometry."
 #: appPlugins/ToolCopperThieving.py:209 appPlugins/ToolCopperThieving.py:1395
 #: appPlugins/ToolCopperThieving.py:1406 appPlugins/ToolCutOut.py:2255
 #: appPlugins/ToolDblSided.py:725 appPlugins/ToolDblSided.py:938
-#: appPlugins/ToolFilm.py:1256 appPlugins/ToolFilm.py:1279
+#: appPlugins/ToolFilm.py:1255 appPlugins/ToolFilm.py:1278
 #: appPlugins/ToolImage.py:153 appPlugins/ToolImage.py:177
 #: appPlugins/ToolImage.py:231 appPlugins/ToolIsolation.py:3544
 #: appPlugins/ToolIsolation.py:3594 appPlugins/ToolNCC.py:4102
 #: appPlugins/ToolNCC.py:4564 appPlugins/ToolPaint.py:3310
 #: appPlugins/ToolPanelize.py:144 appPlugins/ToolPanelize.py:251
 #: appPlugins/ToolPanelize.py:1147 appPlugins/ToolPanelize.py:1198
-#: appPlugins/ToolPanelize.py:1309 appPlugins/ToolSub.py:834
-#: appPlugins/ToolTransform.py:160 appPlugins/ToolTransform.py:652
-#: defaults.py:593
+#: appPlugins/ToolPanelize.py:1309 appPlugins/ToolRulesCheck.py:1209
+#: appPlugins/ToolSub.py:834 appPlugins/ToolTransform.py:160
+#: appPlugins/ToolTransform.py:652 defaults.py:593
 msgid "Gerber"
 msgstr "Gerber"
 
@@ -4753,7 +4759,7 @@ msgstr "B"
 msgid "Will create a new, empty Gerber Object."
 msgstr "Создаёт новый объект Gerber."
 
-#: appGUI/MainGUI.py:112 appGUI/MainGUI.py:1677
+#: appGUI/MainGUI.py:112 appGUI/MainGUI.py:1523 appGUI/MainGUI.py:1677
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:98
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:75
 #: appObjects/ObjectCollection.py:237 appPlugins/ToolAlignObjects.py:449
@@ -4763,11 +4769,12 @@ msgstr "Создаёт новый объект Gerber."
 #: appPlugins/ToolCopperThieving.py:209 appPlugins/ToolCopperThieving.py:1395
 #: appPlugins/ToolCopperThieving.py:1406 appPlugins/ToolDblSided.py:725
 #: appPlugins/ToolDblSided.py:939 appPlugins/ToolDblSided.py:967
-#: appPlugins/ToolFilm.py:1583 appPlugins/ToolIsolation.py:3594
+#: appPlugins/ToolFilm.py:1580 appPlugins/ToolIsolation.py:3594
 #: appPlugins/ToolMilling.py:3595 appPlugins/ToolNCC.py:4564
 #: appPlugins/ToolPaint.py:3310 appPlugins/ToolPanelize.py:147
 #: appPlugins/ToolPanelize.py:251 appPlugins/ToolPanelize.py:1147
 #: appPlugins/ToolPunchGerber.py:2131 appPlugins/ToolPunchGerber.py:2145
+#: appPlugins/ToolRulesCheck.py:1216 appPlugins/ToolRulesCheck.py:1414
 #: appPlugins/ToolTransform.py:160 appPlugins/ToolTransform.py:653
 msgid "Excellon"
 msgstr "Excellon"
@@ -4874,7 +4881,7 @@ msgstr "DXF как объект Gerber"
 msgid "HPGL2 as Geometry Object"
 msgstr "HPGL2 как объект геометрии"
 
-#: appGUI/MainGUI.py:246 appPlugins/ToolFilm.py:1618
+#: appGUI/MainGUI.py:246 appPlugins/ToolFilm.py:1615
 msgid "Export"
 msgstr "Экспорт"
 
@@ -5800,7 +5807,7 @@ msgid "Copper Thieving"
 msgstr "Copper Thieving"
 
 #: appGUI/MainGUI.py:1133 appGUI/MainGUI.py:2428 appGUI/MainGUI.py:4841
-#: appPlugins/ToolCorners.py:809
+#: appPlugins/ToolCorners.py:847
 #, fuzzy
 #| msgid "Corner Markers Tool"
 msgid "Corner Markers"
@@ -5957,19 +5964,6 @@ msgstr "Оболочка TCL"
 #: appGUI/MainGUI.py:2728 app_Main.py:2927 app_Main.py:9991
 msgid "Plot Area"
 msgstr "Рабочая область"
-
-#: appGUI/MainGUI.py:1513 appPlugins/ToolOptimal.py:511
-#: appPlugins/ToolRulesCheck.py:1199
-msgid "GERBER"
-msgstr "GERBER"
-
-#: appGUI/MainGUI.py:1523 appPlugins/ToolRulesCheck.py:1337
-msgid "EXCELLON"
-msgstr "EXCELLON"
-
-#: appGUI/MainGUI.py:1533 appPlugins/ToolSub.py:908
-msgid "GEOMETRY"
-msgstr "GEOMETRY"
 
 #: appGUI/MainGUI.py:1543
 msgid "CNC-JOB"
@@ -6198,7 +6192,7 @@ msgstr ""
 
 #: appGUI/MainGUI.py:4056 appPlugins/ToolIsolation.py:903
 #: appPlugins/ToolNCC.py:1375 appPlugins/ToolPaint.py:664
-#: appPlugins/ToolSolderPaste.py:344 appPlugins/ToolSolderPaste.py:1291
+#: appPlugins/ToolSolderPaste.py:344 appPlugins/ToolSolderPaste.py:1284
 #: app_Main.py:4995
 msgid "New Tool"
 msgstr "Новый инструмент"
@@ -6595,7 +6589,7 @@ msgstr "Открыть онлайн-уроки"
 msgid "Refresh Plots"
 msgstr "Обновить участки"
 
-#: appGUI/MainGUI.py:4882 appPlugins/ToolSolderPaste.py:1714
+#: appGUI/MainGUI.py:4882 appPlugins/ToolSolderPaste.py:1707
 msgid "Delete Object"
 msgstr "Удалить объект"
 
@@ -7064,14 +7058,14 @@ msgstr ""
 
 #: appGUI/ObjectUI.py:521 appGUI/preferences/gerber/GerberOptPrefGroupUI.py:64
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:202
-#: appPlugins/ToolFilm.py:1502
+#: appPlugins/ToolFilm.py:1499
 msgid "Resulting geometry will have rounded corners."
 msgstr "Полученная геометрия будет иметь закругленные углы."
 
 #: appGUI/ObjectUI.py:524 appGUI/ObjectUI.py:569 appPlugins/ToolCutOut.py:2642
 #: appPlugins/ToolFollow.py:765 appPlugins/ToolIsolation.py:3663
 #: appPlugins/ToolNCC.py:4610 appPlugins/ToolPaint.py:3347
-#: appPlugins/ToolSolderPaste.py:1599
+#: appPlugins/ToolSolderPaste.py:1592
 msgid "Generate Geometry"
 msgstr "Создать объект"
 
@@ -7477,7 +7471,7 @@ msgstr ""
 "Открывает диалоговое окно для сохранения\n"
 "файла G-Code."
 
-#: appGUI/ObjectUI.py:1551 appPlugins/ToolSolderPaste.py:1685
+#: appGUI/ObjectUI.py:1551 appPlugins/ToolSolderPaste.py:1678
 msgid "Review CNC Code."
 msgstr "Просмотрите код ЧПУ."
 
@@ -7522,7 +7516,7 @@ msgstr "Выравнивание по левому краю"
 
 #: appGUI/ObjectUI.py:1763 appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:89
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:140
-#: appPlugins/ToolFilm.py:1363 appPlugins/ToolFilm.py:1424 app_Main.py:5431
+#: appPlugins/ToolFilm.py:1361 appPlugins/ToolFilm.py:1422 app_Main.py:5431
 #: app_Main.py:5695
 msgid "Center"
 msgstr "По центру"
@@ -7776,7 +7770,7 @@ msgstr ""
 #: appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:96
 #: appGUI/preferences/tools/ToolsLevelPrefGroupUI.py:155
 #: appObjects/FlatCAMObj.py:843 appPlugins/ToolLevelling.py:2219
-#: appPlugins/ToolReport.py:558 appPlugins/ToolSolderPaste.py:1442
+#: appPlugins/ToolReport.py:558 appPlugins/ToolSolderPaste.py:1435
 msgid "Feedrate"
 msgstr "Скорость подачи"
 
@@ -7836,7 +7830,7 @@ msgstr "Цвет линии передвижения"
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:189
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:151
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:202
-#: appPlugins/ToolRulesCheck.py:1324
+#: appPlugins/ToolRulesCheck.py:1385 appPlugins/ToolRulesCheck.py:1400
 msgid "Outline"
 msgstr "Контур"
 
@@ -8510,7 +8504,7 @@ msgstr "Ориентация"
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:179
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:282
-#: appPlugins/ToolFilm.py:1647
+#: appPlugins/ToolFilm.py:1643
 msgid ""
 "Can be:\n"
 "- Portrait\n"
@@ -8523,14 +8517,14 @@ msgstr ""
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:183
 #: appGUI/preferences/general/GeneralAppSettingsGroupUI.py:165
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:286
-#: appPlugins/ToolFilm.py:1651 app_Main.py:8435
+#: appPlugins/ToolFilm.py:1647 app_Main.py:8435
 msgid "Portrait"
 msgstr "Портретная"
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:184
 #: appGUI/preferences/general/GeneralAppSettingsGroupUI.py:166
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:287
-#: appPlugins/ToolFilm.py:1652 app_Main.py:8437
+#: appPlugins/ToolFilm.py:1648 app_Main.py:8437
 msgid "Landscape"
 msgstr "Альбомная"
 
@@ -8550,7 +8544,7 @@ msgstr ""
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:225
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:286
-#: appPlugins/ToolDblSided.py:852 appPlugins/ToolFilm.py:1460 app_Main.py:8423
+#: appPlugins/ToolDblSided.py:852 appPlugins/ToolFilm.py:1458 app_Main.py:8423
 msgid "Axis"
 msgstr "Оси"
 
@@ -9848,7 +9842,7 @@ msgid "Minimal"
 msgstr "Минимальная"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:114
-#: appPlugins/ToolCopperThieving.py:1416 appPlugins/ToolFilm.py:1282
+#: appPlugins/ToolCopperThieving.py:1416 appPlugins/ToolFilm.py:1281
 #: appPlugins/ToolPanelize.py:1205
 msgid "Box Type"
 msgstr "Тип рамки"
@@ -9957,7 +9951,7 @@ msgstr "Граница рамки."
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:290
 #: appGUI/preferences/tools/Tools2ExtractPrefGroupUI.py:311
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:54
-#: appPlugins/ToolCopperThieving.py:1642 appPlugins/ToolCorners.py:902
+#: appPlugins/ToolCopperThieving.py:1642 appPlugins/ToolCorners.py:940
 #: appPlugins/ToolExtract.py:1366
 msgid "Thickness"
 msgstr "Толщина"
@@ -10003,7 +9997,7 @@ msgstr "Выберите, какую дополнительную геометр
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:345
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:159
-#: appPlugins/ToolCopperThieving.py:1761 appPlugins/ToolFilm.py:1458
+#: appPlugins/ToolCopperThieving.py:1761 appPlugins/ToolFilm.py:1456
 #: appPlugins/ToolMilling.py:3920
 msgid "Both"
 msgstr "Обе"
@@ -10029,9 +10023,9 @@ msgstr "Точки калибровки"
 #: appGUI/preferences/tools/Tools2CalPrefGroupUI.py:30
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:29
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:29
-#: appPlugins/ToolCopperThieving.py:1315 appPlugins/ToolCorners.py:878
+#: appPlugins/ToolCopperThieving.py:1315 appPlugins/ToolCorners.py:916
 #: appPlugins/ToolEtchCompensation.py:407 appPlugins/ToolFiducials.py:964
-#: appPlugins/ToolOptimal.py:526 appPlugins/ToolSolderPaste.py:1329
+#: appPlugins/ToolOptimal.py:526 appPlugins/ToolSolderPaste.py:1322
 msgid "Parameters used for this tool."
 msgstr "Параметры, используемые для этого инструмента."
 
@@ -10107,23 +10101,23 @@ msgstr ""
 #: appGUI/preferences/tools/Tools2CalPrefGroupUI.py:103
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:89
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:140
-#: appPlugins/ToolCalibration.py:879 appPlugins/ToolCorners.py:956
-#: appPlugins/ToolFilm.py:1363 appPlugins/ToolFilm.py:1424 app_Main.py:5692
+#: appPlugins/ToolCalibration.py:879 appPlugins/ToolCorners.py:994
+#: appPlugins/ToolFilm.py:1361 appPlugins/ToolFilm.py:1422 app_Main.py:5692
 msgid "Top Left"
 msgstr "Верхний левый"
 
 #: appGUI/preferences/tools/Tools2CalPrefGroupUI.py:104
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:89
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:140
-#: appPlugins/ToolCalibration.py:880 appPlugins/ToolCorners.py:968
-#: appPlugins/ToolFilm.py:1363 appPlugins/ToolFilm.py:1424 app_Main.py:5693
+#: appPlugins/ToolCalibration.py:880 appPlugins/ToolCorners.py:1006
+#: appPlugins/ToolFilm.py:1361 appPlugins/ToolFilm.py:1422 app_Main.py:5693
 msgid "Bottom Right"
 msgstr "Нижний правый"
 
 #: appGUI/preferences/tools/Tools2CalPrefGroupUI.py:113
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:109
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:142
-#: appPlugins/ToolSolderPaste.py:1407
+#: appPlugins/ToolSolderPaste.py:1400
 msgid "Tool change"
 msgstr "Смена инструмента"
 
@@ -10430,7 +10424,7 @@ msgstr ""
 
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:99
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:47
-#: appPlugins/ToolCorners.py:895 appPlugins/ToolFiducials.py:1035
+#: appPlugins/ToolCorners.py:933 appPlugins/ToolFiducials.py:1035
 msgid "Cross"
 msgstr "Крест"
 
@@ -10445,14 +10439,14 @@ msgid "Line thickness"
 msgstr "Толщина линии"
 
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:132
-#: appPlugins/ToolCorners.py:1002 appPlugins/ToolFiducials.py:1073
+#: appPlugins/ToolCorners.py:1040 appPlugins/ToolFiducials.py:1073
 msgid "Auto"
 msgstr "Авто"
 
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:133
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:67
 #: appGUI/preferences/tools/ToolsLevelPrefGroupUI.py:48
-#: appPlugins/ToolCorners.py:1003 appPlugins/ToolCutOut.py:2520
+#: appPlugins/ToolCorners.py:1041 appPlugins/ToolCutOut.py:2520
 #: appPlugins/ToolDblSided.py:1053 appPlugins/ToolFiducials.py:1074
 #: appPlugins/ToolLevelling.py:1918 appPlugins/ToolPunchGerber.py:2309
 msgid "Manual"
@@ -10460,7 +10454,7 @@ msgstr "Вручную"
 
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:135
 #: appGUI/preferences/tools/ToolsLevelPrefGroupUI.py:41
-#: appPlugins/ToolCorners.py:995 appPlugins/ToolLevelling.py:1911
+#: appPlugins/ToolCorners.py:1033 appPlugins/ToolLevelling.py:1911
 msgid "Mode"
 msgstr "Режим"
 
@@ -10670,7 +10664,7 @@ msgstr "Добавьте сюда текст, который будет вклю
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:116
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:213
-#: appPlugins/ToolFilm.py:1529 appPlugins/ToolQRCode.py:897
+#: appPlugins/ToolFilm.py:1526 appPlugins/ToolQRCode.py:897
 msgid "Polarity"
 msgstr "Полярность"
 
@@ -10687,13 +10681,13 @@ msgstr ""
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:122
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:212
-#: appPlugins/ToolFilm.py:1527 appPlugins/ToolQRCode.py:903
+#: appPlugins/ToolFilm.py:1524 appPlugins/ToolQRCode.py:903
 msgid "Negative"
 msgstr "Негатив"
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:123
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:211
-#: appPlugins/ToolFilm.py:1526 appPlugins/ToolQRCode.py:904
+#: appPlugins/ToolFilm.py:1523 appPlugins/ToolQRCode.py:904
 msgid "Positive"
 msgstr "Позитив"
 
@@ -10755,12 +10749,12 @@ msgstr ""
 "правил изготовления."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:36
-#: appPlugins/ToolRulesCheck.py:460 appPlugins/ToolRulesCheck.py:1403
+#: appPlugins/ToolRulesCheck.py:459 appPlugins/ToolRulesCheck.py:1487
 msgid "Trace Size"
 msgstr "Размер трассы"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:38
-#: appPlugins/ToolRulesCheck.py:1405
+#: appPlugins/ToolRulesCheck.py:1489
 msgid "This checks if the minimum size for traces is met."
 msgstr "Это проверяет, соблюден ли минимальный размер трассы."
 
@@ -10774,27 +10768,22 @@ msgstr "Это проверяет, соблюден ли минимальный 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:195
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:218
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:239
-#: appPlugins/ToolRulesCheck.py:1410 appPlugins/ToolRulesCheck.py:1434
-#: appPlugins/ToolRulesCheck.py:1459 appPlugins/ToolRulesCheck.py:1484
-#: appPlugins/ToolRulesCheck.py:1509 appPlugins/ToolRulesCheck.py:1534
-#: appPlugins/ToolRulesCheck.py:1560 appPlugins/ToolRulesCheck.py:1585
-#: appPlugins/ToolRulesCheck.py:1612 appPlugins/ToolRulesCheck.py:1637
 msgid "Min value"
 msgstr "Минимальное значение"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:50
-#: appPlugins/ToolRulesCheck.py:1412
+#: appPlugins/ToolRulesCheck.py:1496
 msgid "Minimum acceptable trace size."
 msgstr "Минимальный допустимый размер трассировки."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:56
-#: appPlugins/ToolRulesCheck.py:691 appPlugins/ToolRulesCheck.py:721
-#: appPlugins/ToolRulesCheck.py:1426
+#: appPlugins/ToolRulesCheck.py:690 appPlugins/ToolRulesCheck.py:720
+#: appPlugins/ToolRulesCheck.py:1510
 msgid "Copper to Copper clearance"
 msgstr "Зазор между медными дорожками"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:58
-#: appPlugins/ToolRulesCheck.py:1428
+#: appPlugins/ToolRulesCheck.py:1512
 msgid ""
 "This checks if the minimum clearance between copper\n"
 "features is met."
@@ -10807,22 +10796,22 @@ msgstr "Проверяет, соблюдены ли минимальные за�
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:155
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:176
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:241
-#: appPlugins/ToolRulesCheck.py:1436 appPlugins/ToolRulesCheck.py:1461
-#: appPlugins/ToolRulesCheck.py:1486 appPlugins/ToolRulesCheck.py:1511
-#: appPlugins/ToolRulesCheck.py:1536 appPlugins/ToolRulesCheck.py:1562
-#: appPlugins/ToolRulesCheck.py:1614
+#: appPlugins/ToolRulesCheck.py:1520 appPlugins/ToolRulesCheck.py:1545
+#: appPlugins/ToolRulesCheck.py:1607 appPlugins/ToolRulesCheck.py:1632
+#: appPlugins/ToolRulesCheck.py:1657 appPlugins/ToolRulesCheck.py:1695
+#: appPlugins/ToolRulesCheck.py:1732
 msgid "Minimum acceptable clearance value."
 msgstr "Минимально допустимое значение зазора."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:77
-#: appPlugins/ToolRulesCheck.py:751 appPlugins/ToolRulesCheck.py:757
-#: appPlugins/ToolRulesCheck.py:770 appPlugins/ToolRulesCheck.py:777
-#: appPlugins/ToolRulesCheck.py:1451
+#: appPlugins/ToolRulesCheck.py:750 appPlugins/ToolRulesCheck.py:756
+#: appPlugins/ToolRulesCheck.py:769 appPlugins/ToolRulesCheck.py:776
+#: appPlugins/ToolRulesCheck.py:1535
 msgid "Copper to Outline clearance"
 msgstr "Зазор между медью и контуром"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:79
-#: appPlugins/ToolRulesCheck.py:1453
+#: appPlugins/ToolRulesCheck.py:1537
 msgid ""
 "This checks if the minimum clearance between copper\n"
 "features and the outline is met."
@@ -10831,25 +10820,25 @@ msgstr ""
 "и контурами."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:98
-#: appPlugins/ToolRulesCheck.py:1476
+#: appPlugins/ToolRulesCheck.py:1597
 msgid "Silk to Silk Clearance"
 msgstr "Зазор между шелкографией"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:100
-#: appPlugins/ToolRulesCheck.py:1478
+#: appPlugins/ToolRulesCheck.py:1599
 msgid ""
 "This checks if the minimum clearance between silkscreen\n"
 "features and silkscreen features is met."
 msgstr "Проверяет, соблюдены ли минимальные зазоры между шелкографией."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:119
-#: appPlugins/ToolRulesCheck.py:860 appPlugins/ToolRulesCheck.py:866
-#: appPlugins/ToolRulesCheck.py:884 appPlugins/ToolRulesCheck.py:1501
+#: appPlugins/ToolRulesCheck.py:859 appPlugins/ToolRulesCheck.py:865
+#: appPlugins/ToolRulesCheck.py:883 appPlugins/ToolRulesCheck.py:1622
 msgid "Silk to Solder Mask Clearance"
 msgstr "Зазор между шелкографией и паяльной маской"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:121
-#: appPlugins/ToolRulesCheck.py:1503
+#: appPlugins/ToolRulesCheck.py:1624
 msgid ""
 "This checks if the minimum clearance between silkscreen\n"
 "features and soldermask features is met."
@@ -10858,14 +10847,14 @@ msgstr ""
 "и паяльной маской."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:140
-#: appPlugins/ToolRulesCheck.py:914 appPlugins/ToolRulesCheck.py:920
-#: appPlugins/ToolRulesCheck.py:934 appPlugins/ToolRulesCheck.py:941
-#: appPlugins/ToolRulesCheck.py:1526
+#: appPlugins/ToolRulesCheck.py:913 appPlugins/ToolRulesCheck.py:919
+#: appPlugins/ToolRulesCheck.py:933 appPlugins/ToolRulesCheck.py:940
+#: appPlugins/ToolRulesCheck.py:1647
 msgid "Silk to Outline Clearance"
 msgstr "Зазор между шелкографией и контуром"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:142
-#: appPlugins/ToolRulesCheck.py:1528
+#: appPlugins/ToolRulesCheck.py:1649
 msgid ""
 "This checks if the minimum clearance between silk\n"
 "features and the outline is met."
@@ -10874,13 +10863,13 @@ msgstr ""
 "и контурами."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:161
-#: appPlugins/ToolRulesCheck.py:952 appPlugins/ToolRulesCheck.py:979
-#: appPlugins/ToolRulesCheck.py:1551
+#: appPlugins/ToolRulesCheck.py:951 appPlugins/ToolRulesCheck.py:978
+#: appPlugins/ToolRulesCheck.py:1684
 msgid "Minimum Solder Mask Sliver"
 msgstr "Минимальная ширина паяльной маски"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:163
-#: appPlugins/ToolRulesCheck.py:1553
+#: appPlugins/ToolRulesCheck.py:1686
 msgid ""
 "This checks if the minimum clearance between soldermask\n"
 "features and soldermask features is met."
@@ -10889,14 +10878,14 @@ msgstr ""
 "и встречной паяльной маской."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:182
-#: appPlugins/ToolRulesCheck.py:1017 appPlugins/ToolRulesCheck.py:1023
-#: appPlugins/ToolRulesCheck.py:1039 appPlugins/ToolRulesCheck.py:1046
-#: appPlugins/ToolRulesCheck.py:1577
+#: appPlugins/ToolRulesCheck.py:1016 appPlugins/ToolRulesCheck.py:1022
+#: appPlugins/ToolRulesCheck.py:1038 appPlugins/ToolRulesCheck.py:1045
+#: appPlugins/ToolRulesCheck.py:1560
 msgid "Minimum Annular Ring"
 msgstr "Минимальное медное кольцо"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:184
-#: appPlugins/ToolRulesCheck.py:1579
+#: appPlugins/ToolRulesCheck.py:1562
 msgid ""
 "This checks if the minimum copper ring left by drilling\n"
 "a hole into a pad is met."
@@ -10905,34 +10894,34 @@ msgstr ""
 "отверстия в площадке."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:197
-#: appPlugins/ToolRulesCheck.py:1587
+#: appPlugins/ToolRulesCheck.py:1570
 msgid "Minimum acceptable ring value."
 msgstr "Минимальное допустимое значение кольца."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:205
-#: appPlugins/ToolRulesCheck.py:404 appPlugins/ToolRulesCheck.py:1604
+#: appPlugins/ToolRulesCheck.py:403 appPlugins/ToolRulesCheck.py:1722
 msgid "Hole to Hole Clearance"
 msgstr "Зазор между отверстиями"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:207
-#: appPlugins/ToolRulesCheck.py:1606
+#: appPlugins/ToolRulesCheck.py:1724
 msgid ""
 "This checks if the minimum clearance between a drill hole\n"
 "and another drill hole is met."
 msgstr "Проверяет, есть ли минимальный зазор между отверстиями."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:220
-#: appPlugins/ToolRulesCheck.py:1639
+#: appPlugins/ToolRulesCheck.py:1757
 msgid "Minimum acceptable drill size."
 msgstr "Минимальный допустимый размер отверстия."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:226
-#: appPlugins/ToolRulesCheck.py:378 appPlugins/ToolRulesCheck.py:1629
+#: appPlugins/ToolRulesCheck.py:377 appPlugins/ToolRulesCheck.py:1747
 msgid "Hole Size"
 msgstr "Размер отверстия"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:228
-#: appPlugins/ToolRulesCheck.py:1631
+#: appPlugins/ToolRulesCheck.py:1749
 msgid ""
 "This checks if the drill holes\n"
 "sizes are above the threshold."
@@ -10962,7 +10951,7 @@ msgstr ""
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:47
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:94
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:282
-#: appPlugins/ToolCorners.py:1040 appPlugins/ToolCutOut.py:2699
+#: appPlugins/ToolCorners.py:1078 appPlugins/ToolCutOut.py:2699
 #: appPlugins/ToolDblSided.py:1026
 msgid "Drill Dia"
 msgstr "Диаметр Сверла"
@@ -11166,27 +11155,27 @@ msgid "Corner Markers Options"
 msgstr "Параметры угловых маркеров"
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:42
-#: appPlugins/ToolCorners.py:890
+#: appPlugins/ToolCorners.py:928
 msgid "Shape of the marker."
 msgstr "Форма маркера."
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:46
-#: appPlugins/ToolCorners.py:894
+#: appPlugins/ToolCorners.py:932
 msgid "Semi-Cross"
 msgstr "Полукрест"
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:56
-#: appPlugins/ToolCorners.py:904
+#: appPlugins/ToolCorners.py:942
 msgid "The thickness of the line that makes the corner marker."
 msgstr "Толщина линии, обозначающей угол."
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:83
-#: appPlugins/ToolCorners.py:918
+#: appPlugins/ToolCorners.py:956
 msgid "The length of the line that makes the corner marker."
 msgstr "Длина линии, которая делает угловой маркер."
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:96
-#: appPlugins/ToolCorners.py:1042
+#: appPlugins/ToolCorners.py:1080
 msgid "Drill Diameter"
 msgstr "Диаметр сверла"
 
@@ -11380,7 +11369,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:67
 #: appPlugins/ToolDrilling.py:2370 appPlugins/ToolIsolation.py:3236
 #: appPlugins/ToolMilling.py:3753 appPlugins/ToolNCC.py:4183
-#: appPlugins/ToolPaint.py:3052 appPlugins/ToolSolderPaste.py:1495
+#: appPlugins/ToolPaint.py:3052 appPlugins/ToolSolderPaste.py:1488
 msgid "Forward"
 msgstr "Прямой"
 
@@ -11390,7 +11379,7 @@ msgstr "Прямой"
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:67
 #: appPlugins/ToolDrilling.py:2370 appPlugins/ToolIsolation.py:3236
 #: appPlugins/ToolMilling.py:3753 appPlugins/ToolNCC.py:4183
-#: appPlugins/ToolPaint.py:3052 appPlugins/ToolSolderPaste.py:1533
+#: appPlugins/ToolPaint.py:3052 appPlugins/ToolSolderPaste.py:1526
 msgid "Reverse"
 msgstr "Обратный"
 
@@ -11480,7 +11469,7 @@ msgstr "Количество единиц времени для остановк
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:266
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:237
 #: appPlugins/ToolDrilling.py:2760 appPlugins/ToolMilling.py:4456
-#: appPlugins/ToolSolderPaste.py:1577
+#: appPlugins/ToolSolderPaste.py:1570
 msgid "Preprocessor"
 msgstr "Постпроцессор"
 
@@ -11716,21 +11705,21 @@ msgid "Film Plugin"
 msgstr "plugin_tab"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:28
-#: appPlugins/ToolFilm.py:1308
+#: appPlugins/ToolFilm.py:1307
 #, fuzzy
 #| msgid "Film Adjustments"
 msgid "Adjustments"
 msgstr "Регулировка Пленки"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:30
-#: appPlugins/ToolFilm.py:1310
+#: appPlugins/ToolFilm.py:1309
 #, fuzzy
 #| msgid "Center point coordinates"
 msgid "Compensate print distortions."
 msgstr "Координаты центральной точки"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:44
-#: appPlugins/ToolFilm.py:1325
+#: appPlugins/ToolFilm.py:1323
 #, fuzzy
 #| msgid ""
 #| "A value greater than 1 will stretch the film\n"
@@ -11744,7 +11733,7 @@ msgstr ""
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:84
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:135
-#: appPlugins/ToolFilm.py:1358 appPlugins/ToolFilm.py:1419
+#: appPlugins/ToolFilm.py:1356 appPlugins/ToolFilm.py:1417
 #, fuzzy
 #| msgid ""
 #| "The reference point to be used as origin for the skew.\n"
@@ -11756,25 +11745,25 @@ msgstr ""
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:89
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:140
-#: appPlugins/ToolCorners.py:964 appPlugins/ToolFiducials.py:898
-#: appPlugins/ToolFilm.py:1363 appPlugins/ToolFilm.py:1424 app_Main.py:5691
+#: appPlugins/ToolCorners.py:1002 appPlugins/ToolFiducials.py:898
+#: appPlugins/ToolFilm.py:1361 appPlugins/ToolFilm.py:1422 app_Main.py:5691
 msgid "Bottom Left"
 msgstr "Нижний левый"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:89
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:140
-#: appPlugins/ToolFilm.py:1363 appPlugins/ToolFilm.py:1424
+#: appPlugins/ToolFilm.py:1361 appPlugins/ToolFilm.py:1422
 msgid "Top right"
 msgstr "Верхний правый"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:95
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:118
-#: appPlugins/ToolFilm.py:1384 appPlugins/ToolTransform.py:726
+#: appPlugins/ToolFilm.py:1382 appPlugins/ToolTransform.py:726
 msgid "Skew"
 msgstr "Наклон"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:97
-#: appPlugins/ToolFilm.py:1386
+#: appPlugins/ToolFilm.py:1384
 msgid ""
 "Positive values will skew to the right\n"
 "while negative values will skew to the left."
@@ -11783,12 +11772,12 @@ msgstr ""
 "а отрицательные значения будут смещать влево."
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:146
-#: appPlugins/ToolDblSided.py:992 appPlugins/ToolFilm.py:1445
+#: appPlugins/ToolDblSided.py:992 appPlugins/ToolFilm.py:1443
 msgid "Mirror"
 msgstr "Отразить"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:148
-#: appPlugins/ToolFilm.py:1447 appPlugins/ToolFilm.py:1462
+#: appPlugins/ToolFilm.py:1445 appPlugins/ToolFilm.py:1460
 msgid "Mirror the film geometry on the selected axis or on both."
 msgstr "Зеркалирование геометрии пленки на выбранной оси или на обеих."
 
@@ -11801,7 +11790,7 @@ msgstr ""
 "Файл сохраняется в формате SVG."
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:191
-#: appPlugins/ToolFilm.py:1491
+#: appPlugins/ToolFilm.py:1488
 #, fuzzy
 #| msgid ""
 #| "Create a convex shape surrounding the entire PCB.\n"
@@ -11814,7 +11803,7 @@ msgstr ""
 "Используется только в том случае, если тип исходного объекта-Gerber."
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:215
-#: appPlugins/ToolFilm.py:1531
+#: appPlugins/ToolFilm.py:1528
 msgid "Generate a Positive black film or a Negative film."
 msgstr ""
 
@@ -11827,12 +11816,12 @@ msgid "Set the film color when positive film is selected."
 msgstr "Устанавливает цвет плёнки при режиме \"Позитив\"."
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:236
-#: appPlugins/ToolFilm.py:1542
+#: appPlugins/ToolFilm.py:1539
 msgid "Border"
 msgstr "Отступ"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:238
-#: appPlugins/ToolFilm.py:1544
+#: appPlugins/ToolFilm.py:1541
 msgid ""
 "Specify a border around the object.\n"
 "Only for negative film.\n"
@@ -11853,12 +11842,12 @@ msgstr ""
 "окружающими, если бы не эта граница."
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:256
-#: appPlugins/ToolFilm.py:1516
+#: appPlugins/ToolFilm.py:1513
 msgid "Scale Stroke"
 msgstr "Масштаб обводки"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:258
-#: appPlugins/ToolFilm.py:1518
+#: appPlugins/ToolFilm.py:1515
 msgid ""
 "Scale the line stroke thickness of each feature in the SVG file.\n"
 "It means that the line that envelope each SVG feature will be thicker or "
@@ -11871,27 +11860,27 @@ msgstr ""
 "поэтому этот параметр может сильно влиять на мелкие объекты."
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:265
-#: appPlugins/ToolFilm.py:1637
+#: appPlugins/ToolFilm.py:1633
 msgid "SVG"
 msgstr "SVG"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:266
-#: appPlugins/ToolFilm.py:1638
+#: appPlugins/ToolFilm.py:1634
 msgid "PNG"
 msgstr "PNG"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:267
-#: appPlugins/ToolFilm.py:1639
+#: appPlugins/ToolFilm.py:1635
 msgid "PDF"
 msgstr "PDF"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:270
-#: appPlugins/ToolFilm.py:1628
+#: appPlugins/ToolFilm.py:1624
 msgid "Film Type"
 msgstr "Тип плёнки"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:272
-#: appPlugins/ToolFilm.py:1630
+#: appPlugins/ToolFilm.py:1626
 msgid ""
 "The file type of the saved film. Can be:\n"
 "- 'SVG' -> open-source vectorial format\n"
@@ -11904,22 +11893,22 @@ msgstr ""
 "- 'PDF' -> формат портативного документа"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:281
-#: appPlugins/ToolFilm.py:1646
+#: appPlugins/ToolFilm.py:1642
 msgid "Page Orientation"
 msgstr "Ориентация страницы"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:294
-#: appPlugins/ToolFilm.py:1663
+#: appPlugins/ToolFilm.py:1658
 msgid "Page Size"
 msgstr "Размер страницы"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:295
-#: appPlugins/ToolFilm.py:1664
+#: appPlugins/ToolFilm.py:1659
 msgid "A selection of standard ISO 216 page sizes."
 msgstr "Выбор стандартных размеров страниц ISO 216."
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:362
-#: appPlugins/ToolFilm.py:1730
+#: appPlugins/ToolFilm.py:1725
 msgid "Default value is 96 DPI. Change this value to scale the PNG file."
 msgstr ""
 "Значение по умолчанию - 96 точек на дюйм. Измените это значение, чтобы "
@@ -12698,7 +12687,7 @@ msgid "New Nozzle Dia"
 msgstr "Новый диаметр сопла"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:56
-#: appPlugins/ToolSolderPaste.py:1293
+#: appPlugins/ToolSolderPaste.py:1286
 msgid "Diameter for the new tool to add in the Tool Table"
 msgstr "Диаметр нового инструмента, добавляемого в таблицу инструментов"
 
@@ -12707,17 +12696,17 @@ msgid "Z Dispense Start"
 msgstr "Z начала нанесения"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:74
-#: appPlugins/ToolSolderPaste.py:1373
+#: appPlugins/ToolSolderPaste.py:1366
 msgid "The height (Z) when solder paste dispensing starts."
 msgstr "Высота (Z), когда начинается выдача паяльной пасты."
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:85
-#: appPlugins/ToolSolderPaste.py:1484
+#: appPlugins/ToolSolderPaste.py:1477
 msgid "Z Dispense"
 msgstr "Z нанесения"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:87
-#: appPlugins/ToolSolderPaste.py:1386
+#: appPlugins/ToolSolderPaste.py:1379
 msgid "The height (Z) when doing solder paste dispensing."
 msgstr "Высота (Z) при выполнении дозирования паяльной пасты."
 
@@ -12726,7 +12715,7 @@ msgid "Z Dispense Stop"
 msgstr "Z конца нанесения"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:100
-#: appPlugins/ToolSolderPaste.py:1399
+#: appPlugins/ToolSolderPaste.py:1392
 msgid "The height (Z) when solder paste dispensing stops."
 msgstr "Высота (Z) при остановке выдачи паяльной пасты."
 
@@ -12735,7 +12724,7 @@ msgid "Z Travel"
 msgstr "Z перемещения"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:113
-#: appPlugins/ToolSolderPaste.py:1347
+#: appPlugins/ToolSolderPaste.py:1340
 msgid ""
 "The height (Z) for travel between pads\n"
 "(without dispensing solder paste)."
@@ -12748,12 +12737,12 @@ msgid "Z Toolchange"
 msgstr "Z смены инструмента"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:127
-#: appPlugins/ToolSolderPaste.py:1434
+#: appPlugins/ToolSolderPaste.py:1427
 msgid "The height (Z) for tool (nozzle) change."
 msgstr "Высота (Z) для изменения инструмента (сопла)."
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:136
-#: appPlugins/ToolSolderPaste.py:1420
+#: appPlugins/ToolSolderPaste.py:1413
 msgid ""
 "The X,Y location for tool (nozzle) change.\n"
 "The format is (x, y) where x and y are real numbers."
@@ -12762,12 +12751,12 @@ msgstr ""
 "Формат (x, y), где x и y-действительные числа."
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:150
-#: appPlugins/ToolSolderPaste.py:1459
+#: appPlugins/ToolSolderPaste.py:1452
 msgid "Feedrate (speed) while moving on the X-Y plane."
 msgstr "Скорость подачи при движении по плоскости X-Y."
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:163
-#: appPlugins/ToolSolderPaste.py:1472
+#: appPlugins/ToolSolderPaste.py:1465
 msgid ""
 "Feedrate (speed) while moving vertically\n"
 "(on Z plane)."
@@ -12780,7 +12769,7 @@ msgid "Feedrate Z Dispense"
 msgstr "Скорость подачи Z Диспенсер"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:177
-#: appPlugins/ToolSolderPaste.py:1486
+#: appPlugins/ToolSolderPaste.py:1479
 msgid ""
 "Feedrate (speed) while moving up vertically\n"
 "to Dispense position (on Z plane)."
@@ -12793,7 +12782,7 @@ msgid "Spindle Speed FWD"
 msgstr "Скорость прямого вращения шпинделя"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:190
-#: appPlugins/ToolSolderPaste.py:1511
+#: appPlugins/ToolSolderPaste.py:1504
 msgid ""
 "The dispenser speed while pushing solder paste\n"
 "through the dispenser nozzle."
@@ -12806,7 +12795,7 @@ msgid "Dwell FWD"
 msgstr "Задержка В НАЧАЛЕ"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:204
-#: appPlugins/ToolSolderPaste.py:1525
+#: appPlugins/ToolSolderPaste.py:1518
 msgid "Pause after solder dispensing."
 msgstr "Пауза после выдачи паяльной пасты."
 
@@ -12815,7 +12804,7 @@ msgid "Spindle Speed REV"
 msgstr "Скорость обратного вращения шпинделя"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:216
-#: appPlugins/ToolSolderPaste.py:1548
+#: appPlugins/ToolSolderPaste.py:1541
 msgid ""
 "The dispenser speed while retracting solder paste\n"
 "through the dispenser nozzle."
@@ -12828,7 +12817,7 @@ msgid "Dwell REV"
 msgstr "Задержка В КОНЦЕ"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:230
-#: appPlugins/ToolSolderPaste.py:1562
+#: appPlugins/ToolSolderPaste.py:1555
 msgid ""
 "Pause after solder paste dispenser retracted,\n"
 "to allow pressure equilibrium."
@@ -12837,7 +12826,7 @@ msgstr ""
 "чтобы обеспечить равномерное выдавливание."
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:239
-#: appPlugins/ToolSolderPaste.py:1579
+#: appPlugins/ToolSolderPaste.py:1572
 msgid "Files that control the GCode generation."
 msgstr "Файлы контролирующие генерацию GCode."
 
@@ -13578,7 +13567,7 @@ msgid "Click on the START point."
 msgstr "Нажмите на начальную точку."
 
 #: appPlugins/ToolAlignObjects.py:276 appPlugins/ToolCalibration.py:311
-#: appPlugins/ToolCorners.py:740 appPlugins/ToolDblSided.py:464
+#: appPlugins/ToolCorners.py:778 appPlugins/ToolDblSided.py:464
 #: appPlugins/ToolFiducials.py:752
 msgid "Cancelled by user request."
 msgstr "Отменено по запросу пользователя."
@@ -13681,34 +13670,34 @@ msgstr ""
 
 #: appPlugins/ToolAlignObjects.py:555 appPlugins/ToolCalculators.py:1050
 #: appPlugins/ToolCalibration.py:1403 appPlugins/ToolCopperThieving.py:1789
-#: appPlugins/ToolCorners.py:1095 appPlugins/ToolCutOut.py:2753
+#: appPlugins/ToolCorners.py:1133 appPlugins/ToolCutOut.py:2753
 #: appPlugins/ToolDblSided.py:1127 appPlugins/ToolDrilling.py:2903
 #: appPlugins/ToolEtchCompensation.py:513 appPlugins/ToolExtract.py:1400
-#: appPlugins/ToolFiducials.py:1119 appPlugins/ToolFilm.py:1763
+#: appPlugins/ToolFiducials.py:1119 appPlugins/ToolFilm.py:1758
 #: appPlugins/ToolFollow.py:781 appPlugins/ToolInvertGerber.py:320
 #: appPlugins/ToolIsolation.py:3696 appPlugins/ToolLevelling.py:2349
 #: appPlugins/ToolMilling.py:4645 appPlugins/ToolNCC.py:4627
 #: appPlugins/ToolOptimal.py:716 appPlugins/ToolPaint.py:3363
 #: appPlugins/ToolPanelize.py:1396 appPlugins/ToolPunchGerber.py:2350
-#: appPlugins/ToolQRCode.py:1038 appPlugins/ToolRulesCheck.py:1672
-#: appPlugins/ToolSolderPaste.py:1699 appPlugins/ToolSub.py:970
+#: appPlugins/ToolQRCode.py:1038 appPlugins/ToolRulesCheck.py:1794
+#: appPlugins/ToolSolderPaste.py:1692 appPlugins/ToolSub.py:970
 #: appPlugins/ToolTransform.py:1027
 msgid "Reset Tool"
 msgstr "Сбросить настройки инструмента"
 
 #: appPlugins/ToolAlignObjects.py:558 appPlugins/ToolCalculators.py:1053
 #: appPlugins/ToolCalibration.py:1406 appPlugins/ToolCopperThieving.py:1792
-#: appPlugins/ToolCorners.py:1098 appPlugins/ToolCutOut.py:2756
+#: appPlugins/ToolCorners.py:1136 appPlugins/ToolCutOut.py:2756
 #: appPlugins/ToolDblSided.py:1130 appPlugins/ToolDrilling.py:2906
 #: appPlugins/ToolEtchCompensation.py:516 appPlugins/ToolExtract.py:1403
-#: appPlugins/ToolFiducials.py:1122 appPlugins/ToolFilm.py:1766
+#: appPlugins/ToolFiducials.py:1122 appPlugins/ToolFilm.py:1761
 #: appPlugins/ToolFollow.py:784 appPlugins/ToolInvertGerber.py:323
 #: appPlugins/ToolIsolation.py:3699 appPlugins/ToolLevelling.py:2352
 #: appPlugins/ToolMilling.py:4648 appPlugins/ToolNCC.py:4630
 #: appPlugins/ToolOptimal.py:719 appPlugins/ToolPaint.py:3366
 #: appPlugins/ToolPanelize.py:1399 appPlugins/ToolPunchGerber.py:2353
-#: appPlugins/ToolQRCode.py:1041 appPlugins/ToolRulesCheck.py:1675
-#: appPlugins/ToolSolderPaste.py:1702 appPlugins/ToolSub.py:973
+#: appPlugins/ToolQRCode.py:1041 appPlugins/ToolRulesCheck.py:1797
+#: appPlugins/ToolSolderPaste.py:1695 appPlugins/ToolSub.py:973
 #: appPlugins/ToolTransform.py:1030
 msgid "Will reset the tool parameters."
 msgstr "Сброс параметров инструмента."
@@ -14319,9 +14308,9 @@ msgid "Squares grid fill selected."
 msgstr "Выбрано заполнение сеткой квадратов."
 
 #: appPlugins/ToolCopperThieving.py:274 appPlugins/ToolCopperThieving.py:372
-#: appPlugins/ToolCopperThieving.py:986 appPlugins/ToolCorners.py:264
-#: appPlugins/ToolCorners.py:299 appPlugins/ToolCorners.py:528
-#: appPlugins/ToolCorners.py:623 appPlugins/ToolFiducials.py:292
+#: appPlugins/ToolCopperThieving.py:986 appPlugins/ToolCorners.py:266
+#: appPlugins/ToolCorners.py:301 appPlugins/ToolCorners.py:538
+#: appPlugins/ToolCorners.py:648 appPlugins/ToolFiducials.py:292
 #: appPlugins/ToolFiducials.py:594 appPlugins/ToolOptimal.py:223
 #: appPlugins/ToolQRCode.py:244
 msgid "There is no Gerber object loaded ..."
@@ -14421,7 +14410,7 @@ msgid "Copper Thieving Tool exit."
 msgstr "Выход из Copper Thieving."
 
 #: appPlugins/ToolCopperThieving.py:1294 appPlugins/ToolCopperThieving.py:1683
-#: appPlugins/ToolCorners.py:857 appPlugins/ToolCutOut.py:2224
+#: appPlugins/ToolCorners.py:895 appPlugins/ToolCutOut.py:2224
 #: appPlugins/ToolDblSided.py:707 appPlugins/ToolDrilling.py:2297
 #: appPlugins/ToolEtchCompensation.py:330 appPlugins/ToolExtract.py:969
 #: appPlugins/ToolFiducials.py:853 appPlugins/ToolFilm.py:1242
@@ -14537,7 +14526,7 @@ msgstr ""
 msgid "Corners"
 msgstr "Углы"
 
-#: appPlugins/ToolCorners.py:244 appPlugins/ToolCorners.py:801
+#: appPlugins/ToolCorners.py:244 appPlugins/ToolCorners.py:839
 #, fuzzy
 #| msgid "Click to add next polygon or right click to start."
 msgid "Click to add next marker or right click to finish."
@@ -14545,86 +14534,87 @@ msgstr ""
 "Щелкните, чтобы добавить следующий многоугольник, или щелкните правой "
 "кнопкой мыши, чтобы начать."
 
-#: appPlugins/ToolCorners.py:327 appPlugins/ToolCorners.py:533
-#: appPlugins/ToolCorners.py:628
+#: appPlugins/ToolCorners.py:331 appPlugins/ToolCorners.py:544
+#: appPlugins/ToolCorners.py:589 appPlugins/ToolCorners.py:654
+#: appPlugins/ToolCorners.py:699
 msgid "Please select at least a location"
 msgstr "Пожалуйста, выберите хотя бы место"
 
-#: appPlugins/ToolCorners.py:510 appPlugins/ToolCorners.py:605
+#: appPlugins/ToolCorners.py:520 appPlugins/ToolCorners.py:629
 msgid "The tool diameter is zero."
 msgstr "Диаметр инструмента равен нулю."
 
-#: appPlugins/ToolCorners.py:597 appPlugins/ToolCorners.py:700
+#: appPlugins/ToolCorners.py:621 appPlugins/ToolCorners.py:738
 msgid "Excellon object with corner drills created."
 msgstr "Был создан объект Excellon с угловыми сверлами."
 
-#: appPlugins/ToolCorners.py:744
+#: appPlugins/ToolCorners.py:782
 msgid "A Gerber object with corner markers was created."
 msgstr "Был создан объект Gerber с угловыми маркерами."
 
-#: appPlugins/ToolCorners.py:800
+#: appPlugins/ToolCorners.py:838
 #, fuzzy
 #| msgid "Add Marker"
 msgid "Added marker"
 msgstr "Добавить маркер"
 
-#: appPlugins/ToolCorners.py:858
+#: appPlugins/ToolCorners.py:896
 msgid "The Gerber object to which will be added corner markers."
 msgstr "Объект Gerber, к которому будут добавлены угловые маркеры."
 
-#: appPlugins/ToolCorners.py:944
+#: appPlugins/ToolCorners.py:982
 msgid "Locations"
 msgstr "Местоположение"
 
-#: appPlugins/ToolCorners.py:945
+#: appPlugins/ToolCorners.py:983
 msgid "Locations where to place corner markers."
 msgstr "Места расположения угловых маркеров."
 
-#: appPlugins/ToolCorners.py:960 appPlugins/ToolFiducials.py:910
+#: appPlugins/ToolCorners.py:998 appPlugins/ToolFiducials.py:910
 #: app_Main.py:5694
 msgid "Top Right"
 msgstr "Верхний правый"
 
-#: appPlugins/ToolCorners.py:977
+#: appPlugins/ToolCorners.py:1015
 msgid "Toggle ALL"
 msgstr "Переключить всё"
 
-#: appPlugins/ToolCorners.py:997
+#: appPlugins/ToolCorners.py:1035
 msgid ""
 "When the manual type is chosen, the markers\n"
 "are manually placed on canvas."
 msgstr ""
 
-#: appPlugins/ToolCorners.py:1012
+#: appPlugins/ToolCorners.py:1050
 msgid "Add Marker"
 msgstr "Добавить маркер"
 
-#: appPlugins/ToolCorners.py:1015
+#: appPlugins/ToolCorners.py:1053
 msgid "Will add corner markers to the selected Gerber file."
 msgstr "Добавит угловые маркеры к выбранному файлу Gerber."
 
-#: appPlugins/ToolCorners.py:1029
+#: appPlugins/ToolCorners.py:1067
 #, fuzzy
 #| msgid "Drills in Corners"
 msgid "Drills in Locations"
 msgstr "Сверла по углам"
 
-#: appPlugins/ToolCorners.py:1055 appPlugins/ToolCorners.py:1076
+#: appPlugins/ToolCorners.py:1093 appPlugins/ToolCorners.py:1114
 #: appPlugins/ToolDblSided.py:1109
 msgid "Create Excellon Object"
 msgstr "Создать объект Excellon"
 
-#: appPlugins/ToolCorners.py:1058
+#: appPlugins/ToolCorners.py:1096
 msgid "Will add drill holes in the center of the markers."
 msgstr "Добавим просверленные отверстия в центре маркеров."
 
-#: appPlugins/ToolCorners.py:1072
+#: appPlugins/ToolCorners.py:1110
 #, fuzzy
 #| msgid "Locations"
 msgid "Check in Locations"
 msgstr "Местоположение"
 
-#: appPlugins/ToolCorners.py:1079
+#: appPlugins/ToolCorners.py:1117
 msgid ""
 "Will create an Excellon object using a special preprocessor.\n"
 "The spindle will not start and the mounted probe will move to\n"
@@ -15933,7 +15923,7 @@ msgstr ""
 msgid "Film file exported to"
 msgstr "Файл плёнки экспортируется в"
 
-#: appPlugins/ToolFilm.py:1261
+#: appPlugins/ToolFilm.py:1260
 msgid ""
 "Specify the type of object for which to create the film.\n"
 "The object can be of type: Gerber or Geometry.\n"
@@ -15945,7 +15935,7 @@ msgstr ""
 "Выбор здесь определяет тип объектов, которые будут\n"
 "в выпадающем списке объектов плёнки."
 
-#: appPlugins/ToolFilm.py:1284
+#: appPlugins/ToolFilm.py:1283
 msgid ""
 "Specify the type of object to be used as an container for\n"
 "film creation. It can be: Gerber or Geometry type.The selection here decide "
@@ -15957,11 +15947,11 @@ msgstr ""
 "тип объектов, которые будут\n"
 "в поле со списком объектов."
 
-#: appPlugins/ToolFilm.py:1560
+#: appPlugins/ToolFilm.py:1557
 msgid "Punch drill holes"
 msgstr "Перфорация отверстий"
 
-#: appPlugins/ToolFilm.py:1561
+#: appPlugins/ToolFilm.py:1558
 msgid ""
 "When checked the generated film will have holes in pads when\n"
 "the generated film is positive. This is done to help drilling,\n"
@@ -15971,11 +15961,11 @@ msgstr ""
 "если это позитив плёнки. Это сделано для облегчения сверления\n"
 "отверстий вручную."
 
-#: appPlugins/ToolFilm.py:1577
+#: appPlugins/ToolFilm.py:1574
 msgid "Source"
 msgstr "Источник"
 
-#: appPlugins/ToolFilm.py:1579
+#: appPlugins/ToolFilm.py:1576
 msgid ""
 "The punch hole source can be:\n"
 "- Excellon -> an Excellon holes center will serve as reference.\n"
@@ -15986,31 +15976,31 @@ msgstr ""
 "- Центр площадки -> попытается использовать центр площадки в качестве "
 "эталона."
 
-#: appPlugins/ToolFilm.py:1584
+#: appPlugins/ToolFilm.py:1581
 msgid "Pad center"
 msgstr "Центр площадки"
 
-#: appPlugins/ToolFilm.py:1591
+#: appPlugins/ToolFilm.py:1588
 msgid ""
 "Remove the geometry of Excellon from the Film to create the holes in pads."
 msgstr ""
 "Удаляет геометрию Excellon из пленки для создания отверстий в площадках."
 
-#: appPlugins/ToolFilm.py:1602
+#: appPlugins/ToolFilm.py:1599
 msgid "Punch Size"
 msgstr "Размер перфорации"
 
-#: appPlugins/ToolFilm.py:1603
+#: appPlugins/ToolFilm.py:1600
 msgid "The value here will control how big is the punch hole in the pads."
 msgstr ""
 "Это значение контролирует, насколько большим будет отверстие для перфорации "
 "в площадках."
 
-#: appPlugins/ToolFilm.py:1744
+#: appPlugins/ToolFilm.py:1739
 msgid "Save Film"
 msgstr "Сохранить плёнку"
 
-#: appPlugins/ToolFilm.py:1747
+#: appPlugins/ToolFilm.py:1742
 msgid ""
 "Create a Film for the selected object, within\n"
 "the specified box. Does not create a new \n"
@@ -16021,7 +16011,7 @@ msgstr ""
 "указанной ограничительной рамки. Не создает новый\n"
 "  объект FlatCAM, но напрямую сохраняет её в выбранном формате."
 
-#: appPlugins/ToolFilm.py:1827
+#: appPlugins/ToolFilm.py:1822
 msgid ""
 "Using the Pad center does not work on Geometry objects. Only a Gerber object "
 "has pads."
@@ -16422,7 +16412,7 @@ msgstr ""
 
 #: appPlugins/ToolIsolation.py:3318 appPlugins/ToolMilling.py:3866
 #: appPlugins/ToolNCC.py:4273 appPlugins/ToolPaint.py:3125
-#: appPlugins/ToolSolderPaste.py:1310
+#: appPlugins/ToolSolderPaste.py:1303
 msgid ""
 "Delete a selection of tools in the Tool Table\n"
 "by first selecting a row in the Tool Table."
@@ -17290,6 +17280,10 @@ msgstr "Оптимизация. Нахождение минимального р
 msgid "Optimal Tool. Finished successfully."
 msgstr "Optimal Tool. Успешно завершено."
 
+#: appPlugins/ToolOptimal.py:511
+msgid "GERBER"
+msgstr "GERBER"
+
 #: appPlugins/ToolOptimal.py:537
 msgid "Number of decimals kept for found distances."
 msgstr "Количество десятичных знаков, сохраненных для найденных расстояний."
@@ -17696,7 +17690,7 @@ msgstr "Ограничить панель внутри"
 msgid "Panelize Object"
 msgstr "Панелизация"
 
-#: appPlugins/ToolPanelize.py:1381 appPlugins/ToolRulesCheck.py:1657
+#: appPlugins/ToolPanelize.py:1381 appPlugins/ToolRulesCheck.py:1775
 msgid ""
 "Panelize the specified object around the specified box.\n"
 "In other words it creates multiple copies of the source object,\n"
@@ -18035,27 +18029,27 @@ msgstr "Мультипроход"
 msgid "Metric"
 msgstr "Метрический"
 
-#: appPlugins/ToolRulesCheck.py:119 appPlugins/ToolRulesCheck.py:1177
+#: appPlugins/ToolRulesCheck.py:119 appPlugins/ToolRulesCheck.py:1176
 msgid "Check Rules"
 msgstr "Проверка правил"
 
-#: appPlugins/ToolRulesCheck.py:692 appPlugins/ToolRulesCheck.py:752
-#: appPlugins/ToolRulesCheck.py:789 appPlugins/ToolRulesCheck.py:861
-#: appPlugins/ToolRulesCheck.py:915 appPlugins/ToolRulesCheck.py:953
-#: appPlugins/ToolRulesCheck.py:1018
+#: appPlugins/ToolRulesCheck.py:691 appPlugins/ToolRulesCheck.py:751
+#: appPlugins/ToolRulesCheck.py:788 appPlugins/ToolRulesCheck.py:860
+#: appPlugins/ToolRulesCheck.py:914 appPlugins/ToolRulesCheck.py:952
+#: appPlugins/ToolRulesCheck.py:1017
 msgid "Value is not valid."
 msgstr "Значение недействительно."
 
-#: appPlugins/ToolRulesCheck.py:706
+#: appPlugins/ToolRulesCheck.py:705
 msgid "TOP -> Copper to Copper clearance"
 msgstr "ВЕРХ -> Зазор между медными дорожками"
 
-#: appPlugins/ToolRulesCheck.py:717
+#: appPlugins/ToolRulesCheck.py:716
 msgid "BOTTOM -> Copper to Copper clearance"
 msgstr "НИЗ -> Зазор между медными дорожками"
 
-#: appPlugins/ToolRulesCheck.py:722 appPlugins/ToolRulesCheck.py:816
-#: appPlugins/ToolRulesCheck.py:980
+#: appPlugins/ToolRulesCheck.py:721 appPlugins/ToolRulesCheck.py:815
+#: appPlugins/ToolRulesCheck.py:979
 msgid ""
 "At least one Gerber object has to be selected for this rule but none is "
 "selected."
@@ -18063,12 +18057,12 @@ msgstr ""
 "Для этого правила должен быть выбран хотя бы один объект Gerber, но ни один "
 "не выбран."
 
-#: appPlugins/ToolRulesCheck.py:758
+#: appPlugins/ToolRulesCheck.py:757
 msgid ""
 "One of the copper Gerber objects or the Outline Gerber object is not valid."
 msgstr "Один из Gerber объектов меди или Gerber объект контура недопустим."
 
-#: appPlugins/ToolRulesCheck.py:771 appPlugins/ToolRulesCheck.py:935
+#: appPlugins/ToolRulesCheck.py:770 appPlugins/ToolRulesCheck.py:934
 msgid ""
 "Outline Gerber object presence is mandatory for this rule but it is not "
 "selected."
@@ -18076,31 +18070,31 @@ msgstr ""
 "Присутствие Gerber объекта контура является обязательным для этого правила, "
 "но он не выбран."
 
-#: appPlugins/ToolRulesCheck.py:788 appPlugins/ToolRulesCheck.py:815
+#: appPlugins/ToolRulesCheck.py:787 appPlugins/ToolRulesCheck.py:814
 msgid "Silk to Silk clearance"
 msgstr "Зазор между элементами шелкографии"
 
-#: appPlugins/ToolRulesCheck.py:801
+#: appPlugins/ToolRulesCheck.py:800
 msgid "TOP -> Silk to Silk clearance"
 msgstr "ВЕРХ -> Зазор между элементами шелкографии"
 
-#: appPlugins/ToolRulesCheck.py:811
+#: appPlugins/ToolRulesCheck.py:810
 msgid "BOTTOM -> Silk to Silk clearance"
 msgstr "НИЗ -> Зазор между элементами шелкографии"
 
-#: appPlugins/ToolRulesCheck.py:867
+#: appPlugins/ToolRulesCheck.py:866
 msgid "One or more of the Gerber objects is not valid."
 msgstr "Один или несколько объектов Gerber недопустимы."
 
-#: appPlugins/ToolRulesCheck.py:875
+#: appPlugins/ToolRulesCheck.py:874
 msgid "TOP -> Silk to Solder Mask Clearance"
 msgstr "ВЕРХ -> Зазор между шелкографией и паяльной маской"
 
-#: appPlugins/ToolRulesCheck.py:881
+#: appPlugins/ToolRulesCheck.py:880
 msgid "BOTTOM -> Silk to Solder Mask Clearance"
 msgstr "НИЗ -> Зазор между шелкографией и паяльной маской"
 
-#: appPlugins/ToolRulesCheck.py:885
+#: appPlugins/ToolRulesCheck.py:884
 msgid ""
 "Both Silk and Solder Mask Gerber objects has to be either both Top or both "
 "Bottom."
@@ -18108,115 +18102,132 @@ msgstr ""
 "Gerber объекты шелкографии или паяльной маски должны быть либо сверху, либо "
 "снизу."
 
-#: appPlugins/ToolRulesCheck.py:921
+#: appPlugins/ToolRulesCheck.py:920
 msgid ""
 "One of the Silk Gerber objects or the Outline Gerber object is not valid."
 msgstr ""
 "Один из Gerber объектов шелкографии или Gerber объект контура недопустим."
 
-#: appPlugins/ToolRulesCheck.py:965
+#: appPlugins/ToolRulesCheck.py:964
 msgid "TOP -> Minimum Solder Mask Sliver"
 msgstr "ВЕРХ -> Минимальная ширина паяльной маски"
 
-#: appPlugins/ToolRulesCheck.py:975
+#: appPlugins/ToolRulesCheck.py:974
 msgid "BOTTOM -> Minimum Solder Mask Sliver"
 msgstr "НИЗ-> Минимальная ширина паяльной маски"
 
-#: appPlugins/ToolRulesCheck.py:1024
+#: appPlugins/ToolRulesCheck.py:1023
 msgid "One of the Copper Gerber objects or the Excellon objects is not valid."
 msgstr "Один из объектов Copper Gerber или Excellon недопустим."
 
-#: appPlugins/ToolRulesCheck.py:1040
+#: appPlugins/ToolRulesCheck.py:1039
 msgid ""
 "Excellon object presence is mandatory for this rule but none is selected."
 msgstr ""
 "Наличие объекта Excellon обязательно для этого правила, но ни один объект не "
 "выбран."
 
-#: appPlugins/ToolRulesCheck.py:1118 appPlugins/ToolRulesCheck.py:1131
-#: appPlugins/ToolRulesCheck.py:1142 appPlugins/ToolRulesCheck.py:1155
+#: appPlugins/ToolRulesCheck.py:1117 appPlugins/ToolRulesCheck.py:1130
+#: appPlugins/ToolRulesCheck.py:1141 appPlugins/ToolRulesCheck.py:1154
 msgid "STATUS"
 msgstr "СТАТУС"
 
-#: appPlugins/ToolRulesCheck.py:1121 appPlugins/ToolRulesCheck.py:1145
+#: appPlugins/ToolRulesCheck.py:1120 appPlugins/ToolRulesCheck.py:1144
 msgid "FAILED"
 msgstr "НЕУДАЧНО"
 
-#: appPlugins/ToolRulesCheck.py:1134 appPlugins/ToolRulesCheck.py:1158
+#: appPlugins/ToolRulesCheck.py:1133 appPlugins/ToolRulesCheck.py:1157
 msgid "PASSED"
 msgstr "УСПЕШНО ПРОЙДЕНО"
 
-#: appPlugins/ToolRulesCheck.py:1135 appPlugins/ToolRulesCheck.py:1159
+#: appPlugins/ToolRulesCheck.py:1134 appPlugins/ToolRulesCheck.py:1158
 msgid "Violations: There are no violations for the current rule."
 msgstr "Нарушения: нарушений по текущему правилу нет."
 
-#: appPlugins/ToolRulesCheck.py:1201
-msgid "Gerber objects for which to check rules."
-msgstr "Объекты Gerber для проверки правил."
+#: appPlugins/ToolRulesCheck.py:1223 appPlugins/ToolRulesCheck.py:1269
+#: appPlugins/ToolRulesCheck.py:1335 appPlugins/ToolRulesCheck.py:1477
+#, fuzzy
+#| msgid "Copper Area"
+msgid "Copper"
+msgstr "Медный участок"
 
-#: appPlugins/ToolRulesCheck.py:1216
+#: appPlugins/ToolRulesCheck.py:1223 appPlugins/ToolRulesCheck.py:1230
+#: appPlugins/ToolRulesCheck.py:1237 appPlugins/ToolRulesCheck.py:1244
+#: appPlugins/ToolRulesCheck.py:1477 appPlugins/ToolRulesCheck.py:1587
+#: appPlugins/ToolRulesCheck.py:1674 appPlugins/ToolRulesCheck.py:1712
+#, fuzzy
+#| msgid "All Rules"
+msgid "Rules"
+msgstr "Все правила"
+
+#: appPlugins/ToolRulesCheck.py:1230 appPlugins/ToolRulesCheck.py:1305
+#: appPlugins/ToolRulesCheck.py:1371 appPlugins/ToolRulesCheck.py:1587
+#, fuzzy
+#| msgid "Silk Top"
+msgid "Silk"
+msgstr "Шелкография Верх"
+
+#: appPlugins/ToolRulesCheck.py:1237 appPlugins/ToolRulesCheck.py:1674
+#, fuzzy
+#| msgid "Soldermask Gerber"
+msgid "Soldermask"
+msgstr "Gerber объект паяльной маски"
+
+#: appPlugins/ToolRulesCheck.py:1244 appPlugins/ToolRulesCheck.py:1712
+#, fuzzy
+#| msgid "Mill Holes"
+msgid "Holes"
+msgstr "Фрезеровка отверстий"
+
+#: appPlugins/ToolRulesCheck.py:1253
 msgid "Top"
 msgstr "Верх"
 
-#: appPlugins/ToolRulesCheck.py:1218
+#: appPlugins/ToolRulesCheck.py:1271
 msgid "The Top Gerber Copper object for which rules are checked."
 msgstr "Объект Top Gerber Copper, для которого проверяются правила."
 
-#: appPlugins/ToolRulesCheck.py:1234
-msgid "Bottom"
-msgstr "Низ"
+#: appPlugins/ToolRulesCheck.py:1287 appPlugins/ToolRulesCheck.py:1353
+#, fuzzy
+#| msgid "S"
+msgid "SM"
+msgstr "S"
 
-#: appPlugins/ToolRulesCheck.py:1236
-msgid "The Bottom Gerber Copper object for which rules are checked."
-msgstr "Нижний Gerber объект меди, для которого проверяются правила."
-
-#: appPlugins/ToolRulesCheck.py:1252
-msgid "SM Top"
-msgstr "ПМ Верх"
-
-#: appPlugins/ToolRulesCheck.py:1254
+#: appPlugins/ToolRulesCheck.py:1289
 msgid "The Top Gerber Solder Mask object for which rules are checked."
 msgstr ""
 "Верхний Gerber объект паяльной маски, для которого проверяются правила."
 
-#: appPlugins/ToolRulesCheck.py:1270
-msgid "SM Bottom"
-msgstr "ПМ Низ"
-
-#: appPlugins/ToolRulesCheck.py:1272
-msgid "The Bottom Gerber Solder Mask object for which rules are checked."
-msgstr "Нижний Gerber объект паяльной маски, для которого проверяются правила."
-
-#: appPlugins/ToolRulesCheck.py:1288
-msgid "Silk Top"
-msgstr "Шелкография Верх"
-
-#: appPlugins/ToolRulesCheck.py:1290
+#: appPlugins/ToolRulesCheck.py:1307
 msgid "The Top Gerber Silkscreen object for which rules are checked."
 msgstr "Верхний Gerber объект шелкографии, для которого проверяются правила."
 
-#: appPlugins/ToolRulesCheck.py:1306
-msgid "Silk Bottom"
-msgstr "Шелкография низ"
+#: appPlugins/ToolRulesCheck.py:1319
+msgid "Bottom"
+msgstr "Низ"
 
-#: appPlugins/ToolRulesCheck.py:1308
+#: appPlugins/ToolRulesCheck.py:1337
+msgid "The Bottom Gerber Copper object for which rules are checked."
+msgstr "Нижний Gerber объект меди, для которого проверяются правила."
+
+#: appPlugins/ToolRulesCheck.py:1355
+msgid "The Bottom Gerber Solder Mask object for which rules are checked."
+msgstr "Нижний Gerber объект паяльной маски, для которого проверяются правила."
+
+#: appPlugins/ToolRulesCheck.py:1373
 msgid "The Bottom Gerber Silkscreen object for which rules are checked."
 msgstr "Нижний Gerber объект шелкографии, для которого проверяются правила."
 
-#: appPlugins/ToolRulesCheck.py:1326
+#: appPlugins/ToolRulesCheck.py:1402
 msgid "The Gerber Outline (Cutout) object for which rules are checked."
 msgstr ""
 "Gerber объект контур (обрезка платы), для которого проверяются правила."
 
-#: appPlugins/ToolRulesCheck.py:1339
+#: appPlugins/ToolRulesCheck.py:1416
 msgid "Excellon objects for which to check rules."
 msgstr "Объекты Excellon для проверки правил."
 
-#: appPlugins/ToolRulesCheck.py:1351
-msgid "Excellon 1"
-msgstr "Excellon 1"
-
-#: appPlugins/ToolRulesCheck.py:1353
+#: appPlugins/ToolRulesCheck.py:1435
 msgid ""
 "Excellon object for which to check rules.\n"
 "Holds the plated holes or a general Excellon file content."
@@ -18224,11 +18235,7 @@ msgstr ""
 "Объект Excellon, для которого проверяются правила.\n"
 "Содержит отверстия с металлизацией или общее содержимое файла Excellon."
 
-#: appPlugins/ToolRulesCheck.py:1370
-msgid "Excellon 2"
-msgstr "Excellon 2"
-
-#: appPlugins/ToolRulesCheck.py:1372
+#: appPlugins/ToolRulesCheck.py:1454
 msgid ""
 "Excellon object for which to check rules.\n"
 "Holds the non-plated holes."
@@ -18236,15 +18243,7 @@ msgstr ""
 "Объект Excellon, для которого проверяются правила.\n"
 "Содержит отверстия без металлизации."
 
-#: appPlugins/ToolRulesCheck.py:1385
-msgid "All Rules"
-msgstr "Все правила"
-
-#: appPlugins/ToolRulesCheck.py:1387
-msgid "This check/uncheck all the rules below."
-msgstr "Выделение/снятие выделения всех правил ниже."
-
-#: appPlugins/ToolRulesCheck.py:1654
+#: appPlugins/ToolRulesCheck.py:1772
 msgid "Run Rules Check"
 msgstr "Запустить проверку"
 
@@ -18348,7 +18347,7 @@ msgstr ""
 msgid "Gerber Solderpaste object."
 msgstr "Объект паяльной маски."
 
-#: appPlugins/ToolSolderPaste.py:1260
+#: appPlugins/ToolSolderPaste.py:1253
 msgid ""
 "Tools pool from which the algorithm\n"
 "will pick the ones used for dispensing solder paste."
@@ -18356,7 +18355,7 @@ msgstr ""
 "Пул инструментов, из которого алгоритм\n"
 "выберет те, которые будут использоваться для дозирования паяльной пасты."
 
-#: appPlugins/ToolSolderPaste.py:1281
+#: appPlugins/ToolSolderPaste.py:1274
 msgid ""
 "This is the Tool Number.\n"
 "The solder dispensing will start with the tool with the biggest \n"
@@ -18371,7 +18370,7 @@ msgstr ""
 "Если больше нет инструментов, но есть еще не покрытые прокладки\n"
 "  с паяльной пастой приложение выдаст окно с предупреждением."
 
-#: appPlugins/ToolSolderPaste.py:1288
+#: appPlugins/ToolSolderPaste.py:1281
 msgid ""
 "Tool Diameter. Its value\n"
 "is the width of the solder paste dispensed."
@@ -18379,7 +18378,7 @@ msgstr ""
 "Диаметр инструмента. Его ценность\n"
 "ширина нанесенной паяльной пасты."
 
-#: appPlugins/ToolSolderPaste.py:1303
+#: appPlugins/ToolSolderPaste.py:1296
 msgid ""
 "Add a new nozzle tool to the Tool Table\n"
 "with the diameter specified above."
@@ -18387,35 +18386,35 @@ msgstr ""
 "Добавить новый инструмент сопла в таблицу инструментов\n"
 "с диаметром, указанным выше."
 
-#: appPlugins/ToolSolderPaste.py:1356
+#: appPlugins/ToolSolderPaste.py:1349
 #, fuzzy
 #| msgid "Z Dispense"
 msgid "Dispense"
 msgstr "Z нанесения"
 
-#: appPlugins/ToolSolderPaste.py:1371
+#: appPlugins/ToolSolderPaste.py:1364
 #, fuzzy
 #| msgid "Start Z"
 msgid "Z Start"
 msgstr "Z начала"
 
-#: appPlugins/ToolSolderPaste.py:1384
+#: appPlugins/ToolSolderPaste.py:1377
 #, fuzzy
 #| msgid "Location"
 msgid "Z Action"
 msgstr "Местоположение"
 
-#: appPlugins/ToolSolderPaste.py:1397
+#: appPlugins/ToolSolderPaste.py:1390
 #, fuzzy
 #| msgid "Stop"
 msgid "Z Stop"
 msgstr "Конечные"
 
-#: appPlugins/ToolSolderPaste.py:1603
+#: appPlugins/ToolSolderPaste.py:1596
 msgid "Generate solder paste dispensing geometry."
 msgstr "Создание геометрии дозирования паяльной пасты."
 
-#: appPlugins/ToolSolderPaste.py:1621
+#: appPlugins/ToolSolderPaste.py:1614
 msgid ""
 "Geometry Solder Paste object.\n"
 "The name of the object has to end in:\n"
@@ -18425,17 +18424,17 @@ msgstr ""
 "Название объекта должно заканчиваться на:\n"
 "«_solderpaste» в качестве защиты."
 
-#: appPlugins/ToolSolderPaste.py:1630
+#: appPlugins/ToolSolderPaste.py:1623
 #, fuzzy
 #| msgid "Create CNCJob"
 msgid "CNCJob"
 msgstr "Создать CNCJob"
 
-#: appPlugins/ToolSolderPaste.py:1640
+#: appPlugins/ToolSolderPaste.py:1633
 msgid "Generate CNCJob"
 msgstr "Создать CNCJob"
 
-#: appPlugins/ToolSolderPaste.py:1643
+#: appPlugins/ToolSolderPaste.py:1636
 msgid ""
 "Generate GCode for Solder Paste dispensing\n"
 "on PCB pads."
@@ -18443,7 +18442,7 @@ msgstr ""
 "Создаёт GCode для дозирования паяльной пасты\n"
 "на печатной плате."
 
-#: appPlugins/ToolSolderPaste.py:1662
+#: appPlugins/ToolSolderPaste.py:1655
 msgid ""
 "CNCJob Solder paste object.\n"
 "In order to enable the GCode save section,\n"
@@ -18455,11 +18454,11 @@ msgstr ""
 "имя объекта должно заканчиваться на:\n"
 "«_solderpaste» в качестве защиты."
 
-#: appPlugins/ToolSolderPaste.py:1671
+#: appPlugins/ToolSolderPaste.py:1664
 msgid "Save GCode"
 msgstr "Сохранить GCode"
 
-#: appPlugins/ToolSolderPaste.py:1674
+#: appPlugins/ToolSolderPaste.py:1667
 msgid ""
 "Save the generated GCode for Solder Paste dispensing\n"
 "on PCB pads, to a file."
@@ -18565,6 +18564,10 @@ msgstr ""
 "Gerber от целевого Gerber.\n"
 "Может использоваться для удаления перекрывающей шелкографии\n"
 "над паяльной маской."
+
+#: appPlugins/ToolSub.py:908
+msgid "GEOMETRY"
+msgstr "GEOMETRY"
 
 #: appPlugins/ToolSub.py:914
 msgid ""
@@ -20130,6 +20133,30 @@ msgstr ""
 msgid "No Geometry name in args. Provide a name and try again."
 msgstr "Нет имени геометрии в аргументах. Укажите имя и попробуйте снова."
 
+#~ msgid "EXCELLON"
+#~ msgstr "EXCELLON"
+
+#~ msgid "Gerber objects for which to check rules."
+#~ msgstr "Объекты Gerber для проверки правил."
+
+#~ msgid "SM Top"
+#~ msgstr "ПМ Верх"
+
+#~ msgid "SM Bottom"
+#~ msgstr "ПМ Низ"
+
+#~ msgid "Silk Bottom"
+#~ msgstr "Шелкография низ"
+
+#~ msgid "Excellon 1"
+#~ msgstr "Excellon 1"
+
+#~ msgid "Excellon 2"
+#~ msgstr "Excellon 2"
+
+#~ msgid "This check/uncheck all the rules below."
+#~ msgstr "Выделение/снятие выделения всех правил ниже."
+
 #~ msgid ""
 #~ "The number of circle steps for <b>GCode</b> \n"
 #~ "circle and arc shapes linear approximation."
@@ -20358,9 +20385,6 @@ msgstr "Нет имени геометрии в аргументах. Укажи
 
 #~ msgid "Fiducials Coordinates"
 #~ msgstr "Координаты контрольных точек"
-
-#~ msgid "Soldermask Gerber"
-#~ msgstr "Gerber объект паяльной маски"
 
 #~ msgid "The Soldermask Gerber object."
 #~ msgstr "Gerber объект паяльной маски."

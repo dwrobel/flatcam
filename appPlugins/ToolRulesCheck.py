@@ -9,7 +9,7 @@ from PyQt6 import QtWidgets, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, OptionalInputSection, FCComboBox, FCLabel, FCButton, \
-    VerticalScrollArea, FCGridLayout
+    VerticalScrollArea, FCGridLayout, FCFrame
 from copy import deepcopy
 
 from appPool import *
@@ -136,8 +136,7 @@ class RulesCheck(AppTool):
         self.ui.e1_cb.stateChanged.connect(lambda st: self.ui.e1_object.setDisabled(not st))
         self.ui.e2_cb.stateChanged.connect(lambda st: self.ui.e2_object.setDisabled(not st))
 
-        self.ui.all_obj_cb.stateChanged.connect(self.ui.on_all_objects_cb_changed)
-        self.ui.all_cb.stateChanged.connect(self.ui.on_all_cb_changed)
+
         self.ui.run_button.clicked.connect(self.execute)
 
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
@@ -1192,19 +1191,73 @@ class RulesUI:
                                 """)
         self.layout.addWidget(title_label)
 
-        # Form Layout
-        self.grid_layout = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 3, 0])
-        self.layout.addLayout(self.grid_layout)
+        # https://www.w3schools.com/colors/colors_names.asp
 
-        self.gerber_title_lbl = FCLabel('<b>%s</b>:' % _("GERBER"))
-        self.gerber_title_lbl.setToolTip(
-            _("Gerber objects for which to check rules.")
-        )
+        # #############################################################################################################
+        # Select All Frame
+        # #############################################################################################################
+        select_all_label = FCLabel('<span style="color:CornflowerBlue;"><b>%s</b></span>' % _("Select All"))
+        self.layout.addWidget(select_all_label)
 
-        self.all_obj_cb = FCCheckBox()
+        sel_frame = FCFrame()
+        self.layout.addWidget(sel_frame)
 
-        self.grid_layout.addWidget(self.gerber_title_lbl, 0, 0, 1, 2)
-        self.grid_layout.addWidget(self.all_obj_cb, 0, 2)
+        sel_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[1, 0])
+        sel_frame.setLayout(sel_grid)
+
+        # Select All Gerber
+        gerber_title_lbl = FCLabel('%s:' % _("Gerber"))
+        self.all_gerber_obj_cb = FCCheckBox()
+
+        sel_grid.addWidget(gerber_title_lbl, 0, 0)
+        sel_grid.addWidget(self.all_gerber_obj_cb, 0, 1)
+
+        # Select All Excellon
+        excellon_title_lbl = FCLabel('%s:' % _("Excellon"))
+        self.all_exc_obj_cb = FCCheckBox()
+
+        sel_grid.addWidget(excellon_title_lbl, 2, 0)
+        sel_grid.addWidget(self.all_exc_obj_cb, 2, 1)
+
+        # Select All Copper Rules
+        copper_rules_lbl = FCLabel('%s %s:' % (_("Copper"), _("Rules")))
+        self.all_copper_rules_cb = FCCheckBox()
+
+        sel_grid.addWidget(copper_rules_lbl, 4, 0)
+        sel_grid.addWidget(self.all_copper_rules_cb, 4, 1)
+
+        # Select All Silk Rules
+        silk_rules_lbl = FCLabel('%s %s:' % (_("Silk"), _("Rules")))
+        self.all_silk_rules_cb = FCCheckBox()
+
+        sel_grid.addWidget(silk_rules_lbl, 6, 0)
+        sel_grid.addWidget(self.all_silk_rules_cb, 6, 1)
+
+        # Select All Soldermask Rules
+        solder_rules_lbl = FCLabel('%s %s:' % (_("Soldermask"), _("Rules")))
+        self.all_solder_rules_cb = FCCheckBox()
+
+        sel_grid.addWidget(solder_rules_lbl, 8, 0)
+        sel_grid.addWidget(self.all_solder_rules_cb, 8, 1)
+
+        # Select All Holes Rules
+        holes_rules_lbl = FCLabel('%s %s:' % (_("Holes"), _("Rules")))
+        self.all_holes_rules_cb = FCCheckBox()
+
+        sel_grid.addWidget(holes_rules_lbl, 10, 0)
+        sel_grid.addWidget(self.all_holes_rules_cb, 10, 1)
+
+        # #############################################################################################################
+        # Top Gerber Frame
+        # #############################################################################################################
+        top_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _("Top"))
+        self.layout.addWidget(top_label)
+
+        top_frame = FCFrame()
+        self.layout.addWidget(top_frame)
+
+        self.top_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 3, 0])
+        top_frame.setLayout(self.top_grid)
 
         # Copper Top object
         self.copper_t_object = FCComboBox()
@@ -1213,34 +1266,16 @@ class RulesUI:
         self.copper_t_object.is_last = True
         self.copper_t_object.obj_type = "Gerber"
 
-        self.copper_t_object_lbl = FCLabel('%s:' % _("Top"))
+        self.copper_t_object_lbl = FCLabel('%s:' % _("Copper"))
         self.copper_t_object_lbl.setToolTip(
             _("The Top Gerber Copper object for which rules are checked.")
         )
 
         self.copper_t_cb = FCCheckBox()
 
-        self.grid_layout.addWidget(self.copper_t_object_lbl, 1, 0)
-        self.grid_layout.addWidget(self.copper_t_object, 1, 1)
-        self.grid_layout.addWidget(self.copper_t_cb, 1, 2)
-
-        # Copper Bottom object
-        self.copper_b_object = FCComboBox()
-        self.copper_b_object.setModel(self.app.collection)
-        self.copper_b_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.copper_b_object.is_last = True
-        self.copper_b_object.obj_type = "Gerber"
-
-        self.copper_b_object_lbl = FCLabel('%s:' % _("Bottom"))
-        self.copper_b_object_lbl.setToolTip(
-            _("The Bottom Gerber Copper object for which rules are checked.")
-        )
-
-        self.copper_b_cb = FCCheckBox()
-
-        self.grid_layout.addWidget(self.copper_b_object_lbl, 2, 0)
-        self.grid_layout.addWidget(self.copper_b_object, 2, 1)
-        self.grid_layout.addWidget(self.copper_b_cb, 2, 2)
+        self.top_grid.addWidget(self.copper_t_object_lbl, 0, 0)
+        self.top_grid.addWidget(self.copper_t_object, 0, 1)
+        self.top_grid.addWidget(self.copper_t_cb, 0, 2)
 
         # SolderMask Top object
         self.sm_t_object = FCComboBox()
@@ -1249,34 +1284,16 @@ class RulesUI:
         self.sm_t_object.is_last = True
         self.sm_t_object.obj_type = "Gerber"
 
-        self.sm_t_object_lbl = FCLabel('%s:' % _("SM Top"))
+        self.sm_t_object_lbl = FCLabel('%s:' % _("SM"))
         self.sm_t_object_lbl.setToolTip(
             _("The Top Gerber Solder Mask object for which rules are checked.")
         )
 
         self.sm_t_cb = FCCheckBox()
 
-        self.grid_layout.addWidget(self.sm_t_object_lbl, 3, 0)
-        self.grid_layout.addWidget(self.sm_t_object, 3, 1)
-        self.grid_layout.addWidget(self.sm_t_cb, 3, 2)
-
-        # SolderMask Bottom object
-        self.sm_b_object = FCComboBox()
-        self.sm_b_object.setModel(self.app.collection)
-        self.sm_b_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.sm_b_object.is_last = True
-        self.sm_b_object.obj_type = "Gerber"
-
-        self.sm_b_object_lbl = FCLabel('%s:' % _("SM Bottom"))
-        self.sm_b_object_lbl.setToolTip(
-            _("The Bottom Gerber Solder Mask object for which rules are checked.")
-        )
-
-        self.sm_b_cb = FCCheckBox()
-
-        self.grid_layout.addWidget(self.sm_b_object_lbl, 4, 0)
-        self.grid_layout.addWidget(self.sm_b_object, 4, 1)
-        self.grid_layout.addWidget(self.sm_b_cb, 4, 2)
+        self.top_grid.addWidget(self.sm_t_object_lbl, 2, 0)
+        self.top_grid.addWidget(self.sm_t_object, 2, 1)
+        self.top_grid.addWidget(self.sm_t_cb, 2, 2)
 
         # SilkScreen Top object
         self.ss_t_object = FCComboBox()
@@ -1285,16 +1302,64 @@ class RulesUI:
         self.ss_t_object.is_last = True
         self.ss_t_object.obj_type = "Gerber"
 
-        self.ss_t_object_lbl = FCLabel('%s:' % _("Silk Top"))
+        self.ss_t_object_lbl = FCLabel('%s:' % _("Silk"))
         self.ss_t_object_lbl.setToolTip(
             _("The Top Gerber Silkscreen object for which rules are checked.")
         )
 
         self.ss_t_cb = FCCheckBox()
 
-        self.grid_layout.addWidget(self.ss_t_object_lbl, 5, 0)
-        self.grid_layout.addWidget(self.ss_t_object, 5, 1)
-        self.grid_layout.addWidget(self.ss_t_cb, 5, 2)
+        self.top_grid.addWidget(self.ss_t_object_lbl, 4, 0)
+        self.top_grid.addWidget(self.ss_t_object, 4, 1)
+        self.top_grid.addWidget(self.ss_t_cb, 4, 2)
+
+        # #############################################################################################################
+        # Bottom Gerber Frame
+        # #############################################################################################################
+        bottom_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Bottom"))
+        self.layout.addWidget(bottom_label)
+
+        bottom_frame = FCFrame()
+        self.layout.addWidget(bottom_frame)
+
+        self.bottom_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 3, 0])
+        bottom_frame.setLayout(self.bottom_grid)
+
+        # Copper Bottom object
+        self.copper_b_object = FCComboBox()
+        self.copper_b_object.setModel(self.app.collection)
+        self.copper_b_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.copper_b_object.is_last = True
+        self.copper_b_object.obj_type = "Gerber"
+
+        self.copper_b_object_lbl = FCLabel('%s:' % _("Copper"))
+        self.copper_b_object_lbl.setToolTip(
+            _("The Bottom Gerber Copper object for which rules are checked.")
+        )
+
+        self.copper_b_cb = FCCheckBox()
+
+        self.bottom_grid.addWidget(self.copper_b_object_lbl, 0, 0)
+        self.bottom_grid.addWidget(self.copper_b_object, 0, 1)
+        self.bottom_grid.addWidget(self.copper_b_cb, 0, 2)
+
+        # SolderMask Bottom object
+        self.sm_b_object = FCComboBox()
+        self.sm_b_object.setModel(self.app.collection)
+        self.sm_b_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.sm_b_object.is_last = True
+        self.sm_b_object.obj_type = "Gerber"
+
+        self.sm_b_object_lbl = FCLabel('%s:' % _("SM"))
+        self.sm_b_object_lbl.setToolTip(
+            _("The Bottom Gerber Solder Mask object for which rules are checked.")
+        )
+
+        self.sm_b_cb = FCCheckBox()
+
+        self.bottom_grid.addWidget(self.sm_b_object_lbl, 2, 0)
+        self.bottom_grid.addWidget(self.sm_b_object, 2, 1)
+        self.bottom_grid.addWidget(self.sm_b_cb, 2, 2)
 
         # SilkScreen Bottom object
         self.ss_b_object = FCComboBox()
@@ -1303,18 +1368,29 @@ class RulesUI:
         self.ss_b_object.is_last = True
         self.ss_b_object.obj_type = "Gerber"
 
-        self.ss_b_object_lbl = FCLabel('%s:' % _("Silk Bottom"))
+        self.ss_b_object_lbl = FCLabel('%s:' % _("Silk"))
         self.ss_b_object_lbl.setToolTip(
             _("The Bottom Gerber Silkscreen object for which rules are checked.")
         )
 
         self.ss_b_cb = FCCheckBox()
 
-        self.grid_layout.addWidget(self.ss_b_object_lbl, 6, 0)
-        self.grid_layout.addWidget(self.ss_b_object, 6, 1)
-        self.grid_layout.addWidget(self.ss_b_cb, 6, 2)
+        self.bottom_grid.addWidget(self.ss_b_object_lbl, 4, 0)
+        self.bottom_grid.addWidget(self.ss_b_object, 4, 1)
+        self.bottom_grid.addWidget(self.ss_b_cb, 4, 2)
 
-        # Outline object
+        # #############################################################################################################
+        # Outline Frame
+        # #############################################################################################################
+        outline_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Outline"))
+        self.layout.addWidget(outline_label)
+
+        outline_frame = FCFrame()
+        self.layout.addWidget(outline_frame)
+
+        self.outline_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 3, 0])
+        outline_frame.setLayout(self.outline_grid)
+
         self.outline_object = FCComboBox()
         self.outline_object.setModel(self.app.collection)
         self.outline_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
@@ -1328,27 +1404,33 @@ class RulesUI:
 
         self.out_cb = FCCheckBox()
 
-        self.grid_layout.addWidget(self.outline_object_lbl, 7, 0)
-        self.grid_layout.addWidget(self.outline_object, 7, 1)
-        self.grid_layout.addWidget(self.out_cb, 7, 2)
+        self.outline_grid.addWidget(self.outline_object_lbl, 0, 0)
+        self.outline_grid.addWidget(self.outline_object, 0, 1)
+        self.outline_grid.addWidget(self.out_cb, 0, 2)
 
-        self.grid_layout.addWidget(FCLabel(""), 8, 0, 1, 3)
-
-        self.excellon_title_lbl = FCLabel('<b>%s</b>:' % _("EXCELLON"))
-        self.excellon_title_lbl.setToolTip(
+        # #############################################################################################################
+        # Excellon Frame
+        # #############################################################################################################
+        exc_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _("Excellon"))
+        exc_label.setToolTip(
             _("Excellon objects for which to check rules.")
         )
+        self.layout.addWidget(exc_label)
 
-        self.grid_layout.addWidget(self.excellon_title_lbl, 9, 0, 1, 3)
+        exc_frame = FCFrame()
+        self.layout.addWidget(exc_frame)
 
-        # Excellon 1 object
+        self.exc_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 3, 0])
+        exc_frame.setLayout(self.exc_grid)
+
+        # Excellon PTH object
         self.e1_object = FCComboBox()
         self.e1_object.setModel(self.app.collection)
         self.e1_object.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
         self.e1_object.is_last = True
         self.e1_object.obj_type = "Excellon"
 
-        self.e1_object_lbl = FCLabel('%s:' % _("Excellon 1"))
+        self.e1_object_lbl = FCLabel('%s:' % "PTH")
         self.e1_object_lbl.setToolTip(
             _("Excellon object for which to check rules.\n"
               "Holds the plated holes or a general Excellon file content.")
@@ -1356,18 +1438,18 @@ class RulesUI:
 
         self.e1_cb = FCCheckBox()
 
-        self.grid_layout.addWidget(self.e1_object_lbl, 10, 0)
-        self.grid_layout.addWidget(self.e1_object, 10, 1)
-        self.grid_layout.addWidget(self.e1_cb, 10, 2)
+        self.exc_grid.addWidget(self.e1_object_lbl, 0, 0)
+        self.exc_grid.addWidget(self.e1_object, 0, 1)
+        self.exc_grid.addWidget(self.e1_cb, 0, 2)
 
-        # Excellon 2 object
+        # Excellon NPTH object
         self.e2_object = FCComboBox()
         self.e2_object.setModel(self.app.collection)
         self.e2_object.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
         self.e2_object.is_last = True
         self.e2_object.obj_type = "Excellon"
 
-        self.e2_object_lbl = FCLabel('%s:' % _("Excellon 2"))
+        self.e2_object_lbl = FCLabel('%s:' % "NPTH")
         self.e2_object_lbl.setToolTip(
             _("Excellon object for which to check rules.\n"
               "Holds the non-plated holes.")
@@ -1375,39 +1457,41 @@ class RulesUI:
 
         self.e2_cb = FCCheckBox()
 
-        self.grid_layout.addWidget(self.e2_object_lbl, 11, 0)
-        self.grid_layout.addWidget(self.e2_object, 11, 1)
-        self.grid_layout.addWidget(self.e2_cb, 11, 2)
+        self.exc_grid.addWidget(self.e2_object_lbl, 2, 0)
+        self.exc_grid.addWidget(self.e2_object, 2, 1)
+        self.exc_grid.addWidget(self.e2_cb, 2, 2)
 
-        self.grid_layout.addWidget(FCLabel(""), 12, 0, 1, 3)
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        self.layout.addWidget(separator_line)
 
-        # Control All
-        self.all_cb = FCCheckBox('%s' % _("All Rules"))
-        self.all_cb.setToolTip(
-            _("This check/uncheck all the rules below.")
-        )
-        self.all_cb.setStyleSheet(
-            """
-            QCheckBox {font-weight: bold; color: green}
-            """
-        )
-        self.layout.addWidget(self.all_cb)
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        self.layout.addWidget(separator_line)
 
-        # Form Layout
-        self.grid_lay1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(self.grid_lay1)
+        # #############################################################################################################
+        # Rules Frame
+        # #############################################################################################################
+        rules_copper_label = FCLabel('<span style="color:darkorange;"><b>%s %s</b></span>' % (_("Copper"), _("Rules")))
+        self.layout.addWidget(rules_copper_label)
+        
+        copper_frame = FCFrame()
+        self.layout.addWidget(copper_frame)
 
-        self.grid_lay1.addWidget(FCLabel(""), 0, 0, 1, 2)
+        self.copper_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        copper_frame.setLayout(self.copper_grid)
 
         # Trace size
         self.trace_size_cb = FCCheckBox('%s:' % _("Trace Size"))
         self.trace_size_cb.setToolTip(
             _("This checks if the minimum size for traces is met.")
         )
-        self.grid_lay1.addWidget(self.trace_size_cb, 2, 0, 1, 2)
+        self.copper_grid.addWidget(self.trace_size_cb, 0, 0, 1, 2)
 
         # Trace size value
-        self.trace_size_lbl = FCLabel('%s:' % _("Min value"))
+        self.trace_size_lbl = FCLabel('%s:' % _("Value"))
         self.trace_size_lbl.setToolTip(
             _("Minimum acceptable trace size.")
         )
@@ -1417,8 +1501,8 @@ class RulesUI:
         self.trace_size_entry.set_precision(self.decimals)
         self.trace_size_entry.setSingleStep(0.1)
 
-        self.grid_lay1.addWidget(self.trace_size_lbl, 4, 0)
-        self.grid_lay1.addWidget(self.trace_size_entry, 4, 1)
+        self.copper_grid.addWidget(self.trace_size_lbl, 2, 0)
+        self.copper_grid.addWidget(self.trace_size_entry, 2, 1)
 
         self.ts = OptionalInputSection(self.trace_size_cb, [self.trace_size_lbl, self.trace_size_entry])
 
@@ -1428,10 +1512,10 @@ class RulesUI:
             _("This checks if the minimum clearance between copper\n"
               "features is met.")
         )
-        self.grid_lay1.addWidget(self.clearance_copper2copper_cb, 6, 0, 1, 2)
+        self.copper_grid.addWidget(self.clearance_copper2copper_cb, 4, 0, 1, 2)
 
         # Copper2copper clearance value
-        self.clearance_copper2copper_lbl = FCLabel('%s:' % _("Min value"))
+        self.clearance_copper2copper_lbl = FCLabel('%s:' % _("Value"))
         self.clearance_copper2copper_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
@@ -1441,8 +1525,8 @@ class RulesUI:
         self.clearance_copper2copper_entry.set_precision(self.decimals)
         self.clearance_copper2copper_entry.setSingleStep(0.1)
 
-        self.grid_lay1.addWidget(self.clearance_copper2copper_lbl, 8, 0)
-        self.grid_lay1.addWidget(self.clearance_copper2copper_entry, 8, 1)
+        self.copper_grid.addWidget(self.clearance_copper2copper_lbl, 6, 0)
+        self.copper_grid.addWidget(self.clearance_copper2copper_entry, 6, 1)
 
         self.c2c = OptionalInputSection(
             self.clearance_copper2copper_cb, [self.clearance_copper2copper_lbl, self.clearance_copper2copper_entry])
@@ -1453,10 +1537,10 @@ class RulesUI:
             _("This checks if the minimum clearance between copper\n"
               "features and the outline is met.")
         )
-        self.grid_lay1.addWidget(self.clearance_copper2ol_cb, 10, 0, 1, 2)
+        self.copper_grid.addWidget(self.clearance_copper2ol_cb, 8, 0, 1, 2)
 
         # Copper2outline clearance value
-        self.clearance_copper2ol_lbl = FCLabel('%s:' % _("Min value"))
+        self.clearance_copper2ol_lbl = FCLabel('%s:' % _("Value"))
         self.clearance_copper2ol_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
@@ -1466,11 +1550,48 @@ class RulesUI:
         self.clearance_copper2ol_entry.set_precision(self.decimals)
         self.clearance_copper2ol_entry.setSingleStep(0.1)
 
-        self.grid_lay1.addWidget(self.clearance_copper2ol_lbl, 12, 0)
-        self.grid_lay1.addWidget(self.clearance_copper2ol_entry, 12, 1)
+        self.copper_grid.addWidget(self.clearance_copper2ol_lbl, 10, 0)
+        self.copper_grid.addWidget(self.clearance_copper2ol_entry, 10, 1)
 
         self.c2ol = OptionalInputSection(
             self.clearance_copper2ol_cb, [self.clearance_copper2ol_lbl, self.clearance_copper2ol_entry])
+
+        # Ring integrity check
+        self.ring_integrity_cb = FCCheckBox('%s:' % _("Minimum Annular Ring"))
+        self.ring_integrity_cb.setToolTip(
+            _("This checks if the minimum copper ring left by drilling\n"
+              "a hole into a pad is met.")
+        )
+        self.copper_grid.addWidget(self.ring_integrity_cb, 12, 0, 1, 2)
+
+        # Ring integrity value
+        self.ring_integrity_lbl = FCLabel('%s:' % _("Value"))
+        self.ring_integrity_lbl.setToolTip(
+            _("Minimum acceptable ring value.")
+        )
+
+        self.ring_integrity_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.ring_integrity_entry.set_range(0.0000, 10000.0000)
+        self.ring_integrity_entry.set_precision(self.decimals)
+        self.ring_integrity_entry.setSingleStep(0.1)
+
+        self.copper_grid.addWidget(self.ring_integrity_lbl, 14, 0)
+        self.copper_grid.addWidget(self.ring_integrity_entry, 14, 1)
+
+        self.anr = OptionalInputSection(
+            self.ring_integrity_cb, [self.ring_integrity_lbl, self.ring_integrity_entry])
+
+        # #############################################################################################################
+        # Silk Frame
+        # #############################################################################################################
+        silk_copper_label = FCLabel('<span style="color:teal;"><b>%s %s</b></span>' % (_("Silk"), _("Rules")))
+        self.layout.addWidget(silk_copper_label)
+
+        silk_frame = FCFrame()
+        self.layout.addWidget(silk_frame)
+
+        self.silk_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        silk_frame.setLayout(self.silk_grid)
 
         # Silkscreen2silkscreen clearance
         self.clearance_silk2silk_cb = FCCheckBox('%s:' % _("Silk to Silk Clearance"))
@@ -1478,10 +1599,10 @@ class RulesUI:
             _("This checks if the minimum clearance between silkscreen\n"
               "features and silkscreen features is met.")
         )
-        self.grid_lay1.addWidget(self.clearance_silk2silk_cb, 14, 0, 1, 2)
+        self.silk_grid.addWidget(self.clearance_silk2silk_cb, 0, 0, 1, 2)
 
         # Copper2silkscreen clearance value
-        self.clearance_silk2silk_lbl = FCLabel('%s:' % _("Min value"))
+        self.clearance_silk2silk_lbl = FCLabel('%s:' % _("Value"))
         self.clearance_silk2silk_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
@@ -1491,8 +1612,8 @@ class RulesUI:
         self.clearance_silk2silk_entry.set_precision(self.decimals)
         self.clearance_silk2silk_entry.setSingleStep(0.1)
 
-        self.grid_lay1.addWidget(self.clearance_silk2silk_lbl, 16, 0)
-        self.grid_lay1.addWidget(self.clearance_silk2silk_entry, 16, 1)
+        self.silk_grid.addWidget(self.clearance_silk2silk_lbl, 2, 0)
+        self.silk_grid.addWidget(self.clearance_silk2silk_entry, 2, 1)
 
         self.s2s = OptionalInputSection(
             self.clearance_silk2silk_cb, [self.clearance_silk2silk_lbl, self.clearance_silk2silk_entry])
@@ -1503,10 +1624,10 @@ class RulesUI:
             _("This checks if the minimum clearance between silkscreen\n"
               "features and soldermask features is met.")
         )
-        self.grid_lay1.addWidget(self.clearance_silk2sm_cb, 18, 0, 1, 2)
+        self.silk_grid.addWidget(self.clearance_silk2sm_cb, 4, 0, 1, 2)
 
         # Silkscreen2soldermask clearance value
-        self.clearance_silk2sm_lbl = FCLabel('%s:' % _("Min value"))
+        self.clearance_silk2sm_lbl = FCLabel('%s:' % _("Value"))
         self.clearance_silk2sm_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
@@ -1516,8 +1637,8 @@ class RulesUI:
         self.clearance_silk2sm_entry.set_precision(self.decimals)
         self.clearance_silk2sm_entry.setSingleStep(0.1)
 
-        self.grid_lay1.addWidget(self.clearance_silk2sm_lbl, 20, 0)
-        self.grid_lay1.addWidget(self.clearance_silk2sm_entry, 20, 1)
+        self.silk_grid.addWidget(self.clearance_silk2sm_lbl, 6, 0)
+        self.silk_grid.addWidget(self.clearance_silk2sm_entry, 6, 1)
 
         self.s2sm = OptionalInputSection(
             self.clearance_silk2sm_cb, [self.clearance_silk2sm_lbl, self.clearance_silk2sm_entry])
@@ -1528,10 +1649,10 @@ class RulesUI:
             _("This checks if the minimum clearance between silk\n"
               "features and the outline is met.")
         )
-        self.grid_lay1.addWidget(self.clearance_silk2ol_cb, 22, 0, 1, 2)
+        self.silk_grid.addWidget(self.clearance_silk2ol_cb, 8, 0, 1, 2)
 
         # Silk2outline clearance value
-        self.clearance_silk2ol_lbl = FCLabel('%s:' % _("Min value"))
+        self.clearance_silk2ol_lbl = FCLabel('%s:' % _("Value"))
         self.clearance_silk2ol_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
@@ -1541,11 +1662,23 @@ class RulesUI:
         self.clearance_silk2ol_entry.set_precision(self.decimals)
         self.clearance_silk2ol_entry.setSingleStep(0.1)
 
-        self.grid_lay1.addWidget(self.clearance_silk2ol_lbl, 24, 0)
-        self.grid_lay1.addWidget(self.clearance_silk2ol_entry, 24, 1)
+        self.silk_grid.addWidget(self.clearance_silk2ol_lbl, 10, 0)
+        self.silk_grid.addWidget(self.clearance_silk2ol_entry, 10, 1)
 
         self.s2ol = OptionalInputSection(
             self.clearance_silk2ol_cb, [self.clearance_silk2ol_lbl, self.clearance_silk2ol_entry])
+
+        # #############################################################################################################
+        # Soldermask Frame
+        # #############################################################################################################
+        sm_copper_label = FCLabel('<span style="color:magenta;"><b>%s %s</b></span>' % (_("Soldermask"), _("Rules")))
+        self.layout.addWidget(sm_copper_label)
+
+        solder_frame = FCFrame()
+        self.layout.addWidget(solder_frame)
+
+        self.solder_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        solder_frame.setLayout(self.solder_grid)
 
         # Soldermask2soldermask clearance
         self.clearance_sm2sm_cb = FCCheckBox('%s:' % _("Minimum Solder Mask Sliver"))
@@ -1553,11 +1686,11 @@ class RulesUI:
             _("This checks if the minimum clearance between soldermask\n"
               "features and soldermask features is met.")
         )
-        self.grid_lay1.addWidget(self.clearance_sm2sm_cb, 26, 0, 1, 2)
+        self.solder_grid.addWidget(self.clearance_sm2sm_cb, 0, 0, 1, 2)
 
         # Soldermask2soldermask clearance value
 
-        self.clearance_sm2sm_lbl = FCLabel('%s:' % _("Min value"))
+        self.clearance_sm2sm_lbl = FCLabel('%s:' % _("Value"))
         self.clearance_sm2sm_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
@@ -1567,38 +1700,23 @@ class RulesUI:
         self.clearance_sm2sm_entry.set_precision(self.decimals)
         self.clearance_sm2sm_entry.setSingleStep(0.1)
 
-        self.grid_lay1.addWidget(self.clearance_sm2sm_lbl, 28, 0)
-        self.grid_lay1.addWidget(self.clearance_sm2sm_entry, 28, 1)
+        self.solder_grid.addWidget(self.clearance_sm2sm_lbl, 2, 0)
+        self.solder_grid.addWidget(self.clearance_sm2sm_entry, 2, 1)
 
         self.sm2sm = OptionalInputSection(
             self.clearance_sm2sm_cb, [self.clearance_sm2sm_lbl, self.clearance_sm2sm_entry])
 
-        # Ring integrity check
-        self.ring_integrity_cb = FCCheckBox('%s:' % _("Minimum Annular Ring"))
-        self.ring_integrity_cb.setToolTip(
-            _("This checks if the minimum copper ring left by drilling\n"
-              "a hole into a pad is met.")
-        )
-        self.grid_lay1.addWidget(self.ring_integrity_cb, 30, 0, 1, 2)
+        # #############################################################################################################
+        # Holes Frame
+        # #############################################################################################################
+        holes_copper_label = FCLabel('<span style="color:brown;"><b>%s %s</b></span>' % (_("Holes"), _("Rules")))
+        self.layout.addWidget(holes_copper_label)
 
-        # Ring integrity value
-        self.ring_integrity_lbl = FCLabel('%s:' % _("Min value"))
-        self.ring_integrity_lbl.setToolTip(
-            _("Minimum acceptable ring value.")
-        )
+        holes_frame = FCFrame()
+        self.layout.addWidget(holes_frame)
 
-        self.ring_integrity_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.ring_integrity_entry.set_range(0.0000, 10000.0000)
-        self.ring_integrity_entry.set_precision(self.decimals)
-        self.ring_integrity_entry.setSingleStep(0.1)
-
-        self.grid_lay1.addWidget(self.ring_integrity_lbl, 32, 0)
-        self.grid_lay1.addWidget(self.ring_integrity_entry, 32, 1)
-
-        self.anr = OptionalInputSection(
-            self.ring_integrity_cb, [self.ring_integrity_lbl, self.ring_integrity_entry])
-
-        self.grid_lay1.addWidget(FCLabel(''), 34, 0, 1, 2)
+        self.holes_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        holes_frame.setLayout(self.holes_grid)
 
         # Hole2Hole clearance
         self.clearance_d2d_cb = FCCheckBox('%s:' % _("Hole to Hole Clearance"))
@@ -1606,10 +1724,10 @@ class RulesUI:
             _("This checks if the minimum clearance between a drill hole\n"
               "and another drill hole is met.")
         )
-        self.grid_lay1.addWidget(self.clearance_d2d_cb, 36, 0, 1, 2)
+        self.holes_grid.addWidget(self.clearance_d2d_cb, 0, 0, 1, 2)
 
         # Hole2Hole clearance value
-        self.clearance_d2d_lbl = FCLabel('%s:' % _("Min value"))
+        self.clearance_d2d_lbl = FCLabel('%s:' % _("Value"))
         self.clearance_d2d_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
@@ -1619,8 +1737,8 @@ class RulesUI:
         self.clearance_d2d_entry.set_precision(self.decimals)
         self.clearance_d2d_entry.setSingleStep(0.1)
 
-        self.grid_lay1.addWidget(self.clearance_d2d_lbl, 38, 0)
-        self.grid_lay1.addWidget(self.clearance_d2d_entry, 38, 1)
+        self.holes_grid.addWidget(self.clearance_d2d_lbl, 2, 0)
+        self.holes_grid.addWidget(self.clearance_d2d_entry, 2, 1)
 
         self.d2d = OptionalInputSection(
             self.clearance_d2d_cb, [self.clearance_d2d_lbl, self.clearance_d2d_entry])
@@ -1631,10 +1749,10 @@ class RulesUI:
             _("This checks if the drill holes\n"
               "sizes are above the threshold.")
         )
-        self.grid_lay1.addWidget(self.drill_size_cb, 40, 0, 1, 2)
+        self.holes_grid.addWidget(self.drill_size_cb, 4, 0, 1, 2)
 
         # Drills holes value
-        self.drill_size_lbl = FCLabel('%s:' % _("Min value"))
+        self.drill_size_lbl = FCLabel('%s:' % _("Value"))
         self.drill_size_lbl.setToolTip(
             _("Minimum acceptable drill size.")
         )
@@ -1644,8 +1762,8 @@ class RulesUI:
         self.drill_size_entry.set_precision(self.decimals)
         self.drill_size_entry.setSingleStep(0.1)
 
-        self.grid_lay1.addWidget(self.drill_size_lbl, 42, 0)
-        self.grid_lay1.addWidget(self.drill_size_entry, 42, 1)
+        self.holes_grid.addWidget(self.drill_size_lbl, 6, 0)
+        self.holes_grid.addWidget(self.drill_size_entry, 6, 1)
 
         self.ds = OptionalInputSection(
             self.drill_size_cb, [self.drill_size_lbl, self.drill_size_entry])
@@ -1664,7 +1782,11 @@ class RulesUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.grid_lay1.addWidget(self.run_button, 44, 0, 1, 2)
+        self.layout.addWidget(self.run_button)
+
+        FCGridLayout.set_common_column_size(
+            [self.copper_grid, self.solder_grid, self.silk_grid, self.exc_grid, self.top_grid, self.bottom_grid,
+             self.outline_grid, self.holes_grid], 0)
 
         self.layout.addStretch(1)
 
@@ -1681,23 +1803,72 @@ class RulesUI:
                                 }
                                 """)
         self.layout.addWidget(self.reset_button)
+        
+        # #############################################################################################################
+        # SIGNALS
+        # #############################################################################################################
+        self.all_gerber_obj_cb.stateChanged.connect(self.on_all_gerber)
+        self.all_exc_obj_cb.stateChanged.connect(self.on_all_excellon)
+        self.all_copper_rules_cb.stateChanged.connect(self.on_all_copper_rules)
+        self.all_silk_rules_cb.stateChanged.connect(self.on_all_silk_rules)
+        self.all_solder_rules_cb.stateChanged.connect(self.on_all_solder_rules)
+        self.all_holes_rules_cb.stateChanged.connect(self.on_all_holes_rules)
 
         # #################################### FINSIHED GUI ###########################
         # #############################################################################
-    def on_all_cb_changed(self, state):
-        cb_items = [self.grid_lay1.itemAt(i).widget() for i in range(self.grid_lay1.count())
-                    if isinstance(self.grid_lay1.itemAt(i).widget(), FCCheckBox)]
 
+    def on_all_gerber(self, state):
+        cb_items = [self.top_grid.itemAt(i).widget() for i in range(self.top_grid.count())
+                    if isinstance(self.top_grid.itemAt(i).widget(), FCCheckBox)] + \
+                   [self.bottom_grid.itemAt(i).widget() for i in range(self.bottom_grid.count())
+                    if isinstance(self.bottom_grid.itemAt(i).widget(), FCCheckBox)] + \
+                   [self.outline_grid.itemAt(i).widget() for i in range(self.outline_grid.count())
+                    if isinstance(self.outline_grid.itemAt(i).widget(), FCCheckBox)]
+        for cb in cb_items:
+            if state:
+                cb.setChecked(True)
+            else:
+                cb.setChecked(False)
+    
+    def on_all_excellon(self, state):
+        cb_items = [self.exc_grid.itemAt(i).widget() for i in range(self.exc_grid.count())
+                    if isinstance(self.exc_grid.itemAt(i).widget(), FCCheckBox)]
         for cb in cb_items:
             if state:
                 cb.setChecked(True)
             else:
                 cb.setChecked(False)
 
-    def on_all_objects_cb_changed(self, state):
-        cb_items = [self.grid_layout.itemAt(i).widget() for i in range(self.grid_layout.count())
-                    if isinstance(self.grid_layout.itemAt(i).widget(), FCCheckBox)]
+    def on_all_copper_rules(self, state):
+        cb_items = [self.copper_grid.itemAt(i).widget() for i in range(self.copper_grid.count())
+                    if isinstance(self.copper_grid.itemAt(i).widget(), FCCheckBox)]
+        for cb in cb_items:
+            if state:
+                cb.setChecked(True)
+            else:
+                cb.setChecked(False)
+    
+    def on_all_silk_rules(self, state):
+        cb_items = [self.silk_grid.itemAt(i).widget() for i in range(self.silk_grid.count())
+                    if isinstance(self.silk_grid.itemAt(i).widget(), FCCheckBox)]
+        for cb in cb_items:
+            if state:
+                cb.setChecked(True)
+            else:
+                cb.setChecked(False)
 
+    def on_all_solder_rules(self, state):
+        cb_items = [self.solder_grid.itemAt(i).widget() for i in range(self.solder_grid.count())
+                    if isinstance(self.solder_grid.itemAt(i).widget(), FCCheckBox)]
+        for cb in cb_items:
+            if state:
+                cb.setChecked(True)
+            else:
+                cb.setChecked(False)
+
+    def on_all_holes_rules(self, state):
+        cb_items = [self.holes_grid.itemAt(i).widget() for i in range(self.holes_grid.count())
+                    if isinstance(self.holes_grid.itemAt(i).widget(), FCCheckBox)]
         for cb in cb_items:
             if state:
                 cb.setChecked(True)

@@ -1510,7 +1510,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.gerber_tab = QtWidgets.QWidget()
         self.gerber_tab.setObjectName("gerber_tab")
-        self.pref_tab_area.addTab(self.gerber_tab, _("GERBER"))
+        self.pref_tab_area.addTab(self.gerber_tab, _("Gerber").upper())
         self.gerber_tab_lay = QtWidgets.QVBoxLayout()
         self.gerber_tab_lay.setContentsMargins(2, 2, 2, 2)
         self.gerber_tab.setLayout(self.gerber_tab_lay)
@@ -1520,7 +1520,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.excellon_tab = QtWidgets.QWidget()
         self.excellon_tab.setObjectName("excellon_tab")
-        self.pref_tab_area.addTab(self.excellon_tab, _("EXCELLON"))
+        self.pref_tab_area.addTab(self.excellon_tab, _("Excellon").upper())
         self.excellon_tab_lay = QtWidgets.QVBoxLayout()
         self.excellon_tab_lay.setContentsMargins(2, 2, 2, 2)
         self.excellon_tab.setLayout(self.excellon_tab_lay)
@@ -1530,7 +1530,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.geometry_tab = QtWidgets.QWidget()
         self.geometry_tab.setObjectName("geometry_tab")
-        self.pref_tab_area.addTab(self.geometry_tab, _("GEOMETRY"))
+        self.pref_tab_area.addTab(self.geometry_tab, _("Geometry").upper())
         self.geometry_tab_lay = QtWidgets.QVBoxLayout()
         self.geometry_tab_lay.setContentsMargins(2, 2, 2, 2)
         self.geometry_tab.setLayout(self.geometry_tab_lay)

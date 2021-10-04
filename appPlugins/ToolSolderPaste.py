@@ -1232,20 +1232,13 @@ class SolderUI:
         self.object_label.setToolTip(_("Gerber Solderpaste object."))
         self.tools_box.addWidget(self.object_label)
 
-        source_frame = FCFrame()
-        self.tools_box.addWidget(source_frame)
-
-        # ## Grid Layout
-        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        source_frame.setLayout(obj_grid)
-
         self.obj_combo = FCComboBox(callback=solder_class.on_rmb_combo)
         self.obj_combo.setModel(self.app.collection)
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.obj_combo.is_last = True
         self.obj_combo.obj_type = "Gerber"
 
-        obj_grid.addWidget(self.obj_combo, 0, 0, 1, 2)
+        self.tools_box.addWidget(self.obj_combo)
 
         # separator_line = QtWidgets.QFrame()
         # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
@@ -1690,7 +1683,7 @@ class SolderUI:
         self.tools_box.addLayout(buttons_hlay)
 
         FCGridLayout.set_common_column_size(
-            [geo_grid, fr_grid, tc_grid, disp_grid, tool_grid, sp_fw_grid, sp_rev_grid, param_grid, obj_grid, cnc_grid,
+            [geo_grid, fr_grid, tc_grid, disp_grid, tool_grid, sp_fw_grid, sp_rev_grid, param_grid, cnc_grid,
              pp_grid], 0)
 
         self.layout.addStretch(1)

@@ -1248,9 +1248,8 @@ class FilmUI:
         obj_frame = FCFrame()
         self.tools_box.addWidget(obj_frame)
 
-        # Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        obj_frame.setLayout(grid0)
+        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        obj_frame.setLayout(obj_grid)
 
         # Type of object for which to create the film
         self.tf_type_obj_combo = RadioSet([{'label': _('Gerber'), 'value': 'grb'},
@@ -1263,8 +1262,8 @@ class FilmUI:
               "The selection here decide the type of objects that will be\n"
               "in the Film Object combobox.")
         )
-        grid0.addWidget(self.tf_type_obj_combo_label, 0, 0)
-        grid0.addWidget(self.tf_type_obj_combo, 0, 1)
+        obj_grid.addWidget(self.tf_type_obj_combo_label, 0, 0)
+        obj_grid.addWidget(self.tf_type_obj_combo, 0, 1)
 
         # List of objects for which we can create the film
         self.tf_object_combo = FCComboBox()
@@ -1272,7 +1271,7 @@ class FilmUI:
         self.tf_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.tf_object_combo.is_last = True
 
-        grid0.addWidget(self.tf_object_combo, 2, 0, 1, 2)
+        obj_grid.addWidget(self.tf_object_combo, 2, 0, 1, 2)
 
         # Type of Box Object to be used as an envelope for film creation
         # Within this we can create negative
@@ -1286,8 +1285,8 @@ class FilmUI:
               "The selection here decide the type of objects that will be\n"
               "in the Box Object combobox.")
         )
-        grid0.addWidget(self.tf_type_box_combo_label, 4, 0)
-        grid0.addWidget(self.tf_type_box_combo, 4, 1)
+        obj_grid.addWidget(self.tf_type_box_combo_label, 4, 0)
+        obj_grid.addWidget(self.tf_type_box_combo, 4, 1)
 
         # Box
         self.tf_box_combo = FCComboBox()
@@ -1295,12 +1294,12 @@ class FilmUI:
         self.tf_box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.tf_box_combo.is_last = True
 
-        grid0.addWidget(self.tf_box_combo, 6, 0, 1, 2)
-        #
+        obj_grid.addWidget(self.tf_box_combo, 6, 0, 1, 2)
+
         # separator_line = QtWidgets.QFrame()
         # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        # grid0.addWidget(separator_line, 8, 0, 1, 2)
+        # obj_grid.addWidget(separator_line, 8, 0, 1, 2)
 
         # #############################################################################################################
         # Adjustments Frame
@@ -1315,9 +1314,8 @@ class FilmUI:
         self.adj_frame = FCFrame()
         self.tools_box.addWidget(self.adj_frame)
 
-        # Grid Layout
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.adj_frame.setLayout(grid1)
+        adj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.adj_frame.setLayout(adj_grid)
 
         # Scale Geometry
         self.film_scale_cb = FCCheckBox('%s' % _("Scale"))
@@ -1330,7 +1328,7 @@ class FilmUI:
             QCheckBox {font-weight: bold; color: black}
             """
         )
-        grid1.addWidget(self.film_scale_cb, 2, 0, 1, 2)
+        adj_grid.addWidget(self.film_scale_cb, 2, 0, 1, 2)
 
         # Scale X
         self.film_scalex_label = FCLabel('%s:' % _("X factor"))
@@ -1339,8 +1337,8 @@ class FilmUI:
         self.film_scalex_entry.set_precision(self.decimals)
         self.film_scalex_entry.setSingleStep(0.01)
 
-        grid1.addWidget(self.film_scalex_label, 4, 0)
-        grid1.addWidget(self.film_scalex_entry, 4, 1)
+        adj_grid.addWidget(self.film_scalex_label, 4, 0)
+        adj_grid.addWidget(self.film_scalex_entry, 4, 1)
 
         # Scale Y
         self.film_scaley_label = FCLabel('%s:' % _("Y factor"))
@@ -1349,8 +1347,8 @@ class FilmUI:
         self.film_scaley_entry.set_precision(self.decimals)
         self.film_scaley_entry.setSingleStep(0.01)
 
-        grid1.addWidget(self.film_scaley_label, 6, 0)
-        grid1.addWidget(self.film_scaley_entry, 6, 1)
+        adj_grid.addWidget(self.film_scaley_label, 6, 0)
+        adj_grid.addWidget(self.film_scaley_entry, 6, 1)
 
         # Scale reference
         self.scale_ref_label = FCLabel('%s:' % _("Reference"))
@@ -1362,8 +1360,8 @@ class FilmUI:
         self.scale_ref_combo.addItems(
             [_('Center'), _('Bottom Left'), _('Top Left'), _('Bottom Right'), _('Top right')])
 
-        grid1.addWidget(self.scale_ref_label, 8, 0)
-        grid1.addWidget(self.scale_ref_combo, 8, 1)
+        adj_grid.addWidget(self.scale_ref_label, 8, 0)
+        adj_grid.addWidget(self.scale_ref_combo, 8, 1)
 
         self.ois_scale = OptionalHideInputSection(self.film_scale_cb,
                                                   [
@@ -1378,7 +1376,7 @@ class FilmUI:
         self.scale_separator_line = QtWidgets.QFrame()
         self.scale_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         self.scale_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid1.addWidget(self.scale_separator_line, 10, 0, 1, 2)
+        adj_grid.addWidget(self.scale_separator_line, 10, 0, 1, 2)
 
         # Skew Geometry
         self.film_skew_cb = FCCheckBox('%s' % _("Skew"))
@@ -1391,7 +1389,7 @@ class FilmUI:
             QCheckBox {font-weight: bold; color: black}
             """
         )
-        grid1.addWidget(self.film_skew_cb, 12, 0, 1, 2)
+        adj_grid.addWidget(self.film_skew_cb, 12, 0, 1, 2)
 
         # Skew X
         self.film_skewx_label = FCLabel('%s:' % _("X angle"))
@@ -1400,8 +1398,8 @@ class FilmUI:
         self.film_skewx_entry.set_precision(self.decimals)
         self.film_skewx_entry.setSingleStep(0.01)
 
-        grid1.addWidget(self.film_skewx_label, 14, 0)
-        grid1.addWidget(self.film_skewx_entry, 14, 1)
+        adj_grid.addWidget(self.film_skewx_label, 14, 0)
+        adj_grid.addWidget(self.film_skewx_entry, 14, 1)
 
         # Skew Y
         self.film_skewy_label = FCLabel('%s:' % _("Y angle"))
@@ -1410,8 +1408,8 @@ class FilmUI:
         self.film_skewy_entry.set_precision(self.decimals)
         self.film_skewy_entry.setSingleStep(0.01)
 
-        grid1.addWidget(self.film_skewy_label, 16, 0)
-        grid1.addWidget(self.film_skewy_entry, 16, 1)
+        adj_grid.addWidget(self.film_skewy_label, 16, 0)
+        adj_grid.addWidget(self.film_skewy_entry, 16, 1)
 
         # Skew Reference
         self.skew_ref_label = FCLabel('%s:' % _("Reference"))
@@ -1423,8 +1421,8 @@ class FilmUI:
         self.skew_ref_combo.addItems(
             [_('Center'), _('Bottom Left'), _('Top Left'), _('Bottom Right'), _('Top right')])
 
-        grid1.addWidget(self.skew_ref_label, 18, 0)
-        grid1.addWidget(self.skew_ref_combo, 18, 1)
+        adj_grid.addWidget(self.skew_ref_label, 18, 0)
+        adj_grid.addWidget(self.skew_ref_combo, 18, 1)
 
         self.ois_skew = OptionalHideInputSection(self.film_skew_cb,
                                                  [
@@ -1439,7 +1437,7 @@ class FilmUI:
         self.skew_separator_line1 = QtWidgets.QFrame()
         self.skew_separator_line1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         self.skew_separator_line1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid1.addWidget(self.skew_separator_line1, 20, 0, 1, 2)
+        adj_grid.addWidget(self.skew_separator_line1, 20, 0, 1, 2)
 
         # Mirror Geometry
         self.film_mirror_cb = FCCheckBox('%s' % _("Mirror"))
@@ -1451,7 +1449,7 @@ class FilmUI:
             QCheckBox {font-weight: bold; color: black}
             """
         )
-        grid1.addWidget(self.film_mirror_cb, 22, 0, 1, 2)
+        adj_grid.addWidget(self.film_mirror_cb, 22, 0, 1, 2)
 
         self.film_mirror_axis = RadioSet([{'label': _('X'), 'value': 'x'},
                                           {'label': _('Y'), 'value': 'y'},
@@ -1462,8 +1460,8 @@ class FilmUI:
             _("Mirror the film geometry on the selected axis or on both.")
         )
 
-        grid1.addWidget(self.film_mirror_axis_label, 24, 0)
-        grid1.addWidget(self.film_mirror_axis, 24, 1)
+        adj_grid.addWidget(self.film_mirror_axis_label, 24, 0)
+        adj_grid.addWidget(self.film_mirror_axis, 24, 1)
 
         self.ois_mirror = OptionalHideInputSection(self.film_mirror_cb,
                                                    [
@@ -1480,9 +1478,8 @@ class FilmUI:
         par_frame = FCFrame()
         self.tools_box.addWidget(par_frame)
 
-        # Grid Layout
-        grid_par = FCGridLayout(v_spacing=5, h_spacing=3)
-        par_frame.setLayout(grid_par)
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_frame.setLayout(param_grid)
 
         # Convex Shape
         # Surrounding convex box shape
@@ -1493,8 +1490,8 @@ class FilmUI:
         )
         self.convex_box_cb = FCCheckBox()
 
-        grid_par.addWidget(self.convex_box_label, 0, 0)
-        grid_par.addWidget(self.convex_box_cb, 0, 1)
+        param_grid.addWidget(self.convex_box_label, 0, 0)
+        param_grid.addWidget(self.convex_box_cb, 0, 1)
 
         # Rounded corners
         self.rounded_label = FCLabel('%s:' % _("Rounded"))
@@ -1504,8 +1501,8 @@ class FilmUI:
 
         self.rounded_cb = FCCheckBox()
 
-        grid_par.addWidget(self.rounded_label, 2, 0)
-        grid_par.addWidget(self.rounded_cb, 2, 1)
+        param_grid.addWidget(self.rounded_label, 2, 0)
+        param_grid.addWidget(self.rounded_cb, 2, 1)
 
         # Scale Stroke size
         self.film_scale_stroke_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -1519,8 +1516,8 @@ class FilmUI:
               "It means that the line that envelope each SVG feature will be thicker or thinner,\n"
               "therefore the fine features may be more affected by this parameter.")
         )
-        grid_par.addWidget(self.film_scale_stroke_label, 4, 0)
-        grid_par.addWidget(self.film_scale_stroke_entry, 4, 1)
+        param_grid.addWidget(self.film_scale_stroke_label, 4, 0)
+        param_grid.addWidget(self.film_scale_stroke_entry, 4, 1)
 
         # Polarity
         self.film_type = RadioSet([{'label': _('Positive'), 'value': 'pos'},
@@ -1530,8 +1527,8 @@ class FilmUI:
         self.film_type_label.setToolTip(
             _("Generate a Positive black film or a Negative film.")
         )
-        grid_par.addWidget(self.film_type_label, 6, 0)
-        grid_par.addWidget(self.film_type, 6, 1)
+        param_grid.addWidget(self.film_type_label, 6, 0)
+        param_grid.addWidget(self.film_type, 6, 1)
 
         # Border for negative film generation
         self.boundary_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -1550,8 +1547,8 @@ class FilmUI:
               "white color like the rest and which may confound with the\n"
               "surroundings if not for this border.")
         )
-        grid_par.addWidget(self.boundary_label, 8, 0)
-        grid_par.addWidget(self.boundary_entry, 8, 1)
+        param_grid.addWidget(self.boundary_label, 8, 0)
+        param_grid.addWidget(self.boundary_entry, 8, 1)
 
         self.boundary_label.hide()
         self.boundary_entry.hide()
@@ -1561,12 +1558,12 @@ class FilmUI:
         self.punch_cb.setToolTip(_("When checked the generated film will have holes in pads when\n"
                                    "the generated film is positive. This is done to help drilling,\n"
                                    "when done manually."))
-        grid_par.addWidget(self.punch_cb, 10, 0, 1, 2)
+        param_grid.addWidget(self.punch_cb, 10, 0, 1, 2)
 
         # this way I can hide/show the frame
         self.punch_frame = QtWidgets.QFrame()
         self.punch_frame.setContentsMargins(0, 0, 0, 0)
-        grid_par.addWidget(self.punch_frame, 12, 0, 1, 2)
+        param_grid.addWidget(self.punch_frame, 12, 0, 1, 2)
 
         punch_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         punch_grid.setContentsMargins(0, 0, 0, 0)
@@ -1621,9 +1618,8 @@ class FilmUI:
         exp_frame = FCFrame()
         self.tools_box.addWidget(exp_frame)
 
-        # Grid Layout
-        grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
-        exp_frame.setLayout(grid3)
+        export_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        exp_frame.setLayout(export_grid)
 
         self.file_type_label = FCLabel('%s:' % _("Film Type"))
         self.file_type_label.setToolTip(
@@ -1639,8 +1635,8 @@ class FilmUI:
                                          {'label': _('PDF'), 'value': 'pdf'}
                                          ], compact=True)
 
-        grid3.addWidget(self.file_type_label, 0, 0)
-        grid3.addWidget(self.file_type_radio, 0, 1)
+        export_grid.addWidget(self.file_type_label, 0, 0)
+        export_grid.addWidget(self.file_type_radio, 0, 1)
 
         # Page orientation
         self.orientation_label = FCLabel('%s:' % _("Page Orientation"))
@@ -1655,9 +1651,8 @@ class FilmUI:
         # #############################################################################################################
         # ################################  New Grid ##################################################################
         # #############################################################################################################
-
-        grid3.addWidget(self.orientation_label, 2, 0)
-        grid3.addWidget(self.orientation_radio, 2, 1)
+        export_grid.addWidget(self.orientation_label, 2, 0)
+        export_grid.addWidget(self.orientation_radio, 2, 1)
 
         # Page Size
         self.pagesize_label = FCLabel('%s:' % _("Page Size"))
@@ -1719,8 +1714,8 @@ class FilmUI:
         page_size_list = list(self.pagesize.keys())
         self.pagesize_combo.addItems(page_size_list)
 
-        grid3.addWidget(self.pagesize_label, 4, 0)
-        grid3.addWidget(self.pagesize_combo, 4, 1)
+        export_grid.addWidget(self.pagesize_label, 4, 0)
+        export_grid.addWidget(self.pagesize_combo, 4, 1)
 
         self.on_film_type(val='hide')
 
@@ -1732,13 +1727,13 @@ class FilmUI:
         self.png_dpi_spinner = FCSpinner(callback=self.confirmation_message_int)
         self.png_dpi_spinner.set_range(0, 100000)
 
-        grid3.addWidget(self.png_dpi_label, 6, 0)
-        grid3.addWidget(self.png_dpi_spinner, 6, 1)
+        export_grid.addWidget(self.png_dpi_label, 6, 0)
+        export_grid.addWidget(self.png_dpi_spinner, 6, 1)
 
         self.png_dpi_label.hide()
         self.png_dpi_spinner.hide()
 
-        FCGridLayout.set_common_column_size([grid1, grid_par, grid0, grid3, punch_grid], 0)
+        FCGridLayout.set_common_column_size([adj_grid, param_grid, obj_grid, export_grid, punch_grid], 0)
 
         # Buttons
         self.film_object_button = FCButton(_("Save Film"))
