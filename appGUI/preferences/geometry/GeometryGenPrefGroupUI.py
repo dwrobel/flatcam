@@ -52,8 +52,8 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         # Number of circle steps for circular aperture linear approximation
         self.circle_steps_label = FCLabel('%s:' % _("Circle Steps"))
         self.circle_steps_label.setToolTip(
-            _("The number of circle steps for <b>Geometry</b> \n"
-              "circle and arc shapes linear approximation.")
+            _("The number of circle steps for \n"
+              "linear approximation of circles.")
         )
         self.circle_steps_entry = FCSpinner()
         self.circle_steps_entry.set_range(0, 999)

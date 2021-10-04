@@ -57,6 +57,18 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         plot_grid.addWidget(self.multicolored_cb, 0, 2)
 
+        # Number of circle steps for circular aperture linear approximation
+        self.circle_steps_label = FCLabel('%s:' % _("Circle Steps"))
+        self.circle_steps_label.setToolTip(
+            _("The number of circle steps for \n"
+              "linear approximation of circles.")
+        )
+        self.circle_steps_entry = FCSpinner()
+        self.circle_steps_entry.set_range(0, 9999)
+
+        plot_grid.addWidget(self.circle_steps_label, 2, 0)
+        plot_grid.addWidget(self.circle_steps_entry, 2, 1, 1, 2)
+
         # separator_line = QtWidgets.QFrame()
         # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)

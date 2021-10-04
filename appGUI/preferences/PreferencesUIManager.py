@@ -169,6 +169,7 @@ class PreferencesUIManager:
 
             # Excellon General
             "excellon_plot": self.ui.excellon_pref_form.excellon_gen_group.plot_cb,
+            "excellon_circle_steps": self.ui.excellon_pref_form.excellon_gen_group.circle_steps_entry,
             "excellon_solid": self.ui.excellon_pref_form.excellon_gen_group.solid_cb,
             "excellon_multicolored": self.ui.excellon_pref_form.excellon_gen_group.multicolored_cb,
             "excellon_merge_fuse_tools": self.ui.excellon_pref_form.excellon_gen_group.fuse_tools_cb,

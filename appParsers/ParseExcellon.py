@@ -56,12 +56,12 @@ class Excellon(Geometry):
         "excellon_format_upper_in": '2',
         "excellon_format_lower_in": '4',
         "excellon_units": 'INCH',
-        "geo_steps_per_circle": '64'
+        "excellon_circle_steps": '16'
     }
 
     def __init__(self, zeros=None, excellon_format_upper_mm=None, excellon_format_lower_mm=None,
                  excellon_format_upper_in=None, excellon_format_lower_in=None, excellon_units=None,
-                 geo_steps_per_circle=None):
+                 excellon_circle_steps=None):
         """
         The constructor takes no parameters.
 
@@ -71,11 +71,11 @@ class Excellon(Geometry):
 
         self.decimals = self.app.decimals
 
-        if geo_steps_per_circle is None:
-            geo_steps_per_circle = int(Excellon.defaults['geo_steps_per_circle'])
-        self.geo_steps_per_circle = int(geo_steps_per_circle)
+        if excellon_circle_steps is None:
+            excellon_circle_steps = int(Excellon.defaults['excellon_circle_steps'])
+        self.excellon_circle_steps = int(excellon_circle_steps)
 
-        Geometry.__init__(self, geo_steps_per_circle=int(geo_steps_per_circle))
+        Geometry.__init__(self, geo_steps_per_circle=int(excellon_circle_steps))
 
         # dictionary to store tools, see above for description
         self.tools = {}
@@ -1060,7 +1060,7 @@ class Excellon(Geometry):
 
                 if 'drills' in self.tools[tool]:
                     for drill in self.tools[tool]['drills']:
-                        poly = drill.buffer(tooldia / 2.0, int(int(self.geo_steps_per_circle) / 4))
+                        poly = drill.buffer(tooldia / 2.0, int(self.excellon_circle_steps))
 
                         # add poly in the tools geometry
                         self.tools[tool]['solid_geometry'].append(poly)
@@ -1075,7 +1075,7 @@ class Excellon(Geometry):
                         stop = slot[1]
 
                         lines_string = LineString([start, stop])
-                        poly = lines_string.buffer(tooldia / 2.0, int(int(self.geo_steps_per_circle) / 4))
+                        poly = lines_string.buffer(tooldia / 2.0, int(self.excellon_circle_steps))
 
                         # add poly in the tools geometry
                         self.tools[tool]['solid_geometry'].append(poly)
@@ -1581,7 +1581,7 @@ class Excellon(Geometry):
             except TypeError:
                 try:
                     if factor is None:
-                        return obj.buffer(distance, resolution=self.geo_steps_per_circle)
+                        return obj.buffer(distance, resolution=self.excellon_circle_steps)
                     else:
                         return affinity.scale(obj, xfact=distance, yfact=distance, origin='center')
                 except AttributeError:

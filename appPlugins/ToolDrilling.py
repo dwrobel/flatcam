@@ -46,7 +46,7 @@ class ToolDrilling(AppTool, Excellon):
         self.dec_format = self.app.dec_format
 
         AppTool.__init__(self, app)
-        Excellon.__init__(self, geo_steps_per_circle=self.app.defaults["geometry_circle_steps"])
+        Excellon.__init__(self, excellon_circle_steps=self.app.defaults["excellon_circle_steps"])
 
         # #############################################################################
         # ######################### Tool GUI ##########################################

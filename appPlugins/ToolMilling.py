@@ -51,7 +51,7 @@ class ToolMilling(AppTool, Excellon):
         self.decimals = self.app.decimals
 
         AppTool.__init__(self, app)
-        Excellon.__init__(self, geo_steps_per_circle=self.app.defaults["geometry_circle_steps"])
+        Excellon.__init__(self, excellon_circle_steps=self.app.defaults["excellon_circle_steps"])
 
         # #############################################################################
         # ######################### Tool GUI ##########################################
@@ -2822,9 +2822,9 @@ class ToolMilling(AppTool, Excellon):
 
                 if dia_cnc_dict['data']['tools_mill_offset_type'] == 1:  # 'in'
                     tool_offset = -dia_cnc_dict['tools_mill_tooldia'] / 2
-                elif dia_cnc_dict['data']['tools_mill_offset_type'] == 2: # 'out'
+                elif dia_cnc_dict['data']['tools_mill_offset_type'] == 2:  # 'out'
                     tool_offset = dia_cnc_dict['tools_mill_tooldia'] / 2
-                elif dia_cnc_dict['data']['tools_mill_offset_type'] == 3: # 'custom'
+                elif dia_cnc_dict['data']['tools_mill_offset_type'] == 3:  # 'custom'
                     try:
                         offset_value = float(self.ui.offset_entry.get_value())
                     except ValueError:
@@ -3033,10 +3033,10 @@ class ToolMilling(AppTool, Excellon):
                         paint_geo = [g for g in cpoly.get_objects() if g and not g.is_empty]
                     except grace:
                         return "fail"
-                    except Exception as e:
-                        self.app.log.error("Could not Paint the polygons. %s" % str(e))
+                    except Exception as ero:
+                        self.app.log.error("Could not Paint the polygons. %s" % str(ero))
                         mssg = '[ERROR] %s\n%s' % (_("Could not do Paint. Try a different combination of parameters. "
-                                                     "Or a different method of Paint"), str(e))
+                                                     "Or a different method of Paint"), str(ero))
                         self.app.inform.emit(mssg)
                         return
 

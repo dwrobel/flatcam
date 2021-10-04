@@ -43,8 +43,8 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         # ###################################################################
         self.steps_per_circle_label = FCLabel('%s:' % _("Circle Steps"))
         self.steps_per_circle_label.setToolTip(
-            _("The number of circle steps for <b>GCode</b> \n"
-              "circle and arc shapes linear approximation.")
+            _("The number of circle steps for \n"
+              "linear approximation of circles.")
         )
 
         self.steps_per_circle_entry = FCSpinner()

@@ -40,9 +40,9 @@ class ExcellonObject(FlatCAMObj, Excellon):
     def __init__(self, name):
         self.decimals = self.app.decimals
 
-        self.circle_steps = int(self.app.defaults["geometry_circle_steps"])
+        self.circle_steps = int(self.app.defaults["excellon_circle_steps"])
 
-        Excellon.__init__(self, geo_steps_per_circle=self.circle_steps)
+        Excellon.__init__(self, excellon_circle_steps=self.circle_steps)
         FlatCAMObj.__init__(self, name)
 
         self.kind = "excellon"

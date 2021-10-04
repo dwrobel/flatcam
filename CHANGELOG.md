@@ -16,6 +16,8 @@ CHANGELOG for FlatCAM beta
 - added support for all Plugins to handle the LMB click release event without connect/reconnect of the mouse events
 - code refactoring in app_Main file
 - in 2Sided Plugin, deleting the last drill alignment coordinates will update the clipboard values too
+- added the circle approximation parameter for Excellon geometry in Preferences
+- updated the language strings
 
 3.10.2021
 

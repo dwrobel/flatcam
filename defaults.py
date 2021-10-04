@@ -236,6 +236,7 @@ class FlatCAMDefaults:
 
         # Excellon General
         "excellon_plot": True,
+        "excellon_circle_steps": 16,
         "excellon_solid": True,
         "excellon_multicolored": False,
         "excellon_merge_fuse_tools": True,
@@ -319,7 +320,7 @@ class FlatCAMDefaults:
         "cncjob_coords_type": "G90",
         "cncjob_coords_decimals": 4,
         "cncjob_fr_decimals": 2,
-        "cncjob_steps_per_circle": 64,
+        "cncjob_steps_per_circle": 16,
         "cncjob_footer": False,
         "cncjob_line_ending": False,
         "cncjob_save_filters": "G-Code Files .nc (*.nc);;G-Code Files .din (*.din);;G-Code Files .dnc (*.dnc);;"
