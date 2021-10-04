@@ -1231,6 +1231,9 @@ class App(QtCore.QObject):
         self.corners_tool = None
         self.etch_tool = None
 
+        # when this list will get populated will contain a list of references to all the Plugins in this APp
+        self.app_plugins = []
+
         # always install tools only after the shell is initialized because the self.inform.emit() depends on shell
         try:
             self.install_tools()
@@ -1988,6 +1991,46 @@ class App(QtCore.QObject):
         self.pcb_wizard_tool.install(icon=QtGui.QIcon(self.resource_location + '/drill32.png'),
                                      pos=self.ui.menufileimport)
 
+        # create a list of plugins references
+        self.app_plugins = [
+            self.dblsidedtool,
+            self.distance_tool,
+            self.distance_min_tool,
+            self.panelize_tool,
+            self.film_tool,
+            self.paste_tool,
+            self.calculator_tool,
+            self.rules_tool,
+            self.sub_tool,
+            self.move_tool,
+
+            self.cutout_tool,
+            self.ncclear_tool,
+            self.paint_tool,
+            self.isolation_tool,
+            self.follow_tool,
+            self.drilling_tool,
+            self.milling_tool,
+            self.levelling_tool,
+
+            self.optimal_tool,
+            self.transform_tool,
+            self.report_tool,
+            self.pdf_tool,
+            self.image_tool,
+            self.pcb_wizard_tool,
+            self.cal_exc_tool,
+            self.qrcode_tool,
+            self.copper_thieving_tool,
+            self.fiducial_tool,
+            self.extract_tool,
+            self.align_objects_tool,
+            self.punch_tool,
+            self.invert_tool,
+            self.corners_tool,
+            self.etch_tool
+        ]
+
         self.log.debug("Tools are installed.")
 
     def remove_tools(self):
@@ -2012,10 +2055,17 @@ class App(QtCore.QObject):
         self.log.debug("init_tools()")
 
         # delete the data currently in the Tools Tab and the Tab itself
-        widget = QtWidgets.QTabWidget.widget(self.ui.notebook, 2)
+        found_idx = None
+        for tab_idx in range(self.ui.notebook.count()):
+            if self.ui.notebook.widget(tab_idx).objectName() == "plugin_tab":
+                found_idx = tab_idx
+                print(found_idx)
+                break
+        remove_idx = found_idx if found_idx else 2
+        widget = QtWidgets.QTabWidget.widget(self.ui.notebook, remove_idx)
         if widget is not None:
             widget.deleteLater()
-        self.ui.notebook.removeTab(2)
+        self.ui.notebook.removeTab(remove_idx)
 
         # rebuild the Tools Tab
         # self.ui.plugin_tab = QtWidgets.QWidget()
@@ -2677,7 +2727,7 @@ class App(QtCore.QObject):
                         break
                 if found_idx:
                     self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
-                    self.ui.notebook.removeTab(2)
+                    self.ui.notebook.removeTab(found_idx)
 
                 if edited_obj.kind == 'geometry':
                     obj_type = "Geometry"
@@ -6701,7 +6751,7 @@ class App(QtCore.QObject):
                 break
         if found_idx:
             self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
-            self.ui.notebook.removeTab(2)
+            self.ui.notebook.removeTab(found_idx)
 
         # HACK: the content was removed but let's create it again
         self.ui.plugin_tab = QtWidgets.QWidget()
@@ -6759,7 +6809,7 @@ class App(QtCore.QObject):
                     self.app_obj.object_changed.emit(obj)
                 self.inform.emit('[success] %s.' % _("Flip on Y axis done"))
             except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
+                self.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                 return
 
     def on_flipx(self):
@@ -6805,7 +6855,7 @@ class App(QtCore.QObject):
                     self.app_obj.object_changed.emit(obj)
                 self.inform.emit('[success] %s.' % _("Flip on X axis done"))
             except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
+                self.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                 return
 
     def on_rotate(self, silent=False, preset=None):
@@ -7310,90 +7360,143 @@ class App(QtCore.QObject):
         # if the released mouse button was RMB then test if it was a panning motion or not, if not it was a context
         # canvas menu
         if event.button == right_button and self.ui.popMenu.mouse_is_panning is False:  # right click
-            self.ui.popMenu.mouse_is_panning = False
-
-            if self.inhibit_context_menu is False:
-                self.cursor = QtGui.QCursor()
-                self.populate_cmenu_grids()
-                self.ui.popMenu.popup(self.cursor.pos())
+            self.on_mouse_context_menu()
 
         # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
         # selection and then select a type of selection ("enclosing" or "touching")
 
         if event.button == 1:  # left click
-            modifiers = QtWidgets.QApplication.keyboardModifiers()
-            # If the SHIFT key is pressed when LMB is clicked then the coordinates are copied to clipboard
-            if modifiers == QtCore.Qt.KeyboardModifier.ShiftModifier:
-                # do not auto open the Project Tab
-                self.click_noproject = True
+            key_modifier = QtWidgets.QApplication.keyboardModifiers()
+            shift_modifier_key = QtCore.Qt.KeyboardModifier.ShiftModifier
+            ctrl_modifier_key = QtCore.Qt.KeyboardModifier.ControlModifier
+            ctrl_shift_modifier_key = ctrl_modifier_key | shift_modifier_key
 
-                self.clipboard.setText(
-                    self.defaults["global_point_clipboard_format"] %
-                    (self.decimals, self.pos[0], self.decimals, self.pos[1])
-                )
-                self.inform.emit('[success] %s' % _("Coordinates copied to clipboard."))
+            if key_modifier == shift_modifier_key or key_modifier == ctrl_shift_modifier_key:
+                self.on_mouse_and_key_modifiers(position=self.pos, modifiers=key_modifier)
+                self.on_mouse_plugin_click_release()
                 return
+            else:
+                self.on_mouse_plugin_click_release()
 
-            # the object selection on canvas does not work for App Tools or for Editors
+            # the object selection on canvas will not work for App Tools or for Editors
             if self.call_source != 'app':
                 return
 
             if self.doubleclick is True:
-                self.doubleclick = False
-                if self.collection.get_selected():
-                    self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
-                    if self.ui.splitter.sizes()[0] == 0:
-                        self.ui.splitter.setSizes([1, 1])
-                    try:
-                        # delete the selection shape(S) as it may be in the way
-                        self.delete_selection_shape()
-                        self.delete_hover_shape()
-                    except Exception as e:
-                        self.log.error(
-                            "FlatCAMApp.on_mouse_click_release_over_plot() double click --> Error: %s" % str(e))
-                        return
+                self.on_mouse_double_click()
+                return
+
+            # WORKAROUND for LEGACY MODE
+            if self.is_legacy is True:
+                # if there is no move on canvas then we have no dragging selection
+                if self.dx == 0 or self.dy == 0:
+                    self.selection_type = None
+
+            if self.selection_type is not None:
+                try:
+                    self.selection_area_handler(self.pos, pos, self.selection_type)
+                    self.selection_type = None
+                except Exception as e:
+                    self.log.error(
+                        "FlatCAMApp.on_mouse_click_release_over_plot() select area --> Error: %s" % str(e))
+                return
+
+            if key_modifier == shift_modifier_key:
+                mod_key = 'Shift'
+            elif key_modifier == ctrl_modifier_key:
+                mod_key = 'Control'
             else:
-                # WORKAROUND for LEGACY MODE
-                if self.is_legacy is True:
-                    # if there is no move on canvas then we have no dragging selection
-                    if self.dx == 0 or self.dy == 0:
-                        self.selection_type = None
+                mod_key = None
 
-                if self.selection_type is not None:
-                    try:
-                        self.selection_area_handler(self.pos, pos, self.selection_type)
-                        self.selection_type = None
-                    except Exception as e:
-                        self.log.error(
-                            "FlatCAMApp.on_mouse_click_release_over_plot() select area --> Error: %s" % str(e))
-                        return
-                else:
-                    key_modifier = QtWidgets.QApplication.keyboardModifiers()
-                    if key_modifier == QtCore.Qt.KeyboardModifier.ShiftModifier:
-                        mod_key = 'Shift'
-                    elif key_modifier == QtCore.Qt.KeyboardModifier.ControlModifier:
-                        mod_key = 'Control'
+            try:
+                if self.command_active is None:
+                    if mod_key == self.defaults["global_mselect_key"]:
+                        # If the modifier key is pressed when the LMB is clicked then if the object is selected it will
+                        # deselect, and if it's not selected then it will be selected
+                        self.select_objects(key='multisel')
                     else:
-                        mod_key = None
+                        # If there is no active command (self.command_active is None) then we check if
+                        # we clicked on a object by checking the bounding limits against mouse click position
+                        self.select_objects()
 
-                    try:
-                        if self.command_active is None:
-                            # If the CTRL key is pressed when the LMB is clicked then if the object is selected it will
-                            # deselect, and if it's not selected then it will be selected
-                            # If there is no active command (self.command_active is None) then we check if we clicked
-                            # on a object by checking the bounding limits against mouse click position
-                            if mod_key == self.defaults["global_mselect_key"]:
-                                self.select_objects(key='multisel')
-                            else:
-                                # If there is no active command (self.command_active is None) then we check if
-                                # we clicked on a object by checking the bounding limits against mouse click position
-                                self.select_objects()
+                    self.delete_hover_shape()
+            except Exception as e:
+                self.log.error(
+                    "FlatCAMApp.on_mouse_click_release_over_plot() select click --> Error: %s" % str(e))
+                return
 
-                            self.delete_hover_shape()
-                    except Exception as e:
-                        self.log.error(
-                            "FlatCAMApp.on_mouse_click_release_over_plot() select click --> Error: %s" % str(e))
-                        return
+    def on_mouse_double_click(self):
+        """
+        Called when mouse double clicking on canvas.
+
+        :return:
+        """
+        self.doubleclick = False
+        if self.collection.get_selected():
+            self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
+            if self.ui.splitter.sizes()[0] == 0:
+                self.ui.splitter.setSizes([1, 1])
+            try:
+                # delete the selection shape(S) as it may be in the way
+                self.delete_selection_shape()
+                self.delete_hover_shape()
+            except Exception as e:
+                self.log.error(
+                    "FlatCAMApp.on_mouse_click_release_over_plot() double click --> Error: %s" % str(e))
+
+    def on_mouse_and_key_modifiers(self, position, modifiers):
+        """
+        Called when the mouse is left-clicked on canvas and simultaneously a key modifier
+        (Ctrl, AAlt, Shift) is pressed.
+
+        :param position:        A tupple made of the clicked position x, y coordinates
+        :param modifiers:       Key modifiers (Ctrl, Alt, Shift or a combination of them)
+        :return:
+        """
+
+        # If the SHIFT key is pressed when LMB is clicked then the coordinates are copied to clipboard
+        if modifiers == QtCore.Qt.KeyboardModifier.ShiftModifier:
+            # do not auto open the Project Tab
+            self.click_noproject = True
+
+            self.clipboard.setText(
+                self.defaults["global_point_clipboard_format"] %
+                (self.decimals,position[0], self.decimals, position[1])
+            )
+            self.inform.emit('[success] %s' % _("Coordinates copied to clipboard."))
+        elif modifiers == QtCore.Qt.KeyboardModifier.ControlModifier | QtCore.Qt.KeyboardModifier.ShiftModifier:
+            try:
+                old_clipb = eval(self.clipboard.text())
+            except Exception as err:
+                # self.log.error("App.on_mouse_and_key_modifiers() --> %s" % str(err))
+                old_clipb = None
+
+            clip_pos_val = (
+                self.dec_format(position[0], self.decimals),
+                self.dec_format(position[1], self.decimals)
+            )
+            clip_text = "(%s, %s)" % (str(clip_pos_val[0]), str(clip_pos_val[1]))
+
+            if old_clipb is None or old_clipb == '':
+                self.clipboard.setText(clip_text)
+            else:
+                if isinstance(old_clipb, list):
+                    old_clipb.append(clip_pos_val)
+                else:
+                    old_clipb = [old_clipb, clip_pos_val]
+                self.clipboard.setText(str(old_clipb))
+            self.inform.emit('[success] %s' % _("Coordinates copied to clipboard."))
+
+    def on_mouse_context_menu(self):
+        """
+        Display a context menu when mouse right-clicking on canvas.
+
+        :return:
+        """
+        if self.inhibit_context_menu is False:
+            self.cursor = QtGui.QCursor()
+            self.populate_cmenu_grids()
+            self.ui.popMenu.popup(self.cursor.pos())
 
     def selection_area_handler(self, start_pos, end_pos, sel_type):
         """
@@ -7612,6 +7715,25 @@ class App(QtCore.QObject):
                     name=str(curr_sel_obj.options['name']),
                     tx=_("selected"))
                 )
+
+    def on_mouse_plugin_click_release(self):
+        """
+        Handle specific tasks in the Plugins for the mouse click release
+
+        :return:
+        """
+
+        if self.ui.notebook.currentWidget().objectName() == "plugin_tab":
+            tab_idx = self.ui.notebook.currentIndex()
+            for plugin in self.app_plugins:
+                # execute this only for the current active plugin
+                if self.ui.notebook.tabText(tab_idx) == plugin.pluginName:
+                    try:
+                        plugin.on_mouse_plugin_click_release()
+                    except AttributeError:
+                        # not all plugins have this implemented
+                        # print("This does not have it", self.ui.notebook.tabText(tab_idx))
+                        pass
 
     def delete_hover_shape(self):
         self.hover_shapes.clear()

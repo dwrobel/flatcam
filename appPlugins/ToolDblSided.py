@@ -118,7 +118,6 @@ class DblSidedTool(AppTool):
         self.ui.object_type_combo.currentIndexChanged.connect(self.on_object_type)
 
         self.ui.add_point_button.clicked.connect(self.on_point_add)
-        self.ui.add_drill_point_button.clicked.connect(self.on_drill_add)
         self.ui.delete_drill_point_button.clicked.connect(self.on_drill_delete_last)
         self.ui.box_type_radio.activated_custom.connect(self.on_combo_box_type)
 
@@ -433,21 +432,35 @@ class DblSidedTool(AppTool):
                                 self.app.delete_selection_shape()
 
                                 self.ui.axis_location.set_value('point')
-
                                 # set the reference point for mirror
                                 self.ui.point_entry.set_value(center_pt_coords)
+
                                 self.on_exit()
                                 self.app.inform.emit('[success] %s' % _("Mirror reference point set."))
+                                break
 
         elif event.button == right_button and self.app.event_is_dragging is False:
             self.on_exit(cancelled=True)
 
+    def on_mouse_plugin_click_release(self):
+        modifiers = QtWidgets.QApplication.keyboardModifiers()
+        # if modifiers == QtCore.Qt.KeyboardModifier.ShiftModifier:
+        #     clip_val = self.app.clipboard.text()
+        #     self.ui.point_entry.set_value(clip_val)
+        if modifiers == QtCore.Qt.KeyboardModifier.ControlModifier | QtCore.Qt.KeyboardModifier.ShiftModifier:
+            clip_val = self.app.clipboard.text().replace("[", '').replace("]", '')
+            self.ui.alignment_holes.set_value(clip_val)
+        else:
+            return
+        self.drill_values = clip_val
+
     def on_exit(self, cancelled=None):
         self.app.call_source = "app"
         self.app.ui.notebook.setDisabled(False)
+        self.disconnect_events()
+
         if cancelled is True:
             self.app.delete_selection_shape()
-            self.disconnect_events()
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled by user request."))
 
     def disconnect_events(self):
@@ -505,11 +518,6 @@ class DblSidedTool(AppTool):
         val = self.app.defaults["global_point_clipboard_format"] % \
               (self.decimals, self.app.pos[0], self.decimals, self.app.pos[1])
         self.ui.point_entry.set_value(val)
-
-    def on_drill_add(self):
-        self.drill_values += (self.app.defaults["global_point_clipboard_format"] %
-                              (self.decimals, self.app.pos[0], self.decimals, self.app.pos[1])) + ','
-        self.ui.alignment_holes.set_value(self.drill_values)
 
     def on_drill_delete_last(self):
         drill_values_without_last_tupple = self.drill_values.rpartition('(')[0]
@@ -897,13 +905,6 @@ class DsidedUI:
               "The (x, y) coordinates are captured by pressing SHIFT key\n"
               "and left mouse button click on canvas or you can enter the coordinates manually.")
         )
-        # self.add_point_button.setStyleSheet("""
-        #                                 QPushButton
-        #                                 {
-        #                                     font-weight: bold;
-        #                                 }
-        #                                 """)
-        # self.add_point_button.setMinimumWidth(60)
 
         pr_hlay.addWidget(self.point_entry, stretch=1)
         pr_hlay.addWidget(self.add_point_button)
@@ -1072,41 +1073,21 @@ class DsidedUI:
               "- one drill in mirror position over the axis selected above in the 'Align Axis'.")
         )
 
+        grid4.addWidget(self.ah_label, 8, 0, 1, 2)
+
         self.alignment_holes = NumericalEvalTupleEntry(border_color='#0069A9')
         self.alignment_holes.setPlaceholderText(_("Drill coordinates"))
 
-        grid4.addWidget(self.ah_label, 8, 0, 1, 2)
-        grid4.addWidget(self.alignment_holes, 9, 0, 1, 2)
-
-        self.add_drill_point_button = FCButton(_("Add"))
-        self.add_drill_point_button.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
-        self.add_drill_point_button.setToolTip(
-            _("Add alignment drill holes coordinates in the format: (x1, y1), (x2, y2), ... \n"
-              "on one side of the alignment axis.\n\n"
-              "The coordinates set can be obtained:\n"
-              "- press SHIFT key and left mouse clicking on canvas. Then click Add.\n"
-              "- press SHIFT key and left mouse clicking on canvas. Then Ctrl+V in the field.\n"
-              "- press SHIFT key and left mouse clicking on canvas. Then RMB click in the field and click Paste.\n"
-              "- by entering the coords manually in the format: (x1, y1), (x2, y2), ...")
-        )
-        # self.add_drill_point_button.setStyleSheet("""
-        #                 QPushButton
-        #                 {
-        #                     font-weight: bold;
-        #                 }
-        #                 """)
-
-        self.delete_drill_point_button = FCButton(_("Delete Last"))
+        self.delete_drill_point_button = QtWidgets.QToolButton()
         self.delete_drill_point_button.setIcon(QtGui.QIcon(self.app.resource_location + '/trash32.png'))
         self.delete_drill_point_button.setToolTip(
             _("Delete the last coordinates tuple in the list.")
         )
-        drill_hlay = QtWidgets.QHBoxLayout()
 
-        drill_hlay.addWidget(self.add_drill_point_button)
-        drill_hlay.addWidget(self.delete_drill_point_button)
-
-        grid4.addLayout(drill_hlay, 10, 0, 1, 2)
+        hlay = QtWidgets.QHBoxLayout()
+        hlay.addWidget(self.alignment_holes)
+        hlay.addWidget(self.delete_drill_point_button)
+        grid4.addLayout(hlay, 9, 0, 1, 2)
 
         FCGridLayout.set_common_column_size([obj_grid, grid_bounds, grid_mirror, grid_box_ref, grid4], 0)
 

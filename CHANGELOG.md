@@ -12,6 +12,9 @@ CHANGELOG for FlatCAM beta
 - fixed a typo in the Object UI
 - in 2Sided Plugin advanced mode fixed the bounds calculation: if no object is selected on canvas then the object selected in Source Object is used
 - in 2Sided Plugin added a new typ of alignment drills: manual. This mode will no longer add pairs of drill holes mirrored against reference but only add in place drill holes
+- in 2Sided Plugin clicking LMB and also pressing CTRL+Shift will add the click coordinates to the Drll Alignment Coordinates
+- added support for all Plugins to handle the LMB click release event without connect/reconnect of the mouse events
+- code refactoring in app_Main file
 
 3.10.2021
 
