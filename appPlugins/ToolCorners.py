@@ -135,7 +135,7 @@ class ToolCorners(AppTool):
         self.ui.toggle_all_cb.toggled.connect(self.on_toggle_all)
         self.ui.drill_button.clicked.connect(self.on_create_drill_object)
         self.ui.check_button.clicked.connect(self.on_create_check_object)
-        self.ui.sel_radio.activated_custom.connect(self.on_selection_changed)
+        self.ui.mode_radio.activated_custom.connect(self.on_selection_changed)
 
     def set_tool_ui(self):
         self.units = self.app.app_units
@@ -151,7 +151,7 @@ class ToolCorners(AppTool):
         self.ui.toggle_all_cb.set_value(False)
         self.ui.type_radio.set_value(self.app.defaults["tools_corners_type"])
         self.ui.drill_dia_entry.set_value(self.app.defaults["tools_corners_drill_dia"])
-        self.ui.sel_radio.set_value("a")
+        self.ui.mode_radio.set_value("a")
 
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
@@ -237,7 +237,7 @@ class ToolCorners(AppTool):
 
     def add_markers(self):
         self.app.call_source = "corners_tool"
-        select_type = self.ui.sel_radio.get_value()
+        select_type = self.ui.mode_radio.get_value()
         if select_type == 'a':
             self.handle_automatic_placement()
         else:
@@ -248,6 +248,8 @@ class ToolCorners(AppTool):
             self.connect_event_handlers()
 
     def handle_automatic_placement(self):
+        self.points.clear()
+
         tl_state = self.ui.tl_cb.get_value()
         tr_state = self.ui.tr_cb.get_value()
         bl_state = self.ui.bl_cb.get_value()
@@ -266,7 +268,7 @@ class ToolCorners(AppTool):
             return
 
         xmin, ymin, xmax, ymax = self.grb_object.bounds()
-        self.points = {}
+
         if tl_state:
             self.points['tl'] = (xmin, ymax)
         if tr_state:
@@ -321,94 +323,98 @@ class ToolCorners(AppTool):
         margin = self.ui.margin_entry.get_value()
         line_length = self.ui.l_entry.get_value() / 2.0
 
+        mode = self.ui.mode_radio.get_value()
+
         geo_list = []
 
         if not points_storage:
             self.app.inform.emit("[ERROR_NOTCL] %s." % _("Please select at least a location"))
             return 'fail'
 
-        for key in points_storage:
-            if key == 'tl':
-                pt = points_storage[key]
-                x = pt[0] - margin - line_thickness / 2.0
-                y = pt[1] + margin + line_thickness / 2.0
-                if marker_type == 's':
-                    line_geo_hor = LineString([
-                        (x, y), (x + line_length, y)
-                    ])
-                    line_geo_vert = LineString([
-                        (x, y), (x, y - line_length)
-                    ])
-                else:
-                    line_geo_hor = LineString([
-                        (x - line_length, y), (x + line_length, y)
-                    ])
-                    line_geo_vert = LineString([
-                        (x, y + line_length), (x, y - line_length)
-                    ])
-                geo_list.append(line_geo_hor)
-                geo_list.append(line_geo_vert)
-            if key == 'tr':
-                pt = points_storage[key]
-                x = pt[0] + margin + line_thickness / 2.0
-                y = pt[1] + margin + line_thickness / 2.0
-                if marker_type == 's':
-                    line_geo_hor = LineString([
-                        (x, y), (x - line_length, y)
-                    ])
-                    line_geo_vert = LineString([
-                        (x, y), (x, y - line_length)
-                    ])
-                else:
-                    line_geo_hor = LineString([
-                        (x + line_length, y), (x - line_length, y)
-                    ])
-                    line_geo_vert = LineString([
-                        (x, y + line_length), (x, y - line_length)
-                    ])
-                geo_list.append(line_geo_hor)
-                geo_list.append(line_geo_vert)
-            if key == 'bl':
-                pt = points_storage[key]
-                x = pt[0] - margin - line_thickness / 2.0
-                y = pt[1] - margin - line_thickness / 2.0
-                if marker_type == 's':
-                    line_geo_hor = LineString([
-                        (x, y), (x + line_length, y)
-                    ])
-                    line_geo_vert = LineString([
-                        (x, y), (x, y + line_length)
-                    ])
-                else:
-                    line_geo_hor = LineString([
-                        (x - line_length, y), (x + line_length, y)
-                    ])
-                    line_geo_vert = LineString([
-                        (x, y - line_length), (x, y + line_length)
-                    ])
-                geo_list.append(line_geo_hor)
-                geo_list.append(line_geo_vert)
-            if key == 'br':
-                pt = points_storage[key]
-                x = pt[0] + margin + line_thickness / 2.0
-                y = pt[1] - margin - line_thickness / 2.0
-                if marker_type == 's':
-                    line_geo_hor = LineString([
-                        (x, y), (x - line_length, y)
-                    ])
-                    line_geo_vert = LineString([
-                        (x, y), (x, y + line_length)
-                    ])
-                else:
-                    line_geo_hor = LineString([
-                        (x + line_length, y), (x - line_length, y)
-                    ])
-                    line_geo_vert = LineString([
-                        (x, y - line_length), (x, y + line_length)
-                    ])
-                geo_list.append(line_geo_hor)
-                geo_list.append(line_geo_vert)
-            if key == 'manual':
+        if mode == 'a':
+            for key in points_storage:
+                if key == 'tl':
+                    pt = points_storage[key]
+                    x = pt[0] - margin - line_thickness / 2.0
+                    y = pt[1] + margin + line_thickness / 2.0
+                    if marker_type == 's':
+                        line_geo_hor = LineString([
+                            (x, y), (x + line_length, y)
+                        ])
+                        line_geo_vert = LineString([
+                            (x, y), (x, y - line_length)
+                        ])
+                    else:
+                        line_geo_hor = LineString([
+                            (x - line_length, y), (x + line_length, y)
+                        ])
+                        line_geo_vert = LineString([
+                            (x, y + line_length), (x, y - line_length)
+                        ])
+                    geo_list.append(line_geo_hor)
+                    geo_list.append(line_geo_vert)
+                if key == 'tr':
+                    pt = points_storage[key]
+                    x = pt[0] + margin + line_thickness / 2.0
+                    y = pt[1] + margin + line_thickness / 2.0
+                    if marker_type == 's':
+                        line_geo_hor = LineString([
+                            (x, y), (x - line_length, y)
+                        ])
+                        line_geo_vert = LineString([
+                            (x, y), (x, y - line_length)
+                        ])
+                    else:
+                        line_geo_hor = LineString([
+                            (x + line_length, y), (x - line_length, y)
+                        ])
+                        line_geo_vert = LineString([
+                            (x, y + line_length), (x, y - line_length)
+                        ])
+                    geo_list.append(line_geo_hor)
+                    geo_list.append(line_geo_vert)
+                if key == 'bl':
+                    pt = points_storage[key]
+                    x = pt[0] - margin - line_thickness / 2.0
+                    y = pt[1] - margin - line_thickness / 2.0
+                    if marker_type == 's':
+                        line_geo_hor = LineString([
+                            (x, y), (x + line_length, y)
+                        ])
+                        line_geo_vert = LineString([
+                            (x, y), (x, y + line_length)
+                        ])
+                    else:
+                        line_geo_hor = LineString([
+                            (x - line_length, y), (x + line_length, y)
+                        ])
+                        line_geo_vert = LineString([
+                            (x, y - line_length), (x, y + line_length)
+                        ])
+                    geo_list.append(line_geo_hor)
+                    geo_list.append(line_geo_vert)
+                if key == 'br':
+                    pt = points_storage[key]
+                    x = pt[0] + margin + line_thickness / 2.0
+                    y = pt[1] - margin - line_thickness / 2.0
+                    if marker_type == 's':
+                        line_geo_hor = LineString([
+                            (x, y), (x - line_length, y)
+                        ])
+                        line_geo_vert = LineString([
+                            (x, y), (x, y + line_length)
+                        ])
+                    else:
+                        line_geo_hor = LineString([
+                            (x + line_length, y), (x - line_length, y)
+                        ])
+                        line_geo_vert = LineString([
+                            (x, y - line_length), (x, y + line_length)
+                        ])
+                    geo_list.append(line_geo_hor)
+                    geo_list.append(line_geo_vert)
+        elif mode == 'm':
+            if 'manual' in points_storage:
                 if points_storage['manual']:
                     for man_pt in points_storage['manual']:
                         x = man_pt[0] - line_thickness / 2.0
@@ -449,9 +455,9 @@ class ToolCorners(AppTool):
                 new_apid = 10
 
             new_apertures[new_apid] = {
-                'type': 'C',
-                'size': line_thickness,
-                'geometry': []
+                'type':         'C',
+                'size':         line_thickness,
+                'geometry':     []
             }
 
             for geo in geo_list:
@@ -463,11 +469,15 @@ class ToolCorners(AppTool):
 
         s_list = []
         if g_obj.solid_geometry:
+            if isinstance(g_obj.solid_geometry, MultiPolygon):
+                work_geo = g_obj.solid_geometry.geoms
+            else:
+                work_geo = g_obj.solid_geometry
             try:
-                for poly in g_obj.solid_geometry:
+                for poly in work_geo:
                     s_list.append(poly)
             except TypeError:
-                s_list.append(g_obj.solid_geometry)
+                s_list.append(work_geo)
 
         geo_buff_list = MultiPolygon(geo_buff_list)
         geo_buff_list = geo_buff_list.buffer(0)
@@ -529,7 +539,8 @@ class ToolCorners(AppTool):
             self.app.call_source = "app"
             return
 
-        if tl_state is False and tr_state is False and bl_state is False and br_state is False:
+        if tl_state is False and tr_state is False and bl_state is False and br_state is False and \
+                'manual' not in self.points:
             self.app.inform.emit("[ERROR_NOTCL] %s." % _("Please select at least a location"))
             self.app.call_source = "app"
             return
@@ -539,40 +550,53 @@ class ToolCorners(AppTool):
         # list of (x,y) tuples. Store here the drill coordinates
         drill_list = []
 
-        if tl_state:
-            x = xmin - margin - line_thickness / 2.0 + tooldia / 2.0
-            y = ymax + margin + line_thickness / 2.0 - tooldia / 2.0
-            drill_list.append(
-                Point((x, y))
-            )
+        if 'manual' not in self.points:
+            if tl_state:
+                x = xmin - margin - line_thickness / 2.0 + tooldia / 2.0
+                y = ymax + margin + line_thickness / 2.0 - tooldia / 2.0
+                drill_list.append(
+                    Point((x, y))
+                )
 
-        if tr_state:
-            x = xmax + margin + line_thickness / 2.0 - tooldia / 2.0
-            y = ymax + margin + line_thickness / 2.0 - tooldia / 2.0
-            drill_list.append(
-                Point((x, y))
-            )
+            if tr_state:
+                x = xmax + margin + line_thickness / 2.0 - tooldia / 2.0
+                y = ymax + margin + line_thickness / 2.0 - tooldia / 2.0
+                drill_list.append(
+                    Point((x, y))
+                )
 
-        if bl_state:
-            x = xmin - margin - line_thickness / 2.0 + tooldia / 2.0
-            y = ymin - margin - line_thickness / 2.0 + tooldia / 2.0
-            drill_list.append(
-                Point((x, y))
-            )
+            if bl_state:
+                x = xmin - margin - line_thickness / 2.0 + tooldia / 2.0
+                y = ymin - margin - line_thickness / 2.0 + tooldia / 2.0
+                drill_list.append(
+                    Point((x, y))
+                )
 
-        if br_state:
-            x = xmax + margin + line_thickness / 2.0 - tooldia / 2.0
-            y = ymin - margin - line_thickness / 2.0 + tooldia / 2.0
-            drill_list.append(
-                Point((x, y))
-            )
+            if br_state:
+                x = xmax + margin + line_thickness / 2.0 - tooldia / 2.0
+                y = ymin - margin - line_thickness / 2.0 + tooldia / 2.0
+                drill_list.append(
+                    Point((x, y))
+                )
+        else:
+            if self.points['manual']:
+                for pt in self.points['manual']:
+                    add_pt = (pt[0] - (line_thickness / 2)), (pt[1] + line_thickness / 2)
+                    drill_list.append(
+                        Point(add_pt)
+                    )
+            else:
+                self.app.inform.emit("[ERROR_NOTCL] %s." % _("Please select at least a location"))
+                self.app.call_source = "app"
+                return
 
         tools = {
             1: {
-                "tooldia": tooldia,
-                "drills": drill_list,
-                "slots": [],
-                "solid_geometry": []
+                "tooldia":          tooldia,
+                "drills":           drill_list,
+                "slots":            [],
+                "data":             {},
+                "solid_geometry":   []
             }
         }
 
@@ -588,7 +612,7 @@ class ToolCorners(AppTool):
                                                                        use_thread=False)
 
         outname = '%s_%s' % (str(self.grb_object.options['name']), 'corner_drills')
-        ret_val = self.app.app_obj.new_object("excellon", outname, obj_init)
+        ret_val = self.app.app_obj.new_object("excellon", outname, obj_init, autoselected=False)
 
         self.app.call_source = "app"
         if ret_val == 'fail':
@@ -607,6 +631,7 @@ class ToolCorners(AppTool):
 
         line_thickness = self.ui.thick_entry.get_value()
         margin = self.ui.margin_entry.get_value()
+
         tl_state = self.ui.tl_cb.get_value()
         tr_state = self.ui.tr_cb.get_value()
         bl_state = self.ui.bl_cb.get_value()
@@ -624,7 +649,8 @@ class ToolCorners(AppTool):
             self.app.call_source = "app"
             return
 
-        if tl_state is False and tr_state is False and bl_state is False and br_state is False:
+        if tl_state is False and tr_state is False and bl_state is False and br_state is False and \
+                'manual' not in self.points:
             self.app.inform.emit("[ERROR_NOTCL] %s." % _("Please select at least a location"))
             self.app.call_source = "app"
             return
@@ -634,41 +660,53 @@ class ToolCorners(AppTool):
         # list of (x,y) tuples. Store here the drill coordinates
         drill_list = []
 
-        if tl_state:
-            x = xmin - margin - line_thickness / 2.0 + tooldia / 2.0
-            y = ymax + margin + line_thickness / 2.0 - tooldia / 2.0
-            drill_list.append(
-                Point((x, y))
-            )
+        if 'manual' not in self.points:
+            if tl_state:
+                x = xmin - margin - line_thickness / 2.0 + tooldia / 2.0
+                y = ymax + margin + line_thickness / 2.0 - tooldia / 2.0
+                drill_list.append(
+                    Point((x, y))
+                )
 
-        if tr_state:
-            x = xmax + margin + line_thickness / 2.0 - tooldia / 2.0
-            y = ymax + margin + line_thickness / 2.0 - tooldia / 2.0
-            drill_list.append(
-                Point((x, y))
-            )
+            if tr_state:
+                x = xmax + margin + line_thickness / 2.0 - tooldia / 2.0
+                y = ymax + margin + line_thickness / 2.0 - tooldia / 2.0
+                drill_list.append(
+                    Point((x, y))
+                )
 
-        if bl_state:
-            x = xmin - margin - line_thickness / 2.0 + tooldia / 2.0
-            y = ymin - margin - line_thickness / 2.0 + tooldia / 2.0
-            drill_list.append(
-                Point((x, y))
-            )
+            if bl_state:
+                x = xmin - margin - line_thickness / 2.0 + tooldia / 2.0
+                y = ymin - margin - line_thickness / 2.0 + tooldia / 2.0
+                drill_list.append(
+                    Point((x, y))
+                )
 
-        if br_state:
-            x = xmax + margin + line_thickness / 2.0 - tooldia / 2.0
-            y = ymin - margin - line_thickness / 2.0 + tooldia / 2.0
-            drill_list.append(
-                Point((x, y))
-            )
+            if br_state:
+                x = xmax + margin + line_thickness / 2.0 - tooldia / 2.0
+                y = ymin - margin - line_thickness / 2.0 + tooldia / 2.0
+                drill_list.append(
+                    Point((x, y))
+                )
+        else:
+            if self.points['manual']:
+                for pt in self.points['manual']:
+                    add_pt = (pt[0] - (line_thickness / 2)), (pt[1] + line_thickness / 2)
+                    drill_list.append(
+                        Point(add_pt)
+                    )
+            else:
+                self.app.inform.emit("[ERROR_NOTCL] %s." % _("Please select at least a location"))
+                self.app.call_source = "app"
+                return
 
         tools = {
             1: {
-                "tooldia": tooldia,
-                "drills": drill_list,
-                "slots": [],
-                'data': {},
-                "solid_geometry": []
+                "tooldia":          tooldia,
+                "drills":           drill_list,
+                "slots":            [],
+                'data':             {},
+                "solid_geometry":   []
             }
         }
 
@@ -691,7 +729,7 @@ class ToolCorners(AppTool):
                                                                       use_thread=False)
 
         outname = '%s_%s' % (str(self.grb_object.options['name']), 'verification')
-        ret_val = self.app.app_obj.new_object("excellon", outname, obj_init)
+        ret_val = self.app.app_obj.new_object("excellon", outname, obj_init, autoselected=False)
 
         self.app.call_source = "app"
         if ret_val == 'fail':
@@ -981,8 +1019,8 @@ class CornersUI:
         # Selection Frame
         # #############################################################################################################
         # Selection
-        self.sel_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Selection"))
-        self.tools_box.addWidget(self.sel_label)
+        self.mode_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Selection"))
+        self.tools_box.addWidget(self.mode_label)
 
         self.s_frame = FCFrame()
         self.tools_box.addWidget(self.s_frame)
@@ -992,19 +1030,19 @@ class CornersUI:
         self.s_frame.setLayout(grid_sel)
 
         # Type of placement of markers
-        self.sel_label = FCLabel('%s: ' % _("Mode"))
-        self.sel_label.setToolTip(
+        self.mode_label = FCLabel('%s: ' % _("Mode"))
+        self.mode_label.setToolTip(
             _("When the manual type is chosen, the markers\n"
               "are manually placed on canvas.")
         )
 
-        self.sel_radio = RadioSet([
+        self.mode_radio = RadioSet([
             {"label": _("Auto"), "value": "a"},
             {"label": _("Manual"), "value": "m"},
         ])
 
-        grid_sel.addWidget(self.sel_label, 0, 0)
-        grid_sel.addWidget(self.sel_radio, 0, 1)
+        grid_sel.addWidget(self.mode_label, 0, 0)
+        grid_sel.addWidget(self.mode_radio, 0, 1)
 
         # #############################################################################################################
         # ## Insert Corner Marker Button

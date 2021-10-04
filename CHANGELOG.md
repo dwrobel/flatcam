@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+5.10.2021
+
+- Corners Plugin made sure that Drill in Locations and Check in Locations functionality works for manual mode
+
 4.10.2021
 
 - fixed a typo in the Object UI
