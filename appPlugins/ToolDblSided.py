@@ -524,6 +524,20 @@ class DblSidedTool(AppTool):
         self.drill_values = drill_values_without_last_tupple
         self.ui.alignment_holes.set_value(self.drill_values)
 
+        # adjust the clipboard content too
+        try:
+            old_clipb = eval(self.app.clipboard.text())
+        except Exception as err:
+            # self.log.error("App.on_mouse_and_key_modifiers() --> %s" % str(err))
+            old_clipb = None
+
+        if isinstance(old_clipb, list):
+            red_clip = old_clipb[:-1]
+            clip_text = str(red_clip[0]) if len(red_clip) == 1 else str(red_clip)
+        else:
+            clip_text = ''
+        self.app.clipboard.setText(clip_text)
+
     def on_toggle_pointbox(self, val):
         if val == "point":
             self.ui.pr_frame.show()

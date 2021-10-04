@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - in 2Sided Plugin clicking LMB and also pressing CTRL+Shift will add the click coordinates to the Drll Alignment Coordinates
 - added support for all Plugins to handle the LMB click release event without connect/reconnect of the mouse events
 - code refactoring in app_Main file
+- in 2Sided Plugin, deleting the last drill alignment coordinates will update the clipboard values too
 
 3.10.2021
 

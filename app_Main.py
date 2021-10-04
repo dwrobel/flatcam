@@ -7723,17 +7723,20 @@ class App(QtCore.QObject):
         :return:
         """
 
-        if self.ui.notebook.currentWidget().objectName() == "plugin_tab":
-            tab_idx = self.ui.notebook.currentIndex()
-            for plugin in self.app_plugins:
-                # execute this only for the current active plugin
-                if self.ui.notebook.tabText(tab_idx) == plugin.pluginName:
-                    try:
-                        plugin.on_mouse_plugin_click_release()
-                    except AttributeError:
-                        # not all plugins have this implemented
-                        # print("This does not have it", self.ui.notebook.tabText(tab_idx))
-                        pass
+        if self.ui.notebook.currentWidget().objectName() != "plugin_tab":
+            return
+
+        tab_idx = self.ui.notebook.currentIndex()
+        for plugin in self.app_plugins:
+            # execute this only for the current active plugin
+            if self.ui.notebook.tabText(tab_idx) != plugin.pluginName:
+                continue
+            try:
+                plugin.on_mouse_plugin_click_release()
+            except AttributeError:
+                # not all plugins have this implemented
+                # print("This does not have it", self.ui.notebook.tabText(tab_idx))
+                pass
 
     def delete_hover_shape(self):
         self.hover_shapes.clear()
