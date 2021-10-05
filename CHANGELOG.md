@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - Corners Plugin made sure that Drill in Locations and Check in Locations functionality works for manual mode
 - Check Rules Plugin - upgraded the UI to the new look and grouped better the rules
 - updated the language strings
+- upgraded the Preferences UI section for Check Rules Plugin
 
 4.10.2021
 

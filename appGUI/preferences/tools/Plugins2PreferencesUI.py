@@ -28,7 +28,7 @@ class Plugins2PreferencesUI(QtWidgets.QWidget):
         self.defaults = defaults
 
         self.tools2_checkrules_group = Tools2RulesCheckPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
-        self.tools2_checkrules_group.setMinimumWidth(220)
+        self.tools2_checkrules_group.setMinimumWidth(150)
 
         self.tools2_optimal_group = Tools2OptimalPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.tools2_optimal_group.setMinimumWidth(220)
