@@ -345,7 +345,7 @@ class ToolExtract(AppTool):
                 self.ui.apertures_table.cellWidget(row, 3).clicked.disconnect()
             except (TypeError, AttributeError):
                 pass
-            self.ui.apertures_table.cellWidget(row, 3).clicked.connect(self.on_mark_cb_click_table)
+            self.ui.apertures_table.cellWidget(row, 3).stateChanged.connect(self.on_mark_cb_click_table)
 
     def ui_disconnect(self):
         try:
@@ -356,7 +356,7 @@ class ToolExtract(AppTool):
         # Mark Checkboxes
         for row in range(self.ui.apertures_table.rowCount()):
             try:
-                self.ui.apertures_table.cellWidget(row, 3).clicked.disconnect()
+                self.ui.apertures_table.cellWidget(row, 3).stateChanged.disconnect()
             except (TypeError, AttributeError):
                 pass
 
@@ -409,6 +409,8 @@ class ToolExtract(AppTool):
                                                                        use_thread=False)
 
         with self.app.proc_container.new('%s...' % _("Working")):
+            self.clear_aperture_marking()
+
             try:
                 self.app.app_obj.new_object("excellon", outname, obj_init, autoselected=False)
             except Exception as e:
@@ -931,9 +933,21 @@ class ToolExtract(AppTool):
         else:
             grb_obj.clear_plot_apertures(aperture=aperture)
 
+    def clear_aperture_marking(self):
+        """
+        Will clear all aperture markings after creating an Excellon object with extracted drill holes
+
+        :return:
+        :rtype:
+        """
+
+        for row in range(self.ui.apertures_table.rowCount()):
+            self.ui.apertures_table.cellWidget(row, 3).set_value(False)
+
     def reset_fields(self):
         self.ui.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.ui.gerber_object_combo.setCurrentIndex(0)
+        self.clear_aperture_marking()
 
 
 class ExtractUI:

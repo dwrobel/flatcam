@@ -507,7 +507,7 @@ class ToolCorners(AppTool):
             grb_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None, local_use=grb_obj,
                                                                    use_thread=False)
 
-        ret = self.app.app_obj.new_object('gerber', outname, initialize, plot=True)
+        ret = self.app.app_obj.new_object('gerber', outname, initialize, plot=True, autoselected=False)
 
         return ret
 
@@ -552,29 +552,29 @@ class ToolCorners(AppTool):
 
         if 'manual' not in self.points:
             if tl_state:
-                x = xmin - margin - line_thickness / 2.0 + tooldia / 2.0
-                y = ymax + margin + line_thickness / 2.0 - tooldia / 2.0
+                x = xmin - margin - line_thickness / 2.0
+                y = ymax + margin + line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
 
             if tr_state:
-                x = xmax + margin + line_thickness / 2.0 - tooldia / 2.0
-                y = ymax + margin + line_thickness / 2.0 - tooldia / 2.0
+                x = xmax + margin + line_thickness / 2.0
+                y = ymax + margin + line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
 
             if bl_state:
-                x = xmin - margin - line_thickness / 2.0 + tooldia / 2.0
-                y = ymin - margin - line_thickness / 2.0 + tooldia / 2.0
+                x = xmin - margin - line_thickness / 2.0
+                y = ymin - margin - line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
 
             if br_state:
-                x = xmax + margin + line_thickness / 2.0 - tooldia / 2.0
-                y = ymin - margin - line_thickness / 2.0 + tooldia / 2.0
+                x = xmax + margin + line_thickness / 2.0
+                y = ymin - margin - line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
@@ -662,29 +662,29 @@ class ToolCorners(AppTool):
 
         if 'manual' not in self.points:
             if tl_state:
-                x = xmin - margin - line_thickness / 2.0 + tooldia / 2.0
-                y = ymax + margin + line_thickness / 2.0 - tooldia / 2.0
+                x = xmin - margin - line_thickness / 2.0
+                y = ymax + margin + line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
 
             if tr_state:
-                x = xmax + margin + line_thickness / 2.0 - tooldia / 2.0
-                y = ymax + margin + line_thickness / 2.0 - tooldia / 2.0
+                x = xmax + margin + line_thickness / 2.0
+                y = ymax + margin + line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
 
             if bl_state:
-                x = xmin - margin - line_thickness / 2.0 + tooldia / 2.0
-                y = ymin - margin - line_thickness / 2.0 + tooldia / 2.0
+                x = xmin - margin - line_thickness / 2.0
+                y = ymin - margin - line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
 
             if br_state:
-                x = xmax + margin + line_thickness / 2.0 - tooldia / 2.0
-                y = ymin - margin - line_thickness / 2.0 + tooldia / 2.0
+                x = xmax + margin + line_thickness / 2.0
+                y = ymin - margin - line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
@@ -891,14 +891,13 @@ class CornersUI:
         # Gerber Source Object
         # #############################################################################################################
 
-        # Gerber object #
         self.object_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
         self.object_label.setToolTip(_("The Gerber object to which will be added corner markers."))
 
         self.object_combo = FCComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.object_combo.is_last = True
+        self.object_combo.is_last = False
         self.object_combo.obj_type = "Gerber"
 
         self.tools_box.addWidget(self.object_label)

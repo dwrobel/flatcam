@@ -529,6 +529,7 @@ class ToolPunchGerber(AppTool, Gerber):
                 self.on_ring_method(self.grb_obj, outname)
             elif punch_method == 'prop':
                 self.on_proportional_method(self.grb_obj, outname)
+            self.clear_aperture_marking()
         else:
             if punch_method == 'exc':
                 # get the Excellon file whose geometry will create the punch holes
@@ -562,6 +563,7 @@ class ToolPunchGerber(AppTool, Gerber):
 
             # disconnect flags
             self.poly_sel_disconnect_flag = True
+            self.app.ui.notebook.setDisabled(True)
 
             # disable the canvas mouse dragging seelction shape
             self.old_selection_status = deepcopy(self.app.defaults['global_selection_shape'])
@@ -670,7 +672,7 @@ class ToolPunchGerber(AppTool, Gerber):
             new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
                                                                    local_use=new_obj, use_thread=False)
 
-        self.app.app_obj.new_object('gerber', outname, init_func)
+        self.app.app_obj.new_object('gerber', outname, init_func, autoselected=False)
 
     def on_excellon_manual_method(self, outname):
         # get the Excellon file whose geometry will create the punch holes
@@ -791,7 +793,7 @@ class ToolPunchGerber(AppTool, Gerber):
             new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
                                                                    local_use=new_obj, use_thread=False)
 
-        self.app.app_obj.new_object('gerber', outname, init_func)
+        self.app.app_obj.new_object('gerber', outname, init_func, autoselected=False)
 
     def on_fixed_method(self, grb_obj, outname):
         punch_size = float(self.ui.dia_entry.get_value())
@@ -924,7 +926,7 @@ class ToolPunchGerber(AppTool, Gerber):
             new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
                                                                    local_use=new_obj, use_thread=False)
 
-        self.app.app_obj.new_object('gerber', outname, init_func)
+        self.app.app_obj.new_object('gerber', outname, init_func, autoselected=False)
 
     def on_fixed_manual_method(self, outname):
         punch_size = float(self.ui.dia_entry.get_value())
@@ -1019,7 +1021,7 @@ class ToolPunchGerber(AppTool, Gerber):
             new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
                                                                    local_use=new_obj, use_thread=False)
 
-        self.app.app_obj.new_object('gerber', outname, init_func)
+        self.app.app_obj.new_object('gerber', outname, init_func, autoselected=False)
 
     def on_ring_method(self, grb_obj, outname):
         circ_r_val = self.ui.circular_ring_entry.get_value()
@@ -1168,7 +1170,7 @@ class ToolPunchGerber(AppTool, Gerber):
             new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
                                                                    local_use=new_obj, use_thread=False)
 
-        self.app.app_obj.new_object('gerber', outname, init_func)
+        self.app.app_obj.new_object('gerber', outname, init_func, autoselected=False)
 
     def on_ring_manual_method(self, outname):
         circ_r_val = self.ui.circular_ring_entry.get_value()
@@ -1308,7 +1310,7 @@ class ToolPunchGerber(AppTool, Gerber):
             new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
                                                                    local_use=new_obj, use_thread=False)
 
-        self.app.app_obj.new_object('gerber', outname, init_func)
+        self.app.app_obj.new_object('gerber', outname, init_func, autoselected=False)
 
     def on_proportional_method(self, grb_obj, outname):
         prop_factor = self.ui.factor_entry.get_value() / 100.0
@@ -1452,7 +1454,7 @@ class ToolPunchGerber(AppTool, Gerber):
             new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
                                                                    local_use=new_obj, use_thread=False)
 
-        self.app.app_obj.new_object('gerber', outname, init_func)
+        self.app.app_obj.new_object('gerber', outname, init_func, autoselected=False)
 
     def on_proportional_manual_method(self, outname):
         prop_factor = self.ui.factor_entry.get_value() / 100.0
@@ -1588,7 +1590,7 @@ class ToolPunchGerber(AppTool, Gerber):
             new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
                                                                    local_use=new_obj, use_thread=False)
 
-        self.app.app_obj.new_object('gerber', outname, init_func)
+        self.app.app_obj.new_object('gerber', outname, init_func, autoselected=False)
 
     def find_pad(self, point):
         pt = Point(point) if type(point) is tuple else point
@@ -1752,6 +1754,8 @@ class ToolPunchGerber(AppTool, Gerber):
             self.app.tool_shapes.clear(update=True)
 
             self.on_manual_punch()
+            self.clear_aperture_marking()
+            self.app.ui.notebook.setDisabled(False)
 
             # initialize the work variables
             self.manual_pads = []
@@ -1844,8 +1848,9 @@ class ToolPunchGerber(AppTool, Gerber):
                 if self.old_selection_status is not None:
                     self.app.defaults['global_selection_shape'] = self.old_selection_status
 
+            self.app.ui.notebook.setDisabled(False)
             self.poly_dict.clear()
-
+            self.clear_aperture_marking()
             self.delete_moving_selection_shape()
             self.delete_tool_selection_shape()
 
@@ -1942,9 +1947,22 @@ class ToolPunchGerber(AppTool, Gerber):
         self.app.tool_shapes.redraw()
         self.app.inform.emit(_("Selection cleared."))
 
+    def clear_aperture_marking(self):
+        """
+        Will clear all aperture markings after creating an Excellon object with extracted drill holes
+
+        :return:
+        :rtype:
+        """
+
+        for row in range(self.ui.apertures_table.rowCount()):
+            self.ui.apertures_table.cellWidget(row, 3).set_value(False)
+
     def reset_fields(self):
         self.ui.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.ui.exc_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
+        self.clear_aperture_marking()
+
         self.ui_disconnect()
 
 
@@ -2008,7 +2026,7 @@ class PunchUI:
         self.gerber_object_combo = FCComboBox()
         self.gerber_object_combo.setModel(self.app.collection)
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.gerber_object_combo.is_last = True
+        self.gerber_object_combo.is_last = False
         self.gerber_object_combo.obj_type = "Gerber"
 
         grid0.addWidget(self.gerber_object_combo, 0, 0, 1, 2)
