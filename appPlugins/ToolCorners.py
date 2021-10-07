@@ -42,7 +42,8 @@ class ToolCorners(AppTool):
         self.units = ''
 
         # here we store the locations of the selected corners
-        self.points = {}
+        self.points = LoudDict()
+        self.points.set_change_callback(self.on_points_changed)
 
         # #############################################################################
         # ######################### Tool GUI ##########################################
@@ -65,6 +66,33 @@ class ToolCorners(AppTool):
         self.grb_steps_per_circle = self.app.defaults["gerber_circle_steps"]
 
         self.handlers_connected = False
+
+    def on_insert_type_changed(self, val):
+        obj_type = 2 if val == 'geo' else 0
+        self.ui.obj_insert_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        self.ui.obj_insert_combo.setCurrentIndex(0)
+        self.ui.obj_insert_combo.obj_type = {
+            "grb": "gerber", "geo": "geometry"
+        }[self.ui.insert_type_radio.get_value()]
+
+    def on_object_selection_changed(self, current, previous):
+        found_idx = None
+        for tab_idx in range(self.app.ui.notebook.count()):
+            if self.app.ui.notebook.tabText(tab_idx) == self.ui.pluginName:
+                found_idx = True
+                break
+
+        if found_idx:
+            try:
+                name = current.indexes()[0].internalPointer().obj.options['name']
+                kind = current.indexes()[0].internalPointer().obj.kind
+
+                if kind in ['gerber', 'geometry']:
+                    obj_type = {'gerber': 'grb', 'geometry': 'geo'}[kind]
+                    self.ui.insert_type_radio.set_value(obj_type)
+                    self.ui.obj_insert_combo.set_value(name)
+            except Exception:
+                pass
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolCorners()")
@@ -136,6 +164,10 @@ class ToolCorners(AppTool):
         self.ui.drill_button.clicked.connect(self.on_create_drill_object)
         self.ui.check_button.clicked.connect(self.on_create_check_object)
         self.ui.mode_radio.activated_custom.connect(self.on_selection_changed)
+        self.ui.insert_type_radio.activated_custom.connect(self.on_insert_type_changed)
+        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
+
+        self.ui.insert_markers_button.clicked.connect(self.on_insert_markers_in_external_objects)
 
     def set_tool_ui(self):
         self.units = self.app.app_units
@@ -152,6 +184,11 @@ class ToolCorners(AppTool):
         self.ui.type_radio.set_value(self.app.defaults["tools_corners_type"])
         self.ui.drill_dia_entry.set_value(self.app.defaults["tools_corners_drill_dia"])
         self.ui.mode_radio.set_value("a")
+
+        self.ui.insert_type_radio.set_value(val="grb")
+
+        self.points.clear()
+        self.on_points_changed()
 
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
@@ -195,6 +232,10 @@ class ToolCorners(AppTool):
             self.ui.drill_button.hide()
             self.ui.check_label.hide()
             self.ui.check_button.hide()
+
+            self.ui.insert_label.hide()
+            self.ui.insert_frame.hide()
+            self.ui.insert_markers_button.hide()
         else:
             self.ui.level.setText('%s' % _('Advanced'))
             self.ui.level.setStyleSheet("""
@@ -209,6 +250,10 @@ class ToolCorners(AppTool):
             self.ui.drill_button.show()
             self.ui.check_label.show()
             self.ui.check_button.show()
+
+            self.ui.insert_label.show()
+            self.ui.insert_frame.show()
+            self.ui.insert_markers_button.show()
 
     def on_toggle_all(self, val):
         self.ui.bl_cb.set_value(val)
@@ -318,6 +363,18 @@ class ToolCorners(AppTool):
         :return:                None
         """
 
+        geo_list = self.create_marker_geometry(points_storage)
+        if geo_list == "fail" or not geo_list:
+            return "fail"
+
+        assert isinstance(geo_list, list), 'Geometry list should be a list but the type is: %s' % str(type(geo_list))
+        new_name = '%s_%s' % (str(self.grb_object.options['name']), 'corners')
+
+        return_val = self.generate_gerber_obj_with_markers(new_grb_obj=g_obj, marker_geometry=geo_list, outname=new_name)
+
+        return return_val
+
+    def create_marker_geometry(self, points_storage):
         marker_type = self.ui.type_radio.get_value()
         line_thickness = self.ui.thick_entry.get_value()
         margin = self.ui.margin_entry.get_value()
@@ -431,7 +488,23 @@ class ToolCorners(AppTool):
                     self.app.log.warning("Not enough points.")
                     return "fail"
 
-        new_apertures = deepcopy(g_obj.tools)
+        return geo_list
+
+    def generate_gerber_obj_with_markers(self, new_grb_obj, marker_geometry, outname):
+        """
+
+        :param new_grb_obj:     a Gerber App object
+        :type new_grb_obj:
+        :param marker_geometry: a list of Shapely geometries
+        :type marker_geometry:  list
+        :param outname:         the name for the new Gerber object
+        :type outname:          str
+        :return:
+        :rtype:
+        """
+        line_thickness = self.ui.thick_entry.get_value()
+
+        new_apertures = deepcopy(new_grb_obj.tools)
 
         aperture_found = None
         for ap_id, ap_val in new_apertures.items():
@@ -441,7 +514,7 @@ class ToolCorners(AppTool):
 
         geo_buff_list = []
         if aperture_found:
-            for geo in geo_list:
+            for geo in marker_geometry:
                 geo_buff = geo.buffer(line_thickness / 2.0, resolution=self.grb_steps_per_circle, join_style=2)
                 geo_buff_list.append(geo_buff)
 
@@ -455,12 +528,12 @@ class ToolCorners(AppTool):
                 new_apid = 10
 
             new_apertures[new_apid] = {
-                'type':         'C',
-                'size':         line_thickness,
-                'geometry':     []
+                'type': 'C',
+                'size': line_thickness,
+                'geometry': []
             }
 
-            for geo in geo_list:
+            for geo in marker_geometry:
                 geo_buff = geo.buffer(line_thickness / 2.0, resolution=self.grb_steps_per_circle, join_style=3)
                 geo_buff_list.append(geo_buff)
 
@@ -468,11 +541,11 @@ class ToolCorners(AppTool):
                 new_apertures[new_apid]['geometry'].append(deepcopy(dict_el))
 
         s_list = []
-        if g_obj.solid_geometry:
-            if isinstance(g_obj.solid_geometry, MultiPolygon):
-                work_geo = g_obj.solid_geometry.geoms
+        if new_grb_obj.solid_geometry:
+            if isinstance(new_grb_obj.solid_geometry, MultiPolygon):
+                work_geo = new_grb_obj.solid_geometry.geoms
             else:
-                work_geo = g_obj.solid_geometry
+                work_geo = new_grb_obj.solid_geometry
             try:
                 for poly in work_geo:
                     s_list.append(poly)
@@ -489,25 +562,110 @@ class ToolCorners(AppTool):
         except TypeError:
             s_list.append(geo_buff_list)
 
-        outname = '%s_%s' % (str(self.grb_object.options['name']), 'corners')
-
         def initialize(grb_obj, app_obj):
             grb_obj.options = LoudDict()
-            for opt in g_obj.options:
+            for opt in new_grb_obj.options:
                 if opt != 'name':
-                    grb_obj.options[opt] = deepcopy(g_obj.options[opt])
+                    grb_obj.options[opt] = deepcopy(new_grb_obj.options[opt])
             grb_obj.options['name'] = outname
             grb_obj.multitool = False
             grb_obj.multigeo = False
-            grb_obj.follow = deepcopy(g_obj.follow)
+            grb_obj.follow = deepcopy(new_grb_obj.follow)
             grb_obj.tools = new_apertures
             grb_obj.solid_geometry = flatten_shapely_geometry(unary_union(s_list))
-            grb_obj.follow_geometry = flatten_shapely_geometry(g_obj.follow_geometry + geo_list)
+            grb_obj.follow_geometry = flatten_shapely_geometry(new_grb_obj.follow_geometry + marker_geometry)
 
             grb_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None, local_use=grb_obj,
                                                                    use_thread=False)
 
         ret = self.app.app_obj.new_object('gerber', outname, initialize, plot=True, autoselected=False)
+
+        return ret
+
+    def generate_geo_obj_with_markers(self, new_geo_obj, marker_geometry, outname):
+        """
+
+        :param new_geo_obj:     a Geometry App object
+        :type new_geo_obj:
+        :param marker_geometry: a list of Shapely geometries
+        :type marker_geometry:  list
+        :param outname:         the name for the new Geometry object
+        :type outname:          str
+        :return:
+        :rtype:
+        """
+        tooldia = self.ui.thick_entry.get_value()
+
+        new_tools = deepcopy(new_geo_obj.tools)
+        tool_found = None
+        for tool, tool_dict in new_tools.items():
+            if tool_dict['tooldia'] == tooldia:
+                tool_found = tool
+                break
+
+        geo_buff_list = []
+        if tool_found:
+            new_tools[tool_found]['solid_geometry'] += marker_geometry
+        else:
+            obj_tools = list(new_tools.keys())
+            if obj_tools:
+                new_tool = max(obj_tools) + 1
+            else:
+                new_tool = 1
+
+            new_data = {}
+            for opt_key in self.app.options:
+                if opt_key.find('geometry' + "_") == 0:
+                    oname = opt_key[len('geometry') + 1:]
+                    new_data[oname] = self.app.options[opt_key]
+            for opt_key in self.app.options:
+                if opt_key.find('tools_') == 0:
+                    new_data[opt_key] = self.app.options[opt_key]
+
+            new_tools = {
+                new_tool: {
+                    'tooldia': tooldia,
+                    'data': deepcopy(new_data),
+                    'solid_geometry': marker_geometry
+                }
+            }
+
+        s_list = []
+        if new_geo_obj.solid_geometry:
+            if isinstance(new_geo_obj.solid_geometry, MultiPolygon):
+                work_geo = new_geo_obj.solid_geometry.geoms
+            else:
+                work_geo = new_geo_obj.solid_geometry
+            try:
+                for poly in work_geo:
+                    s_list.append(poly)
+            except TypeError:
+                s_list.append(work_geo)
+
+        geo_buff_list = flatten_shapely_geometry(geo_buff_list)
+
+        try:
+            for poly in geo_buff_list + marker_geometry:
+                s_list.append(poly)
+        except TypeError:
+            s_list.append(geo_buff_list)
+
+        def initialize(geo_obj, app_obj):
+            geo_obj.options = LoudDict()
+            for opt in new_geo_obj.options:
+                if opt != 'name' and opt in geo_obj.options:
+                    geo_obj.options[opt] = deepcopy(app_obj.options[opt])
+            geo_obj.options['name'] = outname
+
+            # Propagate options
+            geo_obj.options["tools_mill_tooldia"] = app_obj.defaults["tools_mill_tooldia"]
+            geo_obj.solid_geometry = flatten_shapely_geometry(unary_union(s_list))
+
+            geo_obj.multitool = False
+            geo_obj.multigeo = False
+            geo_obj.tools = new_tools
+
+        ret = self.app.app_obj.new_object('geometry', outname, initialize, plot=True, autoselected=False)
 
         return ret
 
@@ -736,6 +894,60 @@ class ToolCorners(AppTool):
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
         else:
             self.app.inform.emit('[success] %s' % _("Excellon object with corner drills created."))
+
+    def on_insert_markers_in_external_objects(self):
+        obj_type = self.ui.insert_type_radio.get_value()    # values in ["grb", "geo"]
+
+        geo_list = self.create_marker_geometry(self.points)
+        if geo_list == "fail" or not geo_list:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+            return
+        assert isinstance(geo_list, list), 'Geometry list should be a list but the type is: %s' % str(
+            type(geo_list))
+
+        if obj_type == 'grb':
+            # get the Gerber object on which the corner marker will be inserted
+            selection_index = self.ui.obj_insert_combo.currentIndex()
+            model_index = self.app.collection.index(selection_index, 0, self.ui.obj_insert_combo.rootModelIndex())
+
+            try:
+                new_grb_obj = model_index.internalPointer().obj
+            except Exception as e:
+                self.app.log.error("ToolCorners.on_insert_markers_in_external_objects() Gerber --> %s" % str(e))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
+                self.app.call_source = "app"
+                return
+
+            new_name = '%s_%s' % (str(new_grb_obj.options['name']), 'corners')
+            return_val = self.generate_gerber_obj_with_markers(new_grb_obj=new_grb_obj, marker_geometry=geo_list,
+                                                               outname=new_name)
+        else:
+            # get the Geometry object on which the corner marker will be inserted
+            geo_obj_name = self.ui.obj_insert_combo.get_value()
+
+            try:
+                new_geo_obj = self.app.collection.get_by_name(geo_obj_name)
+            except Exception as e:
+                self.app.log.error("ToolCorners.on_insert_markers_in_external_objects() Geometry --> %s" % str(e))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Geometry object available."))
+                self.app.call_source = "app"
+                return
+
+            new_name = '%s_%s' % (str(new_geo_obj.options['name']), 'corners')
+            return_val = self.generate_geo_obj_with_markers(new_geo_obj=new_geo_obj, marker_geometry=geo_list,
+                                                            outname=new_name)
+        if return_val == "fail":
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+        else:
+            self.app.inform.emit('[success] %s' % _("Done."))
+
+    def on_points_changed(self, *args):
+        if self.points:
+            self.ui.insert_frame.setDisabled(False)
+            self.ui.insert_markers_button.setDisabled(False)
+        else:
+            self.ui.insert_frame.setDisabled(True)
+            self.ui.insert_markers_button.setDisabled(True)
 
     def replot(self, obj, run_thread=True):
         def worker_task():
@@ -1049,7 +1261,7 @@ class CornersUI:
         self.add_marker_button = FCButton(_("Add Marker"))
         self.add_marker_button.setIcon(QtGui.QIcon(self.app.resource_location + '/corners_32.png'))
         self.add_marker_button.setToolTip(
-            _("Will add corner markers to the selected Gerber file.")
+            _("Will add corner markers to the selected object.")
         )
         self.add_marker_button.setStyleSheet("""
                                 QPushButton
@@ -1086,8 +1298,6 @@ class CornersUI:
         grid_drill.addWidget(self.drill_dia_label, 0, 0)
         grid_drill.addWidget(self.drill_dia_entry, 0, 1)
 
-        FCGridLayout.set_common_column_size([grid_sel, param_grid, grid_loc, grid_drill], 0)
-
         # ## Create an Excellon object
         self.drill_button = FCButton(_("Create Excellon Object"))
         self.drill_button.setIcon(QtGui.QIcon(self.app.resource_location + '/drill32.png'))
@@ -1105,7 +1315,6 @@ class CornersUI:
         # #############################################################################################################
         # Check in Locations Frame
         # #############################################################################################################
-        # Check in corners
         self.check_label = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _('Check in Locations'))
         self.tools_box.addWidget(self.check_label)
 
@@ -1125,6 +1334,54 @@ class CornersUI:
                                         }
                                         """)
         self.tools_box.addWidget(self.check_button)
+
+        # #############################################################################################################
+        # Insert Markers Frame
+        # #############################################################################################################
+        self.insert_label = FCLabel('<span style="color:teal;"><b>%s</b></span>' % _('Insert Markers'))
+        self.tools_box.addWidget(self.insert_label)
+
+        self.insert_frame = FCFrame()
+        self.tools_box.addWidget(self.insert_frame)
+
+        insert_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.insert_frame.setLayout(insert_grid)
+
+        self.insert_type_label = FCLabel('%s:' % _("Type"))
+        self.insert_type_label.setToolTip(
+            _("Specify the type of object where the markers are inserted.")
+        )
+
+        # Type of object into which to insert the markers
+        self.insert_type_radio = RadioSet([{'label': _('Gerber'), 'value': 'grb'},
+                                           {'label': _('Geometry'), 'value': 'geo'}])
+
+        insert_grid.addWidget(self.insert_type_label, 0, 0)
+        insert_grid.addWidget(self.insert_type_radio, 0, 1)
+
+        # The object into which to insert existing markers
+        self.obj_insert_combo = FCComboBox()
+        self.obj_insert_combo.setModel(self.app.collection)
+        self.obj_insert_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.obj_insert_combo.is_last = False
+
+        insert_grid.addWidget(self.obj_insert_combo, 2, 0, 1, 2)
+
+        # Insert Markers
+        self.insert_markers_button = FCButton(_("Insert Marker"))
+        self.insert_markers_button.setIcon(QtGui.QIcon(self.app.resource_location + '/corners_32.png'))
+        self.insert_markers_button.setToolTip(
+            _("Will add corner markers to the selected object.")
+        )
+        self.insert_markers_button.setStyleSheet("""
+                                       QPushButton
+                                       {
+                                           font-weight: bold;
+                                       }
+                                       """)
+        self.tools_box.addWidget(self.insert_markers_button)
+
+        FCGridLayout.set_common_column_size([grid_sel, param_grid, grid_loc, grid_drill, insert_grid], 0)
 
         self.layout.addStretch(1)
 

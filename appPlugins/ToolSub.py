@@ -165,16 +165,23 @@ class ToolSub(AppTool):
         self.app.ui.notebook.setTabText(2, _("Subtract"))
 
     def on_object_selection_changed(self, current, previous):
-        try:
-            name = current.indexes()[0].internalPointer().obj.options['name']
-            kind = current.indexes()[0].internalPointer().obj.kind
+        found_idx = None
+        for tab_idx in range(self.app.ui.notebook.count()):
+            if self.app.ui.notebook.tabText(tab_idx) == self.ui.pluginName:
+                found_idx = True
+                break
 
-            if kind == 'gerber':
-                self.ui.target_gerber_combo.set_value(name)
-            if kind == 'geometry':
-                self.ui.target_geo_combo.set_value(name)
-        except Exception:
-            pass
+        if found_idx:
+            try:
+                name = current.indexes()[0].internalPointer().obj.options['name']
+                kind = current.indexes()[0].internalPointer().obj.kind
+
+                if kind == 'gerber':
+                    self.ui.target_gerber_combo.set_value(name)
+                if kind == 'geometry':
+                    self.ui.target_geo_combo.set_value(name)
+            except Exception:
+                pass
 
     def connect_signals_at_init(self):
         self.ui.level.toggled.connect(self.on_level_changed)

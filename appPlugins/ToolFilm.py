@@ -79,19 +79,26 @@ class Film(AppTool):
         }[self.ui.tf_type_obj_combo.get_value()]
 
     def on_object_selection_changed(self, current, previous):
-        try:
-            name = current.indexes()[0].internalPointer().obj.options['name']
-            kind = current.indexes()[0].internalPointer().obj.kind
+        found_idx = None
+        for tab_idx in range(self.app.ui.notebook.count()):
+            if self.app.ui.notebook.tabText(tab_idx) == self.ui.pluginName:
+                found_idx = True
+                break
 
-            if kind in ['gerber', 'geometry']:
-                obj_type = {'gerber': 'grb', 'geometry': 'geo'}[kind]
-                self.ui.tf_type_obj_combo.set_value(obj_type)
-                self.ui.tf_type_box_combo.set_value(obj_type)
+        if found_idx:
+            try:
+                name = current.indexes()[0].internalPointer().obj.options['name']
+                kind = current.indexes()[0].internalPointer().obj.kind
 
-                self.ui.tf_object_combo.set_value(name)
-                self.ui.tf_box_combo.set_value(name)
-        except Exception:
-            pass
+                if kind in ['gerber', 'geometry']:
+                    obj_type = {'gerber': 'grb', 'geometry': 'geo'}[kind]
+                    self.ui.tf_type_obj_combo.set_value(obj_type)
+                    self.ui.tf_type_box_combo.set_value(obj_type)
+
+                    self.ui.tf_object_combo.set_value(name)
+                    self.ui.tf_box_combo.set_value(name)
+            except Exception:
+                pass
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolFilm()")

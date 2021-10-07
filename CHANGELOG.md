@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+8.10.2021
+
+- the Plugins object combo boxes are no longer updated on object selection on Project tab generally but only for the Plugin that is current, if any
+- in Corner Markers Plugin I added a new feature, ability to insert existing markers into external objects. Finished the work for external Gerbers and work in progress for the external Geometry
+
 7.10.2021
 
 - updated the Turkish translation files (by Mehmet Kaya)

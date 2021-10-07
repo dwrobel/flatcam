@@ -112,17 +112,24 @@ class CutOut(AppTool):
             self.ui.convex_box_cb.setDisabled(True)
 
     def on_object_selection_changed(self, current, previous):
-        try:
-            name = current.indexes()[0].internalPointer().obj.options['name']
-            kind = current.indexes()[0].internalPointer().obj.kind
+        found_idx = None
+        for tab_idx in range(self.app.ui.notebook.count()):
+            if self.app.ui.notebook.tabText(tab_idx) == self.ui.pluginName:
+                found_idx = True
+                break
 
-            if kind in ['gerber', 'geometry']:
-                obj_type = {'gerber': 'grb', 'geometry': 'geo'}[kind]
-                self.ui.type_obj_radio.set_value(obj_type)
+        if found_idx:
+            try:
+                name = current.indexes()[0].internalPointer().obj.options['name']
+                kind = current.indexes()[0].internalPointer().obj.kind
 
-            self.ui.obj_combo.set_value(name)
-        except IndexError:
-            pass
+                if kind in ['gerber', 'geometry']:
+                    obj_type = {'gerber': 'grb', 'geometry': 'geo'}[kind]
+                    self.ui.type_obj_radio.set_value(obj_type)
+
+                self.ui.obj_combo.set_value(name)
+            except IndexError:
+                pass
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolCutOut()")

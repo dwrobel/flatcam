@@ -459,6 +459,7 @@ class GerberObject(FlatCAMObj, Gerber):
             if not self.options["noncopperrounded"]:
                 bounding_box = bounding_box.envelope
             non_copper = bounding_box.difference(self.solid_geometry)
+            non_copper = flatten_shapely_geometry(non_copper)
 
             if non_copper is None or non_copper.is_empty:
                 app_obj.inform.emit("[ERROR_NOTCL] %s" % _("Operation could not be done."))
@@ -489,6 +490,8 @@ class GerberObject(FlatCAMObj, Gerber):
             if bounding_box is None or bounding_box.is_empty:
                 app_obj.inform.emit("[ERROR_NOTCL] %s" % _("Operation could not be done."))
                 return "fail"
+
+            bounding_box = flatten_shapely_geometry(bounding_box)
             geo_obj.solid_geometry = bounding_box
 
         self.app.app_obj.new_object("geometry", name, geo_init)

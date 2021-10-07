@@ -242,22 +242,29 @@ class Panelize(AppTool):
             self.ui.box_combo.setDisabled(True)
 
     def on_object_selection_changed(self, current, previous):
-        try:
-            name = current.indexes()[0].internalPointer().obj.options['name']
-            kind = current.indexes()[0].internalPointer().obj.kind
+        found_idx = None
+        for tab_idx in range(self.app.ui.notebook.count()):
+            if self.app.ui.notebook.tabText(tab_idx) == self.ui.pluginName:
+                found_idx = True
+                break
 
-            if kind in ['gerber', 'excellon', 'geometry']:
-                obj_type = {
-                    "gerber": _("Gerber"), "excellon": _("Excellon"), "geometry": _("Geometry")
-                }[kind]
+        if found_idx:
+            try:
+                name = current.indexes()[0].internalPointer().obj.options['name']
+                kind = current.indexes()[0].internalPointer().obj.kind
 
-                self.ui.type_obj_combo.set_value(obj_type)
-                self.ui.type_box_combo.set_value(obj_type)
+                if kind in ['gerber', 'excellon', 'geometry']:
+                    obj_type = {
+                        "gerber": _("Gerber"), "excellon": _("Excellon"), "geometry": _("Geometry")
+                    }[kind]
 
-            self.ui.object_combo.set_value(name)
-            self.ui.box_combo.set_value(name)
-        except Exception:
-            pass
+                    self.ui.type_obj_combo.set_value(obj_type)
+                    self.ui.type_box_combo.set_value(obj_type)
+
+                self.ui.object_combo.set_value(name)
+                self.ui.box_combo.set_value(name)
+            except Exception:
+                pass
 
     def change_level(self, level):
         """

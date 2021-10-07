@@ -968,14 +968,21 @@ class ToolDrilling(AppTool, Excellon):
             self.ui.generate_cnc_button.setDisabled(False)
 
     def on_object_selection_changed(self, current, previous):
-        try:
-            sel_obj = current.indexes()[0].internalPointer().obj
-            name = sel_obj.options['name']
-            kind = sel_obj.kind
-            if kind in ['geometry', 'excellon']:
-                self.ui.object_combo.set_value(name)
-        except Exception:
-            pass
+        found_idx = None
+        for tab_idx in range(self.app.ui.notebook.count()):
+            if self.app.ui.notebook.tabText(tab_idx) == self.ui.pluginName:
+                found_idx = True
+                break
+
+        if found_idx:
+            try:
+                sel_obj = current.indexes()[0].internalPointer().obj
+                name = sel_obj.options['name']
+                kind = sel_obj.kind
+                if kind in ['geometry', 'excellon']:
+                    self.ui.object_combo.set_value(name)
+            except Exception:
+                pass
 
     def ui_connect(self):
 

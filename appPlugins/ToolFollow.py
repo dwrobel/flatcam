@@ -321,10 +321,6 @@ class ToolFollow(AppTool, Gerber):
             new_obj.tools = {
                 1: {
                     'tooldia': app_obj.dec_format(float(tools_list[0]), self.decimals),
-                    'offset': 'Path',
-                    'offset_value': 0.0,
-                    'type': 'Rough',
-                    'tool_type': 'C1',
                     'data': deepcopy(new_data),
                     'solid_geometry': new_obj.solid_geometry
                 }

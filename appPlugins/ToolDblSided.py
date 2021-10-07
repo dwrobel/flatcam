@@ -271,20 +271,27 @@ class DblSidedTool(AppTool):
             "grb": "Gerber", "exc": "Excellon", "geo": "Geometry"}[val]
 
     def on_object_selection_changed(self, current, previous):
-        try:
-            name = current.indexes()[0].internalPointer().obj.options['name']
-            kind = current.indexes()[0].internalPointer().obj.kind
+        found_idx = None
+        for tab_idx in range(self.app.ui.notebook.count()):
+            if self.app.ui.notebook.tabText(tab_idx) == self.ui.pluginName:
+                found_idx = True
+                break
 
-            if kind in ['gerber', 'excellon', 'geometry']:
-                index = {'gerber': 0, 'excellon': 1, 'geometry': 2}[kind]
-                self.ui.object_type_combo.set_value(index)
+        if found_idx:
+            try:
+                name = current.indexes()[0].internalPointer().obj.options['name']
+                kind = current.indexes()[0].internalPointer().obj.kind
 
-                obj_type = {'gerber': 'grb', 'excellon': 'exc', 'geometry': 'geo'}[kind]
-                self.ui.box_type_radio.set_value(obj_type)
+                if kind in ['gerber', 'excellon', 'geometry']:
+                    index = {'gerber': 0, 'excellon': 1, 'geometry': 2}[kind]
+                    self.ui.object_type_combo.set_value(index)
 
-                self.ui.object_combo.set_value(name)
-        except Exception as err:
-            self.app.log.error("DblSidedTool.on_object_selection_changed() --> %s" % str(err))
+                    obj_type = {'gerber': 'grb', 'excellon': 'exc', 'geometry': 'geo'}[kind]
+                    self.ui.box_type_radio.set_value(obj_type)
+
+                    self.ui.object_combo.set_value(name)
+            except Exception as err:
+                self.app.log.error("DblSidedTool.on_object_selection_changed() --> %s" % str(err))
 
     def on_create_alignment_holes(self):
         align_type = self.ui.align_type_radio.get_value()
