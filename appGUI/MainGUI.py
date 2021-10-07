@@ -865,6 +865,9 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/brown32.png'), _('Brown'))
 
         self.menuproject_brown = self.menuprojectcolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/indigo32.png'), _('Indigo'))
+
+        self.menuproject_brown = self.menuprojectcolor.addAction(
             QtGui.QIcon(self.app.resource_location + '/white32.png'), _('White'))
 
         self.menuproject_brown = self.menuprojectcolor.addAction(

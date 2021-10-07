@@ -10,6 +10,8 @@ CHANGELOG for FlatCAM beta
 7.10.2021
 
 - updated the Turkish translation files (by Mehmet Kaya)
+- added a new color in the Object Colors ("indigo")
+- now the object color transparency is preserved if a new color is chosen
 
 5.10.2021
 

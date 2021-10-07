@@ -8815,6 +8815,8 @@ class App(QtCore.QObject):
         self.log.debug("App.on_set_color_triggered() launched...")
 
         new_color = self.defaults['gerber_plot_fill']
+        new_line_color = self.defaults['gerber_plot_line']
+
         clicked_action = self.sender()
 
         assert isinstance(clicked_action, QAction), "Expected a QAction, got %s" % type(clicked_action)
@@ -8827,18 +8829,21 @@ class App(QtCore.QObject):
         # a default value, I just chose this one
         alpha_level = 'BF'
         for sel_obj in sel_obj_list:
-            if sel_obj.kind == 'excellon':
-                alpha_level = str(hex(int(self.defaults['excellon_plot_fill'][7:9], 16))[2:])
-            elif sel_obj.kind == 'gerber':
-                alpha_level = str(hex(int(self.defaults['gerber_plot_fill'][7:9], 16))[2:])
-            elif sel_obj.kind == 'geometry':
-                alpha_level = 'FF'
+            if hasattr(sel_obj, "alpha_level"):
+                alpha_level = sel_obj.alpha_level
             else:
-                self.log.debug(
-                    "App.on_set_color_action_triggered() --> Default transparency level "
-                    "for this object type not supported yet")
-                continue
-            sel_obj.alpha_level = alpha_level
+                if sel_obj.kind == 'excellon':
+                    alpha_level = str(hex(int(self.defaults['excellon_plot_fill'][7:9], 16))[2:])
+                elif sel_obj.kind == 'gerber':
+                    alpha_level = str(hex(int(self.defaults['gerber_plot_fill'][7:9], 16))[2:])
+                elif sel_obj.kind == 'geometry':
+                    alpha_level = 'FF'
+                else:
+                    self.log.debug(
+                        "App.on_set_color_action_triggered() --> Default transparency level "
+                        "for this object type not supported yet")
+                    continue
+                sel_obj.alpha_level = alpha_level
 
         if act_name == _('Red'):
             new_color = '#FF0000' + alpha_level
@@ -8853,6 +8858,8 @@ class App(QtCore.QObject):
             new_color = '#FF00FF' + alpha_level
         if act_name == _('Brown'):
             new_color = '#A52A2A' + alpha_level
+        if act_name == _('Indigo'):
+            new_color = '#4B0082' + alpha_level
         if act_name == _('White'):
             new_color = '#FFFFFF' + alpha_level
         if act_name == _('Black'):
@@ -8914,7 +8921,7 @@ class App(QtCore.QObject):
                 for sel_obj in sel_obj_list:
                     new_color = sel_obj.fill_color[:-2] + alpha_str
                     new_line_color = sel_obj.outline_color
-
+                    sel_obj.alpha_level = alpha_str
                     sel_obj.fill_color = new_color
                     sel_obj.shapes.redraw(
                         update_colors=(sel_obj.fill_color, sel_obj.outline_color)
