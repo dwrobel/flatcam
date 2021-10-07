@@ -338,11 +338,11 @@ class ToolIsolation(AppTool, Gerber):
 
         self.ui.new_tooldia_entry.set_value(self.app.defaults["tools_iso_newdia"])
 
-        loaded_obj = self.app.collection.get_by_name(self.ui.object_combo.get_value())
-        if loaded_obj:
-            outname = loaded_obj.options['name']
-        else:
-            outname = ''
+        # loaded_obj = self.app.collection.get_by_name(self.ui.object_combo.get_value())
+        # if loaded_obj:
+        #     outname = loaded_obj.options['name']
+        # else:
+        #     outname = ''
 
         # init the working variables
         self.default_data.clear()
@@ -604,7 +604,9 @@ class ToolIsolation(AppTool, Gerber):
         # make the diameter column editable
         for row in range(tool_id):
             self.ui.tools_table.item(row, 1).setFlags(
-                QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+                QtCore.Qt.ItemFlag.ItemIsEditable |
+                QtCore.Qt.ItemFlag.ItemIsSelectable |
+                QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         # all the tools are selected by default
         self.ui.tools_table.selectColumn(0)
@@ -986,7 +988,7 @@ class ToolIsolation(AppTool, Gerber):
             # disable rest-machining for area painting
             self.ui.rest_cb.setDisabled(False)
 
-    def on_order_changed(self, order):
+    def on_order_changed(self):
         self.build_ui()
 
     def on_rest_machining_check(self, state):
@@ -1958,8 +1960,8 @@ class ToolIsolation(AppTool, Gerber):
             if len(tools_storage) > 1:
                 geo_obj.multigeo = True
             else:
-                for ky in tools_storage.keys():
-                    passes_no = float(tools_storage[ky]['data']['tools_iso_passes'])
+                for __ in tools_storage.keys():
+                    # passes_no = float(tools_storage[ky]['data']['tools_iso_passes'])
                     geo_obj.multigeo = True
                     break
 
@@ -2141,9 +2143,9 @@ class ToolIsolation(AppTool, Gerber):
             if len(tools_storage) > 1:
                 geo_obj.multigeo = True
             else:
-                passes_no = 1
-                for ky in tools_storage.keys():
-                    passes_no = float(tools_storage[ky]['data']['tools_iso_passes'])
+                # passes_no = 1
+                for __ in tools_storage.keys():
+                    # passes_no = float(tools_storage[ky]['data']['tools_iso_passes'])
                     geo_obj.multigeo = True
                     break
                 geo_obj.multigeo = True
@@ -2649,7 +2651,7 @@ class ToolIsolation(AppTool, Gerber):
         #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
         self.app.ui.update_location_labels(self.app.dx, self.app.dy, curr_pos[0], curr_pos[1])
 
-        units = self.app.app_units.lower()
+        # units = self.app.app_units.lower()
         # self.app.plotcanvas.text_hud.text = \
         #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
         #         self.app.dx, units, self.app.dy, units, curr_pos[0], units, curr_pos[1], units)
@@ -2829,6 +2831,7 @@ class ToolIsolation(AppTool, Gerber):
                 self.ui.tools_table.selectRow(row)
                 break
 
+        return True
         # if self.ui.tools_table.rowCount() != 0:
         #     self.param_frame.setDisabled(False)
 

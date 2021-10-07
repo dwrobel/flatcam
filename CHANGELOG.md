@@ -13,6 +13,8 @@ CHANGELOG for FlatCAM beta
 - added a new color in the Object Colors ("indigo")
 - now the object color transparency is preserved if a new color is chosen
 - the Proprties tab UI is now populated with the object UI only when the Properties tab is selected and not on object selection like it was done previously
+- make sure that if the Properties Tab is selected then the Object UI is updated (built) on object selection on canvas
+- code cleanup
 
 5.10.2021
 

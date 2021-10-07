@@ -3,7 +3,7 @@ import stat
 import sys
 from copy import deepcopy
 from appCommon.Common import LoudDict
-from camlib import to_dict, CNCjob, Geometry
+from camlib import to_dict, Geometry
 import simplejson
 import logging
 import gettext

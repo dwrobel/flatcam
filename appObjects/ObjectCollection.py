@@ -995,11 +995,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             self.app.setup_default_properties_tab()
             return
 
-        # if obj:
-        #     try:
-        #         obj.build_ui()
-        #     except RuntimeError:
-        #         pass
+        # make sure that if the Properties Tab is selected then the Object UI is updated (built)
+        self.app.on_notebook_tab_changed()
 
         # don't emit the signal if there more than one objects selected
         # this signal is intended to be emitted for a single selection in the collection view
