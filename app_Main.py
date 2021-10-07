@@ -1432,7 +1432,8 @@ class App(QtCore.QObject):
         self.connect_canvas_context_signals()
 
         # Notebook tab clicking
-        self.ui.notebook.tabBarClicked.connect(self.on_properties_tab_click)
+        # self.ui.notebook.tabBarClicked.connect(self.on_properties_tab_click)
+        self.ui.notebook.currentChanged.connect(self.on_notebook_tab_changed)
 
         # self.ui.notebook.callback_on_close = self.on_close_notebook_tab
 
@@ -6704,7 +6705,7 @@ class App(QtCore.QObject):
 
     def on_notebook_closed(self, tab_obj_name):
 
-        closed_plugin_name = self.ui.plugin_scroll_area.widget().objectName()
+        # closed_plugin_name = self.ui.plugin_scroll_area.widget().objectName()
         # # print(closed_plugin_name)
         # if closed_plugin_name == _("Levelling"):
         #     # clear the possible drawn probing shapes
@@ -6712,7 +6713,7 @@ class App(QtCore.QObject):
         # elif closed_plugin_name in [_("Isolation"), _("NCC"), _("Paint"), _("Punch Gerber")]:
         #     self.tool_shapes.clear(update=True)
 
-        disconnected_tool = self.ui.plugin_scroll_area.widget()
+        # disconnected_tool = self.ui.plugin_scroll_area.widget()
 
         # try:
         #     # if the closed plugin name is Milling
@@ -8358,31 +8359,25 @@ class App(QtCore.QObject):
         if tab_wdg and tab_wdg.objectName() == 'default_properties':
             self.setup_default_properties_tab()
 
+    def on_notebook_tab_changed(self):
+        """
+        Slot for current tab changed in self.ui.notebook
+
+        :return:
+        """
+        if self.ui.notebook.tabText(self.ui.notebook.currentIndex()) == _("Properties"):
+            active_obj = self.collection.get_active()
+            if active_obj:
+                active_obj.build_ui()
+            else:
+                self.setup_default_properties_tab()
+
     def setup_default_properties_tab(self):
         """
         Default text for the Properties tab when is not taken by the Object UI.
 
         :return:
         """
-        # label = FCLabel("Choose an item from Project")
-        # label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
-
-        # sel_title = QtWidgets.QTextEdit()
-        # sel_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
-        # sel_title.setFrameStyle(QtWidgets.QFrame.Shape.NoFrame)
-        #
-        # f_settings = QSettings("Open Source", "FlatCAM")
-        # if f_settings.contains("notebook_font_size"):
-        #     fsize = f_settings.value('notebook_font_size', type=int)
-        # else:
-        #     fsize = 12
-        #
-        # tsize = fsize + int(fsize / 2)
-        #
-        # selected_text = ''
-        #
-        # sel_title.setText(selected_text)
-        # sel_title.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
 
         # Tree Widget
         d_properties_tw = FCTree(columns=2)

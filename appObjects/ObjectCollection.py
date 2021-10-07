@@ -995,11 +995,11 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             self.app.setup_default_properties_tab()
             return
 
-        if obj:
-            try:
-                obj.build_ui()
-            except RuntimeError:
-                pass
+        # if obj:
+        #     try:
+        #         obj.build_ui()
+        #     except RuntimeError:
+        #         pass
 
         # don't emit the signal if there more than one objects selected
         # this signal is intended to be emitted for a single selection in the collection view
@@ -1016,12 +1016,12 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         a_idx = index.internalPointer().obj
         if a_idx is None:
             return
-        else:
-            try:
-                a_idx.build_ui()
-            except Exception as e:
-                self.app.inform.emit('[ERROR] %s: %s' % (_("Cause of error"), str(e)))
-                raise
+
+        try:
+            a_idx.build_ui()
+        except Exception as e:
+            self.app.inform.emit('[ERROR] %s: %s' % (_("Cause of error"), str(e)))
+            raise
 
     def get_list(self):
         """

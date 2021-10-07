@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - updated the Turkish translation files (by Mehmet Kaya)
 - added a new color in the Object Colors ("indigo")
 - now the object color transparency is preserved if a new color is chosen
+- the Proprties tab UI is now populated with the object UI only when the Properties tab is selected and not on object selection like it was done previously
 
 5.10.2021
 
