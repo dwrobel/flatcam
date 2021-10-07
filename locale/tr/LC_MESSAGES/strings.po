@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2021-10-05 02:56+0300\n"
-"PO-Revision-Date: 2021-10-05 02:56+0300\n"
+"PO-Revision-Date: 2021-10-07 13:31+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Generator: Poedit 3.0\n"
+"X-Generator: Poedit 2.2\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -832,8 +832,8 @@ msgstr ""
 "Değeri daha düşük değerlerden başlayarak ayarlayın ve işlenmesi gereken "
 "alanlar hâlâ işlenmiyorsa değeri artırın.\n"
 "Düşük değerler = Daha hızlı işleme, CNC'de daha hızlı yürütme sağlar.\n"
-"Daha yüksek değerler = Çok sayıda yol nedeniyle CNC'de yavaş işleme \n"
-"ve yavaş yürütmeye sebep olur."
+"Daha yüksek değerler = Çok sayıda yol nedeniyle CNC'de yavaş işleme ve yavaş "
+"yürütmeye sebep olur."
 
 #: appDatabase.py:639 appDatabase.py:1115 appEditors/AppGeoEditor.py:540
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:70
@@ -3780,10 +3780,8 @@ msgid ""
 msgstr "Dosyada şekil tanımı yok. Gerber oluşturma işlemi iptal ediliyor."
 
 #: appEditors/AppGerberEditor.py:4974
-#, fuzzy
-#| msgid "Cancelled. No aperture is selected"
 msgid "No aperture is selected."
-msgstr "İptal edildi. Hiçbir şekil seçilmedi"
+msgstr "Hiçbir şekil seçilmedi."
 
 #: appEditors/AppGerberEditor.py:5202 app_Main.py:7466 app_Main.py:7488
 msgid "Coordinates copied to clipboard."
@@ -7559,16 +7557,12 @@ msgstr "Daire Adımı"
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:63
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:55
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:64
-#, fuzzy
-#| msgid ""
-#| "The number of circle steps for Gerber \n"
-#| "circular aperture linear approximation."
 msgid ""
 "The number of circle steps for \n"
 "linear approximation of circles."
 msgstr ""
-"Gerber için daire adımı sayısı\n"
-"dairesel bir şeklin doğrusal yaklaşımı."
+"Dairelerin doğrusal yaklaşımı \n"
+"için daire adımlarının sayısı."
 
 #: appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:57
 msgid "Travel dia"
@@ -8480,8 +8474,6 @@ msgid "RMB"
 msgstr "FSD"
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:398
-#, fuzzy
-#| msgid "Multiple Selection"
 msgid "Multi-Selection"
 msgstr "Çoklu Seçim"
 
@@ -8728,10 +8720,8 @@ msgstr ""
 "Uygulama yeniden başladığında aktif olacaktır."
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:162
-#, fuzzy
-#| msgid "Application units"
 msgid "Application Level"
-msgstr "Uygulama birimleri"
+msgstr "Uygulama Seviyesi"
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:163
 msgid ""
@@ -9039,10 +9029,8 @@ msgstr ""
 "sürüklediğinizde görüntülenir."
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:135
-#, fuzzy
-#| msgid "M-Color"
 msgid "Colors"
-msgstr "Çok Renkli"
+msgstr "Renkler"
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:145
 msgid "Left-Right Selection Color"
@@ -9762,12 +9750,12 @@ msgstr ""
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:305
 #: appPlugins/ToolCopperThieving.py:1677
 msgid "Pattern Plating Mask"
-msgstr "Desen Kaplama Maskesi"
+msgstr "Kaplama Maskesi"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:307
 #: appPlugins/ToolCopperThieving.py:1679
 msgid "Generate a mask for pattern plating."
-msgstr "Desen kaplama için bir maske oluşturun."
+msgstr "Kaplama için bir maske oluşturun."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:319
 #: appPlugins/ToolCopperThieving.py:1707
@@ -9777,7 +9765,8 @@ msgstr "Sadece Pedler"
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:321
 #: appPlugins/ToolCopperThieving.py:1709
 msgid "Select only pads in case the selected object is a copper Gerber."
-msgstr "Seçilen nesnenin bakır Gerber olması durumunda sadece pedleri seçin."
+msgstr ""
+"Seçilen nesnenin bakır bir Gerber olması durumunda sadece pedleri seçin."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:328
 #: appPlugins/ToolCopperThieving.py:1716
@@ -10764,6 +10753,10 @@ msgid ""
 "Y - Pairs of drill holes mirrored horizontally from reference point\n"
 "Manual - no mirroring; drill holes in place"
 msgstr ""
+"Excellon dosyasının içeriği.\n"
+"X - Referans noktasından dikey olarak terslenmiş matkap deliği çiftleri\n"
+"Y - Referans noktasından yatay olarak terslenmiş matkap deliği çiftleri\n"
+"El İle - Tersleme yok; yerinde delikler açın"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:78
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:161
@@ -10796,16 +10789,6 @@ msgstr "Referans Noktası"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:114
 #: appPlugins/ToolDblSided.py:873
-#, fuzzy
-#| msgid ""
-#| "The coordinates used as reference for the mirror operation.\n"
-#| "Can be:\n"
-#| "- Point -> a set of coordinates (x,y) around which the object is "
-#| "mirrored\n"
-#| "- Box -> a set of coordinates (x, y) obtained from the center of the\n"
-#| "bounding box of another object selected below\n"
-#| "- Hole Snap -> a point defined by the center of a drill hole in a "
-#| "Excellon object"
 msgid ""
 "The coordinates used as reference for the mirror operation.\n"
 "Can be:\n"
@@ -10816,9 +10799,9 @@ msgid ""
 msgstr ""
 "Tersleme işlemi için referans olarak kullanılan koordinatlar.\n"
 "Koordinat olarak şunlar kullanılabilir:\n"
-"- Nokta -> Nesnenin etrafında terslendiği (x, y) koordinat kümesi.\n"
-"- Çerçeve -> Aşağıya yazılan, seçilen başka bir nesnenin sınırlayıcı\n"
-"   kutusunun merkezinden elde edilen bir (x, y) koordinat kümesi\n"
+"- Nokta -> Nesnenin etrafında terslendiği koordinat dizisi (x, y)\n"
+"- Çerçeve -> Aşağıda seçilen başka bir nesnenin sınırlayıcı\n"
+"   kutusunun merkezinden elde edilen bir koordinat dizisi (x, y)\n"
 "Deliğe Tuttur-> Excellon nesnesindeki belirlenen bir deliğin merkezi\n"
 "   tarafından tanımlanan bir nokta"
 
@@ -11019,10 +11002,8 @@ msgstr "Tekli"
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:176
 #: appPlugins/ToolCutOut.py:2462
-#, fuzzy
-#| msgid "Mouse Settings"
 msgid "Mouse Bytes"
-msgstr "Fare Ayarları"
+msgstr "Fare Isırıkları"
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:236
 msgid ""
@@ -11103,15 +11084,6 @@ msgstr "Uç Sırası"
 
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:42
 #: appPlugins/ToolDrilling.py:2362 appPlugins/ToolMilling.py:3745
-#, fuzzy
-#| msgid ""
-#| "This set the way that the tools in the tools table are used.\n"
-#| "'No' --> means that the used order is the one in the tool table\n"
-#| "'Forward' --> means that the tools will be ordered from small to big\n"
-#| "'Reverse' --> means that the tools will ordered from big to small\n"
-#| "\n"
-#| "WARNING: using rest machining will automatically set the order\n"
-#| "in reverse and disable this control."
 msgid ""
 "This set the way that the tools in the tools table are used.\n"
 "'Default' --> the order from the Excellon file\n"
@@ -11122,10 +11094,9 @@ msgid ""
 "in reverse and disable this control."
 msgstr ""
 "Bu, Araçlar Tablosundaki uçların kullanılma şeklini belirler.\n"
-"'Hayır' -> Kullanılan uç sıranın Araçlar Tablosundaki sıra olduğu anlamına "
-"gelir.\n"
-"'İleri' -> Uçların küçükten büyüğe doğru kullanılacağı anlamına gelir.\n"
-"Geri -> Uçların büyükten küçüğe doğru kullanılacağı anlamına gelir.\n"
+"'Hayır' --> Excellon dosyasındaki sıra\n"
+"'İleri' --> Uçlar küçükten büyüğe sıralanacak\n"
+"'Geri' --> Uçlar büyükten küçüğe sıralanacak\n"
 "\n"
 "UYARI: Kalan parça işlemeyi kullanmak, sırayı otomatik olarak tersine "
 "çevirir \n"
@@ -11543,17 +11514,13 @@ msgstr ""
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:191
 #: appPlugins/ToolFilm.py:1488
-#, fuzzy
-#| msgid ""
-#| "Create a convex shape surrounding the entire PCB.\n"
-#| "Used only if the source object type is Gerber."
 msgid ""
 "Create a convex shape surrounding the entire PCB.\n"
 "If not checked the shape is rectangular."
 msgstr ""
 "Tüm PCB'yi çevreleyen ve kesim için sınır oluşturan \n"
 "şeklin köşelerini yuvarlaklaştırın.\n"
-"Yalnız, kaynak nesnenin türü Gerber ise kullanılabilir."
+"İşaretli değilse, şekil dikdörtgendir."
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:215
 #: appPlugins/ToolFilm.py:1528
@@ -13006,22 +12973,18 @@ msgid "Calculating dimensions ... Please wait."
 msgstr "Boyutlar hesaplanıyor ... Lütfen bekleyin."
 
 #: appObjects/FlatCAMObj.py:688 appObjects/FlatCAMObj.py:696
-#, fuzzy
-#| msgid "Polygon"
 msgid "Polygons"
-msgstr "Çokgen"
+msgstr "Çokgenler"
 
 #: appObjects/FlatCAMObj.py:690
 #, fuzzy
-#| msgid "Line thickness"
 msgid "LineStrings"
-msgstr "Çizgi Kalınlığı"
+msgstr "LineStrings"
 
 #: appObjects/FlatCAMObj.py:695
 #, fuzzy
-#| msgid "Experimental"
 msgid "Elements"
-msgstr "Deneysel"
+msgstr "Elements"
 
 #: appObjects/FlatCAMObj.py:733 appObjects/FlatCAMObj.py:804
 #: appPlugins/ToolReport.py:448 appPlugins/ToolReport.py:519
@@ -13114,10 +13077,8 @@ msgid "Batch Save"
 msgstr "Toplu Kaydet"
 
 #: appObjects/ObjectCollection.py:531
-#, fuzzy
-#| msgid "Object Transform"
 msgid "Object renamed from"
-msgstr "Nesne Döndür"
+msgstr "Nesne yeniden adlandırıldı"
 
 #: appObjects/ObjectCollection.py:954 appObjects/ObjectCollection.py:960
 #: appObjects/ObjectCollection.py:966 appObjects/ObjectCollection.py:972
@@ -14022,15 +13983,15 @@ msgstr "Şekil Oluştur"
 
 #: appPlugins/ToolCopperThieving.py:961 appPlugins/ToolCopperThieving.py:965
 msgid "P-Plating Mask"
-msgstr "Desen Kaplama Maskesi"
+msgstr "Kaplama Maskesi"
 
 #: appPlugins/ToolCopperThieving.py:989
 msgid "Append PP-M geometry"
-msgstr "Desen Kaplama Maskesi Ekle"
+msgstr "Kaplama Maskesi Ekle"
 
 #: appPlugins/ToolCopperThieving.py:1165
 msgid "Generating Pattern Plating Mask done."
-msgstr "Desen kaplama maskesi oluşturma işlemi tamamlandı."
+msgstr "Kaplama maskesi oluşturma işlemi tamamlandı."
 
 #: appPlugins/ToolCopperThieving.py:1208
 msgid "Copper Thieving Tool exit."
@@ -14096,6 +14057,7 @@ msgid ""
 msgstr ""
 "Gerçek Gerber nesnesini belirli bir mesafede çevreleyecek\n"
 "tanımlanmış bir kalınlığa sahip bir çerçeve ekler.\n"
+"Deliklerin kaplanması yapılırken gereklidir.\n"
 "(Soyguncu çubuğu: Deliklerin kaplanmasını kolaylaştırmak\n"
 "için bakır kenarlık (çerçeve)."
 
@@ -14106,8 +14068,7 @@ msgid ""
 "the pattern plating mask."
 msgstr ""
 "Lehim maskesinin uygulanacağı Gerber nesnesi.\n"
-"Desen kaplama maskesi için bir \n"
-"taban olarak kullanılacaktır."
+"Kaplama maskesi için bir taban olarak kullanılacaktır."
 
 #: appPlugins/ToolCopperThieving.py:1728
 msgid "Plated area"
@@ -14123,7 +14084,7 @@ msgid ""
 "a bit larger than the copper pads, and this area is\n"
 "calculated from the soldermask openings."
 msgstr ""
-"Desen kaplama ile kaplanacak alan.\n"
+"Kaplama yapılacak alan.\n"
 "Temel olarak kaplama maskesindeki açıklıklardan yapılır.\n"
 "\n"
 "<<UYARI>> -Lehim maskesi açıklıklarının bakır pedlerden \n"
@@ -14133,7 +14094,7 @@ msgstr ""
 
 #: appPlugins/ToolCopperThieving.py:1771
 msgid "Generate pattern plating mask"
-msgstr "Desen Kaplama Maskesi Oluştur"
+msgstr "Kaplama Maskesi Oluştur"
 
 #: appPlugins/ToolCopperThieving.py:1774
 msgid ""
@@ -14141,8 +14102,9 @@ msgid ""
 "the geometries of the copper thieving and/or\n"
 "the robber bar if those were generated."
 msgstr ""
-"Eğer oluşturulmuşsa, Gerber lehim maskesine \n"
-"bakır dolgu ve/veya soyguncu çubuğu şekli ekler.\n"
+"Eğer oluşturulmuşsa, bakır dolgu ve/veya soyguncu çubuğunun\n"
+"lehim maskesini Gerber şekline ekleyecektir.\n"
+"\n"
 "(Soyguncu çubuğu: Deliklerin kaplanmasını \n"
 "kolaylaştırmak için bakır kenarlık (çerçeve)."
 
@@ -14481,6 +14443,8 @@ msgid ""
 "Checked: the cutout shape is rectangular.\n"
 "Unchecked: any-form cutout shape."
 msgstr ""
+"İşaretlenmişse: PCB'nin kesim şekli dikdörtgendir.\n"
+"İşaretlenmemişse: PCB, herhangi bir kesme şekline sahip olabilir."
 
 #: appPlugins/ToolCutOut.py:2600
 msgid "Manual cutout Geometry"
@@ -14491,64 +14455,44 @@ msgid "Geometry object used to create the manual cutout."
 msgstr "Geçitlerin el ile yerleştirileceği nesne."
 
 #: appPlugins/ToolCutOut.py:2617
-#, fuzzy
-#| msgid "Manual cutout Geometry"
 msgid "Manual Geometry"
-msgstr "Geçitleri El ile Ekle"
+msgstr "Kesim Şekli Oluştur"
 
 #: appPlugins/ToolCutOut.py:2620
-#, fuzzy
-#| msgid ""
-#| "Generate the geometry for\n"
-#| "the board cutout."
 msgid "Generate a Geometry to be used as cutout."
-msgstr "PCB'yi kesmek için kesim şekilleri oluşturun."
+msgstr "PCB'yi kesmek için kullanılacak bir kesim şekli oluşturun."
 
 #: appPlugins/ToolCutOut.py:2635
 msgid ""
 "Add new gaps on the selected Geometry object\n"
 "by clicking mouse left button on the Geometry outline."
 msgstr ""
+"Kesim şekli çizgisi üzerine farenin sol tuşuna tıklayarak \n"
+"seçilen Şekil nesnesine yeni geçitler ekleyin."
 
 #: appPlugins/ToolCutOut.py:2645
-#, fuzzy
-#| msgid "Generate the Geometry object."
 msgid "Generate the cutout geometry."
-msgstr "Bir şekil nesnesi oluşturulacaktır."
+msgstr "Kesme şeklini oluşturun."
 
 #: appPlugins/ToolDblSided.py:299
-#, fuzzy
-#| msgid ""
-#| "'Point' reference is selected and 'Point' coordinates are missing. Add "
-#| "them and retry."
 msgid "'Point' reference is selected and 'Point' coordinates are missing."
-msgstr ""
-"“Nokta” referansı seçildi, ancak “Nokta” koordinatları eksik. Onları ekleyin "
-"ve tekrar deneyin."
+msgstr "“Nokta” referansı seçildi, ancak “Nokta” koordinatları eksik."
 
 #: appPlugins/ToolDblSided.py:308
-#, fuzzy
-#| msgid "The reference object type is not supported."
 msgid "Box reference object is missing."
-msgstr "Belirtilen nesnenin türü desteklenmiyor."
+msgstr "Sınırlayıcı kutu referans nesnesi eksik."
 
 #: appPlugins/ToolDblSided.py:316
-#, fuzzy
-#| msgid "Geometry not supported"
 msgid "Not supported."
-msgstr "Şekil desteklenmiyor"
+msgstr "Desteklenmiyor."
 
 #: appPlugins/ToolDblSided.py:322
-#, fuzzy
-#| msgid "Drill Diameter"
 msgid "Drill diameter is missing."
-msgstr "Delik genişliği"
+msgstr "Delik genişliği yoktur."
 
 #: appPlugins/ToolDblSided.py:329
-#, fuzzy
-#| msgid "Alignment Drill Coordinates"
 msgid "Alignment drill coordinates are missing."
-msgstr "Hizalama Deliği Koordinatları"
+msgstr "Hizalama Deliği Koordinatları yoktur."
 
 #: appPlugins/ToolDblSided.py:364
 msgid "Alignment Drills"
@@ -14598,7 +14542,7 @@ msgid ""
 "toolpaths to cover the space outside the copper pattern."
 msgstr ""
 "Bakır desenin dışındaki alanı kaplamak için\n"
-"uç çizimleriyle bir Şekil nesnesi oluşturun."
+"uç çizimlerine sahip bir Şekil nesnesi oluşturun."
 
 #: appPlugins/ToolDblSided.py:708
 msgid "Objects to be mirrored"
@@ -15313,10 +15257,8 @@ msgstr ""
 "artıracaktır."
 
 #: appPlugins/ToolExtract.py:387
-#, fuzzy
-#| msgid "Extract"
 msgid "extracted"
-msgstr "Çıkarıcı"
+msgstr "çıkarıldı"
 
 #: appPlugins/ToolExtract.py:463 appPlugins/ToolExtract.py:568
 #: appPlugins/ToolExtract.py:668
@@ -16101,10 +16043,8 @@ msgid "Finished autolevelling."
 msgstr "Otomatik dengeleme tamamlanıyor."
 
 #: appPlugins/ToolLevelling.py:1778
-#, fuzzy
-#| msgid "CNCJob objects can't be scaled."
 msgid "CNCJob source object to be levelled."
-msgstr "CNC İş nesnelerinde ölçeklendirme işlemi yapılamaz."
+msgstr "CNC İş kaynak nesnesi dengelendi."
 
 #: appPlugins/ToolLevelling.py:1811
 msgid "Probe Points Table"
@@ -17565,38 +17505,28 @@ msgstr "İhlaller: Mevcut kural kapsamında ihlal bulunmamaktadır."
 
 #: appPlugins/ToolRulesCheck.py:1223 appPlugins/ToolRulesCheck.py:1269
 #: appPlugins/ToolRulesCheck.py:1335 appPlugins/ToolRulesCheck.py:1477
-#, fuzzy
-#| msgid "Copper Area"
 msgid "Copper"
-msgstr "Bakır Alan"
+msgstr "Bakır"
 
 #: appPlugins/ToolRulesCheck.py:1223 appPlugins/ToolRulesCheck.py:1230
 #: appPlugins/ToolRulesCheck.py:1237 appPlugins/ToolRulesCheck.py:1244
 #: appPlugins/ToolRulesCheck.py:1477 appPlugins/ToolRulesCheck.py:1587
 #: appPlugins/ToolRulesCheck.py:1674 appPlugins/ToolRulesCheck.py:1712
-#, fuzzy
-#| msgid "All Rules"
 msgid "Rules"
-msgstr "Tüm Kurallar"
+msgstr "Kurallar"
 
 #: appPlugins/ToolRulesCheck.py:1230 appPlugins/ToolRulesCheck.py:1305
 #: appPlugins/ToolRulesCheck.py:1371 appPlugins/ToolRulesCheck.py:1587
-#, fuzzy
-#| msgid "Silk Top"
 msgid "Silk"
-msgstr "Üst İpek"
+msgstr "İpek"
 
 #: appPlugins/ToolRulesCheck.py:1237 appPlugins/ToolRulesCheck.py:1674
-#, fuzzy
-#| msgid "Soldermask Gerber"
 msgid "Soldermask"
-msgstr "Gerber Lehim Maskesi"
+msgstr "Lehim Maskesi"
 
 #: appPlugins/ToolRulesCheck.py:1244 appPlugins/ToolRulesCheck.py:1712
-#, fuzzy
-#| msgid "Mill Holes"
 msgid "Holes"
-msgstr "Delikleri Frezele"
+msgstr "Delikler"
 
 #: appPlugins/ToolRulesCheck.py:1253
 msgid "Top"
@@ -17607,10 +17537,8 @@ msgid "The Top Gerber Copper object for which rules are checked."
 msgstr "Kuralların kontrol edildiği üst Gerber bakır nesnesidir."
 
 #: appPlugins/ToolRulesCheck.py:1287 appPlugins/ToolRulesCheck.py:1353
-#, fuzzy
-#| msgid "S"
 msgid "SM"
-msgstr "S"
+msgstr "SM"
 
 #: appPlugins/ToolRulesCheck.py:1289
 msgid "The Top Gerber Solder Mask object for which rules are checked."
@@ -17796,28 +17724,20 @@ msgstr ""
 "çapta bir nozul (ağızlık) ekleyin."
 
 #: appPlugins/ToolSolderPaste.py:1349
-#, fuzzy
-#| msgid "Z Dispense"
 msgid "Dispense"
-msgstr "Z Dağıtımı"
+msgstr "Dağıtım"
 
 #: appPlugins/ToolSolderPaste.py:1364
-#, fuzzy
-#| msgid "Start"
 msgid "Z Start"
-msgstr "Başlatma"
+msgstr "Z Başlatma"
 
 #: appPlugins/ToolSolderPaste.py:1377
-#, fuzzy
-#| msgid "Function"
 msgid "Z Action"
-msgstr "Function"
+msgstr "Z Hareket"
 
 #: appPlugins/ToolSolderPaste.py:1390
-#, fuzzy
-#| msgid "Stop"
 msgid "Z Stop"
-msgstr "Stop"
+msgstr "Z Durma"
 
 #: appPlugins/ToolSolderPaste.py:1596
 msgid "Generate solder paste dispensing geometry."
@@ -17839,7 +17759,7 @@ msgstr "CNC İşi"
 
 #: appPlugins/ToolSolderPaste.py:1633
 msgid "Generate CNCJob"
-msgstr "Generate CNCJob"
+msgstr "CNC İş Nesnesi Oluştur"
 
 #: appPlugins/ToolSolderPaste.py:1636
 msgid ""
@@ -18480,7 +18400,7 @@ msgstr "Şekil nesnesi bir Tekli Şekil türüne dönüştürüldü."
 
 #: app_Main.py:4842
 msgid "Units cannot be changed while the editor is active."
-msgstr ""
+msgstr "Düzenleyici aktifken birimler değiştirilemez."
 
 #: app_Main.py:4854
 msgid ""
@@ -19637,7 +19557,6 @@ msgstr "Değişkenlerde Şekil ismi yok. Lütfen bir isim girin ve tekrar deneyi
 #~ "- 'V-shape'\n"
 #~ "- Circular"
 
-#, python-brace-format
 #~ msgid "Object renamed from <b>{old}</b> to <b>{new}</b>"
 #~ msgstr ""
 #~ "Nesne <b> {old} </b> 'den <b> {new} </b> olarak yeniden adlandırıldı"

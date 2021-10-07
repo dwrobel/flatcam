@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+7.10.2021
+
+- updated the Turkish translation files (by Mehmet Kaya)
+
 5.10.2021
 
 - Corners Plugin made sure that Drill in Locations and Check in Locations functionality works for manual mode
