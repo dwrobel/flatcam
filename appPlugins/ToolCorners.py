@@ -630,6 +630,11 @@ class ToolCorners(AppTool):
                 }
             }
 
+            # remove possible tools without geometry
+            for tool in list(new_tools.keys()):
+                if not new_tools[tool]['solid_geometry']:
+                    new_tools.pop(tool)
+
         s_list = []
         if new_geo_obj.solid_geometry:
             if isinstance(new_geo_obj.solid_geometry, MultiPolygon):
@@ -653,8 +658,7 @@ class ToolCorners(AppTool):
         def initialize(geo_obj, app_obj):
             geo_obj.options = LoudDict()
             for opt in new_geo_obj.options:
-                if opt != 'name' and opt in geo_obj.options:
-                    geo_obj.options[opt] = deepcopy(app_obj.options[opt])
+                geo_obj.options[opt] = deepcopy(new_geo_obj.options[opt])
             geo_obj.options['name'] = outname
 
             # Propagate options
