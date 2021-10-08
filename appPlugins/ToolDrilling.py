@@ -2255,6 +2255,8 @@ class ToolDrilling(AppTool, Excellon):
 
 class DrillingUI:
 
+    pluginName = _("Drilling")
+
     def __init__(self, layout, app, name):
         self.app = app
         self.decimals = self.app.decimals

@@ -1683,9 +1683,11 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/file16.png'), _("Project"))
         self.popMenu.addSeparator()
 
+        # Grids
         self.cmenu_gridmenu = self.popMenu.addMenu(
             QtGui.QIcon(self.app.resource_location + '/grid32_menu.png'), _("Grids"))
 
+        # View
         self.cmenu_viewmenu = self.popMenu.addMenu(
             QtGui.QIcon(self.app.resource_location + '/view64.png'), _("View"))
         self.zoomfit = self.cmenu_viewmenu.addAction(
@@ -1694,6 +1696,53 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/clear_plot32.png'), _("Clear Plot"))
         self.replot = self.cmenu_viewmenu.addAction(
             QtGui.QIcon(self.app.resource_location + '/replot32.png'), _("Replot"))
+
+        self.popMenu.addSeparator()
+
+        # Set colors
+        self.pop_menucolor = self.popMenu.addMenu(
+            QtGui.QIcon(self.app.resource_location + '/set_color32.png'), _('Set Color'))
+
+        self.pop_menu_red = self.pop_menucolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/red32.png'), _('Red'))
+
+        self.pop_menu_blue = self.pop_menucolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/blue32.png'), _('Blue'))
+
+        self.pop_menu_yellow = self.pop_menucolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/yellow32.png'), _('Yellow'))
+
+        self.pop_menu_green = self.pop_menucolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/green32.png'), _('Green'))
+
+        self.pop_menu_purple = self.pop_menucolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/violet32.png'), _('Purple'))
+
+        self.pop_menu_brown = self.pop_menucolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/brown32.png'), _('Brown'))
+
+        self.pop_menu_brown = self.pop_menucolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/indigo32.png'), _('Indigo'))
+
+        self.pop_menu_brown = self.pop_menucolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/white32.png'), _('White'))
+
+        self.pop_menu_brown = self.pop_menucolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/black32.png'), _('Black'))
+
+        self.pop_menucolor.addSeparator()
+
+        self.pop_menu_custom = self.pop_menucolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/set_color32.png'), _('Custom'))
+
+        self.pop_menucolor.addSeparator()
+
+        self.pop_menu_custom = self.pop_menucolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/set_color32.png'), _('Opacity'))
+
+        self.pop_menu_custom = self.pop_menucolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/set_color32.png'), _('Default'))
+
         self.popMenu.addSeparator()
 
         self.g_editor_cmenu = self.popMenu.addMenu(

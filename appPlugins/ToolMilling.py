@@ -3532,6 +3532,8 @@ class ToolMilling(AppTool, Excellon):
 
 class MillingUI:
 
+    pluginName = _("Milling")
+
     def __init__(self, layout, app, name):
         self.app = app
         self.decimals = self.app.decimals

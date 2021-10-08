@@ -2244,14 +2244,20 @@ class App(QtCore.QObject):
         self.ui.popmenu_disable.triggered.connect(lambda: self.toggle_plots(self.collection.get_selected()))
         self.ui.popmenu_panel_toggle.triggered.connect(self.ui.on_toggle_notebook)
 
+        # New
         self.ui.popmenu_new_geo.triggered.connect(lambda: self.app_obj.new_geometry_object())
         self.ui.popmenu_new_grb.triggered.connect(lambda: self.app_obj.new_gerber_object())
         self.ui.popmenu_new_exc.triggered.connect(lambda: self.app_obj.new_excellon_object())
         self.ui.popmenu_new_prj.triggered.connect(lambda: self.f_handlers.on_file_new_project())
 
+        # View
         self.ui.zoomfit.triggered.connect(self.on_zoom_fit)
         self.ui.clearplot.triggered.connect(self.clear_plots)
         self.ui.replot.triggered.connect(self.plot_all)
+
+        # Colors
+        for act in self.ui.pop_menucolor.actions():
+            act.triggered.connect(self.on_set_color_action_triggered)
 
         self.ui.popmenu_copy.triggered.connect(self.on_copy_command)
         self.ui.popmenu_delete.triggered.connect(self.on_delete)
@@ -7501,6 +7507,15 @@ class App(QtCore.QObject):
             self.populate_cmenu_grids()
             self.ui.popMenu.popup(self.cursor.pos())
 
+            # if at least one object is Gerber or Excellon enable color changes
+            sel_obj_list = self.collection.get_selected()
+            self.ui.pop_menucolor.setDisabled(True)
+            if sel_obj_list:
+                for obj in sel_obj_list:
+                    if obj.kind in ["gerber", "excellon"]:
+                        self.ui.pop_menucolor.setDisabled(False)
+                        break
+
     def selection_area_handler(self, start_pos, end_pos, sel_type):
         """
         Called when the mouse selects by dragging left mouse button on canvas.
@@ -8938,12 +8953,13 @@ class App(QtCore.QObject):
             new_line_color = color_variant("#dedede", 0.7)
 
         for sel_obj in sel_obj_list:
-            sel_obj.fill_color = new_color
-            sel_obj.outline_color = new_line_color
+            if sel_obj.kind in ["excellon", "gerber"]:
+                sel_obj.fill_color = new_color
+                sel_obj.outline_color = new_line_color
 
-            sel_obj.shapes.redraw(
-                update_colors=(new_color, new_line_color)
-            )
+                sel_obj.shapes.redraw(
+                    update_colors=(new_color, new_line_color)
+                )
 
         self.set_obj_color_in_preferences_dict(sel_obj_list, new_color, new_line_color)
 

@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+9.10.2021
+
+- fixed some recently introduced issues for the Milling and Drilling Plugins; those plugins did not had the pluginName defined in the Plugin UI
+- in the canvas context menu added the menu for color changing
+- when doing color changing now only Gerber and Excellon objects can have the colors changed
+
 8.10.2021
 
 - the Plugins object combo boxes are no longer updated on object selection on Project tab generally but only for the Plugin that is current, if any
