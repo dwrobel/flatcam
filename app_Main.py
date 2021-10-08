@@ -2537,6 +2537,8 @@ class App(QtCore.QObject):
         self.defaults.report_usage("object2editor()")
 
         edited_object = self.collection.get_active()
+        edited_object.build_ui()
+        self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
 
         if edited_object and edited_object.kind in ['cncjob', 'excellon', 'geometry', 'gerber']:
             pass
