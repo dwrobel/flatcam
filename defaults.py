@@ -239,6 +239,7 @@ class FlatCAMDefaults:
         "excellon_circle_steps": 16,
         "excellon_solid": True,
         "excellon_multicolored": False,
+        "excellon_color": None,
         "excellon_merge_fuse_tools": True,
         "excellon_format_upper_in": 2,
         "excellon_format_lower_in": 4,

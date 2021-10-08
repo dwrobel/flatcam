@@ -8982,6 +8982,8 @@ class App(QtCore.QObject):
                             (self.defaults["gerber_plot_fill"], self.defaults["gerber_plot_line"])
                         )
                     self.defaults["gerber_color_list"][idx] = new_c
+            elif sel_obj.kind == 'excellon':
+                self.defaults["excellon_color"] = new_c
 
     def start_delayed_quit(self, delay, filename, should_quit=None):
         """

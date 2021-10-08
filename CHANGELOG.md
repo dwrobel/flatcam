@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - in Corner Markers Plugin I added a new feature, ability to insert existing markers into external objects. Finished the work for external Gerbers and work in progress for the external Geometry
 - the Editors require an Object UI build before launching; I've added the required code so the shortcut keys work even if the Properties tab is not current
 - in Corner Markers Plugin - finished the feature of adding markers geometry to an external Geometry object
+- changing the Excellon Object color from Project Tab context menu is now persistent
 
 7.10.2021
 

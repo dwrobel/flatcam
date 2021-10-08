@@ -300,8 +300,12 @@ class AppObject(QtCore.QObject):
         if obj.kind != 'document' and obj.kind != 'script':
             try:
                 if obj.kind == 'excellon':
-                    obj.fill_color = self.app.defaults["excellon_plot_fill"]
-                    obj.outline_color = self.app.defaults["excellon_plot_line"]
+                    if self.app.defaults["excellon_color"]:
+                        obj.fill_color = self.app.defaults["excellon_color"][0]
+                        obj.outline_color = self.app.defaults["excellon_color"][1]
+                    else:
+                        obj.fill_color = self.app.defaults["excellon_plot_fill"]
+                        obj.outline_color = self.app.defaults["excellon_plot_line"]
 
                 if obj.kind == 'gerber':
                     if self.app.defaults["gerber_store_color_list"] is True:
