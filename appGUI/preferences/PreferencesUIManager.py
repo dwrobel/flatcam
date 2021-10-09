@@ -564,11 +564,12 @@ class PreferencesUIManager:
             "tools_sub_delete_sources":  self.ui.plugin_pref_form.tools_sub_group.delete_sources_cb,
 
             # Corner Markers Tool
-            "tools_corners_type": self.ui.plugin_pref_form.tools_corners_group.type_radio,
-            "tools_corners_thickness": self.ui.plugin_pref_form.tools_corners_group.thick_entry,
-            "tools_corners_length": self.ui.plugin_pref_form.tools_corners_group.l_entry,
-            "tools_corners_margin": self.ui.plugin_pref_form.tools_corners_group.margin_entry,
-            "tools_corners_drill_dia": self.ui.plugin_pref_form.tools_corners_group.drill_dia_entry,
+            "tools_markers_type": self.ui.plugin_pref_form.tools_markers_group.type_radio,
+            "tools_markers_thickness": self.ui.plugin_pref_form.tools_markers_group.thick_entry,
+            "tools_markers_length": self.ui.plugin_pref_form.tools_markers_group.l_entry,
+            "tools_markers_marginx": self.ui.plugin_pref_form.tools_markers_group.marginx_entry,
+            "tools_markers_marginy": self.ui.plugin_pref_form.tools_markers_group.marginy_entry,
+            "tools_markers_drill_dia": self.ui.plugin_pref_form.tools_markers_group.drill_dia_entry,
 
             # #######################################################################################################
             # ########################################## PLUGINS 2 ##################################################

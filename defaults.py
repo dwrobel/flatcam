@@ -636,12 +636,13 @@ class FlatCAMDefaults:
         # Distance Tool
         "tools_dist_snap_center": False,
 
-        # Corner Markers Tool
-        "tools_corners_thickness": 0.1,
-        "tools_corners_length": 3.0,
-        "tools_corners_margin": 0.0,
-        "tools_corners_type": 's',
-        "tools_corners_drill_dia": 0.5,
+        # Markers Tool
+        "tools_markers_thickness": 0.1,
+        "tools_markers_length": 3.0,
+        "tools_markers_marginx": 0.0,
+        "tools_markers_marginy": 0.0,
+        "tools_markers_type": 's',
+        "tools_markers_drill_dia": 0.5,
 
         # ########################################################################################################
         # ################################ TOOLS 2 ###############################################################

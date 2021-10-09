@@ -13,6 +13,8 @@ CHANGELOG for FlatCAM beta
 - in the canvas context menu added the menu for color changing
 - when doing color changing now only Gerber and Excellon objects can have the colors changed
 - fixed an issue within the version checking (inherited from FlatCAM)
+- renamed the Corner Markers Plugin in Markers Plugin
+- added a new feature in Markers Plugin: now the Margin parameter can be set for both axis: X and Y or both
 
 8.10.2021
 

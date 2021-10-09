@@ -4740,8 +4740,8 @@ class App(QtCore.QObject):
             "tools_solderpaste_z_toolchange", "tools_solderpaste_xy_toolchange", "tools_solderpaste_frxy",
             "tools_solderpaste_frz", "tools_solderpaste_frz_dispense",
 
-            # Corner Markers Tool
-            "tools_corners_thickness", "tools_corners_length", "tools_corners_margin",
+            # Markers Tool
+            "tools_markers_thickness", "tools_markers_length", "tools_markers_marginx", "tools_markers_marginy",
 
             # Check Rules Tool
             "tools_cr_trace_size_val", "tools_cr_c2c_val", "tools_cr_c2o_val", "tools_cr_s2s_val", "tools_cr_s2sm_val",
@@ -7477,7 +7477,7 @@ class App(QtCore.QObject):
         elif modifiers == QtCore.Qt.KeyboardModifier.ControlModifier | QtCore.Qt.KeyboardModifier.ShiftModifier:
             try:
                 old_clipb = eval(self.clipboard.text())
-            except Exception as err:
+            except Exception:
                 # self.log.error("App.on_mouse_and_key_modifiers() --> %s" % str(err))
                 old_clipb = None
 
@@ -9905,7 +9905,7 @@ class MenuFileHandlers(QtCore.QObject):
             response = msgbox.clickedButton()
 
             if response == bt_yes:
-                self.on_file_saveprojectas(threaded=True)
+                self.on_file_saveprojectas(use_thread=True)
             elif response == bt_cancel:
                 return
             elif response == bt_no:
@@ -11149,8 +11149,6 @@ class MenuFileHandlers(QtCore.QObject):
         if not os.path.exists(filename):
             self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
             return
-
-        ret_val = None
 
         with self.app.proc_container.new('%s...' % _("Opening")):
             # Object name

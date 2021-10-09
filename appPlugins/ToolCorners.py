@@ -148,7 +148,7 @@ class ToolCorners(AppTool):
 
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Corners"))
+        self.app.ui.notebook.setTabText(2, _("Markers"))
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+B', **kwargs)
@@ -177,12 +177,17 @@ class ToolCorners(AppTool):
         self.pluginName = self.ui.pluginName
         self.connect_signals_at_init()
 
-        self.ui.thick_entry.set_value(self.app.defaults["tools_corners_thickness"])
-        self.ui.l_entry.set_value(float(self.app.defaults["tools_corners_length"]))
-        self.ui.margin_entry.set_value(float(self.app.defaults["tools_corners_margin"]))
+        self.ui.thick_entry.set_value(self.app.defaults["tools_markers_thickness"])
+        self.ui.l_entry.set_value(float(self.app.defaults["tools_markers_length"]))
+
+        self.ui.marginx_entry.set_value(float(self.app.defaults["tools_markers_marginx"]))
+        self.ui.marginy_entry.set_value(float(self.app.defaults["tools_markers_marginy"]))
+        self.ui.margin_link_button.setChecked(True)
+        self.ui.on_link_checked(True)
+
         self.ui.toggle_all_cb.set_value(False)
-        self.ui.type_radio.set_value(self.app.defaults["tools_corners_type"])
-        self.ui.drill_dia_entry.set_value(self.app.defaults["tools_corners_drill_dia"])
+        self.ui.type_radio.set_value(self.app.defaults["tools_markers_type"])
+        self.ui.drill_dia_entry.set_value(self.app.defaults["tools_markers_drill_dia"])
         self.ui.mode_radio.set_value("a")
 
         self.ui.insert_type_radio.set_value(val="grb")
@@ -268,16 +273,16 @@ class ToolCorners(AppTool):
 
             self.ui.type_label.setDisabled(False)
             self.ui.type_radio.setDisabled(False)
-            self.ui.margin_label.setDisabled(False)
-            self.ui.margin_entry.setDisabled(False)
+            self.ui.marginx_label.setDisabled(False)
+            self.ui.marginx_entry.setDisabled(False)
         else:
             self.ui.locs_label.setDisabled(True)
             self.ui.loc_frame.setDisabled(True)
 
             self.ui.type_label.setDisabled(True)
             self.ui.type_radio.setDisabled(True)
-            self.ui.margin_label.setDisabled(True)
-            self.ui.margin_entry.setDisabled(True)
+            self.ui.marginx_label.setDisabled(True)
+            self.ui.marginx_entry.setDisabled(True)
             self.ui.type_radio.set_value('c')
 
     def add_markers(self):
@@ -377,7 +382,8 @@ class ToolCorners(AppTool):
     def create_marker_geometry(self, points_storage):
         marker_type = self.ui.type_radio.get_value()
         line_thickness = self.ui.thick_entry.get_value()
-        margin = self.ui.margin_entry.get_value()
+        margin_x = self.ui.marginx_entry.get_value()
+        margin_y = self.ui.marginy_entry.get_value()
         line_length = self.ui.l_entry.get_value() / 2.0
 
         mode = self.ui.mode_radio.get_value()
@@ -392,8 +398,8 @@ class ToolCorners(AppTool):
             for key in points_storage:
                 if key == 'tl':
                     pt = points_storage[key]
-                    x = pt[0] - margin - line_thickness / 2.0
-                    y = pt[1] + margin + line_thickness / 2.0
+                    x = pt[0] - margin_x - line_thickness / 2.0
+                    y = pt[1] + margin_y + line_thickness / 2.0
                     if marker_type == 's':
                         line_geo_hor = LineString([
                             (x, y), (x + line_length, y)
@@ -412,8 +418,8 @@ class ToolCorners(AppTool):
                     geo_list.append(line_geo_vert)
                 if key == 'tr':
                     pt = points_storage[key]
-                    x = pt[0] + margin + line_thickness / 2.0
-                    y = pt[1] + margin + line_thickness / 2.0
+                    x = pt[0] + margin_x + line_thickness / 2.0
+                    y = pt[1] + margin_y + line_thickness / 2.0
                     if marker_type == 's':
                         line_geo_hor = LineString([
                             (x, y), (x - line_length, y)
@@ -432,8 +438,8 @@ class ToolCorners(AppTool):
                     geo_list.append(line_geo_vert)
                 if key == 'bl':
                     pt = points_storage[key]
-                    x = pt[0] - margin - line_thickness / 2.0
-                    y = pt[1] - margin - line_thickness / 2.0
+                    x = pt[0] - margin_x - line_thickness / 2.0
+                    y = pt[1] - margin_y - line_thickness / 2.0
                     if marker_type == 's':
                         line_geo_hor = LineString([
                             (x, y), (x + line_length, y)
@@ -452,8 +458,8 @@ class ToolCorners(AppTool):
                     geo_list.append(line_geo_vert)
                 if key == 'br':
                     pt = points_storage[key]
-                    x = pt[0] + margin + line_thickness / 2.0
-                    y = pt[1] - margin - line_thickness / 2.0
+                    x = pt[0] + margin_x + line_thickness / 2.0
+                    y = pt[1] - margin_y - line_thickness / 2.0
                     if marker_type == 's':
                         line_geo_hor = LineString([
                             (x, y), (x - line_length, y)
@@ -683,7 +689,9 @@ class ToolCorners(AppTool):
             return
 
         line_thickness = self.ui.thick_entry.get_value()
-        margin = self.ui.margin_entry.get_value()
+        margin_x = self.ui.marginx_entry.get_value()
+        margin_y = self.ui.marginy_entry.get_value()
+
         tl_state = self.ui.tl_cb.get_value()
         tr_state = self.ui.tr_cb.get_value()
         bl_state = self.ui.bl_cb.get_value()
@@ -714,29 +722,29 @@ class ToolCorners(AppTool):
 
         if 'manual' not in self.points:
             if tl_state:
-                x = xmin - margin - line_thickness / 2.0
-                y = ymax + margin + line_thickness / 2.0
+                x = xmin - margin_x - line_thickness / 2.0
+                y = ymax + margin_y + line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
 
             if tr_state:
-                x = xmax + margin + line_thickness / 2.0
-                y = ymax + margin + line_thickness / 2.0
+                x = xmax + margin_x + line_thickness / 2.0
+                y = ymax + margin_y + line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
 
             if bl_state:
-                x = xmin - margin - line_thickness / 2.0
-                y = ymin - margin - line_thickness / 2.0
+                x = xmin - margin_x - line_thickness / 2.0
+                y = ymin - margin_y - line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
 
             if br_state:
-                x = xmax + margin + line_thickness / 2.0
-                y = ymin - margin - line_thickness / 2.0
+                x = xmax + margin_x + line_thickness / 2.0
+                y = ymin - margin_y - line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
@@ -792,7 +800,8 @@ class ToolCorners(AppTool):
             return
 
         line_thickness = self.ui.thick_entry.get_value()
-        margin = self.ui.margin_entry.get_value()
+        margin_x = self.ui.marginx_entry.get_value()
+        margin_y = self.ui.marginy_entry.get_value()
 
         tl_state = self.ui.tl_cb.get_value()
         tr_state = self.ui.tr_cb.get_value()
@@ -824,29 +833,29 @@ class ToolCorners(AppTool):
 
         if 'manual' not in self.points:
             if tl_state:
-                x = xmin - margin - line_thickness / 2.0
-                y = ymax + margin + line_thickness / 2.0
+                x = xmin - margin_x - line_thickness / 2.0
+                y = ymax + margin_y + line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
 
             if tr_state:
-                x = xmax + margin + line_thickness / 2.0
-                y = ymax + margin + line_thickness / 2.0
+                x = xmax + margin_x + line_thickness / 2.0
+                y = ymax + margin_y + line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
 
             if bl_state:
-                x = xmin - margin - line_thickness / 2.0
-                y = ymin - margin - line_thickness / 2.0
+                x = xmin - margin_x - line_thickness / 2.0
+                y = ymin - margin_y - line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
 
             if br_state:
-                x = xmax + margin + line_thickness / 2.0
-                y = ymin - margin - line_thickness / 2.0
+                x = xmax + margin_x + line_thickness / 2.0
+                y = ymin - margin_y - line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
@@ -1060,7 +1069,7 @@ class ToolCorners(AppTool):
 
 class CornersUI:
 
-    pluginName = _("Corner Markers")
+    pluginName = _("Markers")
 
     def __init__(self, layout, app):
         self.app = app
@@ -1149,7 +1158,7 @@ class CornersUI:
         ])
 
         param_grid.addWidget(self.type_label, 2, 0)
-        param_grid.addWidget(self.type_radio, 2, 1)
+        param_grid.addWidget(self.type_radio, 2, 1, 1, 2)
 
         # Thickness #
         self.thick_label = FCLabel('%s:' % _("Thickness"))
@@ -1163,7 +1172,7 @@ class CornersUI:
         self.thick_entry.setSingleStep(10 ** -self.decimals)
 
         param_grid.addWidget(self.thick_label, 4, 0)
-        param_grid.addWidget(self.thick_entry, 4, 1)
+        param_grid.addWidget(self.thick_entry, 4, 1, 1, 2)
 
         # Length #
         self.l_label = FCLabel('%s:' % _("Length"))
@@ -1176,20 +1185,41 @@ class CornersUI:
         self.l_entry.setSingleStep(10 ** -self.decimals)
 
         param_grid.addWidget(self.l_label, 6, 0)
-        param_grid.addWidget(self.l_entry, 6, 1)
+        param_grid.addWidget(self.l_entry, 6, 1, 1, 2)
 
-        # Margin #
-        self.margin_label = FCLabel('%s:' % _("Margin"))
-        self.margin_label.setToolTip(
+        # Margin X #
+        self.marginx_label = FCLabel('%s X:' % _("Margin"))
+        self.marginx_label.setToolTip(
             _("Bounding box margin.")
         )
-        self.margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.margin_entry.set_range(-10000.0000, 10000.0000)
-        self.margin_entry.set_precision(self.decimals)
-        self.margin_entry.setSingleStep(0.1)
+        self.marginx_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.marginx_entry.set_range(-10000.0000, 10000.0000)
+        self.marginx_entry.set_precision(self.decimals)
+        self.marginx_entry.setSingleStep(0.1)
 
-        param_grid.addWidget(self.margin_label, 8, 0)
-        param_grid.addWidget(self.margin_entry, 8, 1)
+        param_grid.addWidget(self.marginx_label, 8, 0)
+        param_grid.addWidget(self.marginx_entry, 8, 1)
+
+        # Margin Y #
+        self.marginy_label = FCLabel('%s Y:' % _("Margin"))
+        self.marginy_label.setToolTip(
+            _("Bounding box margin.")
+        )
+        self.marginy_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.marginy_entry.set_range(-10000.0000, 10000.0000)
+        self.marginy_entry.set_precision(self.decimals)
+        self.marginy_entry.setSingleStep(0.1)
+
+        param_grid.addWidget(self.marginy_label, 9, 0)
+        param_grid.addWidget(self.marginy_entry, 9, 1)
+
+        # Margin link
+        self.margin_link_button = QtWidgets.QToolButton()
+        self.margin_link_button.setIcon(QtGui.QIcon(self.app.resource_location + '/link32.png'))
+        self.margin_link_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                              QtWidgets.QSizePolicy.Policy.Expanding)
+        self.margin_link_button.setCheckable(True)
+        param_grid.addWidget(self.margin_link_button, 8, 2, 2, 1)
 
         # #############################################################################################################
         # Locations Frame
@@ -1405,6 +1435,26 @@ class CornersUI:
 
         # #################################### FINSIHED GUI ###########################
         # #############################################################################
+
+        # Signals
+
+        self.margin_link_button.clicked.connect(self.on_link_checked)
+        self.marginx_entry.returnPressed.connect(self.on_marginx_edited)
+
+    def on_link_checked(self, checked):
+        if checked:
+            self.marginx_label.set_value('%s:' % _("Margin"))
+            self.marginy_label.setDisabled(True)
+            self.marginy_entry.setDisabled(True)
+            self.marginy_entry.set_value(self.marginx_entry.get_value())
+        else:
+            self.marginx_label.set_value('%s X:' % _("Margin"))
+            self.marginy_label.setDisabled(False)
+            self.marginy_entry.setDisabled(False)
+
+    def on_marginx_edited(self):
+        if self.margin_link_button.isChecked():
+            self.marginy_entry.set_value(self.marginx_entry.get_value())
 
     def confirmation_message(self, accepted, minval, maxval):
         if accepted is False:

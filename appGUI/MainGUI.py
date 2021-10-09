@@ -1133,7 +1133,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.copperfill_btn = self.toolbarplugins.addAction(
             QtGui.QIcon(self.app.resource_location + '/copperfill32.png'), _("Copper Thieving"))
         self.corners_tool_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/corners_32.png'), _("Corner Markers"))
+            QtGui.QIcon(self.app.resource_location + '/corners_32.png'), _("Markers"))
         self.punch_btn = self.toolbarplugins.addAction(
             QtGui.QIcon(self.app.resource_location + '/punch32.png'), _("Punch Gerber"))
         self.calculators_btn = self.toolbarplugins.addAction(
@@ -2477,7 +2477,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.copperfill_btn = self.toolbarplugins.addAction(
             QtGui.QIcon(self.app.resource_location + '/copperfill32.png'), _("Copper Thieving"))
         self.corners_tool_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/corners_32.png'), _("Corner Markers"))
+            QtGui.QIcon(self.app.resource_location + '/corners_32.png'), _("Markers"))
         self.punch_btn = self.toolbarplugins.addAction(
             QtGui.QIcon(self.app.resource_location + '/punch32.png'), _("Punch Gerber"))
         self.calculators_btn = self.toolbarplugins.addAction(
@@ -4890,7 +4890,7 @@ class ShortcutsTab(QtWidgets.QWidget):
 
                     # ALT section
                     _('Alt+A'), _("Align Objects"),
-                    _('Alt+B'), _("Corner Markers"),
+                    _('Alt+B'), _("Markers"),
                     _('Alt+C'), _("Calculators"),
                     _('Alt+D'), _("2-Sided PCB"),
                     _('Alt+E'), _("Extract"),
