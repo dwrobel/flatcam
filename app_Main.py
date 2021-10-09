@@ -1389,7 +1389,8 @@ class App(QtCore.QObject):
 
         # signal to be called when the app is quiting
         self.app_quit.connect(self.quit_application, type=Qt.ConnectionType.QueuedConnection)
-        self.message.connect(lambda: message_dialog(parent=self.ui))
+        self.message.connect(
+            lambda title, msg, kind: message_dialog(title=title, message=msg, kind=kind, parent=self.ui))
         # self.progress.connect(self.set_progress_bar)
 
         # signals emitted when file state change
@@ -8526,15 +8527,13 @@ class App(QtCore.QObject):
             return
 
         self.log.debug("Newer version available.")
-        self.message.emit(
-            _("Newer Version Available"),
-            '%s<br><br>><b>%s</b><br>%s' % (
+        title = _("Newer Version Available")
+        msg = '%s<br><br>><b>%s</b><br>%s' % (
                 _("There is a newer version of FlatCAM available for download:"),
                 str(data["name"]),
                 str(data["message"])
-            ),
-            _("info")
-        )
+            )
+        self.message.emit(title, msg, "info")
 
     def on_plotcanvas_setup(self, container=None):
         """
