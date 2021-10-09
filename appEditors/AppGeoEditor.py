@@ -1535,9 +1535,9 @@ class TransformEditorTool(AppTool):
                     self.draw_app.plot_all()
 
                 if axis == 'X':
-                    self.app.inform.emit('[success] %s...' % _('Offset on the X axis done'))
+                    self.app.inform.emit('[success] %s %s' % (_('Offset on the X axis.'), _("Done.")))
                 else:
-                    self.app.inform.emit('[success] %s...' % _('Offset on the Y axis done'))
+                    self.app.inform.emit('[success] %s %s' % (_('Offset on the Y axis.'), _("Done.")))
 
             except Exception as e:
                 self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
@@ -1593,7 +1593,7 @@ class TransformEditorTool(AppTool):
         val, ok = val_box.get_value()
         if ok:
             self.on_offx(val=val)
-            self.app.inform.emit('[success] %s' % _("Offset on the X axis done"))
+            self.app.inform.emit('[success] %s %s' % (_('Offset on the X axis.'), _("Done.")))
             return
         else:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Offset X cancelled"))

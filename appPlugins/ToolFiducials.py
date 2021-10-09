@@ -968,9 +968,8 @@ class FidoUI:
         par_frame = FCFrame()
         self.tools_box.addWidget(par_frame)
 
-        # ## Grid Layout
-        grid_par = FCGridLayout(v_spacing=5, h_spacing=3)
-        par_frame.setLayout(grid_par)
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_frame.setLayout(param_grid)
 
         # DIAMETER #
         self.size_label = FCLabel('%s:' % _("Size"))
@@ -985,8 +984,8 @@ class FidoUI:
         self.fid_size_entry.setWrapping(True)
         self.fid_size_entry.setSingleStep(0.1)
 
-        grid_par.addWidget(self.size_label, 2, 0)
-        grid_par.addWidget(self.fid_size_entry, 2, 1)
+        param_grid.addWidget(self.size_label, 2, 0)
+        param_grid.addWidget(self.fid_size_entry, 2, 1)
 
         # MARGIN #
         self.margin_label = FCLabel('%s:' % _("Margin"))
@@ -998,8 +997,8 @@ class FidoUI:
         self.margin_entry.set_precision(self.decimals)
         self.margin_entry.setSingleStep(0.1)
 
-        grid_par.addWidget(self.margin_label, 4, 0)
-        grid_par.addWidget(self.margin_entry, 4, 1)
+        param_grid.addWidget(self.margin_label, 4, 0)
+        param_grid.addWidget(self.margin_entry, 4, 1)
 
         # Position for second fiducial #
         self.pos_radio = RadioSet([
@@ -1014,13 +1013,13 @@ class FidoUI:
               "- 'Down' - the order is: bottom-left, bottom-right, top-right.\n"
               "- 'None' - there is no second fiducial. The order is: bottom-left, top-right.")
         )
-        grid_par.addWidget(self.pos_label, 6, 0)
-        grid_par.addWidget(self.pos_radio, 6, 1)
+        param_grid.addWidget(self.pos_label, 6, 0)
+        param_grid.addWidget(self.pos_radio, 6, 1)
 
         self.separator_line = QtWidgets.QFrame()
         self.separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         self.separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid_par.addWidget(self.separator_line, 8, 0, 1, 2)
+        param_grid.addWidget(self.separator_line, 8, 0, 1, 2)
 
         # Fiducial type #
         self.fid_type_label = FCLabel('%s:' % _("Fiducial Type"))
@@ -1034,8 +1033,8 @@ class FidoUI:
         self.fid_type_combo = FCComboBox2()
         self.fid_type_combo.addItems([_('Circular'), _("Cross"), _("Chess")])
 
-        grid_par.addWidget(self.fid_type_label, 10, 0)
-        grid_par.addWidget(self.fid_type_combo, 10, 1)
+        param_grid.addWidget(self.fid_type_label, 10, 0)
+        param_grid.addWidget(self.fid_type_combo, 10, 1)
 
         # Line Thickness #
         self.line_thickness_label = FCLabel('%s:' % _("Line thickness"))
@@ -1047,13 +1046,13 @@ class FidoUI:
         self.line_thickness_entry.set_precision(self.decimals)
         self.line_thickness_entry.setSingleStep(0.1)
 
-        grid_par.addWidget(self.line_thickness_label, 12, 0)
-        grid_par.addWidget(self.line_thickness_entry, 12, 1)
+        param_grid.addWidget(self.line_thickness_label, 12, 0)
+        param_grid.addWidget(self.line_thickness_entry, 12, 1)
 
         # separator_line_1 = QtWidgets.QFrame()
         # separator_line_1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         # separator_line_1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        # grid_par.addWidget(separator_line_1, 14, 0, 1, 2)
+        # param_grid.addWidget(separator_line_1, 14, 0, 1, 2)
 
         # #############################################################################################################
         # Selection Frame
@@ -1081,7 +1080,7 @@ class FidoUI:
         grid_sel.addWidget(self.mode_label, 0, 0)
         grid_sel.addWidget(self.mode_radio, 0, 1)
 
-        FCGridLayout.set_common_column_size([grid_sel, grid_par, grid_par], 0)
+        FCGridLayout.set_common_column_size([grid_sel, param_grid, param_grid], 0)
 
         # ## Insert Copper Fiducial
         self.add_cfid_button = FCButton(_("Add Fiducial"))

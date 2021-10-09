@@ -30,7 +30,7 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class ToolCorners(AppTool):
+class ToolMarkers(AppTool):
 
     def __init__(self, app):
         AppTool.__init__(self, app)
@@ -48,7 +48,7 @@ class ToolCorners(AppTool):
         # #############################################################################
         # ######################### Tool GUI ##########################################
         # #############################################################################
-        self.ui = CornersUI(layout=self.layout, app=self.app)
+        self.ui = MarkersUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
         self.connect_signals_at_init()
 
@@ -95,7 +95,7 @@ class ToolCorners(AppTool):
                 pass
 
     def run(self, toggle=True):
-        self.app.defaults.report_usage("ToolCorners()")
+        self.app.defaults.report_usage("ToolMarkers()")
 
         if toggle:
             # if the splitter is hidden, display it
@@ -173,16 +173,17 @@ class ToolCorners(AppTool):
         self.units = self.app.app_units
 
         self.clear_ui(self.layout)
-        self.ui = CornersUI(layout=self.layout, app=self.app)
+        self.ui = MarkersUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
         self.connect_signals_at_init()
 
         self.ui.thick_entry.set_value(self.app.defaults["tools_markers_thickness"])
         self.ui.l_entry.set_value(float(self.app.defaults["tools_markers_length"]))
 
-        self.ui.marginx_entry.set_value(float(self.app.defaults["tools_markers_marginx"]))
-        self.ui.marginy_entry.set_value(float(self.app.defaults["tools_markers_marginy"]))
-        self.ui.margin_link_button.setChecked(True)
+        self.ui.ref_radio.set_value(self.app.defaults["tools_markers_reference"])
+        self.ui.offset_x_entry.set_value(float(self.app.defaults["tools_markers_offset_x"]))
+        self.ui.offset_y_entry.set_value(float(self.app.defaults["tools_markers_offset_y"]))
+        self.ui.offset_link_button.setChecked(True)
         self.ui.on_link_checked(True)
 
         self.ui.toggle_all_cb.set_value(False)
@@ -273,16 +274,14 @@ class ToolCorners(AppTool):
 
             self.ui.type_label.setDisabled(False)
             self.ui.type_radio.setDisabled(False)
-            self.ui.marginx_label.setDisabled(False)
-            self.ui.marginx_entry.setDisabled(False)
+            self.ui.off_frame.setDisabled(False)
         else:
             self.ui.locs_label.setDisabled(True)
             self.ui.loc_frame.setDisabled(True)
 
             self.ui.type_label.setDisabled(True)
             self.ui.type_radio.setDisabled(True)
-            self.ui.marginx_label.setDisabled(True)
-            self.ui.marginx_entry.setDisabled(True)
+            self.ui.off_frame.setDisabled(True)
             self.ui.type_radio.set_value('c')
 
     def add_markers(self):
@@ -312,7 +311,7 @@ class ToolCorners(AppTool):
         try:
             self.grb_object = model_index.internalPointer().obj
         except Exception as e:
-            log.error("ToolCorners.add_markers() --> %s" % str(e))
+            log.error("ToolMarkers.add_markers() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             self.app.call_source = "app"
             return
@@ -347,7 +346,7 @@ class ToolCorners(AppTool):
         try:
             self.grb_object = model_index.internalPointer().obj
         except Exception as e:
-            log.error("ToolCorners.add_markers() --> %s" % str(e))
+            log.error("ToolMarkers.add_markers() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             self.on_exit()
             return
@@ -379,15 +378,72 @@ class ToolCorners(AppTool):
 
         return return_val
 
+    # def offset_location_from_bb_center(self, pt):
+    #     """
+    #     Will offset a set of x, y coordinates
+    #     from the center of the source object bounding box.
+    #
+    #     :param pt:  x, y coordinates of a location point
+    #     :type pt:   tuple
+    #     :return:    an offseted point pt from the center of the bounding box
+    #     """
+
+    def offset_values(self, offset_reference=None, offset_x=None, offset_y=None):
+        """
+        Will offset a set of x, y coordinates depending on the chosen reference
+
+        :param offset_reference:    can be 'c' = center of the bounding box or 'e' = edge of the bounding box
+        :type offset_reference:     str
+        :param offset_x:            value to offset on X axis
+        :type offset_x:             float
+        :param offset_y:            value to offset on Y axis
+        :type offset_y:             float
+        :return:                    a tuple of offsets (x, y)
+        :rtype:                     tuple
+        """
+        if offset_reference is None:
+            offset_reference = self.ui.ref_radio.get_value()
+        if offset_x is None:
+            offset_x = self.ui.offset_x_entry.get_value()
+        if offset_y is None:
+            offset_y = self.ui.offset_y_entry.get_value()
+
+        if offset_reference == 'c':  # reference from the bounding box center
+            # get the Gerber object on which the corner marker will be inserted
+            selection_index = self.ui.object_combo.currentIndex()
+            model_index = self.app.collection.index(selection_index, 0, self.ui.object_combo.rootModelIndex())
+
+            try:
+                self.grb_object = model_index.internalPointer().obj
+            except Exception as e:
+                log.error("ToolMarkers.add_markers() --> %s" % str(e))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
+                self.on_exit()
+                return
+
+            xmin, ymin, xmax, ymax = self.grb_object.bounds()
+            center_x = xmin + (xmax - xmin) / 2
+            center_y = ymin + (ymax - ymin) / 2
+            offset_x -=  center_x
+            offset_y -= center_y
+
+        return offset_x, offset_y
+
     def create_marker_geometry(self, points_storage):
+        """
+        Will create the marker geometry in the specified points.
+
+        :param points_storage:  a dictionary holding the marker locations
+        :type points_storage:   dict
+        :return:                a list of Shapely lines
+        :rtype:                 list
+        """
         marker_type = self.ui.type_radio.get_value()
         line_thickness = self.ui.thick_entry.get_value()
-        margin_x = self.ui.marginx_entry.get_value()
-        margin_y = self.ui.marginy_entry.get_value()
         line_length = self.ui.l_entry.get_value() / 2.0
-
         mode = self.ui.mode_radio.get_value()
 
+        offset_x, offset_y = self.offset_values()
         geo_list = []
 
         if not points_storage:
@@ -398,8 +454,8 @@ class ToolCorners(AppTool):
             for key in points_storage:
                 if key == 'tl':
                     pt = points_storage[key]
-                    x = pt[0] - margin_x - line_thickness / 2.0
-                    y = pt[1] + margin_y + line_thickness / 2.0
+                    x = pt[0] - offset_x - line_thickness / 2.0
+                    y = pt[1] + offset_y + line_thickness / 2.0
                     if marker_type == 's':
                         line_geo_hor = LineString([
                             (x, y), (x + line_length, y)
@@ -418,8 +474,8 @@ class ToolCorners(AppTool):
                     geo_list.append(line_geo_vert)
                 if key == 'tr':
                     pt = points_storage[key]
-                    x = pt[0] + margin_x + line_thickness / 2.0
-                    y = pt[1] + margin_y + line_thickness / 2.0
+                    x = pt[0] + offset_x + line_thickness / 2.0
+                    y = pt[1] + offset_y + line_thickness / 2.0
                     if marker_type == 's':
                         line_geo_hor = LineString([
                             (x, y), (x - line_length, y)
@@ -438,8 +494,8 @@ class ToolCorners(AppTool):
                     geo_list.append(line_geo_vert)
                 if key == 'bl':
                     pt = points_storage[key]
-                    x = pt[0] - margin_x - line_thickness / 2.0
-                    y = pt[1] - margin_y - line_thickness / 2.0
+                    x = pt[0] - offset_x - line_thickness / 2.0
+                    y = pt[1] - offset_y - line_thickness / 2.0
                     if marker_type == 's':
                         line_geo_hor = LineString([
                             (x, y), (x + line_length, y)
@@ -458,8 +514,8 @@ class ToolCorners(AppTool):
                     geo_list.append(line_geo_vert)
                 if key == 'br':
                     pt = points_storage[key]
-                    x = pt[0] + margin_x + line_thickness / 2.0
-                    y = pt[1] - margin_y - line_thickness / 2.0
+                    x = pt[0] + offset_x + line_thickness / 2.0
+                    y = pt[1] - offset_y - line_thickness / 2.0
                     if marker_type == 's':
                         line_geo_hor = LineString([
                             (x, y), (x - line_length, y)
@@ -689,9 +745,6 @@ class ToolCorners(AppTool):
             return
 
         line_thickness = self.ui.thick_entry.get_value()
-        margin_x = self.ui.marginx_entry.get_value()
-        margin_y = self.ui.marginy_entry.get_value()
-
         tl_state = self.ui.tl_cb.get_value()
         tr_state = self.ui.tr_cb.get_value()
         bl_state = self.ui.bl_cb.get_value()
@@ -704,7 +757,7 @@ class ToolCorners(AppTool):
         try:
             self.grb_object = model_index.internalPointer().obj
         except Exception as e:
-            log.error("ToolCorners.add_markers() --> %s" % str(e))
+            log.error("ToolMarkers.add_markers() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             self.app.call_source = "app"
             return
@@ -716,35 +769,36 @@ class ToolCorners(AppTool):
             return
 
         xmin, ymin, xmax, ymax = self.grb_object.bounds()
+        offset_x, offset_y = self.offset_values()
 
         # list of (x,y) tuples. Store here the drill coordinates
         drill_list = []
 
         if 'manual' not in self.points:
             if tl_state:
-                x = xmin - margin_x - line_thickness / 2.0
-                y = ymax + margin_y + line_thickness / 2.0
+                x = xmin - offset_x - line_thickness / 2.0
+                y = ymax + offset_y + line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
 
             if tr_state:
-                x = xmax + margin_x + line_thickness / 2.0
-                y = ymax + margin_y + line_thickness / 2.0
+                x = xmax + offset_x + line_thickness / 2.0
+                y = ymax + offset_y + line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
 
             if bl_state:
-                x = xmin - margin_x - line_thickness / 2.0
-                y = ymin - margin_y - line_thickness / 2.0
+                x = xmin - offset_x - line_thickness / 2.0
+                y = ymin - offset_y - line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
 
             if br_state:
-                x = xmax + margin_x + line_thickness / 2.0
-                y = ymin - margin_y - line_thickness / 2.0
+                x = xmax + offset_x + line_thickness / 2.0
+                y = ymin - offset_y - line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
@@ -800,9 +854,6 @@ class ToolCorners(AppTool):
             return
 
         line_thickness = self.ui.thick_entry.get_value()
-        margin_x = self.ui.marginx_entry.get_value()
-        margin_y = self.ui.marginy_entry.get_value()
-
         tl_state = self.ui.tl_cb.get_value()
         tr_state = self.ui.tr_cb.get_value()
         bl_state = self.ui.bl_cb.get_value()
@@ -815,7 +866,7 @@ class ToolCorners(AppTool):
         try:
             self.grb_object = model_index.internalPointer().obj
         except Exception as e:
-            log.error("ToolCorners.add_markers() --> %s" % str(e))
+            log.error("ToolMarkers.add_markers() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             self.app.call_source = "app"
             return
@@ -827,35 +878,36 @@ class ToolCorners(AppTool):
             return
 
         xmin, ymin, xmax, ymax = self.grb_object.bounds()
+        offset_x, offset_y = self.offset_values()
 
         # list of (x,y) tuples. Store here the drill coordinates
         drill_list = []
 
         if 'manual' not in self.points:
             if tl_state:
-                x = xmin - margin_x - line_thickness / 2.0
-                y = ymax + margin_y + line_thickness / 2.0
+                x = xmin - offset_x - line_thickness / 2.0
+                y = ymax + offset_y + line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
 
             if tr_state:
-                x = xmax + margin_x + line_thickness / 2.0
-                y = ymax + margin_y + line_thickness / 2.0
+                x = xmax + offset_x + line_thickness / 2.0
+                y = ymax + offset_y + line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
 
             if bl_state:
-                x = xmin - margin_x - line_thickness / 2.0
-                y = ymin - margin_y - line_thickness / 2.0
+                x = xmin - offset_x - line_thickness / 2.0
+                y = ymin - offset_y - line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
 
             if br_state:
-                x = xmax + margin_x + line_thickness / 2.0
-                y = ymin - margin_y - line_thickness / 2.0
+                x = xmax + offset_x + line_thickness / 2.0
+                y = ymin - offset_y - line_thickness / 2.0
                 drill_list.append(
                     Point((x, y))
                 )
@@ -926,7 +978,7 @@ class ToolCorners(AppTool):
             try:
                 new_grb_obj = model_index.internalPointer().obj
             except Exception as e:
-                self.app.log.error("ToolCorners.on_insert_markers_in_external_objects() Gerber --> %s" % str(e))
+                self.app.log.error("ToolMarkers.on_insert_markers_in_external_objects() Gerber --> %s" % str(e))
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
                 self.app.call_source = "app"
                 return
@@ -941,7 +993,7 @@ class ToolCorners(AppTool):
             try:
                 new_geo_obj = self.app.collection.get_by_name(geo_obj_name)
             except Exception as e:
-                self.app.log.error("ToolCorners.on_insert_markers_in_external_objects() Geometry --> %s" % str(e))
+                self.app.log.error("ToolMarkers.on_insert_markers_in_external_objects() Geometry --> %s" % str(e))
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Geometry object available."))
                 self.app.call_source = "app"
                 return
@@ -992,7 +1044,7 @@ class ToolCorners(AppTool):
             self.grb_object.options['xmax'] = c
             self.grb_object.options['ymax'] = d
         except Exception as e:
-            log.error("ToolCorners.on_exit() copper_obj bounds error --> %s" % str(e))
+            log.error("ToolMarkers.on_exit() copper_obj bounds error --> %s" % str(e))
 
         self.app.call_source = "app"
         self.app.ui.notebook.setDisabled(False)
@@ -1067,7 +1119,7 @@ class ToolCorners(AppTool):
             self.handle_manual_placement()
 
 
-class CornersUI:
+class MarkersUI:
 
     pluginName = _("Markers")
 
@@ -1158,7 +1210,7 @@ class CornersUI:
         ])
 
         param_grid.addWidget(self.type_label, 2, 0)
-        param_grid.addWidget(self.type_radio, 2, 1, 1, 2)
+        param_grid.addWidget(self.type_radio, 2, 1)
 
         # Thickness #
         self.thick_label = FCLabel('%s:' % _("Thickness"))
@@ -1172,7 +1224,7 @@ class CornersUI:
         self.thick_entry.setSingleStep(10 ** -self.decimals)
 
         param_grid.addWidget(self.thick_label, 4, 0)
-        param_grid.addWidget(self.thick_entry, 4, 1, 1, 2)
+        param_grid.addWidget(self.thick_entry, 4, 1)
 
         # Length #
         self.l_label = FCLabel('%s:' % _("Length"))
@@ -1185,41 +1237,70 @@ class CornersUI:
         self.l_entry.setSingleStep(10 ** -self.decimals)
 
         param_grid.addWidget(self.l_label, 6, 0)
-        param_grid.addWidget(self.l_entry, 6, 1, 1, 2)
+        param_grid.addWidget(self.l_entry, 6, 1)
 
-        # Margin X #
-        self.marginx_label = FCLabel('%s X:' % _("Margin"))
-        self.marginx_label.setToolTip(
-            _("Bounding box margin.")
+        # #############################################################################################################
+        # Offset Frame
+        # #############################################################################################################
+        self.offset_title_label = FCLabel('<span style="color:magenta;"><b>%s</b></span>' % _('Offset'))
+        self.offset_title_label.setToolTip(_("Offset locations from the set reference."))
+        self.tools_box.addWidget(self.offset_title_label)
+
+        self.off_frame = FCFrame()
+        self.tools_box.addWidget(self.off_frame)
+
+        off_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.off_frame.setLayout(off_grid)
+
+        # Offset Reference
+        self.ref_label = FCLabel('%s:' % _("Reference"))
+        self.ref_label.setToolTip(
+            _("Reference for offseting the marker locations.\n"
+              "- Edge - referenced from the bounding box edge\n"
+              "- Center - referenced from the bounding box center")
         )
-        self.marginx_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.marginx_entry.set_range(-10000.0000, 10000.0000)
-        self.marginx_entry.set_precision(self.decimals)
-        self.marginx_entry.setSingleStep(0.1)
 
-        param_grid.addWidget(self.marginx_label, 8, 0)
-        param_grid.addWidget(self.marginx_entry, 8, 1)
+        self.ref_radio = RadioSet([
+            {"label": _("Edge"), "value": "e"},
+            {"label": _("Center"), "value": "c"},
+        ])
 
-        # Margin Y #
-        self.marginy_label = FCLabel('%s Y:' % _("Margin"))
-        self.marginy_label.setToolTip(
-            _("Bounding box margin.")
+        off_grid.addWidget(self.ref_label, 0, 0)
+        off_grid.addWidget(self.ref_radio, 0, 1, 1, 2)
+
+        # Offset X #
+        self.offset_x_label = FCLabel('%s X:' % _("Offset"))
+        self.offset_x_label.setToolTip(
+            _("Offset on the X axis.")
         )
-        self.marginy_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.marginy_entry.set_range(-10000.0000, 10000.0000)
-        self.marginy_entry.set_precision(self.decimals)
-        self.marginy_entry.setSingleStep(0.1)
+        self.offset_x_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.offset_x_entry.set_range(-10000.0000, 10000.0000)
+        self.offset_x_entry.set_precision(self.decimals)
+        self.offset_x_entry.setSingleStep(0.1)
 
-        param_grid.addWidget(self.marginy_label, 9, 0)
-        param_grid.addWidget(self.marginy_entry, 9, 1)
+        off_grid.addWidget(self.offset_x_label, 2, 0)
+        off_grid.addWidget(self.offset_x_entry, 2, 1)
+
+        # Offset Y #
+        self.offset_y_label = FCLabel('%s Y:' % _("Offset"))
+        self.offset_y_label.setToolTip(
+            _("Offset on the Y axis.")
+        )
+        self.offset_y_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.offset_y_entry.set_range(-10000.0000, 10000.0000)
+        self.offset_y_entry.set_precision(self.decimals)
+        self.offset_y_entry.setSingleStep(0.1)
+
+        off_grid.addWidget(self.offset_y_label, 3, 0)
+        off_grid.addWidget(self.offset_y_entry, 3, 1)
 
         # Margin link
-        self.margin_link_button = QtWidgets.QToolButton()
-        self.margin_link_button.setIcon(QtGui.QIcon(self.app.resource_location + '/link32.png'))
-        self.margin_link_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+        self.offset_link_button = QtWidgets.QToolButton()
+        self.offset_link_button.setIcon(QtGui.QIcon(self.app.resource_location + '/link32.png'))
+        self.offset_link_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
                                               QtWidgets.QSizePolicy.Policy.Expanding)
-        self.margin_link_button.setCheckable(True)
-        param_grid.addWidget(self.margin_link_button, 8, 2, 2, 1)
+        self.offset_link_button.setCheckable(True)
+        off_grid.addWidget(self.offset_link_button, 2, 2, 2, 1)
 
         # #############################################################################################################
         # Locations Frame
@@ -1263,7 +1344,6 @@ class CornersUI:
         # #############################################################################################################
         # Selection Frame
         # #############################################################################################################
-        # Selection
         self.mode_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Selection"))
         self.tools_box.addWidget(self.mode_label)
 
@@ -1415,7 +1495,7 @@ class CornersUI:
                                        """)
         self.tools_box.addWidget(self.insert_markers_button)
 
-        FCGridLayout.set_common_column_size([grid_sel, param_grid, grid_loc, grid_drill, insert_grid], 0)
+        FCGridLayout.set_common_column_size([grid_sel, param_grid, off_grid, grid_loc, grid_drill, insert_grid], 0)
 
         self.layout.addStretch(1)
 
@@ -1438,23 +1518,23 @@ class CornersUI:
 
         # Signals
 
-        self.margin_link_button.clicked.connect(self.on_link_checked)
-        self.marginx_entry.returnPressed.connect(self.on_marginx_edited)
+        self.offset_link_button.clicked.connect(self.on_link_checked)
+        self.offset_x_entry.returnPressed.connect(self.on_marginx_edited)
 
     def on_link_checked(self, checked):
         if checked:
-            self.marginx_label.set_value('%s:' % _("Margin"))
-            self.marginy_label.setDisabled(True)
-            self.marginy_entry.setDisabled(True)
-            self.marginy_entry.set_value(self.marginx_entry.get_value())
+            self.offset_x_label.set_value('%s:' % _("Offset"))
+            self.offset_y_label.setDisabled(True)
+            self.offset_y_entry.setDisabled(True)
+            self.offset_y_entry.set_value(self.offset_x_entry.get_value())
         else:
-            self.marginx_label.set_value('%s X:' % _("Margin"))
-            self.marginy_label.setDisabled(False)
-            self.marginy_entry.setDisabled(False)
+            self.offset_x_label.set_value('%s X:' % _("Offset"))
+            self.offset_y_label.setDisabled(False)
+            self.offset_y_entry.setDisabled(False)
 
     def on_marginx_edited(self):
-        if self.margin_link_button.isChecked():
-            self.marginy_entry.set_value(self.marginx_entry.get_value())
+        if self.offset_link_button.isChecked():
+            self.offset_y_entry.set_value(self.offset_x_entry.get_value())
 
     def confirmation_message(self, accepted, minval, maxval):
         if accepted is False:

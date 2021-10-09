@@ -1964,7 +1964,7 @@ class App(QtCore.QObject):
         self.invert_tool = ToolInvertGerber(self)
         self.invert_tool.install(icon=QtGui.QIcon(self.resource_location + '/invert32.png'), pos=self.ui.menu_plugins)
 
-        self.corners_tool = ToolCorners(self)
+        self.corners_tool = ToolMarkers(self)
         self.corners_tool.install(icon=QtGui.QIcon(self.resource_location + '/corners_32.png'),
                                   pos=self.ui.menu_plugins)
 
@@ -4741,7 +4741,7 @@ class App(QtCore.QObject):
             "tools_solderpaste_frz", "tools_solderpaste_frz_dispense",
 
             # Markers Tool
-            "tools_markers_thickness", "tools_markers_length", "tools_markers_marginx", "tools_markers_marginy",
+            "tools_markers_thickness", "tools_markers_length", "tools_markers_offset_x", "tools_markers_offset_y",
 
             # Check Rules Tool
             "tools_cr_trace_size_val", "tools_cr_c2c_val", "tools_cr_c2o_val", "tools_cr_s2s_val", "tools_cr_s2sm_val",

@@ -64,32 +64,6 @@ class ToolsMarkersPrefGroupUI(OptionsGroupUI):
         param_grid.addWidget(self.thick_label, 4, 0)
         param_grid.addWidget(self.thick_entry, 4, 1)
 
-        # Margin X #
-        self.marginx_label = FCLabel('%s X:' % _("Margin"))
-        self.marginx_label.setToolTip(
-            _("Bounding box margin.")
-        )
-        self.marginx_entry = FCDoubleSpinner()
-        self.marginx_entry.set_range(-10000.0000, 10000.0000)
-        self.marginx_entry.set_precision(self.decimals)
-        self.marginx_entry.setSingleStep(0.1)
-
-        param_grid.addWidget(self.marginx_label, 6, 0)
-        param_grid.addWidget(self.marginx_entry, 6, 1)
-
-        # Margin Y #
-        self.marginy_label = FCLabel('%s Y:' % _("Margin"))
-        self.marginy_label.setToolTip(
-            _("Bounding box margin.")
-        )
-        self.marginy_entry = FCDoubleSpinner()
-        self.marginy_entry.set_range(-10000.0000, 10000.0000)
-        self.marginy_entry.set_precision(self.decimals)
-        self.marginy_entry.setSingleStep(0.1)
-
-        param_grid.addWidget(self.marginy_label, 8, 0)
-        param_grid.addWidget(self.marginy_entry, 8, 1)
-
         # Length #
         self.l_label = FCLabel('%s:' % _("Length"))
         self.l_label.setToolTip(
@@ -115,5 +89,60 @@ class ToolsMarkersPrefGroupUI(OptionsGroupUI):
 
         param_grid.addWidget(self.drill_dia_label, 12, 0)
         param_grid.addWidget(self.drill_dia_entry, 12, 1)
+
+        # Offset Reference
+        self.ref_label = FCLabel('%s:' % _("Reference"))
+        self.ref_label.setToolTip(
+            _("Shape of the marker.")
+        )
+
+        self.ref_radio = RadioSet([
+            {"label": _("Edge"), "value": "e"},
+            {"label": _("Center"), "value": "c"},
+        ])
+
+        # #############################################################################################################
+        # Offset Frame
+        # #############################################################################################################
+        self.offset_title_label = FCLabel('<span style="color:magenta;"><b>%s</b></span>' % _('Offset'))
+        self.offset_title_label.setToolTip(_("Offset locations from the set reference."))
+        self.layout.addWidget(self.offset_title_label)
+
+        off_frame = FCFrame()
+        self.layout.addWidget(off_frame)
+
+        off_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        off_frame.setLayout(off_grid)
+
+        off_grid.addWidget(self.ref_label, 0, 0)
+        off_grid.addWidget(self.ref_radio, 0, 1, 1, 2)
+
+        # Offset X #
+        self.offset_x_label = FCLabel('%s X:' % _("Offset"))
+        self.offset_x_label.setToolTip(
+            _("Bounding box margin.")
+        )
+        self.offset_x_entry = FCDoubleSpinner()
+        self.offset_x_entry.set_range(-10000.0000, 10000.0000)
+        self.offset_x_entry.set_precision(self.decimals)
+        self.offset_x_entry.setSingleStep(0.1)
+
+        off_grid.addWidget(self.offset_x_label, 2, 0)
+        off_grid.addWidget(self.offset_x_entry, 2, 1)
+
+        # Offset Y #
+        self.offset_y_label = FCLabel('%s Y:' % _("Offset"))
+        self.offset_y_label.setToolTip(
+            _("Bounding box margin.")
+        )
+        self.offset_y_entry = FCDoubleSpinner()
+        self.offset_y_entry.set_range(-10000.0000, 10000.0000)
+        self.offset_y_entry.set_precision(self.decimals)
+        self.offset_y_entry.setSingleStep(0.1)
+
+        off_grid.addWidget(self.offset_y_label, 3, 0)
+        off_grid.addWidget(self.offset_y_entry, 3, 1)
+
+        FCGridLayout.set_common_column_size([param_grid, off_grid], 0)
 
         self.layout.addStretch()

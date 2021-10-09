@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+10.10.2021
+
+- in Markers Plugin replaced the Margin parameters with the Offset parameters that now can be referenced either to the edge of the bounding box (effectively replacing the old Margin parameter) or to the center of the bounding box
+- Distance Plugin Ui was upgraded
+- updated the language strings
+
 9.10.2021
 
 - fixed some recently introduced issues for the Milling and Drilling Plugins; those plugins did not had the pluginName defined in the Plugin UI

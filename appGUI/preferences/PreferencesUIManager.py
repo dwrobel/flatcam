@@ -567,8 +567,9 @@ class PreferencesUIManager:
             "tools_markers_type": self.ui.plugin_pref_form.tools_markers_group.type_radio,
             "tools_markers_thickness": self.ui.plugin_pref_form.tools_markers_group.thick_entry,
             "tools_markers_length": self.ui.plugin_pref_form.tools_markers_group.l_entry,
-            "tools_markers_marginx": self.ui.plugin_pref_form.tools_markers_group.marginx_entry,
-            "tools_markers_marginy": self.ui.plugin_pref_form.tools_markers_group.marginy_entry,
+            "tools_markers_reference": self.ui.plugin_pref_form.tools_markers_group.ref_radio,
+            "tools_markers_offset_x": self.ui.plugin_pref_form.tools_markers_group.offset_x_entry,
+            "tools_markers_offset_y": self.ui.plugin_pref_form.tools_markers_group.offset_y_entry,
             "tools_markers_drill_dia": self.ui.plugin_pref_form.tools_markers_group.drill_dia_entry,
 
             # #######################################################################################################
