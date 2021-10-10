@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-10-10 01:36+0300\n"
-"PO-Revision-Date: 2021-10-10 01:36+0300\n"
+"POT-Creation-Date: 2021-10-10 12:22+0300\n"
+"PO-Revision-Date: 2021-10-10 12:22+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -292,7 +292,7 @@ msgid "Name"
 msgstr "名称"
 
 #: appDatabase.py:38 appDatabase.py:263 appPlugins/ToolCalibration.py:955
-#: appPlugins/ToolDblSided.py:726 appPlugins/ToolPanelize.py:1151
+#: appPlugins/ToolDblSided.py:749 appPlugins/ToolPanelize.py:1151
 #: appPlugins/ToolSub.py:851 appPlugins/ToolSub.py:919
 msgid "Target"
 msgstr "目标"
@@ -1413,8 +1413,8 @@ msgstr "取消"
 #: appPlugins/ToolCalculators.py:1079 appPlugins/ToolCalibration.py:1420
 #: appPlugins/ToolCalibration.py:1431 appPlugins/ToolCopperThieving.py:1807
 #: appPlugins/ToolCopperThieving.py:1818 appPlugins/ToolCutOut.py:2803
-#: appPlugins/ToolCutOut.py:2814 appPlugins/ToolDblSided.py:1154
-#: appPlugins/ToolDblSided.py:1165 appPlugins/ToolDistance.py:722
+#: appPlugins/ToolCutOut.py:2814 appPlugins/ToolDblSided.py:1180
+#: appPlugins/ToolDblSided.py:1191 appPlugins/ToolDistance.py:722
 #: appPlugins/ToolDistance.py:733 appPlugins/ToolDistanceMin.py:398
 #: appPlugins/ToolDistanceMin.py:409 appPlugins/ToolDrilling.py:2929
 #: appPlugins/ToolDrilling.py:2940 appPlugins/ToolEtchCompensation.py:531
@@ -1439,7 +1439,7 @@ msgstr "取消"
 #: appPlugins/ToolRulesCheck.py:1891 appPlugins/ToolSolderPaste.py:1714
 #: appPlugins/ToolSolderPaste.py:1725 appPlugins/ToolSub.py:995
 #: appPlugins/ToolSub.py:1006 appPlugins/ToolTransform.py:1071
-#: appPlugins/ToolTransform.py:1082 appTool.py:300 appTool.py:311
+#: appPlugins/ToolTransform.py:1082 appTool.py:304 appTool.py:315
 msgid "Edited value is out of range"
 msgstr "编辑的值超出范围"
 
@@ -1451,8 +1451,8 @@ msgstr "编辑的值超出范围"
 #: appPlugins/ToolCalculators.py:1081 appPlugins/ToolCalibration.py:1426
 #: appPlugins/ToolCalibration.py:1433 appPlugins/ToolCopperThieving.py:1813
 #: appPlugins/ToolCopperThieving.py:1820 appPlugins/ToolCutOut.py:2809
-#: appPlugins/ToolCutOut.py:2816 appPlugins/ToolDblSided.py:1160
-#: appPlugins/ToolDblSided.py:1167 appPlugins/ToolDistance.py:728
+#: appPlugins/ToolCutOut.py:2816 appPlugins/ToolDblSided.py:1186
+#: appPlugins/ToolDblSided.py:1193 appPlugins/ToolDistance.py:728
 #: appPlugins/ToolDistance.py:735 appPlugins/ToolDistanceMin.py:404
 #: appPlugins/ToolDistanceMin.py:411 appPlugins/ToolDrilling.py:2935
 #: appPlugins/ToolDrilling.py:2942 appPlugins/ToolEtchCompensation.py:537
@@ -1477,7 +1477,7 @@ msgstr "编辑的值超出范围"
 #: appPlugins/ToolRulesCheck.py:1893 appPlugins/ToolSolderPaste.py:1720
 #: appPlugins/ToolSolderPaste.py:1727 appPlugins/ToolSub.py:1001
 #: appPlugins/ToolSub.py:1008 appPlugins/ToolTransform.py:1077
-#: appPlugins/ToolTransform.py:1084 appTool.py:306 appTool.py:313
+#: appPlugins/ToolTransform.py:1084 appTool.py:310 appTool.py:317
 msgid "Edited value is within limits."
 msgstr "编辑的值在限制范围内。"
 
@@ -1684,8 +1684,8 @@ msgstr "选定间距角度的项目太多。"
 #: appPlugins/ToolCutOut.py:885 appPlugins/ToolCutOut.py:1014
 #: appPlugins/ToolCutOut.py:1230 appPlugins/ToolCutOut.py:1376
 #: appPlugins/ToolCutOut.py:1419 appPlugins/ToolCutOut.py:1437
-#: appPlugins/ToolCutOut.py:1451 appPlugins/ToolDblSided.py:577
-#: appPlugins/ToolDblSided.py:590 appPlugins/ToolExtract.py:401
+#: appPlugins/ToolCutOut.py:1451 appPlugins/ToolDblSided.py:600
+#: appPlugins/ToolDblSided.py:613 appPlugins/ToolExtract.py:401
 #: appPlugins/ToolExtract.py:767 appPlugins/ToolExtract.py:816
 #: appPlugins/ToolExtract.py:825 appPlugins/ToolExtract.py:829
 #: appPlugins/ToolFiducials.py:344 appPlugins/ToolFiducials.py:605
@@ -1876,7 +1876,7 @@ msgstr "Excellon编辑器"
 #: appEditors/AppExcEditor.py:4027 appEditors/AppGeoEditor.py:3446
 #: appEditors/AppGerberEditor.py:6089 appEditors/appGCodeEditor.py:774
 #: appGUI/ObjectUI.py:72 appPlugins/ToolCutOut.py:2222
-#: appPlugins/ToolDblSided.py:702 appPlugins/ToolDrilling.py:2294
+#: appPlugins/ToolDblSided.py:725 appPlugins/ToolDrilling.py:2294
 #: appPlugins/ToolFiducials.py:832 appPlugins/ToolFilm.py:1237
 #: appPlugins/ToolFollow.py:693 appPlugins/ToolIsolation.py:3158
 #: appPlugins/ToolLevelling.py:1774 appPlugins/ToolMarkers.py:1149
@@ -1951,7 +1951,7 @@ msgstr "新刀具的直径"
 #: appEditors/AppExcEditor.py:4113 appEditors/AppGeoEditor.py:763
 #: appEditors/AppGerberEditor.py:6235 appEditors/AppGerberEditor.py:6774
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:340
-#: appPlugins/ToolCopperThieving.py:1750 appPlugins/ToolDblSided.py:922
+#: appPlugins/ToolCopperThieving.py:1750 appPlugins/ToolDblSided.py:945
 #: appPlugins/ToolLevelling.py:2102 appPlugins/ToolNCC.py:227
 #: appPlugins/ToolPaint.py:224 appPlugins/ToolSolderPaste.py:136
 #: appPlugins/ToolTransform.py:639 app_Main.py:7087
@@ -2011,10 +2011,11 @@ msgstr "添加钻孔阵列（线性或圆形阵列）"
 #: appEditors/AppGeoEditor.py:3479 appEditors/AppGerberEditor.py:4535
 #: appEditors/AppGerberEditor.py:6127 appEditors/AppGerberEditor.py:6200
 #: appEditors/AppGerberEditor.py:6579 appGUI/ObjectUI.py:334
+#: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:56
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:167
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:40
 #: appPlugins/ToolCopperThieving.py:1389 appPlugins/ToolCutOut.py:2266
-#: appPlugins/ToolCutOut.py:2452 appPlugins/ToolDblSided.py:1049
+#: appPlugins/ToolCutOut.py:2452 appPlugins/ToolDblSided.py:1072
 #: appPlugins/ToolExtract.py:1076 appPlugins/ToolFilm.py:1265
 #: appPlugins/ToolIsolation.py:3594 appPlugins/ToolMarkers.py:1202
 #: appPlugins/ToolMarkers.py:1464 appPlugins/ToolMilling.py:3596
@@ -2540,7 +2541,7 @@ msgstr "缓冲区"
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:133
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:94
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:42
-#: appPlugins/ToolDblSided.py:878 appPlugins/ToolDblSided.py:1069
+#: appPlugins/ToolDblSided.py:901 appPlugins/ToolDblSided.py:1092
 #: appPlugins/ToolFilm.py:1361 appPlugins/ToolFilm.py:1422
 #: appPlugins/ToolMarkers.py:1256 appPlugins/ToolPanelize.py:1179
 #: appPlugins/ToolTransform.py:614
@@ -2591,7 +2592,7 @@ msgstr "选择"
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:107
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:52
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:58
-#: appPlugins/ToolDblSided.py:889 appPlugins/ToolTransform.py:624
+#: appPlugins/ToolDblSided.py:912 appPlugins/ToolTransform.py:624
 msgid "Point"
 msgstr "点"
 
@@ -4538,8 +4539,8 @@ msgstr "新建"
 #: appPlugins/ToolCalibration.py:1351 appPlugins/ToolCalibration.py:1368
 #: appPlugins/ToolCopperThieving.py:209 appPlugins/ToolCopperThieving.py:1395
 #: appPlugins/ToolCopperThieving.py:1406 appPlugins/ToolCutOut.py:2263
-#: appPlugins/ToolCutOut.py:2685 appPlugins/ToolDblSided.py:732
-#: appPlugins/ToolDblSided.py:947 appPlugins/ToolFilm.py:1263
+#: appPlugins/ToolCutOut.py:2685 appPlugins/ToolDblSided.py:755
+#: appPlugins/ToolDblSided.py:970 appPlugins/ToolFilm.py:1263
 #: appPlugins/ToolFilm.py:1286 appPlugins/ToolImage.py:175
 #: appPlugins/ToolImage.py:231 appPlugins/ToolIsolation.py:3546
 #: appPlugins/ToolIsolation.py:3597 appPlugins/ToolMarkers.py:1471
@@ -4571,7 +4572,7 @@ msgstr "将创建一个新的空Geometry对象。"
 #: appPlugins/ToolCalibration.py:1351 appPlugins/ToolCalibration.py:1368
 #: appPlugins/ToolCopperThieving.py:209 appPlugins/ToolCopperThieving.py:1395
 #: appPlugins/ToolCopperThieving.py:1406 appPlugins/ToolCutOut.py:2262
-#: appPlugins/ToolDblSided.py:732 appPlugins/ToolDblSided.py:945
+#: appPlugins/ToolDblSided.py:755 appPlugins/ToolDblSided.py:968
 #: appPlugins/ToolFilm.py:1262 appPlugins/ToolFilm.py:1285
 #: appPlugins/ToolImage.py:153 appPlugins/ToolImage.py:177
 #: appPlugins/ToolImage.py:231 appPlugins/ToolIsolation.py:3547
@@ -4603,8 +4604,8 @@ msgstr "将创建一个新的空Gerber对象。"
 #: appPlugins/ToolCalibration.py:206 appPlugins/ToolCalibration.py:917
 #: appPlugins/ToolCalibration.py:1351 appPlugins/ToolCalibration.py:1368
 #: appPlugins/ToolCopperThieving.py:209 appPlugins/ToolCopperThieving.py:1395
-#: appPlugins/ToolCopperThieving.py:1406 appPlugins/ToolDblSided.py:732
-#: appPlugins/ToolDblSided.py:946 appPlugins/ToolDblSided.py:974
+#: appPlugins/ToolCopperThieving.py:1406 appPlugins/ToolDblSided.py:755
+#: appPlugins/ToolDblSided.py:969 appPlugins/ToolDblSided.py:997
 #: appPlugins/ToolFilm.py:1587 appPlugins/ToolIsolation.py:3597
 #: appPlugins/ToolMilling.py:3604 appPlugins/ToolNCC.py:4571
 #: appPlugins/ToolPaint.py:3317 appPlugins/ToolPanelize.py:147
@@ -5597,7 +5598,7 @@ msgid "Film"
 msgstr "胶片"
 
 #: appGUI/MainGUI.py:1120 appGUI/MainGUI.py:2464 appPlugins/ToolDblSided.py:110
-#: appPlugins/ToolDblSided.py:664
+#: appPlugins/ToolDblSided.py:687
 msgid "2-Sided"
 msgstr "双面"
 
@@ -8167,7 +8168,7 @@ msgstr ""
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:225
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:286
-#: appPlugins/ToolDblSided.py:859 appPlugins/ToolFilm.py:1465 app_Main.py:8436
+#: appPlugins/ToolDblSided.py:882 appPlugins/ToolFilm.py:1465 app_Main.py:8436
 msgid "Axis"
 msgstr "轴"
 
@@ -9951,7 +9952,7 @@ msgstr "自动"
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:133
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:67
 #: appGUI/preferences/tools/ToolsLevelPrefGroupUI.py:48
-#: appPlugins/ToolCutOut.py:2527 appPlugins/ToolDblSided.py:1060
+#: appPlugins/ToolCutOut.py:2527 appPlugins/ToolDblSided.py:1083
 #: appPlugins/ToolFiducials.py:1073 appPlugins/ToolLevelling.py:1925
 #: appPlugins/ToolMarkers.py:1366 appPlugins/ToolPunchGerber.py:2327
 msgid "Manual"
@@ -10424,7 +10425,7 @@ msgid "2-Sided Plugin"
 msgstr "双面插件"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:25
-#: appPlugins/ToolDblSided.py:1018
+#: appPlugins/ToolDblSided.py:1041
 msgid "PCB Alignment"
 msgstr "PCB对齐"
 
@@ -10437,22 +10438,18 @@ msgstr "使用对齐孔帮助创建双面PCB的工具。"
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:47
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:282
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:81
-#: appPlugins/ToolCutOut.py:2706 appPlugins/ToolDblSided.py:1033
+#: appPlugins/ToolCutOut.py:2706 appPlugins/ToolDblSided.py:1056
 #: appPlugins/ToolMarkers.py:1403
 msgid "Drill Dia"
 msgstr "孔直径"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:49
-#: appPlugins/ToolDblSided.py:1035 appPlugins/ToolDblSided.py:1040
+#: appPlugins/ToolDblSided.py:1058 appPlugins/ToolDblSided.py:1063
 msgid "Diameter of the drill for the alignment holes."
 msgstr "对齐孔的钻直径。"
 
-#: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:56
-msgid "Align Axis"
-msgstr "对齐轴"
-
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:58
-#: appPlugins/ToolDblSided.py:1051
+#: appPlugins/ToolDblSided.py:1074
 msgid ""
 "The content of the Excellon file.\n"
 "X - Pairs of drill holes mirrored vertically from reference point\n"
@@ -10466,22 +10463,22 @@ msgid "Mirror Axis"
 msgstr "镜像轴"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:80
-#: appPlugins/ToolDblSided.py:860
+#: appPlugins/ToolDblSided.py:883
 msgid "Mirror vertically (X) or horizontally (Y)."
 msgstr "垂直镜像（X）或水平镜像（Y）。"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:92
-#: appPlugins/ToolDblSided.py:848
+#: appPlugins/ToolDblSided.py:871
 msgid "Mirror Operation"
 msgstr "镜像操作"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:108
-#: appPlugins/ToolDblSided.py:890
+#: appPlugins/ToolDblSided.py:913
 msgid "Box"
 msgstr "框"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:109
-#: appPlugins/ToolDblSided.py:891 app_Main.py:8425
+#: appPlugins/ToolDblSided.py:914 app_Main.py:8425
 msgid "Snap"
 msgstr "捕捉"
 
@@ -10490,7 +10487,7 @@ msgid "Axis Ref"
 msgstr "参考轴"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:114
-#: appPlugins/ToolDblSided.py:880
+#: appPlugins/ToolDblSided.py:903
 msgid ""
 "The coordinates used as reference for the mirror operation.\n"
 "Can be:\n"
@@ -11137,7 +11134,7 @@ msgid ""
 msgstr "正值将向右倾斜，而负值将向左倾斜。"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:146
-#: appPlugins/ToolDblSided.py:999 appPlugins/ToolFilm.py:1450
+#: appPlugins/ToolDblSided.py:1022 appPlugins/ToolFilm.py:1450
 msgid "Mirror"
 msgstr "镜像"
 
@@ -12850,7 +12847,7 @@ msgid "Click on the START point."
 msgstr "单击\"开始点\"。"
 
 #: appPlugins/ToolAlignObjects.py:276 appPlugins/ToolCalibration.py:311
-#: appPlugins/ToolDblSided.py:471 appPlugins/ToolFiducials.py:752
+#: appPlugins/ToolDblSided.py:494 appPlugins/ToolFiducials.py:752
 #: appPlugins/ToolMarkers.py:1055
 msgid "Cancelled by user request."
 msgstr "因用户请求而取消。"
@@ -12949,7 +12946,7 @@ msgstr ""
 
 #: appPlugins/ToolAlignObjects.py:555 appPlugins/ToolCalculators.py:1050
 #: appPlugins/ToolCalibration.py:1403 appPlugins/ToolCopperThieving.py:1789
-#: appPlugins/ToolCutOut.py:2760 appPlugins/ToolDblSided.py:1134
+#: appPlugins/ToolCutOut.py:2760 appPlugins/ToolDblSided.py:1160
 #: appPlugins/ToolDrilling.py:2912 appPlugins/ToolEtchCompensation.py:513
 #: appPlugins/ToolExtract.py:1414 appPlugins/ToolFiducials.py:1118
 #: appPlugins/ToolFilm.py:1765 appPlugins/ToolFollow.py:777
@@ -12966,7 +12963,7 @@ msgstr "重置刀具"
 
 #: appPlugins/ToolAlignObjects.py:558 appPlugins/ToolCalculators.py:1053
 #: appPlugins/ToolCalibration.py:1406 appPlugins/ToolCopperThieving.py:1792
-#: appPlugins/ToolCutOut.py:2763 appPlugins/ToolDblSided.py:1137
+#: appPlugins/ToolCutOut.py:2763 appPlugins/ToolDblSided.py:1163
 #: appPlugins/ToolDrilling.py:2915 appPlugins/ToolEtchCompensation.py:516
 #: appPlugins/ToolExtract.py:1417 appPlugins/ToolFiducials.py:1121
 #: appPlugins/ToolFilm.py:1768 appPlugins/ToolFollow.py:780
@@ -13223,7 +13220,7 @@ msgid "Cancelled. Four points are needed for GCode generation."
 msgstr "取消。生成G代码需要四个点。"
 
 #: appPlugins/ToolCalibration.py:638 appPlugins/ToolCalibration.py:729
-#: appPlugins/ToolDblSided.py:489 appPlugins/ToolDblSided.py:577
+#: appPlugins/ToolDblSided.py:512 appPlugins/ToolDblSided.py:600
 #: appPlugins/ToolExtract.py:385 appPlugins/ToolExtract.py:700
 #: appPlugins/ToolExtract.py:803 appPlugins/ToolFilm.py:316
 #: appPlugins/ToolFilm.py:323 appPlugins/ToolFilm.py:327
@@ -13597,7 +13594,7 @@ msgid "Copper Thieving Tool exit."
 msgstr "盗铜工具退出。"
 
 #: appPlugins/ToolCopperThieving.py:1294 appPlugins/ToolCopperThieving.py:1683
-#: appPlugins/ToolCutOut.py:2231 appPlugins/ToolDblSided.py:714
+#: appPlugins/ToolCutOut.py:2231 appPlugins/ToolDblSided.py:737
 #: appPlugins/ToolDrilling.py:2306 appPlugins/ToolEtchCompensation.py:330
 #: appPlugins/ToolExtract.py:983 appPlugins/ToolFiducials.py:853
 #: appPlugins/ToolFilm.py:1249 appPlugins/ToolFollow.py:704
@@ -14018,91 +14015,91 @@ msgstr "单击所需Excelon钻孔内的画布"
 msgid "Mirror reference point set."
 msgstr "镜像参考点集。"
 
-#: appPlugins/ToolDblSided.py:493
+#: appPlugins/ToolDblSided.py:516
 msgid "Only Gerber, Excellon and Geometry objects can be mirrored."
 msgstr "只能镜像Gerber、Excelon和Geometry对象。"
 
-#: appPlugins/ToolDblSided.py:505
+#: appPlugins/ToolDblSided.py:528
 msgid "There is no Box object loaded ..."
 msgstr "没有加载任何框对象。。。"
 
-#: appPlugins/ToolDblSided.py:515
+#: appPlugins/ToolDblSided.py:538
 msgid ""
 "There are no Point coordinates in the Point field. Add coords and try "
 "again ..."
 msgstr "“点”字段中没有点坐标。添加坐标并重试。。。"
 
-#: appPlugins/ToolDblSided.py:522 camlib.py:2462
+#: appPlugins/ToolDblSided.py:545 camlib.py:2462
 msgid "Object was mirrored"
 msgstr "对象已镜像"
 
-#: appPlugins/ToolDblSided.py:692 appPlugins/ToolNCC.py:4061
+#: appPlugins/ToolDblSided.py:715 appPlugins/ToolNCC.py:4061
 msgid ""
 "Create a Geometry object with\n"
 "toolpaths to cover the space outside the copper pattern."
 msgstr "创建一个带有刀具路径的Geometry对象以覆盖铜图案之外的空间。"
 
-#: appPlugins/ToolDblSided.py:715
+#: appPlugins/ToolDblSided.py:738
 msgid "Objects to be mirrored"
 msgstr "要镜像的对象"
 
-#: appPlugins/ToolDblSided.py:728
+#: appPlugins/ToolDblSided.py:751
 msgid "Select the type of application object to be processed in this tool."
 msgstr "选择要处理的应用对象的类型。"
 
-#: appPlugins/ToolDblSided.py:747
+#: appPlugins/ToolDblSided.py:770
 msgid "Bounds Values"
 msgstr "边界值"
 
-#: appPlugins/ToolDblSided.py:749
+#: appPlugins/ToolDblSided.py:772
 msgid ""
 "Select on canvas the object(s)\n"
 "for which to calculate bounds values."
 msgstr "在画布上选择要为其计算边界值的对象。"
 
-#: appPlugins/ToolDblSided.py:765
+#: appPlugins/ToolDblSided.py:788
 msgid "X min"
 msgstr "X最小"
 
-#: appPlugins/ToolDblSided.py:767 appPlugins/ToolDblSided.py:781
+#: appPlugins/ToolDblSided.py:790 appPlugins/ToolDblSided.py:804
 msgid "Minimum location."
 msgstr "最小位置。"
 
-#: appPlugins/ToolDblSided.py:779
+#: appPlugins/ToolDblSided.py:802
 msgid "Y min"
 msgstr "Y最小"
 
-#: appPlugins/ToolDblSided.py:793
+#: appPlugins/ToolDblSided.py:816
 msgid "X max"
 msgstr "X最大"
 
-#: appPlugins/ToolDblSided.py:795 appPlugins/ToolDblSided.py:809
+#: appPlugins/ToolDblSided.py:818 appPlugins/ToolDblSided.py:832
 msgid "Maximum location."
 msgstr "最大位置。"
 
-#: appPlugins/ToolDblSided.py:807
+#: appPlugins/ToolDblSided.py:830
 msgid "Y max"
 msgstr "Y最大"
 
-#: appPlugins/ToolDblSided.py:818
+#: appPlugins/ToolDblSided.py:841
 msgid "Center point coordinates"
 msgstr "中心点坐标"
 
-#: appPlugins/ToolDblSided.py:820
+#: appPlugins/ToolDblSided.py:843
 msgid "Centroid"
 msgstr "中心"
 
-#: appPlugins/ToolDblSided.py:822
+#: appPlugins/ToolDblSided.py:845
 msgid ""
 "The center point location for the rectangular\n"
 "bounding shape. Centroid. Format is (x, y)."
 msgstr "矩形边界形状的中心点位置。质心。格式为（x，y）。"
 
-#: appPlugins/ToolDblSided.py:831
+#: appPlugins/ToolDblSided.py:854
 msgid "Calculate Bounds Values"
 msgstr "计算边界值"
 
-#: appPlugins/ToolDblSided.py:833
+#: appPlugins/ToolDblSided.py:856
 msgid ""
 "Calculate the enveloping rectangular shape coordinates,\n"
 "for the selection of objects.\n"
@@ -14111,15 +14108,15 @@ msgstr ""
 "计算包络矩形形状坐标，用于选择对象。\n"
 "封套形状与X、Y轴平行。"
 
-#: appPlugins/ToolDblSided.py:849
+#: appPlugins/ToolDblSided.py:872
 msgid "Parameters for the mirror operation"
 msgstr "镜像操作的参数"
 
-#: appPlugins/ToolDblSided.py:912
+#: appPlugins/ToolDblSided.py:935
 msgid "Point coordinates"
 msgstr "点坐标"
 
-#: appPlugins/ToolDblSided.py:924
+#: appPlugins/ToolDblSided.py:947
 msgid ""
 "Add the coordinates in format <b>(x, y)</b> through which the mirroring "
 "axis\n"
@@ -14131,7 +14128,7 @@ msgstr ""
 "以<b>（x，y）</b>格式添加在“镜像轴”中选择的镜像轴通过的坐标。\n"
 "按住SHIFT键并在画布上单击鼠标左键可以捕获（x，y）坐标，也可以手动输入坐标。"
 
-#: appPlugins/ToolDblSided.py:949
+#: appPlugins/ToolDblSided.py:972
 msgid ""
 "It can be of type: Gerber or Excellon or Geometry.\n"
 "The coordinates of the center of the bounding box are used\n"
@@ -14140,35 +14137,35 @@ msgstr ""
 "它可以是Gerber、Excelon或Geometry类型。\n"
 "边界框中心的坐标用作镜像操作的参考。"
 
-#: appPlugins/ToolDblSided.py:976
+#: appPlugins/ToolDblSided.py:999
 msgid "Object that holds holes that can be picked as reference for mirroring."
 msgstr "对象，该对象包含可以拾取作为镜像参考的孔。"
 
-#: appPlugins/ToolDblSided.py:988
+#: appPlugins/ToolDblSided.py:1011
 msgid "Pick hole"
 msgstr "选择孔"
 
-#: appPlugins/ToolDblSided.py:990
+#: appPlugins/ToolDblSided.py:1013
 msgid ""
 "Click inside a drill hole that belong to the selected Excellon object,\n"
 "and the hole center coordinates will be copied to the Point field."
 msgstr "在属于选定Excellon对象的钻孔内单击，孔中心坐标将复制到“点”字段。"
 
-#: appPlugins/ToolDblSided.py:1002
+#: appPlugins/ToolDblSided.py:1025
 msgid ""
 "Mirrors (flips) the specified object around \n"
 "the specified axis. Does not create a new \n"
 "object, but modifies it."
 msgstr "围绕指定轴镜像（翻转）指定对象。不创建新对象，但对其进行修改。"
 
-#: appPlugins/ToolDblSided.py:1020 appPlugins/ToolDblSided.py:1119
+#: appPlugins/ToolDblSided.py:1043 appPlugins/ToolDblSided.py:1145
 msgid ""
 "Creates an Excellon Object containing the\n"
 "specified alignment holes and their mirror\n"
 "images."
 msgstr "创建包含指定对齐孔及其镜像的Excellon对象。"
 
-#: appPlugins/ToolDblSided.py:1071 appPlugins/ToolDblSided.py:1078
+#: appPlugins/ToolDblSided.py:1094 appPlugins/ToolDblSided.py:1101
 msgid ""
 "The reference point used to create the second alignment drill\n"
 "from the first alignment drill, by doing mirror.\n"
@@ -14177,34 +14174,33 @@ msgstr ""
 "用于通过镜像从第一个对齐钻孔创建第二个对齐钻孔的参考点。\n"
 "可以在镜像参数->参考部分修改"
 
-#: appPlugins/ToolDblSided.py:1088
-msgid "Alignment Drill Coordinates"
-msgstr "对准钻孔坐标"
+#: appPlugins/ToolDblSided.py:1111
+#, fuzzy
+#| msgid "Drill coordinates"
+msgid "Drill Coordinates"
+msgstr "钻孔坐标"
 
-#: appPlugins/ToolDblSided.py:1090
+#: appPlugins/ToolDblSided.py:1113
 msgid ""
-"Alignment holes (x1, y1), (x2, y2), ... on one side of the mirror axis. For "
-"each set of (x, y) coordinates\n"
-"entered here, a pair of drills will be created:\n"
+"Alignment holes (x1, y1), (x2, y2), ... \n"
+"If the type is X or Y then for each pair of coordinates\n"
+"two drill points will be added: one with the given coordinates,\n"
+"and the other will be mirrored as set in the 'Mirror' section.\n"
+"If the type is 'Manual' then no mirror point is generated.\n"
 "\n"
-"- one drill at the coordinates from the field\n"
-"- one drill in mirror position over the axis selected above in the 'Align "
-"Axis'."
+"Shift + mouse click will add one set of coordinates.\n"
+"Ctrl + Shift + mouse click will accumulate sets of coordinates. "
 msgstr ""
-"对准孔（x1，y1），（x2，y2）。。。在镜像轴的一侧。对于此处输入的每组（x，y）"
-"坐标，将创建一对钻孔：\n"
-"-在现场坐标处进行一次钻孔\n"
-"-在上述“对齐轴”中选择的轴上方的镜像位置进行一次钻孔。"
 
-#: appPlugins/ToolDblSided.py:1100
+#: appPlugins/ToolDblSided.py:1126
 msgid "Drill coordinates"
 msgstr "钻孔坐标"
 
-#: appPlugins/ToolDblSided.py:1105
+#: appPlugins/ToolDblSided.py:1131
 msgid "Delete the last coordinates tuple in the list."
 msgstr "删除列表中的最后一个坐标元组。"
 
-#: appPlugins/ToolDblSided.py:1116 appPlugins/ToolMarkers.py:1416
+#: appPlugins/ToolDblSided.py:1142 appPlugins/ToolMarkers.py:1416
 #: appPlugins/ToolMarkers.py:1436
 msgid "Create Excellon Object"
 msgstr "创建Excellon对象"
@@ -18761,6 +18757,26 @@ msgstr "通过使用偏移所有加载的对象来设置原点 "
 #: tclCommands/TclCommandSubtractRectangle.py:62
 msgid "No Geometry name in args. Provide a name and try again."
 msgstr "参数中没有Geometry名称。请提供名称，然后重试。"
+
+#~ msgid "Align Axis"
+#~ msgstr "对齐轴"
+
+#~ msgid "Alignment Drill Coordinates"
+#~ msgstr "对准钻孔坐标"
+
+#~ msgid ""
+#~ "Alignment holes (x1, y1), (x2, y2), ... on one side of the mirror axis. "
+#~ "For each set of (x, y) coordinates\n"
+#~ "entered here, a pair of drills will be created:\n"
+#~ "\n"
+#~ "- one drill at the coordinates from the field\n"
+#~ "- one drill in mirror position over the axis selected above in the 'Align "
+#~ "Axis'."
+#~ msgstr ""
+#~ "对准孔（x1，y1），（x2，y2）。。。在镜像轴的一侧。对于此处输入的每组（x，"
+#~ "y）坐标，将创建一对钻孔：\n"
+#~ "-在现场坐标处进行一次钻孔\n"
+#~ "-在上述“对齐轴”中选择的轴上方的镜像位置进行一次钻孔。"
 
 #~ msgid "Min value"
 #~ msgstr "最小值"

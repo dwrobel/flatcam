@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-10-10 01:33+0300\n"
+"POT-Creation-Date: 2021-10-10 12:21+0300\n"
 "PO-Revision-Date: 2019-03-25 15:08+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -274,7 +274,7 @@ msgid "Name"
 msgstr ""
 
 #: appDatabase.py:38 appDatabase.py:263 appPlugins/ToolCalibration.py:955
-#: appPlugins/ToolDblSided.py:726 appPlugins/ToolPanelize.py:1151 appPlugins/ToolSub.py:851
+#: appPlugins/ToolDblSided.py:749 appPlugins/ToolPanelize.py:1151 appPlugins/ToolSub.py:851
 #: appPlugins/ToolSub.py:919
 msgid "Target"
 msgstr ""
@@ -1228,7 +1228,7 @@ msgstr ""
 #: appPlugins/ToolCalibration.py:1420 appPlugins/ToolCalibration.py:1431
 #: appPlugins/ToolCopperThieving.py:1807 appPlugins/ToolCopperThieving.py:1818
 #: appPlugins/ToolCutOut.py:2803 appPlugins/ToolCutOut.py:2814
-#: appPlugins/ToolDblSided.py:1154 appPlugins/ToolDblSided.py:1165
+#: appPlugins/ToolDblSided.py:1180 appPlugins/ToolDblSided.py:1191
 #: appPlugins/ToolDistance.py:722 appPlugins/ToolDistance.py:733
 #: appPlugins/ToolDistanceMin.py:398 appPlugins/ToolDistanceMin.py:409
 #: appPlugins/ToolDrilling.py:2929 appPlugins/ToolDrilling.py:2940
@@ -1250,8 +1250,8 @@ msgstr ""
 #: appPlugins/ToolQRCode.py:1067 appPlugins/ToolRulesCheck.py:1880
 #: appPlugins/ToolRulesCheck.py:1891 appPlugins/ToolSolderPaste.py:1714
 #: appPlugins/ToolSolderPaste.py:1725 appPlugins/ToolSub.py:995 appPlugins/ToolSub.py:1006
-#: appPlugins/ToolTransform.py:1071 appPlugins/ToolTransform.py:1082 appTool.py:300
-#: appTool.py:311
+#: appPlugins/ToolTransform.py:1071 appPlugins/ToolTransform.py:1082 appTool.py:304
+#: appTool.py:315
 msgid "Edited value is out of range"
 msgstr ""
 
@@ -1263,7 +1263,7 @@ msgstr ""
 #: appPlugins/ToolCalibration.py:1426 appPlugins/ToolCalibration.py:1433
 #: appPlugins/ToolCopperThieving.py:1813 appPlugins/ToolCopperThieving.py:1820
 #: appPlugins/ToolCutOut.py:2809 appPlugins/ToolCutOut.py:2816
-#: appPlugins/ToolDblSided.py:1160 appPlugins/ToolDblSided.py:1167
+#: appPlugins/ToolDblSided.py:1186 appPlugins/ToolDblSided.py:1193
 #: appPlugins/ToolDistance.py:728 appPlugins/ToolDistance.py:735
 #: appPlugins/ToolDistanceMin.py:404 appPlugins/ToolDistanceMin.py:411
 #: appPlugins/ToolDrilling.py:2935 appPlugins/ToolDrilling.py:2942
@@ -1285,8 +1285,8 @@ msgstr ""
 #: appPlugins/ToolQRCode.py:1069 appPlugins/ToolRulesCheck.py:1886
 #: appPlugins/ToolRulesCheck.py:1893 appPlugins/ToolSolderPaste.py:1720
 #: appPlugins/ToolSolderPaste.py:1727 appPlugins/ToolSub.py:1001 appPlugins/ToolSub.py:1008
-#: appPlugins/ToolTransform.py:1077 appPlugins/ToolTransform.py:1084 appTool.py:306
-#: appTool.py:313
+#: appPlugins/ToolTransform.py:1077 appPlugins/ToolTransform.py:1084 appTool.py:310
+#: appTool.py:317
 msgid "Edited value is within limits."
 msgstr ""
 
@@ -1487,8 +1487,8 @@ msgstr ""
 #: appPlugins/ToolCopperThieving.py:1158 appPlugins/ToolCutOut.py:863
 #: appPlugins/ToolCutOut.py:885 appPlugins/ToolCutOut.py:1014 appPlugins/ToolCutOut.py:1230
 #: appPlugins/ToolCutOut.py:1376 appPlugins/ToolCutOut.py:1419 appPlugins/ToolCutOut.py:1437
-#: appPlugins/ToolCutOut.py:1451 appPlugins/ToolDblSided.py:577
-#: appPlugins/ToolDblSided.py:590 appPlugins/ToolExtract.py:401
+#: appPlugins/ToolCutOut.py:1451 appPlugins/ToolDblSided.py:600
+#: appPlugins/ToolDblSided.py:613 appPlugins/ToolExtract.py:401
 #: appPlugins/ToolExtract.py:767 appPlugins/ToolExtract.py:816 appPlugins/ToolExtract.py:825
 #: appPlugins/ToolExtract.py:829 appPlugins/ToolFiducials.py:344
 #: appPlugins/ToolFiducials.py:605 appPlugins/ToolFiducials.py:661
@@ -1665,7 +1665,7 @@ msgstr ""
 
 #: appEditors/AppExcEditor.py:4027 appEditors/AppGeoEditor.py:3446
 #: appEditors/AppGerberEditor.py:6089 appEditors/appGCodeEditor.py:774 appGUI/ObjectUI.py:72
-#: appPlugins/ToolCutOut.py:2222 appPlugins/ToolDblSided.py:702
+#: appPlugins/ToolCutOut.py:2222 appPlugins/ToolDblSided.py:725
 #: appPlugins/ToolDrilling.py:2294 appPlugins/ToolFiducials.py:832
 #: appPlugins/ToolFilm.py:1237 appPlugins/ToolFollow.py:693 appPlugins/ToolIsolation.py:3158
 #: appPlugins/ToolLevelling.py:1774 appPlugins/ToolMarkers.py:1149
@@ -1734,7 +1734,7 @@ msgstr ""
 #: appEditors/AppExcEditor.py:4113 appEditors/AppGeoEditor.py:763
 #: appEditors/AppGerberEditor.py:6235 appEditors/AppGerberEditor.py:6774
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:340
-#: appPlugins/ToolCopperThieving.py:1750 appPlugins/ToolDblSided.py:922
+#: appPlugins/ToolCopperThieving.py:1750 appPlugins/ToolDblSided.py:945
 #: appPlugins/ToolLevelling.py:2102 appPlugins/ToolNCC.py:227 appPlugins/ToolPaint.py:224
 #: appPlugins/ToolSolderPaste.py:136 appPlugins/ToolTransform.py:639 app_Main.py:7087
 msgid "Add"
@@ -1793,10 +1793,11 @@ msgstr ""
 #: appEditors/AppGeoEditor.py:3479 appEditors/AppGerberEditor.py:4535
 #: appEditors/AppGerberEditor.py:6127 appEditors/AppGerberEditor.py:6200
 #: appEditors/AppGerberEditor.py:6579 appGUI/ObjectUI.py:334
+#: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:56
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:167
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:40
 #: appPlugins/ToolCopperThieving.py:1389 appPlugins/ToolCutOut.py:2266
-#: appPlugins/ToolCutOut.py:2452 appPlugins/ToolDblSided.py:1049
+#: appPlugins/ToolCutOut.py:2452 appPlugins/ToolDblSided.py:1072
 #: appPlugins/ToolExtract.py:1076 appPlugins/ToolFilm.py:1265
 #: appPlugins/ToolIsolation.py:3594 appPlugins/ToolMarkers.py:1202
 #: appPlugins/ToolMarkers.py:1464 appPlugins/ToolMilling.py:3596 appPlugins/ToolNCC.py:4099
@@ -2272,8 +2273,8 @@ msgstr ""
 #: appGUI/GUIElements.py:4000 appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:82
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:133
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:94
-#: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:42 appPlugins/ToolDblSided.py:878
-#: appPlugins/ToolDblSided.py:1069 appPlugins/ToolFilm.py:1361 appPlugins/ToolFilm.py:1422
+#: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:42 appPlugins/ToolDblSided.py:901
+#: appPlugins/ToolDblSided.py:1092 appPlugins/ToolFilm.py:1361 appPlugins/ToolFilm.py:1422
 #: appPlugins/ToolMarkers.py:1256 appPlugins/ToolPanelize.py:1179
 #: appPlugins/ToolTransform.py:614
 msgid "Reference"
@@ -2313,7 +2314,7 @@ msgstr ""
 #: appEditors/AppGeoEditor.py:748 appEditors/AppGerberEditor.py:6759
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:107
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:52
-#: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:58 appPlugins/ToolDblSided.py:889
+#: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:58 appPlugins/ToolDblSided.py:912
 #: appPlugins/ToolTransform.py:624
 msgid "Point"
 msgstr ""
@@ -4144,8 +4145,8 @@ msgstr ""
 #: appPlugins/ToolCalibration.py:1351 appPlugins/ToolCalibration.py:1368
 #: appPlugins/ToolCopperThieving.py:209 appPlugins/ToolCopperThieving.py:1395
 #: appPlugins/ToolCopperThieving.py:1406 appPlugins/ToolCutOut.py:2263
-#: appPlugins/ToolCutOut.py:2685 appPlugins/ToolDblSided.py:732
-#: appPlugins/ToolDblSided.py:947 appPlugins/ToolFilm.py:1263 appPlugins/ToolFilm.py:1286
+#: appPlugins/ToolCutOut.py:2685 appPlugins/ToolDblSided.py:755
+#: appPlugins/ToolDblSided.py:970 appPlugins/ToolFilm.py:1263 appPlugins/ToolFilm.py:1286
 #: appPlugins/ToolImage.py:175 appPlugins/ToolImage.py:231 appPlugins/ToolIsolation.py:3546
 #: appPlugins/ToolIsolation.py:3597 appPlugins/ToolMarkers.py:1471
 #: appPlugins/ToolMilling.py:2696 appPlugins/ToolMilling.py:3603 appPlugins/ToolNCC.py:4108
@@ -4174,7 +4175,7 @@ msgstr ""
 #: appPlugins/ToolCalibration.py:1351 appPlugins/ToolCalibration.py:1368
 #: appPlugins/ToolCopperThieving.py:209 appPlugins/ToolCopperThieving.py:1395
 #: appPlugins/ToolCopperThieving.py:1406 appPlugins/ToolCutOut.py:2262
-#: appPlugins/ToolDblSided.py:732 appPlugins/ToolDblSided.py:945 appPlugins/ToolFilm.py:1262
+#: appPlugins/ToolDblSided.py:755 appPlugins/ToolDblSided.py:968 appPlugins/ToolFilm.py:1262
 #: appPlugins/ToolFilm.py:1285 appPlugins/ToolImage.py:153 appPlugins/ToolImage.py:177
 #: appPlugins/ToolImage.py:231 appPlugins/ToolIsolation.py:3547
 #: appPlugins/ToolIsolation.py:3597 appPlugins/ToolMarkers.py:1470
@@ -4204,8 +4205,8 @@ msgstr ""
 #: appPlugins/ToolCalibration.py:206 appPlugins/ToolCalibration.py:917
 #: appPlugins/ToolCalibration.py:1351 appPlugins/ToolCalibration.py:1368
 #: appPlugins/ToolCopperThieving.py:209 appPlugins/ToolCopperThieving.py:1395
-#: appPlugins/ToolCopperThieving.py:1406 appPlugins/ToolDblSided.py:732
-#: appPlugins/ToolDblSided.py:946 appPlugins/ToolDblSided.py:974 appPlugins/ToolFilm.py:1587
+#: appPlugins/ToolCopperThieving.py:1406 appPlugins/ToolDblSided.py:755
+#: appPlugins/ToolDblSided.py:969 appPlugins/ToolDblSided.py:997 appPlugins/ToolFilm.py:1587
 #: appPlugins/ToolIsolation.py:3597 appPlugins/ToolMilling.py:3604
 #: appPlugins/ToolNCC.py:4571 appPlugins/ToolPaint.py:3317 appPlugins/ToolPanelize.py:147
 #: appPlugins/ToolPanelize.py:258 appPlugins/ToolPanelize.py:1154
@@ -5174,7 +5175,7 @@ msgid "Film"
 msgstr ""
 
 #: appGUI/MainGUI.py:1120 appGUI/MainGUI.py:2464 appPlugins/ToolDblSided.py:110
-#: appPlugins/ToolDblSided.py:664
+#: appPlugins/ToolDblSided.py:687
 msgid "2-Sided"
 msgstr ""
 
@@ -7549,7 +7550,7 @@ msgid ""
 msgstr ""
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:225
-#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:286 appPlugins/ToolDblSided.py:859
+#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:286 appPlugins/ToolDblSided.py:882
 #: appPlugins/ToolFilm.py:1465 app_Main.py:8436
 msgid "Axis"
 msgstr ""
@@ -9140,7 +9141,7 @@ msgstr ""
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:133
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:67
 #: appGUI/preferences/tools/ToolsLevelPrefGroupUI.py:48 appPlugins/ToolCutOut.py:2527
-#: appPlugins/ToolDblSided.py:1060 appPlugins/ToolFiducials.py:1073
+#: appPlugins/ToolDblSided.py:1083 appPlugins/ToolFiducials.py:1073
 #: appPlugins/ToolLevelling.py:1925 appPlugins/ToolMarkers.py:1366
 #: appPlugins/ToolPunchGerber.py:2327
 msgid "Manual"
@@ -9555,7 +9556,7 @@ msgstr ""
 msgid "2-Sided Plugin"
 msgstr ""
 
-#: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:25 appPlugins/ToolDblSided.py:1018
+#: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:25 appPlugins/ToolDblSided.py:1041
 msgid "PCB Alignment"
 msgstr ""
 
@@ -9568,20 +9569,16 @@ msgstr ""
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:47
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:282
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:81 appPlugins/ToolCutOut.py:2706
-#: appPlugins/ToolDblSided.py:1033 appPlugins/ToolMarkers.py:1403
+#: appPlugins/ToolDblSided.py:1056 appPlugins/ToolMarkers.py:1403
 msgid "Drill Dia"
 msgstr ""
 
-#: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:49 appPlugins/ToolDblSided.py:1035
-#: appPlugins/ToolDblSided.py:1040
+#: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:49 appPlugins/ToolDblSided.py:1058
+#: appPlugins/ToolDblSided.py:1063
 msgid "Diameter of the drill for the alignment holes."
 msgstr ""
 
-#: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:56
-msgid "Align Axis"
-msgstr ""
-
-#: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:58 appPlugins/ToolDblSided.py:1051
+#: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:58 appPlugins/ToolDblSided.py:1074
 msgid ""
 "The content of the Excellon file.\n"
 "X - Pairs of drill holes mirrored vertically from reference point\n"
@@ -9594,19 +9591,19 @@ msgstr ""
 msgid "Mirror Axis"
 msgstr ""
 
-#: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:80 appPlugins/ToolDblSided.py:860
+#: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:80 appPlugins/ToolDblSided.py:883
 msgid "Mirror vertically (X) or horizontally (Y)."
 msgstr ""
 
-#: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:92 appPlugins/ToolDblSided.py:848
+#: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:92 appPlugins/ToolDblSided.py:871
 msgid "Mirror Operation"
 msgstr ""
 
-#: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:108 appPlugins/ToolDblSided.py:890
+#: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:108 appPlugins/ToolDblSided.py:913
 msgid "Box"
 msgstr ""
 
-#: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:109 appPlugins/ToolDblSided.py:891
+#: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:109 appPlugins/ToolDblSided.py:914
 #: app_Main.py:8425
 msgid "Snap"
 msgstr ""
@@ -9615,7 +9612,7 @@ msgstr ""
 msgid "Axis Ref"
 msgstr ""
 
-#: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:114 appPlugins/ToolDblSided.py:880
+#: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:114 appPlugins/ToolDblSided.py:903
 msgid ""
 "The coordinates used as reference for the mirror operation.\n"
 "Can be:\n"
@@ -10178,7 +10175,7 @@ msgid ""
 "while negative values will skew to the left."
 msgstr ""
 
-#: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:146 appPlugins/ToolDblSided.py:999
+#: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:146 appPlugins/ToolDblSided.py:1022
 #: appPlugins/ToolFilm.py:1450
 msgid "Mirror"
 msgstr ""
@@ -11659,7 +11656,7 @@ msgid "Click on the START point."
 msgstr ""
 
 #: appPlugins/ToolAlignObjects.py:276 appPlugins/ToolCalibration.py:311
-#: appPlugins/ToolDblSided.py:471 appPlugins/ToolFiducials.py:752
+#: appPlugins/ToolDblSided.py:494 appPlugins/ToolFiducials.py:752
 #: appPlugins/ToolMarkers.py:1055
 msgid "Cancelled by user request."
 msgstr ""
@@ -11744,7 +11741,7 @@ msgstr ""
 
 #: appPlugins/ToolAlignObjects.py:555 appPlugins/ToolCalculators.py:1050
 #: appPlugins/ToolCalibration.py:1403 appPlugins/ToolCopperThieving.py:1789
-#: appPlugins/ToolCutOut.py:2760 appPlugins/ToolDblSided.py:1134
+#: appPlugins/ToolCutOut.py:2760 appPlugins/ToolDblSided.py:1160
 #: appPlugins/ToolDrilling.py:2912 appPlugins/ToolEtchCompensation.py:513
 #: appPlugins/ToolExtract.py:1414 appPlugins/ToolFiducials.py:1118
 #: appPlugins/ToolFilm.py:1765 appPlugins/ToolFollow.py:777
@@ -11760,7 +11757,7 @@ msgstr ""
 
 #: appPlugins/ToolAlignObjects.py:558 appPlugins/ToolCalculators.py:1053
 #: appPlugins/ToolCalibration.py:1406 appPlugins/ToolCopperThieving.py:1792
-#: appPlugins/ToolCutOut.py:2763 appPlugins/ToolDblSided.py:1137
+#: appPlugins/ToolCutOut.py:2763 appPlugins/ToolDblSided.py:1163
 #: appPlugins/ToolDrilling.py:2915 appPlugins/ToolEtchCompensation.py:516
 #: appPlugins/ToolExtract.py:1417 appPlugins/ToolFiducials.py:1121
 #: appPlugins/ToolFilm.py:1768 appPlugins/ToolFollow.py:780
@@ -12013,7 +12010,7 @@ msgid "Cancelled. Four points are needed for GCode generation."
 msgstr ""
 
 #: appPlugins/ToolCalibration.py:638 appPlugins/ToolCalibration.py:729
-#: appPlugins/ToolDblSided.py:489 appPlugins/ToolDblSided.py:577
+#: appPlugins/ToolDblSided.py:512 appPlugins/ToolDblSided.py:600
 #: appPlugins/ToolExtract.py:385 appPlugins/ToolExtract.py:700 appPlugins/ToolExtract.py:803
 #: appPlugins/ToolFilm.py:316 appPlugins/ToolFilm.py:323 appPlugins/ToolFilm.py:327
 #: appPlugins/ToolMilling.py:1976 appPlugins/ToolMove.py:167
@@ -12363,7 +12360,7 @@ msgid "Copper Thieving Tool exit."
 msgstr ""
 
 #: appPlugins/ToolCopperThieving.py:1294 appPlugins/ToolCopperThieving.py:1683
-#: appPlugins/ToolCutOut.py:2231 appPlugins/ToolDblSided.py:714
+#: appPlugins/ToolCutOut.py:2231 appPlugins/ToolDblSided.py:737
 #: appPlugins/ToolDrilling.py:2306 appPlugins/ToolEtchCompensation.py:330
 #: appPlugins/ToolExtract.py:983 appPlugins/ToolFiducials.py:853 appPlugins/ToolFilm.py:1249
 #: appPlugins/ToolFollow.py:704 appPlugins/ToolInvertGerber.py:236
@@ -12719,104 +12716,104 @@ msgstr ""
 msgid "Mirror reference point set."
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:493
+#: appPlugins/ToolDblSided.py:516
 msgid "Only Gerber, Excellon and Geometry objects can be mirrored."
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:505
+#: appPlugins/ToolDblSided.py:528
 msgid "There is no Box object loaded ..."
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:515
+#: appPlugins/ToolDblSided.py:538
 msgid "There are no Point coordinates in the Point field. Add coords and try again ..."
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:522 camlib.py:2462
+#: appPlugins/ToolDblSided.py:545 camlib.py:2462
 msgid "Object was mirrored"
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:692 appPlugins/ToolNCC.py:4061
+#: appPlugins/ToolDblSided.py:715 appPlugins/ToolNCC.py:4061
 msgid ""
 "Create a Geometry object with\n"
 "toolpaths to cover the space outside the copper pattern."
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:715
+#: appPlugins/ToolDblSided.py:738
 msgid "Objects to be mirrored"
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:728
+#: appPlugins/ToolDblSided.py:751
 msgid "Select the type of application object to be processed in this tool."
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:747
+#: appPlugins/ToolDblSided.py:770
 msgid "Bounds Values"
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:749
+#: appPlugins/ToolDblSided.py:772
 msgid ""
 "Select on canvas the object(s)\n"
 "for which to calculate bounds values."
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:765
+#: appPlugins/ToolDblSided.py:788
 msgid "X min"
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:767 appPlugins/ToolDblSided.py:781
+#: appPlugins/ToolDblSided.py:790 appPlugins/ToolDblSided.py:804
 msgid "Minimum location."
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:779
+#: appPlugins/ToolDblSided.py:802
 msgid "Y min"
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:793
+#: appPlugins/ToolDblSided.py:816
 msgid "X max"
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:795 appPlugins/ToolDblSided.py:809
+#: appPlugins/ToolDblSided.py:818 appPlugins/ToolDblSided.py:832
 msgid "Maximum location."
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:807
+#: appPlugins/ToolDblSided.py:830
 msgid "Y max"
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:818
+#: appPlugins/ToolDblSided.py:841
 msgid "Center point coordinates"
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:820
+#: appPlugins/ToolDblSided.py:843
 msgid "Centroid"
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:822
+#: appPlugins/ToolDblSided.py:845
 msgid ""
 "The center point location for the rectangular\n"
 "bounding shape. Centroid. Format is (x, y)."
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:831
+#: appPlugins/ToolDblSided.py:854
 msgid "Calculate Bounds Values"
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:833
+#: appPlugins/ToolDblSided.py:856
 msgid ""
 "Calculate the enveloping rectangular shape coordinates,\n"
 "for the selection of objects.\n"
 "The envelope shape is parallel with the X, Y axis."
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:849
+#: appPlugins/ToolDblSided.py:872
 msgid "Parameters for the mirror operation"
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:912
+#: appPlugins/ToolDblSided.py:935
 msgid "Point coordinates"
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:924
+#: appPlugins/ToolDblSided.py:947
 msgid ""
 "Add the coordinates in format <b>(x, y)</b> through which the mirroring axis\n"
 " selected in 'MIRROR AXIS' pass.\n"
@@ -12824,71 +12821,73 @@ msgid ""
 "and left mouse button click on canvas or you can enter the coordinates manually."
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:949
+#: appPlugins/ToolDblSided.py:972
 msgid ""
 "It can be of type: Gerber or Excellon or Geometry.\n"
 "The coordinates of the center of the bounding box are used\n"
 "as reference for mirror operation."
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:976
+#: appPlugins/ToolDblSided.py:999
 msgid "Object that holds holes that can be picked as reference for mirroring."
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:988
+#: appPlugins/ToolDblSided.py:1011
 msgid "Pick hole"
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:990
+#: appPlugins/ToolDblSided.py:1013
 msgid ""
 "Click inside a drill hole that belong to the selected Excellon object,\n"
 "and the hole center coordinates will be copied to the Point field."
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:1002
+#: appPlugins/ToolDblSided.py:1025
 msgid ""
 "Mirrors (flips) the specified object around \n"
 "the specified axis. Does not create a new \n"
 "object, but modifies it."
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:1020 appPlugins/ToolDblSided.py:1119
+#: appPlugins/ToolDblSided.py:1043 appPlugins/ToolDblSided.py:1145
 msgid ""
 "Creates an Excellon Object containing the\n"
 "specified alignment holes and their mirror\n"
 "images."
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:1071 appPlugins/ToolDblSided.py:1078
+#: appPlugins/ToolDblSided.py:1094 appPlugins/ToolDblSided.py:1101
 msgid ""
 "The reference point used to create the second alignment drill\n"
 "from the first alignment drill, by doing mirror.\n"
 "It can be modified in the Mirror Parameters -> Reference section"
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:1088
-msgid "Alignment Drill Coordinates"
+#: appPlugins/ToolDblSided.py:1111
+msgid "Drill Coordinates"
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:1090
+#: appPlugins/ToolDblSided.py:1113
 msgid ""
-"Alignment holes (x1, y1), (x2, y2), ... on one side of the mirror axis. For each set of "
-"(x, y) coordinates\n"
-"entered here, a pair of drills will be created:\n"
+"Alignment holes (x1, y1), (x2, y2), ... \n"
+"If the type is X or Y then for each pair of coordinates\n"
+"two drill points will be added: one with the given coordinates,\n"
+"and the other will be mirrored as set in the 'Mirror' section.\n"
+"If the type is 'Manual' then no mirror point is generated.\n"
 "\n"
-"- one drill at the coordinates from the field\n"
-"- one drill in mirror position over the axis selected above in the 'Align Axis'."
+"Shift + mouse click will add one set of coordinates.\n"
+"Ctrl + Shift + mouse click will accumulate sets of coordinates. "
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:1100
+#: appPlugins/ToolDblSided.py:1126
 msgid "Drill coordinates"
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:1105
+#: appPlugins/ToolDblSided.py:1131
 msgid "Delete the last coordinates tuple in the list."
 msgstr ""
 
-#: appPlugins/ToolDblSided.py:1116 appPlugins/ToolMarkers.py:1416
+#: appPlugins/ToolDblSided.py:1142 appPlugins/ToolMarkers.py:1416
 #: appPlugins/ToolMarkers.py:1436
 msgid "Create Excellon Object"
 msgstr ""

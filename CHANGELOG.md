@@ -15,6 +15,8 @@ CHANGELOG for FlatCAM beta
 - in 2Sided Plugin: adding cumulative alignment points using the Ctrl+Shift+LMB now detects if it is a new start in adding alignment drill points
 - in 2Sided Plugin: duplicated set of coordinates in Alignment Drills are removed
 - in 2Sided Plugin: Shift+LMB will add automatically the clicked coordinates in the Alignment Drills location
+- update language strings
+- updated the Romanian translation files
 
 9.10.2021
 

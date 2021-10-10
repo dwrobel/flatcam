@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-10-10 01:35+0300\n"
-"PO-Revision-Date: 2021-10-10 01:35+0300\n"
+"POT-Creation-Date: 2021-10-10 12:23+0300\n"
+"PO-Revision-Date: 2021-10-10 12:33+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ro\n"
@@ -297,7 +297,7 @@ msgid "Name"
 msgstr "Nume"
 
 #: appDatabase.py:38 appDatabase.py:263 appPlugins/ToolCalibration.py:955
-#: appPlugins/ToolDblSided.py:726 appPlugins/ToolPanelize.py:1151
+#: appPlugins/ToolDblSided.py:749 appPlugins/ToolPanelize.py:1151
 #: appPlugins/ToolSub.py:851 appPlugins/ToolSub.py:919
 msgid "Target"
 msgstr "Tintă"
@@ -1476,8 +1476,8 @@ msgstr "Anuleaza"
 #: appPlugins/ToolCalculators.py:1079 appPlugins/ToolCalibration.py:1420
 #: appPlugins/ToolCalibration.py:1431 appPlugins/ToolCopperThieving.py:1807
 #: appPlugins/ToolCopperThieving.py:1818 appPlugins/ToolCutOut.py:2803
-#: appPlugins/ToolCutOut.py:2814 appPlugins/ToolDblSided.py:1154
-#: appPlugins/ToolDblSided.py:1165 appPlugins/ToolDistance.py:722
+#: appPlugins/ToolCutOut.py:2814 appPlugins/ToolDblSided.py:1180
+#: appPlugins/ToolDblSided.py:1191 appPlugins/ToolDistance.py:722
 #: appPlugins/ToolDistance.py:733 appPlugins/ToolDistanceMin.py:398
 #: appPlugins/ToolDistanceMin.py:409 appPlugins/ToolDrilling.py:2929
 #: appPlugins/ToolDrilling.py:2940 appPlugins/ToolEtchCompensation.py:531
@@ -1502,7 +1502,7 @@ msgstr "Anuleaza"
 #: appPlugins/ToolRulesCheck.py:1891 appPlugins/ToolSolderPaste.py:1714
 #: appPlugins/ToolSolderPaste.py:1725 appPlugins/ToolSub.py:995
 #: appPlugins/ToolSub.py:1006 appPlugins/ToolTransform.py:1071
-#: appPlugins/ToolTransform.py:1082 appTool.py:300 appTool.py:311
+#: appPlugins/ToolTransform.py:1082 appTool.py:304 appTool.py:315
 msgid "Edited value is out of range"
 msgstr "Valoarea editată este in afara limitelor"
 
@@ -1514,8 +1514,8 @@ msgstr "Valoarea editată este in afara limitelor"
 #: appPlugins/ToolCalculators.py:1081 appPlugins/ToolCalibration.py:1426
 #: appPlugins/ToolCalibration.py:1433 appPlugins/ToolCopperThieving.py:1813
 #: appPlugins/ToolCopperThieving.py:1820 appPlugins/ToolCutOut.py:2809
-#: appPlugins/ToolCutOut.py:2816 appPlugins/ToolDblSided.py:1160
-#: appPlugins/ToolDblSided.py:1167 appPlugins/ToolDistance.py:728
+#: appPlugins/ToolCutOut.py:2816 appPlugins/ToolDblSided.py:1186
+#: appPlugins/ToolDblSided.py:1193 appPlugins/ToolDistance.py:728
 #: appPlugins/ToolDistance.py:735 appPlugins/ToolDistanceMin.py:404
 #: appPlugins/ToolDistanceMin.py:411 appPlugins/ToolDrilling.py:2935
 #: appPlugins/ToolDrilling.py:2942 appPlugins/ToolEtchCompensation.py:537
@@ -1540,7 +1540,7 @@ msgstr "Valoarea editată este in afara limitelor"
 #: appPlugins/ToolRulesCheck.py:1893 appPlugins/ToolSolderPaste.py:1720
 #: appPlugins/ToolSolderPaste.py:1727 appPlugins/ToolSub.py:1001
 #: appPlugins/ToolSub.py:1008 appPlugins/ToolTransform.py:1077
-#: appPlugins/ToolTransform.py:1084 appTool.py:306 appTool.py:313
+#: appPlugins/ToolTransform.py:1084 appTool.py:310 appTool.py:317
 msgid "Edited value is within limits."
 msgstr "Valoarea editată este in limite."
 
@@ -1755,8 +1755,8 @@ msgstr "Prea multe obiecte pentru unghiul de distanțare selectat."
 #: appPlugins/ToolCutOut.py:885 appPlugins/ToolCutOut.py:1014
 #: appPlugins/ToolCutOut.py:1230 appPlugins/ToolCutOut.py:1376
 #: appPlugins/ToolCutOut.py:1419 appPlugins/ToolCutOut.py:1437
-#: appPlugins/ToolCutOut.py:1451 appPlugins/ToolDblSided.py:577
-#: appPlugins/ToolDblSided.py:590 appPlugins/ToolExtract.py:401
+#: appPlugins/ToolCutOut.py:1451 appPlugins/ToolDblSided.py:600
+#: appPlugins/ToolDblSided.py:613 appPlugins/ToolExtract.py:401
 #: appPlugins/ToolExtract.py:767 appPlugins/ToolExtract.py:816
 #: appPlugins/ToolExtract.py:825 appPlugins/ToolExtract.py:829
 #: appPlugins/ToolFiducials.py:344 appPlugins/ToolFiducials.py:605
@@ -1957,7 +1957,7 @@ msgstr "Editor Excellon"
 #: appEditors/AppExcEditor.py:4027 appEditors/AppGeoEditor.py:3446
 #: appEditors/AppGerberEditor.py:6089 appEditors/appGCodeEditor.py:774
 #: appGUI/ObjectUI.py:72 appPlugins/ToolCutOut.py:2222
-#: appPlugins/ToolDblSided.py:702 appPlugins/ToolDrilling.py:2294
+#: appPlugins/ToolDblSided.py:725 appPlugins/ToolDrilling.py:2294
 #: appPlugins/ToolFiducials.py:832 appPlugins/ToolFilm.py:1237
 #: appPlugins/ToolFollow.py:693 appPlugins/ToolIsolation.py:3158
 #: appPlugins/ToolLevelling.py:1774 appPlugins/ToolMarkers.py:1149
@@ -2036,7 +2036,7 @@ msgstr "Diametru pentru noua unealtă (burghiu, freza)"
 #: appEditors/AppExcEditor.py:4113 appEditors/AppGeoEditor.py:763
 #: appEditors/AppGerberEditor.py:6235 appEditors/AppGerberEditor.py:6774
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:340
-#: appPlugins/ToolCopperThieving.py:1750 appPlugins/ToolDblSided.py:922
+#: appPlugins/ToolCopperThieving.py:1750 appPlugins/ToolDblSided.py:945
 #: appPlugins/ToolLevelling.py:2102 appPlugins/ToolNCC.py:227
 #: appPlugins/ToolPaint.py:224 appPlugins/ToolSolderPaste.py:136
 #: appPlugins/ToolTransform.py:639 app_Main.py:7087
@@ -2102,10 +2102,11 @@ msgstr "Adaugă o arie de operațiuni de găurire (arie lineara sau circulara)."
 #: appEditors/AppGeoEditor.py:3479 appEditors/AppGerberEditor.py:4535
 #: appEditors/AppGerberEditor.py:6127 appEditors/AppGerberEditor.py:6200
 #: appEditors/AppGerberEditor.py:6579 appGUI/ObjectUI.py:334
+#: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:56
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:167
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:40
 #: appPlugins/ToolCopperThieving.py:1389 appPlugins/ToolCutOut.py:2266
-#: appPlugins/ToolCutOut.py:2452 appPlugins/ToolDblSided.py:1049
+#: appPlugins/ToolCutOut.py:2452 appPlugins/ToolDblSided.py:1072
 #: appPlugins/ToolExtract.py:1076 appPlugins/ToolFilm.py:1265
 #: appPlugins/ToolIsolation.py:3594 appPlugins/ToolMarkers.py:1202
 #: appPlugins/ToolMarkers.py:1464 appPlugins/ToolMilling.py:3596
@@ -2639,7 +2640,7 @@ msgstr "Bufer"
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:133
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:94
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:42
-#: appPlugins/ToolDblSided.py:878 appPlugins/ToolDblSided.py:1069
+#: appPlugins/ToolDblSided.py:901 appPlugins/ToolDblSided.py:1092
 #: appPlugins/ToolFilm.py:1361 appPlugins/ToolFilm.py:1422
 #: appPlugins/ToolMarkers.py:1256 appPlugins/ToolPanelize.py:1179
 #: appPlugins/ToolTransform.py:614
@@ -2690,7 +2691,7 @@ msgstr "Selecţie"
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:107
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:52
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:58
-#: appPlugins/ToolDblSided.py:889 appPlugins/ToolTransform.py:624
+#: appPlugins/ToolDblSided.py:912 appPlugins/ToolTransform.py:624
 msgid "Point"
 msgstr "Punct"
 
@@ -3119,17 +3120,13 @@ msgstr "Ofsetare"
 #: appEditors/AppGeoEditor.py:1538 appEditors/AppGeoEditor.py:1596
 #: appEditors/AppGerberEditor.py:7586 appEditors/AppGerberEditor.py:7659
 #: appPlugins/ToolMarkers.py:1274
-#, fuzzy
-#| msgid "Offset on the X axis done"
 msgid "Offset on the X axis."
-msgstr "Ofset pe axa X efectuat"
+msgstr "Ofset pe axa X."
 
 #: appEditors/AppGeoEditor.py:1540 appEditors/AppGerberEditor.py:7588
 #: appPlugins/ToolMarkers.py:1287
-#, fuzzy
-#| msgid "Offset on the Y axis done"
 msgid "Offset on the Y axis."
-msgstr "Ofset pe axa Y efectuat"
+msgstr "Ofset pe axa Y."
 
 #: appEditors/AppGeoEditor.py:1553
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:56
@@ -4699,8 +4696,8 @@ msgstr "Nou"
 #: appPlugins/ToolCalibration.py:1351 appPlugins/ToolCalibration.py:1368
 #: appPlugins/ToolCopperThieving.py:209 appPlugins/ToolCopperThieving.py:1395
 #: appPlugins/ToolCopperThieving.py:1406 appPlugins/ToolCutOut.py:2263
-#: appPlugins/ToolCutOut.py:2685 appPlugins/ToolDblSided.py:732
-#: appPlugins/ToolDblSided.py:947 appPlugins/ToolFilm.py:1263
+#: appPlugins/ToolCutOut.py:2685 appPlugins/ToolDblSided.py:755
+#: appPlugins/ToolDblSided.py:970 appPlugins/ToolFilm.py:1263
 #: appPlugins/ToolFilm.py:1286 appPlugins/ToolImage.py:175
 #: appPlugins/ToolImage.py:231 appPlugins/ToolIsolation.py:3546
 #: appPlugins/ToolIsolation.py:3597 appPlugins/ToolMarkers.py:1471
@@ -4732,7 +4729,7 @@ msgstr "Va crea un obiect nou de tip Geometrie, fără continut."
 #: appPlugins/ToolCalibration.py:1351 appPlugins/ToolCalibration.py:1368
 #: appPlugins/ToolCopperThieving.py:209 appPlugins/ToolCopperThieving.py:1395
 #: appPlugins/ToolCopperThieving.py:1406 appPlugins/ToolCutOut.py:2262
-#: appPlugins/ToolDblSided.py:732 appPlugins/ToolDblSided.py:945
+#: appPlugins/ToolDblSided.py:755 appPlugins/ToolDblSided.py:968
 #: appPlugins/ToolFilm.py:1262 appPlugins/ToolFilm.py:1285
 #: appPlugins/ToolImage.py:153 appPlugins/ToolImage.py:177
 #: appPlugins/ToolImage.py:231 appPlugins/ToolIsolation.py:3547
@@ -4764,8 +4761,8 @@ msgstr "Va crea un obiect nou de tip Gerber, fără continut."
 #: appPlugins/ToolCalibration.py:206 appPlugins/ToolCalibration.py:917
 #: appPlugins/ToolCalibration.py:1351 appPlugins/ToolCalibration.py:1368
 #: appPlugins/ToolCopperThieving.py:209 appPlugins/ToolCopperThieving.py:1395
-#: appPlugins/ToolCopperThieving.py:1406 appPlugins/ToolDblSided.py:732
-#: appPlugins/ToolDblSided.py:946 appPlugins/ToolDblSided.py:974
+#: appPlugins/ToolCopperThieving.py:1406 appPlugins/ToolDblSided.py:755
+#: appPlugins/ToolDblSided.py:969 appPlugins/ToolDblSided.py:997
 #: appPlugins/ToolFilm.py:1587 appPlugins/ToolIsolation.py:3597
 #: appPlugins/ToolMilling.py:3604 appPlugins/ToolNCC.py:4571
 #: appPlugins/ToolPaint.py:3317 appPlugins/ToolPanelize.py:147
@@ -5631,7 +5628,7 @@ msgstr "Maro"
 
 #: appGUI/MainGUI.py:868 appGUI/MainGUI.py:1725 app_Main.py:8872
 msgid "Indigo"
-msgstr ""
+msgstr "Mov"
 
 #: appGUI/MainGUI.py:871 appGUI/MainGUI.py:1728 app_Main.py:8874
 #: app_Main.py:8951
@@ -5768,7 +5765,7 @@ msgid "Film"
 msgstr "Film"
 
 #: appGUI/MainGUI.py:1120 appGUI/MainGUI.py:2464 appPlugins/ToolDblSided.py:110
-#: appPlugins/ToolDblSided.py:664
+#: appPlugins/ToolDblSided.py:687
 msgid "2-Sided"
 msgstr "2-fețe"
 
@@ -5789,10 +5786,8 @@ msgstr "Copper Thieving"
 
 #: appGUI/MainGUI.py:1136 appGUI/MainGUI.py:2480 appGUI/MainGUI.py:4893
 #: appPlugins/ToolMarkers.py:151 appPlugins/ToolMarkers.py:1124
-#, fuzzy
-#| msgid "Mark"
 msgid "Markers"
-msgstr "Marchează"
+msgstr "Marcări"
 
 #: appGUI/MainGUI.py:1138 appGUI/MainGUI.py:2482 appGUI/MainGUI.py:4899
 #: appPlugins/ToolPunchGerber.py:1971 appPlugins/ToolPunchGerber.py:2351
@@ -7665,16 +7660,12 @@ msgstr "Pași pt. cerc"
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:63
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:55
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:64
-#, fuzzy
-#| msgid ""
-#| "The number of circle steps for Gerber \n"
-#| "circular aperture linear approximation."
 msgid ""
 "The number of circle steps for \n"
 "linear approximation of circles."
 msgstr ""
 "Numărul de segmente utilizate pentru\n"
-"aproximarea lineara a aperturilor Gerber circulare."
+"aproximarea lineara a cercurilor."
 
 #: appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:57
 msgid "Travel dia"
@@ -8489,7 +8480,7 @@ msgstr ""
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:225
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:286
-#: appPlugins/ToolDblSided.py:859 appPlugins/ToolFilm.py:1465 app_Main.py:8436
+#: appPlugins/ToolDblSided.py:882 appPlugins/ToolFilm.py:1465 app_Main.py:8436
 msgid "Axis"
 msgstr "Axă"
 
@@ -10379,7 +10370,7 @@ msgstr "Auto"
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:133
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:67
 #: appGUI/preferences/tools/ToolsLevelPrefGroupUI.py:48
-#: appPlugins/ToolCutOut.py:2527 appPlugins/ToolDblSided.py:1060
+#: appPlugins/ToolCutOut.py:2527 appPlugins/ToolDblSided.py:1083
 #: appPlugins/ToolFiducials.py:1073 appPlugins/ToolLevelling.py:1925
 #: appPlugins/ToolMarkers.py:1366 appPlugins/ToolPunchGerber.py:2327
 msgid "Manual"
@@ -10674,10 +10665,8 @@ msgstr ""
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:31
 #: appPlugins/ToolRulesCheck.py:1223 appPlugins/ToolRulesCheck.py:1269
 #: appPlugins/ToolRulesCheck.py:1335 appPlugins/ToolRulesCheck.py:1477
-#, fuzzy
-#| msgid "Copper Area"
 msgid "Copper"
-msgstr "Aria de Cupru"
+msgstr "Cupru"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:31
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:130
@@ -10687,10 +10676,8 @@ msgstr "Aria de Cupru"
 #: appPlugins/ToolRulesCheck.py:1237 appPlugins/ToolRulesCheck.py:1244
 #: appPlugins/ToolRulesCheck.py:1477 appPlugins/ToolRulesCheck.py:1587
 #: appPlugins/ToolRulesCheck.py:1674 appPlugins/ToolRulesCheck.py:1712
-#, fuzzy
-#| msgid "All Rules"
 msgid "Rules"
-msgstr "Totate Regulile"
+msgstr "Reguli"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:41
 #: appPlugins/ToolRulesCheck.py:459 appPlugins/ToolRulesCheck.py:1487
@@ -10776,10 +10763,8 @@ msgstr "Valoarea minimă acceptabilă a inelului."
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:130
 #: appPlugins/ToolRulesCheck.py:1230 appPlugins/ToolRulesCheck.py:1305
 #: appPlugins/ToolRulesCheck.py:1371 appPlugins/ToolRulesCheck.py:1587
-#, fuzzy
-#| msgid "Silk Top"
 msgid "Silk"
-msgstr "Silk Top"
+msgstr "Silk"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:140
 #: appPlugins/ToolRulesCheck.py:1597
@@ -10828,10 +10813,8 @@ msgstr ""
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:208
 #: appPlugins/ToolRulesCheck.py:1237 appPlugins/ToolRulesCheck.py:1674
-#, fuzzy
-#| msgid "Soldermask Gerber"
 msgid "Soldermask"
-msgstr "Gerber Soldermask"
+msgstr "Soldermask"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:218
 #: appPlugins/ToolRulesCheck.py:951 appPlugins/ToolRulesCheck.py:978
@@ -10852,10 +10835,8 @@ msgstr ""
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:243
 #: appPlugins/ToolRulesCheck.py:1244 appPlugins/ToolRulesCheck.py:1712
-#, fuzzy
-#| msgid "Mill Holes"
 msgid "Holes"
-msgstr "Frezare găuri"
+msgstr "Găuri"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:253
 #: appPlugins/ToolRulesCheck.py:403 appPlugins/ToolRulesCheck.py:1722
@@ -10895,7 +10876,7 @@ msgid "2-Sided Plugin"
 msgstr "Plugin 2-fețe"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:25
-#: appPlugins/ToolDblSided.py:1018
+#: appPlugins/ToolDblSided.py:1041
 msgid "PCB Alignment"
 msgstr "Aliniere PCB"
 
@@ -10910,28 +10891,28 @@ msgstr ""
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:47
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:282
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:81
-#: appPlugins/ToolCutOut.py:2706 appPlugins/ToolDblSided.py:1033
+#: appPlugins/ToolCutOut.py:2706 appPlugins/ToolDblSided.py:1056
 #: appPlugins/ToolMarkers.py:1403
 msgid "Drill Dia"
 msgstr "Dia Gaură"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:49
-#: appPlugins/ToolDblSided.py:1035 appPlugins/ToolDblSided.py:1040
+#: appPlugins/ToolDblSided.py:1058 appPlugins/ToolDblSided.py:1063
 msgid "Diameter of the drill for the alignment holes."
 msgstr "Diametrul găurii pentru găurile de aliniere."
 
-#: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:56
-msgid "Align Axis"
-msgstr "Aliniați Axa"
-
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:58
-#: appPlugins/ToolDblSided.py:1051
+#: appPlugins/ToolDblSided.py:1074
 msgid ""
 "The content of the Excellon file.\n"
 "X - Pairs of drill holes mirrored vertically from reference point\n"
 "Y - Pairs of drill holes mirrored horizontally from reference point\n"
 "Manual - no mirroring; drill holes in place"
 msgstr ""
+"Conținutul fișierului Excellon.\n"
+"X - Perechi de găuri oglindite vertical față de punctul de referință\n"
+"Y - Perechi de găuri oglindite orizontal  față de punctul de referință\n"
+"Manual - fără oglindire; găuri in locatii"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:78
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:161
@@ -10939,22 +10920,22 @@ msgid "Mirror Axis"
 msgstr "Axa Oglindire"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:80
-#: appPlugins/ToolDblSided.py:860
+#: appPlugins/ToolDblSided.py:883
 msgid "Mirror vertically (X) or horizontally (Y)."
 msgstr "Oglindește vertical (X) sau orizontal (Y)."
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:92
-#: appPlugins/ToolDblSided.py:848
+#: appPlugins/ToolDblSided.py:871
 msgid "Mirror Operation"
 msgstr "Operațiune Oglindire"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:108
-#: appPlugins/ToolDblSided.py:890
+#: appPlugins/ToolDblSided.py:913
 msgid "Box"
 msgstr "Cutie"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:109
-#: appPlugins/ToolDblSided.py:891 app_Main.py:8425
+#: appPlugins/ToolDblSided.py:914 app_Main.py:8425
 msgid "Snap"
 msgstr "Lipire"
 
@@ -10963,7 +10944,7 @@ msgid "Axis Ref"
 msgstr "Axa de Ref"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:114
-#: appPlugins/ToolDblSided.py:880
+#: appPlugins/ToolDblSided.py:903
 msgid ""
 "The coordinates used as reference for the mirror operation.\n"
 "Can be:\n"
@@ -11660,7 +11641,7 @@ msgstr ""
 "în timp ce valorile negative vor înclina spre stânga."
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:146
-#: appPlugins/ToolDblSided.py:999 appPlugins/ToolFilm.py:1450
+#: appPlugins/ToolDblSided.py:1022 appPlugins/ToolFilm.py:1450
 msgid "Mirror"
 msgstr "Oglindește"
 
@@ -12201,10 +12182,8 @@ msgid "Safe height (Z) distance when jogging to origin."
 msgstr "Distanța de înălțime sigură (Z) la jogging până la origine."
 
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:20
-#, fuzzy
-#| msgid "Corner Markers Options"
 msgid "Markers Options"
-msgstr "Opțiuni Marcaje Colțuri"
+msgstr "Opțiuni Marcaje"
 
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:42
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:96
@@ -12235,14 +12214,12 @@ msgstr "Dia Găurire"
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:100
 #: appPlugins/ToolMarkers.py:1264
 msgid "Edge"
-msgstr ""
+msgstr "Margine"
 
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:108
 #: appPlugins/ToolMarkers.py:1246
-#, fuzzy
-#| msgid "Offset action was not executed."
 msgid "Offset locations from the set reference."
-msgstr "Actiuena de offset nu a fost efectuată."
+msgstr "Ofsetati locațiile pornind de la referința setată."
 
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:21
 msgid "Milling Plugin"
@@ -13452,7 +13429,7 @@ msgid "Click on the START point."
 msgstr "Click pe punctul START."
 
 #: appPlugins/ToolAlignObjects.py:276 appPlugins/ToolCalibration.py:311
-#: appPlugins/ToolDblSided.py:471 appPlugins/ToolFiducials.py:752
+#: appPlugins/ToolDblSided.py:494 appPlugins/ToolFiducials.py:752
 #: appPlugins/ToolMarkers.py:1055
 msgid "Cancelled by user request."
 msgstr "Anulat prin solicitarea utilizatorului."
@@ -13557,7 +13534,7 @@ msgstr ""
 
 #: appPlugins/ToolAlignObjects.py:555 appPlugins/ToolCalculators.py:1050
 #: appPlugins/ToolCalibration.py:1403 appPlugins/ToolCopperThieving.py:1789
-#: appPlugins/ToolCutOut.py:2760 appPlugins/ToolDblSided.py:1134
+#: appPlugins/ToolCutOut.py:2760 appPlugins/ToolDblSided.py:1160
 #: appPlugins/ToolDrilling.py:2912 appPlugins/ToolEtchCompensation.py:513
 #: appPlugins/ToolExtract.py:1414 appPlugins/ToolFiducials.py:1118
 #: appPlugins/ToolFilm.py:1765 appPlugins/ToolFollow.py:777
@@ -13574,7 +13551,7 @@ msgstr "Resetați Unealta"
 
 #: appPlugins/ToolAlignObjects.py:558 appPlugins/ToolCalculators.py:1053
 #: appPlugins/ToolCalibration.py:1406 appPlugins/ToolCopperThieving.py:1792
-#: appPlugins/ToolCutOut.py:2763 appPlugins/ToolDblSided.py:1137
+#: appPlugins/ToolCutOut.py:2763 appPlugins/ToolDblSided.py:1163
 #: appPlugins/ToolDrilling.py:2915 appPlugins/ToolEtchCompensation.py:516
 #: appPlugins/ToolExtract.py:1417 appPlugins/ToolFiducials.py:1121
 #: appPlugins/ToolFilm.py:1768 appPlugins/ToolFollow.py:780
@@ -13851,7 +13828,7 @@ msgid "Cancelled. Four points are needed for GCode generation."
 msgstr "Anulat. Patru puncte sunt necesare pentru generarea GCode."
 
 #: appPlugins/ToolCalibration.py:638 appPlugins/ToolCalibration.py:729
-#: appPlugins/ToolDblSided.py:489 appPlugins/ToolDblSided.py:577
+#: appPlugins/ToolDblSided.py:512 appPlugins/ToolDblSided.py:600
 #: appPlugins/ToolExtract.py:385 appPlugins/ToolExtract.py:700
 #: appPlugins/ToolExtract.py:803 appPlugins/ToolFilm.py:316
 #: appPlugins/ToolFilm.py:323 appPlugins/ToolFilm.py:327
@@ -14242,7 +14219,7 @@ msgid "Copper Thieving Tool exit."
 msgstr "Unealta Copper Thieving terminata."
 
 #: appPlugins/ToolCopperThieving.py:1294 appPlugins/ToolCopperThieving.py:1683
-#: appPlugins/ToolCutOut.py:2231 appPlugins/ToolDblSided.py:714
+#: appPlugins/ToolCutOut.py:2231 appPlugins/ToolDblSided.py:737
 #: appPlugins/ToolDrilling.py:2306 appPlugins/ToolEtchCompensation.py:330
 #: appPlugins/ToolExtract.py:983 appPlugins/ToolFiducials.py:853
 #: appPlugins/ToolFilm.py:1249 appPlugins/ToolFollow.py:704
@@ -14637,38 +14614,24 @@ msgid "Generate the cutout geometry."
 msgstr "Generați geometria pentru decupaj."
 
 #: appPlugins/ToolDblSided.py:306
-#, fuzzy
-#| msgid ""
-#| "'Point' reference is selected and 'Point' coordinates are missing. Add "
-#| "them and retry."
 msgid "'Point' reference is selected and 'Point' coordinates are missing."
-msgstr ""
-"Referința 'Punct' este selectată dar coordonatele sale lipsesc. Adăugă-le si "
-"încearcă din nou."
+msgstr "Referința 'Punct' este selectată dar coordonatele sale lipsesc."
 
 #: appPlugins/ToolDblSided.py:315
-#, fuzzy
-#| msgid "The reference object type is not supported."
 msgid "Box reference object is missing."
-msgstr "Tipul de obiect de referintă nu este acceptat."
+msgstr "Obiectul de referință Box lipsește."
 
 #: appPlugins/ToolDblSided.py:323
-#, fuzzy
-#| msgid "Geometry not supported"
 msgid "Not supported."
-msgstr "Geometria nu este acceptată"
+msgstr "Nu este permis."
 
 #: appPlugins/ToolDblSided.py:329
-#, fuzzy
-#| msgid "Drill Diameter"
 msgid "Drill diameter is missing."
-msgstr "Dia Găurire"
+msgstr "Diametrul de găurire lipsește."
 
 #: appPlugins/ToolDblSided.py:336
-#, fuzzy
-#| msgid "Alignment Drill Coordinates"
 msgid "Alignment drill coordinates are missing."
-msgstr "Dia. găuri de aliniere"
+msgstr "Coordonatele găurilor de aliniere lipsesc."
 
 #: appPlugins/ToolDblSided.py:371
 msgid "Alignment Drills"
@@ -14691,26 +14654,26 @@ msgstr "Faceți clic pe ecran în gaura Excellon dorită"
 msgid "Mirror reference point set."
 msgstr "Punctul de referință oglindire a fost setat."
 
-#: appPlugins/ToolDblSided.py:493
+#: appPlugins/ToolDblSided.py:516
 msgid "Only Gerber, Excellon and Geometry objects can be mirrored."
 msgstr "Doar obiectele de tip Geometrie, Excellon și Gerber pot fi oglindite."
 
-#: appPlugins/ToolDblSided.py:505
+#: appPlugins/ToolDblSided.py:528
 msgid "There is no Box object loaded ..."
 msgstr "Nu este incărcat nici-un obiect container ..."
 
-#: appPlugins/ToolDblSided.py:515
+#: appPlugins/ToolDblSided.py:538
 msgid ""
 "There are no Point coordinates in the Point field. Add coords and try "
 "again ..."
 msgstr ""
 "Nu există coord. in câmpul 'Punct'. Adaugă coord. și încearcă din nou..."
 
-#: appPlugins/ToolDblSided.py:522 camlib.py:2462
+#: appPlugins/ToolDblSided.py:545 camlib.py:2462
 msgid "Object was mirrored"
 msgstr "Obiectul a fost oglindit"
 
-#: appPlugins/ToolDblSided.py:692 appPlugins/ToolNCC.py:4061
+#: appPlugins/ToolDblSided.py:715 appPlugins/ToolNCC.py:4061
 msgid ""
 "Create a Geometry object with\n"
 "toolpaths to cover the space outside the copper pattern."
@@ -14719,21 +14682,21 @@ msgstr ""
 "care să curete de cupru toate zonele unde se dorește să nu \n"
 "fie cupru."
 
-#: appPlugins/ToolDblSided.py:715
+#: appPlugins/ToolDblSided.py:738
 msgid "Objects to be mirrored"
 msgstr "Obiecte care vor fi Oglindite"
 
-#: appPlugins/ToolDblSided.py:728
+#: appPlugins/ToolDblSided.py:751
 msgid "Select the type of application object to be processed in this tool."
 msgstr ""
 "Selectați tipul obiectului aplicației care urmează să fie procesat în acest "
 "instrument."
 
-#: appPlugins/ToolDblSided.py:747
+#: appPlugins/ToolDblSided.py:770
 msgid "Bounds Values"
 msgstr "Valorile Limitelor"
 
-#: appPlugins/ToolDblSided.py:749
+#: appPlugins/ToolDblSided.py:772
 msgid ""
 "Select on canvas the object(s)\n"
 "for which to calculate bounds values."
@@ -14741,39 +14704,39 @@ msgstr ""
 "Selectați pe suprafata de afisare obiectul(e)\n"
 "pentru care se calculează valorile limitelor."
 
-#: appPlugins/ToolDblSided.py:765
+#: appPlugins/ToolDblSided.py:788
 msgid "X min"
 msgstr "X min"
 
-#: appPlugins/ToolDblSided.py:767 appPlugins/ToolDblSided.py:781
+#: appPlugins/ToolDblSided.py:790 appPlugins/ToolDblSided.py:804
 msgid "Minimum location."
 msgstr "Locație minimă."
 
-#: appPlugins/ToolDblSided.py:779
+#: appPlugins/ToolDblSided.py:802
 msgid "Y min"
 msgstr "Y min"
 
-#: appPlugins/ToolDblSided.py:793
+#: appPlugins/ToolDblSided.py:816
 msgid "X max"
 msgstr "X max"
 
-#: appPlugins/ToolDblSided.py:795 appPlugins/ToolDblSided.py:809
+#: appPlugins/ToolDblSided.py:818 appPlugins/ToolDblSided.py:832
 msgid "Maximum location."
 msgstr "Locație maximă."
 
-#: appPlugins/ToolDblSided.py:807
+#: appPlugins/ToolDblSided.py:830
 msgid "Y max"
 msgstr "Y max"
 
-#: appPlugins/ToolDblSided.py:818
+#: appPlugins/ToolDblSided.py:841
 msgid "Center point coordinates"
 msgstr "Coordonatele punctului central"
 
-#: appPlugins/ToolDblSided.py:820
+#: appPlugins/ToolDblSided.py:843
 msgid "Centroid"
 msgstr "Centroid"
 
-#: appPlugins/ToolDblSided.py:822
+#: appPlugins/ToolDblSided.py:845
 msgid ""
 "The center point location for the rectangular\n"
 "bounding shape. Centroid. Format is (x, y)."
@@ -14781,11 +14744,11 @@ msgstr ""
 "Locația punctului central pentru dreptunghiul\n"
 "formă de delimitare. Centroid. Formatul este (x, y)."
 
-#: appPlugins/ToolDblSided.py:831
+#: appPlugins/ToolDblSided.py:854
 msgid "Calculate Bounds Values"
 msgstr "Calculați valorile limitelor"
 
-#: appPlugins/ToolDblSided.py:833
+#: appPlugins/ToolDblSided.py:856
 msgid ""
 "Calculate the enveloping rectangular shape coordinates,\n"
 "for the selection of objects.\n"
@@ -14795,15 +14758,15 @@ msgstr ""
 "pentru selectarea obiectelor.\n"
 "Forma este paralelă cu axele X, Y."
 
-#: appPlugins/ToolDblSided.py:849
+#: appPlugins/ToolDblSided.py:872
 msgid "Parameters for the mirror operation"
 msgstr "Parametri pt operația de Oglindire"
 
-#: appPlugins/ToolDblSided.py:912
+#: appPlugins/ToolDblSided.py:935
 msgid "Point coordinates"
 msgstr "Coordonatele Punct"
 
-#: appPlugins/ToolDblSided.py:924
+#: appPlugins/ToolDblSided.py:947
 msgid ""
 "Add the coordinates in format <b>(x, y)</b> through which the mirroring "
 "axis\n"
@@ -14818,7 +14781,7 @@ msgstr ""
 "pe\n"
 "suprafata de afisare sau le puteti introduce manual."
 
-#: appPlugins/ToolDblSided.py:949
+#: appPlugins/ToolDblSided.py:972
 msgid ""
 "It can be of type: Gerber or Excellon or Geometry.\n"
 "The coordinates of the center of the bounding box are used\n"
@@ -14828,16 +14791,16 @@ msgstr ""
 "Coordonatele centrului formei inconjurătoare sunt folosite\n"
 "ca si referintă pentru operatiunea de Oglindire."
 
-#: appPlugins/ToolDblSided.py:976
+#: appPlugins/ToolDblSided.py:999
 msgid "Object that holds holes that can be picked as reference for mirroring."
 msgstr ""
 "Obiect care conține găuri care pot fi alese ca referință pentru oglindire."
 
-#: appPlugins/ToolDblSided.py:988
+#: appPlugins/ToolDblSided.py:1011
 msgid "Pick hole"
 msgstr "Alege o gaură"
 
-#: appPlugins/ToolDblSided.py:990
+#: appPlugins/ToolDblSided.py:1013
 msgid ""
 "Click inside a drill hole that belong to the selected Excellon object,\n"
 "and the hole center coordinates will be copied to the Point field."
@@ -14846,7 +14809,7 @@ msgstr ""
 "selectat,\n"
 "iar coordonatele centrului găurii vor fi copiate în câmpul Punct."
 
-#: appPlugins/ToolDblSided.py:1002
+#: appPlugins/ToolDblSided.py:1025
 msgid ""
 "Mirrors (flips) the specified object around \n"
 "the specified axis. Does not create a new \n"
@@ -14855,7 +14818,7 @@ msgstr ""
 "Oglindește obiectul specificat pe axa specificata.\n"
 "Nu crează un obiect nou ci il modifica."
 
-#: appPlugins/ToolDblSided.py:1020 appPlugins/ToolDblSided.py:1119
+#: appPlugins/ToolDblSided.py:1043 appPlugins/ToolDblSided.py:1145
 msgid ""
 "Creates an Excellon Object containing the\n"
 "specified alignment holes and their mirror\n"
@@ -14864,7 +14827,7 @@ msgstr ""
 "Crează un obiect Excellon care contine găurile\n"
 "de aliniere specificate cat și cele in oglinda."
 
-#: appPlugins/ToolDblSided.py:1071 appPlugins/ToolDblSided.py:1078
+#: appPlugins/ToolDblSided.py:1094 appPlugins/ToolDblSided.py:1101
 msgid ""
 "The reference point used to create the second alignment drill\n"
 "from the first alignment drill, by doing mirror.\n"
@@ -14874,36 +14837,39 @@ msgstr ""
 "din prima gaură de aliniere prin oglindire.\n"
 "Poate fi modificat in Parametri Oglindire -> Sectiunea Referintă"
 
-#: appPlugins/ToolDblSided.py:1088
-msgid "Alignment Drill Coordinates"
-msgstr "Dia. găuri de aliniere"
+#: appPlugins/ToolDblSided.py:1111
+msgid "Drill Coordinates"
+msgstr "Coordonatele găuri"
 
-#: appPlugins/ToolDblSided.py:1090
+#: appPlugins/ToolDblSided.py:1113
 msgid ""
-"Alignment holes (x1, y1), (x2, y2), ... on one side of the mirror axis. For "
-"each set of (x, y) coordinates\n"
-"entered here, a pair of drills will be created:\n"
+"Alignment holes (x1, y1), (x2, y2), ... \n"
+"If the type is X or Y then for each pair of coordinates\n"
+"two drill points will be added: one with the given coordinates,\n"
+"and the other will be mirrored as set in the 'Mirror' section.\n"
+"If the type is 'Manual' then no mirror point is generated.\n"
 "\n"
-"- one drill at the coordinates from the field\n"
-"- one drill in mirror position over the axis selected above in the 'Align "
-"Axis'."
+"Shift + mouse click will add one set of coordinates.\n"
+"Ctrl + Shift + mouse click will accumulate sets of coordinates. "
 msgstr ""
-"Găuri de aliniere in formatul unei liste: (x1, y1), (x2, y2) samd.\n"
-"Pentru fiecare punct din lista de mai sus (cu coord. (x,y) )\n"
-"vor fi create o pereche de găuri:\n"
-"- o gaură cu coord. specificate in campul de editare\n"
-"- o gaură cu coord. in poziţia oglindită pe axa selectată mai sus in 'Axa "
-"Aliniere'."
+"Găuri de aliniere (x1, y1), (x2, y2), ...\n"
+"Dacă tipul este X sau Y, atunci pentru fiecare pereche de coordonate\n"
+"se vor adăuga două puncte de gaurire: unul cu coordonatele date,\n"
+"iar celălalt va fi oglindit așa cum este setat în secțiunea „Oglindă”.\n"
+"Dacă tipul este „Manual”, atunci nu se generează niciun punct de oglindă.\n"
+"\n"
+"Shift + clic cu mouse-ul va adăuga un set de coordonate.\n"
+"Ctrl + Shift + clic cu mouse-ul va acumula seturi de coordonate."
 
-#: appPlugins/ToolDblSided.py:1100
+#: appPlugins/ToolDblSided.py:1126
 msgid "Drill coordinates"
 msgstr "Coordonatele găuri"
 
-#: appPlugins/ToolDblSided.py:1105
+#: appPlugins/ToolDblSided.py:1131
 msgid "Delete the last coordinates tuple in the list."
 msgstr "Șterge ultimul set de coordinate din listă."
 
-#: appPlugins/ToolDblSided.py:1116 appPlugins/ToolMarkers.py:1416
+#: appPlugins/ToolDblSided.py:1142 appPlugins/ToolMarkers.py:1416
 #: appPlugins/ToolMarkers.py:1436
 msgid "Create Excellon Object"
 msgstr "Crează un obiect Excellon"
@@ -16493,6 +16459,9 @@ msgid ""
 "- Edge - referenced from the bounding box edge\n"
 "- Center - referenced from the bounding box center"
 msgstr ""
+"Referință pentru offsetarea locațiilor markerului.\n"
+"- Edge - raportat de la marginea casetei de delimitare\n"
+"- Centru - raportat din centrul casetei de delimitare"
 
 #: appPlugins/ToolMarkers.py:1308
 msgid "Locations"
@@ -16519,10 +16488,8 @@ msgid "Add Marker"
 msgstr "Adaugă Marcaj"
 
 #: appPlugins/ToolMarkers.py:1378 appPlugins/ToolMarkers.py:1488
-#, fuzzy
-#| msgid "Will add corner markers to the selected Gerber file."
 msgid "Will add corner markers to the selected object."
-msgstr "Va adăuga marcaje de colț în fișierul Gerber selectat."
+msgstr "Va adăuga marcaje de colț în obiectul selectat."
 
 #: appPlugins/ToolMarkers.py:1392
 msgid "Drills in Locations"
@@ -16549,22 +16516,16 @@ msgstr ""
 "se va muta la următoarea locație, până la ultima."
 
 #: appPlugins/ToolMarkers.py:1455
-#, fuzzy
-#| msgid "Corner Markers"
 msgid "Insert Markers"
-msgstr "Plugin Marcaje"
+msgstr "Inserare Marcaje"
 
 #: appPlugins/ToolMarkers.py:1466
-#, fuzzy
-#| msgid "Type of the object where the exclusion area was added."
 msgid "Specify the type of object where the markers are inserted."
-msgstr "Tipul obiectului în care a fost adăugată zona de excludere."
+msgstr "Specificați tipul de obiect în care sunt inserate marcajele."
 
 #: appPlugins/ToolMarkers.py:1485
-#, fuzzy
-#| msgid "Corner Markers"
 msgid "Insert Marker"
-msgstr "Plugin Marcaje"
+msgstr "Inserați Marcaje"
 
 #: appPlugins/ToolMilling.py:852
 msgid "Could not build the Plugin UI"
@@ -17870,10 +17831,8 @@ msgid "The Top Gerber Copper object for which rules are checked."
 msgstr "Obiectul Top Gerber cupru pentru care sunt verificate regulile."
 
 #: appPlugins/ToolRulesCheck.py:1287 appPlugins/ToolRulesCheck.py:1353
-#, fuzzy
-#| msgid "S"
 msgid "SM"
-msgstr "S"
+msgstr "SM"
 
 #: appPlugins/ToolRulesCheck.py:1289
 msgid "The Top Gerber Solder Mask object for which rules are checked."
@@ -19789,6 +19748,28 @@ msgid "No Geometry name in args. Provide a name and try again."
 msgstr ""
 "Nici-un nume de Geometrie in argumente. Furnizați un nume și încercați din "
 "nou."
+
+#~ msgid "Align Axis"
+#~ msgstr "Aliniați Axa"
+
+#~ msgid "Alignment Drill Coordinates"
+#~ msgstr "Dia. găuri de aliniere"
+
+#~ msgid ""
+#~ "Alignment holes (x1, y1), (x2, y2), ... on one side of the mirror axis. "
+#~ "For each set of (x, y) coordinates\n"
+#~ "entered here, a pair of drills will be created:\n"
+#~ "\n"
+#~ "- one drill at the coordinates from the field\n"
+#~ "- one drill in mirror position over the axis selected above in the 'Align "
+#~ "Axis'."
+#~ msgstr ""
+#~ "Găuri de aliniere in formatul unei liste: (x1, y1), (x2, y2) samd.\n"
+#~ "Pentru fiecare punct din lista de mai sus (cu coord. (x,y) )\n"
+#~ "vor fi create o pereche de găuri:\n"
+#~ "- o gaură cu coord. specificate in campul de editare\n"
+#~ "- o gaură cu coord. in poziţia oglindită pe axa selectată mai sus in 'Axa "
+#~ "Aliniere'."
 
 #~ msgid "Min value"
 #~ msgstr "Val. min"
