@@ -201,6 +201,9 @@ class ToolCopperThieving(AppTool):
             obj_name = obj.options['name']
             self.ui.grb_object_combo.set_value(obj_name)
 
+        if obj is None:
+            self.ui.grb_object_combo.setCurrentIndex(0)
+
     def on_ref_combo_type_change(self):
         obj_type = self.ui.ref_combo_type.currentIndex()
         self.ui.ref_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
