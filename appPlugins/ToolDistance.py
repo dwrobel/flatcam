@@ -319,7 +319,7 @@ class Distance(AppTool):
         # mouse click releases will be accepted only if the left button is clicked
         # this is necessary because right mouse click or middle mouse click
         # are used for panning on the canvas
-        log.debug("Distance Tool --> mouse click release")
+        # log.debug("Distance Tool --> mouse click release")
 
         if self.app.is_legacy is False:
             event_pos = event.pos
@@ -517,10 +517,16 @@ class Distance(AppTool):
                     angle = math.degrees(math.atan2(dy, dx))
                     if angle < 0:
                         angle += 360
-                    self.ui.angle_entry.set_value('%.*f' % (self.decimals, angle))
+                    self.ui.angle_entry.set_value(str(self.app.dec_format(angle, self.decimals)))
                 except Exception as e:
                     log.error("Distance.on_mouse_move_meas() -> update utility geometry -> %s" % str(e))
                     pass
+                # update the end point value
+                end_val = (
+                    self.app.dec_format(pos[0], self.decimals),
+                    self.app.dec_format(pos[1], self.decimals)
+                )
+                self.ui.stop_entry.set_value(str(end_val))
 
         except Exception as e:
             log.error("Distance.on_mouse_move_meas() --> %s" % str(e))

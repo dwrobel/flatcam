@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+11.10.2021
+
+- in Distance Plugin, after setting the start point of the measurement, moving the mouse will update the end point position
+
 10.10.2021
 
 - in Markers Plugin replaced the Margin parameters with the Offset parameters that now can be referenced either to the edge of the bounding box (effectively replacing the old Margin parameter) or to the center of the bounding box
