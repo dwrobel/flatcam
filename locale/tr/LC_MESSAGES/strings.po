@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-10-10 12:22+0300\n"
-"PO-Revision-Date: 2021-10-10 12:22+0300\n"
+"POT-Creation-Date: 2021-10-10 12:40+0300\n"
+"PO-Revision-Date: 2021-10-10 12:40+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -3098,17 +3098,13 @@ msgstr "Hizalanıyor"
 #: appEditors/AppGeoEditor.py:1538 appEditors/AppGeoEditor.py:1596
 #: appEditors/AppGerberEditor.py:7586 appEditors/AppGerberEditor.py:7659
 #: appPlugins/ToolMarkers.py:1274
-#, fuzzy
-#| msgid "Offset on the X axis done"
 msgid "Offset on the X axis."
-msgstr "X ekseninde hizalama işlemi tamamlandı"
+msgstr "X ekseninde hizala."
 
 #: appEditors/AppGeoEditor.py:1540 appEditors/AppGerberEditor.py:7588
 #: appPlugins/ToolMarkers.py:1287
-#, fuzzy
-#| msgid "Offset on the Y axis done"
 msgid "Offset on the Y axis."
-msgstr "Y eksenindeki hizalama işlemi tamamlandı"
+msgstr "Y ekseninde hizala."
 
 #: appEditors/AppGeoEditor.py:1553
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:56
@@ -5582,7 +5578,7 @@ msgstr "Kahverengi"
 
 #: appGUI/MainGUI.py:868 appGUI/MainGUI.py:1725 app_Main.py:8872
 msgid "Indigo"
-msgstr ""
+msgstr "Çivit Mavisi"
 
 #: appGUI/MainGUI.py:871 appGUI/MainGUI.py:1728 app_Main.py:8874
 #: app_Main.py:8951
@@ -5711,7 +5707,7 @@ msgstr "Takip Et"
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:117
 #: appPlugins/ToolCutOut.py:2255
 msgid "Panel"
-msgstr "Panel"
+msgstr "Panelli PCB"
 
 #: appGUI/MainGUI.py:1118 appGUI/MainGUI.py:2462 appGUI/ObjectUI.py:415
 #: appPlugins/ToolFilm.py:157 appPlugins/ToolFilm.py:1201
@@ -5740,10 +5736,8 @@ msgstr "Bakır Dolgu"
 
 #: appGUI/MainGUI.py:1136 appGUI/MainGUI.py:2480 appGUI/MainGUI.py:4893
 #: appPlugins/ToolMarkers.py:151 appPlugins/ToolMarkers.py:1124
-#, fuzzy
-#| msgid "Mark"
 msgid "Markers"
-msgstr "İşaret"
+msgstr "Köşe İşaretleri"
 
 #: appGUI/MainGUI.py:1138 appGUI/MainGUI.py:2482 appGUI/MainGUI.py:4899
 #: appPlugins/ToolPunchGerber.py:1971 appPlugins/ToolPunchGerber.py:2351
@@ -7241,7 +7235,7 @@ msgid ""
 msgstr ""
 "Bu, çizilecek alan üzerindeki çizim biçimlerini seçer.\n"
 "'Hareket' tipinde olabilirler, yani nesnenin üzerindeki çizimler.\n"
-"'Kesim' tipinde olabilirler, yani nesneyi kesen çizimler."
+"'Kes' tipinde olabilirler, yani nesneyi kesen çizimler."
 
 #: appGUI/ObjectUI.py:1309 appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:60
 msgid "Travel"
@@ -7396,7 +7390,7 @@ msgstr "Sola Hizala"
 #: appPlugins/ToolFilm.py:1368 appPlugins/ToolFilm.py:1429
 #: appPlugins/ToolMarkers.py:1265 app_Main.py:5441 app_Main.py:5705
 msgid "Center"
-msgstr "Ortala"
+msgstr "Orta"
 
 #: appGUI/ObjectUI.py:1768
 msgid "Align Right"
@@ -8188,8 +8182,8 @@ msgid ""
 msgstr ""
 "Bu, Excellon matkap yolu için iyileştirme tipini ayarlar.\n"
 "<<MetaHeuristic>> onay kutusu işaretlenirse, MetaHeuristic Kılavuzlu Yerel "
-"Yollu Google OR-Tools algoritması kullanılır. Varsayılan arama süresi "
-"3saniyedir.\n"
+"Yollu Google OR-Tools algoritması kullanılır. Varsayılan arama süresi 3 "
+"saniyedir.\n"
 "<<Basit>> onay kutusu işaretlenirse Google OR-Tools Basic algoritması "
 "kullanılır.\n"
 "<<TSA>> onay kutusu işaretlenirse, matkap yolu iyileştirmesi için Travelling "
@@ -12071,8 +12065,6 @@ msgid "Safe height (Z) distance when jogging to origin."
 msgstr "Başlangıç noktasına ilerlerken güvenli Z yüksekliği."
 
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:20
-#, fuzzy
-#| msgid "Corner Markers Options"
 msgid "Markers Options"
 msgstr "Köşe İşareti Seçenekleri"
 
@@ -12105,14 +12097,12 @@ msgstr "Delik genişliği"
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:100
 #: appPlugins/ToolMarkers.py:1264
 msgid "Edge"
-msgstr ""
+msgstr "Kenar"
 
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:108
 #: appPlugins/ToolMarkers.py:1246
-#, fuzzy
-#| msgid "Offset action was not executed."
 msgid "Offset locations from the set reference."
-msgstr "Hizalama işlemi gerçekleştirilemedi."
+msgstr "Referans noktalarından hizalama konumlarını ayarla."
 
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:21
 msgid "Milling Plugin"
@@ -13052,14 +13042,12 @@ msgid "Polygons"
 msgstr "Çokgenler"
 
 #: appObjects/FlatCAMObj.py:690
-#, fuzzy
 msgid "LineStrings"
-msgstr "LineStrings"
+msgstr "Çizgiler"
 
 #: appObjects/FlatCAMObj.py:695
-#, fuzzy
 msgid "Elements"
-msgstr "Elements"
+msgstr "Ögeler"
 
 #: appObjects/FlatCAMObj.py:733 appObjects/FlatCAMObj.py:804
 #: appPlugins/ToolReport.py:448 appPlugins/ToolReport.py:519
@@ -16265,6 +16253,10 @@ msgid ""
 "- Edge - referenced from the bounding box edge\n"
 "- Center - referenced from the bounding box center"
 msgstr ""
+"Köşe işaretleyicilerinin konumlarını hizalamak için referans alınacak "
+"noktalar.\n"
+"- Kenar - Referans olarak sınırlayıcı kutunun kenarı alınır\n"
+"- Orta - Referans olarak sınırlayıcı kutunun ortası (merkezi) alınır"
 
 #: appPlugins/ToolMarkers.py:1308
 msgid "Locations"
@@ -16283,17 +16275,16 @@ msgid ""
 "When the manual type is chosen, the markers\n"
 "are manually placed on canvas."
 msgstr ""
-"Elle seçildiğinde, işaretçiler çalışma alanı üzerine el ile yerleştirilir."
+"El İle seçildiğinde, köşe işaretleri\n"
+"çalışma alanı üzerine el ile yerleştirilir."
 
 #: appPlugins/ToolMarkers.py:1375
 msgid "Add Marker"
 msgstr "Köşe İşareti Ekle"
 
 #: appPlugins/ToolMarkers.py:1378 appPlugins/ToolMarkers.py:1488
-#, fuzzy
-#| msgid "Will add corner markers to the selected Gerber file."
 msgid "Will add corner markers to the selected object."
-msgstr "Seçilen Gerber dosyasına köşe işaretleri ekler."
+msgstr "Seçilen nesneye köşe işaretleri ekleyecektir."
 
 #: appPlugins/ToolMarkers.py:1392
 msgid "Drills in Locations"
@@ -16320,22 +16311,16 @@ msgstr ""
 "sonuncuya kadar bir sonraki konuma geçecektir."
 
 #: appPlugins/ToolMarkers.py:1455
-#, fuzzy
-#| msgid "Corner Markers"
 msgid "Insert Markers"
-msgstr "Köşe İşaretleyici"
+msgstr "Köşe İşaretleri Ekle"
 
 #: appPlugins/ToolMarkers.py:1466
-#, fuzzy
-#| msgid "Type of the object where the exclusion area was added."
 msgid "Specify the type of object where the markers are inserted."
-msgstr "Hariç tutma alanının eklendiği nesnenin türü."
+msgstr "Köşe işaretlerinin eklendiği nesnenin türünü belirtin."
 
 #: appPlugins/ToolMarkers.py:1485
-#, fuzzy
-#| msgid "Corner Markers"
 msgid "Insert Marker"
-msgstr "Köşe İşaretleyici"
+msgstr "Köşe İşareti Ekle"
 
 #: appPlugins/ToolMilling.py:852
 msgid "Could not build the Plugin UI"
@@ -18182,7 +18167,7 @@ msgstr "Son proje dosyası yazmak için açılamadı."
 
 #: app_Main.py:3203
 msgid "PCB Manufacturing files Viewer/Editor with Plugins"
-msgstr "PCB Üretim dosyaları görüntüleyicisi /eklenti düzenleyici"
+msgstr "Eklentiler ile PCB üretim dosyaları görüntüleyici/düzenleyici"
 
 #: app_Main.py:3204
 msgid "Development"

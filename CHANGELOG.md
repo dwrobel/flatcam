@@ -17,6 +17,7 @@ CHANGELOG for FlatCAM beta
 - in 2Sided Plugin: Shift+LMB will add automatically the clicked coordinates in the Alignment Drills location
 - update language strings
 - updated the Romanian translation files
+- updated the Turkish translation files by Mehmet Kaya
 
 9.10.2021
 
