@@ -12,6 +12,9 @@ CHANGELOG for FlatCAM beta
 - in Markers Plugin replaced the Margin parameters with the Offset parameters that now can be referenced either to the edge of the bounding box (effectively replacing the old Margin parameter) or to the center of the bounding box
 - Distance Plugin Ui was upgraded
 - updated the language strings
+- in 2Sided Plugin: adding cumulative alignment points using the Ctrl+Shift+LMB now detects if it is a new start in adding alignment drill points
+- in 2Sided Plugin: duplicated set of coordinates in Alignment Drills are removed
+- in 2Sided Plugin: Shift+LMB will add automatically the clicked coordinates in the Alignment Drills location
 
 9.10.2021
 
@@ -40,7 +43,7 @@ CHANGELOG for FlatCAM beta
 - code cleanup
 - in "Punch Gerber" and "Extract" Plugins - make sure that the aperture markings are deleted on Reset Tool click and upon finishing the Plugin main function
 - in Punch Gerber Plugin the object is no longer populated automatically with the generated object
-- in Corner Markers Plugin fixed the position of "drills in locations" and for Checking Exceloon; the source object is no longer auto-updated to the latest one since we have to always work on the original object
+- in Corner Markers Plugin fixed the position of "drills in locations" and for Checking Excellon; the source object is no longer auto-updated to the latest one since we have to always work on the original object
 
 5.10.2021
 
@@ -54,7 +57,7 @@ CHANGELOG for FlatCAM beta
 - fixed a typo in the Object UI
 - in 2Sided Plugin advanced mode fixed the bounds calculation: if no object is selected on canvas then the object selected in Source Object is used
 - in 2Sided Plugin added a new typ of alignment drills: manual. This mode will no longer add pairs of drill holes mirrored against reference but only add in place drill holes
-- in 2Sided Plugin clicking LMB and also pressing CTRL+Shift will add the click coordinates to the Drll Alignment Coordinates
+- in 2Sided Plugin clicking LMB and also pressing CTRL+Shift will add the click coordinates to the Drill Alignment Coordinates
 - added support for all Plugins to handle the LMB click release event without connect/reconnect of the mouse events
 - code refactoring in app_Main file
 - in 2Sided Plugin, deleting the last drill alignment coordinates will update the clipboard values too
@@ -70,7 +73,7 @@ CHANGELOG for FlatCAM beta
 
 2.10.2021
 
-- in Preferences, more Plugins preferences UI is upgraded to the new look
+- in Preferences, more Plugins preferences UI are upgraded to the new look
 - In Paint Plugin fixed the Area select mode to work with Geometry object created by the Geometry Editor
 - in Paint Plugin some changes in the way the source object is autoloaded
 - in Paint, NCC and Cutout Plugins when using a mode that require to be terminated (by mouse RMB or ESC key) the notebook UI element is disabled until this is done
@@ -96,7 +99,7 @@ CHANGELOG for FlatCAM beta
 - changed the circle resolution back to the default of 16 since this value is good for fast rendering of Gerber files
 - added a shortcut to select all apertures in the Gerber Editor (Ctrl+A)
 - other minor fixes
-- added a shortcut to select all apertures in the Excellon Editor (Ctrl+A)
+- added a shortcut to select all tools in the Excellon Editor (Ctrl+A)
 - in Cutout Plugin simplified the UI
 - Gerber Extra Buffering is now OFf by default. For those cases where the Gerber file is not rendered correctly it will need to be activated. It has a performance penalty so it will no longer be enabled by default for everybody.
 - Gerber UI in Preferences is now updated

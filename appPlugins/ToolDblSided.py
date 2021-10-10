@@ -454,12 +454,35 @@ class DblSidedTool(AppTool):
         # if modifiers == QtCore.Qt.KeyboardModifier.ShiftModifier:
         #     clip_val = self.app.clipboard.text()
         #     self.ui.point_entry.set_value(clip_val)
+        clip_val = self.app.clipboard.text()
+
         if modifiers == QtCore.Qt.KeyboardModifier.ControlModifier | QtCore.Qt.KeyboardModifier.ShiftModifier:
-            clip_val = self.app.clipboard.text().replace("[", '').replace("]", '')
+            alignment_holes = self.ui.alignment_holes.get_value()
+            try:
+                eval_clip_val = eval(clip_val)
+            except Exception as err:
+                self.app.log.debug("DblSidedTool.on_mouse_plugin_click_release() --> %s" % str(err))
+                return
+
+            if alignment_holes == '' or alignment_holes is None:
+                if isinstance(eval_clip_val, list):
+                    altered_clip_val = str(eval_clip_val[-1])
+                    self.app.clipboard.setText(altered_clip_val)
+                else:
+                    altered_clip_val = clip_val
+            else:
+                if isinstance(eval_clip_val, list):
+                    # remove duplicates
+                    clean_eval_clip = set(eval_clip_val)
+                    # convert to string
+                    clip_val = str(list(clean_eval_clip))
+                altered_clip_val = clip_val.replace("[", '').replace("]", '')
+
+            self.ui.alignment_holes.set_value(altered_clip_val)
+            self.drill_values = altered_clip_val
+        elif modifiers == QtCore.Qt.KeyboardModifier.ShiftModifier:
             self.ui.alignment_holes.set_value(clip_val)
-        else:
-            return
-        self.drill_values = clip_val
+            self.drill_values = clip_val
 
     def on_exit(self, cancelled=None):
         self.app.call_source = "app"
@@ -534,7 +557,7 @@ class DblSidedTool(AppTool):
         # adjust the clipboard content too
         try:
             old_clipb = eval(self.app.clipboard.text())
-        except Exception as err:
+        except Exception:
             # self.log.error("App.on_mouse_and_key_modifiers() --> %s" % str(err))
             old_clipb = None
 
@@ -1085,13 +1108,16 @@ class DsidedUI:
         grid4.addWidget(self.align_ref_label_val, 6, 1)
 
         # ## Alignment holes
-        self.ah_label = FCLabel("%s:" % _('Alignment Drill Coordinates'))
+        self.ah_label = FCLabel("%s:" % _('Drill Coordinates'))
         self.ah_label.setToolTip(
-            _("Alignment holes (x1, y1), (x2, y2), ... "
-              "on one side of the mirror axis. For each set of (x, y) coordinates\n"
-              "entered here, a pair of drills will be created:\n\n"
-              "- one drill at the coordinates from the field\n"
-              "- one drill in mirror position over the axis selected above in the 'Align Axis'.")
+            _("Alignment holes (x1, y1), (x2, y2), ... \n"
+              "If the type is X or Y then for each pair of coordinates\n"
+              "two drill points will be added: one with the given coordinates,\n"
+              "and the other will be mirrored as set in the 'Mirror' section.\n"
+              "If the type is 'Manual' then no mirror point is generated.\n"
+              "\n"
+              "Shift + mouse click will add one set of coordinates.\n"
+              "Ctrl + Shift + mouse click will accumulate sets of coordinates. ")
         )
 
         grid4.addWidget(self.ah_label, 8, 0, 1, 2)

@@ -53,7 +53,7 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         param_grid.addWidget(self.drill_dia_entry, 0, 1)
 
         # ## Alignment Axis
-        self.align_type_label = FCLabel('%s:' % _("Align Axis"))
+        self.align_type_label = FCLabel('%s:' % _("Type"))
         self.align_type_label.setToolTip(
             _("The content of the Excellon file.\n"
               "X - Pairs of drill holes mirrored vertically from reference point\n"

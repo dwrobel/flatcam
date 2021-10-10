@@ -295,6 +295,10 @@ class AppTool(QtWidgets.QWidget):
         s_storage.clear()
         s_storage.redraw()
 
+    def on_mouse_plugin_click_release(self):
+        # this should be implemented in the descendents, the Plugin classes
+        pass
+
     def confirmation_message(self, accepted, minval, maxval):
         if accepted is False:
             self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%.*f, %.*f]' % (_("Edited value is out of range"),
