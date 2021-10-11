@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 11.10.2021
 
 - in Distance Plugin, after setting the start point of the measurement, moving the mouse will update the end point position
+- in Markers Plugin: fixed the offset from center functionality
 
 10.10.2021
 

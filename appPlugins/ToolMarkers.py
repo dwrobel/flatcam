@@ -378,16 +378,6 @@ class ToolMarkers(AppTool):
 
         return return_val
 
-    # def offset_location_from_bb_center(self, pt):
-    #     """
-    #     Will offset a set of x, y coordinates
-    #     from the center of the source object bounding box.
-    #
-    #     :param pt:  x, y coordinates of a location point
-    #     :type pt:   tuple
-    #     :return:    an offseted point pt from the center of the bounding box
-    #     """
-
     def offset_values(self, offset_reference=None, offset_x=None, offset_y=None):
         """
         Will offset a set of x, y coordinates depending on the chosen reference
@@ -422,8 +412,8 @@ class ToolMarkers(AppTool):
                 return
 
             xmin, ymin, xmax, ymax = self.grb_object.bounds()
-            center_x = xmin + (xmax - xmin) / 2
-            center_y = ymin + (ymax - ymin) / 2
+            center_x = (xmax - xmin) / 2
+            center_y = (ymax - ymin) / 2
             offset_x -=  center_x
             offset_y -= center_y
 
