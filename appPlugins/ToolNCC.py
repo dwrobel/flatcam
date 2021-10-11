@@ -975,7 +975,7 @@ class NonCopperClear(AppTool, Gerber):
         if isinstance(total_geo, Polygon):
             msg = ('[ERROR_NOTCL] %s' % _("The Gerber object has one Polygon as geometry.\n"
                                           "There are no distances between geometry elements to be found."))
-
+            return msg, np.Inf
         min_dict = {}
         idx = 1
         for geo in total_geo.geoms:
@@ -2023,7 +2023,7 @@ class NonCopperClear(AppTool, Gerber):
             if empty == 'fail' or empty.is_empty:
                 msg = '[ERROR_NOTCL] %s' % _("Could not get the extent of the area to be non copper cleared.")
                 self.app.inform.emit(msg)
-                return 'fail'
+                return 'fail', 0
 
             if type(empty) is Polygon:
                 empty = MultiPolygon([empty])
@@ -2052,7 +2052,7 @@ class NonCopperClear(AppTool, Gerber):
             if empty == 'fail' or empty.is_empty:
                 msg = '[ERROR_NOTCL] %s' % _("Could not get the extent of the area to be non copper cleared.")
                 self.app.inform.emit(msg)
-                return 'fail'
+                return 'fail', 0
 
         elif ncc_obj.kind == 'gerber' and isotooldia:
             isolated_geo = []
@@ -2158,7 +2158,7 @@ class NonCopperClear(AppTool, Gerber):
             if empty == 'fail' or empty.is_empty:
                 msg = '[ERROR_NOTCL] %s' % _("Could not get the extent of the area to be non copper cleared.")
                 self.app.inform.emit(msg)
-                return 'fail'
+                return 'fail', 0
 
         elif ncc_obj.kind == 'geometry':
             sol_geo = unary_union(ncc_obj.solid_geometry)
@@ -2170,10 +2170,10 @@ class NonCopperClear(AppTool, Gerber):
             if empty == 'fail' or empty.is_empty:
                 msg = '[ERROR_NOTCL] %s' % _("Could not get the extent of the area to be non copper cleared.")
                 self.app.inform.emit(msg)
-                return 'fail'
+                return 'fail', 0
         else:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _('The selected object is not suitable for copper clearing.'))
-            return 'fail'
+            return 'fail', 0
 
         if type(empty) is Polygon:
             empty = MultiPolygon([empty])
@@ -2395,10 +2395,15 @@ class NonCopperClear(AppTool, Gerber):
                 ncc_offset = float(self.ncc_tools[tool_uid]["data"]["tools_ncc_offset_value"])
 
                 # Area to clear
-                area, warning_flag = self.get_tool_empty_area(name=name, ncc_obj=ncc_obj, geo_obj=geo_obj,
-                                                              isotooldia=isotooldia, ncc_margin=ncc_margin,
-                                                              has_offset=has_offset,  ncc_offset=ncc_offset,
-                                                              tools_storage=tools_storage, bounding_box=bbox)
+                result = self.get_tool_empty_area(name=name, ncc_obj=ncc_obj, geo_obj=geo_obj, isotooldia=isotooldia,
+                                                  ncc_margin=ncc_margin, has_offset=has_offset,  ncc_offset=ncc_offset,
+                                                  tools_storage=tools_storage, bounding_box=bbox)
+
+                area, warning_flag = result
+
+                if area == "fail":
+                    self.app.log.debug("Failed to create empty area for this tool.")
+                    continue
 
                 # Transform area to MultiPolygon
                 if isinstance(area, Polygon):
@@ -3835,8 +3840,10 @@ class NonCopperClear(AppTool, Gerber):
                             create a "negative" geometry (geometry to be emptied of copper)
         :return:
         """
-        if isinstance(target, Polygon):
+        if isinstance(target, (LineString, LinearRing, Polygon)):
             geo_len = 1
+        elif isinstance(target, (MultiPolygon, MultiLineString)):
+            geo_len = len(target.geoms)
         else:
             geo_len = len(target)
 
@@ -3855,7 +3862,8 @@ class NonCopperClear(AppTool, Gerber):
             ret_val = boundary.difference(target)
         except Exception:
             try:
-                for el in target:
+                target_geoms = target.geoms if isinstance(target, MultiPolygon) else target
+                for el in target_geoms:
                     # provide the app with a way to process the GUI events when in a blocking loop
                     QtWidgets.QApplication.processEvents()
                     if self.app.abort_flag:

@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+12.10.2021
+
+- fixed some issues in NCC Plugin: the Plugin could not clear a simple geometry and also some failures were not treated correctly
+
 11.10.2021
 
 - in Distance Plugin, after setting the start point of the measurement, moving the mouse will update the end point position
