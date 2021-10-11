@@ -590,6 +590,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         # ############################# Set the Object UI (Properties Tab) ###########################################
         # ############################################################################################################
         obj.set_ui(obj.ui_type(app=self.app))
+        obj.build_ui()
 
         # a way to signal that the object was fully loaded
         obj.load_complete = True

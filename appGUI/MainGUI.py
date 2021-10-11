@@ -1132,7 +1132,7 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/extract32.png'), _("Extract"))
         self.copperfill_btn = self.toolbarplugins.addAction(
             QtGui.QIcon(self.app.resource_location + '/copperfill32.png'), _("Copper Thieving"))
-        self.corners_tool_btn = self.toolbarplugins.addAction(
+        self.markers_tool_btn = self.toolbarplugins.addAction(
             QtGui.QIcon(self.app.resource_location + '/corners_32.png'), _("Markers"))
         self.punch_btn = self.toolbarplugins.addAction(
             QtGui.QIcon(self.app.resource_location + '/punch32.png'), _("Punch Gerber"))
@@ -2476,7 +2476,7 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/extract32.png'), _("Extract"))
         self.copperfill_btn = self.toolbarplugins.addAction(
             QtGui.QIcon(self.app.resource_location + '/copperfill32.png'), _("Copper Thieving"))
-        self.corners_tool_btn = self.toolbarplugins.addAction(
+        self.markers_tool_btn = self.toolbarplugins.addAction(
             QtGui.QIcon(self.app.resource_location + '/corners_32.png'), _("Markers"))
         self.punch_btn = self.toolbarplugins.addAction(
             QtGui.QIcon(self.app.resource_location + '/punch32.png'), _("Punch Gerber"))
@@ -3057,7 +3057,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Corner Markers Tool
                 if key == QtCore.Qt.Key.Key_B:
-                    self.app.corners_tool.run(toggle=True)
+                    self.app.markers_tool.run(toggle=True)
                     return
 
                 # Calculator Tool
@@ -4284,7 +4284,7 @@ class MainGUI(QtWidgets.QMainWindow):
                 # Jump to coords
                 if key == QtCore.Qt.Key.Key_J:
                     self.app.on_jump_to()
-        elif self.app.call_source == 'corners_tool':
+        elif self.app.call_source == 'markers_tool':
             # CTRL + ALT
             if modifiers == QtCore.Qt.KeyboardModifier.ControlModifier | QtCore.Qt.KeyboardModifier.AltModifier:
                 if key == QtCore.Qt.Key.Key_X:
@@ -4300,7 +4300,7 @@ class MainGUI(QtWidgets.QMainWindow):
             elif modifiers == QtCore.Qt.KeyboardModifier.NoModifier:
                 # Escape = Deselect All
                 if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':
-                    self.app.corners_tool.on_exit(cancelled=True)
+                    self.app.markers_tool.on_exit(cancelled=True)
 
                 # Grid toggle
                 if key == QtCore.Qt.Key.Key_G:

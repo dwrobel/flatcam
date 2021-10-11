@@ -41,7 +41,7 @@ class ToolMarkers(AppTool):
         self.decimals = self.app.decimals
         self.units = ''
 
-        # here we store the locations of the selected corners
+        # here we store the locations of the selected locations
         self.points = LoudDict()
         self.points.set_change_callback(self.on_points_changed)
 
@@ -285,7 +285,7 @@ class ToolMarkers(AppTool):
             self.ui.type_radio.set_value('c')
 
     def add_markers(self):
-        self.app.call_source = "corners_tool"
+        self.app.call_source = "markers_tool"
         select_type = self.ui.mode_radio.get_value()
         if select_type == 'a':
             self.handle_automatic_placement()
@@ -327,7 +327,7 @@ class ToolMarkers(AppTool):
         if br_state:
             self.points['br'] = (xmax, ymin)
 
-        ret_val = self.add_corners_geo(self.points, g_obj=self.grb_object)
+        ret_val = self.add_marker_geo(self.points, g_obj=self.grb_object)
         self.app.call_source = "app"
         if ret_val == 'fail':
             self.app.call_source = "app"
@@ -351,18 +351,18 @@ class ToolMarkers(AppTool):
             self.on_exit()
             return
 
-        ret_val = self.add_corners_geo(self.points, g_obj=self.grb_object)
+        ret_val = self.add_marker_geo(self.points, g_obj=self.grb_object)
         if ret_val == 'fail':
             self.on_exit(ok=False)
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
             return
         self.on_exit()
 
-    def add_corners_geo(self, points_storage, g_obj):
+    def add_marker_geo(self, points_storage, g_obj):
         """
         Add geometry to the solid_geometry of the copper Gerber object
 
-        :param points_storage:  a dictionary holding the points where to add corners
+        :param points_storage:  a dictionary holding the points where to add markers
         :param g_obj:           the Gerber object where to add the geometry
         :return:                None
         """
@@ -372,7 +372,7 @@ class ToolMarkers(AppTool):
             return "fail"
 
         assert isinstance(geo_list, list), 'Geometry list should be a list but the type is: %s' % str(type(geo_list))
-        new_name = '%s_%s' % (str(self.grb_object.options['name']), 'corners')
+        new_name = '%s_%s' % (str(self.grb_object.options['name']), 'markers')
 
         return_val = self.generate_gerber_obj_with_markers(new_grb_obj=g_obj, marker_geometry=geo_list, outname=new_name)
 
@@ -726,7 +726,7 @@ class ToolMarkers(AppTool):
         return ret
 
     def on_create_drill_object(self):
-        self.app.call_source = "corners_tool"
+        self.app.call_source = "markers_tool"
 
         tooldia = self.ui.drill_dia_entry.get_value()
 
@@ -835,7 +835,7 @@ class ToolMarkers(AppTool):
             self.app.inform.emit('[success] %s' % _("Excellon object with corner drills created."))
 
     def on_create_check_object(self):
-        self.app.call_source = "corners_tool"
+        self.app.call_source = "markers_tool"
 
         tooldia = 0.1 if self.units == 'MM' else 0.0254
 
@@ -973,7 +973,7 @@ class ToolMarkers(AppTool):
                 self.app.call_source = "app"
                 return
 
-            new_name = '%s_%s' % (str(new_grb_obj.options['name']), 'corners')
+            new_name = '%s_%s' % (str(new_grb_obj.options['name']), 'markers')
             return_val = self.generate_gerber_obj_with_markers(new_grb_obj=new_grb_obj, marker_geometry=geo_list,
                                                                outname=new_name)
         else:
@@ -988,7 +988,7 @@ class ToolMarkers(AppTool):
                 self.app.call_source = "app"
                 return
 
-            new_name = '%s_%s' % (str(new_geo_obj.options['name']), 'corners')
+            new_name = '%s_%s' % (str(new_geo_obj.options['name']), 'markers')
             return_val = self.generate_geo_obj_with_markers(new_geo_obj=new_geo_obj, marker_geometry=geo_list,
                                                             outname=new_name)
         if return_val == "fail":
@@ -1376,9 +1376,9 @@ class MarkersUI:
         self.tools_box.addWidget(self.add_marker_button,)
 
         # #############################################################################################################
-        # Drill in Corners Frame
+        # Drill in markers Frame
         # #############################################################################################################
-        # Drill is corners
+        # Drill is markers
         self.drills_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _('Drills in Locations'))
         self.tools_box.addWidget(self.drills_label)
 

@@ -1228,7 +1228,7 @@ class App(QtCore.QObject):
         self.align_objects_tool = None
         self.punch_tool = None
         self.invert_tool = None
-        self.corners_tool = None
+        self.markers_tool = None
         self.etch_tool = None
 
         # when this list will get populated will contain a list of references to all the Plugins in this APp
@@ -1964,8 +1964,8 @@ class App(QtCore.QObject):
         self.invert_tool = ToolInvertGerber(self)
         self.invert_tool.install(icon=QtGui.QIcon(self.resource_location + '/invert32.png'), pos=self.ui.menu_plugins)
 
-        self.corners_tool = ToolMarkers(self)
-        self.corners_tool.install(icon=QtGui.QIcon(self.resource_location + '/corners_32.png'),
+        self.markers_tool = ToolMarkers(self)
+        self.markers_tool.install(icon=QtGui.QIcon(self.resource_location + '/corners_32.png'),
                                   pos=self.ui.menu_plugins)
 
         self.etch_tool = ToolEtchCompensation(self)
@@ -2029,7 +2029,7 @@ class App(QtCore.QObject):
             self.align_objects_tool,
             self.punch_tool,
             self.invert_tool,
-            self.corners_tool,
+            self.markers_tool,
             self.etch_tool
         ]
 
@@ -2291,7 +2291,7 @@ class App(QtCore.QObject):
 
         self.ui.extract_btn.triggered.connect(lambda: self.extract_tool.run(toggle=True))
         self.ui.copperfill_btn.triggered.connect(lambda: self.copper_thieving_tool.run(toggle=True))
-        self.ui.corners_tool_btn.triggered.connect(lambda: self.corners_tool.run(toggle=True))
+        self.ui.markers_tool_btn.triggered.connect(lambda: self.markers_tool.run(toggle=True))
         self.ui.punch_btn.triggered.connect(lambda: self.punch_tool.run(toggle=True))
         self.ui.calculators_btn.triggered.connect(lambda: self.calculator_tool.run(toggle=True))
 
@@ -8748,13 +8748,13 @@ class App(QtCore.QObject):
                     # only the Gerber obj has on_plot_cb_click() method
                     obj.ui.plot_cb.stateChanged.disconnect(obj.on_plot_cb_click)
                     obj.ui.plot_cb.setDisabled(True)
-                except AttributeError:
+                except (AttributeError, TypeError):
                     pass
                 obj.set_form_item("plot")
                 try:
                     obj.ui.plot_cb.stateChanged.connect(obj.on_plot_cb_click)
                     obj.ui.plot_cb.setDisabled(False)
-                except AttributeError:
+                except (AttributeError, TypeError):
                     pass
                 obj.options.set_change_callback(obj.on_options_change)
 
