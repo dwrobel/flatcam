@@ -82,7 +82,7 @@ class Distance(AppTool):
             self.sel_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name='measurement')
         
         # Signals
-        self.ui.measure_btn.clicked.connect(self.activate_measure_tool)
+        self.ui.measure_btn.clicked.connect(self.ui_connect)
 
     def run(self, toggle=False):
         self.app.defaults.report_usage("ToolDistance()")
@@ -104,9 +104,9 @@ class Distance(AppTool):
             pass
 
         if self.active is False:
-            self.activate_measure_tool()
+            self.ui_connect()
         else:
-            self.deactivate_measure_tool()
+            self.ui_disconnect()
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Ctrl+M', **kwargs)
@@ -161,15 +161,13 @@ class Distance(AppTool):
 
         # snap center works only for Gerber and Execellon Editor's
         if self.original_call_source == 'exc_editor' or self.original_call_source == 'grb_editor':
-            self.ui.param_label.show()
-            self.ui.par_frame.show()
+            self.ui.snap_center_cb.show()
             snap_center = self.app.defaults['tools_dist_snap_center']
             self.on_snap_toggled(snap_center)
 
             self.ui.snap_center_cb.toggled.connect(self.on_snap_toggled)
         else:
-            self.ui.param_label.hide()
-            self.ui.par_frame.hide()
+            self.ui.snap_center_cb.hide()
             try:
                 self.ui.snap_center_cb.toggled.disconnect(self.on_snap_toggled)
             except (TypeError, AttributeError):
@@ -192,7 +190,7 @@ class Distance(AppTool):
             if self.app.ui.grid_snap_btn.isChecked():
                 self.app.ui.grid_snap_btn.trigger()
 
-    def activate_measure_tool(self):
+    def ui_connect(self):
         # ENABLE the Measuring TOOL
         self.active = True
 
@@ -256,7 +254,7 @@ class Distance(AppTool):
 
         self.set_tool_ui()
 
-    def deactivate_measure_tool(self):
+    def ui_disconnect(self):
         # DISABLE the Measuring TOOL
         self.active = False
         self.points = []
@@ -384,7 +382,7 @@ class Distance(AppTool):
 
                     if len(clicked_pads) > 1:
                         self.tool_done = True
-                        self.deactivate_measure_tool()
+                        self.ui_disconnect()
                         self.app.inform.emit('[WARNING_NOTCL] %s' % _("Pads overlapped. Aborting."))
                         return
 
@@ -413,7 +411,7 @@ class Distance(AppTool):
 
             self.calculate_distance(pos=pos)
         elif event.button == right_button and event_is_dragging is False:
-            self.deactivate_measure_tool()
+            self.ui_disconnect()
             self.app.inform.emit(_("Distance Tool cancelled."))
 
     def calculate_distance(self, pos):
@@ -454,7 +452,7 @@ class Distance(AppTool):
                 )
             )
             self.tool_done = True
-            self.deactivate_measure_tool()
+            self.ui_disconnect()
 
     def on_mouse_move_meas(self, event):
         try:  # May fail in case mouse not within axes
@@ -604,6 +602,12 @@ class DistUI:
               "when it is hovering over the geometry of the pad/drill.")
         )
         param_grid.addWidget(self.snap_center_cb, 0, 0, 1, 2)
+
+        self.multipoint_cb = FCCheckBox(_("Segmented"))
+        self.multipoint_cb.setToolTip(
+            _("Make a measurement over multiple distance segments.")
+        )
+        param_grid.addWidget(self.multipoint_cb, 2, 0, 1, 2)
 
         # #############################################################################################################
         # Coordinates Frame

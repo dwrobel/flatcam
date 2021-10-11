@@ -4147,7 +4147,7 @@ class MainGUI(QtWidgets.QMainWindow):
             elif modifiers == QtCore.Qt.KeyboardModifier.NoModifier:
                 if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':
                     # abort the measurement action
-                    self.app.distance_tool.deactivate_measure_tool()
+                    self.app.distance_tool.ui_disconnect()
                     self.app.inform.emit(_("Distance Tool exit..."))
                     return
 
