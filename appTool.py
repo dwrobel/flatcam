@@ -295,8 +295,12 @@ class AppTool(QtWidgets.QWidget):
         s_storage.clear()
         s_storage.redraw()
 
-    def on_mouse_plugin_click_release(self):
-        # this should be implemented in the descendents, the Plugin classes
+    def on_mouse_plugin_click_release(self, pos):
+        # this should be implemented in the descendants, the Plugin classes
+        pass
+
+    def on_mouse_plugin_move(self, pos):
+        # this should be implemented in the descendants, the Plugin classes
         pass
 
     def confirmation_message(self, accepted, minval, maxval):

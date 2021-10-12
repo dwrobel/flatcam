@@ -7240,8 +7240,9 @@ class App(QtCore.QObject):
                 self.plotcanvas.native.setFocus()
 
         self.pos_jump = event_pos
-
         self.ui.popMenu.mouse_is_panning = False
+
+        self.on_mouse_plugin_move(pos=event_pos)
 
         if origin_click is None:
             # if the RMB is clicked and mouse is moving over plot then 'panning_action' is True
@@ -7383,10 +7384,10 @@ class App(QtCore.QObject):
 
             if key_modifier == shift_modifier_key or key_modifier == ctrl_shift_modifier_key:
                 self.on_mouse_and_key_modifiers(position=self.pos, modifiers=key_modifier)
-                self.on_mouse_plugin_click_release()
+                self.on_mouse_plugin_click_release(pos=pos)
                 return
             else:
-                self.on_mouse_plugin_click_release()
+                self.on_mouse_plugin_click_release(pos=pos)
 
             # the object selection on canvas will not work for App Tools or for Editors
             if self.call_source != 'app':
@@ -7735,10 +7736,12 @@ class App(QtCore.QObject):
                     tx=_("selected"))
                 )
 
-    def on_mouse_plugin_click_release(self):
+    def on_mouse_plugin_click_release(self, pos):
         """
         Handle specific tasks in the Plugins for the mouse click release
 
+        :param pos:     mouse position
+        :type pos:
         :return:
         """
 
@@ -7751,7 +7754,31 @@ class App(QtCore.QObject):
             if self.ui.notebook.tabText(tab_idx) != plugin.pluginName:
                 continue
             try:
-                plugin.on_mouse_plugin_click_release()
+                plugin.on_mouse_plugin_click_release(pos)
+            except AttributeError:
+                # not all plugins have this implemented
+                # print("This does not have it", self.ui.notebook.tabText(tab_idx))
+                pass
+
+    def on_mouse_plugin_move(self, pos):
+        """
+        Handle specific tasks in the Plugins for the mouse move
+
+        :param pos:     mouse position
+        :return:
+        :rtype:
+        """
+
+        if self.ui.notebook.currentWidget().objectName() != "plugin_tab":
+            return
+
+        tab_idx = self.ui.notebook.currentIndex()
+        for plugin in self.app_plugins:
+            # execute this only for the current active plugin
+            if self.ui.notebook.tabText(tab_idx) != plugin.pluginName:
+                continue
+            try:
+                plugin.on_mouse_plugin_move(pos)
             except AttributeError:
                 # not all plugins have this implemented
                 # print("This does not have it", self.ui.notebook.tabText(tab_idx))

@@ -2088,7 +2088,7 @@ class MainGUI(QtWidgets.QMainWindow):
                                         "<b>Y</b>: %s&nbsp;" % (x_dec, y_dec))
 
         # Set the Delta position label
-        if dx is None or dy is None:
+        if dx is None or dy is None or (dx is None and dy is None):
             self.rel_position_label.setText("")
         else:
             dx_dec = str(self.app.dec_format(dx, self.app.decimals)) if dx else '0.0'
@@ -4147,8 +4147,8 @@ class MainGUI(QtWidgets.QMainWindow):
             elif modifiers == QtCore.Qt.KeyboardModifier.NoModifier:
                 if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':
                     # abort the measurement action
-                    self.app.distance_tool.ui_disconnect()
-                    self.app.inform.emit(_("Distance Tool exit..."))
+                    self.app.distance_tool.on_exit()
+                    self.app.inform.emit(_("Cancelled."))
                     return
 
                 if key == QtCore.Qt.Key.Key_G or key == 'G':

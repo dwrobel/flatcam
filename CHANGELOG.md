@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+13.10.2021
+
+- in Distance Plugin - modified the UI
+- in Distance Plugin - implemented a new feature: multi segment distance measurement
+- in Distance Plugin - the Dx, Dy, Angle and Distance values are updated real time (for non multi segment measurement)
+
 12.10.2021
 
 - fixed some issues in NCC Plugin: the Plugin could not clear a simple geometry and also some failures were not treated correctly
