@@ -153,15 +153,6 @@ class Distance(AppTool):
 
         self.app.command_active = "Distance"
 
-        # initial view of the layout
-        self.ui.start_entry.set_value('(0, 0)')
-        self.ui.stop_entry.set_value('(0, 0)')
-
-        self.ui.distance_x_entry.set_value('0.0')
-        self.ui.distance_y_entry.set_value('0.0')
-        self.ui.angle_entry.set_value('0.0')
-        self.ui.total_distance_entry.set_value('0.0')
-
         self.ui.snap_center_cb.set_value(self.app.defaults['tools_dist_snap_center'])
 
         # snap center works only for Gerber and Execellon Editor's
@@ -185,7 +176,18 @@ class Distance(AppTool):
 
         if self.app.ui.grid_snap_btn.isChecked():
             self.grid_status_memory = True
+
+        # initial view of the layout
+        self.initial_view()
         self.app.call_source = 'measurement'
+
+    def initial_view(self):
+        self.display_start((0.0, 0.0))
+        self.display_end((0.0, 0.0))
+        self.ui.angle_entry.set_value('%.*f' % (self.decimals, 0.0))
+        self.ui.distance_x_entry.set_value('%.*f' % (self.decimals, 0.0))
+        self.ui.distance_y_entry.set_value('%.*f' % (self.decimals, 0.0))
+        self.ui.total_distance_entry.set_value('%.*f' % (self.decimals, 0.0))
 
     def on_snap_toggled(self, state):
         self.app.defaults['tools_dist_snap_center'] = state
@@ -575,6 +577,7 @@ class Distance(AppTool):
                 self.delete_utility_shape(self.last_shape)
                 if self.points:
                     self.add_utility_shape(start_pos=self.points[-1], end_pos=pos)
+                    self.display_distance(self.total_distance + self.update_distance(pos, prev_pos=self.points[-1]))
         except Exception as e:
             self.app.log.error("Distance.on_mouse_move() update --> %s" % str(e))
             self.app.ui.position_label.setText("")
@@ -593,6 +596,10 @@ class Distance(AppTool):
     def display_angle(self, val):
         if val:
             self.ui.angle_entry.set_value(str(self.app.dec_format(val, self.decimals)))
+
+    def display_start(self, val):
+        if val:
+            self.ui.start_entry.set_value(str(val))
 
     def update_end_point(self, pos):
         # update the end point value
@@ -613,9 +620,9 @@ class Distance(AppTool):
 
     def display_deltas(self, dx, dy):
         if dx:
-            self.ui.distance_x_entry.set_value('%.*f' % (self.decimals, abs(dx)))
+            self.ui.distance_x_entry.set_value(str(self.app.dec_format(abs(dx), self.decimals)))
         if dy:
-            self.ui.distance_y_entry.set_value('%.*f' % (self.decimals, abs(dy)))
+            self.ui.distance_y_entry.set_value(str(self.app.dec_format(abs(dx), self.decimals)))
 
     def update_distance(self, pos, prev_pos=None):
         if prev_pos is None:
