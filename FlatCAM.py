@@ -12,10 +12,6 @@ from multiprocessing import freeze_support
 # import copyreg
 # import types
 
-if sys.platform == "win32":
-    # cx_freeze 'module win32' workaround
-    from win32comext.shell import shell, shellcon
-
 MIN_VERSION_MAJOR = 3
 MIN_VERSION_MINOR = 6
 

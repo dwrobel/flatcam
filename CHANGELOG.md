@@ -21,6 +21,7 @@ CHANGELOG for FlatCAM beta
 - updated the Romanian translation
 - Google-translated the Spanish translation
 - updated the strings in all translation files
+- if the user is not admin then the application will not restart from within but the changes will be applied at the next app run
 
 12.10.2021
 

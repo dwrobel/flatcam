@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-import os
+import os, ctypes
 import sys
 import logging
 from pathlib import Path
@@ -38,6 +38,14 @@ languages_dict = {
 translations = {}
 
 languages_path_search = ''
+
+
+def isAdmin():
+    try:
+        is_admin = (os.getuid() == 0) or (os.geteuid() == 0)
+    except AttributeError:
+        is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
+    return is_admin
 
 
 def load_languages():
@@ -100,9 +108,11 @@ def on_language_apply_click(app, restart=False):
 
     if restart:
         msgbox = QtWidgets.QMessageBox()
+
         msgbox.setText(_("The application will restart."))
         msgbox.setInformativeText('%s %s?' %
-                                  (_("Are you sure do you want to change the current language to"), name.capitalize()))
+                                  (_("Are you sure do you want to change the current language to"),
+                                   name.capitalize()))
         msgbox.setWindowTitle('%s ...' % _("Apply Language"))
         msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/language32.png'))
         msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
@@ -221,5 +231,21 @@ def restart_program(app, ask=None):
             app.f_handlers.on_file_saveprojectas(use_thread=True, quit_action=True)
 
     app.preferencesUiManager.save_defaults()
-    python = sys.executable
-    os.execl(python, python, *sys.argv)
+
+    try:
+        python = sys.executable
+        os.execl(python, python, *sys.argv)
+    except Exception as err:
+        # app_run_as_admin = isAdmin()
+        msgbox = QtWidgets.QMessageBox()
+
+        msgbox.setText(_("The language will be applied at the next application start."))
+        msgbox.setInformativeText(_("The user does not have admin rights or UAC issues."))
+        msgbox.setDetailedText(str(err))
+        msgbox.setWindowTitle('%s ...' % _("Quit"))
+        msgbox.setIcon(QtWidgets.QMessageBox.Icon.Critical)
+
+        bt_yes = msgbox.addButton(_("Quit"), QtWidgets.QMessageBox.ButtonRole.YesRole)
+
+        msgbox.setDefaultButton(bt_yes)
+        msgbox.exec()
