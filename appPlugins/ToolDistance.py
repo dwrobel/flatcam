@@ -589,7 +589,7 @@ class Distance(AppTool):
             if angle < 0:
                 angle += 360
         except Exception as e:
-            self.app.log.error("Distance.on_mouse_move() -> update utility geometry -> %s" % str(e))
+            self.app.log.error("Distance.update_angle() -> %s" % str(e))
             return None
         return angle
 

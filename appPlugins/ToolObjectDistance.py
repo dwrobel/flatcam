@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore
+from PyQt6 import QtWidgets, QtCore, QtGui
 from appTool import AppTool
 from appGUI.GUIElements import FCEntry, FCLabel, FCButton, VerticalScrollArea, FCGridLayout, FCFrame, FCComboBox2
 
@@ -45,11 +45,9 @@ class ObjectDistance(AppTool):
         # #############################################################################
         self.ui = ObjectDistanceUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         self.h_point = (0, 0)
-
-        self.ui.measure_btn.clicked.connect(self.activate_measure_tool)
-        self.ui.jump_hp_btn.clicked.connect(self.on_jump_to_half_point)
 
     def run(self, toggle=False):
         # if the plugin was already launched do not do it again
@@ -66,15 +64,6 @@ class ObjectDistance(AppTool):
         if toggle:
             pass
 
-        self.set_tool_ui()
-
-        # activate the plugin
-        self.activate_measure_tool()
-
-    def install(self, icon=None, separator=None, **kwargs):
-        AppTool.install(self, icon, separator, shortcut='Shift+M', **kwargs)
-
-    def set_tool_ui(self):
         # if the Tool Tab is hidden display it, else hide it but only if the objectName is the same
         found_idx = None
         for idx in range(self.app.ui.notebook.count()):
@@ -97,8 +86,6 @@ class ObjectDistance(AppTool):
             # focus on Tool Tab
             self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
 
-        self.app.ui.notebook.setTabText(2, _("Object Distance"))
-
         # Remove anything else in the appGUI
         self.app.ui.plugin_scroll_area.takeWidget()
 
@@ -108,6 +95,22 @@ class ObjectDistance(AppTool):
         # Switch notebook to tool page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
 
+        self.set_tool_ui()
+        self.app.ui.notebook.setTabText(2, _("Object Distance"))
+
+        # activate the plugin
+        self.activate_measure_tool()
+
+    def install(self, icon=None, separator=None, **kwargs):
+        AppTool.install(self, icon, separator, shortcut='Shift+M', **kwargs)
+
+    def connect_signals_at_init(self):
+        self.ui.measure_btn.clicked.connect(self.activate_measure_tool)
+        self.ui.jump_hp_btn.clicked.connect(self.on_jump_to_half_point)
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+        self.ui.distance_type_combo.currentIndexChanged.connect(self.on_didstance_type_changed)
+
+    def set_tool_ui(self):
         self.units = self.app.app_units.lower()
 
         # initial view of the layout
@@ -127,126 +130,309 @@ class ObjectDistance(AppTool):
 
         self.active = True
 
+    def on_didstance_type_changed(self):
+        self.init_plugin()
+
     def activate_measure_tool(self):
         # ENABLE the Measuring TOOL
         self.ui.jump_hp_btn.setDisabled(False)
 
         self.units = self.app.app_units.lower()
-
         self.original_call_source = deepcopy(self.app.call_source)
 
-        if self.app.call_source == 'app':
-            selected_objs = self.app.collection.get_selected()
-            if len(selected_objs) != 2:
-                self.app.inform.emit('[WARNING_NOTCL] %s %s' %
-                                     (_("Select two objects and no more. Currently the selection has objects: "),
-                                      str(len(selected_objs))))
-                return
+        measuring_type = self.ui.distance_type_combo.get_value()
+
+        if measuring_type == 0:      # 0 is "nearest points"
+            if self.app.call_source == 'app':
+                first_pos, last_pos = self.measure_nearest_in_app()
+            elif self.app.call_source == 'geo_editor':
+                first_pos, last_pos = self.measure_nearest_in_geo_editor()
+            elif self.app.call_source == 'exc_editor':
+                first_pos, last_pos = self.measure_nearest_in_exc_editor()
+            elif self.app.call_source == 'grb_editor':
+                first_pos, last_pos = self.measure_nearest_in_grb_editor()
             else:
-                if isinstance(selected_objs[0].solid_geometry, list):
-                    try:
-                        selected_objs[0].solid_geometry = MultiPolygon(selected_objs[0].solid_geometry)
-                    except Exception:
-                        selected_objs[0].solid_geometry = unary_union(selected_objs[0].solid_geometry)
-
-                    try:
-                        selected_objs[1].solid_geometry = MultiPolygon(selected_objs[1].solid_geometry)
-                    except Exception:
-                        selected_objs[1].solid_geometry = unary_union(selected_objs[1].solid_geometry)
-
-                first_pos, last_pos = nearest_points(selected_objs[0].solid_geometry, selected_objs[1].solid_geometry)
-
-        elif self.app.call_source == 'geo_editor':
-            selected_objs = self.app.geo_editor.selected
-            if len(selected_objs) != 2:
-                self.app.inform.emit('[WARNING_NOTCL] %s %s' %
-                                     (_("Select two objects and no more. Currently the selection has objects: "),
-                                      str(len(selected_objs))))
-                return
-            else:
-                first_pos, last_pos = nearest_points(selected_objs[0].geo, selected_objs[1].geo)
-        elif self.app.call_source == 'exc_editor':
-            selected_objs = self.app.exc_editor.selected
-            if len(selected_objs) != 2:
-                self.app.inform.emit('[WARNING_NOTCL] %s %s' %
-                                     (_("Select two objects and no more. Currently the selection has objects: "),
-                                      str(len(selected_objs))))
-                return
-            else:
-                # the objects are really MultiLinesStrings made out of 2 lines in cross shape
-                xmin, ymin, xmax, ymax = selected_objs[0].geo.bounds
-                first_geo_radius = (xmax - xmin) / 2
-                first_geo_center = Point(xmin + first_geo_radius, ymin + first_geo_radius)
-                first_geo = first_geo_center.buffer(first_geo_radius)
-
-                # the objects are really MultiLinesStrings made out of 2 lines in cross shape
-                xmin, ymin, xmax, ymax = selected_objs[1].geo.bounds
-                last_geo_radius = (xmax - xmin) / 2
-                last_geo_center = Point(xmin + last_geo_radius, ymin + last_geo_radius)
-                last_geo = last_geo_center.buffer(last_geo_radius)
-
-                first_pos, last_pos = nearest_points(first_geo, last_geo)
-        elif self.app.call_source == 'grb_editor':
-            selected_objs = self.app.grb_editor.selected
-            if len(selected_objs) != 2:
-                self.app.inform.emit('[WARNING_NOTCL] %s %s' %
-                                     (_("Select two objects and no more. Currently the selection has objects: "),
-                                      str(len(selected_objs))))
-                return
-            else:
-                first_pos, last_pos = nearest_points(selected_objs[0].geo['solid'], selected_objs[1].geo['solid'])
+                first_pos, last_pos = Point((0, 0)), Point((0, 0))
         else:
-            first_pos, last_pos = Point((0, 0)), Point((0, 0))
+            if self.app.call_source == 'app':
+                first_pos, last_pos = self.measure_center_in_app()
+            elif self.app.call_source == 'geo_editor':
+                first_pos, last_pos = self.measure_center_in_geo_editor()
+            elif self.app.call_source == 'exc_editor':
+                first_pos, last_pos = self.measure_center_in_exc_editor()
+            elif self.app.call_source == 'grb_editor':
+                first_pos, last_pos = self.measure_center_in_grb_editor()
+            else:
+                first_pos, last_pos = Point((0, 0)), Point((0, 0))
 
-        self.ui.start_entry.set_value("(%.*f, %.*f)" % (self.decimals, first_pos.x, self.decimals, first_pos.y))
-        self.ui.stop_entry.set_value("(%.*f, %.*f)" % (self.decimals, last_pos.x, self.decimals, last_pos.y))
+        if first_pos == "fail":
+            return
 
-        dx = first_pos.x - last_pos.x
-        dy = first_pos.y - last_pos.y
+        # self.ui.start_entry.set_value("(%.*f, %.*f)" % (self.decimals, first_pos.x, self.decimals, first_pos.y))
+        # self.ui.stop_entry.set_value("(%.*f, %.*f)" % (self.decimals, last_pos.x, self.decimals, last_pos.y))
 
-        self.ui.distance_x_entry.set_value('%.*f' % (self.decimals, abs(dx)))
-        self.ui.distance_y_entry.set_value('%.*f' % (self.decimals, abs(dy)))
+        # update start point
+        val_start = self.update_start(first_pos)
+        self.display_start(val_start)
 
-        try:
-            angle = math.degrees(math.atan(dy / dx))
-            self.ui.angle_entry.set_value('%.*f' % (self.decimals, angle))
-        except Exception:
-            pass
+        # update end point
+        val_stop = self.update_end_point(last_pos)
+        self.display_end(val_stop)
 
-        d = math.sqrt(dx ** 2 + dy ** 2)
-        self.ui.total_distance_entry.set_value('%.*f' % (self.decimals, abs(d)))
+        # update deltas
+        dx, dy = self.update_deltas(first_pt=first_pos, second_pt=last_pos)
+        self.display_deltas(dx, dy)
 
-        self.h_point = (min(first_pos.x, last_pos.x) + (abs(dx) / 2), min(first_pos.y, last_pos.y) + (abs(dy) / 2))
-        if d != 0:
-            self.ui.half_point_entry.set_value(
-                "(%.*f, %.*f)" % (self.decimals, self.h_point[0], self.decimals, self.h_point[1])
-            )
+        # update angle
+        angle_val = self.update_angle(dx=dx, dy=dy)
+        self.display_angle(angle_val)
+
+        # update the total distance
+        d = self.update_distance(dx, dy)
+        self.display_distance(d)
+
+        self.h_point = self.update_half_distance(first_pos, last_pos, dx, dy)
+        if measuring_type == 0:  # 0 is "nearest points"
+            if d != 0:
+                self.display_half_distance(self.h_point)
+            else:
+                self.display_half_distance((0.0, 0.0))
+                intersect_loc = "(%.*f, %.*f)" % (self.decimals, self.h_point[0], self.decimals, self.h_point[1])
+                msg = '[WARNING_NOTCL] %s: %s' % (_("Objects intersects or touch at"), intersect_loc)
+                self.app.inform.emit(msg)
         else:
-            self.ui.half_point_entry.set_value(
-                "(%.*f, %.*f)" % (self.decimals, 0.0, self.decimals, 0.0)
-            )
-
-        if d != 0:
-            self.app.inform.emit("{tx1}: {tx2} D(x) = {d_x} | D(y) = {d_y} | {tx3} = {d_z}".format(
-                tx1=_("MEASURING"),
-                tx2=_("Result"),
-                tx3=_("Distance"),
-                d_x='%*f' % (self.decimals, abs(dx)),
-                d_y='%*f' % (self.decimals, abs(dy)),
-                d_z='%*f' % (self.decimals, abs(d)))
-            )
-        else:
-            self.app.inform.emit('[WARNING_NOTCL] %s: %s' %
-                                 (_("Objects intersects or touch at"),
-                                  "(%.*f, %.*f)" % (self.decimals, self.h_point[0], self.decimals, self.h_point[1])))
+            self.display_half_distance(self.h_point)
 
         self.active = False
+
+    def measure_nearest_in_app(self):
+        selected_objs = self.app.collection.get_selected()
+        if len(selected_objs) != 2:
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' %
+                                 (_("Select two objects and no more. Currently the selection has objects: "),
+                                  str(len(selected_objs))))
+            return "fail", "fail"
+
+        geo_first = selected_objs[0].solid_geometry
+        geo_second = selected_objs[1].solid_geometry
+        if isinstance(selected_objs[0].solid_geometry, list):
+            try:
+                geo_first = MultiPolygon(geo_first)
+            except Exception:
+                geo_first = unary_union(geo_first)
+        if isinstance(selected_objs[1].solid_geometry, list):
+            try:
+                geo_second = MultiPolygon(geo_second)
+            except Exception:
+                geo_second = unary_union(geo_second)
+
+        first_pos, last_pos = nearest_points(geo_first, geo_second)
+        return first_pos, last_pos
+
+    def measure_nearest_in_geo_editor(self):
+        selected_objs = self.app.geo_editor.selected
+        if len(selected_objs) != 2:
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' %
+                                 (_("Select two objects and no more. Currently the selection has objects: "),
+                                  str(len(selected_objs))))
+            return "fail", "fail"
+        first_pos, last_pos = nearest_points(selected_objs[0].geo, selected_objs[1].geo)
+        return first_pos, last_pos
+
+    def measure_nearest_in_grb_editor(self):
+        selected_objs = self.app.grb_editor.selected
+        if len(selected_objs) != 2:
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' %
+                                 (_("Select two objects and no more. Currently the selection has objects: "),
+                                  str(len(selected_objs))))
+            return "fail", "fail"
+
+        first_pos, last_pos = nearest_points(selected_objs[0].geo['solid'], selected_objs[1].geo['solid'])
+        return first_pos, last_pos
+
+    def measure_nearest_in_exc_editor(self):
+        selected_objs = self.app.exc_editor.selected
+        if len(selected_objs) != 2:
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' %
+                                 (_("Select two objects and no more. Currently the selection has objects: "),
+                                  str(len(selected_objs))))
+            return "fail", "fail"
+
+        # the objects are really MultiLinesStrings made out of 2 lines in cross shape
+        xmin, ymin, xmax, ymax = selected_objs[0].geo.bounds
+        first_geo_radius = (xmax - xmin) / 2
+        first_geo_center = Point(xmin + first_geo_radius, ymin + first_geo_radius)
+        first_geo = first_geo_center.buffer(first_geo_radius)
+
+        # the objects are really MultiLinesStrings made out of 2 lines in cross shape
+        xmin, ymin, xmax, ymax = selected_objs[1].geo.bounds
+        last_geo_radius = (xmax - xmin) / 2
+        last_geo_center = Point(xmin + last_geo_radius, ymin + last_geo_radius)
+        last_geo = last_geo_center.buffer(last_geo_radius)
+
+        first_pos, last_pos = nearest_points(first_geo, last_geo)
+        return first_pos, last_pos
+
+    def measure_center_in_app(self):
+        selected_objs = self.app.collection.get_selected()
+        if len(selected_objs) != 2:
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' %
+                                 (_("Select two objects and no more. Currently the selection has objects: "),
+                                  str(len(selected_objs))))
+            return "fail", "fail"
+
+        geo_first = selected_objs[0].solid_geometry
+        geo_second = selected_objs[1].solid_geometry
+        if isinstance(selected_objs[0].solid_geometry, list):
+            try:
+                geo_first = MultiPolygon(geo_first)
+            except Exception:
+                geo_first = unary_union(geo_first)
+        if isinstance(selected_objs[1].solid_geometry, list):
+            try:
+                geo_second = MultiPolygon(geo_second)
+            except Exception:
+                geo_second = unary_union(geo_second)
+
+        first_bounds = geo_first.bounds     # xmin, ymin, xmax, ymax
+        first_center_x = first_bounds[0] + (first_bounds[2] - first_bounds[0]) / 2
+        first_center_y = first_bounds[1] + (first_bounds[3] - first_bounds[1]) / 2
+        second_bounds = geo_second.bounds   # xmin, ymin, xmax, ymax
+        second_center_x = second_bounds[0] + (second_bounds[2] - second_bounds[0]) / 2
+        second_center_y = second_bounds[1] + (second_bounds[3] - second_bounds[1]) / 2
+        return Point((first_center_x, first_center_y)), Point((second_center_x, second_center_y))
+
+    def measure_center_in_geo_editor(self):
+        selected_objs = self.app.geo_editor.selected
+        if len(selected_objs) != 2:
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' %
+                                 (_("Select two objects and no more. Currently the selection has objects: "),
+                                  str(len(selected_objs))))
+            return "fail", "fail"
+        geo_first = selected_objs[0].geo
+        geo_second = selected_objs[1].geo
+
+        first_bounds = geo_first.bounds  # xmin, ymin, xmax, ymax
+        first_center_x = first_bounds[0] + (first_bounds[2] - first_bounds[0]) / 2
+        first_center_y = first_bounds[1] + (first_bounds[3] - first_bounds[1]) / 2
+        second_bounds = geo_second.bounds  # xmin, ymin, xmax, ymax
+        second_center_x = second_bounds[0] + (second_bounds[2] - second_bounds[0]) / 2
+        second_center_y = second_bounds[1] + (second_bounds[3] - second_bounds[1]) / 2
+        return Point((first_center_x, first_center_y)), Point((second_center_x, second_center_y))
+
+    def measure_center_in_grb_editor(self):
+        selected_objs = self.app.grb_editor.selected
+        if len(selected_objs) != 2:
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' %
+                                 (_("Select two objects and no more. Currently the selection has objects: "),
+                                  str(len(selected_objs))))
+            return "fail", "fail"
+
+        geo_first = selected_objs[0].geo['solid']
+        geo_second = selected_objs[1].geo['solid']
+
+        first_bounds = geo_first.bounds  # xmin, ymin, xmax, ymax
+        first_center_x = first_bounds[0] + (first_bounds[2] - first_bounds[0]) / 2
+        first_center_y = first_bounds[1] + (first_bounds[3] - first_bounds[1]) / 2
+        second_bounds = geo_second.bounds  # xmin, ymin, xmax, ymax
+        second_center_x = second_bounds[0] + (second_bounds[2] - second_bounds[0]) / 2
+        second_center_y = second_bounds[1] + (second_bounds[3] - second_bounds[1]) / 2
+        return Point((first_center_x, first_center_y)), Point((second_center_x, second_center_y))
+
+    def measure_center_in_exc_editor(self):
+        selected_objs = self.app.exc_editor.selected
+        if len(selected_objs) != 2:
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' %
+                                 (_("Select two objects and no more. Currently the selection has objects: "),
+                                  str(len(selected_objs))))
+            return "fail", "fail"
+
+        # the objects are really MultiLinesStrings made out of 2 lines in cross shape
+        xmin, ymin, xmax, ymax = selected_objs[0].geo.bounds
+        first_geo_radius = (xmax - xmin) / 2
+        first_geo_center = Point(xmin + first_geo_radius, ymin + first_geo_radius)
+        geo_first = first_geo_center.buffer(first_geo_radius)
+
+        # the objects are really MultiLinesStrings made out of 2 lines in cross shape
+        xmin, ymin, xmax, ymax = selected_objs[1].geo.bounds
+        last_geo_radius = (xmax - xmin) / 2
+        last_geo_center = Point(xmin + last_geo_radius, ymin + last_geo_radius)
+        geo_second = last_geo_center.buffer(last_geo_radius)
+
+        first_bounds = geo_first.bounds  # xmin, ymin, xmax, ymax
+        first_center_x = first_bounds[0] + (first_bounds[2] - first_bounds[0]) / 2
+        first_center_y = first_bounds[1] + (first_bounds[3] - first_bounds[1]) / 2
+        second_bounds = geo_second.bounds  # xmin, ymin, xmax, ymax
+        second_center_x = second_bounds[0] + (second_bounds[2] - second_bounds[0]) / 2
+        second_center_y = second_bounds[1] + (second_bounds[3] - second_bounds[1]) / 2
+        return Point((first_center_x, first_center_y)), Point((second_center_x, second_center_y))
 
     def on_jump_to_half_point(self):
         self.app.on_jump_to(custom_location=self.h_point)
         self.app.inform.emit('[success] %s: %s' %
                              (_("Jumped to the half point between the two selected objects"),
                               "(%.*f, %.*f)" % (self.decimals, self.h_point[0], self.decimals, self.h_point[1])))
+
+    def update_angle(self, dx, dy):
+        try:
+            angle = math.degrees(math.atan2(dy, dx))
+            if angle < 0:
+                angle += 360
+        except Exception as e:
+            self.app.log.error("ObjectDistance.update_angle() -> %s" % str(e))
+            return None
+        return angle
+
+    def display_angle(self, val):
+        if val:
+            self.ui.angle_entry.set_value(str(self.app.dec_format(val, self.decimals)))
+
+    def update_start(self, pt):
+        return self.app.dec_format(pt.x, self.decimals), self.app.dec_format(pt.y, self.decimals)
+
+    def display_start(self, val):
+        if val:
+            self.ui.start_entry.set_value(str(val))
+
+    def update_end_point(self, pt):
+        # update the end point value
+        return self.app.dec_format(pt.x, self.decimals), self.app.dec_format(pt.y, self.decimals)
+
+    def display_end(self, val):
+        if val:
+            self.ui.stop_entry.set_value(str(val))
+
+    @staticmethod
+    def update_deltas(first_pt, second_pt):
+        dx = first_pt.x - second_pt.x
+        dy = first_pt.y - second_pt.y
+        return dx, dy
+
+    def display_deltas(self, dx, dy):
+        if dx:
+            self.ui.distance_x_entry.set_value(str(self.app.dec_format(abs(dx), self.decimals)))
+        if dy:
+            self.ui.distance_y_entry.set_value(str(self.app.dec_format(abs(dy), self.decimals)))
+
+    @staticmethod
+    def update_distance(dx, dy):
+        return math.sqrt(dx ** 2 + dy ** 2)
+
+    def display_distance(self, val):
+        if val:
+            self.ui.total_distance_entry.set_value('%.*f' % (self.decimals, abs(val)))
+
+    @staticmethod
+    def update_half_distance(first_pos, last_pos, dx, dy):
+        return min(first_pos.x, last_pos.x) + (abs(dx) / 2), min(first_pos.y, last_pos.y) + (abs(dy) / 2)
+
+    def display_half_distance(self, val):
+        if val:
+            new_val = (
+                self.app.dec_format(val[0], self.decimals),
+                self.app.dec_format(val[1], self.decimals)
+            )
+            self.ui.half_point_entry.set_value(str(new_val))
 
     def on_plugin_cleanup(self):
         self.active = False
@@ -434,6 +620,20 @@ class ObjectDistanceUI:
         FCGridLayout.set_common_column_size([param_grid, coords_grid, res_grid], 0)
 
         self.layout.addStretch(1)
+
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                                        QPushButton
+                                        {
+                                            font-weight: bold;
+                                        }
+                                        """)
+        self.layout.addWidget(self.reset_button)
         # #################################### FINSIHED GUI ###########################
         # #############################################################################
 

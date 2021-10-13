@@ -23,6 +23,7 @@ CHANGELOG for FlatCAM beta
 - updated the strings in all translation files
 - if the user is not admin then the application will not restart from within but the changes will be applied at the next app run
 - updated the strings in all translation files
+- finished the new feature in the Object Distance Plugin (calculate the distance between the bounding box centers) and code refactoring
 
 12.10.2021
 
