@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-10-13 18:11+0300\n"
+"POT-Creation-Date: 2021-10-13 18:40+0300\n"
 "PO-Revision-Date: 2019-03-25 15:08+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -1311,7 +1311,7 @@ msgstr ""
 msgid "Delete from DB"
 msgstr ""
 
-#: appDatabase.py:1619 appTranslation.py:209 app_Main.py:3928 app_Main.py:9935
+#: appDatabase.py:1619 appTranslation.py:219 app_Main.py:3928 app_Main.py:9935
 msgid "Save changes"
 msgstr ""
 
@@ -5482,14 +5482,14 @@ msgid "Are you sure you want to delete the GUI Settings? \n"
 msgstr ""
 
 #: appGUI/MainGUI.py:2329 appGUI/preferences/PreferencesUIManager.py:1046
-#: appGUI/preferences/PreferencesUIManager.py:1290 appTranslation.py:110
-#: appTranslation.py:213 app_Main.py:2715 app_Main.py:3932 app_Main.py:6683 app_Main.py:9939
+#: appGUI/preferences/PreferencesUIManager.py:1290 appTranslation.py:120
+#: appTranslation.py:223 app_Main.py:2715 app_Main.py:3932 app_Main.py:6683 app_Main.py:9939
 #: app_Main.py:10061
 msgid "Yes"
 msgstr ""
 
 #: appGUI/MainGUI.py:2330 appGUI/preferences/PreferencesUIManager.py:1291
-#: appTranslation.py:111 appTranslation.py:214 app_Main.py:2716 app_Main.py:3933
+#: appTranslation.py:121 appTranslation.py:224 app_Main.py:2716 app_Main.py:3933
 #: app_Main.py:6684 app_Main.py:9940 app_Main.py:10062
 msgid "No"
 msgstr ""
@@ -7872,7 +7872,7 @@ msgstr ""
 msgid "Set the language used throughout FlatCAM."
 msgstr ""
 
-#: appGUI/preferences/general/GeneralAppPrefGroupUI.py:199 appTranslation.py:106
+#: appGUI/preferences/general/GeneralAppPrefGroupUI.py:199 appTranslation.py:116
 msgid "Apply Language"
 msgstr ""
 
@@ -15759,18 +15759,30 @@ msgstr ""
 msgid "processes running."
 msgstr ""
 
-#: appTranslation.py:103
+#: appTranslation.py:112
 msgid "The application will restart."
 msgstr ""
 
-#: appTranslation.py:105
+#: appTranslation.py:114
 msgid "Are you sure do you want to change the current language to"
 msgstr ""
 
-#: appTranslation.py:206 app_Main.py:3925
+#: appTranslation.py:216 app_Main.py:3925
 msgid ""
 "There are files/objects modified in FlatCAM. \n"
 "Do you want to Save the project?"
+msgstr ""
+
+#: appTranslation.py:242
+msgid "The language will be applied at the next application start."
+msgstr ""
+
+#: appTranslation.py:243
+msgid "The user does not have admin rights or UAC issues."
+msgstr ""
+
+#: appTranslation.py:245 appTranslation.py:248
+msgid "Quit"
 msgstr ""
 
 #: app_Main.py:900

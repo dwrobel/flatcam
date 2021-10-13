@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-10-13 18:10+0300\n"
-"PO-Revision-Date: 2021-10-13 18:11+0300\n"
+"POT-Creation-Date: 2021-10-13 18:43+0300\n"
+"PO-Revision-Date: 2021-10-13 18:44+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -1502,7 +1502,7 @@ msgstr "从数据库复制"
 msgid "Delete from DB"
 msgstr "从数据库删除"
 
-#: appDatabase.py:1619 appTranslation.py:209 app_Main.py:3928 app_Main.py:9935
+#: appDatabase.py:1619 appTranslation.py:219 app_Main.py:3928 app_Main.py:9935
 msgid "Save changes"
 msgstr "保存更改"
 
@@ -5916,14 +5916,14 @@ msgid "Are you sure you want to delete the GUI Settings? \n"
 msgstr "是否确实要删除GUI设置？\n"
 
 #: appGUI/MainGUI.py:2329 appGUI/preferences/PreferencesUIManager.py:1046
-#: appGUI/preferences/PreferencesUIManager.py:1290 appTranslation.py:110
-#: appTranslation.py:213 app_Main.py:2715 app_Main.py:3932 app_Main.py:6683
+#: appGUI/preferences/PreferencesUIManager.py:1290 appTranslation.py:120
+#: appTranslation.py:223 app_Main.py:2715 app_Main.py:3932 app_Main.py:6683
 #: app_Main.py:9939 app_Main.py:10061
 msgid "Yes"
 msgstr "是"
 
 #: appGUI/MainGUI.py:2330 appGUI/preferences/PreferencesUIManager.py:1291
-#: appTranslation.py:111 appTranslation.py:214 app_Main.py:2716
+#: appTranslation.py:121 appTranslation.py:224 app_Main.py:2716
 #: app_Main.py:3933 app_Main.py:6684 app_Main.py:9940 app_Main.py:10062
 msgid "No"
 msgstr "否"
@@ -8528,7 +8528,7 @@ msgid "Set the language used throughout FlatCAM."
 msgstr "设置整个FlatCAM使用的语言。"
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:199
-#: appTranslation.py:106
+#: appTranslation.py:116
 msgid "Apply Language"
 msgstr "应用语言"
 
@@ -17322,21 +17322,33 @@ msgstr ""
 msgid "processes running."
 msgstr "进程正在运行。"
 
-#: appTranslation.py:103
+#: appTranslation.py:112
 msgid "The application will restart."
 msgstr "应用程序将重新启动。"
 
-#: appTranslation.py:105
+#: appTranslation.py:114
 msgid "Are you sure do you want to change the current language to"
 msgstr "您确定要将当前语言更改为"
 
-#: appTranslation.py:206 app_Main.py:3925
+#: appTranslation.py:216 app_Main.py:3925
 msgid ""
 "There are files/objects modified in FlatCAM. \n"
 "Do you want to Save the project?"
 msgstr ""
 "FlatCAM中有修改的文件/对象。\n"
 "是否要保存该项目？"
+
+#: appTranslation.py:242
+msgid "The language will be applied at the next application start."
+msgstr "下次启动应用程序时将应用该语言。"
+
+#: appTranslation.py:243
+msgid "The user does not have admin rights or UAC issues."
+msgstr "用户没有管理员权限或 UAC 问题。"
+
+#: appTranslation.py:245 appTranslation.py:248
+msgid "Quit"
+msgstr "退出"
 
 #: app_Main.py:900
 msgid "The application is initializing ..."

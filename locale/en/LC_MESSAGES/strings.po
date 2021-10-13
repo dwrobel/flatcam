@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-10-13 18:08+0300\n"
-"PO-Revision-Date: 2021-10-13 18:08+0300\n"
+"POT-Creation-Date: 2021-10-13 18:40+0300\n"
+"PO-Revision-Date: 2021-10-13 18:41+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -1543,7 +1543,7 @@ msgstr "Copy from DB"
 msgid "Delete from DB"
 msgstr "Delete from DB"
 
-#: appDatabase.py:1619 appTranslation.py:209 app_Main.py:3928 app_Main.py:9935
+#: appDatabase.py:1619 appTranslation.py:219 app_Main.py:3928 app_Main.py:9935
 msgid "Save changes"
 msgstr "Save changes"
 
@@ -6015,14 +6015,14 @@ msgid "Are you sure you want to delete the GUI Settings? \n"
 msgstr "Are you sure you want to delete the GUI Settings? \n"
 
 #: appGUI/MainGUI.py:2329 appGUI/preferences/PreferencesUIManager.py:1046
-#: appGUI/preferences/PreferencesUIManager.py:1290 appTranslation.py:110
-#: appTranslation.py:213 app_Main.py:2715 app_Main.py:3932 app_Main.py:6683
+#: appGUI/preferences/PreferencesUIManager.py:1290 appTranslation.py:120
+#: appTranslation.py:223 app_Main.py:2715 app_Main.py:3932 app_Main.py:6683
 #: app_Main.py:9939 app_Main.py:10061
 msgid "Yes"
 msgstr "Yes"
 
 #: appGUI/MainGUI.py:2330 appGUI/preferences/PreferencesUIManager.py:1291
-#: appTranslation.py:111 appTranslation.py:214 app_Main.py:2716
+#: appTranslation.py:121 appTranslation.py:224 app_Main.py:2716
 #: app_Main.py:3933 app_Main.py:6684 app_Main.py:9940 app_Main.py:10062
 msgid "No"
 msgstr "No"
@@ -8585,10 +8585,6 @@ msgid "App Preferences"
 msgstr "App Preferences"
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:32
-#| msgid ""
-#| "The default value for the application units.\n"
-#| "Whatever is selected here is set every time\n"
-#| "FlatCAM is started."
 msgid ""
 "The default value for the application units.\n"
 "Whatever is selected here is set every time\n"
@@ -8760,7 +8756,7 @@ msgid "Set the language used throughout FlatCAM."
 msgstr "Set the language used throughout FlatCAM."
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:199
-#: appTranslation.py:106
+#: appTranslation.py:116
 msgid "Apply Language"
 msgstr "Apply Language"
 
@@ -16911,7 +16907,6 @@ msgstr "Painting ..."
 #: appPlugins/ToolPaint.py:2467 appPlugins/ToolPaint.py:2475
 #: appPlugins/ToolPaint.py:2546 appPlugins/ToolPaint.py:2551
 #: appPlugins/ToolPaint.py:2557
-#| msgid "Paint Plugin"
 msgid "Paint Plugin."
 msgstr "Paint Plugin."
 
@@ -18000,21 +17995,36 @@ msgstr ""
 msgid "processes running."
 msgstr "processes running."
 
-#: appTranslation.py:103
+#: appTranslation.py:112
 msgid "The application will restart."
 msgstr "The application will restart."
 
-#: appTranslation.py:105
+#: appTranslation.py:114
 msgid "Are you sure do you want to change the current language to"
 msgstr "Are you sure do you want to change the current language to"
 
-#: appTranslation.py:206 app_Main.py:3925
+#: appTranslation.py:216 app_Main.py:3925
 msgid ""
 "There are files/objects modified in FlatCAM. \n"
 "Do you want to Save the project?"
 msgstr ""
 "There are files/objects modified in FlatCAM. \n"
 "Do you want to Save the project?"
+
+#: appTranslation.py:242
+#| msgid ""
+#| "Select a style for the application.\n"
+#| "It will be applied at the next app start."
+msgid "The language will be applied at the next application start."
+msgstr "The language will be applied at the next application start."
+
+#: appTranslation.py:243
+msgid "The user does not have admin rights or UAC issues."
+msgstr "The user does not have admin rights or UAC issues."
+
+#: appTranslation.py:245 appTranslation.py:248
+msgid "Quit"
+msgstr "Quit"
 
 #: app_Main.py:900
 msgid "The application is initializing ..."
