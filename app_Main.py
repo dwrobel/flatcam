@@ -1866,7 +1866,7 @@ class App(QtCore.QObject):
                                    before=self.ui.menueditorigin,
                                    separator=False)
 
-        self.distance_min_tool = DistanceMin(self)
+        self.distance_min_tool = ObjectDistance(self)
         self.distance_min_tool.install(icon=QtGui.QIcon(self.resource_location + '/distance_min16.png'),
                                        pos=self.ui.menuedit,
                                        before=self.ui.menueditorigin,
@@ -6760,6 +6760,19 @@ class App(QtCore.QObject):
                 found_idx = idx
                 break
         if found_idx:
+            # #########################################################################################################
+            # first do the Plugin cleanup
+            # #########################################################################################################
+            for plugin in self.app_plugins:
+                # execute this only for the current active plugin
+                if self.ui.notebook.tabText(found_idx) != plugin.pluginName:
+                    continue
+                try:
+                    plugin.on_plugin_cleanup()
+                except AttributeError:
+                    # not all plugins have this implemented
+                    # print("This does not have it", self.ui.notebook.tabText(tab_idx))
+                    pass
             self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
             self.ui.notebook.removeTab(found_idx)
 
@@ -7242,7 +7255,7 @@ class App(QtCore.QObject):
         self.pos_jump = event_pos
         self.ui.popMenu.mouse_is_panning = False
 
-        self.on_mouse_plugin_move(pos=event_pos)
+        self.on_plugin_mouse_move(pos=event_pos)
 
         if origin_click is None:
             # if the RMB is clicked and mouse is moving over plot then 'panning_action' is True
@@ -7384,10 +7397,10 @@ class App(QtCore.QObject):
 
             if key_modifier == shift_modifier_key or key_modifier == ctrl_shift_modifier_key:
                 self.on_mouse_and_key_modifiers(position=self.pos, modifiers=key_modifier)
-                self.on_mouse_plugin_click_release(pos=pos)
+                self.on_plugin_mouse_click_release(pos=pos)
                 return
             else:
-                self.on_mouse_plugin_click_release(pos=pos)
+                self.on_plugin_mouse_click_release(pos=pos)
 
             # the object selection on canvas will not work for App Tools or for Editors
             if self.call_source != 'app':
@@ -7736,7 +7749,7 @@ class App(QtCore.QObject):
                     tx=_("selected"))
                 )
 
-    def on_mouse_plugin_click_release(self, pos):
+    def on_plugin_mouse_click_release(self, pos):
         """
         Handle specific tasks in the Plugins for the mouse click release
 
@@ -7754,13 +7767,13 @@ class App(QtCore.QObject):
             if self.ui.notebook.tabText(tab_idx) != plugin.pluginName:
                 continue
             try:
-                plugin.on_mouse_plugin_click_release(pos)
+                plugin.on_plugin_mouse_click_release(pos)
             except AttributeError:
                 # not all plugins have this implemented
                 # print("This does not have it", self.ui.notebook.tabText(tab_idx))
                 pass
 
-    def on_mouse_plugin_move(self, pos):
+    def on_plugin_mouse_move(self, pos):
         """
         Handle specific tasks in the Plugins for the mouse move
 
@@ -7778,7 +7791,7 @@ class App(QtCore.QObject):
             if self.ui.notebook.tabText(tab_idx) != plugin.pluginName:
                 continue
             try:
-                plugin.on_mouse_plugin_move(pos)
+                plugin.on_plugin_mouse_move(pos)
             except AttributeError:
                 # not all plugins have this implemented
                 # print("This does not have it", self.ui.notebook.tabText(tab_idx))

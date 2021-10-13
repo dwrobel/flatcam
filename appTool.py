@@ -295,11 +295,15 @@ class AppTool(QtWidgets.QWidget):
         s_storage.clear()
         s_storage.redraw()
 
-    def on_mouse_plugin_click_release(self, pos):
+    def on_plugin_mouse_click_release(self, pos):
         # this should be implemented in the descendants, the Plugin classes
         pass
 
-    def on_mouse_plugin_move(self, pos):
+    def on_plugin_mouse_move(self, pos):
+        # this should be implemented in the descendants, the Plugin classes
+        pass
+
+    def on_plugin_cleanup(self):
         # this should be implemented in the descendants, the Plugin classes
         pass
 

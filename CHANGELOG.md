@@ -14,6 +14,9 @@ CHANGELOG for FlatCAM beta
 - in Distance Plugin - the Dx, Dy, Angle and Distance values are updated real time (for non multi segment measurement)
 - in Distance Plugin - Distance value is now updated real time regardless of the Multi Point setting
 - in Distance Minimum Plugin - upgraded the UI
+- added a method to do cleanup after a Plugin close
+- in Distance Plugin added the cleanup after the Plugin is closed from the Tab close button
+- renamed the Distance Minimum Plugin to Object Distance; started to add new functionality on this Plugin: to calculate the distance between the bounding box centers too
 
 12.10.2021
 
@@ -1686,7 +1689,7 @@ RELEASE 8.994
 - in Tools: Image, InvertGerber, Optimal, PcbWizard - moved the Tool UI in its own class
 - Tool Isolation - made sure that the app can load from Tools Database only tools marked for Isolation tool
 - Tool Isolation - on Tool start it will attempt to load the Preferences set tools by diameter from Tools Database. If it can't find one there it will add a default tool.
-- in Tools: Transform, SUb, RulesCheck, DistanceMin, Distance - moved the Tool UI in its own class
+- in Tools: Transform, SUb, RulesCheck, ObjectDistance, Distance - moved the Tool UI in its own class
 - some small fixes
 - fixed a borderline issue in CNCJob UI Autolevelling - Voronoi polygons calculations
 

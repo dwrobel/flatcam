@@ -675,8 +675,8 @@ class Distance(AppTool):
 
         return storage
 
-    # def set_meas_units(self, units):
-    #     self.meas.units_label.setText("[" + self.app.options["units"].lower() + "]")
+    def on_plugin_cleanup(self):
+        self.on_exit()
 
 
 class DistanceUI:

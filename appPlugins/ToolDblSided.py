@@ -449,7 +449,7 @@ class DblSidedTool(AppTool):
         elif event.button == right_button and self.app.event_is_dragging is False:
             self.on_exit(cancelled=True)
 
-    def on_mouse_plugin_click_release(self, pos):
+    def on_plugin_mouse_click_release(self, pos):
         modifiers = QtWidgets.QApplication.keyboardModifiers()
         # if modifiers == QtCore.Qt.KeyboardModifier.ShiftModifier:
         #     clip_val = self.app.clipboard.text()
@@ -461,7 +461,7 @@ class DblSidedTool(AppTool):
             try:
                 eval_clip_val = eval(clip_val)
             except Exception as err:
-                self.app.log.debug("DblSidedTool.on_mouse_plugin_click_release() --> %s" % str(err))
+                self.app.log.debug("DblSidedTool.on_plugin_mouse_click_release() --> %s" % str(err))
                 return
 
             if alignment_holes == '' or alignment_holes is None:

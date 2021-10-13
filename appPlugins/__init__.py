@@ -10,7 +10,7 @@ from appPlugins.ToolFilm import Film
 from appPlugins.ToolImage import ToolImage
 
 from appPlugins.ToolDistance import Distance
-from appPlugins.ToolDistanceMin import DistanceMin
+from appPlugins.ToolObjectDistance import ObjectDistance
 
 from appPlugins.ToolMove import ToolMove
 

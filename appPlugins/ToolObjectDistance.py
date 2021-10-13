@@ -7,11 +7,12 @@
 
 from PyQt6 import QtWidgets, QtCore
 from appTool import AppTool
-from appGUI.GUIElements import FCEntry, FCLabel, FCButton, VerticalScrollArea, FCGridLayout, FCFrame
+from appGUI.GUIElements import FCEntry, FCLabel, FCButton, VerticalScrollArea, FCGridLayout, FCFrame, FCComboBox2
 
 from shapely.ops import nearest_points
 from shapely.geometry import Point, MultiPolygon
 from shapely.ops import unary_union
+from copy import deepcopy
 
 import math
 import logging
@@ -26,7 +27,7 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class DistanceMin(AppTool):
+class ObjectDistance(AppTool):
 
     def __init__(self, app):
         AppTool.__init__(self, app)
@@ -36,10 +37,13 @@ class DistanceMin(AppTool):
         self.units = self.app.app_units.lower()
         self.decimals = self.app.decimals
 
+        self.active = False
+        self.original_call_source = None
+
         # #############################################################################
         # ######################### Tool GUI ##########################################
         # #############################################################################
-        self.ui = DistMinUI(layout=self.layout, app=self.app)
+        self.ui = ObjectDistanceUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
 
         self.h_point = (0, 0)
@@ -48,7 +52,9 @@ class DistanceMin(AppTool):
         self.ui.jump_hp_btn.clicked.connect(self.on_jump_to_half_point)
 
     def run(self, toggle=False):
-        self.app.defaults.report_usage("ToolDistanceMin()")
+        # if the plugin was already launched do not do it again
+        if self.active is True:
+            return
 
         if self.app.plugin_tab_locked is True:
             return
@@ -61,8 +67,9 @@ class DistanceMin(AppTool):
             pass
 
         self.set_tool_ui()
-        self.app.inform.emit('MEASURING: %s' %
-                             _("Select two objects and no more, to measure the distance between them ..."))
+
+        # activate the plugin
+        self.activate_measure_tool()
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Shift+M', **kwargs)
@@ -90,7 +97,7 @@ class DistanceMin(AppTool):
             # focus on Tool Tab
             self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
 
-        self.app.ui.notebook.setTabText(2, _("Minimum Distance"))
+        self.app.ui.notebook.setTabText(2, _("Object Distance"))
 
         # Remove anything else in the appGUI
         self.app.ui.plugin_scroll_area.takeWidget()
@@ -104,6 +111,9 @@ class DistanceMin(AppTool):
         self.units = self.app.app_units.lower()
 
         # initial view of the layout
+        self.init_plugin()
+
+    def init_plugin(self):
         self.ui.start_entry.set_value('(0, 0)')
         self.ui.stop_entry.set_value('(0, 0)')
 
@@ -115,13 +125,15 @@ class DistanceMin(AppTool):
 
         self.ui.jump_hp_btn.setDisabled(True)
 
-        log.debug("Minimum Distance Tool --> tool initialized")
+        self.active = True
 
     def activate_measure_tool(self):
         # ENABLE the Measuring TOOL
         self.ui.jump_hp_btn.setDisabled(False)
 
         self.units = self.app.app_units.lower()
+
+        self.original_call_source = deepcopy(self.app.call_source)
 
         if self.app.call_source == 'app':
             selected_objs = self.app.collection.get_selected()
@@ -184,7 +196,7 @@ class DistanceMin(AppTool):
             else:
                 first_pos, last_pos = nearest_points(selected_objs[0].geo['solid'], selected_objs[1].geo['solid'])
         else:
-            first_pos, last_pos = 0, 0
+            first_pos, last_pos = Point((0, 0)), Point((0, 0))
 
         self.ui.start_entry.set_value("(%.*f, %.*f)" % (self.decimals, first_pos.x, self.decimals, first_pos.y))
         self.ui.stop_entry.set_value("(%.*f, %.*f)" % (self.decimals, last_pos.x, self.decimals, last_pos.y))
@@ -228,19 +240,23 @@ class DistanceMin(AppTool):
                                  (_("Objects intersects or touch at"),
                                   "(%.*f, %.*f)" % (self.decimals, self.h_point[0], self.decimals, self.h_point[1])))
 
+        self.active = False
+
     def on_jump_to_half_point(self):
         self.app.on_jump_to(custom_location=self.h_point)
         self.app.inform.emit('[success] %s: %s' %
                              (_("Jumped to the half point between the two selected objects"),
                               "(%.*f, %.*f)" % (self.decimals, self.h_point[0], self.decimals, self.h_point[1])))
 
-    # def set_meas_units(self, units):
-    #     self.meas.units_label.setText("[" + self.app.options["units"].lower() + "]")
+    def on_plugin_cleanup(self):
+        self.active = False
+        self.app.call_source = self.original_call_source
+        self.app.inform.emit('%s' % _("Done."))
 
 
-class DistMinUI:
+class ObjectDistanceUI:
 
-    pluginName = _("Minimum Distance")
+    pluginName = _("Object Distance")
 
     def __init__(self, layout, app):
         self.app = app
@@ -251,6 +267,35 @@ class DistMinUI:
         # ## Title
         title_label = FCLabel("<font size=4><b>%s</b></font><br>" % self.pluginName)
         self.layout.addWidget(title_label)
+
+        # #############################################################################################################
+        # Parameters Frame
+        # #############################################################################################################
+        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Parameters'))
+        self.param_label.setToolTip(
+            _("Parameters used for this tool.")
+        )
+        self.layout.addWidget(self.param_label)
+
+        par_frame = FCFrame()
+        self.layout.addWidget(par_frame)
+
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_frame.setLayout(param_grid)
+
+        # Distance Type
+
+        self.distance_type_label = FCLabel("%s:" % _("Type"))
+        self.distance_type_label.setToolTip(
+            _("The type of distance to be calculated.\n"
+              "- Nearest points - minimal distance between objects\n"
+              "- Center points - distance between the center of the bounding boxes")
+        )
+
+        self.distance_type_combo = FCComboBox2()
+        self.distance_type_combo.addItems([_("Nearest points"), _("Center points")])
+        param_grid.addWidget(self.distance_type_label, 0, 0)
+        param_grid.addWidget(self.distance_type_combo, 0, 1)
 
         # #############################################################################################################
         # Coordinates Frame
@@ -386,7 +431,7 @@ class DistMinUI:
         self.jump_hp_btn.setDisabled(True)
         self.layout.addWidget(self.jump_hp_btn)
 
-        FCGridLayout.set_common_column_size([coords_grid, res_grid], 0)
+        FCGridLayout.set_common_column_size([param_grid, coords_grid, res_grid], 0)
 
         self.layout.addStretch(1)
         # #################################### FINSIHED GUI ###########################
