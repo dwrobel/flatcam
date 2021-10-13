@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - in Distance Plugin - implemented a new feature: multi segment distance measurement
 - in Distance Plugin - the Dx, Dy, Angle and Distance values are updated real time (for non multi segment measurement)
 - in Distance Plugin - Distance value is now updated real time regardless of the Multi Point setting
+- in Distance Minimum Plugin - upgraded the UI
 
 12.10.2021
 

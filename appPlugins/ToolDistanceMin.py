@@ -252,67 +252,62 @@ class DistMinUI:
         title_label = FCLabel("<font size=4><b>%s</b></font><br>" % self.pluginName)
         self.layout.addWidget(title_label)
 
-        # ## Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
-        
-        # Units
-        self.units_label = FCLabel('%s:' % _("Units"))
-        self.units_label.setToolTip(_("Those are the units in which the distance is measured."))
-        self.units_value = FCLabel("%s" % str({'mm': _("METRIC (mm)"), 'in': _("INCH (in)")}[self.units]))
-        self.units_value.setDisabled(True)
-
-        grid0.addWidget(self.units_label, 0, 0)
-        grid0.addWidget(self.units_value, 0, 1)
-
-        grid0.addWidget(FCLabel(""), 2, 0, 1, 2)
-
         # #############################################################################################################
-        # Coordinates
+        # Coordinates Frame
         # #############################################################################################################
-        coords_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Coordinates'))
-        grid0.addWidget(coords_label, 4, 0, 1, 2)
+        self.coords_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Coordinates'))
+        self.layout.addWidget(self.coords_label)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 6, 0, 1, 2)
+        coords_frame = FCFrame()
+        self.layout.addWidget(coords_frame)
 
-        # Start
+        coords_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        coords_frame.setLayout(coords_grid)
+
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # grid0.addWidget(separator_line, 6, 0, 1, 2)
+
+        # Start Point
         self.start_label = FCLabel("%s:" % _('Start point'))
-        self.start_label.setToolTip(_("This is first object point coordinates.\n"
-                                      "This is the start point for measuring distance."))
-
+        self.start_label.setToolTip(_("This is measuring Start point coordinates."))
 
         self.start_entry = FCEntry()
         self.start_entry.setReadOnly(True)
         self.start_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
-        self.start_entry.setToolTip(_("This is first object point coordinates.\n"
-                                      "This is the start point for measuring distance."))
+        self.start_entry.setToolTip(_("This is measuring Start point coordinates."))
 
-        grid0.addWidget(self.start_label, 8, 0)
-        grid0.addWidget(self.start_entry, 8, 1)
-        
-        # Stop
+        coords_grid.addWidget(self.start_label, 0, 0)
+        coords_grid.addWidget(self.start_entry, 0, 1)
+        coords_grid.addWidget(FCLabel("%s" % self.units), 0, 2)
+
+        # End Point
         self.stop_label = FCLabel("%s:" % _('End point'))
-        self.stop_label.setToolTip(_("This is second object point coordinates.\n"
-                                     "This is the end point for measuring distance."))
-        
+        self.stop_label.setToolTip(_("This is the measuring Stop point coordinates."))
+
         self.stop_entry = FCEntry()
         self.stop_entry.setReadOnly(True)
         self.stop_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
-        self.stop_entry.setToolTip(_("This is second object point coordinates.\n"
-                                     "This is the end point for measuring distance."))
+        self.stop_entry.setToolTip(_("This is the measuring Stop point coordinates."))
 
-        grid0.addWidget(self.stop_label, 10, 0)
-        grid0.addWidget(self.stop_entry, 10, 1)
+        coords_grid.addWidget(self.stop_label, 2, 0)
+        coords_grid.addWidget(self.stop_entry, 2, 1)
+        coords_grid.addWidget(FCLabel("%s" % self.units), 2, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 12, 0, 1, 2)
-        
-        # DX
+        # #############################################################################################################
+        # Coordinates Frame
+        # #############################################################################################################
+        self.res_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _('Results'))
+        self.layout.addWidget(self.res_label)
+
+        res_frame = FCFrame()
+        self.layout.addWidget(res_frame)
+
+        res_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        res_frame.setLayout(res_grid)
+
+        # DX distance
         self.distance_x_label = FCLabel('%s:' % _("Dx"))
         self.distance_x_label.setToolTip(_("This is the distance measured over the X axis."))
 
@@ -321,10 +316,11 @@ class DistMinUI:
         self.distance_x_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.distance_x_entry.setToolTip(_("This is the distance measured over the X axis."))
 
-        grid0.addWidget(self.distance_x_label, 14, 0)
-        grid0.addWidget(self.distance_x_entry, 14, 1)
-        
-        # DY
+        res_grid.addWidget(self.distance_x_label, 0, 0)
+        res_grid.addWidget(self.distance_x_entry, 0, 1)
+        res_grid.addWidget(FCLabel("%s" % self.units), 0, 2)
+
+        # DY distance
         self.distance_y_label = FCLabel('%s:' % _("Dy"))
         self.distance_y_label.setToolTip(_("This is the distance measured over the Y axis."))
 
@@ -333,9 +329,10 @@ class DistMinUI:
         self.distance_y_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.distance_y_entry.setToolTip(_("This is the distance measured over the Y axis."))
 
-        grid0.addWidget(self.distance_y_label, 16, 0)
-        grid0.addWidget(self.distance_y_entry, 16, 1)
-        
+        res_grid.addWidget(self.distance_y_label, 2, 0)
+        res_grid.addWidget(self.distance_y_entry, 2, 1)
+        res_grid.addWidget(FCLabel("%s" % self.units), 2, 2)
+
         # Angle
         self.angle_label = FCLabel('%s:' % _("Angle"))
         self.angle_label.setToolTip(_("This is orientation angle of the measuring line."))
@@ -345,29 +342,28 @@ class DistMinUI:
         self.angle_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.angle_entry.setToolTip(_("This is orientation angle of the measuring line."))
 
-        grid0.addWidget(self.angle_label, 18, 0)
-        grid0.addWidget(self.angle_entry, 18, 1)
+        res_grid.addWidget(self.angle_label, 4, 0)
+        res_grid.addWidget(self.angle_entry, 4, 1)
+        res_grid.addWidget(FCLabel("%s" % "°"), 4, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 20, 0, 1, 2)
-
-        res_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _('Results'))
-        grid0.addWidget(res_label, 22, 0, 1, 2)
+        res_grid.addWidget(separator_line, 6, 0, 1, 3)
 
         # Total Distance
         self.total_distance_label = FCLabel("<b>%s:</b>" % _('DISTANCE'))
-        self.total_distance_label.setToolTip(_("This is the point to point Euclidean distance."))
+        self.total_distance_label.setToolTip(_("This is the point to point Euclidian distance."))
 
         self.total_distance_entry = FCEntry()
         self.total_distance_entry.setReadOnly(True)
         self.total_distance_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight |
                                                QtCore.Qt.AlignmentFlag.AlignVCenter)
-        self.total_distance_entry.setToolTip(_("This is the point to point Euclidean distance."))
+        self.total_distance_entry.setToolTip(_("This is the point to point Euclidian distance."))
 
-        grid0.addWidget(self.total_distance_label, 24, 0)
-        grid0.addWidget(self.total_distance_entry, 24, 1)
+        res_grid.addWidget(self.total_distance_label, 8, 0)
+        res_grid.addWidget(self.total_distance_entry, 8, 1)
+        res_grid.addWidget(FCLabel("%s" % self.units), 8, 2)
         
         # Half Point
         self.half_point_label = FCLabel("<b>%s:</b>" % _('Half Point'))
@@ -378,16 +374,19 @@ class DistMinUI:
         self.half_point_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.half_point_entry.setToolTip(_("This is the middle point of the point to point Euclidean distance."))
 
-        grid0.addWidget(self.half_point_label, 26, 0)
-        grid0.addWidget(self.half_point_entry, 26, 1)
-        
+        res_grid.addWidget(self.half_point_label, 10, 0)
+        res_grid.addWidget(self.half_point_entry, 10, 1)
+        res_grid.addWidget(FCLabel("%s" % self.units), 10, 2)
+
+        # Buttons
         self.measure_btn = FCButton(_("Measure"))
-        grid0.addWidget(self.measure_btn, 28, 0, 1, 2)
+        self.layout.addWidget(self.measure_btn)
 
         self.jump_hp_btn = FCButton(_("Jump to Half Point"))
         self.jump_hp_btn.setDisabled(True)
-        
-        grid0.addWidget(self.jump_hp_btn, 30, 0, 1, 2)
+        self.layout.addWidget(self.jump_hp_btn)
+
+        FCGridLayout.set_common_column_size([coords_grid, res_grid], 0)
 
         self.layout.addStretch(1)
         # #################################### FINSIHED GUI ###########################

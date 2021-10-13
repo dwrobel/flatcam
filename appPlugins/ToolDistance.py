@@ -735,6 +735,7 @@ class DistanceUI:
         # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         # param_grid.addWidget(separator_line, 6, 0, 1, 2)
 
+        # Start Point
         self.start_label = FCLabel("%s:" % _('Start point'))
         self.start_label.setToolTip(_("This is measuring Start point coordinates."))
 
@@ -747,6 +748,7 @@ class DistanceUI:
         coords_grid.addWidget(self.start_entry, 0, 1)
         coords_grid.addWidget(FCLabel("%s" % self.units), 0, 2)
 
+        # End Point
         self.stop_label = FCLabel("%s:" % _('End point'))
         self.stop_label.setToolTip(_("This is the measuring Stop point coordinates."))
 
