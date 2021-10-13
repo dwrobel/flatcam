@@ -17,6 +17,10 @@ CHANGELOG for FlatCAM beta
 - added a method to do cleanup after a Plugin close
 - in Distance Plugin added the cleanup after the Plugin is closed from the Tab close button
 - renamed the Distance Minimum Plugin to Object Distance; started to add new functionality on this Plugin: to calculate the distance between the bounding box centers too
+- pywin32 module is no longer needed when running in Windows
+- updated the Romanian translation
+- Google-translated the Spanish translation
+- updated the strings in all translation files
 
 12.10.2021
 

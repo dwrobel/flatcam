@@ -520,7 +520,7 @@ class FlatCAMDefaults:
         "tools_cutout_drill_pitch": 1.0,
         "tools_cutout_drill_margin": 0.0,
 
-        # Paint Tool
+        # Paint Plugin
         "tools_paint_tooldia": 0.3,
         "tools_paint_order": 2,     # "Reverse"
         "tools_paint_overlap": 20,

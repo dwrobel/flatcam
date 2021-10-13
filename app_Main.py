@@ -6,7 +6,7 @@
 # MIT Licence                                               #
 # Modified by Marius Stanciu (2019)                         #
 # ###########################################################
-
+import os.path
 import urllib.request
 import urllib.parse
 import urllib.error
@@ -103,7 +103,6 @@ import builtins
 
 if sys.platform == 'win32':
     import winreg
-    from win32comext.shell import shell, shellcon
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -500,7 +499,8 @@ class App(QtCore.QObject):
                 pass
 
             if portable is False:
-                self.data_path = shell.SHGetFolderPath(0, shellcon.CSIDL_APPDATA, None, 0) + '\\FlatCAM'
+                # self.data_path = shell.SHGetFolderPath(0, shellcon.CSIDL_APPDATA, None, 0) + '\\FlatCAM'
+                self.data_path = os.path.join(os.getenv('appdata'), 'FlatCAM')
             else:
                 self.data_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + '\\config'
 
@@ -3130,7 +3130,7 @@ class App(QtCore.QObject):
             self.recent_projects.pop()
 
         try:
-            f = open(self.data_path + '/recent.json', 'w')
+            f = open(os.path.join(self.data_path, 'recent.json'), 'w')
         except IOError:
             self.log.error("Failed to open recent items file for writing.")
             self.inform.emit('[ERROR_NOTCL] %s' %
@@ -3141,7 +3141,7 @@ class App(QtCore.QObject):
         f.close()
 
         try:
-            fp = open(self.data_path + '/recent_projects.json', 'w')
+            fp = open(os.path.join(self.data_path, 'recent_projects.json'), 'w')
         except IOError:
             self.log.error("Failed to open recent items file for writing.")
             self.inform.emit('[ERROR_NOTCL] %s' %
@@ -5070,19 +5070,19 @@ class App(QtCore.QObject):
         elif notebook_widget_name == 'plugin_tab':
             tool_widget = self.ui.plugin_scroll_area.widget().objectName()
 
-            # and only if the tool is NCC Tool
+            # and only if the tool is NCC Plugin
             if tool_widget == self.ncclear_tool.pluginName:
                 self.ncclear_tool.on_tool_delete()
 
-            # and only if the tool is Paint Tool
+            # and only if the tool is Paint Plugin
             elif tool_widget == self.paint_tool.pluginName:
                 self.paint_tool.on_tool_delete()
 
-            # and only if the tool is Solder Paste Dispensing Tool
+            # and only if the tool is Solder Paste Dispensing Plugin
             elif tool_widget == self.paste_tool.pluginName:
                 self.paste_tool.on_tool_delete()
 
-            # and only if the tool is Isolation Tool
+            # and only if the tool is Isolation Plugin
             elif tool_widget == self.isolation_tool.pluginName:
                 self.isolation_tool.on_tool_delete()
         else:
@@ -8286,7 +8286,7 @@ class App(QtCore.QObject):
 
         # Open recent file for files
         try:
-            f = open(self.data_path + '/recent.json')
+            f = open(os.path.join(self.data_path, 'recent.json'))
         except IOError:
             self.log.error("Failed to load recent item list.")
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to load recent item list."))
@@ -8303,7 +8303,7 @@ class App(QtCore.QObject):
 
         # Open recent file for projects
         try:
-            fp = open(self.data_path + '/recent_projects.json')
+            fp = open(os.path.join(self.data_path, 'recent_projects.json'))
         except IOError:
             self.log.error("Failed to load recent project item list.")
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to load recent projects item list."))
@@ -8331,7 +8331,7 @@ class App(QtCore.QObject):
             self.ui.recent.clear()
             self.recent = []
             try:
-                ff = open(self.data_path + '/recent.json', 'w')
+                ff = open(os.path.join(self.data_path, 'recent.json'), 'w')
             except IOError:
                 self.log.error("Failed to open recent items file for writing.")
                 return
@@ -8345,7 +8345,7 @@ class App(QtCore.QObject):
             self.recent_projects = []
 
             try:
-                frp = open(self.data_path + '/recent_projects.json', 'w')
+                frp = open(os.path.join(self.data_path, 'recent_projects.json'), 'w')
             except IOError:
                 self.log.error("Failed to open recent projects items file for writing.")
                 return
@@ -10637,7 +10637,7 @@ class MenuFileHandlers(QtCore.QObject):
         try:
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export FlatCAM Preferences"),
-                directory=self.app.data_path + '/preferences_' + date,
+                directory=os.path.join(self.app.data_path, 'preferences_%s' % date),
                 ext_filter=filter__
             )
         except TypeError:

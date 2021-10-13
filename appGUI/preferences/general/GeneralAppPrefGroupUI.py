@@ -31,7 +31,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.unitslabel = FCLabel('<span style="color:red;"><b>%s</b></span>' % _('Units'))
         self.unitslabel.setToolTip(_("The default value for the application units.\n"
                                      "Whatever is selected here is set every time\n"
-                                     "FlatCAM is started."))
+                                     "the application is started."))
         self.layout.addWidget(self.unitslabel)
 
         grid0_frame = FCFrame()

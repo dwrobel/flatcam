@@ -2359,12 +2359,12 @@ class ToolPaint(AppTool, Gerber):
         if obj.kind == 'gerber':
             # I don't do anything here, like buffering when the Gerber is loaded without buffering????!!!!
             if self.app.defaults["gerber_buffering"] == 'no':
-                msg = '%s %s %s' % (_("Paint Tool."),
+                msg = '%s %s %s' % (_("Paint Plugin."),
                                     _("Normal painting polygon task started."),
                                     _("Buffering geometry..."))
                 self.app.inform.emit(msg)
             else:
-                self.app.inform.emit('%s %s' % (_("Paint Tool."), _("Normal painting polygon task started.")))
+                self.app.inform.emit('%s %s' % (_("Paint Plugin."), _("Normal painting polygon task started.")))
 
             if self.app.defaults["tools_paint_plotting"] == 'progressive':
                 if isinstance(obj.solid_geometry, list):
@@ -2372,7 +2372,7 @@ class ToolPaint(AppTool, Gerber):
                 else:
                     obj.solid_geometry = obj.solid_geometry.buffer(0)
         else:
-            self.app.inform.emit('%s %s' % (_("Paint Tool."), _("Normal painting polygon task started.")))
+            self.app.inform.emit('%s %s' % (_("Paint Plugin."), _("Normal painting polygon task started.")))
 
         if inside_pt and poly_list is None:
             polygon_list = self.find_polygon(point=inside_pt, geoset=obj.solid_geometry)
@@ -2461,10 +2461,10 @@ class ToolPaint(AppTool, Gerber):
         if obj.kind == 'gerber':
             # I don't do anything here, like buffering when the Gerber is loaded without buffering????!!!!
             if self.app.defaults["gerber_buffering"] == 'no':
-                msg = '%s %s %s' % (_("Paint Tool."), _("Paint all polygons task started."), _("Buffering geometry..."))
+                msg = '%s %s %s' % (_("Paint Plugin."), _("Paint all polygons task started."), _("Buffering geometry..."))
                 self.app.inform.emit(msg)
             else:
-                self.app.inform.emit('%s %s' % (_("Paint Tool."), _("Paint all polygons task started.")))
+                self.app.inform.emit('%s %s' % (_("Paint Plugin."), _("Paint all polygons task started.")))
 
             if self.app.defaults["tools_paint_plotting"] == 'progressive':
                 if isinstance(obj.solid_geometry, list):
@@ -2472,7 +2472,7 @@ class ToolPaint(AppTool, Gerber):
                 else:
                     obj.solid_geometry = obj.solid_geometry.buffer(0)
         else:
-            self.app.inform.emit('%s %s' % (_("Paint Tool."), _("Paint all polygons task started.")))
+            self.app.inform.emit('%s %s' % (_("Paint Plugin."), _("Paint all polygons task started.")))
 
         painted_area = recurse(obj.solid_geometry)
 
@@ -2543,18 +2543,18 @@ class ToolPaint(AppTool, Gerber):
         if obj.kind == 'gerber':
             # I don't do anything here, like buffering when the Gerber is loaded without buffering????!!!!
             if self.app.defaults["gerber_buffering"] == 'no':
-                msg = '%s %s %s' % (_("Paint Tool."),
+                msg = '%s %s %s' % (_("Paint Plugin."),
                                     _("Painting area task started."),
                                     _("Buffering geometry..."))
                 self.app.inform.emit(msg)
             else:
-                self.app.inform.emit('%s %s' % (_("Paint Tool."), _("Painting area task started.")))
+                self.app.inform.emit('%s %s' % (_("Paint Plugin."), _("Painting area task started.")))
 
             if obj.kind == 'gerber':
                 if self.app.defaults["tools_paint_plotting"] == 'progressive':
                     target_geo = target_geo.buffer(0)
         else:
-            self.app.inform.emit('%s %s' % (_("Paint Tool."), _("Painting area task started.")))
+            self.app.inform.emit('%s %s' % (_("Paint Plugin."), _("Painting area task started.")))
 
         geo_to_paint = target_geo.intersection(sel_obj)
         painted_area = recurse(geo_to_paint, reset=True)

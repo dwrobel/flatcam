@@ -61,7 +61,8 @@ if __name__ == '__main__':
                         portable = False
 
         if portable is False:
-            data_path = shell.SHGetFolderPath(0, shellcon.CSIDL_APPDATA, None, 0) + '\\FlatCAM'
+            # data_path = shell.SHGetFolderPath(0, shellcon.CSIDL_APPDATA, None, 0) + '\\FlatCAM'
+            data_path = os.path.join(os.getenv('appdata'), 'FlatCAM')
         else:
             data_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + '\\config'
     else:

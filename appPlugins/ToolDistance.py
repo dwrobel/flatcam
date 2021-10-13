@@ -318,7 +318,7 @@ class Distance(AppTool):
             self.app.ui.grid_snap_btn.trigger()
 
         if self.tool_done is False:
-            self.app.inform.emit('%s' % _("Distance Tool finished."))
+            self.app.inform.emit('%s' % _("Done."))
 
     def on_mouse_click_release(self, event):
         # mouse click releases will be accepted only if the left button is clicked
