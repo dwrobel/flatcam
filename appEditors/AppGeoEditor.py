@@ -6021,7 +6021,12 @@ class AppGeoEditor(QtCore.QObject):
 
         # ## If iterable, expand recursively.
         try:
-            for geo in geometry:
+            if isinstance(geometry, (MultiPolygon, MultiLineString)):
+                work_geo = geometry.geoms
+            else:
+                work_geo = geometry
+
+            for geo in work_geo:
                 if geo is not None:
                     self.flatten(geometry=geo,
                                  orient_val=orient_val,
