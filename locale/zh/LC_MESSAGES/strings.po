@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-10-13 18:43+0300\n"
-"PO-Revision-Date: 2021-10-13 18:44+0300\n"
+"POT-Creation-Date: 2021-10-14 19:36+0300\n"
+"PO-Revision-Date: 2021-10-14 19:36+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -235,33 +235,33 @@ msgstr "删除了所有禁区。"
 msgid "Selected exclusion zones deleted."
 msgstr "已删除选定的排除区域。"
 
-#: appDatabase.py:28 appGUI/MainGUI.py:1751 appPlugins/ToolMilling.py:3969
+#: appDatabase.py:28 appGUI/MainGUI.py:1751 appPlugins/ToolMilling.py:3967
 msgid "Path"
 msgstr "路径"
 
-#: appDatabase.py:28 appPlugins/ToolMilling.py:3969
+#: appDatabase.py:28 appPlugins/ToolMilling.py:3967
 msgid "In"
 msgstr "内"
 
-#: appDatabase.py:28 appPlugins/ToolMilling.py:3969
+#: appDatabase.py:28 appPlugins/ToolMilling.py:3967
 msgid "Out"
 msgstr "外"
 
 #: appDatabase.py:28 appGUI/MainGUI.py:879 appGUI/MainGUI.py:1736
-#: appPlugins/ToolMilling.py:3969 appPlugins/ToolMilling.py:3977
+#: appPlugins/ToolMilling.py:3967 appPlugins/ToolMilling.py:3975
 #: app_Main.py:8920
 msgid "Custom"
 msgstr "自定义"
 
 #: appDatabase.py:29 appEditors/appGCodeEditor.py:192
 #: appObjects/FlatCAMCNCJob.py:233 appObjects/FlatCAMGeometry.py:125
-#: appPlugins/ToolMilling.py:4040
+#: appPlugins/ToolMilling.py:4038
 msgid "Roughing"
 msgstr "粗加工"
 
 #: appDatabase.py:29 appEditors/appGCodeEditor.py:192
 #: appObjects/FlatCAMCNCJob.py:233 appObjects/FlatCAMGeometry.py:125
-#: appPlugins/ToolMilling.py:4040
+#: appPlugins/ToolMilling.py:4038
 msgid "Finishing"
 msgstr "精加工"
 
@@ -270,13 +270,13 @@ msgstr "精加工"
 #: appGUI/MainGUI.py:1103 appGUI/MainGUI.py:2447 appGUI/MainGUI.py:4900
 #: appObjects/FlatCAMCNCJob.py:233 appObjects/FlatCAMGeometry.py:125
 #: appPlugins/ToolIsolation.py:203 appPlugins/ToolIsolation.py:3121
-#: appPlugins/ToolMilling.py:4040 appPlugins/ToolNCC.py:4323
+#: appPlugins/ToolMilling.py:4038 appPlugins/ToolNCC.py:4323
 msgid "Isolation"
 msgstr "隔离"
 
 #: appDatabase.py:29 appEditors/appGCodeEditor.py:192
 #: appObjects/FlatCAMCNCJob.py:233 appObjects/FlatCAMGeometry.py:125
-#: appPlugins/ToolMilling.py:4040
+#: appPlugins/ToolMilling.py:4038
 msgid "Polishing"
 msgstr "抛光"
 
@@ -430,7 +430,7 @@ msgstr "切割"
 
 #: appDatabase.py:283 appEditors/appGCodeEditor.py:804 appGUI/ObjectUI.py:1068
 #: appGUI/ObjectUI.py:1481
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:431
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:429
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:148
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:315
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:451
@@ -438,7 +438,7 @@ msgstr "切割"
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:285
 #: appPlugins/ToolCutOut.py:2565 appPlugins/ToolFollow.py:747
 #: appPlugins/ToolIsolation.py:3362 appPlugins/ToolIsolation.py:3647
-#: appPlugins/ToolMilling.py:4004 appPlugins/ToolNCC.py:4161
+#: appPlugins/ToolMilling.py:4002 appPlugins/ToolNCC.py:4161
 #: appPlugins/ToolNCC.py:4596 appPlugins/ToolPaint.py:3025
 #: appPlugins/ToolPaint.py:3335
 msgid "Shape"
@@ -446,7 +446,7 @@ msgstr "形状"
 
 #: appDatabase.py:285 appGUI/ObjectUI.py:1092
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:150
-#: appPlugins/ToolIsolation.py:3364 appPlugins/ToolMilling.py:4006
+#: appPlugins/ToolIsolation.py:3364 appPlugins/ToolMilling.py:4004
 #: appPlugins/ToolNCC.py:4179 appPlugins/ToolPaint.py:3043
 msgid ""
 "Tool Shape. \n"
@@ -486,11 +486,11 @@ msgstr ""
 "V形工具尖端的角度。"
 
 #: appDatabase.py:333 appEditors/appGCodeEditor.py:804 appGUI/ObjectUI.py:1068
-#: appGUI/ObjectUI.py:1481 appPlugins/ToolMilling.py:4028
+#: appGUI/ObjectUI.py:1481 appPlugins/ToolMilling.py:4026
 msgid "Job"
 msgstr "任务"
 
-#: appDatabase.py:336 appPlugins/ToolMilling.py:4031
+#: appDatabase.py:336 appPlugins/ToolMilling.py:4029
 msgid ""
 "- Isolation -> informative - lower Feedrate as it uses a milling bit with a "
 "fine tip.\n"
@@ -540,15 +540,15 @@ msgstr ""
 #: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:38
 #: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:75
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:67
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:56
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:54
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:96
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:84
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:97
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:100
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:108
 #: appPlugins/ToolCalculators.py:636 appPlugins/ToolCutOut.py:2372
-#: appPlugins/ToolDrilling.py:2426 appPlugins/ToolMilling.py:1387
-#: appPlugins/ToolMilling.py:4144
+#: appPlugins/ToolDrilling.py:2424 appPlugins/ToolMilling.py:1387
+#: appPlugins/ToolMilling.py:4142
 msgid "Cut Z"
 msgstr "Z向切削"
 
@@ -588,12 +588,12 @@ msgstr ""
 
 #: appDatabase.py:428 appDatabase.py:952
 #: appGUI/preferences/tools/Tools2CalPrefGroupUI.py:60
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:95
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:93
 #: appGUI/preferences/tools/ToolsLevelPrefGroupUI.py:168
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:126
 #: appPlugins/ToolCalibration.py:794 appPlugins/ToolDrilling.py:1566
-#: appPlugins/ToolDrilling.py:2468 appPlugins/ToolMilling.py:3254
-#: appPlugins/ToolMilling.py:4187 appPlugins/ToolSolderPaste.py:1338
+#: appPlugins/ToolDrilling.py:2466 appPlugins/ToolMilling.py:3254
+#: appPlugins/ToolMilling.py:4185 appPlugins/ToolSolderPaste.py:1338
 msgid "Travel Z"
 msgstr "Z移动"
 
@@ -642,7 +642,7 @@ msgstr ""
 
 #: appDatabase.py:481 appGUI/preferences/tools/ToolsMillPrefGroupUI.py:198
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:148
-#: appPlugins/ToolMilling.py:4205
+#: appPlugins/ToolMilling.py:4203
 msgid "Feedrate X-Y"
 msgstr "X-Y进给速度"
 
@@ -655,10 +655,10 @@ msgstr ""
 "切割材料时在XY平面上使用的速度。"
 
 #: appDatabase.py:495 appDatabase.py:975
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:156
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:154
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:213
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:161
-#: appPlugins/ToolDrilling.py:2485 appPlugins/ToolMilling.py:4223
+#: appPlugins/ToolDrilling.py:2483 appPlugins/ToolMilling.py:4221
 msgid "Feedrate Z"
 msgstr "Z向进给速度"
 
@@ -687,8 +687,8 @@ msgstr ""
 
 #: appDatabase.py:530 appDatabase.py:1015
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:229
-#: appPlugins/ToolDrilling.py:1580 appPlugins/ToolDrilling.py:2524
-#: appPlugins/ToolMilling.py:3272 appPlugins/ToolMilling.py:4293
+#: appPlugins/ToolDrilling.py:1580 appPlugins/ToolDrilling.py:2522
+#: appPlugins/ToolMilling.py:3272 appPlugins/ToolMilling.py:4291
 #: appPlugins/ToolSolderPaste.py:1502 appPlugins/ToolSolderPaste.py:1539
 msgid "Spindle speed"
 msgstr "主轴转速"
@@ -703,8 +703,8 @@ msgstr ""
 "如果它是空的，它将不会被使用。\n"
 "主轴的转速，单位为RPM。"
 
-#: appDatabase.py:545 appDatabase.py:1030 appPlugins/ToolDrilling.py:2539
-#: appPlugins/ToolMilling.py:4308 appPlugins/ToolSolderPaste.py:1516
+#: appDatabase.py:545 appDatabase.py:1030 appPlugins/ToolDrilling.py:2537
+#: appPlugins/ToolMilling.py:4306 appPlugins/ToolSolderPaste.py:1516
 #: appPlugins/ToolSolderPaste.py:1553
 msgid "Dwell"
 msgstr "转速到达延迟"
@@ -755,7 +755,7 @@ msgstr "清除"
 #: appGUI/preferences/geometry/GeometryEditorPrefGroupUI.py:55
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:202
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:136
-#: appPlugins/ToolIsolation.py:3427 appPlugins/ToolMilling.py:3918
+#: appPlugins/ToolIsolation.py:3427 appPlugins/ToolMilling.py:3916
 #: appPlugins/ToolNCC.py:4331
 msgid "Milling Type"
 msgstr "铣削类型"
@@ -795,13 +795,13 @@ msgstr "常规"
 
 #: appDatabase.py:618 appDatabase.py:724 appDatabase.py:824 appDatabase.py:1073
 #: appEditors/AppGeoEditor.py:520
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:256
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:254
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:188
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:519
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:168
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:151
-#: appPlugins/ToolDrilling.py:2587 appPlugins/ToolIsolation.py:3412
-#: appPlugins/ToolMilling.py:4061 appPlugins/ToolNCC.py:4354
+#: appPlugins/ToolDrilling.py:2585 appPlugins/ToolIsolation.py:3412
+#: appPlugins/ToolMilling.py:4059 appPlugins/ToolNCC.py:4354
 #: appPlugins/ToolPaint.py:3159
 msgid "Overlap"
 msgstr "重叠"
@@ -840,7 +840,7 @@ msgstr ""
 #: appPlugins/ToolCutOut.py:2413 appPlugins/ToolCutOut.py:2732
 #: appPlugins/ToolExtract.py:1365 appPlugins/ToolFiducials.py:991
 #: appPlugins/ToolInvertGerber.py:269 appPlugins/ToolInvertGerber.py:277
-#: appPlugins/ToolMilling.py:4048 appPlugins/ToolNCC.py:4398
+#: appPlugins/ToolMilling.py:4046 appPlugins/ToolNCC.py:4398
 #: appPlugins/ToolNCC.py:4502
 msgid "Margin"
 msgstr "边缘"
@@ -853,7 +853,7 @@ msgstr "边缘"
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:509
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:190
 #: appPlugins/ToolCopperThieving.py:1345 appPlugins/ToolFiducials.py:993
-#: appPlugins/ToolMilling.py:4050 appPlugins/ToolNCC.py:4400
+#: appPlugins/ToolMilling.py:4048 appPlugins/ToolNCC.py:4400
 #: appPlugins/ToolNCC.py:4504
 msgid "Bounding box margin."
 msgstr "边界框边距。"
@@ -866,7 +866,7 @@ msgstr "边界框边距。"
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:201
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:186
 #: appPlugins/ToolExtract.py:1115 appPlugins/ToolLevelling.py:1932
-#: appPlugins/ToolMilling.py:4076 appPlugins/ToolNCC.py:4375
+#: appPlugins/ToolMilling.py:4074 appPlugins/ToolNCC.py:4375
 #: appPlugins/ToolPaint.py:3195 appPlugins/ToolPunchGerber.py:2130
 msgid "Method"
 msgstr "方法"
@@ -888,7 +888,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:543
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:216
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:205
-#: appPlugins/ToolMilling.py:4086 appPlugins/ToolNCC.py:4390
+#: appPlugins/ToolMilling.py:4084 appPlugins/ToolNCC.py:4390
 #: appPlugins/ToolPaint.py:3209
 msgid "Standard"
 msgstr "标准"
@@ -898,7 +898,7 @@ msgstr "标准"
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:543
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:216
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:205
-#: appPlugins/ToolMilling.py:4086 appPlugins/ToolNCC.py:4390
+#: appPlugins/ToolMilling.py:4084 appPlugins/ToolNCC.py:4390
 #: appPlugins/ToolPaint.py:3209
 msgid "Seed"
 msgstr "种子"
@@ -909,7 +909,7 @@ msgstr "种子"
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:216
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:205
 #: appParsers/ParseGerber.py:445 appParsers/ParseHPGL2.py:200
-#: appPlugins/ToolMilling.py:4086 appPlugins/ToolNCC.py:4390
+#: appPlugins/ToolMilling.py:4084 appPlugins/ToolNCC.py:4390
 #: appPlugins/ToolPaint.py:3209
 msgid "Lines"
 msgstr "基于行"
@@ -1042,7 +1042,7 @@ msgstr "隔离间隙的宽度，以刀具宽度的数量（整数）表示。"
 
 #: appDatabase.py:826 appGUI/preferences/tools/ToolsISOPrefGroupUI.py:190
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:521
-#: appPlugins/ToolIsolation.py:3414 appPlugins/ToolMilling.py:4063
+#: appPlugins/ToolIsolation.py:3414 appPlugins/ToolMilling.py:4061
 msgid "How much (percentage) of the tool width to overlap each tool pass."
 msgstr "每个刀具行程重叠刀具宽度的多少（百分比）。"
 
@@ -1086,9 +1086,9 @@ msgstr "外部"
 msgid "Int"
 msgstr "内部"
 
-#: appDatabase.py:888 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:58
-#: appPlugins/ToolDrilling.py:2428 appPlugins/ToolMilling.py:1389
-#: appPlugins/ToolMilling.py:4146
+#: appDatabase.py:888 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:56
+#: appPlugins/ToolDrilling.py:2426 appPlugins/ToolMilling.py:1389
+#: appPlugins/ToolMilling.py:4144
 msgid ""
 "Drill depth (negative)\n"
 "below the copper surface."
@@ -1096,13 +1096,13 @@ msgstr ""
 "钻孔深度（负）\n"
 "在铜表面之下。"
 
-#: appDatabase.py:904 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:290
-#: appPlugins/ToolDrilling.py:2563
+#: appDatabase.py:904 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:288
+#: appPlugins/ToolDrilling.py:2561
 msgid "Offset Z"
 msgstr "Z向偏移"
 
-#: appDatabase.py:906 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:292
-#: appPlugins/ToolDrilling.py:2565
+#: appDatabase.py:906 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:290
+#: appPlugins/ToolDrilling.py:2563
 msgid ""
 "Some drill bits (the larger ones) need to drill deeper\n"
 "to create the desired exit hole diameter due of the tip shape.\n"
@@ -1112,10 +1112,10 @@ msgstr ""
 "此处的值可以补偿切削Z参数。"
 
 #: appDatabase.py:923 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:87
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:75
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:73
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:103
-#: appPlugins/ToolCutOut.py:2389 appPlugins/ToolDrilling.py:2446
-#: appPlugins/ToolMilling.py:4165
+#: appPlugins/ToolCutOut.py:2389 appPlugins/ToolDrilling.py:2444
+#: appPlugins/ToolMilling.py:4163
 msgid ""
 "Use multiple passes to limit\n"
 "the cut depth in each pass. Will\n"
@@ -1124,22 +1124,22 @@ msgid ""
 msgstr "限制每刀的切割深度。将切割多次，直到达到切削Z。"
 
 #: appDatabase.py:945 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:99
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:87
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:85
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:114
-#: appPlugins/ToolCutOut.py:2400 appPlugins/ToolDrilling.py:2459
-#: appPlugins/ToolMilling.py:4178
+#: appPlugins/ToolCutOut.py:2400 appPlugins/ToolDrilling.py:2457
+#: appPlugins/ToolMilling.py:4176
 msgid "Depth of each pass (positive)."
 msgstr "每刀的深度（正）。"
 
-#: appDatabase.py:954 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:97
-#: appPlugins/ToolDrilling.py:2470 appPlugins/ToolMilling.py:4189
+#: appDatabase.py:954 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:95
+#: appPlugins/ToolDrilling.py:2468 appPlugins/ToolMilling.py:4187
 msgid ""
 "Tool height when travelling\n"
 "across the XY plane."
 msgstr "移动穿过XY平面时的刀具高度。"
 
-#: appDatabase.py:977 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:158
-#: appPlugins/ToolDrilling.py:2487 appPlugins/ToolMilling.py:4225
+#: appDatabase.py:977 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:156
+#: appPlugins/ToolDrilling.py:2485 appPlugins/ToolMilling.py:4223
 msgid ""
 "Tool speed while drilling\n"
 "(in units per minute).\n"
@@ -1150,14 +1150,14 @@ msgstr ""
 "所谓的“下降”进给速度。\n"
 "这是用于直线移动G01。"
 
-#: appDatabase.py:992 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:324
+#: appDatabase.py:992 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:322
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:326
-#: appPlugins/ToolDrilling.py:2502 appPlugins/ToolMilling.py:4240
+#: appPlugins/ToolDrilling.py:2500 appPlugins/ToolMilling.py:4238
 msgid "Feedrate Rapids"
 msgstr "掠过进给率"
 
-#: appDatabase.py:994 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:326
-#: appPlugins/ToolDrilling.py:2504 appPlugins/ToolMilling.py:4242
+#: appDatabase.py:994 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:324
+#: appPlugins/ToolDrilling.py:2502 appPlugins/ToolMilling.py:4240
 msgid ""
 "Tool speed while drilling\n"
 "(in units per minute).\n"
@@ -1171,8 +1171,8 @@ msgstr ""
 "它只对边界有用，\n"
 "对任何其他情况都可以忽略。"
 
-#: appDatabase.py:1017 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:173
-#: appPlugins/ToolDrilling.py:2526 appPlugins/ToolMilling.py:4295
+#: appDatabase.py:1017 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:171
+#: appPlugins/ToolDrilling.py:2524 appPlugins/ToolMilling.py:4293
 msgid ""
 "Speed of the spindle\n"
 "in RPM (optional)"
@@ -1180,29 +1180,29 @@ msgstr ""
 "主轴转速\n"
 "以RPM为单位（可选）"
 
-#: appDatabase.py:1062 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:241
-#: appPlugins/ToolDrilling.py:2579
+#: appDatabase.py:1062 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:239
+#: appPlugins/ToolDrilling.py:2577
 msgid "Drill slots"
 msgstr "钻槽"
 
-#: appDatabase.py:1064 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:243
-#: appPlugins/ToolDrilling.py:2581
+#: appDatabase.py:1064 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:241
+#: appPlugins/ToolDrilling.py:2579
 msgid "If the selected tool has slots then they will be drilled."
 msgstr "如果选定的刀具有插槽，则将钻取插槽。"
 
-#: appDatabase.py:1075 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:258
-#: appPlugins/ToolDrilling.py:2589
+#: appDatabase.py:1075 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:256
+#: appPlugins/ToolDrilling.py:2587
 msgid ""
 "How much (percentage) of the tool diameter to overlap previous drill hole."
 msgstr "与上一个钻孔重叠的刀具直径的多少（百分比）。"
 
-#: appDatabase.py:1089 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:248
-#: appPlugins/ToolDrilling.py:2603
+#: appDatabase.py:1089 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:246
+#: appPlugins/ToolDrilling.py:2601
 msgid "Last drill"
 msgstr "末端钻孔"
 
-#: appDatabase.py:1091 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:250
-#: appPlugins/ToolDrilling.py:2605
+#: appDatabase.py:1091 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:248
+#: appPlugins/ToolDrilling.py:2603
 msgid ""
 "If the slot length is not completely covered by drill holes,\n"
 "add a drill hole on the slot end point."
@@ -1416,8 +1416,8 @@ msgstr "取消"
 #: appPlugins/ToolCopperThieving.py:1821 appPlugins/ToolCutOut.py:2803
 #: appPlugins/ToolCutOut.py:2814 appPlugins/ToolDblSided.py:1180
 #: appPlugins/ToolDblSided.py:1191 appPlugins/ToolDistance.py:847
-#: appPlugins/ToolDistance.py:858 appPlugins/ToolDrilling.py:2929
-#: appPlugins/ToolDrilling.py:2940 appPlugins/ToolEtchCompensation.py:531
+#: appPlugins/ToolDistance.py:858 appPlugins/ToolDrilling.py:2927
+#: appPlugins/ToolDrilling.py:2938 appPlugins/ToolEtchCompensation.py:531
 #: appPlugins/ToolEtchCompensation.py:542 appPlugins/ToolExtract.py:1435
 #: appPlugins/ToolExtract.py:1446 appPlugins/ToolFiducials.py:1136
 #: appPlugins/ToolFiducials.py:1147 appPlugins/ToolFilm.py:1834
@@ -1427,10 +1427,10 @@ msgstr "取消"
 #: appPlugins/ToolInvertGerber.py:349 appPlugins/ToolIsolation.py:3716
 #: appPlugins/ToolIsolation.py:3727 appPlugins/ToolLevelling.py:2373
 #: appPlugins/ToolLevelling.py:2384 appPlugins/ToolMarkers.py:1531
-#: appPlugins/ToolMarkers.py:1542 appPlugins/ToolMilling.py:4671
-#: appPlugins/ToolMilling.py:4682 appPlugins/ToolNCC.py:4759
-#: appPlugins/ToolNCC.py:4770 appPlugins/ToolObjectDistance.py:442
-#: appPlugins/ToolObjectDistance.py:453 appPlugins/ToolOptimal.py:737
+#: appPlugins/ToolMarkers.py:1542 appPlugins/ToolMilling.py:4669
+#: appPlugins/ToolMilling.py:4680 appPlugins/ToolNCC.py:4759
+#: appPlugins/ToolNCC.py:4770 appPlugins/ToolObjectDistance.py:642
+#: appPlugins/ToolObjectDistance.py:653 appPlugins/ToolOptimal.py:737
 #: appPlugins/ToolOptimal.py:748 appPlugins/ToolPaint.py:3441
 #: appPlugins/ToolPaint.py:3452 appPlugins/ToolPanelize.py:1428
 #: appPlugins/ToolPanelize.py:1439 appPlugins/ToolPcbWizard.py:532
@@ -1454,8 +1454,8 @@ msgstr "编辑的值超出范围"
 #: appPlugins/ToolCopperThieving.py:1823 appPlugins/ToolCutOut.py:2809
 #: appPlugins/ToolCutOut.py:2816 appPlugins/ToolDblSided.py:1186
 #: appPlugins/ToolDblSided.py:1193 appPlugins/ToolDistance.py:853
-#: appPlugins/ToolDistance.py:860 appPlugins/ToolDrilling.py:2935
-#: appPlugins/ToolDrilling.py:2942 appPlugins/ToolEtchCompensation.py:537
+#: appPlugins/ToolDistance.py:860 appPlugins/ToolDrilling.py:2933
+#: appPlugins/ToolDrilling.py:2940 appPlugins/ToolEtchCompensation.py:537
 #: appPlugins/ToolEtchCompensation.py:544 appPlugins/ToolExtract.py:1441
 #: appPlugins/ToolExtract.py:1448 appPlugins/ToolFiducials.py:1142
 #: appPlugins/ToolFiducials.py:1149 appPlugins/ToolFilm.py:1840
@@ -1465,10 +1465,10 @@ msgstr "编辑的值超出范围"
 #: appPlugins/ToolInvertGerber.py:351 appPlugins/ToolIsolation.py:3722
 #: appPlugins/ToolIsolation.py:3729 appPlugins/ToolLevelling.py:2379
 #: appPlugins/ToolLevelling.py:2386 appPlugins/ToolMarkers.py:1537
-#: appPlugins/ToolMarkers.py:1544 appPlugins/ToolMilling.py:4677
-#: appPlugins/ToolMilling.py:4684 appPlugins/ToolNCC.py:4765
-#: appPlugins/ToolNCC.py:4772 appPlugins/ToolObjectDistance.py:448
-#: appPlugins/ToolObjectDistance.py:455 appPlugins/ToolOptimal.py:743
+#: appPlugins/ToolMarkers.py:1544 appPlugins/ToolMilling.py:4675
+#: appPlugins/ToolMilling.py:4682 appPlugins/ToolNCC.py:4765
+#: appPlugins/ToolNCC.py:4772 appPlugins/ToolObjectDistance.py:648
+#: appPlugins/ToolObjectDistance.py:655 appPlugins/ToolOptimal.py:743
 #: appPlugins/ToolOptimal.py:750 appPlugins/ToolPaint.py:3447
 #: appPlugins/ToolPaint.py:3454 appPlugins/ToolPanelize.py:1434
 #: appPlugins/ToolPanelize.py:1441 appPlugins/ToolPcbWizard.py:538
@@ -1643,7 +1643,7 @@ msgstr "要添加钻孔，请首先选择一个刀具"
 #: appPlugins/ToolFiducials.py:652 appPlugins/ToolFiducials.py:667
 #: appPlugins/ToolFollow.py:333 appPlugins/ToolFollow.py:400
 #: appPlugins/ToolIsolation.py:1542 appPlugins/ToolMarkers.py:997
-#: appPlugins/ToolObjectDistance.py:254 appPlugins/ToolPaint.py:2323
+#: appPlugins/ToolObjectDistance.py:440 appPlugins/ToolPaint.py:2323
 #: appPlugins/ToolPanelize.py:1065 appPlugins/ToolSolderPaste.py:892
 #: app_Main.py:5667 app_Main.py:5823 tclCommands/TclCommandPanelize.py:304
 #: tclCommands/TclCommandPanelize.py:313
@@ -1938,7 +1938,7 @@ msgstr "在此Excellon对象的刀具列表中添加/删除刀具。"
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:44
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:127
 #: appPlugins/ToolCutOut.py:2303 appPlugins/ToolCutOut.py:2489
-#: appPlugins/ToolIsolation.py:3264 appPlugins/ToolMilling.py:3828
+#: appPlugins/ToolIsolation.py:3264 appPlugins/ToolMilling.py:3826
 #: appPlugins/ToolNCC.py:4226 appPlugins/ToolNCC.py:4239
 #: appPlugins/ToolPaint.py:3084
 msgid "Tool Dia"
@@ -1946,7 +1946,7 @@ msgstr "刀具直径"
 
 #: appEditors/AppExcEditor.py:4101
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:56
-#: appPlugins/ToolIsolation.py:3266 appPlugins/ToolMilling.py:3830
+#: appPlugins/ToolIsolation.py:3266 appPlugins/ToolMilling.py:3828
 #: appPlugins/ToolNCC.py:4228
 msgid "Diameter for the new tool"
 msgstr "新刀具的直径"
@@ -2023,7 +2023,7 @@ msgstr "添加钻孔阵列（线性或圆形阵列）"
 #: appPlugins/ToolIsolation.py:3594 appPlugins/ToolMarkers.py:1192
 #: appPlugins/ToolMarkers.py:1454 appPlugins/ToolMilling.py:3596
 #: appPlugins/ToolNCC.py:4107 appPlugins/ToolNCC.py:4573
-#: appPlugins/ToolObjectDistance.py:288 appPlugins/ToolPaint.py:2972
+#: appPlugins/ToolObjectDistance.py:474 appPlugins/ToolPaint.py:2972
 #: appPlugins/ToolPaint.py:3311 appPlugins/ToolPunchGerber.py:2107
 #: appPlugins/ToolPunchGerber.py:2318 appPlugins/ToolTransform.py:646
 msgid "Type"
@@ -2131,7 +2131,7 @@ msgstr "Y"
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:142
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:160
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:102
-#: appPlugins/ToolDistance.py:803 appPlugins/ToolObjectDistance.py:382
+#: appPlugins/ToolDistance.py:803 appPlugins/ToolObjectDistance.py:568
 #: appPlugins/ToolTransform.py:692
 msgid "Angle"
 msgstr "角度"
@@ -2184,7 +2184,7 @@ msgstr ""
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:153
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:325
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:192
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:373
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:371
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:404
 msgid "CW"
 msgstr "顺时针"
@@ -2194,7 +2194,7 @@ msgstr "顺时针"
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:154
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:326
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:193
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:374
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:372
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:405
 msgid "CCW"
 msgstr "逆时针"
@@ -2330,15 +2330,15 @@ msgstr "圆角"
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:59
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:185
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:140
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:436
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:434
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:320
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:456
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:326
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:290
-#: appPlugins/ToolDrilling.py:2857 appPlugins/ToolExtract.py:1048
+#: appPlugins/ToolDrilling.py:2855 appPlugins/ToolExtract.py:1048
 #: appPlugins/ToolExtract.py:1192 appPlugins/ToolFollow.py:752
 #: appPlugins/ToolInvertGerber.py:292 appPlugins/ToolIsolation.py:3652
-#: appPlugins/ToolMilling.py:4600 appPlugins/ToolNCC.py:4601
+#: appPlugins/ToolMilling.py:4598 appPlugins/ToolNCC.py:4601
 #: appPlugins/ToolPaint.py:3340 appPlugins/ToolPunchGerber.py:2079
 #: appPlugins/ToolPunchGerber.py:2245 appPlugins/ToolQRCode.py:921
 msgid "Square"
@@ -2385,7 +2385,7 @@ msgstr "全部缓冲区"
 #: appPlugins/ToolMarkers.py:114 appPlugins/ToolMarkers.py:123
 #: appPlugins/ToolMilling.py:156 appPlugins/ToolMilling.py:165
 #: appPlugins/ToolNCC.py:167 appPlugins/ToolNCC.py:176
-#: appPlugins/ToolObjectDistance.py:87 appPlugins/ToolObjectDistance.py:96
+#: appPlugins/ToolObjectDistance.py:76 appPlugins/ToolObjectDistance.py:85
 #: appPlugins/ToolOptimal.py:80 appPlugins/ToolOptimal.py:89
 #: appPlugins/ToolPaint.py:175 appPlugins/ToolPaint.py:184
 #: appPlugins/ToolPanelize.py:76 appPlugins/ToolPanelize.py:85
@@ -2448,10 +2448,10 @@ msgstr "文本工具"
 
 #: appEditors/AppGeoEditor.py:476 appObjects/FlatCAMExcellon.py:938
 #: appPlugins/ToolDrilling.py:920 appPlugins/ToolDrilling.py:1297
-#: appPlugins/ToolDrilling.py:2398 appPlugins/ToolIsolation.py:815
+#: appPlugins/ToolDrilling.py:2396 appPlugins/ToolIsolation.py:815
 #: appPlugins/ToolIsolation.py:3333 appPlugins/ToolMilling.py:1615
 #: appPlugins/ToolMilling.py:1679 appPlugins/ToolMilling.py:2485
-#: appPlugins/ToolMilling.py:3889 appPlugins/ToolNCC.py:612
+#: appPlugins/ToolMilling.py:3887 appPlugins/ToolNCC.py:612
 #: appPlugins/ToolNCC.py:2512 appPlugins/ToolNCC.py:4299
 #: appPlugins/ToolPaint.py:589 appPlugins/ToolPaint.py:3143
 msgid "Tool"
@@ -2863,7 +2863,7 @@ msgstr ""
 #: appEditors/AppGeoEditor.py:1025 appEditors/AppGerberEditor.py:7036
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:279
 #: appPlugins/ToolDistance.py:142 appPlugins/ToolDistance.py:684
-#: appPlugins/ToolObjectDistance.py:233 appPlugins/ToolTransform.py:970
+#: appPlugins/ToolTransform.py:970
 msgid "Distance"
 msgstr "距离"
 
@@ -2923,8 +2923,8 @@ msgstr ""
 #: appGUI/preferences/tools/Tools2CalPrefGroupUI.py:47
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:52
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:68
-#: appPlugins/ToolCalibration.py:906 appPlugins/ToolDrilling.py:2811
-#: appPlugins/ToolMilling.py:4554 appPlugins/ToolPanelize.py:1199
+#: appPlugins/ToolCalibration.py:906 appPlugins/ToolDrilling.py:2809
+#: appPlugins/ToolMilling.py:4552 appPlugins/ToolPanelize.py:1199
 #: appPlugins/ToolTransform.py:624
 msgid "Object"
 msgstr "对象"
@@ -3278,7 +3278,7 @@ msgstr "放大选择"
 #: appPlugins/ToolEtchCompensation.py:406 appPlugins/ToolFiducials.py:962
 #: appPlugins/ToolFilm.py:1482 appPlugins/ToolFollow.py:722
 #: appPlugins/ToolInvertGerber.py:257 appPlugins/ToolLevelling.py:1860
-#: appPlugins/ToolMarkers.py:1181 appPlugins/ToolObjectDistance.py:274
+#: appPlugins/ToolMarkers.py:1181 appPlugins/ToolObjectDistance.py:460
 #: appPlugins/ToolOptimal.py:525 appPlugins/ToolPanelize.py:1305
 #: appPlugins/ToolQRCode.py:821 appPlugins/ToolSolderPaste.py:1320
 #: appPlugins/ToolSub.py:821 appPlugins/ToolTransform.py:602
@@ -3328,7 +3328,7 @@ msgstr "几何元素的长度。"
 #: appEditors/AppGeoEditor.py:3570 appEditors/AppGerberEditor.py:6308
 #: appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:83
 #: appPlugins/ToolDistance.py:724 appPlugins/ToolFiducials.py:870
-#: appPlugins/ToolFiducials.py:886 appPlugins/ToolObjectDistance.py:303
+#: appPlugins/ToolFiducials.py:886 appPlugins/ToolObjectDistance.py:489
 msgid "Coordinates"
 msgstr "坐标"
 
@@ -3390,13 +3390,13 @@ msgid "Line"
 msgstr "线型"
 
 #: appEditors/AppGeoEditor.py:3940 appGUI/MainGUI.py:1758
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:437
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:435
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:321
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:457
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:327
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:291
-#: appPlugins/ToolDrilling.py:2858 appPlugins/ToolFollow.py:753
-#: appPlugins/ToolIsolation.py:3653 appPlugins/ToolMilling.py:4601
+#: appPlugins/ToolDrilling.py:2856 appPlugins/ToolFollow.py:753
+#: appPlugins/ToolIsolation.py:3653 appPlugins/ToolMilling.py:4599
 #: appPlugins/ToolNCC.py:4602 appPlugins/ToolPaint.py:3341
 msgid "Polygon"
 msgstr "多边形"
@@ -4187,7 +4187,7 @@ msgstr "G代码"
 #: appEditors/appGCodeEditor.py:815 appGUI/ObjectUI.py:741
 #: appGUI/ObjectUI.py:1491 appObjects/FlatCAMObj.py:503
 #: appPlugins/ToolDrilling.py:2353 appPlugins/ToolMilling.py:3665
-#: appPlugins/ToolMilling.py:3927 appPlugins/ToolReport.py:194
+#: appPlugins/ToolMilling.py:3925 appPlugins/ToolReport.py:194
 msgid "Drills"
 msgstr "钻孔"
 
@@ -4195,7 +4195,7 @@ msgstr "钻孔"
 #: appGUI/ObjectUI.py:1491
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:176
 #: appObjects/FlatCAMObj.py:505 appPlugins/ToolDrilling.py:2353
-#: appPlugins/ToolMilling.py:3665 appPlugins/ToolMilling.py:3928
+#: appPlugins/ToolMilling.py:3665 appPlugins/ToolMilling.py:3926
 #: appPlugins/ToolReport.py:196
 msgid "Slots"
 msgstr "槽"
@@ -5475,12 +5475,12 @@ msgid "Opacity"
 msgstr "不透明"
 
 #: appGUI/MainGUI.py:887 appGUI/MainGUI.py:1744
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:50
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:48
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:64
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:65
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:67
-#: appPlugins/ToolDrilling.py:2379 appPlugins/ToolIsolation.py:3239
-#: appPlugins/ToolMilling.py:3762 appPlugins/ToolNCC.py:4198
+#: appPlugins/ToolDrilling.py:2377 appPlugins/ToolIsolation.py:3239
+#: appPlugins/ToolMilling.py:3760 appPlugins/ToolNCC.py:4198
 #: appPlugins/ToolPaint.py:3059 app_Main.py:8931
 msgid "Default"
 msgstr "预设"
@@ -6855,7 +6855,7 @@ msgstr ""
 
 #: appGUI/ObjectUI.py:750 appGUI/ObjectUI.py:1080
 #: appPlugins/ToolDrilling.py:2360 appPlugins/ToolIsolation.py:3226
-#: appPlugins/ToolMilling.py:3672 appPlugins/ToolMilling.py:3792
+#: appPlugins/ToolMilling.py:3672 appPlugins/ToolMilling.py:3790
 #: appPlugins/ToolNCC.py:4175 appPlugins/ToolPaint.py:3039
 msgid ""
 "Tool Diameter. Its value\n"
@@ -6921,7 +6921,7 @@ msgstr ""
 "创建用于铣削孔的Geometry。\n"
 "从要铣削的孔直径上方的工具表中选择。使用#列进行选择。"
 
-#: appGUI/ObjectUI.py:861 appPlugins/ToolMilling.py:3938
+#: appGUI/ObjectUI.py:861 appPlugins/ToolMilling.py:3936
 msgid "Milling Diameter"
 msgstr "铣削直径"
 
@@ -6993,7 +6993,7 @@ msgstr "绘图对象"
 
 #: appGUI/ObjectUI.py:1068 appGUI/ObjectUI.py:1481 appGUI/ObjectUI.py:1491
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:156
-#: appPlugins/ToolCopperThieving.py:1474 appPlugins/ToolMilling.py:3781
+#: appPlugins/ToolCopperThieving.py:1474 appPlugins/ToolMilling.py:3779
 msgid "Dia"
 msgstr "直径"
 
@@ -7565,7 +7565,7 @@ msgstr "Excellon高级选项"
 
 #: appGUI/preferences/excellon/ExcellonAdvOptPrefGroupUI.py:27
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:27
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:277
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:275
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:292
 msgid "Advanced Options"
 msgstr "高级选项"
@@ -8896,12 +8896,12 @@ msgid "Geometry Adv. Options"
 msgstr "Geometry高级选项"
 
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:42
-#: appPlugins/ToolMilling.py:4487
+#: appPlugins/ToolMilling.py:4485
 msgid "Segment X size"
 msgstr "X分段大小"
 
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:44
-#: appPlugins/ToolMilling.py:4489
+#: appPlugins/ToolMilling.py:4487
 msgid ""
 "The size of the trace segment on the X axis.\n"
 "Useful for auto-leveling.\n"
@@ -8912,12 +8912,12 @@ msgstr ""
 "值为0表示X轴上没有分段。"
 
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:58
-#: appPlugins/ToolMilling.py:4504
+#: appPlugins/ToolMilling.py:4502
 msgid "Segment Y size"
 msgstr "Y分段大小"
 
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:60
-#: appPlugins/ToolMilling.py:4506
+#: appPlugins/ToolMilling.py:4504
 msgid ""
 "The size of the trace segment on the Y axis.\n"
 "Useful for auto-leveling.\n"
@@ -9513,7 +9513,7 @@ msgstr "选择要包括的其他几何图形（如果可用）。"
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:345
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:159
 #: appPlugins/ToolCopperThieving.py:1764 appPlugins/ToolFilm.py:1463
-#: appPlugins/ToolMilling.py:3929
+#: appPlugins/ToolMilling.py:3927
 msgid "Both"
 msgstr "以上都是"
 
@@ -9538,7 +9538,7 @@ msgstr "校准插件"
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:29
 #: appPlugins/ToolCopperThieving.py:1318 appPlugins/ToolEtchCompensation.py:407
 #: appPlugins/ToolFiducials.py:964 appPlugins/ToolMarkers.py:1182
-#: appPlugins/ToolObjectDistance.py:276 appPlugins/ToolOptimal.py:526
+#: appPlugins/ToolObjectDistance.py:462 appPlugins/ToolOptimal.py:526
 #: appPlugins/ToolSolderPaste.py:1322
 msgid "Parameters used for this tool."
 msgstr "用于此工具的参数。"
@@ -9626,7 +9626,7 @@ msgid "Bottom Right"
 msgstr "右下"
 
 #: appGUI/preferences/tools/Tools2CalPrefGroupUI.py:113
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:109
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:107
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:142
 #: appPlugins/ToolSolderPaste.py:1400
 msgid "Tool change"
@@ -10619,10 +10619,10 @@ msgid ""
 msgstr "用于从周围材料中切割PCB形状的工具的直径。"
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:84
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:72
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:70
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:100
-#: appPlugins/ToolCutOut.py:2387 appPlugins/ToolDrilling.py:2443
-#: appPlugins/ToolMilling.py:4162
+#: appPlugins/ToolCutOut.py:2387 appPlugins/ToolDrilling.py:2441
+#: appPlugins/ToolMilling.py:4160
 msgid "Multi-Depth"
 msgstr "多深度"
 
@@ -10732,14 +10732,20 @@ msgstr "刀具顺序"
 
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:42
 #: appPlugins/ToolDrilling.py:2371 appPlugins/ToolMilling.py:3754
+#, fuzzy
+#| msgid ""
+#| "This set the way that the tools in the tools table are used.\n"
+#| "'Default' --> the order from the Excellon file\n"
+#| "'Forward' --> tools will be ordered from small to big\n"
+#| "'Reverse' --> tools will ordered from big to small\n"
+#| "\n"
+#| "WARNING: using rest machining will automatically set the order\n"
+#| "in reverse and disable this control."
 msgid ""
 "This set the way that the tools in the tools table are used.\n"
-"'Default' --> the order from the Excellon file\n"
+"'Default' --> the order from the file\n"
 "'Forward' --> tools will be ordered from small to big\n"
-"'Reverse' --> tools will ordered from big to small\n"
-"\n"
-"WARNING: using rest machining will automatically set the order\n"
-"in reverse and disable this control."
+"'Reverse' --> tools will ordered from big to small."
 msgstr ""
 "这将设置工具表中工具的使用方式。\n"
 "“默认”-->表示使用的顺序是刀具表中的顺序\n"
@@ -10747,70 +10753,70 @@ msgstr ""
 "“逆序”-->表示刀具将从大到小进行顺序\n"
 "警告：使用静止加工将自动设置反向顺序并禁用此控制。"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:50
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:48
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:64
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:65
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:67
-#: appPlugins/ToolDrilling.py:2379 appPlugins/ToolIsolation.py:3239
-#: appPlugins/ToolMilling.py:3762 appPlugins/ToolNCC.py:4198
+#: appPlugins/ToolDrilling.py:2377 appPlugins/ToolIsolation.py:3239
+#: appPlugins/ToolMilling.py:3760 appPlugins/ToolNCC.py:4198
 #: appPlugins/ToolPaint.py:3059 appPlugins/ToolSolderPaste.py:1488
 msgid "Forward"
 msgstr "顺序"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:50
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:48
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:64
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:65
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:67
-#: appPlugins/ToolDrilling.py:2379 appPlugins/ToolIsolation.py:3239
-#: appPlugins/ToolMilling.py:3762 appPlugins/ToolNCC.py:4198
+#: appPlugins/ToolDrilling.py:2377 appPlugins/ToolIsolation.py:3239
+#: appPlugins/ToolMilling.py:3760 appPlugins/ToolNCC.py:4198
 #: appPlugins/ToolPaint.py:3059 appPlugins/ToolSolderPaste.py:1526
 msgid "Reverse"
 msgstr "逆序"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:111
-#: appPlugins/ToolDrilling.py:2651 appPlugins/ToolMilling.py:4360
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:109
+#: appPlugins/ToolDrilling.py:2649 appPlugins/ToolMilling.py:4358
 msgid ""
 "Include tool-change sequence\n"
 "in G-Code (Pause for tool change)."
 msgstr "在G代码中包括换刀顺序（换刀暂停）。"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:117
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:115
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:152
 #: appPlugins/ToolCalibration.py:831
 msgid "Toolchange Z"
 msgstr "换刀Z"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:119
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:117
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:155
-#: appPlugins/ToolDrilling.py:2659 appPlugins/ToolMilling.py:4368
+#: appPlugins/ToolDrilling.py:2657 appPlugins/ToolMilling.py:4366
 msgid ""
 "Z-axis position (height) for\n"
 "tool change."
 msgstr "换刀的Z轴位置（高度）。"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:131
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:129
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:170
-#: appPlugins/ToolDrilling.py:2702 appPlugins/ToolMilling.py:4398
+#: appPlugins/ToolDrilling.py:2700 appPlugins/ToolMilling.py:4396
 msgid "End move Z"
 msgstr "结束移动Z"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:133
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:131
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:172
-#: appPlugins/ToolDrilling.py:2704 appPlugins/ToolMilling.py:4400
+#: appPlugins/ToolDrilling.py:2702 appPlugins/ToolMilling.py:4398
 msgid ""
 "Height of the tool after\n"
 "the last move at the end of the job."
 msgstr "作业结束时最后一次移动后的刀具高度。"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:144
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:142
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:186
-#: appPlugins/ToolDrilling.py:2718 appPlugins/ToolMilling.py:4414
+#: appPlugins/ToolDrilling.py:2716 appPlugins/ToolMilling.py:4412
 msgid "End move X,Y"
 msgstr "结束移动X，Y"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:146
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:144
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:188
-#: appPlugins/ToolDrilling.py:2720 appPlugins/ToolMilling.py:4416
+#: appPlugins/ToolDrilling.py:2718 appPlugins/ToolMilling.py:4414
 msgid ""
 "End move X,Y position. In format (x,y).\n"
 "If no value is entered then there is no move\n"
@@ -10819,71 +10825,71 @@ msgstr ""
 "结束移动X，Y位置。格式为（x,y）。\n"
 "如果未输入任何值，则作业结束时X、Y平面上没有移动。"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:171
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:169
 msgid "Spindle Speed"
 msgstr "主轴速度"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:185
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:183
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:245
 msgid "Enable Dwell"
 msgstr "允许等待主轴转速到达"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:187
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:185
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:247
-#: appPlugins/ToolDrilling.py:2541 appPlugins/ToolMilling.py:4310
+#: appPlugins/ToolDrilling.py:2539 appPlugins/ToolMilling.py:4308
 msgid ""
 "Pause to allow the spindle to reach its\n"
 "speed before cutting."
 msgstr "切割前，暂停以使主轴达到其速度。"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:195
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:193
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:253
-#: appPlugins/ToolDrilling.py:2553 appPlugins/ToolMilling.py:4321
+#: appPlugins/ToolDrilling.py:2551 appPlugins/ToolMilling.py:4319
 msgid "Number of time units for spindle to dwell."
 msgstr "主轴停留的时间单位数。"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:204
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:202
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:266
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:237
-#: appPlugins/ToolDrilling.py:2769 appPlugins/ToolMilling.py:4465
+#: appPlugins/ToolDrilling.py:2767 appPlugins/ToolMilling.py:4463
 #: appPlugins/ToolSolderPaste.py:1570
 msgid "Preprocessor"
 msgstr "预处理器"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:206
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:204
 msgid ""
 "The preprocessor JSON file that dictates\n"
 "Gcode output."
 msgstr "指示G代码输出的预处理器JSON文件。"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:231
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:229
 msgid "Drilling Slots"
 msgstr "铣槽"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:279
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:277
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:294
 msgid "A list of advanced parameters."
 msgstr "高级参数列表。"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:303
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:301
 msgid "Toolchange X,Y"
 msgstr "换刀X，Y"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:305
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:303
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:307
-#: appPlugins/ToolDrilling.py:2674 appPlugins/ToolMilling.py:4382
+#: appPlugins/ToolDrilling.py:2672 appPlugins/ToolMilling.py:4380
 msgid "Toolchange X,Y position."
 msgstr "刀具更换X、Y位置。"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:313
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:311
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:315
-#: appPlugins/ToolDrilling.py:2690
+#: appPlugins/ToolDrilling.py:2688
 msgid "Start Z"
 msgstr "起点Z"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:315
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:313
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:317
-#: appPlugins/ToolDrilling.py:2692
+#: appPlugins/ToolDrilling.py:2690
 msgid ""
 "Height of the tool just after starting the work.\n"
 "Delete the value if you don't need this feature."
@@ -10891,44 +10897,44 @@ msgstr ""
 "起点时刀具的高度。\n"
 "如果不需要此功能，请删除该值。"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:340
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:338
 #: appGUI/preferences/tools/ToolsLevelPrefGroupUI.py:101
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:367
-#: appPlugins/ToolDrilling.py:2732 appPlugins/ToolLevelling.py:1888
-#: appPlugins/ToolMilling.py:4428
+#: appPlugins/ToolDrilling.py:2730 appPlugins/ToolLevelling.py:1888
+#: appPlugins/ToolMilling.py:4426
 msgid "Probe Z depth"
 msgstr "探针Z深度"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:342
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:340
 #: appGUI/preferences/tools/ToolsLevelPrefGroupUI.py:103
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:369
-#: appPlugins/ToolDrilling.py:2734 appPlugins/ToolLevelling.py:1890
-#: appPlugins/ToolMilling.py:4430
+#: appPlugins/ToolDrilling.py:2732 appPlugins/ToolLevelling.py:1890
+#: appPlugins/ToolMilling.py:4428
 msgid ""
 "The maximum depth that the probe is allowed\n"
 "to probe. Negative value, in current units."
 msgstr "允许探头探测的最大深度。负值，以当前单位表示。"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:353
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:351
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:382
-#: appPlugins/ToolDrilling.py:2751 appPlugins/ToolMilling.py:4447
+#: appPlugins/ToolDrilling.py:2749 appPlugins/ToolMilling.py:4445
 msgid "Feedrate Probe"
 msgstr "进给率探头"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:355
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:353
 #: appGUI/preferences/tools/ToolsLevelPrefGroupUI.py:116
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:384
-#: appPlugins/ToolDrilling.py:2753 appPlugins/ToolLevelling.py:1903
-#: appPlugins/ToolMilling.py:4449
+#: appPlugins/ToolDrilling.py:2751 appPlugins/ToolLevelling.py:1903
+#: appPlugins/ToolMilling.py:4447
 msgid "The feedrate used while the probe is probing."
 msgstr "探头探测时使用的进给速度。"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:365
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:363
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:396
 msgid "Spindle direction"
 msgstr "主轴方向"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:367
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:365
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:398
 msgid ""
 "This sets the direction that the spindle is rotating.\n"
@@ -10941,12 +10947,12 @@ msgstr ""
 "-顺时针=顺时针旋转或\n"
 "-逆时针=逆时针旋转"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:378
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:376
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:410
 msgid "Fast Plunge"
 msgstr "快速下落"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:380
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:378
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:412
 msgid ""
 "By checking this, the vertical move from\n"
@@ -10958,11 +10964,11 @@ msgstr ""
 "这意味着可用的最快速度。\n"
 "警告:移动是在换刀 X,Y坐标完成的。"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:387
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:385
 msgid "Fast Retract"
 msgstr "快速缩回"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:389
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:387
 msgid ""
 "Exit hole strategy.\n"
 " - When uncheked, while exiting the drilled hole the drill bit\n"
@@ -10977,24 +10983,24 @@ msgstr ""
 "-选中时，从Z切割（切割深度）到Z_移动（移动高度）的移动在一次移动中尽可能快"
 "（G0）。"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:407
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:405
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:427
 msgid "Area Exclusion"
 msgstr "区域排除"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:409
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:407
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:429
 msgid "Area exclusion parameters."
 msgstr "区域排除参数。"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:420
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:418
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:440
 msgid "Exclusion areas"
 msgstr "禁区"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:423
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:421
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:443
-#: appPlugins/ToolDrilling.py:2789 appPlugins/ToolMilling.py:4531
+#: appPlugins/ToolDrilling.py:2787 appPlugins/ToolMilling.py:4529
 msgid ""
 "Include exclusion areas.\n"
 "In those areas the travel of the tools\n"
@@ -11003,27 +11009,27 @@ msgstr ""
 "包括禁区。\n"
 "在这些区域，禁止移动工具。"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:433
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:431
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:317
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:453
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:323
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:287
-#: appPlugins/ToolDrilling.py:2860 appPlugins/ToolFollow.py:749
-#: appPlugins/ToolIsolation.py:3649 appPlugins/ToolMilling.py:4603
+#: appPlugins/ToolDrilling.py:2858 appPlugins/ToolFollow.py:749
+#: appPlugins/ToolIsolation.py:3649 appPlugins/ToolMilling.py:4601
 #: appPlugins/ToolNCC.py:4598 appPlugins/ToolPaint.py:3337
 msgid "The kind of selection shape used for area selection."
 msgstr "用于区域选择的选择形状的类型。"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:443
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:441
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:463
-#: appPlugins/ToolDrilling.py:2811 appPlugins/ToolDrilling.py:2828
-#: appPlugins/ToolMilling.py:4554 appPlugins/ToolMilling.py:4571
+#: appPlugins/ToolDrilling.py:2809 appPlugins/ToolDrilling.py:2826
+#: appPlugins/ToolMilling.py:4552 appPlugins/ToolMilling.py:4569
 msgid "Strategy"
 msgstr "策略"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:444
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:442
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:464
-#: appPlugins/ToolDrilling.py:2829 appPlugins/ToolMilling.py:4572
+#: appPlugins/ToolDrilling.py:2827 appPlugins/ToolMilling.py:4570
 msgid ""
 "The strategy followed when encountering an exclusion area.\n"
 "Can be:\n"
@@ -11035,30 +11041,30 @@ msgstr ""
 "-掠过->遇到该区域时，刀具将到达设定高度\n"
 "-绕过->将通过绕过该区域来避开排除区域"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:448
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:446
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:468
-#: appPlugins/ToolDrilling.py:861 appPlugins/ToolDrilling.py:2833
-#: appPlugins/ToolMilling.py:881 appPlugins/ToolMilling.py:4576
+#: appPlugins/ToolDrilling.py:861 appPlugins/ToolDrilling.py:2831
+#: appPlugins/ToolMilling.py:881 appPlugins/ToolMilling.py:4574
 msgid "Over"
 msgstr "掠过"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:449
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:447
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:469
-#: appPlugins/ToolDrilling.py:861 appPlugins/ToolDrilling.py:2834
-#: appPlugins/ToolMilling.py:881 appPlugins/ToolMilling.py:4577
+#: appPlugins/ToolDrilling.py:861 appPlugins/ToolDrilling.py:2832
+#: appPlugins/ToolMilling.py:881 appPlugins/ToolMilling.py:4575
 msgid "Around"
 msgstr "绕过"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:455
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:453
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:475
-#: appPlugins/ToolDrilling.py:2811 appPlugins/ToolDrilling.py:2841
-#: appPlugins/ToolMilling.py:4554 appPlugins/ToolMilling.py:4584
+#: appPlugins/ToolDrilling.py:2809 appPlugins/ToolDrilling.py:2839
+#: appPlugins/ToolMilling.py:4552 appPlugins/ToolMilling.py:4582
 msgid "Over Z"
 msgstr "结束Z"
 
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:456
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:454
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:476
-#: appPlugins/ToolDrilling.py:2842 appPlugins/ToolMilling.py:4585
+#: appPlugins/ToolDrilling.py:2840 appPlugins/ToolMilling.py:4583
 msgid ""
 "The height Z to which the tool will rise in order to avoid\n"
 "an interdiction area."
@@ -11272,9 +11278,18 @@ msgstr "逗号分隔值"
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:59
 #: appPlugins/ToolIsolation.py:3231 appPlugins/ToolNCC.py:4187
 #: appPlugins/ToolPaint.py:3051
+#, fuzzy
+#| msgid ""
+#| "This set the way that the tools in the tools table are used.\n"
+#| "'No' --> means that the used order is the one in the tool table\n"
+#| "'Forward' --> means that the tools will be ordered from small to big\n"
+#| "'Reverse' --> means that the tools will ordered from big to small\n"
+#| "\n"
+#| "WARNING: using rest machining will automatically set the order\n"
+#| "in reverse and disable this control."
 msgid ""
 "This set the way that the tools in the tools table are used.\n"
-"'No' --> means that the used order is the one in the tool table\n"
+"'Default' --> means that the used order is the one in the tool table\n"
 "'Forward' --> means that the tools will be ordered from small to big\n"
 "'Reverse' --> means that the tools will ordered from big to small\n"
 "\n"
@@ -11292,7 +11307,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:71
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:73
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:80
-#: appPlugins/ToolMilling.py:4106
+#: appPlugins/ToolMilling.py:4104
 msgid "V-Tip Dia"
 msgstr "V形端直径"
 
@@ -11300,7 +11315,7 @@ msgstr "V形端直径"
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:56
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:73
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:75
-#: appPlugins/ToolMilling.py:4109
+#: appPlugins/ToolMilling.py:4107
 msgid "The tip diameter for V-Shape Tool"
 msgstr "V形刀具的刀尖直径"
 
@@ -11309,7 +11324,7 @@ msgstr "V形刀具的刀尖直径"
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:83
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:86
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:94
-#: appPlugins/ToolMilling.py:4122
+#: appPlugins/ToolMilling.py:4120
 msgid "V-Tip Angle"
 msgstr "V形端角度"
 
@@ -11317,7 +11332,7 @@ msgstr "V形端角度"
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:71
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:85
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:88
-#: appPlugins/ToolMilling.py:4125
+#: appPlugins/ToolMilling.py:4123
 msgid ""
 "The tip angle for V-Shape Tool.\n"
 "In degree."
@@ -11374,8 +11389,8 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:247
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:274
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:231
-#: appPlugins/ToolDrilling.py:2636 appPlugins/ToolIsolation.py:3481
-#: appPlugins/ToolMilling.py:4345 appPlugins/ToolNCC.py:4473
+#: appPlugins/ToolDrilling.py:2634 appPlugins/ToolIsolation.py:3481
+#: appPlugins/ToolMilling.py:4343 appPlugins/ToolNCC.py:4473
 #: appPlugins/ToolPaint.py:3252
 msgid "Common Parameters"
 msgstr "公共参数"
@@ -11383,8 +11398,8 @@ msgstr "公共参数"
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:249
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:276
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:233
-#: appPlugins/ToolDrilling.py:2638 appPlugins/ToolFollow.py:723
-#: appPlugins/ToolIsolation.py:3483 appPlugins/ToolMilling.py:4347
+#: appPlugins/ToolDrilling.py:2636 appPlugins/ToolFollow.py:723
+#: appPlugins/ToolIsolation.py:3483 appPlugins/ToolMilling.py:4345
 #: appPlugins/ToolNCC.py:4475 appPlugins/ToolPaint.py:3253
 #: appPlugins/ToolPanelize.py:1306 appPlugins/ToolSub.py:822
 msgid "Parameters that are common for all tools."
@@ -11703,7 +11718,7 @@ msgid ""
 msgstr "在机器代码中包括换刀顺序（换刀暂停）。"
 
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:200
-#: appPlugins/ToolMilling.py:4207
+#: appPlugins/ToolMilling.py:4205
 msgid ""
 "Cutting speed in the XY\n"
 "plane in units per minute"
@@ -11737,8 +11752,8 @@ msgstr "指示机器代码（如GCode、RML、HPGL）输出的预处理器文件
 
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:305
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:134
-#: appPlugins/ToolCalibration.py:845 appPlugins/ToolDrilling.py:2672
-#: appPlugins/ToolMilling.py:4380
+#: appPlugins/ToolCalibration.py:845 appPlugins/ToolDrilling.py:2670
+#: appPlugins/ToolMilling.py:4378
 msgid "Toolchange X-Y"
 msgstr "换刀X-Y"
 
@@ -11757,13 +11772,13 @@ msgstr ""
 "忽略任何其他情况。"
 
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:344
-#: appPlugins/ToolMilling.py:4262
+#: appPlugins/ToolMilling.py:4260
 msgid "Re-cut"
 msgstr "重新切割"
 
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:346
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:358
-#: appPlugins/ToolMilling.py:4264 appPlugins/ToolMilling.py:4277
+#: appPlugins/ToolMilling.py:4262 appPlugins/ToolMilling.py:4275
 msgid ""
 "In order to remove possible\n"
 "copper leftovers where first cut\n"
@@ -11786,7 +11801,7 @@ msgstr ""
 "铣削后，金属刷将清洁材料。"
 
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:535
-#: appPlugins/ToolMilling.py:4078
+#: appPlugins/ToolMilling.py:4076
 msgid ""
 "Algorithm for polishing:\n"
 "- Standard: Fixed step inwards.\n"
@@ -12221,7 +12236,7 @@ msgstr "将“关键字”列表恢复为默认状态。"
 #: appGUI/preferences/utilities/FAExcPrefGroupUI.py:37
 #: appGUI/preferences/utilities/FAGcoPrefGroupUI.py:27
 #: appGUI/preferences/utilities/FAGrbPrefGroupUI.py:27
-#: appPlugins/ToolDrilling.py:2871 appPlugins/ToolMilling.py:4614
+#: appPlugins/ToolDrilling.py:2869 appPlugins/ToolMilling.py:4612
 msgid "Delete All"
 msgstr "全部删除"
 
@@ -12929,34 +12944,34 @@ msgstr ""
 #: appPlugins/ToolAlignObjects.py:555 appPlugins/ToolCalculators.py:1050
 #: appPlugins/ToolCalibration.py:1403 appPlugins/ToolCopperThieving.py:1792
 #: appPlugins/ToolCutOut.py:2760 appPlugins/ToolDblSided.py:1160
-#: appPlugins/ToolDrilling.py:2912 appPlugins/ToolEtchCompensation.py:513
+#: appPlugins/ToolDrilling.py:2910 appPlugins/ToolEtchCompensation.py:513
 #: appPlugins/ToolExtract.py:1414 appPlugins/ToolFiducials.py:1118
 #: appPlugins/ToolFilm.py:1765 appPlugins/ToolFollow.py:777
 #: appPlugins/ToolInvertGerber.py:320 appPlugins/ToolIsolation.py:3699
 #: appPlugins/ToolLevelling.py:2356 appPlugins/ToolMarkers.py:1493
-#: appPlugins/ToolMilling.py:4654 appPlugins/ToolNCC.py:4642
-#: appPlugins/ToolOptimal.py:716 appPlugins/ToolPaint.py:3370
-#: appPlugins/ToolPanelize.py:1403 appPlugins/ToolPunchGerber.py:2368
-#: appPlugins/ToolQRCode.py:1038 appPlugins/ToolRulesCheck.py:1794
-#: appPlugins/ToolSolderPaste.py:1692 appPlugins/ToolSub.py:977
-#: appPlugins/ToolTransform.py:1027
+#: appPlugins/ToolMilling.py:4652 appPlugins/ToolNCC.py:4642
+#: appPlugins/ToolObjectDistance.py:625 appPlugins/ToolOptimal.py:716
+#: appPlugins/ToolPaint.py:3370 appPlugins/ToolPanelize.py:1403
+#: appPlugins/ToolPunchGerber.py:2368 appPlugins/ToolQRCode.py:1038
+#: appPlugins/ToolRulesCheck.py:1794 appPlugins/ToolSolderPaste.py:1692
+#: appPlugins/ToolSub.py:977 appPlugins/ToolTransform.py:1027
 msgid "Reset Tool"
 msgstr "重置刀具"
 
 #: appPlugins/ToolAlignObjects.py:558 appPlugins/ToolCalculators.py:1053
 #: appPlugins/ToolCalibration.py:1406 appPlugins/ToolCopperThieving.py:1795
 #: appPlugins/ToolCutOut.py:2763 appPlugins/ToolDblSided.py:1163
-#: appPlugins/ToolDrilling.py:2915 appPlugins/ToolEtchCompensation.py:516
+#: appPlugins/ToolDrilling.py:2913 appPlugins/ToolEtchCompensation.py:516
 #: appPlugins/ToolExtract.py:1417 appPlugins/ToolFiducials.py:1121
 #: appPlugins/ToolFilm.py:1768 appPlugins/ToolFollow.py:780
 #: appPlugins/ToolInvertGerber.py:323 appPlugins/ToolIsolation.py:3702
 #: appPlugins/ToolLevelling.py:2359 appPlugins/ToolMarkers.py:1496
-#: appPlugins/ToolMilling.py:4657 appPlugins/ToolNCC.py:4645
-#: appPlugins/ToolOptimal.py:719 appPlugins/ToolPaint.py:3373
-#: appPlugins/ToolPanelize.py:1406 appPlugins/ToolPunchGerber.py:2371
-#: appPlugins/ToolQRCode.py:1041 appPlugins/ToolRulesCheck.py:1797
-#: appPlugins/ToolSolderPaste.py:1695 appPlugins/ToolSub.py:980
-#: appPlugins/ToolTransform.py:1030
+#: appPlugins/ToolMilling.py:4655 appPlugins/ToolNCC.py:4645
+#: appPlugins/ToolObjectDistance.py:628 appPlugins/ToolOptimal.py:719
+#: appPlugins/ToolPaint.py:3373 appPlugins/ToolPanelize.py:1406
+#: appPlugins/ToolPunchGerber.py:2371 appPlugins/ToolQRCode.py:1041
+#: appPlugins/ToolRulesCheck.py:1797 appPlugins/ToolSolderPaste.py:1695
+#: appPlugins/ToolSub.py:980 appPlugins/ToolTransform.py:1030
 msgid "Will reset the tool parameters."
 msgstr "将重置刀具参数。"
 
@@ -13860,13 +13875,13 @@ msgid "Cutout Tool"
 msgstr "切割工具"
 
 #: appPlugins/ToolCutOut.py:2314 appPlugins/ToolIsolation.py:214
-#: appPlugins/ToolIsolation.py:3295 appPlugins/ToolMilling.py:3849
+#: appPlugins/ToolIsolation.py:3295 appPlugins/ToolMilling.py:3847
 #: appPlugins/ToolNCC.py:4262 appPlugins/ToolPaint.py:3106
 msgid "Search and Add"
 msgstr "查找并添加"
 
 #: appPlugins/ToolCutOut.py:2317 appPlugins/ToolIsolation.py:3298
-#: appPlugins/ToolMilling.py:3852 appPlugins/ToolNCC.py:4265
+#: appPlugins/ToolMilling.py:3850 appPlugins/ToolNCC.py:4265
 #: appPlugins/ToolPaint.py:3109
 msgid ""
 "Add a new tool to the Tool Table\n"
@@ -13882,13 +13897,13 @@ msgstr ""
 
 #: appPlugins/ToolCutOut.py:2326 appPlugins/ToolIsolation.py:219
 #: appPlugins/ToolIsolation.py:3307 appPlugins/ToolMilling.py:384
-#: appPlugins/ToolMilling.py:3861 appPlugins/ToolNCC.py:4274
+#: appPlugins/ToolMilling.py:3859 appPlugins/ToolNCC.py:4274
 #: appPlugins/ToolPaint.py:3118
 msgid "Pick from DB"
 msgstr "从数据库选择"
 
 #: appPlugins/ToolCutOut.py:2329 appPlugins/ToolIsolation.py:3310
-#: appPlugins/ToolMilling.py:3864 appPlugins/ToolNCC.py:4277
+#: appPlugins/ToolMilling.py:3862 appPlugins/ToolNCC.py:4277
 #: appPlugins/ToolPaint.py:3121
 msgid ""
 "Add a new tool to the Tool Table\n"
@@ -14178,7 +14193,7 @@ msgid "MEASURING: Click on the Start point ..."
 msgstr "测量：点击起点。。。"
 
 #: appPlugins/ToolDistance.py:304 appPlugins/ToolDistance.py:835
-#: appPlugins/ToolObjectDistance.py:427
+#: appPlugins/ToolObjectDistance.py:613
 msgid "Measure"
 msgstr "测量"
 
@@ -14208,57 +14223,57 @@ msgstr "多点"
 msgid "Make a measurement over multiple distance segments."
 msgstr "在多个距离段上进行测量。"
 
-#: appPlugins/ToolDistance.py:739 appPlugins/ToolObjectDistance.py:318
+#: appPlugins/ToolDistance.py:739 appPlugins/ToolObjectDistance.py:504
 msgid "Start point"
 msgstr "起点"
 
 #: appPlugins/ToolDistance.py:740 appPlugins/ToolDistance.py:745
-#: appPlugins/ToolObjectDistance.py:319 appPlugins/ToolObjectDistance.py:324
+#: appPlugins/ToolObjectDistance.py:505 appPlugins/ToolObjectDistance.py:510
 msgid "This is measuring Start point coordinates."
 msgstr "这是测量起点坐标。"
 
-#: appPlugins/ToolDistance.py:752 appPlugins/ToolObjectDistance.py:331
+#: appPlugins/ToolDistance.py:752 appPlugins/ToolObjectDistance.py:517
 msgid "End point"
 msgstr "终点"
 
 #: appPlugins/ToolDistance.py:753 appPlugins/ToolDistance.py:758
-#: appPlugins/ToolObjectDistance.py:332 appPlugins/ToolObjectDistance.py:337
+#: appPlugins/ToolObjectDistance.py:518 appPlugins/ToolObjectDistance.py:523
 msgid "This is the measuring Stop point coordinates."
 msgstr "这是测量停止点坐标。"
 
-#: appPlugins/ToolDistance.py:767 appPlugins/ToolObjectDistance.py:346
+#: appPlugins/ToolDistance.py:767 appPlugins/ToolObjectDistance.py:532
 msgid "Results"
 msgstr "结果"
 
-#: appPlugins/ToolDistance.py:777 appPlugins/ToolObjectDistance.py:356
+#: appPlugins/ToolDistance.py:777 appPlugins/ToolObjectDistance.py:542
 msgid "Dx"
 msgstr "Dx"
 
 #: appPlugins/ToolDistance.py:778 appPlugins/ToolDistance.py:783
-#: appPlugins/ToolObjectDistance.py:357 appPlugins/ToolObjectDistance.py:362
+#: appPlugins/ToolObjectDistance.py:543 appPlugins/ToolObjectDistance.py:548
 msgid "This is the distance measured over the X axis."
 msgstr "这是在X轴上测量的距离。"
 
-#: appPlugins/ToolDistance.py:790 appPlugins/ToolObjectDistance.py:369
+#: appPlugins/ToolDistance.py:790 appPlugins/ToolObjectDistance.py:555
 msgid "Dy"
 msgstr "Dy"
 
 #: appPlugins/ToolDistance.py:791 appPlugins/ToolDistance.py:796
-#: appPlugins/ToolObjectDistance.py:370 appPlugins/ToolObjectDistance.py:375
+#: appPlugins/ToolObjectDistance.py:556 appPlugins/ToolObjectDistance.py:561
 msgid "This is the distance measured over the Y axis."
 msgstr "这是在Y轴上测量的距离。"
 
 #: appPlugins/ToolDistance.py:804 appPlugins/ToolDistance.py:809
-#: appPlugins/ToolObjectDistance.py:383 appPlugins/ToolObjectDistance.py:388
+#: appPlugins/ToolObjectDistance.py:569 appPlugins/ToolObjectDistance.py:574
 msgid "This is orientation angle of the measuring line."
 msgstr "这是测量线的方位角。"
 
-#: appPlugins/ToolDistance.py:821 appPlugins/ToolObjectDistance.py:400
+#: appPlugins/ToolDistance.py:821 appPlugins/ToolObjectDistance.py:586
 msgid "DISTANCE"
 msgstr "距离"
 
 #: appPlugins/ToolDistance.py:822 appPlugins/ToolDistance.py:828
-#: appPlugins/ToolObjectDistance.py:401 appPlugins/ToolObjectDistance.py:407
+#: appPlugins/ToolObjectDistance.py:587 appPlugins/ToolObjectDistance.py:593
 msgid "This is the point to point Euclidian distance."
 msgstr "这是点对点的欧氏距离。"
 
@@ -14266,7 +14281,7 @@ msgstr "这是点对点的欧氏距离。"
 #: appPlugins/ToolDrilling.py:965 appPlugins/ToolDrilling.py:1245
 #: appPlugins/ToolDrilling.py:1252 appPlugins/ToolDrilling.py:1284
 #: appPlugins/ToolDrilling.py:1297 appPlugins/ToolDrilling.py:1301
-#: appPlugins/ToolDrilling.py:2398 appPlugins/ToolIsolation.py:643
+#: appPlugins/ToolDrilling.py:2396 appPlugins/ToolIsolation.py:643
 #: appPlugins/ToolIsolation.py:757 appPlugins/ToolIsolation.py:762
 #: appPlugins/ToolIsolation.py:792 appPlugins/ToolIsolation.py:815
 #: appPlugins/ToolIsolation.py:828 appPlugins/ToolIsolation.py:3333
@@ -14274,7 +14289,7 @@ msgstr "这是点对点的欧氏距离。"
 #: appPlugins/ToolMilling.py:1607 appPlugins/ToolMilling.py:1615
 #: appPlugins/ToolMilling.py:1619 appPlugins/ToolMilling.py:1667
 #: appPlugins/ToolMilling.py:1679 appPlugins/ToolMilling.py:1683
-#: appPlugins/ToolMilling.py:3889 appPlugins/ToolNCC.py:554
+#: appPlugins/ToolMilling.py:3887 appPlugins/ToolNCC.py:554
 #: appPlugins/ToolNCC.py:559 appPlugins/ToolNCC.py:589
 #: appPlugins/ToolNCC.py:612 appPlugins/ToolNCC.py:625
 #: appPlugins/ToolNCC.py:840 appPlugins/ToolNCC.py:4299
@@ -14368,11 +14383,11 @@ msgstr "用于钻孔/铣削操作的Excellon对象。"
 msgid "Tools in the object used for drilling."
 msgstr "对象中用于钻孔的刀具。"
 
-#: appPlugins/ToolDrilling.py:2385
+#: appPlugins/ToolDrilling.py:2383
 msgid "Search DB"
 msgstr "搜索数据库"
 
-#: appPlugins/ToolDrilling.py:2388
+#: appPlugins/ToolDrilling.py:2386
 msgid ""
 "Will search and try to replace the tools from Tools Table\n"
 "with tools from DB that have a close diameter value."
@@ -14380,8 +14395,8 @@ msgstr ""
 "将搜索并尝试替换工具表中的工具\n"
 "使用DB中具有接近直径值的工具。"
 
-#: appPlugins/ToolDrilling.py:2401 appPlugins/ToolIsolation.py:3336
-#: appPlugins/ToolMilling.py:3892 appPlugins/ToolNCC.py:4301
+#: appPlugins/ToolDrilling.py:2399 appPlugins/ToolIsolation.py:3336
+#: appPlugins/ToolMilling.py:3890 appPlugins/ToolNCC.py:4301
 #: appPlugins/ToolPaint.py:3146
 msgid ""
 "The data used for creating GCode.\n"
@@ -14390,29 +14405,29 @@ msgstr ""
 "用于创建GCode的数据。\n"
 "每个工具都存储自己的一组此类数据。"
 
-#: appPlugins/ToolDrilling.py:2624 appPlugins/ToolIsolation.py:3469
-#: appPlugins/ToolMilling.py:4333 appPlugins/ToolNCC.py:4461
+#: appPlugins/ToolDrilling.py:2622 appPlugins/ToolIsolation.py:3469
+#: appPlugins/ToolMilling.py:4331 appPlugins/ToolNCC.py:4461
 #: appPlugins/ToolPaint.py:3240
 msgid "Apply parameters to all tools"
 msgstr "将参数应用于所有刀具"
 
-#: appPlugins/ToolDrilling.py:2627 appPlugins/ToolIsolation.py:3472
-#: appPlugins/ToolMilling.py:4336 appPlugins/ToolNCC.py:4464
+#: appPlugins/ToolDrilling.py:2625 appPlugins/ToolIsolation.py:3472
+#: appPlugins/ToolMilling.py:4334 appPlugins/ToolNCC.py:4464
 #: appPlugins/ToolPaint.py:3243
 msgid ""
 "The parameters in the current form will be applied\n"
 "on all the tools from the Tool Table."
 msgstr "当前形式的参数将应用于刀具表中的所有刀具。"
 
-#: appPlugins/ToolDrilling.py:2649 appPlugins/ToolMilling.py:4358
+#: appPlugins/ToolDrilling.py:2647 appPlugins/ToolMilling.py:4356
 msgid "Tool change Z"
 msgstr "换刀Z"
 
-#: appPlugins/ToolDrilling.py:2725 appPlugins/ToolMilling.py:4421
+#: appPlugins/ToolDrilling.py:2723 appPlugins/ToolMilling.py:4419
 msgid "X,Y coordinates"
 msgstr "X,Y坐标"
 
-#: appPlugins/ToolDrilling.py:2771
+#: appPlugins/ToolDrilling.py:2769
 msgid ""
 "The preprocessor JSON file that dictates\n"
 "Gcode output for Excellon Objects."
@@ -14420,55 +14435,55 @@ msgstr ""
 "指示的预处理器JSON文件\n"
 "Excellon对象的G代码输出。"
 
-#: appPlugins/ToolDrilling.py:2786 appPlugins/ToolMilling.py:4528
+#: appPlugins/ToolDrilling.py:2784 appPlugins/ToolMilling.py:4526
 msgid "Add exclusion areas"
 msgstr "添加排除区域"
 
-#: appPlugins/ToolDrilling.py:2813 appPlugins/ToolMilling.py:4556
+#: appPlugins/ToolDrilling.py:2811 appPlugins/ToolMilling.py:4554
 msgid "This is the Area ID."
 msgstr "这是区域ID。"
 
-#: appPlugins/ToolDrilling.py:2815 appPlugins/ToolMilling.py:4558
+#: appPlugins/ToolDrilling.py:2813 appPlugins/ToolMilling.py:4556
 msgid "Type of the object where the exclusion area was added."
 msgstr "添加排除区域的对象的类型。"
 
-#: appPlugins/ToolDrilling.py:2817 appPlugins/ToolMilling.py:4560
+#: appPlugins/ToolDrilling.py:2815 appPlugins/ToolMilling.py:4558
 msgid ""
 "The strategy used for exclusion area. Go around the exclusion areas or over "
 "it."
 msgstr "用于排除区域的策略。绕过禁区或越过禁区。"
 
-#: appPlugins/ToolDrilling.py:2819 appPlugins/ToolMilling.py:4562
+#: appPlugins/ToolDrilling.py:2817 appPlugins/ToolMilling.py:4560
 msgid ""
 "If the strategy is to go over the area then this is the height at which the "
 "tool will go to avoid the exclusion area."
 msgstr "如果策略是越过该区域，则这是工具避开排除区域的高度。"
 
-#: appPlugins/ToolDrilling.py:2853 appPlugins/ToolMilling.py:4596
+#: appPlugins/ToolDrilling.py:2851 appPlugins/ToolMilling.py:4594
 msgid "Add Area:"
 msgstr "添加区域："
 
-#: appPlugins/ToolDrilling.py:2854 appPlugins/ToolMilling.py:4597
+#: appPlugins/ToolDrilling.py:2852 appPlugins/ToolMilling.py:4595
 msgid "Add an Exclusion Area."
 msgstr "添加一个排除区域。"
 
-#: appPlugins/ToolDrilling.py:2872 appPlugins/ToolMilling.py:4615
+#: appPlugins/ToolDrilling.py:2870 appPlugins/ToolMilling.py:4613
 msgid "Delete all exclusion areas."
 msgstr "删除所有排除区域。"
 
-#: appPlugins/ToolDrilling.py:2875 appPlugins/ToolMilling.py:4618
+#: appPlugins/ToolDrilling.py:2873 appPlugins/ToolMilling.py:4616
 msgid "Delete Selected"
 msgstr "删除所选内容"
 
-#: appPlugins/ToolDrilling.py:2876 appPlugins/ToolMilling.py:4619
+#: appPlugins/ToolDrilling.py:2874 appPlugins/ToolMilling.py:4617
 msgid "Delete all exclusion areas that are selected in the table."
 msgstr "删除表中选定的所有排除区域。"
 
-#: appPlugins/ToolDrilling.py:2892 appPlugins/ToolMilling.py:4634
+#: appPlugins/ToolDrilling.py:2890 appPlugins/ToolMilling.py:4632
 msgid "Generate CNCJob object"
 msgstr "生成CNC任务"
 
-#: appPlugins/ToolDrilling.py:2895 appPlugins/ToolMilling.py:4637
+#: appPlugins/ToolDrilling.py:2893 appPlugins/ToolMilling.py:4635
 msgid ""
 "Generate the CNC Job.\n"
 "If milling then an additional Geometry object will be created.\n"
@@ -15192,7 +15207,7 @@ msgstr ""
 "只有创建隔离几何图形的工具仍将出现在生成的几何图形中。这是因为使用某些工具，"
 "此功能将无法创建布管几何图形。"
 
-#: appPlugins/ToolIsolation.py:3260 appPlugins/ToolMilling.py:3825
+#: appPlugins/ToolIsolation.py:3260 appPlugins/ToolMilling.py:3823
 #: appPlugins/ToolNCC.py:230 appPlugins/ToolNCC.py:4222
 #: appPlugins/ToolPaint.py:227 appPlugins/ToolPaint.py:3080
 msgid "Add from DB"
@@ -15204,7 +15219,7 @@ msgid ""
 "to do a complete isolation."
 msgstr "找到保证完全隔离的工具直径。"
 
-#: appPlugins/ToolIsolation.py:3321 appPlugins/ToolMilling.py:3875
+#: appPlugins/ToolIsolation.py:3321 appPlugins/ToolMilling.py:3873
 #: appPlugins/ToolNCC.py:4288 appPlugins/ToolPaint.py:3132
 #: appPlugins/ToolSolderPaste.py:1303
 msgid ""
@@ -15761,7 +15776,7 @@ msgstr "用于铣削操作的对象。"
 msgid "Tools in the object used for milling."
 msgstr "对象中用于铣削的刀具。"
 
-#: appPlugins/ToolMilling.py:3787
+#: appPlugins/ToolMilling.py:3785
 msgid ""
 "This is the Tool Number.\n"
 "When ToolChange is checked, on toolchange event this value\n"
@@ -15770,7 +15785,7 @@ msgstr ""
 "这是工具编号。\n"
 "当检查刀具更换时，在刀具更换事件中，该值将显示为T1、T2。。。Tn"
 
-#: appPlugins/ToolMilling.py:3797
+#: appPlugins/ToolMilling.py:3795
 msgid ""
 "Plot column. It is visible only for MultiGeo geometries, meaning geometries "
 "that holds the geometry\n"
@@ -15784,7 +15799,7 @@ msgstr ""
 "这些几何图形，删除该工具也将删除几何图形数据，因此请注意。通过每行上的复选"
 "框，可以启用/禁用在画布上绘制相应刀具。"
 
-#: appPlugins/ToolMilling.py:3920
+#: appPlugins/ToolMilling.py:3918
 msgid ""
 "Milling type:\n"
 "- Drills -> will mill the drills associated with this tool\n"
@@ -15796,15 +15811,15 @@ msgstr ""
 "-铣槽->将铣削与此刀具关联的槽\n"
 "-以上都是->将同时钻孔和铣削"
 
-#: appPlugins/ToolMilling.py:3940
+#: appPlugins/ToolMilling.py:3938
 msgid "The diameter of the tool who will do the milling"
 msgstr "进行铣削的刀具的直径"
 
-#: appPlugins/ToolMilling.py:3957
+#: appPlugins/ToolMilling.py:3955
 msgid "Offset Type"
 msgstr "偏移类型"
 
-#: appPlugins/ToolMilling.py:3960
+#: appPlugins/ToolMilling.py:3958
 msgid ""
 "The value for the Offset can be:\n"
 "- Path -> There is no offset, the tool cut will be done through the geometry "
@@ -15820,7 +15835,7 @@ msgstr ""
 "- 外（侧）-> 刀具切割将沿着外部的几何线。\n"
 "- 自定义 -> 刀具将以选定的偏移量进行切割。"
 
-#: appPlugins/ToolMilling.py:3980
+#: appPlugins/ToolMilling.py:3978
 msgid ""
 "The value to offset the cut when \n"
 "the Offset type selected is 'Custom'.\n"
@@ -15831,17 +15846,17 @@ msgstr ""
 "选择的偏移类型是“自定义”。\n"
 "'外侧'切割的值可以为正，'内侧'切割的值可以为负。"
 
-#: appPlugins/ToolMilling.py:4467
+#: appPlugins/ToolMilling.py:4465
 msgid ""
 "The preprocessor JSON file that dictates\n"
 "Gcode output for Geometry (Milling) Objects."
 msgstr "为Geometry（铣削）对象指定G代码输出的预处理器JSON文件。"
 
-#: appPlugins/ToolMilling.py:4478
+#: appPlugins/ToolMilling.py:4476
 msgid "Allow levelling"
 msgstr "允许平放"
 
-#: appPlugins/ToolMilling.py:4480
+#: appPlugins/ToolMilling.py:4478
 msgid "Allow levelling by having segments size more than zero."
 msgstr "通过使段大小大于零来允许调平。"
 
@@ -16046,32 +16061,26 @@ msgstr ""
 "用作非铜清除参考的FlatCAM对象的类型。\n"
 "它可以是Gerber、Excelon或Geometry。"
 
-#: appPlugins/ToolObjectDistance.py:100 appPlugins/ToolObjectDistance.py:259
+#: appPlugins/ToolObjectDistance.py:99 appPlugins/ToolObjectDistance.py:445
 msgid "Object Distance"
 msgstr "物距"
 
-#: appPlugins/ToolObjectDistance.py:142 appPlugins/ToolObjectDistance.py:163
-#: appPlugins/ToolObjectDistance.py:172 appPlugins/ToolObjectDistance.py:193
-msgid "Select two objects and no more. Currently the selection has objects: "
-msgstr "选择两个对象而不是更多。 目前选择有对象： "
-
-#: appPlugins/ToolObjectDistance.py:231
-msgid "MEASURING"
-msgstr "测量"
-
-#: appPlugins/ToolObjectDistance.py:232
-msgid "Result"
-msgstr "结果"
-
-#: appPlugins/ToolObjectDistance.py:240
+#: appPlugins/ToolObjectDistance.py:201
 msgid "Objects intersects or touch at"
 msgstr "对象相交或接触在"
 
-#: appPlugins/ToolObjectDistance.py:248
+#: appPlugins/ToolObjectDistance.py:212 appPlugins/ToolObjectDistance.py:236
+#: appPlugins/ToolObjectDistance.py:246 appPlugins/ToolObjectDistance.py:257
+#: appPlugins/ToolObjectDistance.py:280 appPlugins/ToolObjectDistance.py:309
+#: appPlugins/ToolObjectDistance.py:327 appPlugins/ToolObjectDistance.py:346
+msgid "Select two objects and no more. Currently the selection has objects: "
+msgstr "选择两个对象而不是更多。 目前选择有对象： "
+
+#: appPlugins/ToolObjectDistance.py:373
 msgid "Jumped to the half point between the two selected objects"
 msgstr "跳到两个选定对象之间的中点"
 
-#: appPlugins/ToolObjectDistance.py:290
+#: appPlugins/ToolObjectDistance.py:476
 msgid ""
 "The type of distance to be calculated.\n"
 "- Nearest points - minimal distance between objects\n"
@@ -16081,23 +16090,23 @@ msgstr ""
 "- 最近点 - 物体之间的最小距离\n"
 "- 中心点 - 边界框中心之间的距离"
 
-#: appPlugins/ToolObjectDistance.py:296
+#: appPlugins/ToolObjectDistance.py:482
 msgid "Nearest points"
 msgstr "最近点"
 
-#: appPlugins/ToolObjectDistance.py:296
+#: appPlugins/ToolObjectDistance.py:482
 msgid "Center points"
 msgstr "中心点"
 
-#: appPlugins/ToolObjectDistance.py:414
+#: appPlugins/ToolObjectDistance.py:600
 msgid "Half Point"
 msgstr "点间欧氏中点"
 
-#: appPlugins/ToolObjectDistance.py:415 appPlugins/ToolObjectDistance.py:420
+#: appPlugins/ToolObjectDistance.py:601 appPlugins/ToolObjectDistance.py:606
 msgid "This is the middle point of the point to point Euclidean distance."
 msgstr "这是点对点欧氏距离的中点。"
 
-#: appPlugins/ToolObjectDistance.py:430
+#: appPlugins/ToolObjectDistance.py:616
 msgid "Jump to Half Point"
 msgstr "跳转到点间欧氏中点"
 
@@ -18718,6 +18727,12 @@ msgstr "通过使用偏移所有加载的对象来设置原点 "
 #: tclCommands/TclCommandSubtractRectangle.py:62
 msgid "No Geometry name in args. Provide a name and try again."
 msgstr "参数中没有Geometry名称。请提供名称，然后重试。"
+
+#~ msgid "MEASURING"
+#~ msgstr "测量"
+
+#~ msgid "Result"
+#~ msgstr "结果"
 
 #~ msgid "Paint Tool."
 #~ msgstr "绘画工具。"

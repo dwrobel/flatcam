@@ -3229,7 +3229,7 @@ class IsoUI:
         # Tool order
         self.order_label = FCLabel('%s:' % _('Tool order'))
         self.order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
-                                      "'No' --> means that the used order is the one in the tool table\n"
+                                      "'Default' --> means that the used order is the one in the tool table\n"
                                       "'Forward' --> means that the tools will be ordered from small to big\n"
                                       "'Reverse' --> means that the tools will ordered from big to small\n\n"
                                       "WARNING: using rest machining will automatically set the order\n"

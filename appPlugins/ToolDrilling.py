@@ -2369,11 +2369,9 @@ class DrillingUI:
         # Tool order
         self.order_label = FCLabel('%s:' % _('Tool order'))
         self.order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
-                                      "'Default' --> the order from the Excellon file\n"
+                                      "'Default' --> the order from the file\n"
                                       "'Forward' --> tools will be ordered from small to big\n"
-                                      "'Reverse' --> tools will ordered from big to small\n\n"
-                                      "WARNING: using rest machining will automatically set the order\n"
-                                      "in reverse and disable this control."))
+                                      "'Reverse' --> tools will ordered from big to small."))
 
         self.order_combo = FCComboBox2()
         self.order_combo.addItems([_('Default'), _('Forward'), _('Reverse')])

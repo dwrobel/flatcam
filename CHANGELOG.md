@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+14.10.2021
+
+- updated the translation strings
+
 13.10.2021
 
 - in Distance Plugin - modified the UI
