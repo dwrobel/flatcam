@@ -551,7 +551,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
             def g2dxf(dxf_space, geo_obj):
                 if isinstance(geo_obj, MultiPolygon):
-                    for poly in geo_obj:
+                    for poly in geo_obj.geoms:
                         ext_points = list(poly.exterior.coords)
                         dxf_space.add_lwpolyline(ext_points)
                         for interior in poly.interiors:
@@ -562,7 +562,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     for interior in geo_obj.interiors:
                         dxf_space.add_lwpolyline(list(interior.coords))
                 if isinstance(geo_obj, MultiLineString):
-                    for line in geo_obj:
+                    for line in geo_obj.geoms:
                         dxf_space.add_lwpolyline(list(line.coords))
                 if isinstance(geo_obj, LineString) or isinstance(geo_obj, LinearRing):
                     dxf_space.add_lwpolyline(list(geo_obj.coords))

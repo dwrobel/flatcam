@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 15.10.2021
 
 - added an ugly form of extra pad passes functionality in Isolation Plugin - does not take into consideration the milling direction
+- fixed a Shapely deprecation warning in export_dxf() in GeometryObject class
 
 14.10.2021
 
