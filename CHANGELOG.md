@@ -1,4 +1,4 @@
-latCAM BETA (c) 2019 - by Marius Stanciu
+FlatCAM BETA (c) 2019 - by Marius Stanciu
 Based on FlatCAM: 
 2D Computer-Aided PCB Manufacturing by (c) 2014-2016 Juan Pablo Caram
 =================================================
@@ -6,6 +6,10 @@ Based on FlatCAM:
 CHANGELOG for FlatCAM beta
 
 =================================================
+
+15.10.2021
+
+- added an ugly form of extra pad passes functionality in Isolation Plugin - does not take into consideration the milling direction
 
 14.10.2021
 

@@ -103,7 +103,7 @@ class Gerber(Geometry):
         # ## Gerber elements # ##
         '''
         tools = {
-            'id':{
+            aperture_id:{
                 'type':string, 
                 'size':float, 
                 'width':float,
@@ -111,7 +111,7 @@ class Gerber(Geometry):
                 'geometry': [],
             }
         }
-        tools['geometry'] list elements are dicts
+        tools[aperture_id]['geometry'] list elements are dicts
         dict = {
             'solid': [],
             'follow': [],

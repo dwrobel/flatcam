@@ -1732,6 +1732,39 @@ class ToolIsolation(AppTool, Gerber):
                         self.app.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
                         continue
 
+                    # Extra Pads isolations
+                    pad_geo = []
+                    extra_passes = self.ui.pad_passes_entry.get_value()
+                    if extra_passes > 0:
+                        solid_geo_union = unary_union(iso_geo)
+                        extra_geo = []
+                        for apid in self.grb_obj.tools:
+                            for t_geo_dict in self.grb_obj.tools[apid]['geometry']:
+                                if isinstance(t_geo_dict['follow'], Point):
+                                    extra_geo.append(t_geo_dict['solid'])
+
+                        for nr_pass in range(i, extra_passes + i):
+                            pad_pass_geo = []
+                            for geo in extra_geo:
+                                iso_offset = tool_dia * ((2 * nr_pass + 1) / 2.0000001) - (
+                                            nr_pass * overlap * tool_dia)
+                                if negative_dia:
+                                    iso_offset = -iso_offset
+                                pad_pass_geo.append(
+                                    geo.buffer(iso_offset, int(self.app.defaults["gerber_circle_steps"])))
+                            pad_geo.append(unary_union(pad_pass_geo).difference(solid_geo_union))
+
+                    total_geo = []
+                    try:
+                        for p in iso_geo.geoms:
+                            total_geo.append(p)
+                    except (AttributeError, TypeError):
+                        total_geo.append(iso_geo)
+
+                    for p in pad_geo:
+                        total_geo.append(p)
+                    iso_geo = total_geo
+
                     # ############################################################
                     # ########## AREA SUBTRACTION ################################
                     # ############################################################
@@ -2095,6 +2128,28 @@ class ToolIsolation(AppTool, Gerber):
                         solid_geo.append(geo)
                 else:
                     solid_geo.append(iso_geo)
+
+            # Extra Pads isolations
+            pad_geo = []
+            extra_passes = self.ui.pad_passes_entry.get_value()
+            if extra_passes > 0:
+                solid_geo_union = unary_union(solid_geo)
+                extra_geo = []
+                for apid in self.grb_obj.tools:
+                    for t_geo_dict in self.grb_obj.tools[apid]['geometry']:
+                        if isinstance(t_geo_dict['follow'], Point):
+                            extra_geo.append(t_geo_dict['solid'])
+
+                for nr_pass in range(passes, extra_passes + passes):
+                    pad_pass_geo = []
+                    for geo in extra_geo:
+                        iso_offset = tool_dia * ((2 * nr_pass + 1) / 2.0000001) - (nr_pass * overlap * tool_dia)
+                        if negative_dia:
+                            iso_offset = -iso_offset
+                        pad_pass_geo.append(geo.buffer(iso_offset, int(self.app.defaults["gerber_circle_steps"])))
+                    pad_geo.append(unary_union(pad_pass_geo).difference(solid_geo_union))
+
+            solid_geo += pad_geo
 
             # ############################################################
             # ########## AREA SUBTRACTION ################################
@@ -2884,7 +2939,7 @@ class ToolIsolation(AppTool, Gerber):
         :type offset:           float
         :param invert:          If to invert the direction of geometry (CW to CCW or reverse)
         :type invert:           int
-        :param geometry:        Shapely Geometry for which t ogenerate envelope
+        :param geometry:        Shapely Geometry for which to generate envelope
         :type geometry:
         :param env_iso_type:    type of isolation, can be 0 = exteriors or 1 = interiors or 2 = both (complete)
         :type env_iso_type:     int
