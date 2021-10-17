@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+18.10.2021
+
+- fixing a possible error in the Subtract Plugin: trying to remove the aperture with id: 0 will create an exception if this aperture does not exist
+
 15.10.2021
 
 - added an ugly form of extra pad passes functionality in Isolation Plugin - does not take into consideration the milling direction

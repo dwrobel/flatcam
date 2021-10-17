@@ -448,7 +448,7 @@ class ToolSub(AppTool):
                     grb_obj.tools.pop(apid, None)
 
             # delete the 0 aperture if it has no geometry
-            if not grb_obj.tools[0]['geometry']:
+            if 0 in grb_obj.tools and not grb_obj.tools[0]['geometry']:
                 grb_obj.tools.pop(0, None)
 
             poly_buff = []
