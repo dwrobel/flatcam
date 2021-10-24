@@ -7,9 +7,13 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+24.10.2021
+
+- added an example showing performance degradation in VisPy 0.9.1
+
 18.10.2021
 
-- fixing a possible error in the Subtract Plugin: trying to remove the aperture with id: 0 will create an exception if this aperture does not exist
+- fixing a possible error in Subtract Plugin: trying to remove the aperture with id: 0 will create an exception if this aperture does not exist
 
 15.10.2021
 
