@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+25.10.2021
+
+- updated the PlotCanvas3d
+
 24.10.2021
 
 - added an example showing performance degradation in VisPy 0.9.1
