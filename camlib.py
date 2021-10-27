@@ -5716,6 +5716,15 @@ class CNCjob(Geometry):
                 # it's a Shapely object, return it's bounds
                 return obj.bounds
 
+        # #############################################################################################################
+        # ## Flatten the geometry. Only linear elements (no polygons) remain.
+        # #############################################################################################################
+
+        # flat_geometry = self.flatten(temp_solid_geometry, pathonly=True)
+        flat_ext_geo, flat_ints_geo = self.flatten_exterior_interiors(geo_obj.solid_geometry)
+        flat_geometry = flat_ext_geo + flat_ints_geo
+        log.debug("%d paths" % len(flat_geometry))
+
         # Create the solid geometry which will be used to generate GCode
         temp_solid_geometry = []
         if offset != 0.0:
@@ -5737,19 +5746,31 @@ class CNCjob(Geometry):
                 elif -offset == ((c - a) / 2) or -offset == ((d - b) / 2):
                     offset_for_use = offset - 0.0000000001
 
-            for it in geo_obj.solid_geometry:
+            # for it in flat_geometry:
+            #     # if the geometry is a closed shape then create a Polygon out of it
+            #     if isinstance(it, (LineString, LinearRing)):
+            #         c = it.coords
+            #         if c[0] == c[-1]:
+            #             it = Polygon(it)
+            #     temp_solid_geometry.append(it.buffer(offset_for_use, join_style=2))
+
+            for it in flat_ext_geo:
                 # if the geometry is a closed shape then create a Polygon out of it
                 if isinstance(it, LineString):
-                    c = it.coords
-                    if c[0] == c[-1]:
+                    if it.is_ring:
                         it = Polygon(it)
                 temp_solid_geometry.append(it.buffer(offset_for_use, join_style=2))
-        else:
-            temp_solid_geometry = geo_obj.solid_geometry
 
-        # ## Flatten the geometry. Only linear elements (no polygons) remain.
-        flat_geometry = self.flatten(temp_solid_geometry, pathonly=True)
-        log.debug("%d paths" % len(flat_geometry))
+            for it in flat_ints_geo:
+                # if the geometry is a closed shape then create a Polygon out of it
+                if isinstance(it, (LineString, LinearRing)):
+                    if it.is_ring:
+                        it = Polygon(it)
+                temp_solid_geometry.append(it.buffer(-offset_for_use, join_style=2))
+
+            temp_solid_geometry = self.flatten(temp_solid_geometry, reset=True, pathonly=True)
+        else:
+            temp_solid_geometry = flat_geometry
 
         default_dia = None
         if isinstance(self.app.defaults["tools_mill_tooldia"], float):
@@ -5889,7 +5910,7 @@ class CNCjob(Geometry):
         log.debug("Indexing geometry before generating G-Code...")
         self.app.inform.emit(_("Indexing geometry before generating G-Code..."))
 
-        for geo_shape in flat_geometry:
+        for geo_shape in temp_solid_geometry:
             if self.app.abort_flag:
                 # graceful abort requested by the user
                 raise grace
@@ -5960,7 +5981,7 @@ class CNCjob(Geometry):
         self.app.inform.emit('%s...' % _("Starting G-Code"))
 
         # variables to display the percentage of work done
-        geo_len = len(flat_geometry)
+        geo_len = len(temp_solid_geometry)
 
         old_disp_number = 0
         log.warning("Number of paths for which to generate GCode: %s" % str(geo_len))
