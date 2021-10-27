@@ -977,6 +977,37 @@ class Geometry(object):
 
         return self.flat_geometry
 
+    def flatten_exterior_interiors(self, geometry=None):
+        """
+        Creates a list of non-iterable linear geometry objects.
+        Polygons are expanded into its exterior and interiors.
+
+
+        :param geometry: Shapely type or list or list of list of such.
+        """
+
+        flat_geo_ext = []
+        flat_geo_ints = []
+
+        if geometry is None:
+            geometry = self.solid_geometry
+        # ## If iterable, expand recursively.
+        try:
+            for geo in geometry:
+                if geo is not None:
+                    ext, ints = self.flatten_exterior_interiors(geo)
+                    flat_geo_ext += ext
+                    flat_geo_ints += ints
+        # ## Not iterable, do the actual indexing and add.
+        except TypeError:
+            if type(geometry) == Polygon:
+                flat_geo_ext.append(geometry.exterior)
+                flat_geo_ints += geometry.interiors
+            elif isinstance(geometry, (LineString, LinearRing)):
+                flat_geo_ext.append(geometry)
+
+        return flat_geo_ext, flat_geo_ints
+
     # def make2Dstorage(self):
     #
     #     self.flatten()
@@ -3545,14 +3576,9 @@ class CNCjob(Geometry):
 
         # The Geometry from which we create GCode
         geometry = tools[tool]['solid_geometry']
-        # ## Flatten the geometry. Only linear elements (no polygons) remain.
-        flat_geometry = self.flatten(geometry, reset=True, pathonly=True)
-        log.debug("%d paths" % len(flat_geometry))
 
         # #########################################################################################################
-        # #########################################################################################################
         # ############# PARAMETERS used in PREPROCESSORS so they need to be updated ###############################
-        # #########################################################################################################
         # #########################################################################################################
         self.tool = str(tool)
         tool_dict = tools[tool]['data']
@@ -3593,13 +3619,34 @@ class CNCjob(Geometry):
         else:
             tool_offset = 0.0
 
+        # #############################################################################################################
+        # ## Flatten the geometry. Only linear elements (no polygons) remain.
+        # #############################################################################################################
+        flat_ext_geo, flat_ints_geo = self.flatten_exterior_interiors(geometry)
+        flat_geometry = flat_ext_geo + flat_ints_geo
+        # flat_geometry = self.flatten(geometry, reset=True, pathonly=True)
+        log.debug("%d paths" % len(flat_geometry))
         if tool_offset != 0.0:
-            for it in flat_geometry:
+            # for it in flat_geometry:
+            #     # if the geometry is a closed shape then create a Polygon out of it
+            #     if isinstance(it, LineString):
+            #         if it.is_ring:
+            #             it = Polygon(it)
+            #     temp_solid_geometry.append(it.buffer(tool_offset, join_style=2))
+            for it in flat_ext_geo:
                 # if the geometry is a closed shape then create a Polygon out of it
                 if isinstance(it, LineString):
                     if it.is_ring:
                         it = Polygon(it)
                 temp_solid_geometry.append(it.buffer(tool_offset, join_style=2))
+
+            for it in flat_ints_geo:
+                # if the geometry is a closed shape then create a Polygon out of it
+                if isinstance(it, (LineString, LinearRing)):
+                    if it.is_ring:
+                        it = Polygon(it)
+                temp_solid_geometry.append(it.buffer(-tool_offset, join_style=2))
+
             temp_solid_geometry = self.flatten(temp_solid_geometry, reset=True, pathonly=True)
         else:
             temp_solid_geometry = flat_geometry

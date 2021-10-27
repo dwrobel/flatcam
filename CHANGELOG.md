@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+27.10.2021
+
+- fixed the offseting feature in the Isolation Plugin such that the interiors of the isolated polygons are offset correctly
+
 25.10.2021
 
 - updated the PlotCanvas3d
