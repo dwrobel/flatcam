@@ -14,10 +14,11 @@ CHANGELOG for FlatCAM beta
 - added an error message when the File -> Print to PDF functionality is not working due of missing a root element in the SVG step
 - fixed printing a CNCJob object with File -> Print(PDF) functionality by adding a root element if both travels and cuts are present
 - fixed some more Shapely 2.0 deprecation warnings
+- added more of the contributors in the About page
 
 27.10.2021
 
-- fixed the offseting feature in the Isolation Plugin such that the interiors of the isolated polygons are offset correctly
+- fixed the offsetting feature in the Isolation Plugin such that the interiors of the isolated polygons are offset correctly
 - applied changes for offsetting to other methods
 
 25.10.2021

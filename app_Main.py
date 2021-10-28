@@ -3482,6 +3482,51 @@ class App(QtCore.QObject):
                         'description': '',
                         'email': ''
                     },
+                    {
+                        'name': "Emily Ellis",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Maksym Stetsyuk",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Peter Nitschneider",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Bogusz Jagoda",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Andre Spahlinger",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Hans Boot",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Dmitriy Klabukov",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Robert Niemöller",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Adam Coddington",
+                        'description': '',
+                        'email': ''
+                    },
                 ]
 
                 self.prog_grid_lay = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0, 1])
