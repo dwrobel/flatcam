@@ -1831,7 +1831,8 @@ class Geometry(object):
 
         # Add lines to storage
         try:
-            for line in lines_trimmed:
+            lines_t_geo = lines_trimmed.geoms if isinstance(lines_trimmed, MultiLineString) else lines_trimmed
+            for line in lines_t_geo:
                 if isinstance(line, LineString) or isinstance(line, LinearRing):
                     if not line.is_empty:
                         geoms.insert(line)
@@ -1845,7 +1846,8 @@ class Geometry(object):
         # Add margin (contour) to storage
         if contour:
             try:
-                for poly in margin_poly:
+                margin_poly_geo = margin_poly.geoms if isinstance(margin_poly, MultiPolygon) else margin_poly
+                for poly in margin_poly_geo:
                     if isinstance(poly, Polygon) and not poly.is_empty:
                         geoms.insert(poly.exterior)
                         if prog_plot:

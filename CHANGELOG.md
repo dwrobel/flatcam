@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - fixed error that did not allowed printing from the TextEditor
 - added an error message when the File -> Print to PDF functionality is not working due of missing a root element in the SVG step
 - fixed printing a CNCJob object with File -> Print(PDF) functionality by adding a root element if both travels and cuts are present
+- fixed some more Shapely 2.0 deprecation warnings
 
 27.10.2021
 
