@@ -959,7 +959,8 @@ class Geometry(object):
 
         # ## If iterable, expand recursively.
         try:
-            for geo in geometry:
+            work_geo = geometry.geoms if isinstance(geometry, (MultiPolygon, MultiLineString)) else geometry
+            for geo in work_geo:
                 if geo is not None:
                     self.flatten(geometry=geo,
                                  reset=False,
@@ -968,12 +969,14 @@ class Geometry(object):
         # ## Not iterable, do the actual indexing and add.
         except TypeError:
             if pathonly and type(geometry) == Polygon:
-                self.flat_geometry.append(geometry.exterior)
-                self.flatten(geometry=geometry.interiors,
-                             reset=False,
-                             pathonly=True)
+                ext_geo = geometry.exterior
+                ints_geo = geometry.interiors
+                if ext_geo is not None and not ext_geo.is_empty:
+                    self.flat_geometry.append(ext_geo)
+                self.flatten(geometry=ints_geo, reset=False,  pathonly=True)
             else:
-                self.flat_geometry.append(geometry)
+                if geometry is not None and not geometry.is_empty:
+                    self.flat_geometry.append(geometry)
 
         return self.flat_geometry
 
@@ -993,7 +996,8 @@ class Geometry(object):
             geometry = self.solid_geometry
         # ## If iterable, expand recursively.
         try:
-            for geo in geometry:
+            work_geo = geometry.geoms if isinstance(geometry, (MultiPolygon, MultiLineString)) else geometry
+            for geo in work_geo:
                 if geo is not None:
                     ext, ints = self.flatten_exterior_interiors(geo)
                     flat_geo_ext += ext
@@ -1001,10 +1005,16 @@ class Geometry(object):
         # ## Not iterable, do the actual indexing and add.
         except TypeError:
             if type(geometry) == Polygon:
-                flat_geo_ext.append(geometry.exterior)
-                flat_geo_ints += geometry.interiors
+                ext_geo = geometry.exterior
+                ints_geo = geometry.interiors
+                if ext_geo is not None and not ext_geo.is_empty:
+                    flat_geo_ext.append(ext_geo)
+                for i_geo in ints_geo:
+                    if i_geo is not None and not i_geo.is_empty:
+                        flat_geo_ints.append(i_geo)
             elif isinstance(geometry, (LineString, LinearRing)):
-                flat_geo_ext.append(geometry)
+                if geometry is not None and not geometry.is_empty:
+                    flat_geo_ext.append(geometry)
 
         return flat_geo_ext, flat_geo_ints
 
@@ -3155,13 +3165,17 @@ class CNCjob(Geometry):
         log.debug("Indexing geometry before generating G-Code...")
         self.app.inform.emit(_("Indexing geometry before generating G-Code..."))
 
-        for geo_shape in geometry:
+        work_geo = geometry.geoms if isinstance(geometry, (MultiPolygon, MultiLineString)) else geometry
+        for geo_shape in work_geo:
             if self.app.abort_flag:
                 # graceful abort requested by the user
                 raise grace
 
             if geo_shape is not None:
-                storage.insert(geo_shape)
+                try:
+                    storage.insert(geo_shape)
+                except Exception:
+                    pass
 
         current_pt = (0, 0)
         pt, geo = storage.nearest(current_pt)
@@ -3651,6 +3665,8 @@ class CNCjob(Geometry):
         else:
             temp_solid_geometry = flat_geometry
 
+        temp_solid_geometry = [t_geo for t_geo in temp_solid_geometry if not t_geo.is_empty]
+
         if self.z_cut is None:
             if 'laser' not in self.pp_geometry_name:
                 self.app.inform.emit(
@@ -3774,8 +3790,11 @@ class CNCjob(Geometry):
 
         geo_storage = {}
         for geo in temp_solid_geometry:
-            if geo is not None:
-                geo_storage[geo.coords[0]] = geo
+            if geo is not None and isinstance(geo, (MultiPolygon, MultiLineString, LineString, LinearRing)):
+                try:
+                    geo_storage[geo.coords[0]] = geo
+                except Exception:
+                    pass
         locations = list(geo_storage.keys())
 
         if opt_type == 'M':
