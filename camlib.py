@@ -7688,6 +7688,10 @@ class CNCjob(Geometry):
         if cuts:
             svg_elem += cutsgeom.svg(scale_factor=scale_stroke_factor, stroke_color="#5E6CFF")
 
+        # if both are true then we need a root element <g>
+        if travels and cuts:
+            svg_elem = "<g>" + svg_elem + "</g>"
+
         return svg_elem
 
     def bounds(self, flatten=None):
