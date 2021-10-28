@@ -7613,15 +7613,27 @@ class CNCjob(Geometry):
         gcode += self.doformat(p.lift_code, x=first_x, y=first_y)  # Stop cutting
         return gcode
 
-    def export_svg(self, scale_stroke_factor=0.00):
+    def export_svg(self, scale_stroke_factor=0.00,
+                   scale_factor_x=None, scale_factor_y=None,
+                   skew_factor_x=None, skew_factor_y=None,
+                   skew_reference='center', scale_reference='center', mirror_reference='center',
+                   mirror=None):
+
         """
         Exports the CNC Job as a SVG Element
 
-        :param scale_stroke_factor:     A factor to scale the SVG geometry
-        :type scale_stroke_factor:      float
+        :param scale_stroke_factor:     A factor to scale the SVG geometry element outline
+        :param scale_factor_x:          x factor for scale
+        :param scale_factor_y:          y factor for scale
+        :param skew_factor_x:           x factor for skew
+        :param skew_factor_y:           y factor for skew
+        :param skew_reference:          The reference point for skewing (str, tuple)
+        :param scale_reference:         The reference point for scaling (str, tuple)
+        :param mirror_reference:        The reference point for mirroring (str, tuple)
+        :param mirror:                  Bool, if to mirror or not
         :return:                        SVG Element string
-        :rtype:                         str
         """
+
         # scale_factor is a multiplication factor for the SVG stroke-width used within shapely's svg export
         # If not specified then try and use the tool diameter
         # This way what is on screen will match what is outputed for the svg

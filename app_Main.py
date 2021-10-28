@@ -10420,8 +10420,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         exported_svg = []
         for obj in obj_selection:
-            svg_obj = obj.export_svg(scale_stroke_factor=0.0, scale_factor_x=None, scale_factor_y=None,
-                                     skew_factor_x=None, skew_factor_y=None, mirror=None)
+            svg_obj = obj.export_svg(scale_stroke_factor=0.0)
 
             if obj.kind.lower() == 'gerber' or obj.kind.lower() == 'excellon':
                 color = obj.fill_color[:-2]
@@ -10433,7 +10432,14 @@ class MenuFileHandlers(QtCore.QObject):
             # We don't need stroke-width
             # We set opacity to maximum
             # We set the colour to WHITE
-            root = ET.fromstring(svg_obj)
+
+            try:
+                root = ET.fromstring(svg_obj)
+            except Exception as e:
+                self.log.debug("MenuFileHandlers.save_pdf() -> Missing root node -> %s" % str(e))
+                self.app.inform.emit("[ERROR_NOTCL] %s" % _("Failed."))
+                return
+
             for child in root:
                 child.set('fill', str(color))
                 child.set('opacity', str(transparency_level))
