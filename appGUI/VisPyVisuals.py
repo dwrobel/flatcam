@@ -292,8 +292,21 @@ class ShapeCollectionVisual(CompoundVisual):
         self.key_lock.release()
 
         # Prepare data for translation
-        self.data[key] = {'geometry': shape, 'color': color, 'alpha': alpha, 'face_color': face_color,
-                          'visible': visible, 'layer': layer, 'tolerance': tolerance}
+        self.data[key] = {
+            'geometry': shape,
+            'color': color,
+            'alpha': alpha,
+            'face_color': face_color,
+            'visible': visible,
+            'layer': layer,
+            'tolerance': tolerance,
+            # the following keys are updated in the _update_shape_buffers() method
+            'mesh_vertices': [],    # Vertices for mesh
+            'mesh_tris': [],        # Faces for mesh
+            'mesh_colors': [],      # Face colors
+            'line_pts': [],         # Vertices for line
+            'line_colors': []       # Line colors
+        }
 
         if linewidth:
             self._line_width = linewidth
@@ -497,7 +510,7 @@ class ShapeCollectionVisual(CompoundVisual):
         self.update_lock.acquire(True)
 
         # Merge shapes buffers
-        for data in list(self.data.values()):
+        for data in self.data.values():
             if data['visible'] and 'line_pts' in data:
                 try:
                     line_pts[data['layer']] += data['line_pts']
