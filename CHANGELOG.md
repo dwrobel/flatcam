@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+31.10.2021
+
+- in Markers Plugin made sure that whenever new markers are added, the previous ones are first cleared so there is no accumulative action
+- in Markers Plugin added utility geometry for the manual mode
+
 30.10.2021
 
 - small changes in the VisPyVisuals that should improve a bit the performance

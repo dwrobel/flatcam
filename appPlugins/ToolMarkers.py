@@ -67,6 +67,9 @@ class ToolMarkers(AppTool):
 
         self.handlers_connected = False
 
+        # storage for temporary shapes when adding manual markers
+        self.temp_shapes = self.app.move_tool.sel_shapes
+
     def on_insert_type_changed(self, val):
         obj_type = 2 if val == 'geo' else 0
         self.ui.obj_insert_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
@@ -286,6 +289,10 @@ class ToolMarkers(AppTool):
 
     def add_markers(self):
         self.app.call_source = "markers_tool"
+
+        # cleanup previous possible markers
+        self.points.clear()
+
         select_type = self.ui.mode_radio.get_value()
         if select_type == 'a':
             self.handle_automatic_placement()
@@ -1016,6 +1023,8 @@ class ToolMarkers(AppTool):
             worker_task()
 
     def on_exit(self, corner_gerber_obj=None, cancelled=None, ok=True):
+        self.clear_utility_geometry()
+
         # plot the object
         if corner_gerber_obj:
             try:
@@ -1099,6 +1108,7 @@ class ToolMarkers(AppTool):
             if 'manual' not in self.points:
                 self.points['manual'] = []
             self.points['manual'].append(pos)
+            self.draw_utility_geometry(pos=pos)
 
             self.app.inform.emit(
                 '%s: %d. %s' %
@@ -1107,6 +1117,30 @@ class ToolMarkers(AppTool):
 
         elif event.button == right_button and self.app.event_is_dragging is False:
             self.handle_manual_placement()
+
+    def draw_utility_geometry(self, pos):
+        line_thickness = self.ui.thick_entry.get_value()
+        line_length = self.ui.l_entry.get_value() / 2.0
+
+        x = pos[0] - line_thickness / 2.0
+        y = pos[1] + line_thickness / 2.0
+        line_geo_hor = LineString([
+            (x - line_length, y), (x + line_length, y)
+        ])
+        line_geo_vert = LineString([
+            (x, y + line_length), (x, y - line_length)
+        ])
+
+        outline = '#0000FFAF'
+        for shape in [line_geo_hor, line_geo_vert]:
+            self.temp_shapes.add(shape, color=outline, update=True, layer=0, tolerance=None)
+
+        if self.app.is_legacy is True:
+            self.temp_shapes.redraw()
+
+    def clear_utility_geometry(self):
+        self.temp_shapes.clear(update=True)
+        self.temp_shapes.redraw()
 
 
 class MarkersUI:
