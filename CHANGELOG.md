@@ -10,7 +10,7 @@ CHANGELOG for FlatCAM beta
 30.10.2021
 
 - small changes in the VisPyVisuals that should improve a bit the performance
-
+- in Isolation Plugin: if using a V-shape tool, restored the ability to change the tool diameter as a function of tip diameter, tip angle and the depth of cut
 
 28.10.2021
 

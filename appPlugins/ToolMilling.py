@@ -1915,7 +1915,7 @@ class ToolMilling(AppTool, Excellon):
         try:
             new_cutz = (tooldia - vdia) / (2 * math.tan(math.radians(half_vangle)))
         except ZeroDivisionError:
-            new_cutz = self.old_cutz
+            new_cutz = 0.0
 
         new_cutz = self.app.dec_format(new_cutz, self.decimals) * -1.0   # this value has to be negative
 
@@ -3996,7 +3996,7 @@ class MillingUI:
         self.offset_separator_line = QtWidgets.QFrame()
         self.offset_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         self.offset_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        param_grid.addWidget(self.offset_separator_line, 7, 0, 1, 2)
+        param_grid.addWidget(self.offset_separator_line, 8, 0, 1, 2)
 
         # Tool Type
         self.tool_shape_label = FCLabel('%s:' % _('Shape'))
@@ -4019,8 +4019,13 @@ class MillingUI:
         else:
             self.tool_shape_combo.setCurrentIndex(idx)
 
-        param_grid.addWidget(self.tool_shape_label, 8, 0)
-        param_grid.addWidget(self.tool_shape_combo, 8, 1)
+        param_grid.addWidget(self.tool_shape_label, 10, 0)
+        param_grid.addWidget(self.tool_shape_combo, 10, 1)
+
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # param_grid.addWidget(separator_line, 12, 0, 1, 2)
 
         # Job Type
         self.job_type_lbl = FCLabel('%s:' % _('Job'))
@@ -4039,8 +4044,8 @@ class MillingUI:
         )
         self.job_type_combo.setObjectName('mill_job_type')
 
-        param_grid.addWidget(self.job_type_lbl, 10, 0)
-        param_grid.addWidget(self.job_type_combo, 10, 1)
+        param_grid.addWidget(self.job_type_lbl, 14, 0)
+        param_grid.addWidget(self.job_type_combo, 14, 1)
 
         # Polish Margin
         self.polish_margin_lbl = FCLabel('%s:' % _('Margin'))
@@ -4052,8 +4057,8 @@ class MillingUI:
         self.polish_margin_entry.set_range(-10000.0000, 10000.0000)
         self.polish_margin_entry.setObjectName("mill_polish_margin")
 
-        param_grid.addWidget(self.polish_margin_lbl, 12, 0)
-        param_grid.addWidget(self.polish_margin_entry, 12, 1)
+        param_grid.addWidget(self.polish_margin_lbl, 16, 0)
+        param_grid.addWidget(self.polish_margin_entry, 16, 1)
 
         # Polish Overlap
         self.polish_over_lbl = FCLabel('%s:' % _('Overlap'))
@@ -4067,8 +4072,8 @@ class MillingUI:
         self.polish_over_entry.setSingleStep(0.1)
         self.polish_over_entry.setObjectName("mill_polish_overlap")
 
-        param_grid.addWidget(self.polish_over_lbl, 14, 0)
-        param_grid.addWidget(self.polish_over_entry, 14, 1)
+        param_grid.addWidget(self.polish_over_lbl, 18, 0)
+        param_grid.addWidget(self.polish_over_entry, 18, 1)
 
         # Polish Method
         self.polish_method_lbl = FCLabel('%s:' % _('Method'))
@@ -4085,8 +4090,8 @@ class MillingUI:
         )
         self.polish_method_combo.setObjectName('mill_polish_method')
 
-        param_grid.addWidget(self.polish_method_lbl, 16, 0)
-        param_grid.addWidget(self.polish_method_combo, 16, 1)
+        param_grid.addWidget(self.polish_method_lbl, 20, 0)
+        param_grid.addWidget(self.polish_method_combo, 20, 1)
 
         self.polish_margin_lbl.hide()
         self.polish_margin_entry.hide()
@@ -4098,7 +4103,7 @@ class MillingUI:
         self.job_separator_line = QtWidgets.QFrame()
         self.job_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         self.job_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        param_grid.addWidget(self.job_separator_line, 18, 0, 1, 2)
+        param_grid.addWidget(self.job_separator_line, 22, 0, 1, 2)
 
         # Tip Dia
         self.tipdialabel = FCLabel('%s:' % _('V-Tip Dia'))
@@ -4113,8 +4118,8 @@ class MillingUI:
         self.tipdia_entry.setSingleStep(0.1)
         self.tipdia_entry.setObjectName("mill_tipdia")
 
-        param_grid.addWidget(self.tipdialabel, 20, 0)
-        param_grid.addWidget(self.tipdia_entry, 20, 1)
+        param_grid.addWidget(self.tipdialabel, 24, 0)
+        param_grid.addWidget(self.tipdia_entry, 24, 1)
 
         # Tip Angle
         self.tipanglelabel = FCLabel('%s:' % _('V-Tip Angle'))
@@ -4130,8 +4135,8 @@ class MillingUI:
         self.tipangle_entry.setSingleStep(1)
         self.tipangle_entry.setObjectName("mill_tipangle")
 
-        param_grid.addWidget(self.tipanglelabel, 22, 0)
-        param_grid.addWidget(self.tipangle_entry, 22, 1)
+        param_grid.addWidget(self.tipanglelabel, 26, 0)
+        param_grid.addWidget(self.tipangle_entry, 26, 1)
 
         self.tipdialabel.hide()
         self.tipdia_entry.hide()
@@ -4141,9 +4146,8 @@ class MillingUI:
         # Cut Z
         self.cutzlabel = FCLabel('%s:' % _('Cut Z'))
         self.cutzlabel.setToolTip(
-            _("Drill depth (negative)\n"
-              "below the copper surface.")
-        )
+            _("Cutting depth (negative)\n"
+              "below the copper surface."))
 
         self.cutz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.cutz_entry.set_precision(self.decimals)
@@ -4153,8 +4157,8 @@ class MillingUI:
         self.cutz_entry.setSingleStep(0.1)
         self.cutz_entry.setObjectName("mill_cutz")
 
-        param_grid.addWidget(self.cutzlabel, 24, 0)
-        param_grid.addWidget(self.cutz_entry, 24, 1)
+        param_grid.addWidget(self.cutzlabel, 28, 0)
+        param_grid.addWidget(self.cutz_entry, 28, 1)
 
         # Multi-Depth
         self.mpass_cb = FCCheckBox('%s:' % _("Multi-Depth"))
@@ -4178,8 +4182,8 @@ class MillingUI:
 
         self.mis_mpass_geo = OptionalInputSection(self.mpass_cb, [self.maxdepth_entry])
 
-        param_grid.addWidget(self.mpass_cb, 26, 0)
-        param_grid.addWidget(self.maxdepth_entry, 26, 1)
+        param_grid.addWidget(self.mpass_cb, 30, 0)
+        param_grid.addWidget(self.maxdepth_entry, 30, 1)
 
         # Travel Z (z_move)
         self.travelzlabel = FCLabel('%s:' % _('Travel Z'))
@@ -4196,8 +4200,8 @@ class MillingUI:
         self.travelz_entry.setSingleStep(0.1)
         self.travelz_entry.setObjectName("mill_travelz")
 
-        param_grid.addWidget(self.travelzlabel, 28, 0)
-        param_grid.addWidget(self.travelz_entry, 28, 1)
+        param_grid.addWidget(self.travelzlabel, 32, 0)
+        param_grid.addWidget(self.travelz_entry, 32, 1)
 
         # Feedrate X-Y
         self.frxylabel = FCLabel('%s:' % _('Feedrate X-Y'))
@@ -4211,8 +4215,8 @@ class MillingUI:
         self.xyfeedrate_entry.setSingleStep(0.1)
         self.xyfeedrate_entry.setObjectName("mill_feedratexy")
 
-        param_grid.addWidget(self.frxylabel, 30, 0)
-        param_grid.addWidget(self.xyfeedrate_entry, 30, 1)
+        param_grid.addWidget(self.frxylabel, 34, 0)
+        param_grid.addWidget(self.xyfeedrate_entry, 34, 1)
 
         self.frxylabel.hide()
         self.xyfeedrate_entry.hide()
@@ -4231,8 +4235,8 @@ class MillingUI:
         self.feedrate_z_entry.setSingleStep(0.1)
         self.feedrate_z_entry.setObjectName("mill_feedratez")
 
-        param_grid.addWidget(self.frzlabel, 32, 0)
-        param_grid.addWidget(self.feedrate_z_entry, 32, 1)
+        param_grid.addWidget(self.frzlabel, 36, 0)
+        param_grid.addWidget(self.feedrate_z_entry, 36, 1)
 
         # Rapid Feedrate
         self.feedrate_rapid_label = FCLabel('%s:' % _('Feedrate Rapids'))
@@ -4249,8 +4253,8 @@ class MillingUI:
         self.feedrate_rapid_entry.setSingleStep(0.1)
         self.feedrate_rapid_entry.setObjectName("mill_fr_rapid")
 
-        param_grid.addWidget(self.feedrate_rapid_label, 34, 0)
-        param_grid.addWidget(self.feedrate_rapid_entry, 34, 1)
+        param_grid.addWidget(self.feedrate_rapid_label, 38, 0)
+        param_grid.addWidget(self.feedrate_rapid_entry, 38, 1)
 
         # default values is to hide
         self.feedrate_rapid_label.hide()
@@ -4284,8 +4288,8 @@ class MillingUI:
         self.extracut_cb.hide()
         self.e_cut_entry.hide()
 
-        param_grid.addWidget(self.extracut_cb, 36, 0)
-        param_grid.addWidget(self.e_cut_entry, 36, 1)
+        param_grid.addWidget(self.extracut_cb, 40, 0)
+        param_grid.addWidget(self.e_cut_entry, 40, 1)
 
         # Spindlespeed
         self.spindle_label = FCLabel('%s:' % _('Spindle speed'))
@@ -4299,8 +4303,8 @@ class MillingUI:
         self.spindlespeed_entry.set_step(100)
         self.spindlespeed_entry.setObjectName("mill_spindlespeed")
 
-        param_grid.addWidget(self.spindle_label, 38, 0)
-        param_grid.addWidget(self.spindlespeed_entry, 38, 1)
+        param_grid.addWidget(self.spindle_label, 42, 0)
+        param_grid.addWidget(self.spindlespeed_entry, 42, 1)
 
         # Dwell
         self.dwell_cb = FCCheckBox('%s:' % _('Dwell'))
@@ -4320,8 +4324,8 @@ class MillingUI:
         )
         self.dwelltime_entry.setObjectName("mill_dwelltime")
 
-        param_grid.addWidget(self.dwell_cb, 40, 0)
-        param_grid.addWidget(self.dwelltime_entry, 40, 1)
+        param_grid.addWidget(self.dwell_cb, 44, 0)
+        param_grid.addWidget(self.dwelltime_entry, 44, 1)
 
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 

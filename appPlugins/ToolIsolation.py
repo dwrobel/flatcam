@@ -15,6 +15,7 @@ from appParsers.ParseGerber import Gerber
 from camlib import grace
 
 from copy import deepcopy
+import math
 
 import numpy as np
 import simplejson as json
@@ -116,7 +117,10 @@ class ToolIsolation(AppTool, Gerber):
         self.poly_sel_disconnect_flag = False
 
         self.form_fields = {
-            "tools_mill_tool_shape":     self.ui.tool_shape_combo,
+            "tools_mill_tool_shape":    self.ui.tool_shape_combo,
+            "tools_mill_cutz":          self.ui.cutz_entry,
+            "tools_mill_vtipdia":       self.ui.tipdia_entry,
+            "tools_mill_vtipangle":     self.ui.tipangle_entry,
             "tools_iso_passes":         self.ui.passes_entry,
             "tools_iso_pad_passes":     self.ui.pad_passes_entry,
             "tools_iso_overlap":        self.ui.iso_overlap_entry,
@@ -127,6 +131,9 @@ class ToolIsolation(AppTool, Gerber):
 
         self.name2option = {
             "i_tool_shape":     "tools_mill_tool_shape",
+            "i_cutz":           "tools_mill_cutz",
+            "i_tipdia":         "tools_mill_vtipdia",
+            "i_tipangle":       "tools_mill_vtipangle",
             "i_passes":         "tools_iso_passes",
             "i_pad_passes":     "tools_iso_pad_passes",
             "i_overlap":        "tools_iso_overlap",
@@ -279,6 +286,9 @@ class ToolIsolation(AppTool, Gerber):
 
         self.form_fields = {
             "tools_mill_tool_shape":    self.ui.tool_shape_combo,
+            "tools_mill_cutz":          self.ui.cutz_entry,
+            "tools_mill_vtipdia":       self.ui.tipdia_entry,
+            "tools_mill_vtipangle":     self.ui.tipangle_entry,
             "tools_iso_passes":         self.ui.passes_entry,
             "tools_iso_pad_passes":     self.ui.pad_passes_entry,
             "tools_iso_overlap":        self.ui.iso_overlap_entry,
@@ -326,6 +336,11 @@ class ToolIsolation(AppTool, Gerber):
 
         self.ui.iso_order_combo.set_value(self.app.defaults["tools_iso_order"])
         self.ui.tool_shape_combo.set_value(self.app.defaults["tools_iso_tool_shape"])
+
+        self.ui.tipdia_entry.set_value(self.app.defaults["tools_iso_vtipdia"])
+        self.ui.tipangle_entry.set_value(self.app.defaults["tools_iso_vtipangle"])
+        self.ui.cutz_entry.set_value(self.app.defaults["tools_iso_cutz"])
+
         self.ui.passes_entry.set_value(self.app.defaults["tools_iso_passes"])
         self.ui.pad_passes_entry.set_value(self.app.defaults["tools_iso_pad_passes"])
         self.ui.iso_overlap_entry.set_value(self.app.defaults["tools_iso_overlap"])
@@ -354,6 +369,11 @@ class ToolIsolation(AppTool, Gerber):
 
             if option.find('tools_') == 0:
                 self.default_data[option] = self.app.options[option]
+
+        # transfer some Isolation Plugin values to the Milling Plugin; that works only for adding a default tool
+        self.default_data['tools_mill_cutz'] = deepcopy(self.default_data['tools_iso_cutz'])
+        self.default_data['tools_mill_vtipdia'] = deepcopy(self.default_data['tools_iso_vtipdia'])
+        self.default_data['tools_mill_vtipangle'] = deepcopy(self.default_data['tools_iso_vtipangle'])
 
         # self.default_data.update({
         #     "name":                     outname + '_iso',
@@ -644,7 +664,14 @@ class ToolIsolation(AppTool, Gerber):
             )
 
     def ui_connect(self):
+        self.ui.tool_shape_combo.currentIndexChanged.connect(self.on_tt_change)
+
         self.ui.tools_table.itemChanged.connect(self.on_tool_edit)
+
+        # V-shape tool parameters changes
+        self.ui.cutz_entry.editingFinished.connect(self.on_update_tool_dia)
+        self.ui.tipdia_entry.editingFinished.connect(self.on_update_tool_dia)
+        self.ui.tipangle_entry.editingFinished.connect(self.on_update_tool_dia)
 
         # rows selected
         self.ui.tools_table.clicked.connect(self.on_row_selection_change)
@@ -668,8 +695,27 @@ class ToolIsolation(AppTool, Gerber):
     def ui_disconnect(self):
 
         try:
+            self.ui.tool_shape_combo.currentIndexChanged.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.ui.tools_table.itemChanged.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        # V-shape tool parameters changes
+        try:
+            self.ui.cutz_entry.editingFinished.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.tipdia_entry.editingFinished.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.tipangle_entry.editingFinished.disconnect()
         except (TypeError, AttributeError):
             pass
 
@@ -736,6 +782,60 @@ class ToolIsolation(AppTool, Gerber):
         for tool in new_tools_list:
             new_toolid += 1
             self.iso_tools[new_toolid] = tool[1]
+
+    def on_tt_change(self):
+        tool_type = self.ui.tool_shape_combo.get_value()
+        self.ui_update_v_shape(tool_type)
+        self.form_to_storage()
+
+    def ui_update_v_shape(self, tool_type_txt):
+        if tool_type_txt == 5:  # 'V'
+            self.ui.v_frame.show()
+            self.on_update_tool_dia()
+            return
+        self.ui.v_frame.hide()
+
+    def on_update_tool_dia(self):
+        if not self.ui.v_frame.isVisible():
+            return
+
+        self.ui_disconnect()
+
+        vdia = float(self.ui.tipdia_entry.get_value())
+        half_vangle = float(self.ui.tipangle_entry.get_value()) / 2
+        cut_z = self.ui.cutz_entry.get_value()
+        cut_z = -cut_z if cut_z < 0 else cut_z      # cut_z param has to have a positive value here
+
+        row = self.ui.tools_table.currentRow()
+        tool_uid_item = self.ui.tools_table.item(row, 3)
+        if tool_uid_item is None:
+            return
+        tool_uid = int(tool_uid_item.text())
+
+        tool_dia_item = self.ui.tools_table.item(row, 1)
+        if tool_dia_item is None:
+            return
+
+        try:
+            new_tooldia = vdia + (2 * cut_z * math.tan(math.radians(half_vangle)))
+        except ZeroDivisionError:
+            self.ui_connect()
+            return
+
+        f_new_tool_dia = self.app.dec_format(new_tooldia, self.decimals)
+
+        tool_dias = [
+            self.app.dec_format(v['tooldia'], self.decimals) for v in self.iso_tools.values() if 'tooldia' in v]
+        if f_new_tool_dia in tool_dias:
+            # if the new diameter is already in the current tools abort: we don't want duplicates
+            self.ui_connect()
+            return
+
+        self.iso_tools[tool_uid]['tooldia'] = deepcopy(f_new_tool_dia)
+        self.iso_tools[tool_uid]['data']['tools_iso_tooldia'] = deepcopy(f_new_tool_dia)
+        self.ui.tools_table.item(row, 1).setText(str(f_new_tool_dia))
+
+        self.ui_connect()
 
     def on_toggle_all_rows(self):
         """
@@ -1386,14 +1486,6 @@ class ToolIsolation(AppTool, Gerber):
                     tool_dias.append(self.app.dec_format(v[tool_v], self.decimals))
 
         truncated_tooldia = self.app.dec_format(tool_dia, self.decimals)
-        # if truncated_tooldia in tool_dias:
-        #     if muted is None:
-        #         self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
-        #     # self.ui.tools_table.itemChanged.connect(self.on_tool_edit)
-        #     self.blockSignals(False)
-        #     return
-
-        # print("before", self.iso_tools)
         self.iso_tools.update({
             int(self.tooluid): {
                 'tooldia':          truncated_tooldia,
@@ -3437,6 +3529,72 @@ class IsoUI:
         tool_param_grid.addWidget(self.tool_shape_label, 0, 0)
         tool_param_grid.addWidget(self.tool_shape_combo, 0, 1)
 
+        # V-Shape Frame
+        self.v_frame = QtWidgets.QFrame()
+        self.v_frame.setContentsMargins(0, 0, 0, 0)
+        tool_param_grid.addWidget(self.v_frame, 2, 0, 1, 2)
+
+        v_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        v_grid.setContentsMargins(0, 0, 0, 0)
+        self.v_frame.setLayout(v_grid)
+
+        # Tip Dia
+        self.tipdialabel = FCLabel('%s:' % _('V-Tip Dia'))
+        self.tipdialabel.setToolTip(
+            _(
+                "The tip diameter for V-Shape Tool"
+            )
+        )
+        self.tipdia_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.tipdia_entry.set_precision(self.decimals)
+        self.tipdia_entry.set_range(0.00001, 10000.0000)
+        self.tipdia_entry.setSingleStep(0.1)
+        self.tipdia_entry.setObjectName("i_tipdia")
+
+        v_grid.addWidget(self.tipdialabel, 0, 0)
+        v_grid.addWidget(self.tipdia_entry, 0, 1)
+
+        # Tip Angle
+        self.tipanglelabel = FCLabel('%s:' % _('V-Tip Angle'))
+        self.tipanglelabel.setToolTip(
+            _(
+                "The tip angle for V-Shape Tool.\n"
+                "In degree."
+            )
+        )
+        self.tipangle_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.tipangle_entry.set_precision(self.decimals)
+        self.tipangle_entry.set_range(1.0, 180.0)
+        self.tipangle_entry.setSingleStep(1)
+        self.tipangle_entry.setObjectName("i_tipangle")
+
+        v_grid.addWidget(self.tipanglelabel, 2, 0)
+        v_grid.addWidget(self.tipangle_entry, 2, 1)
+
+        # Cut Z
+        self.cutzlabel = FCLabel('%s:' % _('Cut Z'))
+        self.cutzlabel.setToolTip(
+            _("Cutting depth (negative)\n"
+              "below the copper surface."))
+
+        self.cutz_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.cutz_entry.set_precision(self.decimals)
+
+        self.cutz_entry.set_range(-10000.0000, 10000.0000)
+
+        self.cutz_entry.setSingleStep(0.1)
+        self.cutz_entry.setObjectName("i_cutz")
+
+        v_grid.addWidget(self.cutzlabel, 4, 0)
+        v_grid.addWidget(self.cutz_entry, 4, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        v_grid.addWidget(separator_line, 6, 0, 1, 2)
+
+        self.v_frame.hide()
+
         # Passes
         passlabel = FCLabel('%s:' % _('Passes'))
         passlabel.setToolTip(
@@ -3447,8 +3605,8 @@ class IsoUI:
         self.passes_entry.set_range(1, 999)
         self.passes_entry.setObjectName("i_passes")
 
-        tool_param_grid.addWidget(passlabel, 2, 0)
-        tool_param_grid.addWidget(self.passes_entry, 2, 1)
+        tool_param_grid.addWidget(passlabel, 6, 0)
+        tool_param_grid.addWidget(self.passes_entry, 6, 1)
 
         # Pad Passes
         padpasslabel = FCLabel('%s:' % _('Pad Passes'))
@@ -3460,8 +3618,8 @@ class IsoUI:
         self.pad_passes_entry.set_range(0, 999)
         self.pad_passes_entry.setObjectName("i_pad_passes")
 
-        tool_param_grid.addWidget(padpasslabel, 4, 0)
-        tool_param_grid.addWidget(self.pad_passes_entry, 4, 1)
+        tool_param_grid.addWidget(padpasslabel, 8, 0)
+        tool_param_grid.addWidget(self.pad_passes_entry, 8, 1)
 
         # Overlap Entry
         overlabel = FCLabel('%s:' % _('Overlap'))
@@ -3475,8 +3633,8 @@ class IsoUI:
         self.iso_overlap_entry.setSingleStep(0.1)
         self.iso_overlap_entry.setObjectName("i_overlap")
 
-        tool_param_grid.addWidget(overlabel, 6, 0)
-        tool_param_grid.addWidget(self.iso_overlap_entry, 6, 1)
+        tool_param_grid.addWidget(overlabel, 10, 0)
+        tool_param_grid.addWidget(self.iso_overlap_entry, 10, 1)
 
         # Milling Type Radio Button
         self.milling_type_label = FCLabel('%s:' % _('Milling Type'))
@@ -3495,8 +3653,8 @@ class IsoUI:
         )
         self.milling_type_radio.setObjectName("i_milling_type")
 
-        tool_param_grid.addWidget(self.milling_type_label, 8, 0)
-        tool_param_grid.addWidget(self.milling_type_radio, 8, 1)
+        tool_param_grid.addWidget(self.milling_type_label, 12, 0)
+        tool_param_grid.addWidget(self.milling_type_radio, 12, 1)
 
         # Isolation Type
         self.iso_type_label = FCLabel('%s:' % _('Isolation Type'))
@@ -3515,8 +3673,8 @@ class IsoUI:
                                         {'label': _('Int'), 'value': 'int'}])
         self.iso_type_radio.setObjectName("i_iso_type")
 
-        tool_param_grid.addWidget(self.iso_type_label, 10, 0)
-        tool_param_grid.addWidget(self.iso_type_radio, 10, 1)
+        tool_param_grid.addWidget(self.iso_type_label, 14, 0)
+        tool_param_grid.addWidget(self.iso_type_radio, 14, 1)
 
         # ##############################################################################################################
         # Apply to All Parameters Button
@@ -3713,7 +3871,7 @@ class IsoUI:
         self.area_shape_label.hide()
         self.area_shape_radio.hide()
 
-        FCGridLayout.set_common_column_size([tool_grid, new_tool_grid, tool_param_grid, gen_grid], 0)
+        FCGridLayout.set_common_column_size([tool_grid, new_tool_grid, tool_param_grid, v_grid, gen_grid], 0)
 
         # #############################################################################################################
         # Generate Geometry object

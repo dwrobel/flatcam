@@ -286,6 +286,10 @@ class PreferencesUIManager:
             "tools_iso_newdia":         self.ui.plugin_eng_pref_form.tools_iso_group.newdia_entry,
 
             "tools_iso_tool_shape":     self.ui.plugin_eng_pref_form.tools_iso_group.tool_shape_combo,  # "C1"
+            "tools_iso_cutz":           self.ui.plugin_eng_pref_form.tools_iso_group.cutz_entry,
+            "tools_iso_vtipdia":        self.ui.plugin_eng_pref_form.tools_iso_group.tipdia_entry,
+            "tools_iso_vtipangle":      self.ui.plugin_eng_pref_form.tools_iso_group.tipangle_entry,
+
             "tools_iso_passes":         self.ui.plugin_eng_pref_form.tools_iso_group.passes_entry,
             "tools_iso_pad_passes":     self.ui.plugin_eng_pref_form.tools_iso_group.pad_passes_entry,
             "tools_iso_overlap":        self.ui.plugin_eng_pref_form.tools_iso_group.overlap_entry,

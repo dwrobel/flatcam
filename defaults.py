@@ -358,6 +358,10 @@ class FlatCAMDefaults:
         "tools_iso_newdia": 0.1,
 
         "tools_iso_tool_shape": 0,  # "C1"
+        "tools_iso_cutz": -0.07,
+        "tools_iso_vtipdia": 0.1,
+        "tools_iso_vtipangle": 30,
+
         "tools_iso_passes": 1,
         "tools_iso_pad_passes": 0,
         "tools_iso_overlap": 10,
