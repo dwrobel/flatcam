@@ -15,6 +15,8 @@ CHANGELOG for FlatCAM beta
 - made sure that there is no longer a double action when toggling the object visibility ('plot' attribute)
 - fixed an exception that was triggered when toggling units inside the Editors
 - working on Cutout Plugin - refactoring code
+- fixed issue in Cutout Plugin: there was an offset from the object center when using automatic gaps, both on X and Y axis
+- fixed issue in Cutout Plugin: when the margin parameter was bigger than the gaps size (automatic gaps) the gaps are not created
 
 30.10.2021
 
