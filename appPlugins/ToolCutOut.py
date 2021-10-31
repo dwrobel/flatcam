@@ -420,9 +420,11 @@ class CutOut(AppTool):
     def on_cutout_shape_changed(self, state):
         if state:
             self.ui.generate_cutout_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/rectangle32.png'))
+            self.ui.man_geo_creation_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/rectangle32.png'))
             self.ui.cutout_shape_cb.setText('%s' % _("Rectangular"))
         else:
             self.ui.generate_cutout_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/irregular32.png'))
+            self.ui.man_geo_creation_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/irregular32.png'))
             self.ui.cutout_shape_cb.setText('%s' % _("Any"))
 
     def on_tool_add(self, custom_dia=None):
@@ -1667,6 +1669,7 @@ class CutOut(AppTool):
 
         def geo_init(geo_obj, app_obj):
             geo_union = unary_union(cutout_obj.solid_geometry)
+            shape_type = self.ui.cutout_shape_cb.get_value()    # True means rectangular shape
 
             if convex_box:
                 geo = geo_union.convex_hull
@@ -1675,11 +1678,22 @@ class CutOut(AppTool):
                 if isinstance(geo_union, Polygon) or \
                         (isinstance(geo_union, list) and len(geo_union) == 1) or \
                         (isinstance(geo_union, MultiPolygon) and len(geo_union.geoms) == 1):
-                    geo_obj.solid_geometry = geo_union.buffer(margin + abs(dia / 2)).exterior
+
+                    buff_geo = geo_union.buffer(margin + abs(dia / 2)).exterior
+                    if shape_type is False:
+                        geo_obj.solid_geometry = buff_geo
+                    else:
+                        geo_obj.solid_geometry = buff_geo.envelope
                 elif isinstance(geo_union, MultiPolygon):
-                    x0, y0, x1, y1 = geo_union.bounds
-                    geo = box(x0, y0, x1, y1)
-                    geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
+
+                    if shape_type is False:
+                        buff_geo = geo_union.buffer(margin + abs(dia / 2))
+                        geo_obj.solid_geometry = buff_geo
+                    else:
+                        x0, y0, x1, y1 = geo_union.bounds
+                        geo = box(x0, y0, x1, y1)
+                        buff_geo = geo.buffer(margin + abs(dia / 2))
+                        geo_obj.solid_geometry = buff_geo
                 else:
                     app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (
                         _("Geometry not supported"), type(geo_union)))
@@ -1687,18 +1701,22 @@ class CutOut(AppTool):
             else:
                 geo = geo_union
                 geo = geo.buffer(margin + abs(dia / 2))
-                if isinstance(geo, Polygon):
-                    geo_obj.solid_geometry = geo.exterior
-                elif isinstance(geo, MultiPolygon):
-                    solid_geo = []
-                    for poly in geo:
-                        solid_geo.append(poly.exterior)
-                    geo_obj.solid_geometry = deepcopy(solid_geo)
-
-            geo_obj.options['tools_mill_tooldia'] = str(dia)
-            geo_obj.options['cutz'] = self.ui.cutz_entry.get_value()
-            geo_obj.options['multidepth'] = self.ui.mpass_cb.get_value()
-            geo_obj.options['depthperpass'] = self.ui.maxdepth_entry.get_value()
+                if shape_type is False:
+                    if isinstance(geo, Polygon):
+                        geo_obj.solid_geometry = geo.exterior
+                    elif isinstance(geo, MultiPolygon):
+                        solid_geo = []
+                        for poly in geo:
+                            solid_geo.append(poly.exterior)
+                        geo_obj.solid_geometry = deepcopy(solid_geo)
+                else:
+                    if isinstance(geo, Polygon):
+                        geo_obj.solid_geometry = geo.envelope.exterior
+                    elif isinstance(geo, MultiPolygon):
+                        solid_geo = []
+                        for poly in geo:
+                            solid_geo.append(poly.envelope.exterior)
+                        geo_obj.solid_geometry = deepcopy(unary_union(solid_geo).exterior)
 
             geo_obj.multigeo = True
 
@@ -1709,6 +1727,7 @@ class CutOut(AppTool):
             geo_obj.tools[1]['solid_geometry'] = geo_obj.solid_geometry
 
             geo_obj.tools[1]['data']['name'] = outname
+            geo_obj.tools[1]['data']['tools_mill_tooldia'] = str(dia)
             geo_obj.tools[1]['data']['tools_mill_cutz'] = self.ui.cutz_entry.get_value()
             geo_obj.tools[1]['data']['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
             geo_obj.tools[1]['data']['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()

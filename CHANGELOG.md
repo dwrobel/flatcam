@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+1.11.2021
+
+- Cutout Plugin - improved the functionality in Manual mode: depending on the state of the Shape parameter different types of cutout manual geometry is generated
+- fixed a bug in the Editors when trying to launch the Editor without an object selected
+
 31.10.2021
 
 - in Markers Plugin made sure that whenever new markers are added, the previous ones are first cleared so there is no accumulative action

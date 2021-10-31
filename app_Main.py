@@ -2543,6 +2543,10 @@ class App(QtCore.QObject):
         self.defaults.report_usage("object2editor()")
 
         edited_object = self.collection.get_active()
+        if edited_object is None:
+            self.inform.emit('[ERROR_NOTCL] %s %s' % (_("The Editor could not start."), _("No object is selected.")))
+            return
+
         edited_object.build_ui()
         self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
 
