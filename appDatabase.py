@@ -46,7 +46,8 @@ class ToolsDB2UI:
         # p.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(226, 237, 253) )
         # self.tree_widget.setPalette(p)
 
-        self.tree_widget.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.MinimumExpanding)
+        self.tree_widget.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                       QtWidgets.QSizePolicy.Policy.MinimumExpanding)
         tree_layout.addWidget(self.tree_widget)
 
         param_hlay = QtWidgets.QHBoxLayout()
@@ -75,7 +76,8 @@ class ToolsDB2UI:
         self.description_vlay = QtWidgets.QVBoxLayout()
         self.tool_description_box.setTitle(_("Tool Description"))
         self.tool_description_box.setMinimumWidth(250)
-        self.tool_description_box.setSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.tool_description_box.setSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred,
+                                                QtWidgets.QSizePolicy.Policy.Minimum)
 
         # Milling box
         self.milling_box = QtWidgets.QGroupBox()
@@ -2452,7 +2454,6 @@ class ToolsDB2(QtWidgets.QWidget):
 
             if wdg is None:
                 return
-
             if isinstance(wdg, FCButton) or isinstance(wdg, QtGui.QAction):
                 # this is called when adding a new tool; no need to run the update below since that section is for
                 # when editing a tool
@@ -2471,9 +2472,6 @@ class ToolsDB2(QtWidgets.QWidget):
         # #############################################################################################################
         # #############################################################################################################
 
-        # #############################################################################################################
-        # this might change in the future; it makes sense to change values at once for all tools
-        # for now change values only for one tool at once
         sel_rows = []
         for item in self.ui.tree_widget.selectedItems():
             sel_rows.append(item.data(0, QtCore.Qt.ItemDataRole.DisplayRole))
