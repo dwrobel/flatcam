@@ -4692,19 +4692,25 @@ class App(QtCore.QObject):
         self.ui.units_label.setText("[" + units.lower() + "]")
 
     def on_toggle_units_click(self):
-        new_units, factor =  self.on_toggle_units()
+        try:
+            new_units, factor =  self.on_toggle_units()
+        except TypeError:
+            # hen the self.on_toggle_units() return only one value (maybe None) it means something went wrong,
+            # it will end up in this exception and and we should return
+            return
+
         if self.ui.plot_tab_area.currentWidget().objectName() == "preferences_tab":
             if factor != 1:     # means we had a unit change in the rest of the app
                 if self.app_units != new_units:
                     pref_factor = 25.4 if new_units == 'MM' else 1 / 25.4
-                    self.scale_preferenes(pref_factor, new_units)
+                    self.scale_preferences(pref_factor, new_units)
 
                     self.defaults["units"] = new_units
 
         # update th new units in the preferences storage
         self.app_units = new_units
 
-    def scale_preferenes(self, sfactor, new_units):
+    def scale_preferences(self, sfactor, new_units):
         self.preferencesUiManager.defaults_read_form()
 
         # update the defaults from form, some may assume that the conversion is enough and it's not

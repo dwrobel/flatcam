@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - in Markers Plugin added utility geometry for the manual mode
 - refactored the is_legacy object to use_3d_engine
 - made sure that there is no longer a double action when toggling the object visibility ('plot' attribute)
+- fixed an exception that was triggered when toggling units inside the Editors
 
 30.10.2021
 
