@@ -2825,7 +2825,7 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
         self.mr = self.canvas.graph_event_connect('mouse_release', self.on_mouse_click_release)
 
         # disconnect old
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             self.canvas.graph_event_disconnect('mouse_press', self.draw_app.on_canvas_click)
             self.canvas.graph_event_disconnect('mouse_move', self.draw_app.on_canvas_move)
             self.canvas.graph_event_disconnect('mouse_release', self.draw_app.on_canvas_click_release)
@@ -2839,7 +2839,7 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
         self.draw_app.mm = self.canvas.graph_event_connect('mouse_move', self.draw_app.on_canvas_move)
         self.draw_app.mr = self.canvas.graph_event_connect('mouse_release', self.draw_app.on_canvas_click_release)
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             self.canvas.graph_event_disconnect('mouse_press', self.on_mouse_click)
             self.canvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
             self.canvas.graph_event_disconnect('mouse_release', self.on_mouse_click_release)
@@ -2849,7 +2849,7 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
             self.canvas.graph_event_disconnect(self.mr)
 
     def on_mouse_click(self, event):
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             event_pos = event.pos
         else:
             event_pos = (event.xdata, event.ydata)
@@ -2869,7 +2869,7 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
         if not self.app.plotcanvas.native.hasFocus():
             self.app.plotcanvas.native.setFocus()
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             event_pos = event.pos
             self.event_is_dragging = event.is_dragging
             right_button = 2
@@ -2942,9 +2942,9 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
 
     def on_mouse_click_release(self, event):
         left_button = 1
-        right_button = 2 if self.app.is_legacy is False else 3
+        right_button = 2 if self.app.use_3d_engine else 3
 
-        event_pos = event.pos if self.app.is_legacy is False else (event.xdata, event.ydata)
+        event_pos = event.pos if self.app.use_3d_engine else (event.xdata, event.ydata)
         try:
             x = float(event_pos[0])
             y = float(event_pos[1])
@@ -3304,7 +3304,7 @@ class AppGerberEditor(QtCore.QObject):
         self.gerber_obj_options = {}
 
         # VisPy Visuals
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             self.shapes = self.canvas.new_shape_collection(layers=1)
             self.tool_shape = self.canvas.new_shape_collection(layers=1)
             self.ma_annotation = self.canvas.new_text_group()
@@ -4149,7 +4149,7 @@ class AppGerberEditor(QtCore.QObject):
                 ymin = xmin
                 ymax = xmax
 
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 rect = Rect(xmin, ymin, xmax, ymax)
                 rect.left, rect.right = xmin, xmax
                 rect.bottom, rect.top = ymin, ymax
@@ -4368,7 +4368,7 @@ class AppGerberEditor(QtCore.QObject):
         self.mm = self.canvas.graph_event_connect('mouse_move', self.on_canvas_move)
         self.mr = self.canvas.graph_event_connect('mouse_release', self.on_canvas_click_release)
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             self.canvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
             self.canvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
             self.canvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
@@ -4416,7 +4416,7 @@ class AppGerberEditor(QtCore.QObject):
         self.app.mdc = self.canvas.graph_event_connect('mouse_double_click', self.app.on_mouse_double_click_over_plot)
         self.app.collection.view.clicked.connect(self.app.collection.on_mouse_down)
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             self.canvas.graph_event_disconnect('mouse_press', self.on_canvas_click)
             self.canvas.graph_event_disconnect('mouse_move', self.on_canvas_move)
             self.canvas.graph_event_disconnect('mouse_release', self.on_canvas_click_release)
@@ -5169,15 +5169,7 @@ class AppGerberEditor(QtCore.QObject):
         :param event: Event object dispatched by VisPy
         :return: None
         """
-        if self.app.is_legacy is False:
-            event_pos = event.pos
-            # event_is_dragging = event.is_dragging
-            # right_button = 2
-        else:
-            event_pos = (event.xdata, event.ydata)
-            # event_is_dragging = self.app.plotcanvas.is_dragging
-            # right_button = 3
-
+        event_pos = event.pos if self.app.use_3d_engine else (event.xdata, event.ydata)
         self.pos = self.canvas.translate_coords(event_pos)
 
         if self.app.grid_status():
@@ -5238,13 +5230,11 @@ class AppGerberEditor(QtCore.QObject):
 
     def on_canvas_click_release(self, event):
         self.modifiers = QtWidgets.QApplication.keyboardModifiers()
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             event_pos = event.pos
-            # event_is_dragging = event.is_dragging
             right_button = 2
         else:
             event_pos = (event.xdata, event.ydata)
-            # event_is_dragging = self.app.plotcanvas.is_dragging
             right_button = 3
 
         pos_canvas = self.canvas.translate_coords(event_pos)
@@ -5421,7 +5411,7 @@ class AppGerberEditor(QtCore.QObject):
         if not self.app.plotcanvas.native.hasFocus():
             self.app.plotcanvas.native.setFocus()
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             event_pos = event.pos
             event_is_dragging = event.is_dragging
             right_button = 2
@@ -5697,7 +5687,7 @@ class AppGerberEditor(QtCore.QObject):
         # calculate the bounds values for the edited Gerber object
         xmin, ymin, xmax, ymax = all_geo.bounds
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             new_rect = Rect(xmin, ymin, xmax, ymax)
             self.app.plotcanvas.fit_view(rect=new_rect)
         else:

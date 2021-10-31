@@ -1370,8 +1370,6 @@ class ToolsDB2(QtWidgets.QWidget):
             tool_id: {
                 'name': 'new_tool'
                 'tooldia': self.app.defaults["tools_mill_tooldia"]
-                'offset': 'Path'
-                'offset_value': 0.0
                 'data': dict()
             }
         }

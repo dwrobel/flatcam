@@ -262,7 +262,7 @@ class ToolLevelling(AppTool, CNCjob):
             name = ''
 
         # Shapes container for the Voronoi cells in Autolevelling
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             self.probing_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
         else:
             self.probing_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=name + "_probing_shapes")
@@ -351,7 +351,7 @@ class ToolLevelling(AppTool, CNCjob):
             self.ui.al_frame.setDisabled(False)
 
             # Shapes container for the Voronoi cells in Autolevelling
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 self.probing_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
             else:
                 self.probing_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=obj_name + "_probing_shapes")
@@ -602,7 +602,7 @@ class ToolLevelling(AppTool, CNCjob):
             self.app.inform.emit(_("Click on canvas to add a Probe Point..."))
             self.app.defaults['global_selection_shape'] = False
 
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 self.app.plotcanvas.graph_event_disconnect('key_press', self.app.ui.keyPressEvent)
                 self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
                 self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
@@ -673,7 +673,7 @@ class ToolLevelling(AppTool, CNCjob):
 
     def plot_probing_geo(self, geometry, visibility, custom_color=None):
         if visibility:
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 def random_color():
                     r_color = np.random.rand(4)
                     r_color[3] = 0.5
@@ -695,7 +695,7 @@ class ToolLevelling(AppTool, CNCjob):
                     return new_color
 
             try:
-                # if self.app.is_legacy is False:
+                # if self.app.use_3d_engine:
                 #     color = "#0000FFFE"
                 # else:
                 #     color = "#0000FFFE"
@@ -816,13 +816,11 @@ class ToolLevelling(AppTool, CNCjob):
     # To be called after clicking on the plot.
     def on_mouse_click_release(self, event):
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             event_pos = event.pos
-            # event_is_dragging = event.is_dragging
             right_button = 2
         else:
             event_pos = (event.xdata, event.ydata)
-            # event_is_dragging = self.app.plotcanvas.is_dragging
             right_button = 3
 
         try:
@@ -873,7 +871,7 @@ class ToolLevelling(AppTool, CNCjob):
 
         # if RMB then we exit
         elif event.button == right_button and self.mouse_is_dragging is False:
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
                 self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_click_release)
             else:
@@ -951,7 +949,7 @@ class ToolLevelling(AppTool, CNCjob):
         if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':
             if self.mouse_events_connected is True:
                 self.mouse_events_connected = False
-                if self.app.is_legacy is False:
+                if self.app.use_3d_engine:
                     self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
                     self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_click_release)
                 else:

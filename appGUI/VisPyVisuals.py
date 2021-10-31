@@ -137,6 +137,7 @@ class ShapeGroup(object):
         self._collection = collection
         self._indexes = []
         self._visible = True
+        self._enabled = True
         self._color = None
 
     def add(self, **kwargs):
@@ -197,6 +198,23 @@ class ShapeGroup(object):
             self._collection.data[i]['visible'] = value
 
         self._collection.redraw([])
+
+    @property
+    def enabled(self):
+        """
+        Another way to toggle visibility on canvas
+        :return:
+        :rtype:
+        """
+        return self._enabled
+
+    @enabled.setter
+    def enabled(self, value):
+        """
+        Another way to toggle visibility on canvas
+        :param value: bool
+        """
+        self._collection.enabled = value
 
     def update_visibility(self, state, indexes=None):
         if indexes:

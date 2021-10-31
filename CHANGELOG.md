@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM beta
 
 - in Markers Plugin made sure that whenever new markers are added, the previous ones are first cleared so there is no accumulative action
 - in Markers Plugin added utility geometry for the manual mode
+- refactored the is_legacy object to use_3d_engine
+- made sure that there is no longer a double action when toggling the object visibility ('plot' attribute)
 
 30.10.2021
 

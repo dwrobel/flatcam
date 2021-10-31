@@ -1675,7 +1675,7 @@ class ToolIsolation(AppTool, Gerber):
         elif selection == 1:    # Area Selection
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the start point of the area."))
 
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
                 self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
                 self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
@@ -1703,7 +1703,7 @@ class ToolIsolation(AppTool, Gerber):
             self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_poly_mouse_click_release)
             self.kp = self.app.plotcanvas.graph_event_connect('key_press', self.on_key_press)
 
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 self.app.plotcanvas.graph_event_disconnect('mouse_release',
                                                            self.app.on_mouse_click_release_over_plot)
             else:
@@ -2434,7 +2434,7 @@ class ToolIsolation(AppTool, Gerber):
         return new_geometry
 
     def on_poly_mouse_click_release(self, event):
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             event_pos = event.pos
             right_button = 2
             self.app.event_is_dragging = self.app.event_is_dragging
@@ -2502,7 +2502,7 @@ class ToolIsolation(AppTool, Gerber):
             if self.grid_status_memory is True:
                 self.app.ui.grid_snap_btn.trigger()
 
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_poly_mouse_click_release)
                 self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
             else:
@@ -2640,13 +2640,11 @@ class ToolIsolation(AppTool, Gerber):
     def on_mouse_release(self, event):
         shape_type = self.ui.area_shape_radio.get_value()
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             event_pos = event.pos
-            # event_is_dragging = event.is_dragging
             right_button = 2
         else:
             event_pos = (event.xdata, event.ydata)
-            # event_is_dragging = self.app.plotcanvas.is_dragging
             right_button = 3
 
         event_pos = self.app.plotcanvas.translate_coords(event_pos)
@@ -2728,7 +2726,7 @@ class ToolIsolation(AppTool, Gerber):
 
             self.delete_tool_selection_shape()
 
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
                 self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
                 self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
@@ -2758,14 +2756,12 @@ class ToolIsolation(AppTool, Gerber):
     def on_mouse_move(self, event):
         shape_type = self.ui.area_shape_radio.get_value()
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             event_pos = event.pos
             event_is_dragging = event.is_dragging
-            # right_button = 2
         else:
             event_pos = (event.xdata, event.ydata)
             event_is_dragging = self.app.plotcanvas.is_dragging
-            # right_button = 3
 
         curr_pos = self.app.plotcanvas.translate_coords(event_pos)
 
@@ -2855,7 +2851,7 @@ class ToolIsolation(AppTool, Gerber):
         if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':
 
             if self.area_sel_disconnect_flag is True:
-                if self.app.is_legacy is False:
+                if self.app.use_3d_engine:
                     self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
                     self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
                     self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
@@ -2876,7 +2872,7 @@ class ToolIsolation(AppTool, Gerber):
                 if self.grid_status_memory is True:
                     self.app.ui.grid_snap_btn.trigger()
 
-                if self.app.is_legacy is False:
+                if self.app.use_3d_engine:
                     self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_poly_mouse_click_release)
                     self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
                 else:

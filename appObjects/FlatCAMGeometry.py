@@ -1369,7 +1369,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 for sub_el in element:
                     self.plot_element(sub_el, color=color)
         except TypeError:  # Element is not iterable...
-            # if self.app.is_legacy is False:
+            # if self.app.use_3d_engine:
             self.add_shape(shape=element, color=color, visible=visible, layer=0)
 
     def plot(self, visible=None, kind=None, plot_tool=None):
@@ -1389,7 +1389,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         if not FlatCAMObj.plot(self):
             return
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             def random_color():
                 r_color = np.random.rand(4)
                 r_color[3] = 1
@@ -1452,6 +1452,7 @@ class GeometryObject(FlatCAMObj, Geometry):
     def on_plot_cb_click(self):
         if self.muted_ui:
             return
+
         self.read_form_item('plot')
         self.plot()
 

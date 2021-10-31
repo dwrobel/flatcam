@@ -154,7 +154,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         gcodenr_re_string = r'([+-]?\d*\.\d+)'
         self.g_nr_re = re.compile(gcodenr_re_string)
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             self.text_col = self.app.plotcanvas.new_text_collection()
             self.text_col.enabled = True
             self.annotation = self.app.plotcanvas.new_text_group(collection=self.text_col)
@@ -1348,19 +1348,19 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.shapes.redraw()
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 self.annotation.clear(update=True)
 
         # Annotations shapes plotting
         try:
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 if self.ui.annotation_cb.get_value() and visible:
                     self.plot_annotations(obj=self, visible=True)
                 else:
                     self.plot_annotations(obj=self, visible=False)
 
         except (ObjectDeleted, AttributeError):
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 self.annotation.clear(update=True)
 
     def on_annotation_change(self, val):
@@ -1369,19 +1369,17 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         :return:
         """
 
-        if self.app.is_legacy is False:
-            # self.text_col.visible = True if val == 2 else False
-            # self.plot(kind=self.ui.cncplot_method_combo.get_value())
+        if self.app.use_3d_engine:
             # Annotations shapes plotting
             try:
-                if self.app.is_legacy is False:
+                if self.app.use_3d_engine:
                     if val and self.ui.plot_cb.get_value():
                         self.plot_annotations(obj=self, visible=True)
                     else:
                         self.plot_annotations(obj=self, visible=False)
 
             except (ObjectDeleted, AttributeError):
-                if self.app.is_legacy is False:
+                if self.app.use_3d_engine:
                     self.annotation.clear(update=True)
 
             # self.annotation.redraw()

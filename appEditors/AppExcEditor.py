@@ -1799,7 +1799,7 @@ class AppExcEditor(QtCore.QObject):
             self.tolerance = float(self.app.defaults["global_tolerance"]) / 20
 
         # VisPy Visuals
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             self.shapes = self.canvas.new_shape_collection(layers=1)
             if self.canvas.big_cursor is True:
                 self.tool_shape = self.canvas.new_shape_collection(layers=1, line_width=2)
@@ -2643,7 +2643,7 @@ class AppExcEditor(QtCore.QObject):
 
         # make sure that the shortcuts key and mouse events will no longer be linked to the methods from FlatCAMApp
         # but those from AppGeoEditor
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
             self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
             self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
@@ -2680,7 +2680,7 @@ class AppExcEditor(QtCore.QObject):
                                                                self.app.on_mouse_double_click_over_plot)
         self.app.collection.view.clicked.connect(self.app.collection.on_mouse_down)
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             self.canvas.graph_event_disconnect('mouse_press', self.on_canvas_click)
             self.canvas.graph_event_disconnect('mouse_move', self.on_canvas_move)
             self.canvas.graph_event_disconnect('mouse_release', self.on_exc_click_release)
@@ -3242,7 +3242,7 @@ class AppExcEditor(QtCore.QObject):
         :param event:       Event object dispatched by VisPy
         :return:            None
         """
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             event_pos = event.pos
             # event_is_dragging = event.is_dragging
             # right_button = 2
@@ -3311,7 +3311,7 @@ class AppExcEditor(QtCore.QObject):
         :return:            None
         """
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             event_pos = event.pos
             # event_is_dragging = event.is_dragging
             right_button = 2
@@ -3396,7 +3396,7 @@ class AppExcEditor(QtCore.QObject):
         if not self.app.plotcanvas.native.hasFocus():
             self.app.plotcanvas.native.setFocus()
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             event_pos = event.pos
             event_is_dragging = event.is_dragging
             right_button = 2

@@ -1537,7 +1537,7 @@ class CutOut(AppTool):
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             self.app.plotcanvas.graph_event_disconnect('key_press', self.app.ui.keyPressEvent)
             self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
             self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
@@ -1737,7 +1737,7 @@ class CutOut(AppTool):
     # To be called after clicking on the plot.
     def on_mouse_click_release(self, event):
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             event_pos = event.pos
             # event_is_dragging = event.is_dragging
             right_button = 2
@@ -1763,7 +1763,7 @@ class CutOut(AppTool):
 
         # if RMB then we exit
         elif event.button == right_button and self.mouse_is_dragging is False:
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
                 self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
                 self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_click_release)
@@ -1853,7 +1853,7 @@ class CutOut(AppTool):
 
         self.app.on_mouse_move_over_plot(event=event)
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             event_pos = event.pos
             event_is_dragging = event.is_dragging
             # right_button = 2
@@ -1989,7 +1989,7 @@ class CutOut(AppTool):
         if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':
             if self.mouse_events_connected is True:
                 self.mouse_events_connected = False
-                if self.app.is_legacy is False:
+                if self.app.use_3d_engine:
                     self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
                     self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
                     self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_click_release)

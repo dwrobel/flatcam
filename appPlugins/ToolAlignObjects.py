@@ -217,13 +217,13 @@ class AlignObjects(AppTool):
         self.app.inform.emit('%s: %s' % (_("First Point"), _("Click on the START point.")))
         self.mr = self.canvas.graph_event_connect('mouse_release', self.on_mouse_click_release)
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             self.canvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
         else:
             self.canvas.graph_event_disconnect(self.app.mr)
 
     def on_mouse_click_release(self, event):
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             event_pos = event.pos
             right_button = 2
             self.app.event_is_dragging = self.app.event_is_dragging
@@ -361,7 +361,7 @@ class AlignObjects(AppTool):
 
         self.app.mr = self.canvas.graph_event_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             self.canvas.graph_event_disconnect('mouse_release', self.on_mouse_click_release)
         else:
             self.canvas.graph_event_disconnect(self.mr)

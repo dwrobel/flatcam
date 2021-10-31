@@ -47,7 +47,7 @@ class ToolMove(AppTool):
         self.old_coords = []
 
         # VisPy visuals
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
         else:
             from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
@@ -73,7 +73,7 @@ class ToolMove(AppTool):
         if self.isVisible():
             self.setVisible(False)
 
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_move)
                 self.app.plotcanvas.graph_event_disconnect('mouse_press', self.on_left_click)
                 self.app.plotcanvas.graph_event_disconnect('key_release', self.on_key_press)
@@ -117,11 +117,7 @@ class ToolMove(AppTool):
         # this is necessary because right mouse click and middle mouse click
         # are used for panning on the canvas
 
-        if self.app.is_legacy is False:
-            event_pos = event.pos
-        else:
-            event_pos = (event.xdata, event.ydata)
-
+        event_pos = event.pos if self.app.use_3d_engine else (event.xdata, event.ydata)
         if event.button == 1:
             if self.clicked_move == 0:
                 pos_canvas = self.app.plotcanvas.translate_coords(event_pos)
@@ -239,12 +235,7 @@ class ToolMove(AppTool):
         self.app.worker_task.emit({'fcn': worker_task, 'params': []})
 
     def on_move(self, event):
-
-        if self.app.is_legacy is False:
-            event_pos = event.pos
-        else:
-            event_pos = (event.xdata, event.ydata)
-
+        event_pos = event.pos if self.app.use_3d_engine else (event.xdata, event.ydata)
         try:
             x = float(event_pos[0])
             y = float(event_pos[1])
@@ -308,7 +299,7 @@ class ToolMove(AppTool):
         self.old_coords = [p1, p2, p3, p4]
         self.draw_shape(Polygon(self.old_coords))
 
-        if self.app.is_legacy is True:
+        if self.app.use_3d_engine:
             self.sel_shapes.redraw()
 
     def update_sel_bbox(self, pos):
@@ -320,7 +311,7 @@ class ToolMove(AppTool):
         pt4 = (self.old_coords[3][0] + pos[0], self.old_coords[3][1] + pos[1])
         self.draw_shape(Polygon([pt1, pt2, pt3, pt4]))
 
-        if self.app.is_legacy is True:
+        if self.app.use_3d_engine:
             self.sel_shapes.redraw()
 
     def delete_shape(self):

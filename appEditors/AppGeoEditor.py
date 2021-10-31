@@ -3658,7 +3658,7 @@ class AppGeoEditor(QtCore.QObject):
 
         # VisPy visuals
         self.fcgeometry = None
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             self.shapes = self.app.plotcanvas.new_shape_collection(layers=1)
             self.tool_shape = self.app.plotcanvas.new_shape_collection(layers=1)
         else:
@@ -4027,7 +4027,7 @@ class AppGeoEditor(QtCore.QObject):
                     ymin = xmin
                     ymax = xmax
 
-                if self.app.is_legacy is False:
+                if self.app.use_3d_engine:
                     rect = Rect(xmin, ymin, xmax, ymax)
                     rect.left, rect.right = xmin, xmax
                     rect.bottom, rect.top = ymin, ymax
@@ -4348,7 +4348,7 @@ class AppGeoEditor(QtCore.QObject):
         self.mm = self.canvas.graph_event_connect('mouse_move', self.on_canvas_move)
         self.mr = self.canvas.graph_event_connect('mouse_release', self.on_canvas_click_release)
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             # make sure that the shortcuts key and mouse events will no longer be linked to the methods from FlatCAMApp
             # but those from AppGeoEditor
             self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
@@ -4406,7 +4406,7 @@ class AppGeoEditor(QtCore.QObject):
                                                                self.app.on_mouse_double_click_over_plot)
         # self.app.collection.view.clicked.connect(self.app.collection.on_mouse_down)
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             self.canvas.graph_event_disconnect('mouse_press', self.on_canvas_click)
             self.canvas.graph_event_disconnect('mouse_move', self.on_canvas_move)
             self.canvas.graph_event_disconnect('mouse_release', self.on_canvas_click_release)
@@ -4673,7 +4673,7 @@ class AppGeoEditor(QtCore.QObject):
         :param event: Event object dispatched by Matplotlib
         :return: None
         """
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             event_pos = event.pos
         else:
             event_pos = (event.xdata, event.ydata)
@@ -4727,7 +4727,7 @@ class AppGeoEditor(QtCore.QObject):
         :param event: Event object dispatched by VisPy SceneCavas
         :return: None
         """
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             event_pos = event.pos
             event_is_dragging = event.is_dragging
             right_button = 2
@@ -4823,7 +4823,7 @@ class AppGeoEditor(QtCore.QObject):
             self.draw_utility_geometry(geo=geo)
 
     def on_canvas_click_release(self, event):
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             event_pos = event.pos
             # event_is_dragging = event.is_dragging
             right_button = 2

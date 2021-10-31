@@ -1197,7 +1197,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         if not FlatCAMObj.plot(self):
             return
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             def random_color():
                 r_color = np.random.rand(4)
                 r_color[3] = 1

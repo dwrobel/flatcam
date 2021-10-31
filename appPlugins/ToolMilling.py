@@ -3427,7 +3427,7 @@ class ToolMilling(AppTool, Excellon):
 
         self.delete_sel_shape()
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             face = self.app.defaults['global_sel_fill'][:-2] + str(hex(int(0.2 * 255)))[2:]
             outline = self.app.defaults['global_sel_line'][:-2] + str(hex(int(0.8 * 255)))[2:]
         else:
@@ -3438,7 +3438,7 @@ class ToolMilling(AppTool, Excellon):
             sel_rect = self.app.exc_areas.exclusion_areas_storage[row]['shape']
             self.app.move_tool.sel_shapes.add(sel_rect, color=outline, face_color=face, update=True, layer=0,
                                               tolerance=None)
-        if self.app.is_legacy is True:
+        if self.app.use_3d_engine:
             self.app.move_tool.sel_shapes.redraw()
 
     def clear_selection(self):

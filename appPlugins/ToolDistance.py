@@ -80,7 +80,7 @@ class Distance(AppTool):
         self.mouse_is_dragging = False
 
         # VisPy visuals
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
         else:
             from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
@@ -221,7 +221,7 @@ class Distance(AppTool):
 
         # we disconnect the mouse/key handlers from wherever the measurement tool was called
         if self.app.call_source == 'app':
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 self.canvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
                 self.canvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
                 self.canvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
@@ -231,7 +231,7 @@ class Distance(AppTool):
                 self.canvas.graph_event_disconnect(self.app.mr)
 
         elif self.app.call_source == 'geo_editor':
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 self.canvas.graph_event_disconnect('mouse_move', self.app.geo_editor.on_canvas_move)
                 self.canvas.graph_event_disconnect('mouse_press', self.app.geo_editor.on_canvas_click)
                 self.canvas.graph_event_disconnect('mouse_release', self.app.geo_editor.on_canvas_click_release)
@@ -241,7 +241,7 @@ class Distance(AppTool):
                 self.canvas.graph_event_disconnect(self.app.geo_editor.mr)
 
         elif self.app.call_source == 'exc_editor':
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 self.canvas.graph_event_disconnect('mouse_move', self.app.exc_editor.on_canvas_move)
                 self.canvas.graph_event_disconnect('mouse_press', self.app.exc_editor.on_canvas_click)
                 self.canvas.graph_event_disconnect('mouse_release', self.app.exc_editor.on_exc_click_release)
@@ -251,7 +251,7 @@ class Distance(AppTool):
                 self.canvas.graph_event_disconnect(self.app.exc_editor.mr)
 
         elif self.app.call_source == 'grb_editor':
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 self.canvas.graph_event_disconnect('mouse_move', self.app.grb_editor.on_canvas_move)
                 self.canvas.graph_event_disconnect('mouse_press', self.app.grb_editor.on_canvas_click)
                 self.canvas.graph_event_disconnect('mouse_release', self.app.grb_editor.on_grb_click_release)
@@ -285,7 +285,7 @@ class Distance(AppTool):
                                                                      self.app.grb_editor.on_grb_click_release)
 
         # disconnect the mouse/key events from functions of measurement tool
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             self.canvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
             self.canvas.graph_event_disconnect('mouse_release', self.on_mouse_click_release)
         else:
@@ -329,7 +329,7 @@ class Distance(AppTool):
         snap_enabled = self.ui.snap_center_cb.get_value()
         multipoint = self.ui.multipoint_cb.get_value()
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             event_pos = event.pos
             right_button = 2
             event_is_dragging = self.mouse_is_dragging
@@ -506,7 +506,7 @@ class Distance(AppTool):
         multipoint = self.ui.multipoint_cb.get_value()
 
         try:  # May fail in case mouse not within axes
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 event_pos = event.pos
                 self.mouse_is_dragging = event.is_dragging
             else:
@@ -656,7 +656,7 @@ class Distance(AppTool):
 
         self.last_shape = self.sel_shapes.add(meas_line, color=color, update=True, layer=0, tolerance=None, linewidth=2)
 
-        if self.app.is_legacy is True:
+        if self.app.use_3d_engine:
             self.sel_shapes.redraw()
 
     def delete_all_shapes(self):

@@ -725,7 +725,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         self.endRemoveRows()
         # ############ OBJECT DELETION FROM MODEL STOPS HERE ####################
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             self.app.plotcanvas.redraw()
 
         if select_project:
@@ -778,7 +778,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         self.endRemoveRows()
         # ############ OBJECT DELETION FROM MODEL STOPS HERE ####################
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             self.app.plotcanvas.redraw()
 
         if select_project:

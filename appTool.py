@@ -165,7 +165,7 @@ class AppTool(QtWidgets.QWidget):
         color_t = face_color[:-2] + str(hex(int(face_alpha * 255)))[2:]
 
         s_storage.add(sel_rect, color=color, face_color=color_t, update=True, layer=0, tolerance=None)
-        if self.app.is_legacy is True:
+        if self.app.use_3d_engine:
             s_storage.redraw()
 
     def draw_selection_shape_polygon(self, points, **kwargs):
@@ -207,7 +207,7 @@ class AppTool(QtWidgets.QWidget):
         color_t = face_color[:-2] + str(hex(int(face_alpha * 255)))[2:]
 
         s_storage.add(sel_rect, color=color, face_color=color_t, update=True, layer=0, tolerance=None)
-        if self.app.is_legacy is True:
+        if self.app.use_3d_engine:
             s_storage.redraw()
 
     def delete_tool_selection_shape(self, **kwargs):
@@ -277,7 +277,7 @@ class AppTool(QtWidgets.QWidget):
         elif not geo.is_valid:
             s_storage.add(geo, color="red", face_color=color_t_error, update=True, layer=0, tolerance=None)
 
-        if self.app.is_legacy is True:
+        if self.app.use_3d_engine:
             s_storage.redraw()
 
     def delete_moving_selection_shape(self, **kwargs):

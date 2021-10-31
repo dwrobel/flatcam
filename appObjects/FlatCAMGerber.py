@@ -915,7 +915,7 @@ class GerberObject(FlatCAMObj, Gerber):
         else:
             geometry = self.solid_geometry
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             def random_color():
                 r_color = np.random.rand(4)
                 r_color[3] = 1
@@ -976,7 +976,7 @@ class GerberObject(FlatCAMObj, Gerber):
         :return:
         """
 
-        log.debug(str(inspect.stack()[1][3]) + " --> GerberObject.plot_aperture()")
+        # log.debug(str(inspect.stack()[1][3]) + " --> GerberObject.plot_aperture()")
 
         # Does all the required setup and returns False
         # if the 'ptint' option is set to False.
@@ -1042,7 +1042,7 @@ class GerberObject(FlatCAMObj, Gerber):
 
         if self.mark_shapes_storage:
             if aperture == 'all':
-                val = False if self.app.is_legacy is True else True
+                val = True if self.app.use_3d_engine else False
                 self.mark_shapes.clear(update=val)
             else:
                 for shape_key in self.mark_shapes_storage[aperture]:

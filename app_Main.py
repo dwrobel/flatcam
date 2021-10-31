@@ -1096,10 +1096,10 @@ class App(QtCore.QObject):
         # ######################################## SETUP Plot Area ##################################################
         # ###########################################################################################################
 
+        self.use_3d_engine = True
         # determine if the Legacy Graphic Engine is to be used or the OpenGL one
-        self.is_legacy = True
-        if self.defaults["global_graphic_engine"] == '3D':
-            self.is_legacy = False
+        if self.defaults["global_graphic_engine"] == '2D':
+            self.use_3d_engine = False
 
         # PlotCanvas Event signals disconnect id holders
         self.mp = None
@@ -1139,7 +1139,7 @@ class App(QtCore.QObject):
 
         # Storage for shapes, storage that can be used by FlatCAm tools for utility geometry
         # VisPy visuals
-        if self.is_legacy is False:
+        if self.use_3d_engine:
             try:
                 self.tool_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
             except AttributeError:
@@ -1151,8 +1151,7 @@ class App(QtCore.QObject):
             from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.tool_shapes = ShapeCollectionLegacy(obj=self, app=self, name="tool")
 
-            # Storage for Hover Shapes
-            # will use the default Matplotlib axes
+            # Storage for Hover Shapes will use the default Matplotlib axes
             self.hover_shapes = ShapeCollectionLegacy(obj=self, app=self, name='hover')
 
         end_plot_time = time.time()
@@ -4036,19 +4035,19 @@ class App(QtCore.QObject):
             self.log.debug("App.quit_application() --> Gerber Editor deactivated.")
 
         # disconnect the mouse events
-        if self.is_legacy:
-            self.plotcanvas.graph_event_disconnect(self.mm)
-            self.plotcanvas.graph_event_disconnect(self.mp)
-            self.plotcanvas.graph_event_disconnect(self.mr)
-            self.plotcanvas.graph_event_disconnect(self.mdc)
-            self.plotcanvas.graph_event_disconnect(self.kp)
-        else:
+        if self.use_3d_engine:
             self.mm = self.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move_over_plot)
             self.mp = self.plotcanvas.graph_event_disconnect('mouse_press', self.on_mouse_click_over_plot)
             self.mr = self.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_click_release_over_plot)
             self.mdc = self.plotcanvas.graph_event_disconnect('mouse_double_click',
                                                               self.on_mouse_double_click_over_plot)
             self.kp = self.plotcanvas.graph_event_disconnect('key_press', self.ui.keyPressEvent)
+        else:
+            self.plotcanvas.graph_event_disconnect(self.mm)
+            self.plotcanvas.graph_event_disconnect(self.mp)
+            self.plotcanvas.graph_event_disconnect(self.mr)
+            self.plotcanvas.graph_event_disconnect(self.mdc)
+            self.plotcanvas.graph_event_disconnect(self.kp)
 
         self.preferencesUiManager.save_defaults(silent=True)
         self.log.debug("App.quit_application() --> App Defaults saved.")
@@ -5226,11 +5225,10 @@ class App(QtCore.QObject):
             self.log.debug("Nothing selected for deletion")
             return
 
-        if self.is_legacy is True:
+        if self.use_3d_engine is False:
             # Remove plot only if the object was plotted otherwise delaxes will fail
             if isPlotted:
                 try:
-                    # self.plotcanvas.figure.delaxes(self.collection.get_active().axes)
                     self.plotcanvas.figure.delaxes(self.collection.get_active().shapes.axes)
                 except Exception as e:
                     self.log.error("App.delete_first_selected() --> %s" % str(e))
@@ -5265,10 +5263,10 @@ class App(QtCore.QObject):
                     for obj in self.collection.get_list():
                         obj.plot()
                     self.plotcanvas.fit_view()
-                if self.is_legacy:
-                    self.plotcanvas.graph_event_disconnect(self.mp_zc)
-                else:
+                if self.use_3d_engine:
                     self.plotcanvas.graph_event_disconnect('mouse_release', self.on_set_zero_click)
+                else:
+                    self.plotcanvas.graph_event_disconnect(self.mp_zc)
                 self.inhibit_context_menu = False
 
             self.worker_task.emit({'fcn': worker_task, 'params': []})
@@ -5292,19 +5290,15 @@ class App(QtCore.QObject):
         :return:
         """
         noplot_sig = noplot
+        right_button = 2 if self.use_3d_engine else 3
 
-        if self.is_legacy is False:
-            right_button = 2
-        else:
-            right_button = 3
-
-        def worker_task():
-            with self.proc_container.new(_("Setting Origin...")):
-                obj_list = self.collection.get_list()
+        def worker_task(app_obj):
+            with app_obj.proc_container.new(_("Setting Origin...")):
+                obj_list = app_obj.collection.get_list()
 
                 for obj in obj_list:
                     obj.offset((x, y))
-                    self.app_obj.object_changed.emit(obj)
+                    app_obj.app_obj.object_changed.emit(obj)
 
                     # Update the object bounding box options
                     a, b, c, d = obj.bounds()
@@ -5320,22 +5314,22 @@ class App(QtCore.QObject):
                         # not all objects have this attribute
                         pass
 
-                self.inform.emit('[success] %s...' % _('Origin set'))
+                app_obj.inform.emit('[success] %s...' % _('Origin set'))
 
                 for obj in obj_list:
                     out_name = obj.options["name"]
 
                     if obj.kind == 'gerber':
-                        obj.source_file = self.f_handlers.export_gerber(
+                        obj.source_file = app_obj.f_handlers.export_gerber(
                             obj_name=out_name, filename=None, local_use=obj, use_thread=False)
                     elif obj.kind == 'excellon':
-                        obj.source_file = self.f_handlers.export_excellon(
+                        obj.source_file = app_obj.f_handlers.export_excellon(
                             obj_name=out_name, filename=None, local_use=obj, use_thread=False)
                     elif obj.kind == 'geometry':
-                        obj.source_file = self.f_handlers.export_dxf(
+                        obj.source_file = app_obj.f_handlers.export_dxf(
                             obj_name=out_name, filename=None, local_use=obj, use_thread=False)
                 if noplot_sig is False:
-                    self.replot_signal.emit([])
+                    app_obj.replot_signal.emit([])
 
         if location is not None:
             if len(location) != 2:
@@ -5345,17 +5339,14 @@ class App(QtCore.QObject):
             x, y = location
 
             if use_thread is True:
-                self.worker_task.emit({'fcn': worker_task, 'params': []})
+                self.worker_task.emit({'fcn': worker_task, 'params': [self]})
             else:
-                worker_task()
+                worker_task(self)
             self.should_we_save = True
             return
 
         if event is not None and event.button == 1:
-            if self.is_legacy is False:
-                event_pos = event.pos
-            else:
-                event_pos = (event.xdata, event.ydata)
+            event_pos = event.pos if self.use_3d_engine else (event.xdata, event.ydata)
             pos_canvas = self.plotcanvas.translate_coords(event_pos)
 
             if self.grid_status():
@@ -5373,11 +5364,12 @@ class App(QtCore.QObject):
             self.should_we_save = True
         elif event is not None and event.button == right_button:
             if self.ui.popMenu.mouse_is_panning is False:
-                if self.is_legacy:
-                    self.plotcanvas.graph_event_disconnect(self.mp_zc)
-                else:
+                if self.use_3d_engine:
                     self.plotcanvas.graph_event_disconnect('mouse_release', self.on_set_zero_click)
                     self.inhibit_context_menu = False
+                else:
+                    self.plotcanvas.graph_event_disconnect(self.mp_zc)
+
                 self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
 
     def on_move2origin(self, use_thread=True):
@@ -5655,7 +5647,7 @@ class App(QtCore.QObject):
 
         cursor = QtGui.QCursor()
 
-        if self.is_legacy is False:
+        if self.use_3d_engine:
             # I don't know where those differences come from but they are constant for the current
             # execution of the application and they are multiples of a value around 0.0263mm.
             # In a random way sometimes they are more sometimes they are less
@@ -5802,7 +5794,7 @@ class App(QtCore.QObject):
 
         cursor = QtGui.QCursor()
 
-        if self.is_legacy is False:
+        if self.use_3d_engine:
             # I don't know where those differences come from but they are constant for the current
             # execution of the application and they are multiples of a value around 0.0263mm.
             # In a random way sometimes they are more sometimes they are less
@@ -6598,7 +6590,7 @@ class App(QtCore.QObject):
         self.tools_db_tab.ui_connect()
 
     def on_3d_area(self):
-        if self.is_legacy is True:
+        if self.use_3d_engine is False:
             msg = '[ERROR_NOTCL] %s' % _("Not available for Legacy 2D graphic mode.")
             self.inform.emit(msg)
             return
@@ -7087,14 +7079,9 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        if self.is_legacy is False:
-            self.plotcanvas.update()
-        else:
-            self.plotcanvas.auto_adjust_axes()
-
+        self.plotcanvas.update() if self.use_3d_engine else self.plotcanvas.auto_adjust_axes()
         self.on_zoom_fit()
         self.collection.update_view()
-        # self.inform.emit(_("Done."))
 
     def on_toolbar_replot(self):
         """
@@ -7103,17 +7090,11 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.log.debug("on_toolbar_replot()")
-
         try:
             obj = self.collection.get_active()
-            if obj:
-                obj.read_form()
-            else:
-                self.on_zoom_fit()
-        except AttributeError as e:
+            obj.read_form() if obj else self.on_zoom_fit()
+        except Exception as e:
             self.log.debug("on_toolbar_replot() -> %s" % str(e))
-            pass
 
         self.plot_all()
 
@@ -7230,20 +7211,11 @@ class App(QtCore.QObject):
         """
         self.pos = []
 
-        if self.is_legacy is False:
-            event_pos = event.pos
-            # pan_button = 2 if self.defaults["global_pan_button"] == '2'else 3
-            # # Set the mouse button for panning
-            # self.plotcanvas.view.camera.pan_button_setting = pan_button
-        else:
-            event_pos = (event.xdata, event.ydata)
-            # Matplotlib has the middle and right buttons mapped in reverse compared with VisPy
-            # pan_button = 3 if self.defaults["global_pan_button"] == '2' else 2
+        event_pos = event.pos if self.use_3d_engine else (event.xdata, event.ydata)
+        self.pos_canvas = self.plotcanvas.translate_coords(event_pos)
 
         # So it can receive key presses
         self.plotcanvas.native.setFocus()
-
-        self.pos_canvas = self.plotcanvas.translate_coords(event_pos)
 
         if self.grid_status():
             self.pos = self.geo_editor.snap(self.pos_canvas[0], self.pos_canvas[1])
@@ -7276,20 +7248,14 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        if self.is_legacy is False:
+        if self.use_3d_engine:
             event_pos = event.pos
-            if self.defaults["global_pan_button"] == '2':
-                pan_button = 2
-            else:
-                pan_button = 3
+            pan_button = 2 if self.defaults["global_pan_button"] == '2' else 3
             self.event_is_dragging = event.is_dragging
         else:
             event_pos = (event.xdata, event.ydata)
             # Matplotlib has the middle and right buttons mapped in reverse compared with VisPy
-            if self.defaults["global_pan_button"] == '2':
-                pan_button = 3
-            else:
-                pan_button = 2
+            pan_button = 3 if self.defaults["global_pan_button"] == '2' else 2
             self.event_is_dragging = self.plotcanvas.is_dragging
 
         # So it can receive key presses but not when the Tcl Shell is active
@@ -7409,7 +7375,7 @@ class App(QtCore.QObject):
         :return:
         """
 
-        if self.is_legacy is False:
+        if self.use_3d_engine:
             event_pos = event.pos
             right_button = 2
         else:
@@ -7456,7 +7422,7 @@ class App(QtCore.QObject):
                 return
 
             # WORKAROUND for LEGACY MODE
-            if self.is_legacy is True:
+            if self.use_3d_engine is False:
                 # if there is no move on canvas then we have no dragging selection
                 if self.dx == 0 or self.dy == 0:
                     self.selection_type = None
@@ -7886,7 +7852,7 @@ class App(QtCore.QObject):
 
         self.hover_shapes.add(hover_rect, color=outline, face_color=face, update=True, layer=0, tolerance=None)
 
-        if self.is_legacy is True:
+        if self.use_3d_engine is False:
             self.hover_shapes.redraw()
 
     def delete_selection_shape(self):
@@ -7935,7 +7901,7 @@ class App(QtCore.QObject):
             face = color[:-2] + str(hex(int(0.2 * 255)))[2:]
             outline = color[:-2] + str(hex(int(0.8 * 255)))[2:]
         else:
-            if self.is_legacy is False:
+            if self.use_3d_engine:
                 face = self.defaults['global_sel_fill'][:-2] + str(hex(int(0.2 * 255)))[2:]
                 outline = self.defaults['global_sel_line'][:-2] + str(hex(int(0.8 * 255)))[2:]
             else:
@@ -7948,7 +7914,7 @@ class App(QtCore.QObject):
                                                                    update=True,
                                                                    layer=0,
                                                                    tolerance=None))
-        if self.is_legacy is True:
+        if self.use_3d_engine is False:
             self.move_tool.sel_shapes.redraw()
 
     def draw_moving_selection_shape(self, old_coords, coords, **kwargs):
@@ -7992,7 +7958,7 @@ class App(QtCore.QObject):
 
         self.move_tool.sel_shapes.add(sel_rect, color=color, face_color=color_t, update=True,
                                       layer=0, tolerance=None)
-        if self.is_legacy is True:
+        if self.use_3d_engine is False:
             self.move_tool.sel_shapes.redraw()
 
     def obj_properties(self):
@@ -8638,30 +8604,32 @@ class App(QtCore.QObject):
 
         self.log.debug("Setting up canvas: %s" % str(self.defaults["global_graphic_engine"]))
 
-        if self.is_legacy is True or modifier == QtCore.Qt.KeyboardModifier.ControlModifier:
-            self.is_legacy = True
-            plotcanvas = PlotCanvasLegacy(self)
-            if plotcanvas.status != 'ok':
-                return 'fail'
-        else:
+        if modifier == QtCore.Qt.KeyboardModifier.ControlModifier:
+            self.use_3d_engine = False
+
+        if self.use_3d_engine:
             try:
                 plotcanvas = PlotCanvas(self)
             except Exception as er:
                 msg_txt = traceback.format_exc()
                 self.log.error("App.on_plotcanvas_setup() failed -> %s" % str(er))
                 self.log.error("OpenGL canvas initialization failed with the following error.\n" + msg_txt)
-                msg = '[ERROR_NOTCL] %s' % _("An internal error has occurred. See shell.\n")
+                msg = '[ERROR] %s' % _("An internal error has occurred. See shell.\n")
                 msg += _("OpenGL canvas initialization failed. HW or HW configuration not supported."
                          "Change the graphic engine to Legacy(2D) in Edit -> Preferences -> General tab.\n\n")
                 msg += msg_txt
                 self.log.error(msg)
                 self.inform.emit(msg)
                 return 'fail'
+        else:
+            plotcanvas = PlotCanvasLegacy(self)
+            if plotcanvas.status != 'ok':
+                return 'fail'
 
         # So it can receive key presses
         plotcanvas.native.setFocus()
 
-        if self.is_legacy is False:
+        if self.use_3d_engine:
             pan_button = 2 if self.defaults["global_pan_button"] == '2' else 3
             # Set the mouse button for panning
             plotcanvas.view.camera.pan_button_setting = pan_button
@@ -8707,7 +8675,7 @@ class App(QtCore.QObject):
 
         :return:        None
         """
-        if self.is_legacy is False:
+        if self.use_3d_engine:
             self.plotcanvas.fit_view()
         else:
             xmin, ymin, xmax, ymax = self.collection.get_bounds()
@@ -9564,7 +9532,7 @@ class MenuFileHandlers(QtCore.QObject):
         date = date.replace(' ', '_')
 
         data = None
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             image = _screenshot(alpha=False)
             data = np.asarray(image)
             if not data.ndim == 3 and data.shape[-1] in (3, 4):
@@ -9588,7 +9556,7 @@ class MenuFileHandlers(QtCore.QObject):
             self.inform.emit(_("Cancelled."))
             return
         else:
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 write_png(filename, data)
             else:
                 self.app.plotcanvas.figure.savefig(filename)

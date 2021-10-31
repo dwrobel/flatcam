@@ -92,10 +92,9 @@ class FlatCAMObj(QtCore.QObject):
         self.axes = None
         self.kind = None  # Override with proper name
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             self.shapes = self.app.plotcanvas.new_shape_group()
             self.mark_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
-            # self.shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, pool=self.app.pool, layers=2)
         else:
             self.shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=name)
             self.mark_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=name + "_mark_shapes")
@@ -161,11 +160,100 @@ class FlatCAMObj(QtCore.QObject):
         # Update form on programmatically options change
         self.set_form_item(key)
 
-        # Set object visibility
-        if key == 'plot':
+        # Set object visibility for objects that are edited
+        if key == 'plot' and self.app.call_source != 'app':
             self.visible = self.options['plot']
 
         self.optionChanged.emit(key)
+
+    def plot(self, kind=None):
+        """
+        Plot this object (Extend this method to implement the actual plotting).
+        Call this in descendants before doing the plotting.
+
+        :param kind:    Used by only some of the FlatCAM objects
+        :return:        Whether to continue plotting or not depending on the "plot" option. Boolean
+        """
+        # log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMObj.plot()")
+
+        if self.deleted:
+            return False
+
+        self.clear()
+        return True
+
+    def single_object_plot(self):
+        def plot_task():
+            with self.app.proc_container.new('%s ...' % _("Plotting")):
+                self.plot()
+            self.app.app_obj.object_changed.emit(self)
+
+        self.app.worker_task.emit({'fcn': plot_task, 'params': []})
+
+    def add_shape(self, **kwargs):
+        tol = kwargs['tolerance'] if 'tolerance' in kwargs else self.drawing_tolerance
+
+        if self.deleted:
+            raise ObjectDeleted()
+        else:
+            key = self.shapes.add(tolerance=tol, **kwargs)
+        return key
+
+    def add_mark_shape(self, **kwargs):
+        tol = kwargs['tolerance'] if 'tolerance' in kwargs else self.drawing_tolerance
+
+        if self.deleted:
+            raise ObjectDeleted()
+        else:
+            key = self.mark_shapes.add(tolerance=tol, layer=0, **kwargs)
+        return key
+
+    @property
+    def visible(self):
+        '''
+        This property is used by Editors to turn off plotting for the original object that is edited,
+        such that when deleting certain elements there is no background plot in place to confuse things.
+        :return:
+        :rtype:
+        '''
+        return self.shapes.visible
+
+    @visible.setter
+    def visible(self, value, threaded=True):
+        log.debug("FlatCAMObj.visible()")
+
+        # self.shapes.enabled = not self.shapes.enabled
+
+        current_visibility = self.shapes.visible
+        self.shapes.visible = current_visibility   # maybe this is slower in VisPy? use enabled property?
+        def task(visibility):
+            if visibility is True:
+                if value is False:
+                    self.shapes.visible = False
+            else:
+                if value is True:
+                    self.shapes.visible = True
+
+            if self.app.use_3d_engine:
+                # Not all object types has annotations
+                try:
+                    self.annotation.visible = value
+                except Exception:
+                    pass
+
+        if threaded:
+            self.app.worker_task.emit({'fcn': task, 'params': [current_visibility]})
+        else:
+            task(current_visibility)
+
+    def clear(self, update=False):
+        self.shapes.clear(update)
+
+        # Not all object types has annotations
+        try:
+            self.annotation.clear(update)
+        except Exception:
+            pass
 
     def set_ui(self, ui):
         self.ui = ui
@@ -372,30 +460,6 @@ class FlatCAMObj(QtCore.QObject):
             pass
             # self.app.log.warning("Failed to read option from field: %s" % option)
 
-    def plot(self, kind=None):
-        """
-        Plot this object (Extend this method to implement the actual plotting).
-        Call this in descendants before doing the plotting.
-
-        :param kind:    Used by only some of the FlatCAM objects
-        :return:        Whether to continue plotting or not depending on the "plot" option. Boolean
-        """
-        log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMObj.plot()")
-
-        if self.deleted:
-            return False
-
-        self.clear()
-        return True
-
-    def single_object_plot(self):
-        def plot_task():
-            with self.app.proc_container.new('%s ...' % _("Plotting")):
-                self.plot()
-            self.app.app_obj.object_changed.emit(self)
-
-        self.app.worker_task.emit({'fcn': plot_task, 'params': []})
-
     def serialize(self):
         """
         Returns a representation of the object as a dictionary so
@@ -415,24 +479,6 @@ class FlatCAMObj(QtCore.QObject):
         :return: None
         """
         return
-
-    def add_shape(self, **kwargs):
-        tol = kwargs['tolerance'] if 'tolerance' in kwargs else self.drawing_tolerance
-
-        if self.deleted:
-            raise ObjectDeleted()
-        else:
-            key = self.shapes.add(tolerance=tol, **kwargs)
-        return key
-
-    def add_mark_shape(self, **kwargs):
-        tol = kwargs['tolerance'] if 'tolerance' in kwargs else self.drawing_tolerance
-
-        if self.deleted:
-            raise ObjectDeleted()
-        else:
-            key = self.mark_shapes.add(tolerance=tol, layer=0, **kwargs)
-        return key
 
     def update_filters(self, last_ext, filter_string):
         """
@@ -928,37 +974,6 @@ class FlatCAMObj(QtCore.QObject):
         return [poly.exterior] + [interior for interior in poly.interiors]
 
     @property
-    def visible(self):
-        return self.shapes.visible
-
-    @visible.setter
-    def visible(self, value, threaded=True):
-        log.debug("FlatCAMObj.visible()")
-
-        current_visibility = self.shapes.visible
-        # self.shapes.visible = value   # maybe this is slower in VisPy? use enabled property?
-
-        def task(visibility):
-            if visibility is True:
-                if value is False:
-                    self.shapes.visible = False
-            else:
-                if value is True:
-                    self.shapes.visible = True
-
-            if self.app.is_legacy is False:
-                # Not all object types has annotations
-                try:
-                    self.annotation.visible = value
-                except Exception:
-                    pass
-
-        if threaded:
-            self.app.worker_task.emit({'fcn': task, 'params': [current_visibility]})
-        else:
-            task(current_visibility)
-
-    @property
     def drawing_tolerance(self):
         self.units = self.app.app_units.upper()
         tol = self._drawing_tolerance if self.units == 'MM' or not self.units else self._drawing_tolerance / 25.4
@@ -968,15 +983,6 @@ class FlatCAMObj(QtCore.QObject):
     def drawing_tolerance(self, value):
         self.units = self.app.app_units.upper()
         self._drawing_tolerance = value if self.units == 'MM' or not self.units else value / 25.4
-
-    def clear(self, update=False):
-        self.shapes.clear(update)
-
-        # Not all object types has annotations
-        try:
-            self.annotation.clear(update)
-        except Exception:
-            pass
 
     def delete(self):
         # Free resources

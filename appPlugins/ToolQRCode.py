@@ -434,7 +434,7 @@ class QRCode(AppTool):
         for shape in offset_geo:
             self.shapes.add(shape, color=outline, update=True, layer=0, tolerance=None)
 
-        if self.app.is_legacy is True:
+        if self.app.use_3d_engine:
             self.shapes.redraw()
 
     def delete_utility_geo(self):
@@ -442,11 +442,7 @@ class QRCode(AppTool):
         self.shapes.redraw()
 
     def on_mouse_move(self, event):
-        if self.app.is_legacy is False:
-            event_pos = event.pos
-        else:
-            event_pos = (event.xdata, event.ydata)
-
+        event_pos = event.pos if self.app.use_3d_engine else (event.xdata, event.ydata)
         try:
             x = float(event_pos[0])
             y = float(event_pos[1])
@@ -473,11 +469,7 @@ class QRCode(AppTool):
         # this is necessary because right mouse click and middle mouse click
         # are used for panning on the canvas
 
-        if self.app.is_legacy is False:
-            event_pos = event.pos
-        else:
-            event_pos = (event.xdata, event.ydata)
-
+        event_pos = event.pos if self.app.use_3d_engine else (event.xdata, event.ydata)
         if event.button == 1:
             pos_canvas = self.app.plotcanvas.translate_coords(event_pos)
             self.delete_utility_geo()
@@ -562,7 +554,7 @@ class QRCode(AppTool):
         self.app.worker_task.emit({'fcn': worker_task, 'params': []})
 
     def on_exit(self):
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
             self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
             self.app.plotcanvas.graph_event_disconnect('key_release', self.on_key_release)

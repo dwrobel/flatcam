@@ -1059,7 +1059,7 @@ class ToolMarkers(AppTool):
 
     def connect_event_handlers(self):
         if self.handlers_connected is False:
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
                 self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
             else:
@@ -1072,7 +1072,7 @@ class ToolMarkers(AppTool):
 
     def disconnect_event_handlers(self):
         if self.handlers_connected is True:
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
             else:
                 self.app.plotcanvas.graph_event_disconnect(self.mr)
@@ -1089,7 +1089,7 @@ class ToolMarkers(AppTool):
         pass
 
     def on_mouse_release(self, event):
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             event_pos = event.pos
             right_button = 2
             self.app.event_is_dragging = self.app.event_is_dragging
@@ -1135,7 +1135,7 @@ class ToolMarkers(AppTool):
         for shape in [line_geo_hor, line_geo_vert]:
             self.temp_shapes.add(shape, color=outline, update=True, layer=0, tolerance=None)
 
-        if self.app.is_legacy is True:
+        if self.app.use_3d_engine:
             self.temp_shapes.redraw()
 
     def clear_utility_geometry(self):

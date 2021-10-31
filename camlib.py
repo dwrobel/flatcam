@@ -545,7 +545,7 @@ class Geometry(object):
         self.old_disp_number = 0
         self.el_count = 0
 
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             self.temp_shapes = self.app.plotcanvas.new_shape_collection(layers=1)
         else:
             from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
@@ -6990,7 +6990,7 @@ class CNCjob(Geometry):
             return
 
         if visible is True:
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 obj.annotation.clear(update=True)
             obj.text_col.visible = True
         else:
@@ -7029,7 +7029,7 @@ class CNCjob(Geometry):
                                    color=new_color)
         except Exception as e:
             log.error("CNCJob.plot2() --> annotations --> %s" % str(e))
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 obj.annotation.clear(update=True)
 
         obj.annotation.redraw()

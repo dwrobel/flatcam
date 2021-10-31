@@ -554,7 +554,7 @@ class ToolPunchGerber(AppTool, Gerber):
             self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_single_poly_mouse_release)
             self.kp = self.app.plotcanvas.graph_event_connect('key_press', self.on_key_press)
 
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
                 self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
             else:
@@ -1657,7 +1657,7 @@ class ToolPunchGerber(AppTool, Gerber):
 
     # To be called after clicking on the plot.
     def on_single_poly_mouse_release(self, event):
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             event_pos = event.pos
             right_button = 2
             event_is_dragging = self.app.event_is_dragging
@@ -1733,7 +1733,7 @@ class ToolPunchGerber(AppTool, Gerber):
             if self.grid_status_memory is True:
                 self.app.ui.grid_snap_btn.trigger()
 
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_single_poly_mouse_release)
                 self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
             else:
@@ -1805,7 +1805,7 @@ class ToolPunchGerber(AppTool, Gerber):
         if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':
             if self.area_sel_disconnect_flag is True:
                 try:
-                    if self.app.is_legacy is False:
+                    if self.app.use_3d_engine:
                         self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
                         self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
                         self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
@@ -1829,7 +1829,7 @@ class ToolPunchGerber(AppTool, Gerber):
                     if self.grid_status_memory is True:
                         self.app.ui.grid_snap_btn.trigger()
 
-                    if self.app.is_legacy is False:
+                    if self.app.use_3d_engine:
                         self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_single_poly_mouse_release)
                         self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
                     else:

@@ -415,7 +415,7 @@ class ToolCopperThieving(AppTool):
         # To be called after clicking on the plot.
 
     def on_mouse_release(self, event):
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             event_pos = event.pos
             # event_is_dragging = event.is_dragging
             right_button = 2
@@ -482,7 +482,7 @@ class ToolCopperThieving(AppTool):
 
     # called on mouse move
     def on_mouse_move(self, event):
-        if self.app.is_legacy is False:
+        if self.app.use_3d_engine:
             event_pos = event.pos
             event_is_dragging = event.is_dragging
             # right_button = 2
@@ -1212,7 +1212,7 @@ class ToolCopperThieving(AppTool):
 
     def connect_event_handlers(self):
         if self.handlers_connected is False:
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
                 self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
                 self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
@@ -1227,7 +1227,7 @@ class ToolCopperThieving(AppTool):
 
     def disconnect_event_handlers(self):
         if self.handlers_connected is True:
-            if self.app.is_legacy is False:
+            if self.app.use_3d_engine:
                 self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
                 self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
             else:
