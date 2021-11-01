@@ -662,9 +662,11 @@ class ToolMarkers(AppTool):
                 tool_found = tool
                 break
 
-        geo_buff_list = []
         if tool_found:
-            new_tools[tool_found]['solid_geometry'] += marker_geometry
+            if isinstance(new_tools[tool_found]['solid_geometry'], list):
+                new_tools[tool_found]['solid_geometry'] += marker_geometry
+            else:
+                new_tools[tool_found]['solid_geometry'] = [new_tools[tool_found]['solid_geometry'], marker_geometry]
         else:
             obj_tools = list(new_tools.keys())
             if obj_tools:
@@ -696,23 +698,13 @@ class ToolMarkers(AppTool):
 
         s_list = []
         if new_geo_obj.solid_geometry:
-            if isinstance(new_geo_obj.solid_geometry, MultiPolygon):
-                work_geo = new_geo_obj.solid_geometry.geoms
-            else:
-                work_geo = new_geo_obj.solid_geometry
-            try:
-                for poly in work_geo:
-                    s_list.append(poly)
-            except TypeError:
-                s_list.append(work_geo)
-
-        geo_buff_list = flatten_shapely_geometry(geo_buff_list)
+            s_list = flatten_shapely_geometry(new_geo_obj.solid_geometry)
 
         try:
-            for poly in geo_buff_list + marker_geometry:
-                s_list.append(poly)
+            for g_el in marker_geometry:
+                s_list.append(g_el)
         except TypeError:
-            s_list.append(geo_buff_list)
+            s_list.append(marker_geometry)
 
         def initialize(geo_obj, app_obj):
             geo_obj.options = LoudDict()
@@ -722,11 +714,11 @@ class ToolMarkers(AppTool):
 
             # Propagate options
             geo_obj.options["tools_mill_tooldia"] = app_obj.defaults["tools_mill_tooldia"]
-            geo_obj.solid_geometry = flatten_shapely_geometry(unary_union(s_list))
+            geo_obj.solid_geometry = flatten_shapely_geometry(s_list)
 
-            geo_obj.multitool = False
-            geo_obj.multigeo = False
-            geo_obj.tools = new_tools
+            geo_obj.multitool = True
+            geo_obj.multigeo = True
+            geo_obj.tools = deepcopy(new_tools)
 
         ret = self.app.app_obj.new_object('geometry', outname, initialize, plot=True, autoselected=False)
 
