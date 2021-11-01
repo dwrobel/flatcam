@@ -683,13 +683,15 @@ class ToolMarkers(AppTool):
                 if opt_key.find('tools_') == 0:
                     new_data[opt_key] = self.app.options[opt_key]
 
-            new_tools = {
-                new_tool: {
-                    'tooldia': tooldia,
-                    'data': deepcopy(new_data),
-                    'solid_geometry': marker_geometry
+            new_tools.update(
+                {
+                    new_tool: {
+                        'tooldia': tooldia,
+                        'data': deepcopy(new_data),
+                        'solid_geometry': marker_geometry
+                    }
                 }
-            }
+            )
 
             # remove possible tools without geometry
             for tool in list(new_tools.keys()):
