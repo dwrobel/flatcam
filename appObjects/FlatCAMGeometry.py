@@ -395,13 +395,32 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.set_offset_values()
 
         self.ui.geo_tools_table.itemSelectionChanged.connect(self.on_row_changed)
-
+        self.ui.geo_tools_table.horizontalHeader().sectionClicked.connect(self.table_toggle_all)
         # Show/Hide Advanced Options
         app_mode = self.app.defaults["global_app_level"]
         self.change_level(app_mode)
 
     def on_row_changed(self):
         pass
+
+    def table_toggle_all(self):
+        """
+        Will toggle the selection of all rows in the table
+
+        :return:
+        """
+        sel_model = self.ui.geo_tools_table.selectionModel()
+        sel_indexes = sel_model.selectedIndexes()
+
+        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        sel_rows = set()
+        for idx in sel_indexes:
+            sel_rows.add(idx.row())
+
+        if sel_rows:
+            self.ui.geo_tools_table.clearSelection()
+        else:
+            self.ui.geo_tools_table.selectAll()
 
     def set_offset_values(self):
         xmin, ymin, xmax, ymax = self.bounds()

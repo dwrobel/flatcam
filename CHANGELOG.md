@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - in Isolation Plugin there is no longer auto-switch to Properties Tab
 - when editing Geometry objects with multiple geometry fixed the issue with the edited geometry always being the one in the first tool
+- in Geometry Property Tab, clicking the tools table header will toggle the selection for all tools in the table
 
 1.11.2021
 
