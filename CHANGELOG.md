@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+6.11.2021
+
+- in Isolation Plugin there is no longer auto-switch to Properties Tab
+- when editing Geometry objects with multiple geometry fixed the issue with the edited geometry always being the one in the first tool
+
 1.11.2021
 
 - Cutout Plugin - improved the functionality in Manual mode: depending on the state of the Shape parameter different types of cutout manual geometry is generated

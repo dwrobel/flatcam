@@ -2547,15 +2547,15 @@ class App(QtCore.QObject):
             self.inform.emit('[ERROR_NOTCL] %s %s' % (_("The Editor could not start."), _("No object is selected.")))
             return
 
-        edited_object.build_ui()
-        self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
-
         if edited_object and edited_object.kind in ['cncjob', 'excellon', 'geometry', 'gerber']:
-            pass
+            if edited_object.kind != 'geometry':
+                edited_object.build_ui()
         else:
             self.inform.emit('[WARNING_NOTCL] %s' % _("Select a Geometry, Gerber, Excellon or CNCJob Object to edit."))
             self.ui.menuobjects.setDisabled(False)
             return
+
+        self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
 
         if edited_object.kind == 'geometry':
             if self.geo_editor is None:
@@ -2568,7 +2568,6 @@ class App(QtCore.QObject):
 
             # we set the notebook to hidden
             # self.ui.splitter.setSizes([0, 1])
-
             if edited_object.multigeo is True:
                 sel_rows = set()
                 for item in edited_object.ui.geo_tools_table.selectedItems():
@@ -2589,14 +2588,10 @@ class App(QtCore.QObject):
                     return
 
                 # determine the tool dia of the selected tool
-                selected_tooldia = float(edited_object.ui.geo_tools_table.item(sel_rows[0], 1).text())
+                # selected_tooldia = float(edited_object.ui.geo_tools_table.item(sel_rows[0], 1).text())
+                sel_id = int(edited_object.ui.geo_tools_table.item(sel_rows[0], 5).text())
 
-                # now find the key in the edited_object.tools that has this tooldia
-                multi_tool = 1
-                for tool in edited_object.tools:
-                    if edited_object.tools[tool]['tooldia'] == selected_tooldia:
-                        multi_tool = tool
-                        break
+                multi_tool = sel_id
                 self.log.debug("Editing MultiGeo Geometry with tool diameter: %s" % str(multi_tool))
                 self.geo_editor.edit_fcgeometry(edited_object, multigeo_tool=multi_tool)
             else:

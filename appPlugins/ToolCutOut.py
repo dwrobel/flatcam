@@ -958,9 +958,7 @@ class CutOut(AppTool):
                     geo_obj.tools[1]['data']['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
                     geo_obj.tools[1]['data']['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
 
-                    if not gaps_solid_geo:
-                        pass
-                    else:
+                    if gaps_solid_geo:
                         geo_obj.tools[99] = deepcopy(self.cut_tool_dict)
                         geo_obj.tools[99]['tooldia'] = str(cut_dia)
                         geo_obj.tools[99]['solid_geometry'] = gaps_solid_geo

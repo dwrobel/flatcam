@@ -1929,7 +1929,7 @@ class ToolIsolation(AppTool, Gerber):
                 self.temp_shapes.clear(update=True)
 
         # Switch notebook to Properties page
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
+        # self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
     def combined_rest(self, iso_obj, iso2geo, tools_storage, lim_area, negative_dia=None, plot=True):
         """

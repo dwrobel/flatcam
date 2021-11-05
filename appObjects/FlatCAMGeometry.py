@@ -348,7 +348,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             # following convoluted way of changing the keys from string to float type
             temp_tools = {}
             for tooluid_key in self.tools:
-                val = deepcopy(self.tools[tooluid_key])
+                val = deepcopy(self.tools[int(tooluid_key)])
                 new_key = deepcopy(int(tooluid_key))
                 temp_tools[new_key] = val
 
@@ -394,9 +394,14 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         self.set_offset_values()
 
+        self.ui.geo_tools_table.itemSelectionChanged.connect(self.on_row_changed)
+
         # Show/Hide Advanced Options
         app_mode = self.app.defaults["global_app_level"]
         self.change_level(app_mode)
+
+    def on_row_changed(self):
+        pass
 
     def set_offset_values(self):
         xmin, ymin, xmax, ymax = self.bounds()
