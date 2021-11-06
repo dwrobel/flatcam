@@ -120,8 +120,9 @@ class CutOut(AppTool):
 
         if found_idx:
             try:
-                name = current.indexes()[0].internalPointer().obj.options['name']
-                kind = current.indexes()[0].internalPointer().obj.kind
+                found_obj = current.indexes()[0].internalPointer().obj
+                name = found_obj.options['name']
+                kind = found_obj.kind
 
                 if kind in ['gerber', 'geometry']:
                     obj_type = {'gerber': 'grb', 'geometry': 'geo'}[kind]
@@ -1856,7 +1857,7 @@ class CutOut(AppTool):
                             exc_obj.options['xmax'] = xmax
                             exc_obj.options['ymax'] = ymax
 
-                        ret = app_obj.app_obj.new_object('excellon', outname_exc, excellon_init)
+                        ret = app_obj.app_obj.new_object('excellon', outname_exc, excellon_init, autoselected=False)
                         if ret == 'fail':
                             app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Mouse bites failed."))
 

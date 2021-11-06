@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+7.11.2021
+
+- in Cutout Plugin made sure that mouse bytes feature will not autoselect the Excellon object that is created
+
 6.11.2021
 
 - in Isolation Plugin there is no longer auto-switch to Properties Tab
