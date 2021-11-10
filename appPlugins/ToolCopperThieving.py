@@ -22,7 +22,7 @@ import shapely.affinity as affinity
 import logging
 from copy import deepcopy
 import numpy as np
-from collections import Iterable
+from collections.abc import Iterable
 
 import gettext
 import appTranslation as fcTranslate

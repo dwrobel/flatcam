@@ -38,7 +38,7 @@ from shapely.geometry import shape
 from descartes.patch import PolygonPatch
 # ---------------------------------------
 
-from collections import Iterable
+from collections.abc import Iterable
 
 import rasterio
 from rasterio.features import shapes

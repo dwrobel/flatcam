@@ -340,10 +340,10 @@ class ExcellonObject(FlatCAMObj, Excellon):
             self.ui.tools_table.setItem(self.tool_row, 4, empty_plot_item)
 
             if 'multicolor' in self.tools[tool_no] and self.tools[tool_no]['multicolor'] is not None:
-                red = self.tools[tool_no]['multicolor'][0] * 255
-                green = self.tools[tool_no]['multicolor'][1] * 255
-                blue = self.tools[tool_no]['multicolor'][2] * 255
-                alpha = self.tools[tool_no]['multicolor'][3] * 255
+                red = int(self.tools[tool_no]['multicolor'][0] * 255)
+                green = int(self.tools[tool_no]['multicolor'][1] * 255)
+                blue = int(self.tools[tool_no]['multicolor'][2] * 255)
+                alpha = int(self.tools[tool_no]['multicolor'][3] * 255)
                 h_color = QtGui.QColor(red, green, blue, alpha)
                 self.ui.tools_table.item(self.tool_row, 4).setBackground(h_color)
             else:
@@ -1166,11 +1166,10 @@ class ExcellonObject(FlatCAMObj, Excellon):
         cb_flag = self.ui.plot_cb.isChecked()
         for row in range(self.ui.tools_table.rowCount() - 2):
             table_cb = self.ui.tools_table.cellWidget(row, 5)
-            if cb_flag:
-                table_cb.setChecked(True)
-            else:
-                table_cb.setChecked(False)
+            table_cb.setChecked(True) if cb_flag else table_cb.setChecked(False)
+
         self.ui_connect()
+        self.on_plot_cb_click_table()
 
     def on_plot_cb_click_table(self):
         self.ui_disconnect()

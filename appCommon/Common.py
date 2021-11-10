@@ -88,7 +88,7 @@ class LoudDict(dict):
         self.callback = callback
 
 
-class LoudUniqueList(list, collections.MutableSequence):
+class LoudUniqueList(list, collections.abc.MutableSequence):
     """
     A List with a callback for item changes, callback which returns the index where the items are added/modified.
     A List that will allow adding only items that are not in the list.

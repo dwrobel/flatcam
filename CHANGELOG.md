@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+10.11.2021
+
+- fixed the issue with toggling visibility for Excellon objects
+- fixed some issue when using Python 3.10
+
 7.11.2021
 
 - in Cutout Plugin made sure that mouse bytes feature will not autoselect the Excellon object that is created
