@@ -1605,7 +1605,7 @@ class FCCheckBox(QtWidgets.QCheckBox):
         return self.isChecked()
 
     def set_value(self, val):
-        self.setChecked(val)
+        self.setChecked(True if val else False)
 
     def toggle(self):
         self.set_value(not self.get_value())

@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+17.11.2021
+
+- fixed an issue when using Python 3.10, in GUI elements
+
 10.11.2021
 
 - fixed the issue with toggling visibility for Excellon objects
