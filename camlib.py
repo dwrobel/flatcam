@@ -3201,6 +3201,49 @@ class CNCjob(Geometry):
 
         return locations
 
+    def exc_optimized_rtree(self, geometry):
+        locations = []
+
+        # ## Index first and last points in paths. What points to index.
+        def get_pts(o):
+            return [(o.x, o.y)]
+
+        # Create the indexed storage.
+        storage = FlatCAMRTreeStorage()
+        storage.get_points = get_pts
+
+        # Store the geometry
+        log.debug("Indexing geometry before generating G-Code...")
+        self.app.inform.emit(_("Indexing geometry before generating G-Code..."))
+
+        for geo_shape in geometry:
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise grace
+
+            if geo_shape is not None:
+                try:
+                    storage.insert(geo_shape)
+                except Exception:
+                    pass
+
+        current_pt = (0, 0)
+        pt, geo = storage.nearest(current_pt)
+        try:
+            while True:
+                storage.remove(geo)
+                locations.append((pt, geo))
+                current_pt = (geo.x, geo.y)
+                pt, geo = storage.nearest(current_pt)
+        except StopIteration:
+            pass
+
+        # if there are no locations then go to the next tool
+        if not locations:
+            return 'fail'
+
+        return locations
+
     def check_zcut(self, zcut):
         if zcut > 0:
             self.app.inform.emit('[WARNING] %s' %
@@ -3251,12 +3294,18 @@ class CNCjob(Geometry):
         # ##################################   DRILLING !!!   #########################################################
         # #############################################################################################################
         # #############################################################################################################
+        if not HAS_ORTOOLS:
+            if opt_type in ['M', 'B']:
+                opt_type = 'R'
+
         if opt_type == 'M':
             log.debug("Using OR-Tools Metaheuristic Guided Local Search drill path optimization.")
         elif opt_type == 'B':
             log.debug("Using OR-Tools Basic drill path optimization.")
         elif opt_type == 'T':
             log.debug("Using Travelling Salesman drill path optimization.")
+        elif opt_type == 'R':
+            log.debug("Using RTree path optimization.")
         else:
             log.debug("Using no path optimization.")
 
@@ -3367,9 +3416,6 @@ class CNCjob(Geometry):
         locations = []
         optimized_path = []
 
-        if not HAS_ORTOOLS:
-            opt_type = 'T'
-
         if opt_type == 'M':
             locations = self.create_tool_data_array(points=points)
             # if there are no locations then go to the next tool
@@ -3389,6 +3435,11 @@ class CNCjob(Geometry):
             if not locations:
                 return 'fail'
             optimized_path = self.optimized_travelling_salesman(locations)
+        elif opt_type == 'R':
+            temp_solid_geometry = tools[tool]['drills']
+            optimized_path = self.exc_optimized_rtree(temp_solid_geometry)
+            if optimized_path == 'fail':
+                return 'fail'
         else:
             # it's actually not optimized path but here we build a list of (x,y) coordinates
             # out of the tool's drills
@@ -3464,6 +3515,9 @@ class CNCjob(Geometry):
                 if opt_type == 'T':
                     locx = point[0]
                     locy = point[1]
+                elif opt_type == 'R':
+                    locx = point[0][0]
+                    locy = point[0][1]
                 else:
                     locx = locations[point][0]
                     locy = locations[point][1]

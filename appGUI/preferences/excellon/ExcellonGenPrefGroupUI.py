@@ -231,20 +231,23 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
         self.excellon_optimization_label = FCLabel(_('Algorithm:'))
         self.excellon_optimization_label.setToolTip(
-            _("This sets the optimization type for the Excellon drill path.\n"
-              "If <<MetaHeuristic>> is checked then Google OR-Tools algorithm with\n"
+            _("This sets the path optimization algorithm.\n"
+              "- Rtre -> Rtree algorithm\n"
+              "- MetaHeuristic -> Google OR-Tools algorithm with\n"
               "MetaHeuristic Guided Local Path is used. Default search time is 3sec.\n"
-              "If <<Basic>> is checked then Google OR-Tools Basic algorithm is used.\n"
-              "If <<TSA>> is checked then Travelling Salesman algorithm is used for\n"
-              "drill path optimization.\n"
+              "- Basic -> Using Google OR-Tools Basic algorithm\n"
+              "- TSA -> Using Travelling Salesman algorithm\n"
               "\n"
               "Some options are disabled when the application works in 32bit mode.")
         )
 
-        self.excellon_optimization_radio = RadioSet([{'label': _('MetaHeuristic'), 'value': 'M'},
-                                                     {'label': _('Basic'), 'value': 'B'},
-                                                     {'label': _('TSA'), 'value': 'T'}],
-                                                    orientation='vertical', compact=True)
+        self.excellon_optimization_radio = RadioSet(
+            [
+                {'label': _('Rtree'), 'value': 'R'},
+                {'label': _('MetaHeuristic'), 'value': 'M'},
+                {'label': _('Basic'), 'value': 'B'},
+                {'label': _('TSA'), 'value': 'T'}
+            ], orientation='vertical', compact=True)
 
         opt_grid.addWidget(self.excellon_optimization_label, 0, 0)
         opt_grid.addWidget(self.excellon_optimization_radio, 0, 1)

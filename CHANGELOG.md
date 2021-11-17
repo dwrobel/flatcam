@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - fixed an issue when using Python 3.10, in GUI elements
 - added fix such that the application will work without having the ortools package installed: TSA and RTree algorithms will be automatically used in that case
+- added Rtree optimization for Drilling Plugin
 
 10.11.2021
 
