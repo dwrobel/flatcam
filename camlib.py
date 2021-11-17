@@ -7,7 +7,7 @@
 # ########################################################## ##
 
 
-from PyQt6 import QtWidgets, QtCore
+from PyQt6 import QtWidgets
 from io import StringIO
 
 from numpy.linalg import solve, norm
@@ -53,9 +53,14 @@ from appCommon.Common import GracefulException as grace
 from appParsers.ParseSVG import *
 from appParsers.ParseDXF import *
 
+HAS_ORTOOLS = True
+
 if platform.architecture()[0] == '64bit':
-    from ortools.constraint_solver import pywrapcp
-    from ortools.constraint_solver import routing_enums_pb2
+    try:
+        from ortools.constraint_solver import pywrapcp
+        from ortools.constraint_solver import routing_enums_pb2
+    except ModuleNotFoundError:
+        HAS_ORTOOLS = False
 
 import logging
 
@@ -3362,6 +3367,9 @@ class CNCjob(Geometry):
         locations = []
         optimized_path = []
 
+        if not HAS_ORTOOLS:
+            opt_type = 'T'
+
         if opt_type == 'M':
             locations = self.create_tool_data_array(points=points)
             # if there are no locations then go to the next tool
@@ -3607,6 +3615,9 @@ class CNCjob(Geometry):
 
         # Optimization type. Can be: 'M', 'B', 'T', 'R', 'No'
         opt_type = tool_dict['tools_mill_optimization_type']
+        if not HAS_ORTOOLS:
+            opt_type = 'R'
+
         opt_time = tool_dict['tools_mill_search_time'] if 'tools_mill_search_time' in tool_dict else 'R'
 
         if opt_type == 'M':
@@ -4195,6 +4206,9 @@ class CNCjob(Geometry):
         if current_platform == '64bit':
             used_excellon_optimization_type = self.excellon_optimization_type
         else:
+            used_excellon_optimization_type = 'T'
+
+        if not HAS_ORTOOLS:
             used_excellon_optimization_type = 'T'
 
         # #############################################################################################################

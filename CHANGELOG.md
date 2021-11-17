@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 17.11.2021
 
 - fixed an issue when using Python 3.10, in GUI elements
+- added fix such that the application will work without having the ortools package installed: TSA and RTree algorithms will be automatically used in that case
 
 10.11.2021
 
