@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+19.11.2021
+
+- solved some Shapely 2.0 deprecation warnings in the Panelize Plugin
+
 17.11.2021
 
 - fixed an issue when using Python 3.10, in GUI elements

@@ -17,7 +17,7 @@ import numpy as np
 
 import shapely.affinity as affinity
 from shapely.ops import unary_union, linemerge, snap
-from shapely.geometry import LineString, MultiLineString, Polygon
+from shapely.geometry import LineString, MultiLineString, Polygon, MultiPolygon
 
 import gettext
 import appTranslation as fcTranslate
@@ -544,19 +544,25 @@ class Panelize(AppTool):
                         if panel_source_obj.multigeo is True:
                             for tool in panel_source_obj.tools:
                                 try:
-                                    geo_len += len(panel_source_obj.tools[tool]['solid_geometry'])
+                                    source_geo = panel_source_obj.tools[tool]['solid_geometry']
+                                    work_geo = source_geo.geoms if isinstance(source_geo, MultiPolygon) else source_geo
+                                    geo_len += len(work_geo)
                                 except TypeError:
                                     geo_len += 1
                         else:
                             try:
-                                geo_len = len(panel_source_obj.solid_geometry)
+                                source_geo = panel_source_obj.solid_geometry
+                                work_geo = source_geo.geoms if isinstance(source_geo, MultiPolygon) else source_geo
+                                geo_len = len(work_geo)
                             except TypeError:
                                 geo_len = 1
                     elif panel_source_obj.kind == 'gerber':
                         for ap in panel_source_obj.tools:
                             if 'geometry' in panel_source_obj.tools[ap]:
                                 try:
-                                    geo_len += len(panel_source_obj.tools[ap]['geometry'])
+                                    source_geo = panel_source_obj.tools[ap]['geometry']
+                                    work_geo = source_geo.geoms if isinstance(source_geo, MultiPolygon) else source_geo
+                                    geo_len += len(work_geo)
                                 except TypeError:
                                     geo_len += 1
 
@@ -578,7 +584,10 @@ class Panelize(AppTool):
 
                                         # calculate the number of polygons
                                         try:
-                                            geo_len = len(panel_source_obj.tools[tool]['solid_geometry'])
+                                            source_geo = panel_source_obj.tools[tool]['geometry']
+                                            work_geo = source_geo.geoms if isinstance(source_geo,
+                                                                                      MultiPolygon) else source_geo
+                                            geo_len = len(work_geo)
                                         except TypeError:
                                             geo_len = 1
 
@@ -619,7 +628,9 @@ class Panelize(AppTool):
 
                                 # calculate the number of polygons
                                 try:
-                                    geo_len = len(panel_source_obj.solid_geometry)
+                                    source_geo = panel_source_obj.solid_geometry
+                                    work_geo = source_geo.geoms if isinstance(source_geo, MultiPolygon) else source_geo
+                                    geo_len = len(work_geo)
                                 except TypeError:
                                     geo_len = 1
 
