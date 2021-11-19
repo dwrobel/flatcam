@@ -1255,7 +1255,9 @@ class GeometryObject(FlatCAMObj, Geometry):
                 # variables to display the percentage of work done
                 self.geo_len = 0
                 try:
-                    self.geo_len = len(self.tools[tool]['solid_geometry'])
+                    source_geo = self.tools[tool]['solid_geometry']
+                    work_geo = source_geo.geoms if isinstance(source_geo, MultiPolygon) else source_geo
+                    self.geo_len = len(work_geo)
                 except TypeError:
                     self.geo_len = 1
                 self.old_disp_number = 0
@@ -1266,7 +1268,9 @@ class GeometryObject(FlatCAMObj, Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            self.geo_len = len(self.solid_geometry)
+            source_geo = self.solid_geometry
+            work_geo = source_geo.geoms if isinstance(source_geo, MultiPolygon) else source_geo
+            self.geo_len = len(work_geo)
         except TypeError:
             self.geo_len = 1
 
