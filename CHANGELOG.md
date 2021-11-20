@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+20.11.2021
+
+- fixed another issue when using Python 3.10, in GUI elements
+- fixed the Rtree optimization when drilling with no toolchange such that all drill points are used
+- fixed the CNCJob object Tools Table when drilling with no toolchange: now only one tool is displayed
+
 19.11.2021
 
 - solved some Shapely 2.0 deprecation warnings in the Panelize Plugin

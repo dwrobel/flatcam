@@ -4728,12 +4728,12 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
             block_bottom = block_top + int(self.blockBoundingRect(block).height())
 
             # Iterate over all visible text blocks in the document.
-            while block.isValid() and block_top <= event.rect().bottom():
+            while block.isValid() and block_top <= int(event.rect().bottom()):
                 line_count += 1
 
                 # Check if the position of the block is out side of the visible
                 # area.
-                if block.isVisible() and block_bottom >= event.rect().top():
+                if block.isVisible() and block_bottom >= int(event.rect().top()):
 
                     # We want the line number for the selected line to be bold.
                     if line_count == current_line:
@@ -4748,14 +4748,14 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                         painter.setFont(font)
 
                     # Draw the line number right justified at the position of the line.
-                    paint_rect = QtCore.QRect(0, block_top, number_bar.width(), font_metrics.height())
+                    paint_rect = QtCore.QRect(0, block_top, int(number_bar.width()), int(font_metrics.height()))
                     # I add some spaces to the line_count to prettify; make sure to remember adjust the width in the
                     # NumberBar() class above
-                    painter.drawText(paint_rect, Qt.AlignmentFlag.AlignRight, ' ' + str(line_count) + '  ')
+                    painter.drawText(paint_rect, Qt.AlignmentFlag.AlignRight, ' %s  ' % str(line_count))
 
                 block = block.next()
                 block_top = block_bottom
-                block_bottom = block_top + self.blockBoundingRect(block).height()
+                block_bottom = block_top + int(self.blockBoundingRect(block).height())
 
             painter.end()
 

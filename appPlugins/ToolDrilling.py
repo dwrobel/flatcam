@@ -440,7 +440,8 @@ class ToolDrilling(AppTool, Excellon):
 
         # add tooltips
         for it in range(self.ui.pp_excellon_name_cb.count()):
-            self.ui.pp_excellon_name_cb.setItemData(it, self.ui.pp_excellon_name_cb.itemText(it), QtCore.Qt.ItemDataRole.ToolTipRole)
+            self.ui.pp_excellon_name_cb.setItemData(it, self.ui.pp_excellon_name_cb.itemText(it),
+                                                    QtCore.Qt.ItemDataRole.ToolTipRole)
 
         self.ui.order_combo.set_value(self.app.defaults["tools_drill_tool_order"])
 
@@ -726,12 +727,14 @@ class ToolDrilling(AppTool, Excellon):
 
             # Tool name/id
             exc_id_item = QtWidgets.QTableWidgetItem('%d' % int(tool_no))
-            exc_id_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsDragEnabled)
+            exc_id_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled |
+                                 QtCore.Qt.ItemFlag.ItemIsDragEnabled)
             self.ui.tools_table.setItem(self.tool_row, 0, exc_id_item)
 
             # Tool Diameter
             dia_item = QtWidgets.QTableWidgetItem(str(self.dec_format(self.excellon_tools[tool_no]['tooldia'])))
-            dia_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsDragEnabled)
+            dia_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled |
+                              QtCore.Qt.ItemFlag.ItemIsDragEnabled)
             self.ui.tools_table.setItem(self.tool_row, 1, dia_item)
 
             # Number of drills per tool
@@ -1892,7 +1895,13 @@ class ToolDrilling(AppTool, Excellon):
 
     def on_cnc_button_click(self):
         obj_name = self.ui.object_combo.currentText()
-        toolchange = self.ui.toolchange_cb.get_value()
+        # toolchange = self.ui.toolchange_cb.get_value()
+        # determine if we have toolchange event or not
+        has_toolchange = False
+        for v in self.excellon_tools.values():
+            if v["data"]["tools_drill_toolchange"] is True:
+                has_toolchange = True
+                break
 
         # Get source object.
         try:
@@ -1924,13 +1933,14 @@ class ToolDrilling(AppTool, Excellon):
             return
 
         # Get the tools from the Tool Table
-        selected_tools_id = self.get_selected_tools_uid()
-        if not selected_tools_id:
+        selected_tools_ids = self.get_selected_tools_uid()
+        if not selected_tools_ids:
             # if there is a single tool in the table (remember that the last 2 rows are for totals and do not count in
             # tool number) it means that there are 3 rows (1 tool and 2 totals).
             # in this case regardless of the selection status of that tool, use it.
             if self.ui.tools_table.rowCount() == 3:
-                selected_tools_id.append(int(self.ui.tools_table.item(0, 3).text()))
+                first_selected = int(self.ui.tools_table.item(0, 3).text())
+                selected_tools_ids.append(first_selected)
             else:
                 msg = '[ERROR_NOTCL] %s' % _("Please select one or more tools from the list and try again.")
                 self.app.inform.emit(msg)
@@ -1956,7 +1966,7 @@ class ToolDrilling(AppTool, Excellon):
             sorted_tools = all_tools
 
         # Create a sorted list of selected sel_tools from the sorted_tools list
-        sel_tools = [i for i, j in sorted_tools for k in selected_tools_id if i == k]
+        sel_tools = [i for i, j in sorted_tools for k in selected_tools_ids if i == k]
 
         log.debug("Tools sorted are: %s" % str(sel_tools))
 
@@ -2001,50 +2011,103 @@ class ToolDrilling(AppTool, Excellon):
             # #########################################################################################################
             # #########################################################################################################
             job_obj.tools = {}
-            for sel_id in sorted_tools:
-                for t_id in self.excellon_tools:
-                    selected_id = sel_id[0]
-                    selected_tooldia = sel_id[1]
 
-                    if selected_id == t_id:
-                        job_obj.tools[selected_id] = deepcopy(self.excellon_tools[selected_id])
-                        sol_geo = []
+            if has_toolchange:
+                for sel_id in sorted_tools:
+                    for t_id in self.excellon_tools:
+                        selected_id = sel_id[0]
+                        selected_tooldia = sel_id[1]
 
-                        # solid geometry addition; we look into points because we may have slots converted to drills
-                        # therefore more drills than there were originally in
-                        # the self.excellon_tools[to_ol]['drills'] list
-                        drill_no = 0
-                        if selected_id in points and points[selected_id]:
-                            drill_no = len(points[selected_id])
-                            for drill in points[selected_id]:
-                                sol_geo.append(
-                                    drill.buffer((selected_tooldia / 2.0), resolution=job_obj.geo_steps_per_circle)
-                                )
+                        if selected_id == t_id:
+                            job_obj.tools[selected_id] = deepcopy(self.excellon_tools[selected_id])
+                            sol_geo = []
 
-                        slot_no = 0
-                        convert_slots = self.excellon_tools[selected_id]['data']['tools_drill_drill_slots']
-                        if 'slots' in self.excellon_tools[selected_id] and convert_slots is False:
-                            slot_no = len(self.excellon_tools[selected_id]['slots'])
-                            for eslot in self.excellon_tools[selected_id]['slots']:
-                                start = (eslot[0].x, eslot[0].y)
-                                stop = (eslot[1].x, eslot[1].y)
-                                line_geo = LineString([start, stop])
-                                sol_geo.append(
-                                    line_geo.buffer((selected_tooldia / 2.0), resolution=job_obj.geo_steps_per_circle)
-                                )
+                            # solid geometry addition; we look into points because we may have slots converted to drills
+                            # therefore more drills than there were originally in
+                            # the self.excellon_tools[to_ol]['drills'] list
+                            drill_no = 0
+                            if selected_id in points and points[selected_id]:
+                                drill_no = len(points[selected_id])
+                                for drill in points[selected_id]:
+                                    sol_geo.append(
+                                        drill.buffer((selected_tooldia / 2.0), resolution=job_obj.geo_steps_per_circle)
+                                    )
 
-                        # adjust Offset for current tool
-                        try:
-                            z_off = float(self.excellon_tools[selected_id]['data']['offset']) * (-1)
-                        except KeyError:
-                            z_off = 0
+                            slot_no = 0
+                            convert_slots = self.excellon_tools[selected_id]['data']['tools_drill_drill_slots']
+                            if 'slots' in self.excellon_tools[selected_id] and convert_slots is False:
+                                slot_no = len(self.excellon_tools[selected_id]['slots'])
+                                for eslot in self.excellon_tools[selected_id]['slots']:
+                                    start = (eslot[0].x, eslot[0].y)
+                                    stop = (eslot[1].x, eslot[1].y)
+                                    line_geo = LineString([start, stop])
+                                    buff_distance = selected_tooldia / 2.0
+                                    sol_geo.append(
+                                        line_geo.buffer(buff_distance, resolution=job_obj.geo_steps_per_circle)
+                                    )
 
-                        job_obj.tools[selected_id]['nr_drills'] = drill_no
-                        job_obj.tools[selected_id]['nr_slots'] = slot_no
-                        job_obj.tools[selected_id]['offset'] = z_off
-                        job_obj.tools[selected_id]['gcode'] = ''
-                        job_obj.tools[selected_id]['gcode_parsed'] = []
-                        job_obj.tools[selected_id]['solid_geometry'] = deepcopy(sol_geo)
+                            # adjust Offset for current tool
+                            try:
+                                z_off = float(self.excellon_tools[selected_id]['data']['offset']) * (-1)
+                            except KeyError:
+                                z_off = 0
+
+                            job_obj.tools[selected_id]['nr_drills'] = drill_no
+                            job_obj.tools[selected_id]['nr_slots'] = slot_no
+                            job_obj.tools[selected_id]['offset'] = z_off
+                            job_obj.tools[selected_id]['gcode'] = ''
+                            job_obj.tools[selected_id]['gcode_parsed'] = []
+                            job_obj.tools[selected_id]['solid_geometry'] = deepcopy(sol_geo)
+            else:
+                # use the first tool in the selection as the tool that we are going to use
+                used_tool = sel_tools[0]
+                job_obj.tools[used_tool] = deepcopy(self.excellon_tools[used_tool])
+
+                sol_geo = []
+                drill_no = 0
+                slot_no = 0
+
+                for sel_id in sorted_tools:
+                    for t_id in self.excellon_tools:
+                        selected_id = sel_id[0]
+                        selected_tooldia = sel_id[1]
+
+                        if selected_id == t_id:
+
+                            # solid geometry addition; we look into points because we may have slots converted to drills
+                            # therefore more drills than there were originally in
+                            # the self.excellon_tools[to_ol]['drills'] list
+                            if selected_id in points and points[selected_id]:
+                                drill_no += len(points[selected_id])
+                                for drill in points[selected_id]:
+                                    sol_geo.append(
+                                        drill.buffer((selected_tooldia / 2.0), resolution=job_obj.geo_steps_per_circle)
+                                    )
+
+                            convert_slots = self.excellon_tools[selected_id]['data']['tools_drill_drill_slots']
+                            if 'slots' in self.excellon_tools[selected_id] and convert_slots is False:
+                                slot_no += len(self.excellon_tools[selected_id]['slots'])
+                                for eslot in self.excellon_tools[selected_id]['slots']:
+                                    start = (eslot[0].x, eslot[0].y)
+                                    stop = (eslot[1].x, eslot[1].y)
+                                    line_geo = LineString([start, stop])
+                                    buff_distance = selected_tooldia / 2.0
+                                    sol_geo.append(
+                                        line_geo.buffer(buff_distance, resolution=job_obj.geo_steps_per_circle)
+                                    )
+
+                # adjust Offset for current tool
+                try:
+                    z_off = float(self.excellon_tools[used_tool]['data']['offset']) * (-1)
+                except KeyError:
+                    z_off = 0
+
+                job_obj.tools[used_tool]['nr_drills'] = drill_no
+                job_obj.tools[used_tool]['nr_slots'] = slot_no
+                job_obj.tools[used_tool]['offset'] = z_off
+                job_obj.tools[used_tool]['gcode'] = ''
+                job_obj.tools[used_tool]['gcode_parsed'] = []
+                job_obj.tools[used_tool]['solid_geometry'] = deepcopy(sol_geo)
 
             # #########################################################################################################
             # #########################################################################################################
@@ -2096,7 +2159,7 @@ class ToolDrilling(AppTool, Excellon):
             # #########################################################################################################
             # ####################### NO TOOLCHANGE ###################################################################
             # #########################################################################################################
-            if toolchange is False:
+            if has_toolchange is False:
                 tool_points = []
                 for tool in sel_tools:
                     if tool in points:
@@ -2250,7 +2313,7 @@ class ToolDrilling(AppTool, Excellon):
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
     def reset_fields(self):
-        self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.ui.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
 
 
 class DrillingUI:

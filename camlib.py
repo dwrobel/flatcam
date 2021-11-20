@@ -3436,8 +3436,7 @@ class CNCjob(Geometry):
                 return 'fail'
             optimized_path = self.optimized_travelling_salesman(locations)
         elif opt_type == 'R':
-            temp_solid_geometry = tools[tool]['drills']
-            optimized_path = self.exc_optimized_rtree(temp_solid_geometry)
+            optimized_path = self.exc_optimized_rtree(points)
             if optimized_path == 'fail':
                 return 'fail'
         else:
