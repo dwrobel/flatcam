@@ -1,38 +1,45 @@
 # This file contains python only requirements to be installed with pip
+#
 # Python packages that cannot be installed with pip (e.g. GDAL, Rasterio) are not included.
 # For Windows GDAL wheel can be found here: https://www.lfd.uci.edu/~gohlke/pythonlibs/#gdal
-# Usage: pip3 install -r requirements.txt
+# For Windows Rasterio wheel can be found here: https://www.lfd.uci.edu/~gohlke/pythonlibs/#rasterio
+#
+# Usage: pip install -r requirements.txt
 
+setuptools
 numpy>=1.16
 cycler>=0.10
 python-dateutil>=2.1
 kiwisolver>=1.1
-matplotlib>=3.5.0
 six
-setuptools
 dill
+simplejson
+qrcode>=6.1
+
 rtree
-pyopengl
+foronoi>=1.0.3
+shapely>=1.8.0
 
 # ###############################
 # OR-TOOLS package is now optional
 ortools>=7.0
 # ###############################
 
-svg.path>=4.0
-simplejson
-shapely>=1.7.1
-freetype-py
-fontTools
 lxml
-ezdxf
-qrcode>=6.1
-reportlab>=3.5
+svg.path>=4.0
 svglib
-gdal
+fontTools
+ezdxf
+
+reportlab>=3.5
 pyserial>=3.4
 pikepdf>=2.0
+
+matplotlib>=3.5.0
+pyopengl
 pyqt6>=6.1.0
+freetype-py
 vispy>=0.9.0
+
+gdal
 rasterio
-foronoi>=1.0.3

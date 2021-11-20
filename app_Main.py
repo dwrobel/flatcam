@@ -4940,8 +4940,9 @@ class App(QtCore.QObject):
                 self.plotcanvas.draw_workspace(pagesize=self.defaults['global_workspaceT'])
 
             # adjust the grid values on the main toolbar
-            val_x = float(self.defaults['global_gridx']) * factor
-            val_y = val_x if self.ui.grid_gap_link_cb.isChecked() else float(self.defaults['global_gridx']) * factor
+            val_x = round(float(self.defaults['global_gridx']) * factor, self.decimals)
+            val_y = val_x if self.ui.grid_gap_link_cb.isChecked() else \
+                round(float(self.defaults['global_gridy']) * factor, self.decimals)
 
             # update Object UI forms
             current = self.collection.get_active()

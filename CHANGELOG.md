@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+21.11.2021
+
+- updated the language strings
+
 20.11.2021
 
 - fixed another issue when using Python 3.10, in GUI elements
