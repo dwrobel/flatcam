@@ -171,6 +171,13 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
             self.optimization_time_label.setDisabled(True)
             self.optimization_time_entry.setDisabled(True)
 
+        try:
+            import ortools
+        except ModuleNotFoundError:
+            self.opt_algorithm_radio.setOptionsDisabled([_('MetaHeuristic'), _('Basic')], True)
+            self.optimization_time_label.setDisabled(True)
+            self.optimization_time_entry.setDisabled(True)
+
         self.opt_algorithm_radio.activated_custom.connect(self.optimization_selection)
 
         # Setting plot colors signals

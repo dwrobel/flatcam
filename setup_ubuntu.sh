@@ -18,6 +18,7 @@ sudo apt-get install -y \
 	python3-tk
 
 
+# ################################
 # Python packages
 
 sudo -H python3 -m pip install --upgrade \
@@ -35,7 +36,6 @@ sudo -H python3 -m pip install --upgrade \
 	pyopengl \
 	setuptools \
 	svg.path \
-	ortools \
 	freetype-py \
 	fontTools \
 	rasterio \
@@ -48,4 +48,6 @@ sudo -H python3 -m pip install --upgrade \
 	pyserial \
 	pikepdf \
 	foronoi \
-	networkx
+	ortools
+# OR-TOOLS package is now optional
+# ################################

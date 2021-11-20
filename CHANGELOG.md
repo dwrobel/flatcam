@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - fixed another issue when using Python 3.10, in GUI elements
 - fixed the Rtree optimization when drilling with no toolchange such that all drill points are used
 - fixed the CNCJob object Tools Table when drilling with no toolchange: now only one tool is displayed
+- made sure that if the OR-TOOLS package is not installed then the options in the Preferences for the related optimizations are disabled
 
 19.11.2021
 

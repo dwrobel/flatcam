@@ -123,14 +123,14 @@ class RadioSetDefaults(RadioSet):
         * 'label': Shown in the UI
         * 'value': The value returned is selected
 
-        :param choices: List of choices. See description.
-        :param orientation: 'horizontal' (default) of 'vertical'.
-        :param parent: Qt parent widget.
-        :type choices:      list
+        :param choices:         List of choices. See description.
+        :param orientation:     'horizontal' (default) of 'vertical'.
+        :param parent:          Qt parent widget.
+        :type choices:          list
         :param dictionary:
-        :type dictionary:   "dict"
+        :type dictionary:       "dict"
         :param key_spec:
-        :type key_spec:      'str'
+        :type key_spec:         'str'
         """
 
         super(RadioSetDefaults, self).__init__(choices=choices, orientation=orientation, compact=compact, parent=parent)

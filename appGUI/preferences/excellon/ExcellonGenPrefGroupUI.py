@@ -346,6 +346,13 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
             self.optimization_time_label.setDisabled(True)
             self.optimization_time_entry.setDisabled(True)
 
+        try:
+            import ortools
+        except ModuleNotFoundError:
+            self.excellon_optimization_radio.setOptionsDisabled([_('MetaHeuristic'), _('Basic')], True)
+            self.optimization_time_label.setDisabled(True)
+            self.optimization_time_entry.setDisabled(True)
+
         # Setting plot colors signals
         self.line_color_entry.editingFinished.connect(self.on_line_color_entry)
         self.fill_color_entry.editingFinished.connect(self.on_fill_color_entry)
