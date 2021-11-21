@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-11-21 01:18+0200\n"
-"PO-Revision-Date: 2021-11-21 01:18+0200\n"
+"POT-Creation-Date: 2021-11-21 17:55+0200\n"
+"PO-Revision-Date: 2021-11-21 17:55+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: it\n"
@@ -3094,17 +3094,13 @@ msgstr "Applicazione offset"
 #: appEditors/AppGeoEditor.py:1538 appEditors/AppGeoEditor.py:1596
 #: appEditors/AppGerberEditor.py:7576 appEditors/AppGerberEditor.py:7649
 #: appPlugins/ToolMarkers.py:1292
-#, fuzzy
-#| msgid "Offset on the X axis done"
 msgid "Offset on the X axis."
-msgstr "Offset sull'asse X applicato"
+msgstr "Offset sull'asse X."
 
 #: appEditors/AppGeoEditor.py:1540 appEditors/AppGerberEditor.py:7578
 #: appPlugins/ToolMarkers.py:1305
-#, fuzzy
-#| msgid "Offset on the Y axis done"
 msgid "Offset on the Y axis."
-msgstr "Offset sull'asse Y applicato"
+msgstr "Offset sull'asse Y."
 
 #: appEditors/AppGeoEditor.py:1553
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:56
@@ -5594,7 +5590,7 @@ msgstr "Marrone"
 
 #: appGUI/MainGUI.py:868 appGUI/MainGUI.py:1725 app_Main.py:8931
 msgid "Indigo"
-msgstr ""
+msgstr "Indaco"
 
 #: appGUI/MainGUI.py:871 appGUI/MainGUI.py:1728 app_Main.py:8933
 #: app_Main.py:9010
@@ -5618,7 +5614,7 @@ msgstr "Trasparenza"
 #: appPlugins/ToolMilling.py:3760 appPlugins/ToolNCC.py:4196
 #: appPlugins/ToolPaint.py:3059 app_Main.py:8950
 msgid "Default"
-msgstr "Valori di default"
+msgstr "Valori predefiniti"
 
 #: appGUI/MainGUI.py:892
 msgid "View Source"
@@ -5752,10 +5748,8 @@ msgstr "Copper Thieving"
 
 #: appGUI/MainGUI.py:1136 appGUI/MainGUI.py:2480 appGUI/MainGUI.py:4893
 #: appPlugins/ToolMarkers.py:154 appPlugins/ToolMarkers.py:1142
-#, fuzzy
-#| msgid "Mark"
 msgid "Markers"
-msgstr "Contrassegna"
+msgstr "Contrassegni"
 
 #: appGUI/MainGUI.py:1138 appGUI/MainGUI.py:2482 appGUI/MainGUI.py:4899
 #: appPlugins/ToolPunchGerber.py:1971 appPlugins/ToolPunchGerber.py:2351
@@ -7446,7 +7440,7 @@ msgstr "Dimensione tab"
 #: appGUI/ObjectUI.py:1823
 msgid "Set the tab size. In pixels. Default value is 80 pixels."
 msgstr ""
-"Imposta la dimensione del tab. In pixel. Il valore di default è 80 pixel."
+"Imposta la dimensione del tab. In pixel. Il valore predefinito è 80 pixel."
 
 #: appGUI/PlotCanvas.py:243 appGUI/PlotCanvasLegacy.py:398
 msgid "Axis enabled."
@@ -7620,16 +7614,12 @@ msgstr "Passi cerchi"
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:63
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:55
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:64
-#, fuzzy
-#| msgid ""
-#| "The number of circle steps for Gerber \n"
-#| "circular aperture linear approximation."
 msgid ""
 "The number of circle steps for \n"
 "linear approximation of circles."
 msgstr ""
-"Il numero di passi del cerchio per le aperture circolari\n"
-"del Gerber ad approssimazione lineare."
+"Il numero di passi del cerchio per\n"
+"l'approssimazione lineare dei cerchi."
 
 #: appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:57
 msgid "Travel dia"
@@ -8039,7 +8029,7 @@ msgid ""
 "If TZ is checked then Trailing Zeros are kept\n"
 "and Leading Zeros are removed."
 msgstr ""
-"Questo imposta il tipo di default degli zeri di Excellon.\n"
+"Questo imposta il tipo predefinito degli zeri di Excellon.\n"
 "Se ZI, gli Zeri iniziali vengono mantenuti e\n"
 "Gli zeri finali vengono rimossi.\n"
 "Se ZF è selezionato, gli Zeri finali vengono mantenuti\n"
@@ -8135,7 +8125,7 @@ msgstr "POLLICI"
 
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:112
 msgid "Default values for INCH are 2:4"
-msgstr "I valori di default per i POLLICI sono 2:4"
+msgstr "I valori predefiniti per i POLLICI sono 2:4"
 
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:140
 msgid "METRIC"
@@ -8143,7 +8133,7 @@ msgstr "METRICA"
 
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:141
 msgid "Default values for METRIC are 3:3"
-msgstr "I valori di default per i METRICI sono 3:3"
+msgstr "I valori predefiniti per i METRICI sono 3:3"
 
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:172
 msgid ""
@@ -8661,11 +8651,6 @@ msgid "App Preferences"
 msgstr "Preferenze App"
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:32
-#, fuzzy
-#| msgid ""
-#| "The default value for the application units.\n"
-#| "Whatever is selected here is set every time\n"
-#| "FlatCAM is started."
 msgid ""
 "The default value for the application units.\n"
 "Whatever is selected here is set every time\n"
@@ -8673,7 +8658,7 @@ msgid ""
 msgstr ""
 "Il valore predefinito per le unità dell'applicazione.\n"
 "Qualunque cosa sia qui selezionata verrà impostata ad ogni\n"
-"avvio di FlatCAM."
+"avvio della applicazione."
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:45
 #: appPlugins/ToolCalculators.py:548
@@ -9522,7 +9507,7 @@ msgstr "Generali Gerber"
 
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:78
 msgid "Default Values"
-msgstr "Valori di default"
+msgstr "Valori predefiniti"
 
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:80
 msgid ""
@@ -10477,7 +10462,7 @@ msgid ""
 "Default value is 4. The width of the clearance around the QRCode."
 msgstr ""
 "Dimensione del bordo del QRCode. Quanto spesso sarà il bordo.\n"
-"Valore di default è 4. La larghezza della distanza attorno al QRCode."
+"Il valore predefinito è 4. La larghezza della distanza attorno al QRCode."
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:104
 #: appPlugins/ToolQRCode.py:785
@@ -10581,10 +10566,8 @@ msgstr ""
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:31
 #: appPlugins/ToolRulesCheck.py:1223 appPlugins/ToolRulesCheck.py:1269
 #: appPlugins/ToolRulesCheck.py:1335 appPlugins/ToolRulesCheck.py:1477
-#, fuzzy
-#| msgid "Copper Area"
 msgid "Copper"
-msgstr "Area rame"
+msgstr "Rame"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:31
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:130
@@ -10594,10 +10577,8 @@ msgstr "Area rame"
 #: appPlugins/ToolRulesCheck.py:1237 appPlugins/ToolRulesCheck.py:1244
 #: appPlugins/ToolRulesCheck.py:1477 appPlugins/ToolRulesCheck.py:1587
 #: appPlugins/ToolRulesCheck.py:1674 appPlugins/ToolRulesCheck.py:1712
-#, fuzzy
-#| msgid "All Rules"
 msgid "Rules"
-msgstr "Tutte le regole"
+msgstr "Regole"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:41
 #: appPlugins/ToolRulesCheck.py:459 appPlugins/ToolRulesCheck.py:1487
@@ -10683,10 +10664,8 @@ msgstr "Valore minimo anello."
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:130
 #: appPlugins/ToolRulesCheck.py:1230 appPlugins/ToolRulesCheck.py:1305
 #: appPlugins/ToolRulesCheck.py:1371 appPlugins/ToolRulesCheck.py:1587
-#, fuzzy
-#| msgid "Silk Top"
 msgid "Silk"
-msgstr "Silk Top"
+msgstr "Silk"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:140
 #: appPlugins/ToolRulesCheck.py:1597
@@ -10735,10 +10714,8 @@ msgstr ""
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:208
 #: appPlugins/ToolRulesCheck.py:1237 appPlugins/ToolRulesCheck.py:1674
-#, fuzzy
-#| msgid "Soldermask Gerber"
 msgid "Soldermask"
-msgstr "Gerber soldermask"
+msgstr "Soldermask"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:218
 #: appPlugins/ToolRulesCheck.py:951 appPlugins/ToolRulesCheck.py:978
@@ -10757,10 +10734,8 @@ msgstr ""
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:243
 #: appPlugins/ToolRulesCheck.py:1244 appPlugins/ToolRulesCheck.py:1712
-#, fuzzy
-#| msgid "Mill Holes"
 msgid "Holes"
-msgstr "Fresatura fori"
+msgstr "Fori"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:253
 #: appPlugins/ToolRulesCheck.py:403 appPlugins/ToolRulesCheck.py:1722
@@ -10833,6 +10808,10 @@ msgid ""
 "Y - Pairs of drill holes mirrored horizontally from reference point\n"
 "Manual - no mirroring; drill holes in place"
 msgstr ""
+"Contenuto del file Excellon.\n"
+"X - Coppia di fori speculari verticalmente dal punto di riferimento\n"
+"Y - Coppia di fori speculari orizzontalmente dal punto di riferimento\n"
+"Manuale - nessun foro speculare"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:78
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:161
@@ -11139,15 +11118,6 @@ msgstr "Ordine utensili"
 
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:42
 #: appPlugins/ToolDrilling.py:2434 appPlugins/ToolMilling.py:3754
-#, fuzzy
-#| msgid ""
-#| "This set the way that the tools in the tools table are used.\n"
-#| "'Default' --> the order from the Excellon file\n"
-#| "'Forward' --> tools will be ordered from small to big\n"
-#| "'Reverse' --> tools will ordered from big to small\n"
-#| "\n"
-#| "WARNING: using rest machining will automatically set the order\n"
-#| "in reverse and disable this control."
 msgid ""
 "This set the way that the tools in the tools table are used.\n"
 "'Default' --> the order from the file\n"
@@ -11156,12 +11126,9 @@ msgid ""
 msgstr ""
 "Questo imposta il modo in cui vengono utilizzati gli strumenti nella tabella "
 "degli strumenti.\n"
-"'Predefinito' -> l'ordine dal file Excellon\n"
+"'Predefinito' -> l'ordine dal file\n"
 "'Avanti' -> gli strumenti verranno ordinati da piccoli a grandi\n"
-"'Reverse' -> gli strumenti verranno ordinati da grandi a piccoli\n"
-"\n"
-"ATTENZIONE: l'uso delle riprese fisse imposterà automaticamente l'ordine\n"
-"al contrario e disabilitare questo controllo."
+"'Reverse' -> gli strumenti verranno ordinati da grandi a piccoli."
 
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:48
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:64
@@ -11696,7 +11663,7 @@ msgstr "Una selezione di pagine standard secondo ISO 216."
 #: appPlugins/ToolFilm.py:1732
 msgid "Default value is 96 DPI. Change this value to scale the PNG file."
 msgstr ""
-"Il valore di default è 96 DPI. Cambia il valore per riscalare il file PNG."
+"Il valore predefinito è 96 DPI. Cambia il valore per riscalare il file PNG."
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:20
 msgid "Isolation Plugin"
@@ -11721,15 +11688,6 @@ msgstr "Valori separati da virgola"
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:59
 #: appPlugins/ToolIsolation.py:3374 appPlugins/ToolNCC.py:4185
 #: appPlugins/ToolPaint.py:3051
-#, fuzzy
-#| msgid ""
-#| "This set the way that the tools in the tools table are used.\n"
-#| "'No' --> means that the used order is the one in the tool table\n"
-#| "'Forward' --> means that the tools will be ordered from small to big\n"
-#| "'Reverse' --> means that the tools will ordered from big to small\n"
-#| "\n"
-#| "WARNING: using rest machining will automatically set the order\n"
-#| "in reverse and disable this control."
 msgid ""
 "This set the way that the tools in the tools table are used.\n"
 "'Default' --> means that the used order is the one in the tool table\n"
@@ -11741,15 +11699,11 @@ msgid ""
 msgstr ""
 "Questo imposta il modo in cui vengono utilizzati gli strumenti nella tabella "
 "degli strumenti.\n"
-"'No' -> significa che l'ordine utilizzato è quello nella tabella degli "
-"strumenti\n"
+"'Predefinito' -> significa che l'ordine utilizzato è quello nella tabella "
+"degli strumenti\n"
 "'Avanti' -> significa che gli strumenti verranno ordinati da piccoli a "
 "grandi\n"
-"'Reverse' -> significa che gli strumenti ordineranno da grandi a piccoli\n"
-"\n"
-"ATTENZIONE: l'utilizzo della lavorazione di ripresa imposterà "
-"automaticamente l'ordine\n"
-"al contrario e disabiliterà questo controllo."
+"'Reverse' -> significa che gli strumenti ordineranno da grandi a piccoli."
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:70
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:53
@@ -12122,16 +12076,14 @@ msgid "Safe height (Z) distance when jogging to origin."
 msgstr "Altezza (Z) per lo spostamento in jog verso l'origine."
 
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:20
-#, fuzzy
-#| msgid "Corner Markers Options"
 msgid "Markers Options"
-msgstr "Opzioni marcatori bordi"
+msgstr "Opzioni marcatori"
 
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:42
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:96
 #: appPlugins/ToolMarkers.py:1222
 msgid "Shape of the marker."
-msgstr "Forma del marker."
+msgstr "Forma del marcatore."
 
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:46
 #: appPlugins/ToolMarkers.py:1226
@@ -12156,14 +12108,12 @@ msgstr "Diametro punta"
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:100
 #: appPlugins/ToolMarkers.py:1282
 msgid "Edge"
-msgstr ""
+msgstr "Bordo"
 
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:108
 #: appPlugins/ToolMarkers.py:1264
-#, fuzzy
-#| msgid "Offset action was not executed."
 msgid "Offset locations from the set reference."
-msgstr "Offset non applicato."
+msgstr "Posizione dell'offset dal riferimento."
 
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:21
 msgid "Milling Plugin"
@@ -12738,7 +12688,7 @@ msgstr "Ripristina"
 #: appGUI/preferences/utilities/AutoCompletePrefGroupUI.py:26
 msgid "Restore the autocompleter keywords list to the default state."
 msgstr ""
-"Ripristina l'autocompletamento delle parole chiave allo stato di default."
+"Ripristina l'autocompletamento delle parole chiave allo stato predefinito."
 
 #: appGUI/preferences/utilities/AutoCompletePrefGroupUI.py:27
 #: appGUI/preferences/utilities/FAExcPrefGroupUI.py:37
@@ -12803,7 +12753,7 @@ msgstr "Associazione file Excellon"
 #: appGUI/preferences/utilities/FAGcoPrefGroupUI.py:26
 #: appGUI/preferences/utilities/FAGrbPrefGroupUI.py:26
 msgid "Restore the extension list to the default state."
-msgstr "Ripristina la lista estensioni allo stato di default."
+msgstr "Ripristina la lista estensioni allo stato predefinito."
 
 #: appGUI/preferences/utilities/FAExcPrefGroupUI.py:38
 #: appGUI/preferences/utilities/FAGcoPrefGroupUI.py:28
@@ -14261,7 +14211,7 @@ msgstr ""
 
 #: appPlugins/ToolCutOut.py:429 appPlugins/ToolCutOut.py:2588
 msgid "Any"
-msgstr ""
+msgstr "Qualunque"
 
 #: appPlugins/ToolCutOut.py:446 appPlugins/ToolIsolation.py:1022
 #: appPlugins/ToolIsolation.py:1345 appPlugins/ToolIsolation.py:1470
@@ -14284,7 +14234,7 @@ msgstr "Impossibile caricare il file del DB utensili."
 #: appPlugins/ToolMilling.py:2064 appPlugins/ToolNCC.py:1276
 #: appPlugins/ToolPaint.py:927
 msgid "Tool not in Tools Database. Adding a default tool."
-msgstr "Utensile non presente nel DB tool. Aggiungo un tool di default."
+msgstr "Utensile non presente nel DB tool. Aggiungo un tool predefinito."
 
 #: appPlugins/ToolCutOut.py:520 appPlugins/ToolDrilling.py:1220
 #: appPlugins/ToolIsolation.py:1428 appPlugins/ToolMilling.py:2072
@@ -14302,7 +14252,7 @@ msgstr "Tool aggiornati dal DB tool."
 
 #: appPlugins/ToolCutOut.py:565
 msgid "Default tool added."
-msgstr "Tool di default aggiunto."
+msgstr "Tool predefinito aggiunto."
 
 #: appPlugins/ToolCutOut.py:579 appPlugins/ToolIsolation.py:2903
 #: appPlugins/ToolNCC.py:3941 appPlugins/ToolPaint.py:2799 app_Main.py:6669
@@ -14545,38 +14495,24 @@ msgid "Generate the cutout geometry."
 msgstr "Genera la geometria del ritaglio."
 
 #: appPlugins/ToolDblSided.py:306
-#, fuzzy
-#| msgid ""
-#| "'Point' reference is selected and 'Point' coordinates are missing. Add "
-#| "them and retry."
 msgid "'Point' reference is selected and 'Point' coordinates are missing."
-msgstr ""
-"'Punto' riferimento selezionato ma coordinate 'Punto' mancanti. Aggiungile e "
-"riprova."
+msgstr "'Punto' di riferimento selezionato ma coordinate del 'Punto' mancanti."
 
 #: appPlugins/ToolDblSided.py:315
-#, fuzzy
-#| msgid "The reference object type is not supported."
 msgid "Box reference object is missing."
-msgstr "Il tipo di oggetto di riferimento non è supportato."
+msgstr "L'oggetto box di riferimento è mancante."
 
 #: appPlugins/ToolDblSided.py:323
-#, fuzzy
-#| msgid "Geometry not supported"
 msgid "Not supported."
-msgstr "Geometria non supportata"
+msgstr "Non supportato."
 
 #: appPlugins/ToolDblSided.py:329
-#, fuzzy
-#| msgid "Drill Diameter"
 msgid "Drill diameter is missing."
-msgstr "Diametro punta"
+msgstr "Diametro punta mancante."
 
 #: appPlugins/ToolDblSided.py:336
-#, fuzzy
-#| msgid "Alignment Drill Coordinates"
 msgid "Alignment drill coordinates are missing."
-msgstr "Coordinate fori di allineamento"
+msgstr "Coordinate fori di allineamento mancanti."
 
 #: appPlugins/ToolDblSided.py:371
 msgid "Alignment Drills"
@@ -14786,8 +14722,6 @@ msgstr ""
 "Può essere modificato nella sezione Parametri specchio -> Riferimento"
 
 #: appPlugins/ToolDblSided.py:1111
-#, fuzzy
-#| msgid "Drill coordinates"
 msgid "Drill Coordinates"
 msgstr "Coordinate fori"
 
@@ -14802,6 +14736,14 @@ msgid ""
 "Shift + mouse click will add one set of coordinates.\n"
 "Ctrl + Shift + mouse click will accumulate sets of coordinates. "
 msgstr ""
+"Fori di allineamento (x1, y1), (x2, y2), ... \n"
+"Se il tipo è X o Y allora per ogni coppia di coordinate\n"
+"saranno aggiunti due fori: uno con le coordinate date,\n"
+"e l'altro speculare a quanto scelto come 'Specchio'.\n"
+"Se il tipo è 'Manuale' allora nessun punto speculare verrà generato.\n"
+"\n"
+"Shift + click del mouse aggiunge un nuovo set di coordinate.\n"
+"Ctrl + Shift + click mouse accumula set di coordinate. "
 
 #: appPlugins/ToolDblSided.py:1126
 msgid "Drill coordinates"
@@ -14826,11 +14768,9 @@ msgid "Measure"
 msgstr "Misura"
 
 #: appPlugins/ToolDistance.py:428
-#, fuzzy
-#| msgid "Click to add next marker or right click to finish."
 msgid "Click to add next point or right click to finish."
 msgstr ""
-"Fare clic per aggiungere il marcatore successivo o fare clic con il pulsante "
+"Fare clic per aggiungere il prossimo punto o fare clic con il pulsante "
 "destro del mouse per terminare."
 
 #: appPlugins/ToolDistance.py:475
@@ -14850,14 +14790,12 @@ msgstr ""
 "quando passa sopra la geometria del pad/foro."
 
 #: appPlugins/ToolDistance.py:715
-#, fuzzy
-#| msgid "Multi-Line"
 msgid "Multi-Point"
-msgstr "Multi-Linea"
+msgstr "Multi-punto"
 
 #: appPlugins/ToolDistance.py:717
 msgid "Make a measurement over multiple distance segments."
-msgstr ""
+msgstr "Esegue una misura fra più segmenti di distanze."
 
 #: appPlugins/ToolDistance.py:739 appPlugins/ToolObjectDistance.py:504
 msgid "Start point"
@@ -15770,7 +15708,7 @@ msgstr "Nuovo utensile aggiunto alla tabella da DB Tool."
 #: appPlugins/ToolIsolation.py:1511 appPlugins/ToolNCC.py:1374
 #: appPlugins/ToolPaint.py:1027
 msgid "Default tool added to Tool Table."
-msgstr "Tool di default aggiunto alla tabella."
+msgstr "Tool predefinito aggiunto alla tabella."
 
 #: appPlugins/ToolIsolation.py:1537 appPlugins/ToolNCC.py:1431
 #: appPlugins/ToolPaint.py:1052
@@ -16311,7 +16249,7 @@ msgstr "Non è disponibile alcun oggetto Geometria."
 
 #: appPlugins/ToolMarkers.py:1052
 msgid "A Gerber object with corner markers was created."
-msgstr "L'oggetto Gerber con marker sui bordi è stato creato."
+msgstr "L'oggetto Gerber con marcatori sui bordi è stato creato."
 
 #: appPlugins/ToolMarkers.py:1109
 msgid "Added marker"
@@ -16327,6 +16265,9 @@ msgid ""
 "- Edge - referenced from the bounding box edge\n"
 "- Center - referenced from the bounding box center"
 msgstr ""
+"Riferimento per l'offset della posizione del marcatore.\n"
+"- Bordo - riferito al bordo del box\n"
+"- Centro - riferito al centro del box"
 
 #: appPlugins/ToolMarkers.py:1326
 msgid "Locations"
@@ -16345,7 +16286,7 @@ msgid ""
 "When the manual type is chosen, the markers\n"
 "are manually placed on canvas."
 msgstr ""
-"Quando si sceglie il tipo manuale, i marker\n"
+"Quando si sceglie il tipo manuale, i marcatori\n"
 "vengono posizionati manualmente."
 
 #: appPlugins/ToolMarkers.py:1393
@@ -16353,10 +16294,8 @@ msgid "Add Marker"
 msgstr "Aggiungi marcatore"
 
 #: appPlugins/ToolMarkers.py:1396 appPlugins/ToolMarkers.py:1506
-#, fuzzy
-#| msgid "Will add corner markers to the selected Gerber file."
 msgid "Will add corner markers to the selected object."
-msgstr "Aggiungerà marcatori bordi al file Gerber selezionato."
+msgstr "Aggiungerà marcatori bordi all'oggetto selezionato."
 
 #: appPlugins/ToolMarkers.py:1410
 msgid "Drills in Locations"
@@ -16364,7 +16303,7 @@ msgstr "Fori in posizioni"
 
 #: appPlugins/ToolMarkers.py:1437
 msgid "Will add drill holes in the center of the markers."
-msgstr "Aggiungerà dei fori al centro dei markers."
+msgstr "Aggiungerà dei fori al centro dei marcatori."
 
 #: appPlugins/ToolMarkers.py:1450
 msgid "Check in Locations"
@@ -16383,22 +16322,16 @@ msgstr ""
 "si sposterà alla prossima locazione fino all'ultima."
 
 #: appPlugins/ToolMarkers.py:1473
-#, fuzzy
-#| msgid "Corner Markers"
 msgid "Insert Markers"
-msgstr "Marchiatura bordi"
+msgstr "Inserici marcatori"
 
 #: appPlugins/ToolMarkers.py:1484
-#, fuzzy
-#| msgid "Type of the object where the exclusion area was added."
 msgid "Specify the type of object where the markers are inserted."
-msgstr "Tipo di oggetto in cui è stata aggiunta l'area di esclusione."
+msgstr "Tipo di oggetto in cui sono stati aggiunti i marcatori."
 
 #: appPlugins/ToolMarkers.py:1503
-#, fuzzy
-#| msgid "Corner Markers"
 msgid "Insert Marker"
-msgstr "Marchiatura bordi"
+msgstr "Inserisci marcatori"
 
 #: appPlugins/ToolMilling.py:852
 msgid "Could not build the Plugin UI"
@@ -16809,10 +16742,8 @@ msgstr ""
 "Può essere Gerber, Excellon o Geometry."
 
 #: appPlugins/ToolObjectDistance.py:99 appPlugins/ToolObjectDistance.py:445
-#, fuzzy
-#| msgid "Distance"
 msgid "Object Distance"
-msgstr "Distanza"
+msgstr "Distanza oggetto"
 
 #: appPlugins/ToolObjectDistance.py:201
 msgid "Objects intersects or touch at"
@@ -16836,18 +16767,17 @@ msgid ""
 "- Nearest points - minimal distance between objects\n"
 "- Center points - distance between the center of the bounding boxes"
 msgstr ""
+"Tipo di distanza da calcolare.\n"
+"- Punti più vicini - distanza minima fra due oggetti\n"
+"- Punti centrali - distanza fra i centri dei due box"
 
 #: appPlugins/ToolObjectDistance.py:482
-#, fuzzy
-#| msgid "Start point"
 msgid "Nearest points"
-msgstr "Punto iniziale"
+msgstr "Punti più vicini"
 
 #: appPlugins/ToolObjectDistance.py:482
-#, fuzzy
-#| msgid "Center point coordinates"
 msgid "Center points"
-msgstr "Coordinate punto centrale"
+msgstr "Punti centrali"
 
 #: appPlugins/ToolObjectDistance.py:600
 msgid "Half Point"
@@ -17083,10 +17013,8 @@ msgstr "Verniciatura ..."
 #: appPlugins/ToolPaint.py:2467 appPlugins/ToolPaint.py:2475
 #: appPlugins/ToolPaint.py:2546 appPlugins/ToolPaint.py:2551
 #: appPlugins/ToolPaint.py:2557
-#, fuzzy
-#| msgid "Paint Plugin"
 msgid "Paint Plugin."
-msgstr "Plugin Disegno"
+msgstr "Plugin Disegno."
 
 #: appPlugins/ToolPaint.py:2363 appPlugins/ToolPaint.py:2367
 #: appPlugins/ToolPaint.py:2375
@@ -17745,10 +17673,8 @@ msgid "The Top Gerber Copper object for which rules are checked."
 msgstr "L'oggetto Gerber rame TOP per il quale vengono controllate le regole."
 
 #: appPlugins/ToolRulesCheck.py:1287 appPlugins/ToolRulesCheck.py:1353
-#, fuzzy
-#| msgid "S"
 msgid "SM"
-msgstr "S"
+msgstr "SM"
 
 #: appPlugins/ToolRulesCheck.py:1289
 msgid "The Top Gerber Solder Mask object for which rules are checked."
@@ -18217,22 +18143,16 @@ msgstr ""
 "Vuoi salvare il progetto?"
 
 #: appTranslation.py:242
-#, fuzzy
-#| msgid ""
-#| "Select a style for the application.\n"
-#| "It will be applied at the next app start."
 msgid "The language will be applied at the next application start."
-msgstr ""
-"Seleziona uno stile per l'applicazione.\n"
-"Sarà applicato al prossimo riavvio del programma."
+msgstr "La lingua sarà applicata al prossimo avvio."
 
 #: appTranslation.py:243
 msgid "The user does not have admin rights or UAC issues."
-msgstr ""
+msgstr "L'utente non ha diritti di amministrazione oppure problemi di UAC."
 
 #: appTranslation.py:245 appTranslation.py:248
 msgid "Quit"
-msgstr ""
+msgstr "Esci"
 
 #: app_Main.py:900
 msgid "The application is initializing ..."

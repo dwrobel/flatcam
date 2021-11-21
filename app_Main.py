@@ -4692,7 +4692,7 @@ class App(QtCore.QObject):
 
     def on_toggle_units_click(self):
         try:
-            new_units, factor =  self.on_toggle_units()
+            new_units, factor = self.on_toggle_units()
         except TypeError:
             # hen the self.on_toggle_units() return only one value (maybe None) it means something went wrong,
             # it will end up in this exception and and we should return

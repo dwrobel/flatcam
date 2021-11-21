@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 21.11.2021
 
 - updated the language strings
+- updated the Italian (Massimiliano Golfetto) and Turkish (Mehmet Kaya) translations
 
 20.11.2021
 

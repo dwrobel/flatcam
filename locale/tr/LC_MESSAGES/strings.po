@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-11-21 01:19+0200\n"
-"PO-Revision-Date: 2021-11-21 01:19+0200\n"
+"POT-Creation-Date: 2021-11-21 17:55+0200\n"
+"PO-Revision-Date: 2021-11-21 17:55+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -7328,7 +7328,7 @@ msgstr "Çizimi güncelleyin."
 #: appGUI/ObjectUI.py:1518 appGUI/preferences/tools/ToolsLevelPrefGroupUI.py:27
 #: appPlugins/ToolLevelling.py:1763
 msgid "Generate CNC Code with auto-levelled paths."
-msgstr "Otomatik dengeleme yolları CNC Kodu oluşturun."
+msgstr "Otomatik dengelenmiş yollarla CNC Kodu oluşturun."
 
 #: appGUI/ObjectUI.py:1545
 msgid "Opens dialog to save CNC Code file."
@@ -8617,18 +8617,14 @@ msgid "App Preferences"
 msgstr "Uygulama Ayarları"
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:32
-#, fuzzy
-#| msgid ""
-#| "The default value for the application units.\n"
-#| "Whatever is selected here is set every time\n"
-#| "FlatCAM is started."
 msgid ""
 "The default value for the application units.\n"
 "Whatever is selected here is set every time\n"
 "the application is started."
 msgstr ""
 "Uygulama birimleri için varsayılan değer.\n"
-"Burada seçilen her şey, FlatCAM her başlatıldığında yüklenir."
+"Burada ne seçilirse seçilsin, uygulama\n"
+"her başlatıldığında ayarlanır."
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:45
 #: appPlugins/ToolCalculators.py:548
@@ -10822,7 +10818,7 @@ msgstr "Çerçeve"
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:109
 #: appPlugins/ToolDblSided.py:914 app_Main.py:8482
 msgid "Snap"
-msgstr "Maksimum Tutturma"
+msgstr "Deliğe Tuttur"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:112
 msgid "Axis Ref"
@@ -11096,15 +11092,6 @@ msgstr "Uç Sırası"
 
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:42
 #: appPlugins/ToolDrilling.py:2434 appPlugins/ToolMilling.py:3754
-#, fuzzy
-#| msgid ""
-#| "This set the way that the tools in the tools table are used.\n"
-#| "'Default' --> the order from the Excellon file\n"
-#| "'Forward' --> tools will be ordered from small to big\n"
-#| "'Reverse' --> tools will ordered from big to small\n"
-#| "\n"
-#| "WARNING: using rest machining will automatically set the order\n"
-#| "in reverse and disable this control."
 msgid ""
 "This set the way that the tools in the tools table are used.\n"
 "'Default' --> the order from the file\n"
@@ -11112,13 +11099,9 @@ msgid ""
 "'Reverse' --> tools will ordered from big to small."
 msgstr ""
 "Bu, Araçlar Tablosundaki uçların kullanılma şeklini belirler.\n"
-"'Hayır' --> Excellon dosyasındaki sıra\n"
-"'İleri' --> Uçlar küçükten büyüğe sıralanacak\n"
-"'Geri' --> Uçlar büyükten küçüğe sıralanacak\n"
-"\n"
-"UYARI: Kalan parça işlemeyi kullanmak, sırayı otomatik olarak tersine "
-"çevirir \n"
-"ve bu kontrolü devre dışı bırakır."
+"'Varsayılan' --> Dosyasındaki sıraya göre\n"
+"'İleri' --> Uçlar, küçükten büyüğe sıralanacak\n"
+"'Geri' --> Uçlar, büyükten küçüğe sıralanacak."
 
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:48
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:64
@@ -11675,15 +11658,6 @@ msgstr "Virgülle Ayrılmış Değerler"
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:59
 #: appPlugins/ToolIsolation.py:3374 appPlugins/ToolNCC.py:4185
 #: appPlugins/ToolPaint.py:3051
-#, fuzzy
-#| msgid ""
-#| "This set the way that the tools in the tools table are used.\n"
-#| "'No' --> means that the used order is the one in the tool table\n"
-#| "'Forward' --> means that the tools will be ordered from small to big\n"
-#| "'Reverse' --> means that the tools will ordered from big to small\n"
-#| "\n"
-#| "WARNING: using rest machining will automatically set the order\n"
-#| "in reverse and disable this control."
 msgid ""
 "This set the way that the tools in the tools table are used.\n"
 "'Default' --> means that the used order is the one in the tool table\n"
@@ -11694,8 +11668,8 @@ msgid ""
 "in reverse and disable this control."
 msgstr ""
 "Bu, Araçlar Tablosundaki uçların kullanılma şeklini belirler.\n"
-"'Hayır' -> Kullanılan uç sıranın Araçlar Tablosundaki sıra olduğu anlamına "
-"gelir.\n"
+"'Varsayılan' -> Kullanılan uç sıranın Araçlar Tablosundaki sıra olduğu "
+"anlamına gelir.\n"
 "'İleri' -> Uçların küçükten büyüğe doğru kullanılacağı anlamına gelir.\n"
 "Geri -> Uçların büyükten küçüğe doğru kullanılacağı anlamına gelir.\n"
 "\n"
@@ -14176,7 +14150,7 @@ msgstr ""
 
 #: appPlugins/ToolCutOut.py:429 appPlugins/ToolCutOut.py:2588
 msgid "Any"
-msgstr ""
+msgstr "Serbest"
 
 #: appPlugins/ToolCutOut.py:446 appPlugins/ToolIsolation.py:1022
 #: appPlugins/ToolIsolation.py:1345 appPlugins/ToolIsolation.py:1470
@@ -14264,7 +14238,7 @@ msgstr "Fare ısırığı şekli başarısız oldu."
 #: appPlugins/ToolCutOut.py:1011 tclCommands/TclCommandGeoCutout.py:301
 #: tclCommands/TclCommandGeoCutout.py:356
 msgid "Any-form Cutout operation finished."
-msgstr "Kesme işlemi tamamlandı."
+msgstr "Serbest kesim işlemi tamamlandı."
 
 #: appPlugins/ToolCutOut.py:1031 appPlugins/ToolDrilling.py:1914
 #: appPlugins/ToolEtchCompensation.py:201 appPlugins/ToolFollow.py:214
@@ -14418,7 +14392,7 @@ msgid ""
 "Unchecked: any-form cutout shape."
 msgstr ""
 "İşaretlenmişse: PCB'nin kesim şekli dikdörtgendir.\n"
-"İşaretlenmemişse: PCB, herhangi bir kesme şekline sahip olabilir."
+"İşaretlenmemişse: PCB, herhangi bir (serbest) kesme şekline sahip olabilir."
 
 #: appPlugins/ToolCutOut.py:2625
 msgid "Manual cutout Geometry"
@@ -14671,8 +14645,6 @@ msgstr ""
 "bölümünden değiştirilebilir"
 
 #: appPlugins/ToolDblSided.py:1111
-#, fuzzy
-#| msgid "Drill coordinates"
 msgid "Drill Coordinates"
 msgstr "Delik Koordinatları"
 
@@ -14687,6 +14659,14 @@ msgid ""
 "Shift + mouse click will add one set of coordinates.\n"
 "Ctrl + Shift + mouse click will accumulate sets of coordinates. "
 msgstr ""
+"Hizalama delikleri (x1, y1), (x2, y2), ...\n"
+"Tip X veya Y ise, her koordinat çifti için iki delme noktası eklenir: \n"
+"Biri verilen koordinatlarla, diğeri 'Tersleme İşlemi' bölümünde ayarlandığı "
+"gibi terslenir.\n"
+"Tip 'El İle' ise, tersleme noktası oluşturulmaz.\n"
+"\n"
+"Shift + fareye sol tıklamak, bir koordinat ayarı ekleyecektir.\n"
+"Ctrl + Shift + fareye sol tıklamak koordinat kümelerini toplayacaktır. "
 
 #: appPlugins/ToolDblSided.py:1126
 msgid "Drill coordinates"
@@ -14711,11 +14691,9 @@ msgid "Measure"
 msgstr "Ölç"
 
 #: appPlugins/ToolDistance.py:428
-#, fuzzy
-#| msgid "Click to add next marker or right click to finish."
 msgid "Click to add next point or right click to finish."
 msgstr ""
-"Sonraki işareti eklemek için tıklayın veya sonlandırmak için sağ tıklayın."
+"Sonraki noktayı eklemek için tıklayın veya sonlandırmak için sağ tıklayın."
 
 #: appPlugins/ToolDistance.py:475
 msgid "Pads overlapped. Aborting."
@@ -14734,14 +14712,12 @@ msgstr ""
 "geldiğinde pedin/deliğin merkezine tutturacaktır."
 
 #: appPlugins/ToolDistance.py:715
-#, fuzzy
-#| msgid "Multi-Line"
 msgid "Multi-Point"
-msgstr "Çoklu Çizgi"
+msgstr "Çok Noktalı"
 
 #: appPlugins/ToolDistance.py:717
 msgid "Make a measurement over multiple distance segments."
-msgstr ""
+msgstr "Birden çok noktanın mesafesini ölçün."
 
 #: appPlugins/ToolDistance.py:739 appPlugins/ToolObjectDistance.py:504
 msgid "Start point"
@@ -16667,10 +16643,8 @@ msgstr ""
 "Gerber, Excellon veya Şekil olabilir."
 
 #: appPlugins/ToolObjectDistance.py:99 appPlugins/ToolObjectDistance.py:445
-#, fuzzy
-#| msgid "Distance"
 msgid "Object Distance"
-msgstr "Mesafe"
+msgstr "Nesne Mesafesi"
 
 #: appPlugins/ToolObjectDistance.py:201
 msgid "Objects intersects or touch at"
@@ -16693,18 +16667,17 @@ msgid ""
 "- Nearest points - minimal distance between objects\n"
 "- Center points - distance between the center of the bounding boxes"
 msgstr ""
+"Hesaplanacak mesafe tipi.\n"
+"- En yakın noktalar - Nesneler arasındaki minimum mesafe\n"
+"- Merkez noktaları - Sınırlayıcı kutuların merkezi arasındaki mesafe"
 
 #: appPlugins/ToolObjectDistance.py:482
-#, fuzzy
-#| msgid "Start point"
 msgid "Nearest points"
-msgstr "Başlangıç Noktası"
+msgstr "En yakın noktalar"
 
 #: appPlugins/ToolObjectDistance.py:482
-#, fuzzy
-#| msgid "Center point coordinates"
 msgid "Center points"
-msgstr "Merkez noktası koordinatları"
+msgstr "Merkez noktaları"
 
 #: appPlugins/ToolObjectDistance.py:600
 msgid "Half Point"
@@ -16937,10 +16910,8 @@ msgstr "Çiziliyor..."
 #: appPlugins/ToolPaint.py:2467 appPlugins/ToolPaint.py:2475
 #: appPlugins/ToolPaint.py:2546 appPlugins/ToolPaint.py:2551
 #: appPlugins/ToolPaint.py:2557
-#, fuzzy
-#| msgid "Paint Plugin"
 msgid "Paint Plugin."
-msgstr "Çizim Eklentisi"
+msgstr "Çizim Eklentisi."
 
 #: appPlugins/ToolPaint.py:2363 appPlugins/ToolPaint.py:2367
 #: appPlugins/ToolPaint.py:2375
@@ -18034,22 +18005,18 @@ msgstr ""
 "kaydetmek istiyor musunuz?"
 
 #: appTranslation.py:242
-#, fuzzy
-#| msgid ""
-#| "Select a style for the application.\n"
-#| "It will be applied at the next app start."
 msgid "The language will be applied at the next application start."
-msgstr ""
-"Uygulama stili seçimi.\n"
-"Stil, uygulama yeniden başlatıldığında uygulanacaktır."
+msgstr "Dil, uygulamanın bir sonraki başlatılmasında uygulanacaktır."
 
 #: appTranslation.py:243
 msgid "The user does not have admin rights or UAC issues."
 msgstr ""
+"Kullanıcının yönetici hakları veya UAC (Kullanıcı Hesap Denetimi) sorunları "
+"yoktur."
 
 #: appTranslation.py:245 appTranslation.py:248
 msgid "Quit"
-msgstr ""
+msgstr "Çıkış"
 
 #: app_Main.py:900
 msgid "The application is initializing ..."
