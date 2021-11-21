@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM beta
 
 - updated the language strings
 - updated the Italian (Massimiliano Golfetto) and Turkish (Mehmet Kaya) translations
+- fixed a bug in Panelize Plugin where the Geometry objects could not be panelized
+- fixed some more Shapely 2.0 deprecation warnings in the Panelize Plugin
 
 20.11.2021
 

@@ -545,14 +545,16 @@ class Panelize(AppTool):
                             for tool in panel_source_obj.tools:
                                 try:
                                     source_geo = panel_source_obj.tools[tool]['solid_geometry']
-                                    work_geo = source_geo.geoms if isinstance(source_geo, MultiPolygon) else source_geo
+                                    work_geo = source_geo.geoms if \
+                                        isinstance(source_geo, (MultiPolygon, MultiLineString)) else source_geo
                                     geo_len += len(work_geo)
                                 except TypeError:
                                     geo_len += 1
                         else:
                             try:
                                 source_geo = panel_source_obj.solid_geometry
-                                work_geo = source_geo.geoms if isinstance(source_geo, MultiPolygon) else source_geo
+                                work_geo = source_geo.geoms if \
+                                    isinstance(source_geo, (MultiPolygon, MultiLineString)) else source_geo
                                 geo_len = len(work_geo)
                             except TypeError:
                                 geo_len = 1
@@ -584,11 +586,13 @@ class Panelize(AppTool):
 
                                         # calculate the number of polygons
                                         try:
-                                            source_geo = panel_source_obj.tools[tool]['geometry']
-                                            work_geo = source_geo.geoms if isinstance(source_geo,
-                                                                                      MultiPolygon) else source_geo
+                                            source_geo = panel_source_obj.tools[tool]['solid_geometry']
+                                            work_geo = source_geo.geoms if \
+                                                isinstance(source_geo, (MultiPolygon, MultiLineString)) else source_geo
                                             geo_len = len(work_geo)
-                                        except TypeError:
+                                        except TypeError as err:
+                                            self.app.log.error(
+                                                "Panelize.on_panelize.panelize_worker() -> %s" % str(err))
                                             geo_len = 1
 
                                         # panelization
@@ -596,7 +600,9 @@ class Panelize(AppTool):
 
                                         trans_geo = translate_recursion(panel_source_obj.tools[tool]['solid_geometry'])
                                         try:
-                                            for trans_it in trans_geo:
+                                            work_geo = trans_geo.geoms if \
+                                                isinstance(trans_geo, (MultiPolygon, MultiLineString)) else trans_geo
+                                            for trans_it in work_geo:
                                                 if not trans_it.is_empty:
                                                     new_obj.tools[tool]['solid_geometry'].append(trans_it)
 
@@ -629,7 +635,8 @@ class Panelize(AppTool):
                                 # calculate the number of polygons
                                 try:
                                     source_geo = panel_source_obj.solid_geometry
-                                    work_geo = source_geo.geoms if isinstance(source_geo, MultiPolygon) else source_geo
+                                    work_geo = source_geo.geoms if \
+                                        isinstance(source_geo, (MultiPolygon, MultiLineString)) else source_geo
                                     geo_len = len(work_geo)
                                 except TypeError:
                                     geo_len = 1
@@ -637,7 +644,10 @@ class Panelize(AppTool):
                                 # panelization
                                 pol_nr = 0
                                 try:
-                                    for geo_el in panel_source_obj.solid_geometry:
+                                    sol_geo = panel_source_obj.solid_geometry
+                                    work_geo = sol_geo.geoms if \
+                                        isinstance(sol_geo, (MultiPolygon, MultiLineString)) else sol_geo
+                                    for geo_el in work_geo:
                                         if app_obj.abort_flag:
                                             # graceful abort requested by the user
                                             raise grace
