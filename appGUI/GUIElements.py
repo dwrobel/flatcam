@@ -626,10 +626,13 @@ class IntEntry(FCLineEdit):
 
 
 class FCEntry(FCLineEdit):
-    def __init__(self, decimals=None, alignment=None, border_color=None, parent=None):
+    def __init__(self, decimals=None, alignment=None, border_color=None, parent=None, keep_focus=False):
         super(FCEntry, self).__init__(parent)
         self.readyToEdit = True
-        self.editingFinished.connect(self.on_edit_finished)
+        self._keep_focus = keep_focus
+        if self._keep_focus is False:
+            self.editingFinished.connect(self.on_edit_finished)
+
         self.decimals = decimals if decimals is not None else 4
 
         if border_color:
@@ -643,6 +646,25 @@ class FCEntry(FCLineEdit):
             else:
                 align_val = QtCore.Qt.AlignmentFlag.AlignLeft
             self.setAlignment(align_val)
+
+    @property
+    def keep_focus(self):
+        return self._keep_focus
+
+    @keep_focus.setter
+    def keep_focus(self, val):
+        self._keep_focus = val
+        if val is True:
+            try:
+                self.editingFinished.disconnect(self.on_edit_finished)
+            except (AttributeError, TypeError):
+                pass
+            self.editingFinished.connect(self.on_edit_finished)
+        else:
+            try:
+                self.editingFinished.disconnect(self.on_edit_finished)
+            except (AttributeError, TypeError):
+                pass
 
     def on_edit_finished(self):
         self.clearFocus()

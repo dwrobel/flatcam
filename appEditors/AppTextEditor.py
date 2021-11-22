@@ -91,6 +91,7 @@ class AppTextEditor(QtWidgets.QWidget):
 
         # Entry FIND
         self.entryFind = FCEntry()
+        self.entryFind.setPlaceholderText(_("Find box. Enter here the strings to be searched in the text."))
         self.entryFind.setToolTip(_("Find box. Enter here the strings to be searched in the text."))
         control_lay.addWidget(self.entryFind)
 
@@ -102,6 +103,7 @@ class AppTextEditor(QtWidgets.QWidget):
 
         # Entry REPLACE
         self.entryReplace = FCEntry()
+        self.entryReplace.setPlaceholderText(_("String to replace the one in the Find box throughout the text."))
         self.entryReplace.setToolTip(_("String to replace the one in the Find box throughout the text."))
         control_lay.addWidget(self.entryReplace)
 
@@ -163,6 +165,7 @@ class AppTextEditor(QtWidgets.QWidget):
         self.buttonPrint.clicked.connect(self.handlePrint)
         self.buttonPreview.clicked.connect(self.handlePreview)
         self.buttonFind.clicked.connect(self.handleFindGCode)
+        self.entryFind.editingFinished.connect(self.handleFindGCode)
         self.buttonReplace.clicked.connect(self.handleReplaceGCode)
         # self.button_copy_all.clicked.connect(self.handleCopyAll)
 
@@ -333,9 +336,25 @@ class AppTextEditor(QtWidgets.QWidget):
         text_to_be_found = self.entryFind.get_value()
 
         r = self.code_editor.find(str(text_to_be_found), flags)
+
         if r is False:
-            self.code_editor.moveCursor(QtGui.QTextCursor.MoveOperation.Start)
-            self.code_editor.find(str(text_to_be_found), flags)
+            msgbox = QtWidgets.QMessageBox()
+            msgbox.setWindowTitle(_('Find'))
+            msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/find32.png'))
+            msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
+
+            msgbox.setText(_("End of document."))
+            msgbox.setInformativeText('%s' % _("Start from beginning?"))
+            bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.ButtonRole.AcceptRole)
+            bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
+
+            msgbox.setDefaultButton(bt_cancel)
+            msgbox.exec()
+            response = msgbox.clickedButton()
+
+            if response == bt_ok:
+                self.code_editor.moveCursor(QtGui.QTextCursor.MoveOperation.Start)
+                self.code_editor.find(str(text_to_be_found), flags)
 
     def handleReplaceGCode(self):
 

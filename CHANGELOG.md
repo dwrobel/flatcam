@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+22.11.2021
+
+- in AppTextEditor made some changes (added some placeholders and a message popup when reaching the end of document)
+- when viewing GCode the Find field can now keep the focus
+
 21.11.2021
 
 - updated the language strings

@@ -793,6 +793,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.gcode_editor_tab.entryReplace.hide()
         self.gcode_editor_tab.code_editor.setReadOnly(True)
 
+        # make sure that the Find entry keeps the focus on the line
+        self.gcode_editor_tab.entryFind.keep_focus = False
+
         self.app.inform.emit('[success] %s...' % _('Loaded Machine Code into Code Editor'))
 
     def on_update_source_file(self):
