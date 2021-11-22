@@ -749,7 +749,7 @@ class PreferencesUIManager:
         try:
             value = def_dict[field]
             # log.debug("value is " + str(value) + " and factor is "+str(factor))
-            if factor is not None:
+            if factor is not None and not isinstance(value, str):
                 value *= factor
 
             form_field = self.defaults_form_fields[field]
@@ -757,7 +757,6 @@ class PreferencesUIManager:
                 form_field.set_value(value)
             elif (units == 'IN' or units == 'MM') and (field == 'global_gridx' or field == 'global_gridy'):
                 form_field.set_value(value)
-
         except KeyError:
             pass
         except AttributeError:
