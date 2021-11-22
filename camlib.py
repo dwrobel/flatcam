@@ -3153,7 +3153,10 @@ class CNCjob(Geometry):
         # must_visit.remove(start)
         while must_visit:
             nearest = min(must_visit, key=lambda x: distance(path[-1], x))
-            path.append(nearest)
+            # fixed the Travelling Salesman algorithm such that it does not add duplicated points
+            # that are next to each other
+            if nearest != path[-1]:
+                path.append(nearest)
             must_visit.remove(nearest)
         return path
 
@@ -3706,6 +3709,7 @@ class CNCjob(Geometry):
         flat_geometry = flat_ext_geo + flat_ints_geo
         # flat_geometry = self.flatten(geometry, reset=True, pathonly=True)
         log.debug("%d paths" % len(flat_geometry))
+
         if tool_offset != 0.0:
             # for it in flat_geometry:
             #     # if the geometry is a closed shape then create a Polygon out of it

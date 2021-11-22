@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - in AppTextEditor made some changes (added some placeholders and a message popup when reaching the end of document)
 - when viewing GCode the Find field can now keep the focus
+- fixed the Travelling Salesman algorithm such that it does not add duplicated points that are next to each other
 
 21.11.2021
 
