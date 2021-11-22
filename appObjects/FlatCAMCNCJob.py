@@ -192,17 +192,20 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.exc_cnc_tools_table.hide()
 
         if self.options['type'].lower() == 'geometry':
-            self.ui.cnc_tools_table.show()
             self.build_cnc_tools_table()
+            self.ui.cnc_tools_table.show()
 
         if self.options['type'].lower() == 'excellon':
-            self.ui.exc_cnc_tools_table.show()
             self.build_excellon_cnc_tools()
+            self.ui.exc_cnc_tools_table.show()
 
         self.ui_connect()
 
     def build_cnc_tools_table(self):
         tool_idx = 0
+
+        # reset the Tools Table
+        self.ui.cnc_tools_table.setRowCount(0)
 
         # for the case when self.tools is empty: it can happen for old projects who stored the data elsewhere
         if not self.tools:
@@ -321,6 +324,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         if not self.tools:
             return
 
+        # reset the Tools Table
+        self.ui.exc_cnc_tools_table.setRowCount(0)
+
         n = len(self.tools)
         self.ui.exc_cnc_tools_table.setRowCount(n)
 
@@ -329,16 +335,15 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             tooldia = self.tools[t_id]['tooldia']
 
             row_no = t_id - 1
-
-            t_id_item = QtWidgets.QTableWidgetItem('%d' % int(t_id))
-            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooldia)))
-            nr_drills_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_drills']))
-            nr_slots_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_slots']))
             try:
                 offset_val = self.app.dec_format(float(dia_value['offset']), self.decimals) + self.z_cut
             except KeyError:
                 offset_val = self.app.dec_format(float(dia_value['offset_z']), self.decimals) + self.z_cut
 
+            t_id_item = QtWidgets.QTableWidgetItem('%d' % int(t_id))
+            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooldia)))
+            nr_drills_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_drills']))
+            nr_slots_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_slots']))
             cutz_item = QtWidgets.QTableWidgetItem('%f' % offset_val)
 
             t_id_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
@@ -346,17 +351,6 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             nr_drills_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             nr_slots_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             cutz_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
-
-            # hack so the checkbox stay centered in the table cell
-            # used this:
-            # https://stackoverflow.com/questions/32458111/pyqt-allign-checkbox-and-put-it-in-every-row
-            # plot_item = QtWidgets.QWidget()
-            # checkbox = FCCheckBox()
-            # checkbox.setCheckState(QtCore.Qt.Checked)
-            # qhboxlayout = QtWidgets.QHBoxLayout(plot_item)
-            # qhboxlayout.addWidget(checkbox)
-            # qhboxlayout.setAlignment(QtCore.Qt.AlignCenter)
-            # qhboxlayout.setContentsMargins(0, 0, 0, 0)
 
             plot_item = FCCheckBox()
             plot_item.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
