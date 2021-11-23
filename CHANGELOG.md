@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+23.11.2021
+
+- added a few protections against RuntimeError exceptions that randomly popup due of wrapped C++ objects being deleted
+
 22.11.2021
 
 - in AppTextEditor made some changes (added some placeholders and a message popup when reaching the end of document)

@@ -8443,7 +8443,10 @@ class App(QtCore.QObject):
         if self.ui.notebook.tabText(self.ui.notebook.currentIndex()) == _("Properties"):
             active_obj = self.collection.get_active()
             if active_obj:
-                active_obj.build_ui()
+                try:
+                    active_obj.build_ui()
+                except Exception:
+                    self.setup_default_properties_tab()
             else:
                 self.setup_default_properties_tab()
 

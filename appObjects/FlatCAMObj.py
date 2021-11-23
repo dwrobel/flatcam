@@ -312,7 +312,13 @@ class FlatCAMObj(QtCore.QObject):
         except Exception as e:
             self.app.log.error("FlatCAMObj.build_ui() --> Nothing to remove: %s" % str(e))
 
-        self.app.ui.properties_scroll_area.setWidget(self.ui)
+        try:
+            self.app.ui.properties_scroll_area.setWidget(self.ui)
+        except RuntimeError:
+            try:
+                self.app.ui.properties_scroll_area.setWidget(self.ui)
+            except Exception:
+                pass
         # self.ui.setMinimumWidth(100)
         # self.ui.setMaximumWidth(self.app.ui.properties_tab.sizeHint().width())
 
