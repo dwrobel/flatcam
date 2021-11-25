@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+26.11.2021
+
+- in Follow Plugin made sure that the notebook is disabled until the user finish (or cancel) the operation when using the area type of 'follow'
+
 23.11.2021
 
 - added a few protections against RuntimeError exceptions that randomly popup due of wrapped C++ objects being deleted

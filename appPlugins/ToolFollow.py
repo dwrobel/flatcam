@@ -223,6 +223,9 @@ class ToolFollow(AppTool, Gerber):
         if select_method == 'all':  # _("All")
             self.follow_all(obj, outname)
         else:
+            # disable the "notebook UI" until finished
+            self.app.ui.notebook.setDisabled(True)
+
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the start point of the area."))
 
             if self.app.use_3d_engine:
@@ -512,6 +515,8 @@ class ToolFollow(AppTool, Gerber):
 
             # disconnect flags
             self.area_sel_disconnect_flag = False
+            # disable the "notebook UI" until finished
+            self.app.ui.notebook.setDisabled(False)
 
             if len(self.sel_rect) == 0:
                 return
@@ -648,6 +653,9 @@ class ToolFollow(AppTool, Gerber):
 
             self.delete_moving_selection_shape()
             self.delete_tool_selection_shape()
+
+            # disable the "notebook UI" until finished
+            self.app.ui.notebook.setDisabled(False)
 
 
 class FollowUI:
