@@ -2198,7 +2198,7 @@ class MoveEditorGrb(ShapeToolEditorGrb):
         for index in self.draw_app.ui.apertures_table.selectedIndexes():
             row = index.row()
             # on column 1 in tool tables we hold the aperture codes, and we retrieve them as strings
-            aperture_on_row = self.draw_app.ui.apertures_table.item(row, 1).text()
+            aperture_on_row = int(self.draw_app.ui.apertures_table.item(row, 1).text())
             self.selected_apertures.append(aperture_on_row)
 
         # Switch notebook to Properties page
