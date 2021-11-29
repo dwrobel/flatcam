@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+29.11.2021
+
+- some issues fixed that were left behind rom porting to PyQt6
+- trying to solve differently RuntimeError exceptions that randomly popup due of wrapped C++ objects being deleted by attempting to create a new UI for the objects
+
 27.11.2021
 
 - fixed a bug in the Gerber Editor in the Move command

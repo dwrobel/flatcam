@@ -1017,9 +1017,11 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         try:
             a_idx.build_ui()
+        except RuntimeError:
+            a_idx.set_ui(a_idx.ui_type(app=self.app))
+            a_idx.build_ui()
         except Exception as e:
             self.app.inform.emit('[ERROR] %s: %s' % (_("Cause of error"), str(e)))
-            raise
 
     def get_list(self):
         """

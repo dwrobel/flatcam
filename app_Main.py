@@ -8445,6 +8445,9 @@ class App(QtCore.QObject):
             if active_obj:
                 try:
                     active_obj.build_ui()
+                except RuntimeError:
+                    active_obj.set_ui(active_obj.ui_type(app=self))
+                    active_obj.build_ui()
                 except Exception:
                     self.setup_default_properties_tab()
             else:

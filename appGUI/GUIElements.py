@@ -10,7 +10,6 @@
 # File Modified (major mod): Marius Adrian Stanciu         #
 # Date: 3/10/2019                                          #
 # ##########################################################
-import typing
 
 from PyQt6 import QtGui, QtCore, QtWidgets
 from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal
@@ -448,9 +447,9 @@ class LengthEntry(FCLineEdit):
     def returnPressed(self, *args, **kwargs):
         val = self.get_value()
         if val is not None:
-            self.set_text(str(val))
+            self.setText(str(val))
         else:
-            log.warning("Could not interpret entry: %s" % self.get_text())
+            log.warning("Could not interpret entry: %s" % self.text())
 
     def get_value(self):
         raw = str(self.text()).strip(' ')
@@ -506,7 +505,7 @@ class FloatEntry(FCLineEdit):
     def returnPressed(self, *args, **kwargs):
         val = self.get_value()
         if val is not None:
-            self.set_text(str(val))
+            self.setText(str(val))
         else:
             log.warning("Could not interpret entry: %s" % self.text())
 
@@ -761,7 +760,7 @@ class EvalEntry(FCLineEdit):
         if val is not None:
             self.setText(str(val))
         else:
-            log.warning("Could not interpret entry: %s" % self.get_text())
+            log.warning("Could not interpret entry: %s" % self.text())
 
     def get_value(self):
         raw = str(self.text()).strip(' ')
@@ -920,10 +919,12 @@ class FCColorEntry(QtWidgets.QFrame):
         self.set_value(new_value)
         self.editingFinished.emit()
 
-    def _extract_color(self, value: str) -> str:
+    @staticmethod
+    def _extract_color(value: str) -> str:
         return value[:7]
 
-    def _extract_alpha(self, value: str) -> str:
+    @staticmethod
+    def _extract_alpha(value: str) -> str:
         return value[7:9]
 
 
@@ -1597,15 +1598,18 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         # make sure that the user can't type more decimals than the set precision
         if self.minimum() < 0 or self.maximum() <= 0:
             self.lineEdit().setValidator(
-                QtGui.QRegularExpressionValidator(QtCore.QRegularExpression("-?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
+                QtGui.QRegularExpressionValidator(
+                    QtCore.QRegularExpression("-?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
         else:
             self.lineEdit().setValidator(
-                QtGui.QRegularExpressionValidator(QtCore.QRegularExpression("\+?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
+                QtGui.QRegularExpressionValidator(
+                    QtCore.QRegularExpression("\+?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
 
     def set_range(self, min_val, max_val):
         if min_val < 0 or max_val <= 0:
             self.lineEdit().setValidator(
-                QtGui.QRegularExpressionValidator(QtCore.QRegularExpression("-?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
+                QtGui.QRegularExpressionValidator(
+                    QtCore.QRegularExpression("-?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
 
         self.setRange(min_val, max_val)
 
@@ -2561,16 +2565,16 @@ class FCInputSpinner(QtWidgets.QDialog):
         self.lbl.set_value(txt)
 
     def set_min(self, val):
-        self.wdg.spinner.setMinimum(val)
+        self.wdg.setMinimum(val)
 
     def set_max(self, val):
-        self.wdg.spinner.setMaximum(val)
+        self.wdg.setMaximum(val)
 
     def set_range(self, min, max):
-        self.wdg.spinner.set_range(min, max)
+        self.wdg.set_range(min, max)
 
     def set_step(self, val):
-        self.wdg.spinner.set_step(val)
+        self.wdg.set_step(val)
 
     def get_value(self):
         if self.exec() == QtWidgets.QDialog.DialogCode.Accepted:
@@ -2910,7 +2914,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         """
 
         # if tab is protected don't delete it
-        if self.tabBar.tabButton(current_index, QtWidgets.QTabBar.RightSide) is not None:
+        if self.tabBar.tabButton(current_index, QtWidgets.QTabBar.ButtonPosition.RightSide) is not None:
             self.callback_on_close()
             self.removeTab(current_index)
 
@@ -3484,7 +3488,7 @@ class FCDetachableTab2(FCDetachableTab):
         self.tab_closed_signal.emit(tab_name, currentIndex)
 
         if self._auto_remove_closed_tab:
-            self.removeTab(currentIndex)
+            super().removeTab(currentIndex)
 
 
 class VerticalScrollArea(QtWidgets.QScrollArea):
@@ -3987,16 +3991,11 @@ class Dialog_box(QtWidgets.QWidget):
 
     def mousePressEvent(self, e, parent=None):
         super(Dialog_box, self).mousePressEvent(e)  # required to deselect on 2e click
-        if self.readyToEdit:
-            self.lineEdit().selectAll()
-            self.readyToEdit = False
 
     def focusOutEvent(self, e):
         # don't focus out if the user requests an popup menu
         if e.reason() != QtCore.Qt.FocusReason.PopupFocusReason:
             super(Dialog_box, self).focusOutEvent(e)  # required to remove cursor on focusOut
-            self.lineEdit().deselect()
-            self.readyToEdit = True
 
 
 class DialogBoxRadio(QtWidgets.QDialog):
