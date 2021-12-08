@@ -2131,7 +2131,8 @@ class CutOut(AppTool):
                 maxx = -Inf
                 maxy = -Inf
 
-                for k in obj:
+                work_geo = obj.geoms if isinstance(obj , (MultiPolygon, MultiLineString)) else obj
+                for k in work_geo:
                     minx_, miny_, maxx_, maxy_ = bounds_rec(k)
                     minx = min(minx, minx_)
                     miny = min(miny, miny_)

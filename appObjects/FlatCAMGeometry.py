@@ -1256,7 +1256,8 @@ class GeometryObject(FlatCAMObj, Geometry):
                 self.geo_len = 0
                 try:
                     source_geo = self.tools[tool]['solid_geometry']
-                    work_geo = source_geo.geoms if isinstance(source_geo, MultiPolygon) else source_geo
+                    work_geo = source_geo.geoms if isinstance(source_geo, (MultiPolygon, MultiLineString)) else \
+                        source_geo
                     self.geo_len = len(work_geo)
                 except TypeError:
                     self.geo_len = 1
@@ -1269,7 +1270,8 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.geo_len = 0
         try:
             source_geo = self.solid_geometry
-            work_geo = source_geo.geoms if isinstance(source_geo, MultiPolygon) else source_geo
+            work_geo = source_geo.geoms if isinstance(source_geo, (MultiPolygon, MultiLineString)) else \
+                source_geo
             self.geo_len = len(work_geo)
         except TypeError:
             self.geo_len = 1

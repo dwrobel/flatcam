@@ -2556,7 +2556,10 @@ class Geometry(object):
                     # variables to display the percentage of work done
                     self.geo_len = 0
                     try:
-                        self.geo_len = len(self.tools[tool]['solid_geometry'])
+                        work_geo = self.tools[tool]['solid_geometry']
+                        self.geo_len = len(
+                            work_geo.geoms if isinstance(work_geo, (MultiPolygon, MultiLineString)) else work_geo
+                        )
                     except TypeError:
                         self.geo_len = 1
                     self.old_disp_number = 0
@@ -2567,7 +2570,10 @@ class Geometry(object):
                 # variables to display the percentage of work done
                 self.geo_len = 0
                 try:
-                    self.geo_len = len(self.solid_geometry)
+                    work_geo = self.solid_geometry
+                    self.geo_len = len(
+                        work_geo.geoms if isinstance(work_geo, (MultiPolygon, MultiLineString)) else work_geo
+                    )
                 except TypeError:
                     self.geo_len = 1
                 self.old_disp_number = 0
@@ -7786,7 +7792,8 @@ class CNCjob(Geometry):
                 cmaxx = -np.Inf
                 cmaxy = -np.Inf
 
-                for oo in obj:
+                w_geo = obj.geoms if isinstance(obj, (MultiPolygon, MultiLineString)) else obj
+                for oo in w_geo:
                     if type(oo) is dict:
                         for key in oo:
                             minx_, miny_, maxx_, maxy_ = bounds_rec(oo[key])
@@ -7825,7 +7832,9 @@ class CNCjob(Geometry):
                     maxx = -np.Inf
                     maxy = -np.Inf
                     try:
-                        for geo in v['solid_geometry']:
+                        work_geo = v['solid_geometry']
+                        i_wg = work_geo.geoms if isinstance(work_geo, (MultiPolygon, MultiLineString)) else work_geo
+                        for geo in i_wg:
                             if isinstance(geo, list):
                                 geo = unary_union(geo)
                             if geo.is_empty:

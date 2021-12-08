@@ -7,9 +7,14 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+8.12.2021
+
+- fixed some more Shapely 2.0 deprecation warnings
+- fixed a message bug in the AppMain
+
 29.11.2021
 
-- some issues fixed that were left behind rom porting to PyQt6
+- some issues fixed that were left behind from porting to PyQt6
 - trying to solve differently RuntimeError exceptions that randomly popup due of wrapped C++ objects being deleted by attempting to create a new UI for the objects
 
 27.11.2021

@@ -10965,7 +10965,7 @@ class MenuFileHandlers(QtCore.QObject):
                 else:
                     return exported_gerber
             except Exception as e:
-                self.error("App.export_gerber.make_gerber() --> %s" % str(e))
+                self.log.error("App.export_gerber.make_gerber() --> %s" % str(e))
                 return 'fail'
 
         if use_thread is True:
@@ -10975,7 +10975,7 @@ class MenuFileHandlers(QtCore.QObject):
                     ret = make_gerber()
                     if ret == 'fail':
                         app_obj.inform.emit('[ERROR_NOTCL] %s' % _('Could not export.'))
-                        return
+                        return 'fail'
 
                 self.worker_task.emit({'fcn': job_thread_grb, 'params': [self]})
         else:

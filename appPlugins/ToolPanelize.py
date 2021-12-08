@@ -858,12 +858,20 @@ class Panelize(AppTool):
                         if panel_source_obj.multigeo is True:
                             for tool in panel_source_obj.tools:
                                 try:
-                                    geo_len += len(panel_source_obj.tools[tool]['solid_geometry'])
+                                    work_geo = panel_source_obj.tools[tool]['solid_geometry']
+                                    geo_len += len(
+                                        work_geo.geoms if isinstance(work_geo, (MultiPolygon, MultiLineString)) else
+                                        work_geo
+                                    )
                                 except TypeError:
                                     geo_len += 1
                         else:
                             try:
-                                geo_len = len(panel_source_obj.solid_geometry)
+                                work_geo = panel_source_obj.solid_geometry
+                                geo_len = len(
+                                    work_geo.geoms if isinstance(work_geo, (MultiPolygon, MultiLineString)) else
+                                    work_geo
+                                )
                             except TypeError:
                                 geo_len = 1
                     elif panel_source_obj.kind == 'gerber':
@@ -892,13 +900,20 @@ class Panelize(AppTool):
 
                                         # calculate the number of polygons
                                         try:
-                                            geo_len = len(panel_source_obj.tools[tool]['solid_geometry'])
+                                            work_geo = panel_source_obj.tools[tool]['solid_geometry']
+                                            geo_len = len(
+                                                work_geo.geoms if isinstance(work_geo, (MultiPolygon, MultiLineString))
+                                                else work_geo
+                                            )
                                         except TypeError:
                                             geo_len = 1
 
                                         # panelization
                                         pol_nr = 0
-                                        for geo_el in panel_source_obj.tools[tool]['solid_geometry']:
+                                        work_geo = panel_source_obj.tools[tool]['solid_geometry']
+                                        i_wg = work_geo.geoms if isinstance(work_geo, (MultiPolygon, MultiLineString)) \
+                                            else work_geo
+                                        for geo_el in i_wg:
                                             trans_geo = translate_recursion(geo_el)
                                             if not trans_geo.is_empty:
                                                 new_obj.tools[tool]['solid_geometry'].append(trans_geo)
@@ -920,14 +935,21 @@ class Panelize(AppTool):
 
                                 # calculate the number of polygons
                                 try:
-                                    geo_len = len(panel_source_obj.solid_geometry)
+                                    work_geo = panel_source_obj.solid_geometry
+                                    geo_len = len(
+                                        work_geo.geoms if isinstance(work_geo, (MultiPolygon, MultiLineString))
+                                        else work_geo
+                                    )
                                 except TypeError:
                                     geo_len = 1
 
                                 # panelization
                                 pol_nr = 0
                                 try:
-                                    for geo_el in panel_source_obj.solid_geometry:
+                                    work_geo = panel_source_obj.solid_geometry
+                                    i_wg = work_geo.geoms if isinstance(work_geo, (MultiPolygon, MultiLineString)) \
+                                        else work_geo
+                                    for geo_el in i_wg:
                                         if app_obj.abort_flag:
                                             # graceful abort requested by the user
                                             raise grace
@@ -1178,7 +1200,7 @@ class PanelizeUI:
         self.type_obj_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
         grid0.addWidget(self.type_object_label, 2, 0)
-        grid0.addWidget( self.type_obj_combo, 2, 1)
+        grid0.addWidget(self.type_obj_combo, 2, 1)
 
         # Object to be panelized
         self.object_combo = FCComboBox()
