@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+9.12.2021
+
+- small optimization when deleting all objects (creating a new project)
+
 8.12.2021
 
 - fixed some more Shapely 2.0 deprecation warnings

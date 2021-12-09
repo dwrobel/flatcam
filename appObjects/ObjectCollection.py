@@ -805,29 +805,27 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             self.app.all_objects_list.clear()
 
             self.app.geo_editor.clear()
-
             self.app.exc_editor.clear()
 
             self.app.dblsidedtool.reset_fields()
-
             self.app.panelize_tool.reset_fields()
-
             self.app.cutout_tool.reset_fields()
-
             self.app.film_tool.reset_fields()
-
-            self.beginResetModel()
-
-            self.checked_indexes = []
-
-            for group in self.root_item.child_items:
-                group.remove_children()
-
-            self.endResetModel()
-
-            self.app.plotcanvas.redraw()
         except Exception as e:
             self.app.log.error("ObjectCollection.delete_all() --> %s" % str(e))
+
+        self.beginResetModel()
+        self.checked_indexes = []
+
+        for group in self.root_item.child_items:
+            try:
+                group.remove_children()
+            except Exception as e:
+                self.app.log.error("ObjectCollection.delete_all() group %s--> %s" % (str(group), str(e)))
+
+        self.endResetModel()
+
+        self.app.plotcanvas.redraw()
 
     def get_active(self):
         """
