@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+16.12.2021
+
+- in Milling Plugin fixed the toolchange_xy and end_xy parameters not being used
+
 9.12.2021
 
 - small optimization when deleting all objects (creating a new project)

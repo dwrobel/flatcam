@@ -2437,7 +2437,7 @@ class AppExcEditor(QtCore.QObject):
         for shape_exc in source_storage.get_objects():
             geo_list = []
             if isinstance(shape_exc.geo, MultiLineString):
-                for subgeo in shape_exc.geo:
+                for subgeo in shape_exc.geo.geoms:
                     geo_list.append(affinity.scale(subgeo, xfact=factor, yfact=factor, origin='center'))
                 new_geo = MultiLineString(geo_list)
             elif isinstance(shape_exc.geo, Polygon):

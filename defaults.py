@@ -450,9 +450,9 @@ class FlatCAMDefaults:
         "tools_mill_extracut": False,
         "tools_mill_extracut_length": 0.1,
         "tools_mill_z_pdepth": -0.02,
+        "tools_mill_feedrate_probe": 75,
         "tools_mill_f_plunge": False,
         "tools_mill_spindledir": 'CW',
-        "tools_mill_feedrate_probe": 75,
 
         "tools_mill_area_exclusion": False,
         "tools_mill_area_shape": "polygon",

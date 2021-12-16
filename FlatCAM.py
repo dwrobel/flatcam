@@ -11,6 +11,7 @@ from appGUI import VisPyPatches
 from multiprocessing import freeze_support
 # import copyreg
 # import types
+# import qdarktheme
 
 MIN_VERSION_MAJOR = 3
 MIN_VERSION_MINOR = 6
@@ -153,6 +154,8 @@ if __name__ == '__main__':
             idx = 0
         style = QtWidgets.QStyleFactory.keys()[idx]
         app.setStyle(style)
+
+    # app.setStyleSheet(qdarktheme.load_stylesheet())
 
     fc = App(qapp=app)
 

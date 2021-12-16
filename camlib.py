@@ -3632,7 +3632,7 @@ class CNCjob(Geometry):
         return t_gcode, (locx, locy), start_gcode
 
     # used in Geometry (and soon in Tool Milling)
-    def geometry_tool_gcode_gen(self, tool, tools, first_pt, tolerance, is_first=False, is_last=False,
+    def geometry_tool_gcode_gen(self, tool, tools, first_pt, last_pt, tolerance, is_first=False, is_last=False,
                                 toolchange=False):
         """
         Algorithm to generate GCode from multitool Geometry.
@@ -3643,6 +3643,9 @@ class CNCjob(Geometry):
         :type tools:        dict
         :param first_pt:    a tuple of coordinates for the first point of the current tool
         :type first_pt:     tuple
+        :param last_pt:     a tuple of coordinates for the last point of the current tool
+                            (which is the same for all tools)
+        :type last_pt:      tuple
         :param tolerance:   geometry tolerance
         :type tolerance:
         :param is_first:    if the current tool is the first tool (for this we need to add start GCode)
@@ -3813,7 +3816,8 @@ class CNCjob(Geometry):
             self.startz = None
 
         self.z_end = float(tool_dict['tools_mill_endz'])
-        self.xy_end = tool_dict['tools_mill_endxy']
+        self.xy_end = last_pt
+
         try:
             if self.xy_end == '' or self.xy_end is None:
                 self.xy_end = None
@@ -3829,7 +3833,7 @@ class CNCjob(Geometry):
                     self.app.inform.emit('[ERROR] %s' % _("The End X,Y format has to be (x, y)."))
                     return 'fail'
         except Exception as e:
-            log.error("camlib.CNCJob.geometry_from_excellon_by_tool() xy_end --> %s" % str(e))
+            log.error("camlib.CNCJob.geometry_tool_gcode_gen xy_end --> %s" % str(e))
             self.xy_end = [0, 0]
 
         self.z_toolchange = tool_dict['tools_mill_toolchangez']
@@ -3966,7 +3970,7 @@ class CNCjob(Geometry):
         log.warning("Number of paths for which to generate GCode: %s" % str(geo_len))
         old_disp_number = 0
 
-        current_pt = (0, 0)
+        current_pt = first_pt
         for pt, geo in optimized_path:
             if self.app.abort_flag:
                 # graceful abort requested by the user
@@ -4025,7 +4029,14 @@ class CNCjob(Geometry):
         if is_last:
             t_gcode += self.doformat(p.spindle_stop_code)
             t_gcode += self.doformat(p.lift_code, x=current_pt[0], y=current_pt[1])
-            t_gcode += self.doformat(p.end_code, x=0, y=0)
+            if isinstance(self.xy_end, tuple):
+                endx = self.xy_end[0]
+                endy = self.xy_end[1]
+            else:
+                endx = 0
+                endy = 0
+
+            t_gcode += self.doformat(p.end_code, x=endx, y=endy)
             self.app.inform.emit(
                 '%s... %s %s.' % (_("Finished G-Code generation"), str(path_count), _("paths traced"))
             )

@@ -2868,7 +2868,7 @@ class ToolMilling(AppTool, Excellon):
                 toolchangexy = tools_dict[tooluid_key]['data']["tools_mill_toolchangexy"]
                 startz = tools_dict[tooluid_key]['data']["tools_mill_startz"]
                 endz = tools_dict[tooluid_key]['data']["tools_mill_endz"]
-                endxy = self.target_obj.options["tools_mill_endxy"]
+                endxy = tools_dict[tooluid_key]['data']["tools_mill_endxy"]
                 spindlespeed = tools_dict[tooluid_key]['data']["tools_mill_spindlespeed"]
                 dwell = tools_dict[tooluid_key]['data']["tools_mill_dwell"]
                 dwelltime = tools_dict[tooluid_key]['data']["tools_mill_dwelltime"]
@@ -2995,8 +2995,6 @@ class ToolMilling(AppTool, Excellon):
 
                     # create the Paint geometry for this tool
                     bbox = box(xmin-margin, ymin-margin, xmax+margin, ymax+margin)
-                    print(bbox.wkt)
-                    print(margin, overlap, paint_method)
 
                     # paint the box
                     try:
@@ -3055,27 +3053,29 @@ class ToolMilling(AppTool, Excellon):
                 # #####################################################################################################
 
                 # Toolchange Z
-                tools_dict[tooluid_key]['data']['toolchangez'] = self.ui.toolchangez_entry.get_value()
+                tools_dict[tooluid_key]['data']['tools_mill_toolchangez'] = self.ui.toolchangez_entry.get_value()
+                # Toolchange X-Y
+                tools_dict[tooluid_key]['data']['tools_mill_toolchangexy'] = self.ui.toolchangexy_entry.get_value()
                 # End Move Z
-                tools_dict[tooluid_key]['data']['endz'] = self.ui.endz_entry.get_value()
+                tools_dict[tooluid_key]['data']['tools_mill_endz'] = self.ui.endz_entry.get_value()
                 # End Move XY
-                tools_dict[tooluid_key]['data']['endxy'] = self.ui.endxy_entry.get_value()
+                tools_dict[tooluid_key]['data']['tools_mill_endxy'] = self.ui.endxy_entry.get_value()
                 # Probe Z
-                tools_dict[tooluid_key]['data']['z_pdepth'] = self.ui.pdepth_entry.get_value()
+                tools_dict[tooluid_key]['data']['tools_mill_z_pdepth'] = self.ui.pdepth_entry.get_value()
                 # Probe FR
-                tools_dict[tooluid_key]['data']['feedrate_probe'] = self.ui.feedrate_probe_entry.get_value()
+                tools_dict[tooluid_key]['data']['tools_mill_feedrate_probe'] = self.ui.feedrate_probe_entry.get_value()
 
                 # Exclusion Areas Enable
-                tools_dict[tooluid_key]['data']['area_exclusion'] = self.ui.exclusion_cb.get_value()
+                tools_dict[tooluid_key]['data']['tools_mill_area_exclusion'] = self.ui.exclusion_cb.get_value()
                 # Exclusion Areas Shape
-                tools_dict[tooluid_key]['data']['area_shape'] = self.ui.area_shape_radio.get_value()
+                tools_dict[tooluid_key]['data']['tools_mill_area_shape'] = self.ui.area_shape_radio.get_value()
                 # Exclusion Areas Strategy
-                tools_dict[tooluid_key]['data']['area_strategy'] = self.ui.strategy_radio.get_value()
+                tools_dict[tooluid_key]['data']['tools_mill_area_strategy'] = self.ui.strategy_radio.get_value()
                 # Exclusion Areas Overz
-                tools_dict[tooluid_key]['data']['area_overz'] = self.ui.over_z_entry.get_value()
+                tools_dict[tooluid_key]['data']['tools_mill_area_overz'] = self.ui.over_z_entry.get_value()
 
                 # Preprocessor
-                tools_dict[tooluid_key]['data']['ppname_g'] = self.ui.pp_geo_name_cb.get_value()
+                tools_dict[tooluid_key]['data']['tools_mill_ppname_g'] = self.ui.pp_geo_name_cb.get_value()
 
                 # Offset calculation
                 offset_type = dia_cnc_dict['data']['tools_mill_offset_type']
@@ -3117,8 +3117,12 @@ class ToolMilling(AppTool, Excellon):
 
                 tool_lst = list(tools_dict.keys())
                 is_first = True if tooluid_key == tool_lst[0] else False
+                first_pt = (0, 0)
                 is_last = True if tooluid_key == tool_lst[-1] else False
-                res, start_gcode = new_cncjob_obj.geometry_tool_gcode_gen(tooluid_key, tools_dict, first_pt=(0, 0),
+                last_pt = tools_dict[tooluid_key]['data']['tools_mill_endxy']
+
+                res, start_gcode = new_cncjob_obj.geometry_tool_gcode_gen(tooluid_key, tools_dict, first_pt=first_pt,
+                                                                          last_pt=last_pt,
                                                                           tolerance=tol,
                                                                           is_first=is_first, is_last=is_last,
                                                                           toolchange=is_toolchange)
