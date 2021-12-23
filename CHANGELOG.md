@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+23.12.2021
+
+- in Milling Plugin working on milling Excellon holes by painting them from the center
+- removed display of some of the logs in Tcl Shell (when in Verbose mode) when parsing the Gerber files
+
 16.12.2021
 
 - in Milling Plugin fixed the toolchange_xy and end_xy parameters not being used

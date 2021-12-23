@@ -1608,9 +1608,9 @@ class Geometry(object):
         :param steps_per_circle:    how many linear segments to use to approximate a circle
         :param tooldia:             Diameter of the tool
         :param seedpoint:           Shapely.geometry.Point or None
-        :param overlap:             Tool fraction overlap bewteen passes
-        :param connect:             Connect disjoint segment to minumize tool lifts
-        :param contour:             Cut countour inside the polygon.
+        :param overlap:             Tool fraction overlap between passes
+        :param connect:             Connect disjoint segment to minimize tool lifts
+        :param contour:             Cut contour inside the polygon.
         :param prog_plot:           boolean; if True use the progressive plotting
         :return:                    List of toolpaths covering polygon.
         :rtype:                     FlatCAMRTreeStorage | None

@@ -14,6 +14,7 @@ from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, F
 from appParsers.ParseExcellon import Excellon
 
 from camlib import grace
+import numpy as np
 
 from copy import deepcopy
 import math
@@ -42,6 +43,47 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
+class HybridGeoExc:
+    def __init__(self, app):
+        self.app = app
+        self.decimals = self.app.decimals
+
+        """
+        self.tools = {}
+        This is a dictionary. Each dict key is associated with a tool used in geo_tools_table. The key is the 
+        tool_id of the tools and the value is another dict that will hold the data under the following form:
+            {tooluid:   {
+                        'tooldia': 1,
+                        'data': self.default_tool_data
+                        'solid_geometry': []
+                        }
+            }
+        """
+        self.options = {}
+        self.tools = {}
+        self.solid_geometry = []
+
+        kind = 'geometry'
+        for option in self.app.options:
+            if option.find(kind + "_") == 0:
+                oname = option[len(kind) + 1:]
+                self.options[oname] = self.app.options[option]
+        for option in self.app.options:
+            if option.find('tools_mill_') == 0:
+                self.options[option] = self.app.options[option]
+        for option in self.app.options:
+            if option.find('tools_') == 0:
+                self.options[option] = self.app.options[option]
+
+        self.options['xmin'] = 0
+        self.options['ymin'] = 0
+        self.options['xmax'] = 0
+        self.options['ymax'] = 0
+
+        self.multigeo = True
+        self.multitool = True
+
+
 class ToolMilling(AppTool, Excellon):
     builduiSig = QtCore.pyqtSignal()
     launch_job = QtCore.pyqtSignal()
@@ -63,7 +105,6 @@ class ToolMilling(AppTool, Excellon):
         # ########################## VARIABLES ########################################
         # #############################################################################
         self.units = ''
-        self.obj_tools = {}
         self.tooluid = 0
 
         # dict that holds the object names and the option name
@@ -1063,7 +1104,7 @@ class ToolMilling(AppTool, Excellon):
 
             # order the tools by tool diameter if it's the case
             sorted_tools = []
-            for k, v in self.obj_tools.items():
+            for k, v in self.target_obj.tools.items():
                 sorted_tools.append(self.app.dec_format(float(v['tooldia'])))
 
             order = self.ui.order_combo.get_value()
@@ -1078,13 +1119,13 @@ class ToolMilling(AppTool, Excellon):
             new_id = 1
             new_tools = {}
             for tooldia in sorted_tools:
-                for old_tool in self.obj_tools:
-                    if self.app.dec_format(float(self.obj_tools[old_tool]['tooldia'])) == tooldia:
-                        new_tools[new_id] = deepcopy(self.obj_tools[old_tool])
+                for old_tool in self.target_obj.tools:
+                    if self.app.dec_format(float(self.target_obj.tools[old_tool]['tooldia'])) == tooldia:
+                        new_tools[new_id] = deepcopy(self.target_obj.tools[old_tool])
                         new_id += 1
 
-            self.obj_tools = new_tools
-            tools = [k for k in self.obj_tools]
+            self.target_obj.tools = new_tools
+            tools = [k for k in self.target_obj.tools]
 
         else:
             tools = []
@@ -1101,14 +1142,14 @@ class ToolMilling(AppTool, Excellon):
 
             # Find no of drills for the current tool
             try:
-                drill_cnt = len(self.obj_tools[tool_no]["drills"])
+                drill_cnt = len(self.target_obj.tools[tool_no]["drills"])
             except KeyError:
                 drill_cnt = 0
             self.tot_drill_cnt += drill_cnt
 
             # Find no of slots for the current tool
             try:
-                slot_cnt = len(self.obj_tools[tool_no]["slots"])
+                slot_cnt = len(self.target_obj.tools[tool_no]["slots"])
             except KeyError:
                 slot_cnt = 0
             self.tot_slot_cnt += slot_cnt
@@ -1119,7 +1160,7 @@ class ToolMilling(AppTool, Excellon):
             self.ui.tools_table.setItem(self.tool_row, 0, exc_id_item)
 
             # Tool Diameter
-            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, self.obj_tools[tool_no]['tooldia']))
+            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, self.target_obj.tools[tool_no]['tooldia']))
             dia_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.tools_table.setItem(self.tool_row, 1, dia_item)
 
@@ -1323,7 +1364,6 @@ class ToolMilling(AppTool, Excellon):
             self.ui.param_frame.setDisabled(False)
             self.ui.plot_cb.setDisabled(False)
 
-            self.obj_tools = self.target_obj.tools
             # set the object as active so the Properties is populated by whatever object is selected
             if self.obj_name and self.obj_name != '':
                 self.app.collection.set_all_inactive()
@@ -1687,14 +1727,11 @@ class ToolMilling(AppTool, Excellon):
             self.ui_connect()
             return
 
+        # #########################################################################################################
+        # update the form with the V-Shape fields if V-Shape selected in the geo_plugin_table
+        # also modify the Cut Z form entry to reflect the calculated Cut Z from values got from V-Shape Fields
+        # #########################################################################################################
         if self.ui.target_radio.get_value() == 'geo':
-            # the last selected row is the current row
-            current_row = sel_rows[-1]
-
-            # #########################################################################################################
-            # update the form with the V-Shape fields if V-Shape selected in the geo_plugin_table
-            # also modify the Cut Z form entry to reflect the calculated Cut Z from values got from V-Shape Fields
-            # #########################################################################################################
             try:
                 item = self.ui.tool_shape_combo
                 if item is not None:
@@ -1714,9 +1751,10 @@ class ToolMilling(AppTool, Excellon):
                 item = plugin_table.item(c_row, 3)
                 if type(item) is not None:
                     tooluid = item.text()
-                    if self.ui.target_radio.get_value() == 'geo':
-                        tooluid = int(tooluid)
-                    self.storage_to_form(self.obj_tools[tooluid]['data'])
+                    # if self.ui.target_radio.get_value() == 'geo':
+                    #     tooluid = int(tooluid)
+                    tooluid = int(tooluid)
+                    self.storage_to_form(self.target_obj.tools[tooluid]['data'])
                 else:
                     self.ui_connect()
                     return
@@ -2667,7 +2705,167 @@ class ToolMilling(AppTool, Excellon):
         if self.target_obj.kind == 'geometry':
             self.on_generatecnc_from_geo()
         elif self.target_obj.kind == 'excellon':
+            self.on_generatecnc_from_exc()
+
+    def on_generatecnc_from_exc(self):
+        self.app.log.debug("Generating CNCJob from milling Excellon ...")
+
+        self.sel_tools.clear()
+
+        self.obj_name = self.ui.object_combo.currentText()
+
+        # Get source object.
+        try:
+            self.target_obj = self.app.collection.get_by_name(self.obj_name)
+        except Exception as e:
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
+            return "Could not retrieve object: %s with error: %s" % (self.obj_name, str(e))
+
+        if self.target_obj is None:
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(self.obj_name)))
+            return
+
+        try:
+            if self.target_obj.special_group:
+                msg = '[WARNING_NOTCL] %s %s %s.' % \
+                      (
+                          _("This Geometry can't be processed because it is"),
+                          str(self.target_obj.special_group),
+                          _("Geometry")
+                      )
+                self.app.inform.emit(msg)
+                return
+        except AttributeError:
             pass
+
+        # test to see if we have tools available in the tool table
+        if self.ui.tools_table.selectedItems():
+            for x in self.ui.tools_table.selectedItems():
+                tooluid = int(self.ui.tools_table.item(x.row(), 3).text())
+
+                for tooluid_key, tooluid_value in self.target_obj.tools.items():
+                    if int(tooluid_key) == tooluid:
+                        self.sel_tools.update({
+                            tooluid: deepcopy(tooluid_value)
+                        })
+
+            self.paint_excellon_cncjpb()
+
+        elif self.ui.geo_tools_table.rowCount() == 3:
+            tooluid = int(self.ui.tools_table.item(0, 3).text())
+
+            for tooluid_key, tooluid_value in self.target_obj.tools.items():
+                if int(tooluid_key) == tooluid:
+                    self.sel_tools.update({
+                        tooluid: deepcopy(tooluid_value)
+                    })
+            self.paint_excellon_cncjpb()
+            # self.ui.geo_tools_table.clearSelection()
+        else:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No tool selected in the tool table ..."))
+
+    def paint_excellon_cncjpb(self):
+        outname = "%s_%s" % (self.target_obj.options["name"], 'exc_cnc')
+        tools_dict = self.sel_tools
+
+        old_disp_number = 0
+
+        # create a unified geometry for the selected tools
+        drills_tool_geo = []
+        slots_tool_geo = []
+        total_paint_geo = []
+        final_solid_geometry = []
+
+        new_obj = HybridGeoExc(app=self.app)
+        new_obj.options = dict()
+        for opt, val in self.target_obj.options.items():
+            new_obj.options[opt] = val
+        new_obj.options['name'] = outname
+        new_obj.units = self.app.options["units"]
+        kind = 'geometry'
+        for option in self.app.options:
+            if option.find(kind + "_") == 0:
+                oname = option[len(kind) + 1:]
+                new_obj.options[oname] = self.app.options[option]
+
+        for tool in tools_dict:
+            mill_type = tools_dict[tool]['data']['tools_mill_milling_type']
+            mill_dia = tools_dict[tool]['data']['tools_mill_milling_dia']
+            buff_dia = float(tools_dict[tool]['tooldia'])
+
+            over = 0.05
+            conn = True
+            cont = True
+
+            if mill_type in ['drills', 'both']:
+                drills_tool_geo = [
+                    d_p.buffer(buff_dia / 2.0) for d_p in tools_dict[tool]['drills']
+                ]
+                total_paint_geo = drills_tool_geo
+            elif mill_type in ['slots', 'both']:
+                slots_tool_geo = [
+                    LineString(s_l).buffer(buff_dia / 2.0) for s_l in tools_dict[tool]['slots']
+                ]
+                total_paint_geo = slots_tool_geo
+            elif mill_type == 'both':
+                total_paint_geo = drills_tool_geo + slots_tool_geo
+
+            pol_nr = 0
+            geo_len = len(total_paint_geo)
+            cp = []
+
+            for pp in total_paint_geo:
+                # provide the app with a way to process the GUI events when in a blocking loop
+                QtWidgets.QApplication.processEvents()
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise grace
+                geo_res = self.clear_polygon2(pp, seedpoint=pp.centroid, tooldia=mill_dia, overlap=over,
+                                              steps_per_circle=self.app.defaults['geometry_circle_steps'],
+                                              connect=conn, contour=cont, prog_plot=False)
+                if geo_res:
+                    cp.append(geo_res)
+                pol_nr += 1
+                disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
+                # log.debug("Polygons cleared: %d" % pol_nr)
+
+                if old_disp_number < disp_number <= 100:
+                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                    old_disp_number = disp_number
+
+            total_geometry = []
+            if cp:
+                for x in cp:
+                    total_geometry += list(x.get_objects())
+
+                # clean the geometry
+                new_geo = [g for g in total_geometry if g and not g.is_empty]
+                total_geometry = new_geo
+                final_solid_geometry += total_geometry
+            else:
+                continue
+
+            tools_dict[tool]['data']['tools_mill_tooldia'] = mill_dia
+            tools_dict[tool]['tooldia'] = mill_dia
+
+            new_obj.tools[tool] = {
+                'tooldia':          mill_dia,
+                'data':             deepcopy(self.target_obj.tools[tool]['data']),
+                'solid_geometry':   final_solid_geometry
+            }
+            new_obj.tools[tool]['data']['tools_mill_tooldia'] = mill_dia
+            new_obj.tools[tool]['data']['segx'] = self.app.options['geometry_segx']
+            new_obj.tools[tool]['data']['segy'] = self.app.options['geometry_segy']
+
+        # if not total_tool_geo:
+        #     self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Nothing to mill ..."))
+        #     return
+
+        # I need to prepare a dictionary like cnc_dict for a CNCJob object, each key a tool and each tool a data and
+        # a milled geometry (either drills or slots or both) not a total sum.
+        # painting the polygons
+
+        self.mtool_gen_cncjob(geo_obj=new_obj, tools_dict=new_obj.tools)
 
     def on_generatecnc_from_geo(self):
         self.app.log.debug("Generating CNCJob from Geometry ...")
@@ -2733,13 +2931,14 @@ class ToolMilling(AppTool, Excellon):
         #         float(self.sel_tools[tooluid_key]['data']['tools_mill_tooldia']), self.decimals)
         #     print(tooldia_val)
 
-    def mtool_gen_cncjob(self, outname=None, tools_dict=None, tools_in_use=None, segx=None, segy=None, toolchange=None,
-                         plot=True, use_thread=True):
+    def mtool_gen_cncjob(self, geo_obj=None, outname=None, tools_dict=None, tools_in_use=None, segx=None, segy=None,
+                         toolchange=None, plot=True, use_thread=True):
         """
         Creates a multi-tool CNCJob out of this Geometry object.
         The actual work is done by the target CNCJobObject object's
         `generate_from_geometry_2()` method.
 
+        :param geo_obj:         a Geometry object that is used as the parameter for this function
         :param toolchange:
         :param outname:
         :param tools_dict:      a dictionary that holds the whole data needed to create the Gcode
@@ -2753,26 +2952,29 @@ class ToolMilling(AppTool, Excellon):
         :return:                None
         """
 
+        geo_obj = geo_obj if geo_obj is not None else self.target_obj
+
         # use the name of the first tool selected in self.geo_tools_table which has the diameter passed as tool_dia
-        outname = "%s_%s" % (self.target_obj.options["name"], 'cnc') if outname is None else outname
+        outname = "%s_%s" % (geo_obj.options["name"], 'cnc') if outname is None else outname
 
         tools_dict = self.sel_tools if tools_dict is None else tools_dict
-        if not self.target_obj.tools:
-            segx = segx if segx is not None else float(self.target_obj.options['segx'])
-            segy = segy if segy is not None else float(self.target_obj.options['segy'])
+        print(tools_dict)
+        if not geo_obj.tools:
+            segx = segx if segx is not None else float(geo_obj.options['segx'])
+            segy = segy if segy is not None else float(geo_obj.options['segy'])
         else:
-            tools_list = list(self.target_obj.tools.keys())
+            tools_list = list(geo_obj.tools.keys())
             # the segx and segy values are the same for all tools os we just take the values from the first tool
             sel_tool = tools_list[0]
-            data_dict = self.target_obj.tools[sel_tool]['data']
+            data_dict = geo_obj.tools[sel_tool]['data']
             segx = data_dict['segx']
             segy = data_dict['segy']
 
         try:
-            xmin = self.target_obj.options['xmin']
-            ymin = self.target_obj.options['ymin']
-            xmax = self.target_obj.options['xmax']
-            ymax = self.target_obj.options['ymax']
+            xmin = geo_obj.options['xmin']
+            ymin = geo_obj.options['ymin']
+            xmax = geo_obj.options['xmax']
+            ymax = geo_obj.options['ymax']
         except Exception as e:
             self.app.log.error("FlatCAMObj.GeometryObject.mtool_gen_cncjob() --> %s\n" % str(e))
 
@@ -2811,8 +3013,8 @@ class ToolMilling(AppTool, Excellon):
             new_cncjob_obj.segx = segx
             new_cncjob_obj.segy = segy
 
-            new_cncjob_obj.z_pdepth = float(self.target_obj.options["tools_mill_z_pdepth"])
-            new_cncjob_obj.feedrate_probe = float(self.target_obj.options["tools_mill_feedrate_probe"])
+            new_cncjob_obj.z_pdepth = float(geo_obj.options["tools_mill_z_pdepth"])
+            new_cncjob_obj.feedrate_probe = float(geo_obj.options["tools_mill_feedrate_probe"])
 
             total_gcode = ''
             for tooluid_key in list(tools_dict.keys()):
@@ -2824,7 +3026,7 @@ class ToolMilling(AppTool, Excellon):
                 dia_cnc_dict['data']['tools_mill_tooldia'] = tooldia_val
 
                 if "optimization_type" not in tools_dict[tooluid_key]['data']:
-                    def_optimization_type = self.target_obj.options["tools_mill_optimization_type"]
+                    def_optimization_type = geo_obj.options["tools_mill_optimization_type"]
                     tools_dict[tooluid_key]['data']["tools_mill_optimization_type"] = def_optimization_type
 
                 if dia_cnc_dict['data']['tools_mill_offset_type'] == 1:  # 'in'
@@ -2894,7 +3096,7 @@ class ToolMilling(AppTool, Excellon):
                 tol = glob_tol / 20 if self.units.lower() == 'in' else glob_tol
 
                 res, start_gcode = new_cncjob_obj.generate_from_geometry_2(
-                    self.target_obj, tooldia=tooldia_val, offset=tool_offset, tolerance=tol,
+                    geo_obj, tooldia=tooldia_val, offset=tool_offset, tolerance=tol,
                     z_cut=z_cut, z_move=z_move,
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
                     spindlespeed=spindlespeed, spindledir=spindledir, dwell=dwell, dwelltime=dwelltime,
@@ -2958,16 +3160,16 @@ class ToolMilling(AppTool, Excellon):
             new_cncjob_obj.segx = segx
             new_cncjob_obj.segy = segy
 
-            new_cncjob_obj.z_pdepth = float(self.target_obj.options["tools_mill_z_pdepth"])
-            new_cncjob_obj.feedrate_probe = float(self.target_obj.options["tools_mill_feedrate_probe"])
+            new_cncjob_obj.z_pdepth = float(geo_obj.options["tools_mill_z_pdepth"])
+            new_cncjob_obj.feedrate_probe = float(geo_obj.options["tools_mill_feedrate_probe"])
 
             # make sure that trying to make a CNCJob from an empty file is not creating an app crash
-            if not self.target_obj.solid_geometry:
+            if not geo_obj.solid_geometry:
                 a = 0
-                for tooluid_key in self.target_obj.tools:
-                    if self.target_obj.tools[tooluid_key]['solid_geometry'] is None:
+                for tooluid_key in geo_obj.tools:
+                    if geo_obj.tools[tooluid_key]['solid_geometry'] is None:
                         a += 1
-                if a == len(self.target_obj.tools):
+                if a == len(geo_obj.tools):
                     app_obj.inform.emit('[ERROR_NOTCL] %s...' % _('Cancelled. Empty file, it has no geometry'))
                     return 'fail'
 
@@ -2982,7 +3184,7 @@ class ToolMilling(AppTool, Excellon):
                 dia_cnc_dict['data']['tools_mill_tooldia'] = deepcopy(tooldia_val)
 
                 if "optimization_type" not in tools_dict[tooluid_key]['data']:
-                    def_optimization_type = self.target_obj.options["tools_mill_optimization_type"]
+                    def_optimization_type = geo_obj.options["tools_mill_optimization_type"]
                     tools_dict[tooluid_key]['data']["tools_mill_optimization_type"] = def_optimization_type
 
                 job_type = tools_dict[tooluid_key]['data']['tools_mill_job_type']
@@ -3099,7 +3301,7 @@ class ToolMilling(AppTool, Excellon):
                 dia_cnc_dict['data']['tools_mill_offset_value'] = tool_offset
 
                 # Solid Geometry
-                tool_solid_geometry = self.target_obj.tools[tooluid_key]['solid_geometry']
+                tool_solid_geometry = geo_obj.tools[tooluid_key]['solid_geometry']
 
                 # Coordinates
                 new_cncjob_obj.coords_decimals = self.app.defaults["cncjob_coords_decimals"]
@@ -3166,7 +3368,7 @@ class ToolMilling(AppTool, Excellon):
         if use_thread:
             # To be run in separate thread
             def job_thread(a_obj):
-                if self.target_obj.multigeo is False:
+                if geo_obj.multigeo is False:
                     with self.app.proc_container.new('%s...' % _("Generating")):
                         ret_value = a_obj.app_obj.new_object("cncjob", outname, job_init_single_geometry, plot=plot,
                                                              autoselected=True)
@@ -3184,7 +3386,7 @@ class ToolMilling(AppTool, Excellon):
             # Send to worker
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
         else:
-            if self.target_obj.multigeo is False:
+            if geo_obj.multigeo is False:
                 ret_val = self.app.app_obj.new_object("cncjob", outname, job_init_single_geometry, plot=plot,
                                                       autoselected=True)
             else:
@@ -3678,7 +3880,7 @@ class MillingUI:
         self.tools_table.horizontalHeaderItem(2).setToolTip(
             _("The number of Drill holes. Holes that are drilled with\n"
               "a drill bit."))
-        self.tools_table.horizontalHeaderItem(3).setToolTip(
+        self.tools_table.horizontalHeaderItem(4).setToolTip(
             _("The number of Slot holes. Holes that are created by\n"
               "milling them with an endmill bit."))
 

@@ -1527,7 +1527,7 @@ class Gerber(Geometry):
                         ]
 
                         valid = False
-                        self.app.log.debug("I: %f  J: %f" % (i, j))
+                        log.debug("I: %f  J: %f" % (i, j))
                         for center in center_candidates:
                             radius = np.sqrt(i ** 2 + j ** 2)
 
@@ -1543,14 +1543,14 @@ class Gerber(Geometry):
                             start = np.arctan2(-j, -i)  # Start angle
                             stop = np.arctan2(-center[1] + circular_y, -center[0] + circular_x)  # Stop angle
                             angle = abs(arc_angle(start, stop, arcdir[current_interpolation_mode]))
-                            self.app.log.debug("ARC START: %f, %f  CENTER: %f, %f  STOP: %f, %f" %
+                            log.debug("ARC START: %f, %f  CENTER: %f, %f  STOP: %f, %f" %
                                       (current_x, current_y, center[0], center[1], circular_x, circular_y))
-                            self.app.log.debug("START Ang: %f, STOP Ang: %f, DIR: %s, ABS: %.12f <= %.12f: %s" %
+                            log.debug("START Ang: %f, STOP Ang: %f, DIR: %s, ABS: %.12f <= %.12f: %s" %
                                       (start * 180 / np.pi, stop * 180 / np.pi, arcdir[current_interpolation_mode],
                                        angle * 180 / np.pi, np.pi / 2 * 180 / np.pi, angle <= (np.pi + 1e-6) / 2))
 
                             if angle <= (np.pi + 1e-6) / 2:
-                                self.app.log.debug("########## ACCEPTING ARC ############")
+                                log.debug("########## ACCEPTING ARC ############")
                                 this_arc = arc(center, radius, start, stop,
                                                arcdir[current_interpolation_mode],
                                                self.steps_per_circle)

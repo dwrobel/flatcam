@@ -63,16 +63,16 @@ class AppObject(QtCore.QObject):
         This method is thread-safe.
 
         Notes:
-            * If the name is in use, the self.collection will modify it
-              when appending it to the collection. There is no need to handle
+        If the name is in use, the self.collection will modify it when appending it to the collection.
+        There is no need to handle
               name conflicts here.
 
-        :param kind:            The kind of object to create. One of 'gerber', 'excellon', 'cncjob' and 'geometry'.
+        :param kind:            The kind of object to create. One of 'gerber', 'excellon', 'cncjob' and 'geometry'
         :type kind:             str
-        :param name:            Name for the object.
+        :param name:            Name for the object
         :type name:             str
         :param initialize:      Function to run after creation of the object but before it is attached to the
-                                application.
+                                application
                                 The function is called with 2 parameters: the new object and the App instance.
         :type initialize:       function
         :param plot:            If to plot the resulting object
