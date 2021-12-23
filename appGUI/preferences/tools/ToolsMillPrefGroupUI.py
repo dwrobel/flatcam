@@ -546,6 +546,86 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         polish_grid.addWidget(self.polish_method_lbl, 4, 0)
         polish_grid.addWidget(self.polish_method_combo, 4, 1)
 
-        FCGridLayout.set_common_column_size([param_grid, adv_grid, area_grid, polish_grid], 0)
+        # #############################################################################################################
+        # Excellon Milling Frame
+        # #############################################################################################################
+        self.mille_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _('Excellon Milling'))
+        self.mille_label.setToolTip(
+            _("Will mill Excellon holes progressively from the center of the hole.")
+        )
+        self.layout.addWidget(self.mille_label)
+
+        excellon_mill_frame = FCFrame()
+        self.layout.addWidget(excellon_mill_frame)
+
+        excellon_mill_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        excellon_mill_frame.setLayout(excellon_mill_grid)
+
+        # Milling Type
+        self.mill_type_label = FCLabel('%s:' % _('Milling Type'))
+        self.mill_type_label.setToolTip(
+            _("Milling type:\n"
+              "- Drills -> will mill the drills associated with this tool\n"
+              "- Slots -> will mill the slots associated with this tool\n"
+              "- Both -> will mill both drills and mills or whatever is available")
+        )
+        self.milling_type_radio = RadioSet(
+            [
+                {'label': _('Drills'), 'value': 'drills'},
+                {'label': _("Slots"), 'value': 'slots'},
+                {'label': _("Both"), 'value': 'both'},
+            ]
+        )
+        self.milling_type_radio.setObjectName("milling_type")
+
+        excellon_mill_grid.addWidget(self.mill_type_label, 0, 0)
+        excellon_mill_grid.addWidget(self.milling_type_radio, 2, 0, 1, 2)
+
+        # Milling Diameter
+        self.mill_dia_label = FCLabel('%s:' % _('Milling Diameter'))
+        self.mill_dia_label.setToolTip(
+            _("The diameter of the tool who will do the milling")
+        )
+
+        self.mill_dia_entry = FCDoubleSpinner()
+        self.mill_dia_entry.set_precision(self.decimals)
+        self.mill_dia_entry.set_range(0.0000, 10000.0000)
+        self.mill_dia_entry.setObjectName("milling_dia")
+
+        excellon_mill_grid.addWidget(self.mill_dia_label, 4, 0)
+        excellon_mill_grid.addWidget(self.mill_dia_entry, 4, 1)
+
+        # Overlap
+        self.ovlabel = FCLabel('%s:' % _('Overlap'))
+        self.ovlabel.setToolTip(
+            _("How much (percentage) of the tool width to overlap each tool pass.\n"
+              "Adjust the value starting with lower values\n"
+              "and increasing it if areas that should be processed are still \n"
+              "not processed.\n"
+              "Lower values = faster processing, faster execution on CNC.\n"
+              "Higher values = slow processing and slow execution on CNC\n"
+              "due of too many paths.")
+        )
+        self.overlap_entry = FCDoubleSpinner( suffix='%')
+        self.overlap_entry.set_precision(3)
+        self.overlap_entry.setWrapping(True)
+        self.overlap_entry.setRange(0.0000, 99.9999)
+        self.overlap_entry.setSingleStep(0.1)
+        self.overlap_entry.setObjectName('milling_overlap')
+
+        excellon_mill_grid.addWidget(self.ovlabel, 6, 0)
+        excellon_mill_grid.addWidget(self.overlap_entry, 6, 1)
+
+        # Connect lines
+        self.connect_cb = FCCheckBox('%s' % _("Connect"))
+        self.connect_cb.setObjectName('milling_connect')
+        self.connect_cb.setToolTip(
+            _("Draw lines between resulting\n"
+              "segments to minimize tool lifts.")
+        )
+
+        excellon_mill_grid.addWidget(self.connect_cb, 8, 0, 1, 2)
+
+        FCGridLayout.set_common_column_size([param_grid, adv_grid, area_grid, polish_grid, excellon_mill_grid], 0)
 
         self.layout.addStretch()

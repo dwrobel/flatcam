@@ -491,6 +491,8 @@ class ToolMilling(AppTool, Excellon):
             # Excellon properties
             "tools_mill_milling_type": self.ui.milling_type_radio,
             "tools_mill_milling_dia": self.ui.mill_dia_entry,
+            "tools_mill_milling_overlap": self.ui.overlap_entry,
+            "tools_mill_milling_connect": self.ui.connect_cb,
 
             # Geometry properties
             # "tools_mill_tooldia": self.ui.addtool_entry,
@@ -547,6 +549,8 @@ class ToolMilling(AppTool, Excellon):
         self.name2option = {
             "milling_type":     "tools_mill_milling_type",
             "milling_dia":      "tools_mill_milling_dia",
+            "milling_overlap": "tools_mill_milling_overlap",
+            "milling_connect": "tools_mill_milling_connect",
 
             "mill_offset_type": "tools_mill_offset_type",
             "mill_offset":      "tools_mill_offset_value",
@@ -1285,6 +1289,10 @@ class ToolMilling(AppTool, Excellon):
             self.ui.mill_dia_label.show()
             self.ui.mill_dia_entry.show()
 
+            self.ui.ovlabel.show()
+            self.ui.overlap_entry.show()
+            self.ui.connect_cb.show()
+
             self.ui.frxylabel.hide()
             self.ui.xyfeedrate_entry.hide()
             self.ui.extracut_cb.hide()
@@ -1310,6 +1318,10 @@ class ToolMilling(AppTool, Excellon):
             self.ui.milling_type_radio.hide()
             self.ui.mill_dia_label.hide()
             self.ui.mill_dia_entry.hide()
+
+            self.ui.ovlabel.hide()
+            self.ui.overlap_entry.hide()
+            self.ui.connect_cb.hide()
 
             self.ui.frxylabel.show()
             self.ui.xyfeedrate_entry.show()
@@ -2768,14 +2780,6 @@ class ToolMilling(AppTool, Excellon):
         outname = "%s_%s" % (self.target_obj.options["name"], 'exc_cnc')
         tools_dict = self.sel_tools
 
-        old_disp_number = 0
-
-        # create a unified geometry for the selected tools
-        drills_tool_geo = []
-        slots_tool_geo = []
-        total_paint_geo = []
-        final_solid_geometry = []
-
         new_obj = HybridGeoExc(app=self.app)
         new_obj.options = dict()
         for opt, val in self.target_obj.options.items():
@@ -2789,22 +2793,36 @@ class ToolMilling(AppTool, Excellon):
                 new_obj.options[oname] = self.app.options[option]
 
         for tool in tools_dict:
+            old_disp_number = 0
+            drills_tool_geo = []
+            slots_tool_geo = []
+            total_paint_geo = []
+
             mill_type = tools_dict[tool]['data']['tools_mill_milling_type']
             mill_dia = tools_dict[tool]['data']['tools_mill_milling_dia']
-            buff_dia = float(tools_dict[tool]['tooldia'])
 
-            over = 0.05
-            conn = True
-            cont = True
+            over = tools_dict[tool]['data']['tools_mill_milling_overlap'] / 100
+            conn = tools_dict[tool]['data']['tools_mill_milling_connect']
+            cont = True  # in this case we need the contour always on
 
+            if tools_dict[tool]['data']['tools_mill_offset_type'] == 0:     # Path
+                offset = 0.0
+            elif tools_dict[tool]['data']['tools_mill_offset_type'] == 1:     # In
+                offset = -mill_dia / 2.0
+            elif tools_dict[tool]['data']['tools_mill_offset_type'] == 2:     # Out
+                offset = mill_dia / 2.0
+            else:   # Custom
+                offset = tools_dict[tool]['data']['tools_mill_offset_value']
+
+            buff_dia = float(tools_dict[tool]['tooldia']) / 2.0 + offset
             if mill_type in ['drills', 'both']:
                 drills_tool_geo = [
-                    d_p.buffer(buff_dia / 2.0) for d_p in tools_dict[tool]['drills']
+                    d_p.buffer(buff_dia) for d_p in tools_dict[tool]['drills']
                 ]
                 total_paint_geo = drills_tool_geo
             elif mill_type in ['slots', 'both']:
                 slots_tool_geo = [
-                    LineString(s_l).buffer(buff_dia / 2.0) for s_l in tools_dict[tool]['slots']
+                    LineString(s_l).buffer(buff_dia) for s_l in tools_dict[tool]['slots']
                 ]
                 total_paint_geo = slots_tool_geo
             elif mill_type == 'both':
@@ -2839,10 +2857,9 @@ class ToolMilling(AppTool, Excellon):
                     total_geometry += list(x.get_objects())
 
                 # clean the geometry
-                new_geo = [g for g in total_geometry if g and not g.is_empty]
-                total_geometry = new_geo
-                final_solid_geometry += total_geometry
+                total_geometry = [g for g in total_geometry if g and not g.is_empty]
             else:
+                self.app.log.debug("The tools does not have a suitable geometry for milling.")
                 continue
 
             tools_dict[tool]['data']['tools_mill_tooldia'] = mill_dia
@@ -2851,7 +2868,7 @@ class ToolMilling(AppTool, Excellon):
             new_obj.tools[tool] = {
                 'tooldia':          mill_dia,
                 'data':             deepcopy(self.target_obj.tools[tool]['data']),
-                'solid_geometry':   final_solid_geometry
+                'solid_geometry':   deepcopy(total_geometry)
             }
             new_obj.tools[tool]['data']['tools_mill_tooldia'] = mill_dia
             new_obj.tools[tool]['data']['segx'] = self.app.options['geometry_segx']
@@ -2865,7 +2882,7 @@ class ToolMilling(AppTool, Excellon):
         # a milled geometry (either drills or slots or both) not a total sum.
         # painting the polygons
 
-        self.mtool_gen_cncjob(geo_obj=new_obj, tools_dict=new_obj.tools)
+        self.mtool_gen_cncjob(geo_obj=new_obj, tools_dict=new_obj.tools, disable_offset=True)
 
     def on_generatecnc_from_geo(self):
         self.app.log.debug("Generating CNCJob from Geometry ...")
@@ -2932,7 +2949,7 @@ class ToolMilling(AppTool, Excellon):
         #     print(tooldia_val)
 
     def mtool_gen_cncjob(self, geo_obj=None, outname=None, tools_dict=None, tools_in_use=None, segx=None, segy=None,
-                         toolchange=None, plot=True, use_thread=True):
+                         toolchange=None, plot=True, use_thread=True, disable_offset=False):
         """
         Creates a multi-tool CNCJob out of this Geometry object.
         The actual work is done by the target CNCJobObject object's
@@ -2949,6 +2966,7 @@ class ToolMilling(AppTool, Excellon):
         :param segy:            number of segments on the Y axis, for auto-levelling
         :param plot:            if True the generated object will be plotted; if False will not be plotted
         :param use_thread:      if True use threading
+        :param disable_offset:  If True then the set offset for each tool will not be used
         :return:                None
         """
 
@@ -2958,7 +2976,7 @@ class ToolMilling(AppTool, Excellon):
         outname = "%s_%s" % (geo_obj.options["name"], 'cnc') if outname is None else outname
 
         tools_dict = self.sel_tools if tools_dict is None else tools_dict
-        print(tools_dict)
+
         if not geo_obj.tools:
             segx = segx if segx is not None else float(geo_obj.options['segx'])
             segy = segy if segy is not None else float(geo_obj.options['segy'])
@@ -3052,6 +3070,9 @@ class ToolMilling(AppTool, Excellon):
                         )
                         return
                 else:
+                    tool_offset = 0.0
+
+                if disable_offset is True:
                     tool_offset = 0.0
 
                 dia_cnc_dict['data']['tools_mill_offset_value'] = tool_offset
@@ -3298,7 +3319,11 @@ class ToolMilling(AppTool, Excellon):
                 else:
                     tool_offset = 0.0
 
+                if disable_offset is True:
+                    tool_offset = 0.0
+
                 dia_cnc_dict['data']['tools_mill_offset_value'] = tool_offset
+                tools_dict[tooluid_key]['data']['tools_mill_offset_value'] = tool_offset
 
                 # Solid Geometry
                 tool_solid_geometry = geo_obj.tools[tooluid_key]['solid_geometry']
@@ -4199,10 +4224,45 @@ class MillingUI:
         param_grid.addWidget(self.offset_label, 6, 0)
         param_grid.addWidget(self.offset_entry, 6, 1)
 
+        # Overlap
+        self.ovlabel = FCLabel('%s:' % _('Overlap'))
+        self.ovlabel.setToolTip(
+            _("How much (percentage) of the tool width to overlap each tool pass.\n"
+              "Adjust the value starting with lower values\n"
+              "and increasing it if areas that should be processed are still \n"
+              "not processed.\n"
+              "Lower values = faster processing, faster execution on CNC.\n"
+              "Higher values = slow processing and slow execution on CNC\n"
+              "due of too many paths.")
+        )
+        self.overlap_entry = FCDoubleSpinner(callback=self.confirmation_message, suffix='%')
+        self.overlap_entry.set_precision(3)
+        self.overlap_entry.setWrapping(True)
+        self.overlap_entry.setRange(0.0000, 99.9999)
+        self.overlap_entry.setSingleStep(0.1)
+        self.overlap_entry.setObjectName('milling_overlap')
+
+        param_grid.addWidget(self.ovlabel, 8, 0)
+        param_grid.addWidget(self.overlap_entry, 8, 1)
+
+        # Connect lines
+        self.connect_cb = FCCheckBox('%s' % _("Connect"))
+        self.connect_cb.setObjectName('milling_connect')
+        self.connect_cb.setToolTip(
+            _("Draw lines between resulting\n"
+              "segments to minimize tool lifts.")
+        )
+
+        param_grid.addWidget(self.connect_cb, 10, 0, 1, 2)
+
+        self.ovlabel.hide()
+        self.overlap_entry.hide()
+        self.connect_cb.hide()
+
         self.offset_separator_line = QtWidgets.QFrame()
         self.offset_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         self.offset_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        param_grid.addWidget(self.offset_separator_line, 8, 0, 1, 2)
+        param_grid.addWidget(self.offset_separator_line, 12, 0, 1, 2)
 
         # Tool Type
         self.tool_shape_label = FCLabel('%s:' % _('Shape'))
@@ -4225,8 +4285,8 @@ class MillingUI:
         else:
             self.tool_shape_combo.setCurrentIndex(idx)
 
-        param_grid.addWidget(self.tool_shape_label, 10, 0)
-        param_grid.addWidget(self.tool_shape_combo, 10, 1)
+        param_grid.addWidget(self.tool_shape_label, 14, 0)
+        param_grid.addWidget(self.tool_shape_combo, 14, 1)
 
         # separator_line = QtWidgets.QFrame()
         # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
@@ -4250,8 +4310,8 @@ class MillingUI:
         )
         self.job_type_combo.setObjectName('mill_job_type')
 
-        param_grid.addWidget(self.job_type_lbl, 14, 0)
-        param_grid.addWidget(self.job_type_combo, 14, 1)
+        param_grid.addWidget(self.job_type_lbl, 16, 0)
+        param_grid.addWidget(self.job_type_combo, 16, 1)
 
         # Polish Margin
         self.polish_margin_lbl = FCLabel('%s:' % _('Margin'))
@@ -4263,8 +4323,8 @@ class MillingUI:
         self.polish_margin_entry.set_range(-10000.0000, 10000.0000)
         self.polish_margin_entry.setObjectName("mill_polish_margin")
 
-        param_grid.addWidget(self.polish_margin_lbl, 16, 0)
-        param_grid.addWidget(self.polish_margin_entry, 16, 1)
+        param_grid.addWidget(self.polish_margin_lbl, 18, 0)
+        param_grid.addWidget(self.polish_margin_entry, 18, 1)
 
         # Polish Overlap
         self.polish_over_lbl = FCLabel('%s:' % _('Overlap'))
@@ -4278,8 +4338,8 @@ class MillingUI:
         self.polish_over_entry.setSingleStep(0.1)
         self.polish_over_entry.setObjectName("mill_polish_overlap")
 
-        param_grid.addWidget(self.polish_over_lbl, 18, 0)
-        param_grid.addWidget(self.polish_over_entry, 18, 1)
+        param_grid.addWidget(self.polish_over_lbl, 20, 0)
+        param_grid.addWidget(self.polish_over_entry, 20, 1)
 
         # Polish Method
         self.polish_method_lbl = FCLabel('%s:' % _('Method'))
@@ -4296,8 +4356,8 @@ class MillingUI:
         )
         self.polish_method_combo.setObjectName('mill_polish_method')
 
-        param_grid.addWidget(self.polish_method_lbl, 20, 0)
-        param_grid.addWidget(self.polish_method_combo, 20, 1)
+        param_grid.addWidget(self.polish_method_lbl, 22, 0)
+        param_grid.addWidget(self.polish_method_combo, 22, 1)
 
         self.polish_margin_lbl.hide()
         self.polish_margin_entry.hide()
@@ -4309,7 +4369,7 @@ class MillingUI:
         self.job_separator_line = QtWidgets.QFrame()
         self.job_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         self.job_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        param_grid.addWidget(self.job_separator_line, 22, 0, 1, 2)
+        param_grid.addWidget(self.job_separator_line, 24, 0, 1, 2)
 
         # Tip Dia
         self.tipdialabel = FCLabel('%s:' % _('V-Tip Dia'))
@@ -4324,8 +4384,8 @@ class MillingUI:
         self.tipdia_entry.setSingleStep(0.1)
         self.tipdia_entry.setObjectName("mill_tipdia")
 
-        param_grid.addWidget(self.tipdialabel, 24, 0)
-        param_grid.addWidget(self.tipdia_entry, 24, 1)
+        param_grid.addWidget(self.tipdialabel, 26, 0)
+        param_grid.addWidget(self.tipdia_entry, 26, 1)
 
         # Tip Angle
         self.tipanglelabel = FCLabel('%s:' % _('V-Tip Angle'))
@@ -4341,8 +4401,8 @@ class MillingUI:
         self.tipangle_entry.setSingleStep(1)
         self.tipangle_entry.setObjectName("mill_tipangle")
 
-        param_grid.addWidget(self.tipanglelabel, 26, 0)
-        param_grid.addWidget(self.tipangle_entry, 26, 1)
+        param_grid.addWidget(self.tipanglelabel, 28, 0)
+        param_grid.addWidget(self.tipangle_entry, 28, 1)
 
         self.tipdialabel.hide()
         self.tipdia_entry.hide()
@@ -4363,8 +4423,8 @@ class MillingUI:
         self.cutz_entry.setSingleStep(0.1)
         self.cutz_entry.setObjectName("mill_cutz")
 
-        param_grid.addWidget(self.cutzlabel, 28, 0)
-        param_grid.addWidget(self.cutz_entry, 28, 1)
+        param_grid.addWidget(self.cutzlabel, 30, 0)
+        param_grid.addWidget(self.cutz_entry, 30, 1)
 
         # Multi-Depth
         self.mpass_cb = FCCheckBox('%s:' % _("Multi-Depth"))
@@ -4388,8 +4448,8 @@ class MillingUI:
 
         self.mis_mpass_geo = OptionalInputSection(self.mpass_cb, [self.maxdepth_entry])
 
-        param_grid.addWidget(self.mpass_cb, 30, 0)
-        param_grid.addWidget(self.maxdepth_entry, 30, 1)
+        param_grid.addWidget(self.mpass_cb, 32, 0)
+        param_grid.addWidget(self.maxdepth_entry, 32, 1)
 
         # Travel Z (z_move)
         self.travelzlabel = FCLabel('%s:' % _('Travel Z'))
@@ -4406,8 +4466,8 @@ class MillingUI:
         self.travelz_entry.setSingleStep(0.1)
         self.travelz_entry.setObjectName("mill_travelz")
 
-        param_grid.addWidget(self.travelzlabel, 32, 0)
-        param_grid.addWidget(self.travelz_entry, 32, 1)
+        param_grid.addWidget(self.travelzlabel, 34, 0)
+        param_grid.addWidget(self.travelz_entry, 34, 1)
 
         # Feedrate X-Y
         self.frxylabel = FCLabel('%s:' % _('Feedrate X-Y'))
@@ -4421,8 +4481,8 @@ class MillingUI:
         self.xyfeedrate_entry.setSingleStep(0.1)
         self.xyfeedrate_entry.setObjectName("mill_feedratexy")
 
-        param_grid.addWidget(self.frxylabel, 34, 0)
-        param_grid.addWidget(self.xyfeedrate_entry, 34, 1)
+        param_grid.addWidget(self.frxylabel, 36, 0)
+        param_grid.addWidget(self.xyfeedrate_entry, 36, 1)
 
         self.frxylabel.hide()
         self.xyfeedrate_entry.hide()
@@ -4441,8 +4501,8 @@ class MillingUI:
         self.feedrate_z_entry.setSingleStep(0.1)
         self.feedrate_z_entry.setObjectName("mill_feedratez")
 
-        param_grid.addWidget(self.frzlabel, 36, 0)
-        param_grid.addWidget(self.feedrate_z_entry, 36, 1)
+        param_grid.addWidget(self.frzlabel, 38, 0)
+        param_grid.addWidget(self.feedrate_z_entry, 38, 1)
 
         # Rapid Feedrate
         self.feedrate_rapid_label = FCLabel('%s:' % _('Feedrate Rapids'))
@@ -4459,8 +4519,8 @@ class MillingUI:
         self.feedrate_rapid_entry.setSingleStep(0.1)
         self.feedrate_rapid_entry.setObjectName("mill_fr_rapid")
 
-        param_grid.addWidget(self.feedrate_rapid_label, 38, 0)
-        param_grid.addWidget(self.feedrate_rapid_entry, 38, 1)
+        param_grid.addWidget(self.feedrate_rapid_label, 40, 0)
+        param_grid.addWidget(self.feedrate_rapid_entry, 40, 1)
 
         # default values is to hide
         self.feedrate_rapid_label.hide()
@@ -4494,8 +4554,8 @@ class MillingUI:
         self.extracut_cb.hide()
         self.e_cut_entry.hide()
 
-        param_grid.addWidget(self.extracut_cb, 40, 0)
-        param_grid.addWidget(self.e_cut_entry, 40, 1)
+        param_grid.addWidget(self.extracut_cb, 42, 0)
+        param_grid.addWidget(self.e_cut_entry, 42, 1)
 
         # Spindlespeed
         self.spindle_label = FCLabel('%s:' % _('Spindle speed'))
@@ -4509,8 +4569,8 @@ class MillingUI:
         self.spindlespeed_entry.set_step(100)
         self.spindlespeed_entry.setObjectName("mill_spindlespeed")
 
-        param_grid.addWidget(self.spindle_label, 42, 0)
-        param_grid.addWidget(self.spindlespeed_entry, 42, 1)
+        param_grid.addWidget(self.spindle_label, 44, 0)
+        param_grid.addWidget(self.spindlespeed_entry, 44, 1)
 
         # Dwell
         self.dwell_cb = FCCheckBox('%s:' % _('Dwell'))
@@ -4530,8 +4590,8 @@ class MillingUI:
         )
         self.dwelltime_entry.setObjectName("mill_dwelltime")
 
-        param_grid.addWidget(self.dwell_cb, 44, 0)
-        param_grid.addWidget(self.dwelltime_entry, 44, 1)
+        param_grid.addWidget(self.dwell_cb, 46, 0)
+        param_grid.addWidget(self.dwelltime_entry, 46, 1)
 
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 

@@ -10,7 +10,9 @@ CHANGELOG for FlatCAM beta
 23.12.2021
 
 - in Milling Plugin working on milling Excellon holes by painting them from the center
-- removed display of some of the logs in Tcl Shell (when in Verbose mode) when parsing the Gerber files
+- removed display of some logs in Tcl Shell (when in Verbose mode) when parsing the Gerber files
+- fixed a double application of milling offset when having geometries with multiple tools
+- finished the mill-excellon feature in the Milling Tool; milling will be done progressively from the hole center toward the edge
 
 16.12.2021
 

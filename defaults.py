@@ -468,6 +468,9 @@ class FlatCAMDefaults:
         # Milling Plugin - Excellon Milling
         "tools_mill_milling_type": 'both',
         "tools_mill_milling_dia": 0.1,
+        "tools_mill_milling_overlap": 10,   # in percentage
+        "tools_mill_milling_connect": True,
+
         "tools_mill_optimization_type": 'R',
         "tools_mill_search_time": 3,
 

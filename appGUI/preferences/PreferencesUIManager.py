@@ -360,6 +360,12 @@ class PreferencesUIManager:
             "tools_mill_optimization_type": self.ui.geo_pref_form.geometry_gen_group.opt_algorithm_radio,
             "tools_mill_search_time": self.ui.geo_pref_form.geometry_gen_group.optimization_time_entry,
 
+            # Excellon Milling
+            "tools_mill_milling_type": self.ui.plugin_pref_form.tools_mill_group.milling_type_radio,
+            "tools_mill_milling_dia": self.ui.plugin_pref_form.tools_mill_group.mill_dia_entry,
+            "tools_mill_milling_overlap": self.ui.plugin_pref_form.tools_mill_group.overlap_entry,
+            "tools_mill_milling_connect": self.ui.plugin_pref_form.tools_mill_group.connect_cb,
+
             # Autolevelling Tool
             "tools_al_mode":             self.ui.plugin_eng_pref_form.tools_level_group.al_mode_radio,
             "tools_al_method":           self.ui.plugin_eng_pref_form.tools_level_group.al_method_radio,

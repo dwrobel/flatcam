@@ -3702,14 +3702,15 @@ class CNCjob(Geometry):
         p = self.pp_geometry
 
         # Offset the Geometry if it is the case
-        if tool_dict['tools_mill_offset_type'] == 1:  # 'in'
-            tool_offset = -float(tool_dict['tools_mill_tooldia']) / 2.0
-        elif tool_dict['tools_mill_offset_type'] == 2: # 'out'
-            tool_offset = float(tool_dict['tools_mill_tooldia']) / 2.0
-        elif tool_dict['tools_mill_offset_type'] == 3: # 'custom'
-            tool_offset = tool_dict['tools_mill_offset_value']
-        else:
-            tool_offset = 0.0
+        # if tool_dict['tools_mill_offset_type'] == 1:  # 'in'
+        #     tool_offset = -float(tool_dict['tools_mill_tooldia']) / 2.0
+        # elif tool_dict['tools_mill_offset_type'] == 2: # 'out'
+        #     tool_offset = float(tool_dict['tools_mill_tooldia']) / 2.0
+        # elif tool_dict['tools_mill_offset_type'] == 3: # 'custom'
+        #     tool_offset = tool_dict['tools_mill_offset_value']
+        # else:
+        #     tool_offset = 0.0
+        tool_offset = tool_dict['tools_mill_offset_value']
 
         # #############################################################################################################
         # ## Flatten the geometry. Only linear elements (no polygons) remain.
