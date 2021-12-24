@@ -1351,6 +1351,8 @@ class ToolMilling(AppTool, Excellon):
             last_key = list(obj.tools.keys())[-1]
             self.to_form(storage=obj.tools[last_key]['data'])
 
+        self.on_level_changed(self.ui.level.isChecked())
+
     def on_object_changed(self):
         # print(self.app.ui.notebook.currentWidget().objectName() != 'plugin_tab')
         if not self.app.ui.notebook.tabText(2) != _("Milling Tool"):

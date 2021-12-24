@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+24.12.2021
+
+- in Milling Plugin made sure that the UI is updated correctly when changing the type of target object depending on the Basic/Advanced mode
+
 23.12.2021
 
 - in Milling Plugin working on milling Excellon holes by painting them from the center
