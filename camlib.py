@@ -38,8 +38,11 @@ from shapely.geometry import shape
 from descartes.patch import PolygonPatch
 # ---------------------------------------
 
-from collections import Iterable
-
+# Fix for python 3.10
+try:
+    from collections import Iterable
+except ImportError:
+    from collections.abc import Iterable
 import rasterio
 from rasterio.features import shapes
 import ezdxf

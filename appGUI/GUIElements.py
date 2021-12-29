@@ -4662,8 +4662,7 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
         exitAction = menu.addAction(_("Exit"))
         exitAction.setIcon(QtGui.QIcon(self.app.resource_location + '/power16.png'))
         self.setContextMenu(menu)
-
-        menu_runscript.triggered.connect(lambda: self.app.on_filerunscript(
+        menu_runscript.triggered.connect(lambda: self.app.f_handlers.on_filerunscript(
             silent=True if self.app.cmd_line_headless == 1 else False))
 
         exitAction.triggered.connect(self.app.final_save)
