@@ -1136,13 +1136,13 @@ class FCDoubleSlider(QtWidgets.QSlider):
         return self.value()
 
     def setMinimum(self, value):
-        return super(FCDoubleSlider, self).setMinimum(value * self._multi)
+        return super(FCDoubleSlider, self).setMinimum(int(value * self._multi))
 
     def setMaximum(self, value):
-        return super(FCDoubleSlider, self).setMaximum(value * self._multi)
+        return super(FCDoubleSlider, self).setMaximum(int(value * self._multi))
 
     def setSingleStep(self, value):
-        return super(FCDoubleSlider, self).setSingleStep(value * self._multi)
+        return super(FCDoubleSlider, self).setSingleStep(int(value * self._multi))
 
     def singleStep(self):
         return float(super(FCDoubleSlider, self).singleStep()) / self._multi
@@ -1155,7 +1155,7 @@ class FCDoubleSlider(QtWidgets.QSlider):
 
     def set_range(self, min, max):
         self.blockSignals(True)
-        self.setRange(min * self._multi, max * self._multi)
+        self.setRange(int(min * self._multi), int(max * self._multi))
         self.blockSignals(False)
 
 
