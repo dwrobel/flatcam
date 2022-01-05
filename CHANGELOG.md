@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+5.01.2022
+
+- in Paint Plugin fixed the method 'laser-lines' for the case when the painted Gerber file has square shape apertures
+
 24.12.2021
 
 - in Milling Plugin made sure that the UI is updated correctly when changing the type of target object depending on the Basic/Advanced mode

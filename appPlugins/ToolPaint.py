@@ -1657,19 +1657,19 @@ class ToolPaint(AppTool, Gerber):
             except Exception as ee:
                 log.error("ToolPaint.paint_polygon_worker() Lines --> %s" % str(ee))
         elif paint_method == 3:  # _("Laser_lines")
+            # line = None
+            # aperture_size = None
+
+            # the key is the aperture type and the val is a list of geo elements
+            flash_el_dict = {}
+            # the key is the aperture size, the val is a list of geo elements
+            traces_el_dict = {}
+
             try:
-                # line = None
-                # aperture_size = None
-
-                # the key is the aperture type and the val is a list of geo elements
-                flash_el_dict = {}
-                # the key is the aperture size, the val is a list of geo elements
-                traces_el_dict = {}
-
                 # find the flashes and the lines that are in the selected polygon and store them separately
                 for apid, apval in obj.tools.items():
                     for geo_el in apval['geometry']:
-                        if apval["size"] == 0.0:
+                        if "size" in apval and apval["size"] == 0.0:
                             if apval["size"] in traces_el_dict:
                                 traces_el_dict[apval["size"]].append(geo_el)
                             else:
@@ -1699,13 +1699,18 @@ class ToolPaint(AppTool, Gerber):
                                     traces_el_dict[aperture_size].append(geo_el)
                                 else:
                                     traces_el_dict[aperture_size] = [geo_el]
+            except grace:
+                return "fail"
+            except Exception as ee:
+                log.error("ToolPaint.paint_polygon_worker() Laser Lines -> Identify flashes/traces--> %s" % str(ee))
 
-                cpoly = FlatCAMRTreeStorage()
-                pads_lines_list = []
+            cpoly = FlatCAMRTreeStorage()
+            pads_lines_list = []
 
-                # process the flashes found in the selected polygon with the 'lines' method for rectangular
-                # flashes and with _("Seed") for oblong and circular flashes
-                # and pads (flashes) need the contour therefore I override the GUI settings with always True
+            # process the flashes found in the selected polygon with the 'lines' method for rectangular
+            # flashes and with _("Seed") for oblong and circular flashes
+            # and pads (flashes) need the contour therefore I override the GUI settings with always True
+            try:
                 for ap_type in flash_el_dict:
                     for elem in flash_el_dict[ap_type]:
                         if 'solid' in elem:
@@ -1742,19 +1747,24 @@ class ToolPaint(AppTool, Gerber):
                                                           prog_plot=prog_plot)
 
                                 pads_lines_list += [p for p in f_o.get_objects() if p]
+            except grace:
+                return "fail"
+            except Exception as ee:
+                log.error("ToolPaint.paint_polygon_worker() Laser Lines -> Process flashes--> %s" % str(ee))
 
-                # add the lines from pads to the storage
-                try:
-                    for lin in pads_lines_list:
-                        if lin:
-                            cpoly.insert(lin)
-                except TypeError:
-                    cpoly.insert(pads_lines_list)
+            # add the lines from pads to the storage
+            try:
+                for lin in pads_lines_list:
+                    if lin:
+                        cpoly.insert(lin)
+            except TypeError:
+                cpoly.insert(pads_lines_list)
 
-                copper_lines_list = []
-                # process the traces found in the selected polygon using the 'laser_lines' method,
-                # method which will follow the 'follow' line therefore use the longer path possible for the
-                # laser, therefore the acceleration will play a smaller factor
+            copper_lines_list = []
+            # process the traces found in the selected polygon using the 'laser_lines' method,
+            # method which will follow the 'follow' line therefore use the longer path possible for the
+            # laser, therefore the acceleration will play a smaller factor
+            try:
                 for aperture_size in traces_el_dict:
                     for elem in traces_el_dict[aperture_size]:
                         line = elem['follow']
@@ -1769,20 +1779,21 @@ class ToolPaint(AppTool, Gerber):
                                                        prog_plot=prog_plot)
 
                             copper_lines_list += [p for p in t_o.get_objects() if p]
-
-                # add the lines from copper features to storage but first try to make as few lines as possible
-                # by trying to fuse them
-                lines_union = linemerge(unary_union(copper_lines_list))
-                try:
-                    for lin in lines_union:
-                        if lin:
-                            cpoly.insert(lin)
-                except TypeError:
-                    cpoly.insert(lines_union)
             except grace:
                 return "fail"
             except Exception as ee:
-                log.error("ToolPaint.paint_polygon_worker() Laser Lines --> %s" % str(ee))
+                log.error("ToolPaint.paint_polygon_worker() Laser Lines -> Process traces--> %s" % str(ee))
+
+            # add the lines from copper features to storage but first try to make as few lines as possible
+            # by trying to fuse them
+            lines_union = linemerge(unary_union(copper_lines_list))
+            try:
+                for lin in lines_union:
+                    if lin:
+                        cpoly.insert(lin)
+            except TypeError:
+                cpoly.insert(lines_union)
+
         elif paint_method == 4:  # _("Combo")
             try:
                 self.app.inform.emit(_("Painting polygon with method: lines."))
