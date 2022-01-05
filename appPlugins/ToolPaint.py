@@ -1768,11 +1768,11 @@ class ToolPaint(AppTool, Gerber):
                 for aperture_size in traces_el_dict:
                     for elem in traces_el_dict[aperture_size]:
                         line = elem['follow']
-                        if line:
+
+                        if line and isinstance(line, (LineString, MultiLineString)):
                             t_o = self.fill_with_lines(line, aperture_size,
                                                        tooldia=tooldiameter,
-                                                       steps_per_circle=self.app.defaults[
-                                                           "geometry_circle_steps"],
+                                                       steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                        overlap=over,
                                                        contour=cont,
                                                        connect=conn,

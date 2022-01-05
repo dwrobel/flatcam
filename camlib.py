@@ -1914,13 +1914,47 @@ class Geometry(object):
         def get_pts(o):
             return [o.coords[0], o.coords[-1]]
 
+        # get a line that extends the 'line' LineString toward ourside
+        def getExtrapoledLine(p1, p2):
+            'Creates a line extrapoled in p1->p2 direction'
+            EXTRAPOL_RATIO = 10
+            a = p1
+            b = (p1[0] + EXTRAPOL_RATIO * (p2[0] - p1[0]), p1[1] + EXTRAPOL_RATIO * (p2[1] - p1[1]))
+            return [a, b]
+
         geoms = FlatCAMRTreeStorage()
         geoms.get_points = get_pts
 
         lines_trimmed = []
 
         polygon = line.buffer(aperture_size / 2.0, int(steps_per_circle))
+        line_coords = list(line.coords)
 
+        # #### the line (as parameter) needs to be extended by half of tool diameter such that the cleared area will
+        # include also the rounded part of the trace if the trace diameter is much higher than the clearing diameter
+        first_line_coords = getExtrapoledLine(line_coords[1], line_coords[0])
+        second_line_coords = getExtrapoledLine(line_coords[-2], line_coords[-1])
+
+        sum_coords = first_line_coords + line_coords + second_line_coords
+        sum_set = set(tuple(x) for x in sum_coords)
+        simplified_coords = [x for x in sum_set]
+        combo_line = LineString(simplified_coords)
+        prepared_line = combo_line.intersection(polygon)
+        if isinstance(prepared_line, MultiLineString):
+            prepared_line = linemerge(prepared_line)
+            if isinstance(prepared_line, MultiLineString):
+                prepared_line = unary_union(prepared_line).simplify(0)
+                if isinstance(prepared_line, MultiLineString):
+                    t_coords = []
+                    for m_l in prepared_line.geoms:
+                        t_coords += list(m_l.coords)
+                    sum_set = set(tuple(x) for x in t_coords)
+                    simplified_coords = [x for x in sum_set]
+                    try:
+                        prepared_line = LineString(simplified_coords)
+                    except Exception as err:
+                        print(str(err))
+        # ##########################################################################
         try:
             margin_poly = polygon.buffer(-tooldia / 2.0, int(steps_per_circle))
         except Exception:
@@ -1938,11 +1972,11 @@ class Geometry(object):
                 # provide the app with a way to process the GUI events when in a blocking loop
                 QtWidgets.QApplication.processEvents()
 
-                new_line = line.parallel_offset(distance=delta, side='left', resolution=int(steps_per_circle))
+                new_line = prepared_line.parallel_offset(distance=delta, side='left', resolution=int(steps_per_circle))
                 new_line = new_line.intersection(margin_poly)
                 lines_trimmed.append(new_line)
 
-                new_line = line.parallel_offset(distance=delta, side='right', resolution=int(steps_per_circle))
+                new_line = prepared_line.parallel_offset(distance=delta, side='right', resolution=int(steps_per_circle))
                 new_line = new_line.intersection(margin_poly)
                 lines_trimmed.append(new_line)
 
@@ -1954,7 +1988,7 @@ class Geometry(object):
             # Last line
             delta = (aperture_size / 2) - (tooldia / 2.00000001)
 
-            new_line = line.parallel_offset(distance=delta, side='left', resolution=int(steps_per_circle))
+            new_line = prepared_line.parallel_offset(distance=delta, side='left', resolution=int(steps_per_circle))
             new_line = new_line.intersection(margin_poly)
         except Exception as e:
             log.error('camlib.Geometry.fill_with_lines() Processing poly --> %s' % str(e))
@@ -1971,7 +2005,7 @@ class Geometry(object):
             if prog_plot:
                 self.plot_temp_shapes(lines_geometry)
 
-        new_line = line.parallel_offset(distance=delta, side='right', resolution=int(steps_per_circle))
+        new_line = prepared_line.parallel_offset(distance=delta, side='right', resolution=int(steps_per_circle))
         new_line = new_line.intersection(margin_poly)
 
         lines_geometry = new_line.geoms if isinstance(new_line, MultiLineString) else new_line
@@ -1993,11 +2027,11 @@ class Geometry(object):
         # Add lines to storage
         lines_geometry = lines_trimmed.geoms if isinstance(lines_trimmed, MultiLineString) else lines_trimmed
         try:
-            for line in lines_geometry:
-                if isinstance(line, LineString) or isinstance(line, LinearRing):
-                    geoms.insert(line)
+            for line_g in lines_geometry:
+                if isinstance(line_g, LineString) or isinstance(line_g, LinearRing):
+                    geoms.insert(line_g)
                 else:
-                    log.debug("camlib.Geometry.fill_with_lines(). Not a line: %s" % str(type(line)))
+                    log.debug("camlib.Geometry.fill_with_lines(). Not a line: %s" % str(type(line_g)))
         except TypeError:
             # in case lines_trimmed are not iterable (Linestring, LinearRing)
             geoms.insert(lines_geometry)

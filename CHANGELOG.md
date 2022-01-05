@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+6.01.2022
+
+- modified the 'laser-lines' method in the Paint Plugin such that the rounded part of a painted trace is painted too in the case that the trace width is much higher than the clearing tool diameter
+
 5.01.2022
 
 - in Paint Plugin fixed the method 'laser-lines' for the case when the painted Gerber file has square shape apertures
