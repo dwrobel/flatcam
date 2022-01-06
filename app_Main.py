@@ -183,7 +183,8 @@ class App(QtCore.QObject):
                       "pdf?7ac957791daba2cdf4c2c913f67a43da"
     excellon_spec_url = "https://www.ucamco.com/files/downloads/file/305/the_xnc_file_format_specification.pdf"
     bug_report_url = "https://bitbucket.org/jpcgt/flatcam/issues?status=new&status=open"
-
+    donate_url = "https://www.paypal.com/cgi-bin/webscr?cmd=_" \
+                                "donations&business=WLTJJ3Q77D98L&currency_code=USD&source=url"
     # this variable will hold the project status
     # if True it will mean that the project was modified and not saved
     should_we_save = False
@@ -2217,6 +2218,7 @@ class App(QtCore.QObject):
     def connect_menuhelp_signals(self):
         self.ui.menuhelp_about.triggered.connect(self.on_about)
         self.ui.menuhelp_readme.triggered.connect(self.on_howto)
+        self.ui.menuhelp_donate.triggered.connect(lambda: webbrowser.open(self.donate_url))
         self.ui.menuhelp_manual.triggered.connect(lambda: webbrowser.open(self.manual_url))
         self.ui.menuhelp_report_bug.triggered.connect(lambda: webbrowser.open(self.bug_report_url))
         self.ui.menuhelp_exc_spec.triggered.connect(lambda: webbrowser.open(self.excellon_spec_url))

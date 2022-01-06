@@ -639,6 +639,10 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.menuhelp.addSeparator()
 
+        self.menuhelp_donate = self.menuhelp.addAction(
+            QtGui.QIcon(self.app.resource_location + '/paypal32.png'),
+            '%s\t%s' % (_('Donate'), ''))
+
         self.menuhelp_readme = self.menuhelp.addAction(
             QtGui.QIcon(self.app.resource_location + '/warning.png'),
             '%s\t%s' % (_("How To"), ''))
