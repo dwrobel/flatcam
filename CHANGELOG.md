@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 6.01.2022
 
 - modified the 'laser-lines' method in the Paint Plugin such that the rounded part of a painted trace is painted too in the case that the trace width is much higher than the clearing tool diameter
+- some changes in the Excellon object suggessted by an user: Karl-Heinz
 
 5.01.2022
 

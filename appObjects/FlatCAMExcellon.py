@@ -1178,12 +1178,18 @@ class ExcellonObject(FlatCAMObj, Excellon):
         for tool_key in self.tools:
             # find the geo_plugin_table row associated with the tool_key
             for row in range(self.ui.tools_table.rowCount()):
-                tool_item = int(self.ui.tools_table.item(row, 0).text())
+                tool_item = int(float(self.ui.tools_table.item(row, 0).text()))
                 if tool_item == int(tool_key):
                     check_row = row
                     break
             state = self.ui.tools_table.cellWidget(check_row, 5).isChecked()
-            self.shapes.update_visibility(state, indexes=self.shape_indexes_dict[tool_key])
+            try:
+                # suggested by an user that may fix issues when run in Linux
+                # I don't see the reason for the .copy() but ...
+                #TODO may need removal of the .copy() method if the reason is not found
+                self.shapes.update_visibility(state, indexes=self.shape_indexes_dict[tool_key]).copy()
+            except Exception:
+                pass
         self.shapes.redraw()
         self.ui_connect()
 
