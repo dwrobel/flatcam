@@ -877,7 +877,7 @@ class ToolIsolation(AppTool, Gerber):
             self.update_ui()
 
     def update_ui(self):
-        self.blockSignals(True)
+        self.ui_disconnect()
 
         sel_rows = set()
         table_items = self.ui.tools_table.selectedItems()
@@ -891,7 +891,7 @@ class ToolIsolation(AppTool, Gerber):
             self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
             )
-            self.blockSignals(False)
+            self.ui_connect()
             return
         else:
             self.ui.generate_iso_button.setDisabled(False)
@@ -903,9 +903,11 @@ class ToolIsolation(AppTool, Gerber):
                 if item is not None:
                     tooluid = int(item.text())
                 else:
+                    self.ui_connect()
                     return
             except Exception as e:
                 log.error("Tool missing. Add a tool in the Tool Table. %s" % str(e))
+                self.ui_connect()
                 return
 
             # update the QLabel that shows for which Tool we have the parameters in the UI form
@@ -928,7 +930,7 @@ class ToolIsolation(AppTool, Gerber):
                     "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
                 )
 
-        self.blockSignals(False)
+        self.ui_connect()
 
     def storage_to_form(self, dict_storage):
         for form_key in self.form_fields:
@@ -1323,7 +1325,6 @@ class ToolIsolation(AppTool, Gerber):
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
     def on_tool_add(self, custom_dia=None):
-        self.blockSignals(True)
         self.ui_disconnect()
 
         filename = self.app.tools_database_path()
@@ -1344,7 +1345,6 @@ class ToolIsolation(AppTool, Gerber):
             self.build_ui()
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter with non-zero value, "
                                                           "in Float format."))
-            self.blockSignals(False)
             self.ui_connect()
             return
         truncated_tooldia = self.app.dec_format(tool_dia, self.decimals)
@@ -1362,8 +1362,6 @@ class ToolIsolation(AppTool, Gerber):
         except IOError:
             self.app.log.error("Could not load tools DB file.")
             self.app.inform.emit('[ERROR] %s' % _("Could not load Tools DB file."))
-            self.blockSignals(False)
-            self.ui_connect()
             self.on_tool_default_add(dia=tool_dia)
             return
 
@@ -1374,8 +1372,6 @@ class ToolIsolation(AppTool, Gerber):
             e = sys.exc_info()[0]
             self.app.log.error(str(e))
             self.app.inform.emit('[ERROR] %s' % _("Failed to parse Tools DB file."))
-            self.blockSignals(False)
-            self.ui_connect()
             self.on_tool_default_add(dia=tool_dia)
             return
 
@@ -1419,15 +1415,12 @@ class ToolIsolation(AppTool, Gerber):
         if tool_found == 0:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Tool not in Tools Database. Adding a default tool."))
             self.on_tool_default_add(dia=tool_dia)
-            self.blockSignals(False)
-            self.ui_connect()
             return
 
         if tool_found > 1:
             self.app.inform.emit(
                 '[WARNING_NOTCL] %s' % _("Cancelled.\n"
                                          "Multiple tools for one tool diameter found in Tools Database."))
-            self.blockSignals(False)
             self.ui_connect()
             return
 
@@ -1445,8 +1438,6 @@ class ToolIsolation(AppTool, Gerber):
                 'solid_geometry':   []
             }
         })
-        self.blockSignals(False)
-        self.ui_connect()
         self.build_ui()
 
         # select the tool just added
@@ -1461,7 +1452,7 @@ class ToolIsolation(AppTool, Gerber):
         self.app.inform.emit('[success] %s' % _("New tool added to Tool Table from Tools Database."))
 
     def on_tool_default_add(self, dia=None, muted=None):
-        self.blockSignals(True)
+        self.ui_disconnect()
 
         tool_dia = dia if dia is not None else self.ui.new_tooldia_entry.get_value()
 
@@ -1469,7 +1460,6 @@ class ToolIsolation(AppTool, Gerber):
             self.build_ui()
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter with non-zero value, "
                                                           "in Float format."))
-            self.blockSignals(False)
             return
 
         # construct a list of all 'tooluid' in the self.iso_tools
@@ -1495,7 +1485,6 @@ class ToolIsolation(AppTool, Gerber):
         })
         # print("after", self.iso_tools)
 
-        self.blockSignals(False)
         self.build_ui()
 
         # select the tool just added
@@ -1511,7 +1500,7 @@ class ToolIsolation(AppTool, Gerber):
             self.app.inform.emit('[success] %s' % _("Default tool added to Tool Table."))
 
     def on_tool_edit(self, item):
-        self.blockSignals(True)
+        self.ui_disconnect()
 
         edited_row = item.row()
         editeduid = int(self.ui.tools_table.item(edited_row, 3).text())
@@ -1525,17 +1514,21 @@ class ToolIsolation(AppTool, Gerber):
                 new_tool_dia = float(self.ui.tools_table.item(edited_row, 1).text().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit('[ERROR_NOTCL]  %s' % _("Wrong value format entered, use a number."))
-                self.blockSignals(False)
+                self.ui_connect()
                 return
 
         for v in self.iso_tools.values():
-            tool_dias = [float('%.*f' % (self.decimals, v[tool_v])) for tool_v in v.keys() if tool_v == 'tooldia']
+            tool_dias = [self.app.dec_format(v[tool_v], self.decimals) for tool_v in v.keys() if tool_v == 'tooldia']
 
         # identify the tool that was edited and get it's tooluid
         if new_tool_dia not in tool_dias:
-            self.iso_tools[editeduid]['tooldia'] = deepcopy(float('%.*f' % (self.decimals, new_tool_dia)))
+            try:
+                self.iso_tools[editeduid]['tooldia'] = deepcopy(float('%.*f' % (self.decimals, new_tool_dia)))
+            except Exception as err:
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                self.app.log.error("Failed due: %s" % str(err))
+
             self.app.inform.emit('[success] %s' % _("Tool from Tool Table was edited."))
-            self.blockSignals(False)
             self.build_ui()
             return
 
@@ -1548,7 +1541,6 @@ class ToolIsolation(AppTool, Gerber):
                 break
 
         self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. New diameter value is already in the Tool Table."))
-        self.blockSignals(False)
         self.build_ui()
 
     def on_tool_delete(self, rows_to_delete=None, all_tools=None):
@@ -1559,13 +1551,12 @@ class ToolIsolation(AppTool, Gerber):
         :param all_tools:           delete all tools in the tool table
         :return:
         """
-        self.blockSignals(True)
+        self.ui_disconnect()
 
         deleted_tools_list = []
 
         if all_tools:
             self.iso_tools.clear()
-            self.blockSignals(False)
             self.build_ui()
             return
 
@@ -1581,7 +1572,6 @@ class ToolIsolation(AppTool, Gerber):
             for t in deleted_tools_list:
                 self.iso_tools.pop(t, None)
 
-            self.blockSignals(False)
             self.build_ui()
             return
 
@@ -1599,13 +1589,12 @@ class ToolIsolation(AppTool, Gerber):
 
         except AttributeError:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Delete failed. Select a tool to delete."))
-            self.blockSignals(False)
+            self.ui_connect()
             return
         except Exception as e:
             log.error(str(e))
 
         self.app.inform.emit('[success] %s' % _("Tool(s) deleted from Tool Table."))
-        self.blockSignals(False)
         self.build_ui()
 
     def on_generate_buffer(self):
@@ -2965,7 +2954,6 @@ class ToolIsolation(AppTool, Gerber):
 
         self.app.inform.emit('[success] %s' % _("New tool added to Tool Table."))
 
-        self.ui_connect()
         self.build_ui()
 
         # select the tool just added
@@ -2999,7 +2987,7 @@ class ToolIsolation(AppTool, Gerber):
         self.app.tools_db_tab.ui.cancel_tool_from_db.show()
 
     def reset_fields(self):
-        self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.ui.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
 
     @staticmethod
     def poly2rings(poly):

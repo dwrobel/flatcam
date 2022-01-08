@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+8.01.2021
+
+- in Isolation Plugin fixed the issue with clicking the header not toggling all tools rows
+- in Isolation Plugin fixed an issue in the reset_fields() method
+
 6.01.2022
 
 - modified the 'laser-lines' method in the Paint Plugin such that the rounded part of a painted trace is painted too in the case that the trace width is much higher than the clearing tool diameter
