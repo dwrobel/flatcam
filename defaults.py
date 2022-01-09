@@ -321,6 +321,15 @@ class FlatCAMDefaults:
         "cncjob_coords_type": "G90",
         "cncjob_coords_decimals": 4,
         "cncjob_fr_decimals": 2,
+
+        # bed square compensation
+        "cncjob_bed_max_x": 300,
+        "cncjob_bed_max_y": 400,
+        "cncjob_bed_offset_x": 0,
+        "cncjob_bed_offset_y": 0,
+        "cncjob_bed_skew_x": 0,
+        "cncjob_bed_skew_y": 0,
+
         "cncjob_steps_per_circle": 16,
         "cncjob_footer": False,
         "cncjob_line_ending": False,

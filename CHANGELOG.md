@@ -10,6 +10,8 @@ CHANGELOG for FlatCAM beta
 9.01.2022
 
 - some UI changes in the Preferences: the clicked tab now have a distinctive color (green) and some strings are optimized
+- added in CNCJob preferences new preferences that allow compensation for the CNC bed skew/tilt (axes not being square one to another)
+- all pre-processors are altered such they can adjust the gcode to use the compensation values set in Preferences -> CNC-Job section
 
 8.01.2021
 

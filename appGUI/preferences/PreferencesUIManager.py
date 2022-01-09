@@ -275,6 +275,14 @@ class PreferencesUIManager:
             "cncjob_annotation_fontsize":   self.ui.cncjob_pref_form.cncjob_adv_opt_group.annotation_fontsize_sp,
             "cncjob_annotation_fontcolor": self.ui.cncjob_pref_form.cncjob_adv_opt_group.annotation_fontcolor_entry,
 
+            # CNC Job Preprocessors Options
+            "cncjob_bed_max_x":     self.ui.cncjob_pref_form.cncjob_pp_group.bed_max_x_entry,
+            "cncjob_bed_max_y":     self.ui.cncjob_pref_form.cncjob_pp_group.bed_max_y_entry,
+            "cncjob_bed_offset_x":  self.ui.cncjob_pref_form.cncjob_pp_group.bed_offx_entry,
+            "cncjob_bed_offset_y":  self.ui.cncjob_pref_form.cncjob_pp_group.bed_offy_entry,
+            "cncjob_bed_skew_x":    self.ui.cncjob_pref_form.cncjob_pp_group.bed_skewx_entry,
+            "cncjob_bed_skew_y":    self.ui.cncjob_pref_form.cncjob_pp_group.bed_skewy_entry,
+
             # CNC Job (GCode) Editor
             "cncjob_prepend":               self.ui.cncjob_pref_form.cncjob_editor_group.prepend_text,
             "cncjob_append":                self.ui.cncjob_pref_form.cncjob_editor_group.append_text,

@@ -2890,6 +2890,19 @@ class CNCjob(Geometry):
 
         self.input_geometry_bounds = None
 
+        # compensation for CNC bed not square
+        self._bed_limit_x = self.app.defaults["cncjob_bed_max_x"]
+        self._bed_limit_y = self.app.defaults["cncjob_bed_max_y"]
+
+        self._bed_offset_x = self.app.defaults["cncjob_bed_offset_x"]
+        self._bed_offset_y = self.app.defaults["cncjob_bed_offset_y"]
+        self._bed_skew_x = self.app.defaults["cncjob_bed_skew_x"]
+        self._bed_skew_y = self.app.defaults["cncjob_bed_skew_y"]
+
+        # coordinates used by the preprocessors position_code() method; updated when creating gcode
+        self.x = 0.0
+        self.y = 0.0
+
         self.oldx = None
         self.oldy = None
 
@@ -2967,6 +2980,7 @@ class CNCjob(Geometry):
         :param fun:     One of the methods inside the preprocessor classes which get loaded here in the 'p' object
         :type fun:      class 'function'
         :param kwargs:  keyword args which will update attributes of the current class
+                        if some parameters are not yet attributes of the class they are added
         :type kwargs:   dict
         :return:        Gcode line
         :rtype:         str

@@ -4745,63 +4745,67 @@ class App(QtCore.QObject):
             "tools_mill_feedrate_probe", "tools_mill_startz", "geometry_segx", "geometry_segy", "tools_mill_area_overz",
 
             # CNCJob Object
-            'cncjob_tooldia', "tools_al_travelz", "tools_al_probe_depth", "tools_al_grbl_jog_step",
+            'cncjob_tooldia', 'cncjob_bed_max_x', 'cncjob_bed_max_y', 'cncjob_bed_offset_x', 'cncjob_bed_offset_y',
+            'cncjob_bed_skew_x', 'cncjob_bed_skew_y',
+
+            # AutoLevelling Plugin
+            "tools_al_travelz", "tools_al_probe_depth", "tools_al_grbl_jog_step",
             "tools_al_grbl_jog_fr", "tools_al_grbl_travelz",
 
-            # Isolation Tool
+            # Isolation Plugin
             "tools_iso_tool_cutz",
 
-            # Drilling Tool
+            # Drilling Plugin
             'tools_drill_cutz', 'tools_drill_depthperpass', 'tools_drill_travelz', 'tools_drill_endz',
             'tools_drill_endxy', 'tools_drill_feedrate_z', 'tools_drill_toolchangez', "tools_drill_drill_overlap",
             'tools_drill_offset', "tools_drill_toolchangexy", "tools_drill_startz", 'tools_drill_feedrate_rapid',
             "tools_drill_feedrate_probe", "tools_drill_z_pdepth", "tools_drill_area_overz",
 
-            # NCC Tool
+            # NCC Plugin
             "tools_ncc_tools", "tools_ncc_margin", "tools_ncc_offset_value", "tools_ncc_cutz", "tools_ncc_tipdia",
             "tools_ncc_newdia",
 
-            # Cutout Tool
+            # Cutout Plugin
             "tools_cutout_tooldia", 'tools_cutout_margin', "tools_cutout_z", "tools_cutout_depthperpass",
             'tools_cutout_gapsize', 'tools_cutout_gap_depth', 'tools_cutout_mb_dia', 'tools_cutout_mb_spacing',
 
-            # Paint Tool
+            # Paint Plugin
             "tools_paint_tooldia", 'tools_paint_offset', "tools_paint_cutz", "tools_paint_tipdia", "tools_paint_newdia",
 
-            # 2Sided Tool
+            # 2Sided Plugin
             "tools_2sided_drilldia",
 
-            # Film Tool
+            # Film Plugin
             "tools_film_boundary", "tools_film_scale_stroke",
 
-            # Panel Tool
+            # Panel Plugin
             "tools_panelize_spacing_columns", "tools_panelize_spacing_rows", "tools_panelize_constrainx",
             "tools_panelize_constrainy",
 
-            # Calculators Tool
+            # Calculators Plugin
             "tools_calc_vshape_tip_dia", "tools_calc_vshape_cut_z",
 
-            # Transform Tool
+            # Transform Plugin
             "tools_transform_ref_point", "tools_transform_offset_x", "tools_transform_offset_y",
             "tools_transform_buffer_dis",
 
-            # SolderPaste Tool
+            # SolderPaste Plugin
             "tools_solderpaste_tools", "tools_solderpaste_new", "tools_solderpaste_z_start",
             "tools_solderpaste_z_dispense", "tools_solderpaste_z_stop", "tools_solderpaste_z_travel",
             "tools_solderpaste_z_toolchange", "tools_solderpaste_xy_toolchange", "tools_solderpaste_frxy",
             "tools_solderpaste_frz", "tools_solderpaste_frz_dispense",
 
-            # Markers Tool
+            # Markers Plugin
             "tools_markers_thickness", "tools_markers_length", "tools_markers_offset_x", "tools_markers_offset_y",
 
-            # Check Rules Tool
+            # Check Rules Plugin
             "tools_cr_trace_size_val", "tools_cr_c2c_val", "tools_cr_c2o_val", "tools_cr_s2s_val", "tools_cr_s2sm_val",
             "tools_cr_s2o_val", "tools_cr_sm2sm_val", "tools_cr_ri_val", "tools_cr_h2h_val", "tools_cr_dh_val",
 
-            # QRCode Tool
+            # QRCode Plugin
             "tools_qrcode_border_size",
 
-            # Copper Thieving Tool
+            # Copper Thieving Plugin
             "tools_copper_thieving_clearance", "tools_copper_thieving_margin",
             "tools_copper_thieving_dots_dia", "tools_copper_thieving_dots_spacing",
             "tools_copper_thieving_squares_size", "tools_copper_thieving_squares_spacing",
@@ -4809,21 +4813,21 @@ class App(QtCore.QObject):
             "tools_copper_thieving_rb_margin", "tools_copper_thieving_rb_thickness",
             "tools_copper_thieving_mask_clearance",
 
-            # Fiducials Tool
+            # Fiducials Plugin
             "tools_fiducials_dia", "tools_fiducials_margin", "tools_fiducials_line_thickness",
 
-            # Calibration Tool
+            # Calibration Plugin
             "tools_cal_travelz", "tools_cal_verz", "tools_cal_toolchangez", "tools_cal_toolchange_xy",
 
-            # Drills Extraction Tool
+            # Drills Extraction Plugin
             "tools_extract_hole_fixed_dia", "tools_extract_circular_ring", "tools_extract_oblong_ring",
             "tools_extract_square_ring", "tools_extract_rectangular_ring", "tools_extract_others_ring",
 
-            # Punch Gerber Tool
+            # Punch Gerber Plugin
             "tools_punch_hole_fixed_dia", "tools_punch_circular_ring", "tools_punch_oblong_ring",
             "tools_punch_square_ring", "tools_punch_rectangular_ring", "tools_punch_others_ring",
 
-            # Invert Gerber Tool
+            # Invert Gerber Plugin
             "tools_invert_margin",
 
         ]
