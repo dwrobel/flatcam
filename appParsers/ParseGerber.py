@@ -876,6 +876,9 @@ class Gerber(Geometry):
                         path = [path[-1]]
 
                     making_region = True
+                    # flashes are not allowed inside regions
+                    if current_operation_code == 3:
+                        current_operation_code = 2
                     continue
 
                 # ################################################################
@@ -1068,7 +1071,7 @@ class Gerber(Geometry):
                     if match.group(4) is not None:
                         current_operation_code = int(match.group(4))
 
-                    # Pen down: add segment
+                        # Pen down: add segment
                     if current_operation_code == 1:
                         # if linear_x or linear_y are None, ignore those
                         if current_x is not None and current_y is not None:
