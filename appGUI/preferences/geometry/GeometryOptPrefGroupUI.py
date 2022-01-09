@@ -18,7 +18,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         # OptionsGroupUI.__init__(self, "Geometry Options Preferences", parent=parent)
         super(GeometryOptPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("Geometry Options")))
+        self.setTitle(str(_("Options")))
         self.decimals = decimals
         self.defaults = defaults
 

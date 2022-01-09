@@ -1499,6 +1499,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.pref_tab_area_tabBar.setStyleSheet("QTabBar::tab{min-width:90px;}")
         self.pref_tab_area_tabBar.setExpanding(True)
         self.pref_tab_layout.addWidget(self.pref_tab_area)
+        self.default_pref_tab_area_tab_text_color = self.pref_tab_area.tabBar().tabTextColor(0)
 
         self.general_tab = QtWidgets.QWidget()
         self.general_tab.setObjectName("general_tab")
@@ -2048,6 +2049,8 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.plot_tab_area.tab_detached.connect(self.on_tab_detached)
 
+        self.pref_tab_area.tabBar().tabBarClicked.connect(self.on_pref_tabbar_clicked)
+
         # self.screenChanged.connect(self.on_screen_change)
 
     # def on_screen_change(self, old_screen, new_screen):
@@ -2064,7 +2067,18 @@ class MainGUI(QtWidgets.QMainWindow):
     #     if old_pixel_ratio != 1.0 or new_pixel_ratio != 1.0:
     #         # update canvas dpi
     #         ratio = new_pixel_ratio / old_pixel_ratio
-    #         self.app.plotcanvas.dpi = self.app.plotcanvas.dpi * ratio
+    #         self.app.plotcanvas.dpi = self.app.plotcanvas.Pdpi * ratio
+
+    def on_pref_tabbar_clicked(self, idx, color=None):
+        self.set_pref_tab_area_tab_default_text_color()
+        if color is None:
+            self.pref_tab_area.tabBar().setTabTextColor(idx, QtGui.QColor('green'))
+        else:
+            self.pref_tab_area.tabBar().setTabTextColor(idx, color)
+
+    def set_pref_tab_area_tab_default_text_color(self):
+        for idx in range(self.pref_tab_area.count()):
+            self.pref_tab_area.tabBar().setTabTextColor(idx, self.default_pref_tab_area_tab_text_color)
 
     def update_location_labels(self, dx, dy, x, y):
         """

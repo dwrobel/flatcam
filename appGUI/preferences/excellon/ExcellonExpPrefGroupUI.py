@@ -16,7 +16,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
     def __init__(self, defaults, decimals=4, parent=None):
         super(ExcellonExpPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("Excellon Export")))
+        self.setTitle(str(_("Export")))
         self.decimals = decimals
         self.defaults = defaults
 

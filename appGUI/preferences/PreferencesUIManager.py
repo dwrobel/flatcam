@@ -708,6 +708,9 @@ class PreferencesUIManager:
 
         }
 
+        # set the colors of the tab text's to default and the color of the first tab is 'green'
+        self.ui.on_pref_tabbar_clicked(0)
+
     def defaults_read_form(self):
         """
         Will read all the values in the Preferences GUI and update the defaults dictionary.
@@ -1118,28 +1121,6 @@ class PreferencesUIManager:
         if should_restart is True:
             self.ui.app.on_app_restart()
 
-    def on_pref_close_button(self):
-        # Preferences saved, update flag
-        self.preferences_changed_flag = False
-        self.ignore_tab_close_event = True
-
-        # restore stylesheet to default for the statusBar icon
-        self.ui.pref_status_label.setStyleSheet("")
-
-        self.defaults_write_form(source_dict=self.defaults.current_defaults)
-
-        self.defaults.update(self.defaults.current_defaults)
-
-        # Preferences save, update the color of the Preferences Tab text
-        for idx in range(self.ui.plot_tab_area.count()):
-            if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
-                self.ui.plot_tab_area.tabBar.setTabTextColor(idx, self.old_color)
-                self.ui.plot_tab_area.closeTab(idx)
-                break
-
-        self.inform.emit('%s' % _("Preferences closed without saving."))
-        self.ignore_tab_close_event = False
-
     def on_restore_defaults_preferences(self):
         """
         Loads the application's factory default settings into ``self.defaults``.
@@ -1310,3 +1291,25 @@ class PreferencesUIManager:
                 self.preferences_changed_flag = False
                 self.inform.emit('')
                 return
+
+    def on_pref_close_button(self):
+        # Preferences saved, update flag
+        self.preferences_changed_flag = False
+        self.ignore_tab_close_event = True
+
+        # restore stylesheet to default for the statusBar icon
+        self.ui.pref_status_label.setStyleSheet("")
+
+        self.defaults_write_form(source_dict=self.defaults.current_defaults)
+
+        self.defaults.update(self.defaults.current_defaults)
+
+        # Preferences save, update the color of the Preferences Tab text
+        for idx in range(self.ui.plot_tab_area.count()):
+            if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
+                self.ui.plot_tab_area.tabBar.setTabTextColor(idx, self.old_color)
+                self.ui.plot_tab_area.closeTab(idx)
+                break
+
+        self.inform.emit('%s' % _("Preferences closed without saving."))
+        self.ignore_tab_close_event = False

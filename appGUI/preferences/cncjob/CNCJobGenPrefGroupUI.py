@@ -17,7 +17,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         # OptionsGroupUI.__init__(self, "CNC Job General Preferences", parent=None)
         super(CNCJobGenPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("CNC Job General")))
+        self.setTitle(str(_("General")))
         self.decimals = decimals
         self.defaults = defaults
 

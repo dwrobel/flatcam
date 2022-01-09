@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+9.01.2022
+
+- some UI changes in the Preferences: the clicked tab now have a distinctive color (green) and some strings are optimized
+
 8.01.2021
 
 - in Isolation Plugin fixed the issue with clicking the header not toggling all tools rows

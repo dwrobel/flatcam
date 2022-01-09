@@ -20,7 +20,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         # OptionsGroupUI.__init__(self, "Excellon Options", parent=parent)
         super(ExcellonGenPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("Excellon General")))
+        self.setTitle(str(_("General")))
         self.decimals = decimals
         self.defaults = defaults
 

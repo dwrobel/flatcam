@@ -20,7 +20,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        self.setTitle(str(_("Gerber Options")))
+        self.setTitle(str(_("Options")))
 
         # #############################################################################################################
         # Non-copper Regions Frame

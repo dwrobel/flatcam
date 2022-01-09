@@ -2777,6 +2777,7 @@ class FCMenu(QtWidgets.QMenu):
 class FCTab(QtWidgets.QTabWidget):
     def __init__(self, parent=None):
         super(FCTab, self).__init__(parent)
+
         self.setTabsClosable(True)
         self.tabCloseRequested.connect(self.closeTab)
 

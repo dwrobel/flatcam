@@ -16,7 +16,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
     def __init__(self, defaults, decimals=4, parent=None):
         super(ExcellonEditorPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("Excellon Editor")))
+        self.setTitle(str(_("Editor")))
         self.decimals = decimals
         self.defaults = defaults
 

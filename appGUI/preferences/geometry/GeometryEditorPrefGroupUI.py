@@ -17,7 +17,7 @@ class GeometryEditorPrefGroupUI(OptionsGroupUI):
         # OptionsGroupUI.__init__(self, "Gerber Adv. Options Preferences", parent=parent)
         super(GeometryEditorPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("Geometry Editor")))
+        self.setTitle(str(_("Editor")))
         self.decimals = decimals
         self.defaults = defaults
 

@@ -16,7 +16,7 @@ class GeometryExpPrefGroupUI(OptionsGroupUI):
     def __init__(self, defaults, decimals=4, parent=None):
         super(GeometryExpPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("Geometry Export")))
+        self.setTitle(str(_("Export")))
         self.decimals = decimals
         self.defaults = defaults
 

@@ -17,7 +17,7 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
         # OptionsGroupUI.__init__(self, "Excellon Advanced Options", parent=parent)
         super(ExcellonAdvOptPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("Excellon Adv. Options")))
+        self.setTitle(str(_("Adv. Options")))
         self.decimals = decimals
         self.defaults = defaults
 

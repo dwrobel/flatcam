@@ -18,7 +18,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        self.setTitle(str(_("CNC Job Adv. Options")))
+        self.setTitle(str(_("Adv. Options")))
 
         # #############################################################################################################
         # PARAMETERS Frame

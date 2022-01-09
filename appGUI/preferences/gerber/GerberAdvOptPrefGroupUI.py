@@ -18,7 +18,7 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         # OptionsGroupUI.__init__(self, "Gerber Adv. Options Preferences", parent=parent)
         super(GerberAdvOptPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("Gerber Adv. Options")))
+        self.setTitle(str(_("Adv. Options")))
         self.decimals = decimals
         self.defaults = defaults
 
