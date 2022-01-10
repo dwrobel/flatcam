@@ -8894,8 +8894,6 @@ class App(QtCore.QObject):
         :return:
         """
 
-        self.log.debug("App.on_set_color_triggered() launched...")
-
         new_color = self.defaults['gerber_plot_fill']
         new_line_color = self.defaults['gerber_plot_line']
 
@@ -9009,13 +9007,16 @@ class App(QtCore.QObject):
                         update_colors=(sel_obj.fill_color, sel_obj.outline_color)
                     )
 
-                    new_c = (new_line_color, new_color)
                     if sel_obj.kind == 'gerber':
                         item = sel_obj.item
                         item_index = self.collection.index(item.row(), 0, group_index)
                         idx = item_index.row()
-                        self.defaults["gerber_color_list"][idx] = new_c
-
+                        new_c = (new_line_color, new_color, '%s_%d' % (_("Layer"), int(idx+1)))
+                        try:
+                            self.defaults["gerber_color_list"][idx] = new_c
+                        except Exception as err:
+                            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                            self.log.error(str(err))
             return
 
         new_line_color = color_variant(new_color[:7], 0.7)
@@ -9035,7 +9036,7 @@ class App(QtCore.QObject):
 
     def set_obj_color_in_preferences_dict(self, list_of_obj, fill_color, outline_color):
         """
-        This method will save the set colors into a list that will be used next time when Gerber objects are loaded.
+        Will save the set colors into a list that will be used next time when Gerber objects are loaded.
         First loaded Gerber will have the first color in the list, second loaded Gerber object will have set the second
         color in the list and so on.
 
@@ -9054,21 +9055,25 @@ class App(QtCore.QObject):
         group_gerber_index = self.collection.index(group_gerber.row(), 0, QtCore.QModelIndex())
         all_gerber_list = [x for x in self.collection.get_list() if x.kind == 'gerber']
 
-        new_c = (outline_color, fill_color)
         for sel_obj in list_of_obj:
             if sel_obj.kind == 'gerber':
                 item = sel_obj.item
                 item_index = self.collection.index(item.row(), 0, group_gerber_index)
                 idx = item_index.row()
+                new_c = (outline_color, fill_color, '%s_%d' % (_("Layer"), int(idx+1)))
                 try:
                     self.defaults["gerber_color_list"][idx] = new_c
                 except IndexError:
                     for x in range(len(self.defaults["gerber_color_list"]), len(all_gerber_list)):
                         self.defaults["gerber_color_list"].append(
-                            (self.defaults["gerber_plot_fill"], self.defaults["gerber_plot_line"])
+                            (
+                                self.defaults["gerber_plot_fill"],      # content color
+                                self.defaults["gerber_plot_line"],      # outline color
+                                '%s_%d' % (_("Layer"), int(idx+1)))     # layer name
                         )
                     self.defaults["gerber_color_list"][idx] = new_c
             elif sel_obj.kind == 'excellon':
+                new_c = (outline_color, fill_color)
                 self.defaults["excellon_color"] = new_c
 
     def start_delayed_quit(self, delay, filename, should_quit=None):

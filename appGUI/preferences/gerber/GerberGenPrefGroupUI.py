@@ -1,8 +1,10 @@
-from PyQt6 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from appGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCButton, FCSliderWithSpinner, FCColorEntry, FCLabel, \
-    FCGridLayout, FCFrame
+    FCGridLayout, FCFrame, FCTable, FCColorEntry
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
+
+from copy import deepcopy
 
 import gettext
 import appTranslation as fcTranslate
@@ -160,24 +162,47 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         )
         param_grid.addWidget(self.gerber_extra_buffering, 2, 0, 1, 3)
 
+        # #############################################################################################################
+        # Layers Frame
+        # #############################################################################################################
+        # Layers label
+        self.layers_label = FCLabel('<span style="color:magenta;"><b>%s</b></span>' % _('Layers'))
+        self.layout.addWidget(self.layers_label)
+
+        layers_frame = FCFrame()
+        self.layout.addWidget(layers_frame)
+
+        # ## Grid Layout
+        layers_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        layers_frame.setLayout(layers_grid)
+
         # Store colors
         self.store_colors_cb = FCCheckBox(label='%s' % _('Store colors'))
         self.store_colors_cb.setToolTip(
             _("It will store the set colors for Gerber objects.\n"
               "Those will be used each time the application is started.")
         )
+        layers_grid.addWidget(self.store_colors_cb, 0, 0, 1, 3)
+
+        # Layers color manager
+        self.layers_button = FCButton()
+        self.layers_button.setText('%s' % _('Color manager'))
+        self.layers_button.setIcon(QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
+        self.layers_button.setToolTip(
+            _("Manage colors associated with Gerber objects.")
+        )
 
         # Clear stored colors
-        self.clear_colors_button = FCButton()
+        self.clear_colors_button = QtWidgets.QToolButton()
         # self.clear_colors_button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
-        self.clear_colors_button.setText('%s' % _('Clear Colors'))
+        # self.clear_colors_button.setText('%s' % _('Clear Colors'))
         self.clear_colors_button.setIcon(QtGui.QIcon(self.app.resource_location + '/trash32.png'))
         self.clear_colors_button.setToolTip(
             _("Reset the colors associated with Gerber objects.")
         )
 
-        param_grid.addWidget(self.store_colors_cb, 4, 0, 1, 3)
-        param_grid.addWidget(self.clear_colors_button, 6, 0, 1, 3)
+        layers_grid.addWidget(self.layers_button, 2, 0, 1, 2)
+        layers_grid.addWidget(self.clear_colors_button, 2, 3)
 
         # separator_line = QtWidgets.QFrame()
         # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
@@ -238,16 +263,29 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         self.line_color_entry.editingFinished.connect(self.on_line_color_changed)
         self.fill_color_entry.editingFinished.connect(self.on_fill_color_changed)
 
-        self.gerber_alpha_entry.valueChanged.connect(self.on_gerber_alpha_changed)     # alpha
+        self.gerber_alpha_entry.valueChanged.connect(self.on_gerber_alpha_changed)  # alpha
 
+        self.layers_button.clicked.connect(self.on_layers_manager)
         self.clear_colors_button.clicked.connect(self.on_colors_clear_clicked)
 
     # Setting plot colors handlers
     def on_fill_color_changed(self):
+        """
+        Will set the default fill color for the Gerber Object
+        :return:
+        :rtype:
+        """
         self.app.defaults['gerber_plot_fill'] = self.fill_color_entry.get_value()[:7] + \
                                                 self.app.defaults['gerber_plot_fill'][7:9]
 
     def on_gerber_alpha_changed(self, spinner_value):
+        """
+        Will set the default alpha (transparency) for the Gerber Object
+        :param spinner_value:   alpha level
+        :type spinner_value:    int
+        :return:
+        :rtype:
+        """
         self.app.defaults['gerber_plot_fill'] = \
             self.app.defaults['gerber_plot_fill'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
@@ -256,9 +294,213 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
 
     def on_line_color_changed(self):
-        self.app.defaults['gerber_plot_line'] = self.line_color_entry.get_value()[:7] + \
-                                                self.app.defaults['gerber_plot_line'][7:9]
+        """
+        Will set the default outline color for the Gerber Object
+        :return:
+        :rtype:
+        """
+        self.app.defaults['gerber_plot_line'] = (self.line_color_entry.get_value()[:7] +
+                                                 self.app.defaults['gerber_plot_line'][7:9])
 
     def on_colors_clear_clicked(self):
-        self.app.defaults['gerber_color_list'].clear()
+        """
+        Clear the list that stores the colors for the Gerber Objects
+        :return:
+        :rtype:
+        """
+        self.app.defaults["gerber_color_list"].clear()
         self.app.inform.emit('[WARNING_NOTCL] %s' % _("Stored colors for Gerber objects are deleted."))
+
+    def on_layers_manager(self):
+        color_box = ColorsManager(app=self.app, parent=self)
+
+        if color_box.ok is True:
+            color_box.update_color_list()
+            self.defaults["gerber_color_list"] = color_box.color_list
+
+
+class ColorsManager(QtWidgets.QDialog):
+    def __init__(self, app, parent):
+        """
+        A Dialog to show the color's manager
+        :param parent:
+        :type parent:
+        """
+        super(ColorsManager, self).__init__(parent=parent)
+        self.app = app
+
+        self.ok = False
+        self.color_list = []
+        self.original_color_list = deepcopy(self.app.defaults["gerber_color_list"])
+
+        self.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
+        self.setWindowTitle('%s' % _('Color manager'))
+
+        self.layout = QtWidgets.QVBoxLayout(self)
+
+        # #############################################################################################################
+        # ################################ Layers Frame ###############################################################
+        # #############################################################################################################
+        layers_frame = FCFrame()
+        layers_frame.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.layout.addWidget(layers_frame)
+
+        layers_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        layers_frame.setLayout(layers_grid)
+
+        # Layers Colors Table
+        self.colors_table = FCTable()
+        layers_grid.addWidget(self.colors_table, 0, 0, 1, 2)
+        # self.colors_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
+        self.colors_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+
+        self.colors_table.setColumnCount(3)
+        self.colors_table.setColumnWidth(0, 20)
+        self.colors_table.setHorizontalHeaderLabels(['#', _('Name'), _("Color")])
+
+        self.colors_table.horizontalHeaderItem(0).setToolTip(_("ID"))
+        self.colors_table.horizontalHeaderItem(1).setToolTip(_("Name"))
+        self.colors_table.horizontalHeaderItem(2).setToolTip('%s.' % _("Color"))
+
+        self.layout.addStretch(1)
+
+        lay_hlay = QtWidgets.QHBoxLayout()
+
+        # Add layer
+        self.add_button = FCButton()
+        self.add_button.setText('%s' % _("Add"))
+        self.add_button.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
+        self.add_button.setToolTip(
+            _("Add a new layer.")
+        )
+
+        # Delete layer
+        self.delete_button = FCButton()
+        self.delete_button.setText('%s' % _("Delete"))
+        self.delete_button.setIcon(QtGui.QIcon(self.app.resource_location + '/trash32.png'))
+        self.delete_button.setToolTip(
+            _("Delete the last layers.")
+        )
+        lay_hlay.addWidget(self.add_button)
+        lay_hlay.addWidget(self.delete_button)
+
+        layers_grid.addLayout(lay_hlay, 2, 0, 1, 2)
+
+        # #############################################################################################################
+        # ######################################## Button Grid ########################################################
+        # #############################################################################################################
+        button_grid = FCGridLayout(h_spacing=5, v_spacing=5)
+        self.layout.addLayout(button_grid)
+
+        self.button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Ok |
+                                                     QtWidgets.QDialogButtonBox.StandardButton.Cancel,
+                                                     orientation=QtCore.Qt.Orientation.Horizontal, parent=self)
+        button_grid.addWidget(self.button_box, 8, 0, 1, 2)
+
+        self.button_box.button(QtWidgets.QDialogButtonBox.StandardButton.Ok).setText(_("Ok"))
+        self.button_box.button(QtWidgets.QDialogButtonBox.StandardButton.Cancel).setText(_("Cancel"))
+
+        self.button_box.accepted.connect(self.accept)
+        self.button_box.rejected.connect(self.reject)
+        self.add_button.clicked.connect(self.on_layer_add)
+        self.delete_button.clicked.connect(self.on_layer_delete)
+
+        self.build_ui()
+
+        self.ok = True if self.exec() == QtWidgets.QDialog.DialogCode.Accepted else False
+
+    def build_ui(self):
+        n = len(self.original_color_list)
+        self.colors_table.setRowCount(n)
+
+        color_id = 0
+        for color in range(n):
+            color_id += 1
+
+            # ------------------------  ID ----------------------------------------------------------------------------
+            id_ = QtWidgets.QTableWidgetItem('%d' % int(color_id))
+            flags = QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled
+            id_.setFlags(flags)
+            row_no = color_id - 1
+            self.colors_table.setItem(row_no, 0, id_)  # Tool name/id
+
+            # ------------------------ Name ----------------------------------------------------------------------------
+            if self.original_color_list[color][2] == '':
+                name = '%s_%d' % (_("Layer"), int(color_id))
+            else:
+                name = self.original_color_list[color][2]
+
+            name_item = QtWidgets.QTableWidgetItem(name)
+            name_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            self.colors_table.setItem(row_no, 1, name_item)  # Name
+
+            # ------------------------ Color Widget --------------------------------------------------------------------
+            color_item = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
+            color_item.set_value(self.original_color_list[color][1])
+            self.colors_table.setCellWidget(row_no, 2, color_item)
+
+        # make the name column editable
+        for row in range(color_id):
+            flags = QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsSelectable | \
+                    QtCore.Qt.ItemFlag.ItemIsEnabled
+            self.colors_table.item(row, 1).setFlags(flags)
+
+        self.colors_table.resizeColumnsToContents()
+        self.colors_table.resizeRowsToContents()
+
+        vertical_header = self.colors_table.verticalHeader()
+        vertical_header.hide()
+        self.colors_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+
+        horizontal_header = self.colors_table.horizontalHeader()
+        horizontal_header.setMinimumSectionSize(10)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
+        horizontal_header.resizeSection(0, 20)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
+
+        self.colors_table.setMinimumHeight(self.colors_table.getHeight())
+        self.colors_table.setMaximumHeight(self.colors_table.getHeight())
+
+        self.colors_table.setMinimumWidth(self.colors_table.getWidth())
+
+    def update_color_list(self):
+        n = len(self.original_color_list)
+        for row in range(n):
+            fill_color = self.colors_table.cellWidget(row, 2).get_value()
+            line_color = fill_color[:-2]
+            layer_name = self.colors_table.item(row, 1).text()
+            self.color_list.append(
+                (
+                    line_color,
+                    fill_color,
+                    layer_name
+                )
+            )
+
+    def on_layer_add(self):
+        list_len = len(self.original_color_list)
+        if list_len is None:
+            layer_nr = 0
+        else:
+            layer_nr = list_len
+        self.original_color_list.append(
+            (
+                self.app.defaults['gerber_plot_line'],
+                self.app.defaults['gerber_plot_fill'],
+                '%s_%d' % (_("Layer"), layer_nr)
+            )
+        )
+        self.build_ui()
+
+    def on_layer_delete(self):
+        sel_rows = set()
+        for it in self.colors_table.selectedItems():
+            sel_rows.add(it.row())
+
+        table_len = self.colors_table.rowCount()
+
+        if (table_len - 1) in sel_rows:
+            self.colors_table.removeRow(table_len - 1)
+            self.original_color_list.pop()
+            self.build_ui()
+            self.on_layer_delete()

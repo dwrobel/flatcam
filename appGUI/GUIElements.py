@@ -870,6 +870,13 @@ class NumericalEvalTupleEntry(EvalEntry):
 class FCColorEntry(QtWidgets.QFrame):
 
     def __init__(self, **kwargs):
+        """
+
+        :param kwargs:
+        :type kwargs:
+        """
+
+        self.icon = kwargs.pop('icon', None)
         super().__init__(**kwargs)
 
         self.entry = FCEntry()
@@ -909,15 +916,27 @@ class FCColorEntry(QtWidgets.QFrame):
         current_color = QtGui.QColor(self._extract_color(value))
 
         color_dialog = QtWidgets.QColorDialog()
-        selected_color = color_dialog.getColor(initial=current_color,
-                                               options=QtWidgets.QColorDialog.ColorDialogOption.ShowAlphaChannel)
+        color_dialog.setOption(QtWidgets.QColorDialog.ColorDialogOption.ShowAlphaChannel, True)
+        if self.icon:
+            color_dialog.setWindowIcon(self.icon)
+        # selected_color = color_dialog.getColor(initial=current_color,
+        #                                        options=QtWidgets.QColorDialog.ColorDialogOption.ShowAlphaChannel)
 
-        if selected_color.isValid() is False:
-            return
+        current_color.setAlpha(int(self._extract_alpha(value), 16))
+        color_dialog.setCurrentColor(current_color)
 
-        new_value = str(selected_color.name()) + self._extract_alpha(value)
-        self.set_value(new_value)
+        if color_dialog.exec() == QtWidgets.QDialog.DialogCode.Accepted:
+            selected_color = color_dialog.selectedColor()
+            if selected_color.isValid() is False:
+                return
+
+            new_value = self.argb2rgba(selected_color.name(QtGui.QColor.NameFormat.HexArgb)).upper()
+            self.set_value(new_value)
         self.editingFinished.emit()
+
+    @staticmethod
+    def argb2rgba(argb_color):
+        return '#%s%s' % (argb_color[3:], argb_color[1:3])
 
     @staticmethod
     def _extract_color(value: str) -> str:

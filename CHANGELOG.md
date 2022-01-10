@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+10.01.2022
+
+- added a new feature in Preferences -> Gerber: a Layer Color Manager where the user can set and edit predefined colors for the Gerber objects: loading order matter
+
 9.01.2022
 
 - some UI changes in the Preferences: the clicked tab now have a distinctive color (green) and some strings are optimized
