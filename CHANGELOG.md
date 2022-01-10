@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 10.01.2022
 
 - added a new feature in Preferences -> Gerber: a Layer Color Manager where the user can set and edit predefined colors for the Gerber objects: loading order matter
+- fixed and error in the Isolation Plugin when using the pad multi-isolations and area isolation simultaneously
 
 9.01.2022
 
