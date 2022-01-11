@@ -14,7 +14,7 @@ ASSEST_PATH = assets/linux
 INSTALL_PATH = /usr/share/flatcam-beta
 APPS_PATH = /usr/share/applications
 
-MIN_PY3_MINOR_VERSION := 5
+MIN_PY3_MINOR_VERSION := 6
 PY3_MINOR_VERSION := $(shell python3 --version | cut -d'.' -f2)
 
 ifneq ($(MIN_PY3_MINOR_VERSION), $(firstword $(sort $(PY3_MINOR_VERSION) $(MIN_PY3_MINOR_VERSION))))

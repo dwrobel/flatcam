@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+11.01.2022
+
+- added an initial implementation of a dark theme using the qdarktheme (performance is not great and there are some artifacts); the theme is activated once the gray icons are checked in the Preferences
+
 10.01.2022
 
 - added a new feature in Preferences -> Gerber: a Layer Color Manager where the user can set and edit predefined colors for the Gerber objects: loading order matter

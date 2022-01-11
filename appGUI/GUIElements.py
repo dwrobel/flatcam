@@ -922,7 +922,11 @@ class FCColorEntry(QtWidgets.QFrame):
         # selected_color = color_dialog.getColor(initial=current_color,
         #                                        options=QtWidgets.QColorDialog.ColorDialogOption.ShowAlphaChannel)
 
-        current_color.setAlpha(int(self._extract_alpha(value), 16))
+        try:
+            current_color.setAlpha(int(self._extract_alpha(value), 16))
+        except Exception:
+            current_color.setAlpha(255)
+
         color_dialog.setCurrentColor(current_color)
 
         if color_dialog.exec() == QtWidgets.QDialog.DialogCode.Accepted:
