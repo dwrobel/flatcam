@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 11.01.2022
 
 - added an initial implementation of a dark theme using the qdarktheme (performance is not great and there are some artifacts); the theme is activated once the gray icons are checked in the Preferences
+- started to mod the qdarktheme to fit the application
 
 10.01.2022
 
