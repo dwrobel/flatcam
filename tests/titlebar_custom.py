@@ -88,7 +88,7 @@ class TitleBar(QtWidgets.QDialog):
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
             box.moving = True
-            box.offset = event.pos()
+            box.offset = event.position()
             if event.type() == QtCore.QEvent.Type.MouseButtonDblClick:
                 self.showMaxRestore()
 

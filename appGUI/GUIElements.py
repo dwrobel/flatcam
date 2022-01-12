@@ -5420,6 +5420,26 @@ class FCGridLayout(QtWidgets.QGridLayout):
                 grid_lay.setColumnMinimumWidth(column, max_size)
 
 
+class FCMessageBox(QtWidgets.QMessageBox):
+    """
+    Frameless QMessageBox
+    """
+    def __init__(self, *args, **kwargs):
+        super(FCMessageBox, self).__init__(*args, **kwargs)
+        self.offset = None
+        self.moving = None
+        self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
+    
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.moving = True
+            self.offset = event.position()
+
+    def mouseMoveEvent(self, event):
+        if self.moving:
+            self.move(event.globalPosition().toPoint() - self.offset.toPoint())
+            
+
 def message_dialog(title, message, kind="info", parent=None):
     """
     Builds and show a custom QMessageBox to be used in FlatCAM.

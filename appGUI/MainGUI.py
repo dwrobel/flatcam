@@ -55,6 +55,7 @@ class MainGUI(QtWidgets.QMainWindow):
     # https://www.w3.org/TR/SVG11/types.html#ColorKeywords
     def __init__(self, app):
         super(MainGUI, self).__init__()
+        # self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
 
         self.app = app
         self.decimals = self.app.decimals

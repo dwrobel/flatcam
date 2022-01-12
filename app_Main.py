@@ -2717,11 +2717,12 @@ class App(QtCore.QObject):
         edited_obj = self.collection.get_active()
 
         if cleanup is None:
-            msgbox = QtWidgets.QMessageBox()
-            msgbox.setText(_("Do you want to save the edited object?"))
-            msgbox.setWindowTitle(_("Exit Editor"))
-            msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
-            msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
+            msgbox = FCMessageBox()
+            title = _("Exit Editor")
+            txt = _("Do you want to save the edited object?")
+            msgbox.setText('<b>%s</b>' % title)
+            msgbox.setInformativeText(txt)
+            msgbox.setIconPixmap(QtGui.QPixmap(self.resource_location + '/save_as.png'))
 
             bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
             bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
@@ -3946,17 +3947,18 @@ class App(QtCore.QObject):
         :return:    None
         :rtype:     None
         """
-        msgbox = QtWidgets.QMessageBox()
-        msgbox.setText(_("This entry will resolve to another website if:\n\n"
-                         "1. FlatCAM.org website is down\n"
-                         "2. Someone forked FlatCAM project and wants to point\n"
-                         "to his own website\n\n"
-                         "If you can't get any informations about the application\n"
-                         "use the YouTube channel link from the Help menu."))
+        msgbox = FCMessageBox()
+        title = _("Alternative website")
+        txt = _("This entry will resolve to another website if:\n\n"
+                "1. FlatCAM.org website is down\n"
+                "2. Someone forked FlatCAM project and wants to point\n"
+                "to his own website\n\n"
+                "If you can't get any informations about the application\n"
+                "use the YouTube channel link from the Help menu.")
+        msgbox.setText('<b>%s</b>\n\n' % title)
+        msgbox.setInformativeText(txt)
 
-        msgbox.setWindowTitle(_("Alternative website"))
-        msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/globe16.png'))
-        msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
+        msgbox.setIconPixmap(QtGui.QPixmap(self.resource_location + '/globe16.png'))
 
         bt_yes = msgbox.addButton(_('Close'), QtWidgets.QMessageBox.ButtonRole.YesRole)
 
@@ -3977,13 +3979,14 @@ class App(QtCore.QObject):
             return
 
         if self.should_we_save and self.collection.get_list():
-            msgbox = QtWidgets.QMessageBox()
-            msgbox.setText(_("There are files/objects modified in FlatCAM. "
-                             "\n"
-                             "Do you want to Save the project?"))
-            msgbox.setWindowTitle(_("Save changes"))
-            msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
-            msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
+            msgbox = FCMessageBox()
+            title = _("Save changes")
+            txt = _("There are files/objects modified in FlatCAM. "
+                    "\n"
+                    "Do you want to Save the project?")
+            msgbox.setText('<b>%s</b>' % title)
+            msgbox.setInformativeText(txt)
+            msgbox.setIconPixmap(QtGui.QPixmap(self.resource_location + '/save_as.png'))
 
             bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
             bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
@@ -4922,14 +4925,15 @@ class App(QtCore.QObject):
         # ##############################################################################################################
         # Changing project units. Ask the user.
         # ##############################################################################################################
-        msgbox = QtWidgets.QMessageBox()
-        msgbox.setWindowTitle(_("Toggle Units"))
-        msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/toggle_units32.png'))
-        msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
+        msgbox = FCMessageBox()
+        title = _("Toggle Units")
+        txt = _("Changing the units of the project\n"
+                "will scale all objects.\n\n"
+                "Do you want to continue?")
+        msgbox.setText('<b>%s</b>' % title)
+        msgbox.setInformativeText(txt)
+        msgbox.setIconPixmap(QtGui.QPixmap(self.resource_location + '/toggle_units32.png'))
 
-        msgbox.setText(_("Changing the units of the project\n"
-                         "will scale all objects.\n\n"
-                         "Do you want to continue?"))
         bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.ButtonRole.AcceptRole)
         msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
 
@@ -5088,12 +5092,13 @@ class App(QtCore.QObject):
                     else:
                         self.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
                 else:
-                    msgbox = QtWidgets.QMessageBox()
-                    msgbox.setText(_("Adding Tool works only when Advanced is checked.\n"
-                                     "Go to Preferences -> General - Show Advanced Options."))
-                    msgbox.setWindowTitle("Tool adding ...")
-                    msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/warning.png'))
-                    msgbox.setIcon(QtWidgets.QMessageBox.Icon.Warning)
+                    msgbox = FCMessageBox()
+                    title = _("Tool adding ...")
+                    txt = _("Adding Tool works only when Advanced is checked.\n"
+                            "Go to Preferences -> General - Show Advanced Options.")
+                    msgbox.setText('<b>%s</b>' % title)
+                    msgbox.setInformativeText(txt)
+                    msgbox.setIconPixmap(QtGui.QPixmap(self.resource_location + '/warning.png'))
 
                     bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.ButtonRole.AcceptRole)
 
@@ -5176,14 +5181,14 @@ class App(QtCore.QObject):
         # a geometry object before we update it.
         if self.call_source == 'app':
             if self.defaults["global_delete_confirmation"] is True and force_deletion is False:
-                msgbox = QtWidgets.QMessageBox()
-                msgbox.setWindowTitle(_("Delete objects"))
-                msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/deleteshape32.png'))
-                msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
+                msgbox = FCMessageBox()
+                title = _("Delete objects")
+                txt = _("Are you sure you want to permanently delete\n"
+                        "the selected objects?")
+                msgbox.setText('<b>%s</b>' % title)
+                msgbox.setInformativeText(txt)
+                msgbox.setIconPixmap(QtGui.QPixmap(self.resource_location + '/deleteshape32.png'))
 
-                # msgbox.setText("<B>%s</B>" % _("Change project units ..."))
-                msgbox.setText(_("Are you sure you want to permanently delete\n"
-                                 "the selected objects?"))
                 bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.ButtonRole.AcceptRole)
                 msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
 
@@ -6733,12 +6738,13 @@ class App(QtCore.QObject):
             self.tools_db_tab.ui_disconnect()
 
             if self.tools_db_changed_flag is True:
-                msgbox = QtWidgets.QMessageBox(parent=self.ui)
-                msgbox.setText(_("One or more Tools are edited.\n"
-                                 "Do you want to save?"))
-                msgbox.setWindowTitle(_("Save Tools Database"))
-                msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
-                msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
+                msgbox = FCMessageBox(parent=self.ui)
+                title = _("Save Tools Database")
+                txt = _("One or more Tools are edited.\n"
+                        "Do you want to save?")
+                msgbox.setText('<b>%s</b>' % title)
+                msgbox.setInformativeText(txt)
+                msgbox.setIconPixmap(QtGui.QPixmap(self.resource_location + '/save_as.png'))
 
                 bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
                 msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
@@ -9524,10 +9530,11 @@ class MenuFileHandlers(QtCore.QObject):
                 and not isinstance(obj, CNCJobObject)
                 and not isinstance(obj, ExcellonObject)):
             msg = '[ERROR_NOTCL] %s' % _("Only Geometry, Gerber and CNCJob objects can be used.")
-            msgbox = QtWidgets.QMessageBox()
-            msgbox.setIcon(QtWidgets.QMessageBox.Icon.Warning)
+            msgbox = FCMessageBox()
 
             msgbox.setInformativeText(msg)
+            msgbox.setIconPixmap(QtGui.QPixmap(self.app.resource_location + '/waning.png'))
+
             bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.ButtonRole.AcceptRole)
             msgbox.setDefaultButton(bt_ok)
             msgbox.exec()
@@ -9871,8 +9878,12 @@ class MenuFileHandlers(QtCore.QObject):
 
         # Check for more compatible types and add as required
         if obj.kind != 'geometry':
-            msg = '[ERROR_NOTCL] %s' % _("Only Geometry objects can be used.")
-            msgbox = QtWidgets.QMessageBox()
+            msg = _("Only Geometry objects can be used.")
+            msgbox = FCMessageBox()
+
+            msgbox.setInformativeText(msg)
+            msgbox.setIconPixmap(QtGui.QPixmap(self.app.resource_location + '/waning.png'))
+
             msgbox.setIcon(QtWidgets.QMessageBox.Icon.Warning)
 
             msgbox.setInformativeText(msg)
@@ -9974,14 +9985,14 @@ class MenuFileHandlers(QtCore.QObject):
         """
 
         if self.app.collection.get_list() and self.app.should_we_save:
-            msgbox = QtWidgets.QMessageBox()
-            # msgbox.setText("<B>Save changes ...</B>")
-            msgbox.setText(_("There are files/objects opened in FlatCAM.\n"
-                             "Creating a New project will delete them.\n"
-                             "Do you want to Save the project?"))
-            msgbox.setWindowTitle(_("Save changes"))
-            msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
-            msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
+            msgbox = FCMessageBox()
+            title = _("Save changes")
+            txt = _("There are files/objects opened in FlatCAM.\n"
+                    "Creating a New project will delete them.\n"
+                    "Do you want to Save the project?")
+            msgbox.setText('<b>%s</b>' % title)
+            msgbox.setInformativeText(txt)
+            msgbox.setIconPixmap(QtGui.QPixmap(self.app.resource_location + '/save_as.png'))
 
             bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
             bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
@@ -10099,11 +10110,12 @@ class MenuFileHandlers(QtCore.QObject):
             self.app.ui.plot_tab_area.insertTab(0, self.app.ui.plot_tab, _("Plot Area"))
             self.app.ui.plot_tab_area.protectTab(0)
 
-        msgbox = QtWidgets.QMessageBox()
-        msgbox.setText(_("Do you want to save the current settings/preferences?"))
-        msgbox.setWindowTitle(_("Save preferences"))
-        msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
-        msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
+        msgbox = FCMessageBox()
+        title = _("Save preferences")
+        txt = _("Do you want to save the current settings/preferences?")
+        msgbox.setText('<b>%s</b>' % title)
+        msgbox.setInformativeText(txt)
+        msgbox.setIconPixmap(QtGui.QPixmap(self.app.resource_location + '/save_as.png'))
 
         bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
         bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
