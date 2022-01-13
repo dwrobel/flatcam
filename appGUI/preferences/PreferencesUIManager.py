@@ -4,6 +4,8 @@ from PyQt6.QtCore import QSettings
 from defaults import FlatCAMDefaults
 import logging
 
+from appGUI.GUIElements import FCMessageBox
+
 import gettext
 import appTranslation as fcTranslate
 import builtins
@@ -1057,10 +1059,13 @@ class PreferencesUIManager:
         ge_val = self.ui.general_pref_form.general_app_group.ge_radio.get_value()
 
         if theme_new_val != theme or ge != ge_val:
-            msgbox = QtWidgets.QMessageBox()
-            msgbox.setText(_("Are you sure you want to continue?"))
-            msgbox.setWindowTitle(_("Application will restart"))
-            msgbox.setWindowIcon(QtGui.QIcon(self.ui.app.resource_location + '/warning.png'))
+            msgbox = FCMessageBox()
+            title = _("Application will restart")
+            txt = _("Are you sure you want to continue?")
+            msgbox.setWindowTitle(title)  # taskbar still shows it
+            msgbox.setWindowIcon(QtGui.QIcon(self.ui.app.resource_location + '/flatcam_icon128.png'))
+            msgbox.setText('<b>%s</b>' % title)
+            msgbox.setInformativeText(txt)
             msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
 
             bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
@@ -1278,12 +1283,15 @@ class PreferencesUIManager:
 
         # Prompt user to save
         if self.preferences_changed_flag is True:
-            msgbox = QtWidgets.QMessageBox(parent=parent)
-            msgbox.setText(_("One or more values are changed.\n"
-                             "Do you want to save?"))
-            msgbox.setWindowTitle(_("Save Preferences"))
-            msgbox.setWindowIcon(QtGui.QIcon(self.ui.app.resource_location + '/save_as.png'))
-            msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
+            msgbox = FCMessageBox(parent=parent)
+            title = _("Save Preferences")
+            txt = _("One or more values are changed.\n"
+                    "Do you want to save?")
+            msgbox.setWindowTitle(title)  # taskbar still shows it
+            msgbox.setWindowIcon(QtGui.QIcon(self.ui.app.resource_location + '/flatcam_icon128.png'))
+            msgbox.setText('<b>%s</b>' % title)
+            msgbox.setInformativeText(txt)
+            msgbox.setIconPixmap(QtGui.QPixmap(self.ui.app.resource_location + '/save_as.png'))
 
             bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
             msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)

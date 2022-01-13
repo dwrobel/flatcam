@@ -2339,11 +2339,14 @@ class MainGUI(QtWidgets.QMainWindow):
         response = None
         bt_yes = None
         if forced_clear is False:
-            msgbox = QtWidgets.QMessageBox()
-            msgbox.setText(_("Are you sure you want to delete the GUI Settings? \n"))
-            msgbox.setWindowTitle(_("Clear GUI Settings"))
-            msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/trash32.png'))
-            msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
+            msgbox = FCMessageBox()
+            title = _("Clear GUI Settings")
+            txt = _("Are you sure you want to delete the GUI Settings? \n")
+            msgbox.setWindowTitle(title)  # taskbar still shows it
+            msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
+            msgbox.setText('<b>%s</b>' % title)
+            msgbox.setInformativeText(txt)
+            msgbox.setIconPixmap(QtGui.QPixmap(self.app.resource_location + '/trash32.png'))
 
             bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
             bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
@@ -3410,11 +3413,13 @@ class MainGUI(QtWidgets.QMainWindow):
                                 'out of the first item. In the end press ~X~ key or\n'
                                 'the toolbar button.')
 
-                        messagebox = QtWidgets.QMessageBox()
-                        messagebox.setText(msg)
-                        messagebox.setWindowTitle(_("Warning"))
-                        messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/warning.png'))
-                        messagebox.setIcon(QtWidgets.QMessageBox.Icon.Question)
+                        messagebox = FCMessageBox()
+                        title = _("Warning")
+                        messagebox.setWindowTitle(title)  # taskbar still shows it
+                        messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
+                        messagebox.setText('<b>%s</b>' % title)
+                        messagebox.setInformativeText(msg)
+                        messagebox.setIcon(QtWidgets.QMessageBox.Icon.Warning)
 
                         messagebox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
                         messagebox.setDefaultButton(QtWidgets.QMessageBox.StandardButton.Ok)
@@ -3570,10 +3575,12 @@ class MainGUI(QtWidgets.QMainWindow):
                             msg = _("Please select geometry items \n"
                                     "on which to perform Intersection Tool.")
 
-                            messagebox = QtWidgets.QMessageBox()
-                            messagebox.setText(msg)
-                            messagebox.setWindowTitle(_("Warning"))
-                            messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/warning.png'))
+                            messagebox = FCMessageBox()
+                            title = _("Warning")
+                            messagebox.setWindowTitle(title)  # taskbar still shows it
+                            messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
+                            messagebox.setText('<b>%s</b>' % title)
+                            messagebox.setInformativeText(msg)
                             messagebox.setIcon(QtWidgets.QMessageBox.Icon.Warning)
 
                             messagebox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
@@ -3617,10 +3624,12 @@ class MainGUI(QtWidgets.QMainWindow):
                                 "Please select geometry items \n"
                                 "on which to perform Substraction Tool.")
 
-                            messagebox = QtWidgets.QMessageBox()
-                            messagebox.setText(msg)
-                            messagebox.setWindowTitle(_("Warning"))
-                            messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/warning.png'))
+                            messagebox = FCMessageBox()
+                            title = _("Warning")
+                            messagebox.setWindowTitle(title)  # taskbar still shows it
+                            messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
+                            messagebox.setText('<b>%s</b>' % title)
+                            messagebox.setInformativeText(msg)
                             messagebox.setIcon(QtWidgets.QMessageBox.Icon.Warning)
 
                             messagebox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
@@ -3639,10 +3648,12 @@ class MainGUI(QtWidgets.QMainWindow):
                             msg = _("Please select geometry items \n"
                                     "on which to perform union.")
 
-                            messagebox = QtWidgets.QMessageBox()
-                            messagebox.setText(msg)
-                            messagebox.setWindowTitle(_("Warning"))
-                            messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/warning.png'))
+                            messagebox = FCMessageBox()
+                            title = _("Warning")
+                            messagebox.setWindowTitle(title)  # taskbar still shows it
+                            messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
+                            messagebox.setText('<b>%s</b>' % title)
+                            messagebox.setInformativeText(msg)
                             messagebox.setIcon(QtWidgets.QMessageBox.Icon.Warning)
 
                             messagebox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)

@@ -3,10 +3,12 @@ import os
 import traceback
 from datetime import datetime
 
-from PyQt6 import QtWidgets
+from PyQt6 import QtWidgets, QtGui
 from PyQt6.QtCore import QSettings, QTimer
 from app_Main import App
 from appGUI import VisPyPatches
+
+from appGUI.GUIElements import FCMessageBox
 
 from multiprocessing import freeze_support
 # import copyreg
@@ -119,14 +121,16 @@ if __name__ == '__main__':
 
             # show the message
             try:
-                msgbox = QtWidgets.QMessageBox()
+                msgbox = FCMessageBox()
                 displayed_msg = "The application encountered a critical error and it will close.\n"\
                                 "Please report this error to the developers."
-
-                msgbox.setText(displayed_msg)
+                title = "Critical Error"
+                msgbox.setWindowTitle(title)  # taskbar still shows it
+                ic = QtGui.QIcon()
+                ic.addPixmap(QtGui.QPixmap("assets/resources/warning.png"), QtGui.QIcon.Mode.Normal)
+                msgbox.setWindowIcon(ic)
+                msgbox.setText('<b>%s</b>' % displayed_msg)
                 msgbox.setDetailedText(msg)
-                msgbox.setWindowTitle("Critical Error")
-                # msgbox.setWindowIcon()
                 msgbox.setIcon(QtWidgets.QMessageBox.Icon.Critical)
 
                 bt_yes = msgbox.addButton("Quit", QtWidgets.QMessageBox.ButtonRole.YesRole)

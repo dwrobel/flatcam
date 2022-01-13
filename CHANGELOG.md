@@ -10,6 +10,8 @@ CHANGELOG for FlatCAM beta
 13.01.2022
 
 - modified the FCMessageBox to have a border and a single color inside the box
+- made sure that the FCMessageBox taskbar icons and message are the correct ones
+- applied the FCMessageBox GUI elements everywhere; there is still a hack in appTranslation file where I needed to re-implement the class due of some circular imports errors
 
 12.01.2022
 

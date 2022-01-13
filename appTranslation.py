@@ -11,6 +11,7 @@ import logging
 from pathlib import Path
 
 from PyQt6 import QtWidgets, QtGui
+from PyQt6.QtCore import Qt
 from PyQt6.QtCore import QSettings
 
 import gettext
@@ -107,15 +108,14 @@ def on_language_apply_click(app, restart=False):
             return
 
     if restart:
-        msgbox = QtWidgets.QMessageBox()
-
-        msgbox.setText(_("The application will restart."))
-        msgbox.setInformativeText('%s %s?' %
-                                  (_("Are you sure do you want to change the current language to"),
-                                   name.capitalize()))
-        msgbox.setWindowTitle('%s ...' % _("Apply Language"))
-        msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/language32.png'))
-        msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
+        msgbox = FCMessageBox()
+        title = _("The application will restart.")
+        txt = '%s %s?' % (_("Are you sure do you want to change the current language to"), name.capitalize())
+        msgbox.setWindowTitle('%s ...' % _("Apply Language"))  # taskbar still shows it
+        msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/flatcam_icon128.png'))
+        msgbox.setText('<b>%s</b>' % title)
+        msgbox.setInformativeText(txt)
+        msgbox.setIconPixmap(QtGui.QPixmap(resource_loc + '/language32.png'))
 
         bt_yes = msgbox.addButton(_("Yes"), QtWidgets.QMessageBox.ButtonRole.YesRole)
         bt_no = msgbox.addButton(_("No"), QtWidgets.QMessageBox.ButtonRole.NoRole)
@@ -212,13 +212,16 @@ def restart_program(app, ask=None):
         log.error("FlatCAMTranslation.restart_program() --> %s" % str(err))
 
     if app.should_we_save and app.collection.get_list() or ask is True:
-        msgbox = QtWidgets.QMessageBox()
-        msgbox.setText(_("There are files/objects modified in FlatCAM. "
-                         "\n"
-                         "Do you want to Save the project?"))
-        msgbox.setWindowTitle(_("Save changes"))
-        msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/save_as.png'))
-        msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
+        msgbox = FCMessageBox()
+        title = _("Save changes")
+        txt = _("There are files/objects modified in FlatCAM. "
+                "\n"
+                "Do you want to Save the project?")
+        msgbox.setWindowTitle(title)  # taskbar still shows it
+        msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/flatcam_icon128.png'))
+        msgbox.setText('<b>%s</b>' % title)
+        msgbox.setInformativeText(txt)
+        msgbox.setIconPixmap(QtGui.QPixmap(resource_loc + '/save_as.png'))
 
         bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
         msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
@@ -237,15 +240,46 @@ def restart_program(app, ask=None):
         os.execl(python, python, *sys.argv)
     except Exception as err:
         # app_run_as_admin = isAdmin()
-        msgbox = QtWidgets.QMessageBox()
-
-        msgbox.setText(_("The language will be applied at the next application start."))
-        msgbox.setInformativeText(_("The user does not have admin rights or UAC issues."))
-        msgbox.setDetailedText(str(err))
-        msgbox.setWindowTitle('%s ...' % _("Quit"))
+        msgbox = FCMessageBox()
+        title = _("The language will be applied at the next application start.")
+        txt = _("The user does not have admin rights or UAC issues.")
+        msgbox.setWindowTitle('%s ...' % _("Quit"))  # taskbar still shows it
+        msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/flatcam_icon128.png'))
+        msgbox.setText('<b>%s</b>' % title)
+        msgbox.setInformativeText(txt)
         msgbox.setIcon(QtWidgets.QMessageBox.Icon.Critical)
 
         bt_yes = msgbox.addButton(_("Quit"), QtWidgets.QMessageBox.ButtonRole.YesRole)
 
         msgbox.setDefaultButton(bt_yes)
         msgbox.exec()
+
+
+# TODO Due of some circular imports issues which I currently can't fix I readd this class here
+#  (mainly is located in appGUI.GUIElements) - required for a consistent look
+class FCMessageBox(QtWidgets.QMessageBox):
+    """
+    Frameless QMessageBox
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(FCMessageBox, self).__init__(*args, **kwargs)
+        self.offset = None
+        self.moving = None
+        self.setWindowFlags(self.windowFlags() | Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowSystemMenuHint)
+
+        self.setStyleSheet(
+            "QDialog { "
+            "border: 1px solid palette(shadow); "
+            "background-color: palette(base); "
+            "}"
+        )
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.moving = True
+            self.offset = event.position()
+
+    def mouseMoveEvent(self, event):
+        if self.moving:
+            self.move(event.globalPosition().toPoint() - self.offset.toPoint())

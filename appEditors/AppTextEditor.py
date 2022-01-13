@@ -6,7 +6,7 @@
 # ##########################################################
 
 from appGUI.GUIElements import FCFileSaveDialog, FCEntry, FCTextAreaExtended, FCTextAreaLineNumber, FCButton, \
-    FCGridLayout, FCCheckBox
+    FCCheckBox, FCMessageBox
 from PyQt6 import QtPrintSupport, QtWidgets, QtCore, QtGui
 
 from reportlab.platypus import SimpleDocTemplate, Paragraph
@@ -338,13 +338,15 @@ class AppTextEditor(QtWidgets.QWidget):
         r = self.code_editor.find(str(text_to_be_found), flags)
 
         if r is False:
-            msgbox = QtWidgets.QMessageBox()
-            msgbox.setWindowTitle(_('Find'))
-            msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/find32.png'))
-            msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
+            msgbox = FCMessageBox()
+            title = _("End of document.")
+            txt = '%s' % _("Start from beginning?")
+            msgbox.setWindowTitle(_('Find'))  # taskbar still shows it
+            msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
+            msgbox.setText('<b>%s</b>' % title)
+            msgbox.setInformativeText(txt)
+            msgbox.setIconPixmap(QtGui.QPixmap(self.app.resource_location + '/find32.png'))
 
-            msgbox.setText(_("End of document."))
-            msgbox.setInformativeText('%s' % _("Start from beginning?"))
             bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.ButtonRole.AcceptRole)
             bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
 
