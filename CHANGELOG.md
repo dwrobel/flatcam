@@ -7,13 +7,17 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+13.01.2022
+
+- modified the FCMessageBox to have a border and a single color inside the box
+
 12.01.2022
 
 - subclassed the QMessageBox and created a new type of MessageBox that is frameless; started to use it throughout the app
 
 11.01.2022
 
-- added an initial implementation of a dark theme using the qdarktheme (performance is not great and there are some artifacts); the theme is activated once the gray icons are checked in the Preferences
+- added an initial implementation of a dark theme using the pyqtqdarktheme (performance is not great and there are some artifacts); the theme is activated once the gray icons are checked in the Preferences
 - started to mod the qdarktheme to fit the application
 
 10.01.2022

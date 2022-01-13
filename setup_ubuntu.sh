@@ -48,6 +48,7 @@ sudo -H python3 -m pip install --upgrade \
 	pyserial \
 	pikepdf \
 	foronoi \
-	ortools
+	ortools \
+	pyqtdarktheme
 # OR-TOOLS package is now optional
 # ################################

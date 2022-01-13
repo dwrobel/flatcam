@@ -5428,7 +5428,14 @@ class FCMessageBox(QtWidgets.QMessageBox):
         super(FCMessageBox, self).__init__(*args, **kwargs)
         self.offset = None
         self.moving = None
-        self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
+        self.setWindowFlags(self.windowFlags() | Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowSystemMenuHint)
+
+        self.setStyleSheet(
+            "QDialog { "
+            "border: 1px solid palette(shadow); "
+            "background-color: palette(base); "
+            "}"
+        )
     
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
