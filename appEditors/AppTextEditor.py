@@ -338,7 +338,7 @@ class AppTextEditor(QtWidgets.QWidget):
         r = self.code_editor.find(str(text_to_be_found), flags)
 
         if r is False:
-            msgbox = FCMessageBox()
+            msgbox = FCMessageBox(parent=self.app.ui)
             title = _("End of document.")
             txt = '%s' % _("Start from beginning?")
             msgbox.setWindowTitle(_('Find'))  # taskbar still shows it

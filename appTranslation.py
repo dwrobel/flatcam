@@ -108,7 +108,7 @@ def on_language_apply_click(app, restart=False):
             return
 
     if restart:
-        msgbox = FCMessageBox()
+        msgbox = FCMessageBox(parent=app.ui)
         title = _("The application will restart.")
         txt = '%s %s?' % (_("Are you sure do you want to change the current language to"), name.capitalize())
         msgbox.setWindowTitle('%s ...' % _("Apply Language"))  # taskbar still shows it
@@ -212,7 +212,7 @@ def restart_program(app, ask=None):
         log.error("FlatCAMTranslation.restart_program() --> %s" % str(err))
 
     if app.should_we_save and app.collection.get_list() or ask is True:
-        msgbox = FCMessageBox()
+        msgbox = FCMessageBox(parent=app.ui)
         title = _("Save changes")
         txt = _("There are files/objects modified in FlatCAM. "
                 "\n"
@@ -240,7 +240,7 @@ def restart_program(app, ask=None):
         os.execl(python, python, *sys.argv)
     except Exception as err:
         # app_run_as_admin = isAdmin()
-        msgbox = FCMessageBox()
+        msgbox = FCMessageBox(parent=app.ui)
         title = _("The language will be applied at the next application start.")
         txt = _("The user does not have admin rights or UAC issues.")
         msgbox.setWindowTitle('%s ...' % _("Quit"))  # taskbar still shows it

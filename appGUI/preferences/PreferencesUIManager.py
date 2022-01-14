@@ -1059,7 +1059,7 @@ class PreferencesUIManager:
         ge_val = self.ui.general_pref_form.general_app_group.ge_radio.get_value()
 
         if theme_new_val != theme or ge != ge_val:
-            msgbox = FCMessageBox()
+            msgbox = FCMessageBox(parent=self.ui)
             title = _("Application will restart")
             txt = _("Are you sure you want to continue?")
             msgbox.setWindowTitle(title)  # taskbar still shows it
@@ -1283,7 +1283,7 @@ class PreferencesUIManager:
 
         # Prompt user to save
         if self.preferences_changed_flag is True:
-            msgbox = FCMessageBox(parent=parent)
+            msgbox = FCMessageBox(parent=self.ui)
             title = _("Save Preferences")
             txt = _("One or more values are changed.\n"
                     "Do you want to save?")

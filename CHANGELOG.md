@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+14.01.2022
+
+- made sure that new message boxes are always centered on the app UI by setting correctly the parent
+
 13.01.2022
 
 - modified the FCMessageBox to have a border and a single color inside the box

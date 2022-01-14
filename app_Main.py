@@ -2717,7 +2717,7 @@ class App(QtCore.QObject):
         edited_obj = self.collection.get_active()
 
         if cleanup is None:
-            msgbox = FCMessageBox()
+            msgbox = FCMessageBox(parent=self.ui)
             title = _("Exit Editor")
             txt = _("Do you want to save the edited object?")
             msgbox.setWindowTitle(title)    # taskbar still shows it
@@ -3949,7 +3949,7 @@ class App(QtCore.QObject):
         :return:    None
         :rtype:     None
         """
-        msgbox = FCMessageBox()
+        msgbox = FCMessageBox(parent=self.ui)
         title = _("Alternative website")
         txt = _("This entry will resolve to another website if:\n\n"
                 "1. FlatCAM.org website is down\n"
@@ -3983,7 +3983,7 @@ class App(QtCore.QObject):
             return
 
         if self.should_we_save and self.collection.get_list():
-            msgbox = FCMessageBox()
+            msgbox = FCMessageBox(parent=self.ui)
             title = _("Save changes")
             txt = _("There are files/objects modified in FlatCAM. "
                     "\n"
@@ -4931,7 +4931,7 @@ class App(QtCore.QObject):
         # ##############################################################################################################
         # Changing project units. Ask the user.
         # ##############################################################################################################
-        msgbox = FCMessageBox()
+        msgbox = FCMessageBox(parent=self.ui)
         title = _("Toggle Units")
         txt = _("Changing the units of the project\n"
                 "will scale all objects.\n\n"
@@ -5100,7 +5100,7 @@ class App(QtCore.QObject):
                     else:
                         self.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
                 else:
-                    msgbox = FCMessageBox()
+                    msgbox = FCMessageBox(parent=self.ui)
                     title = _("Tool adding ...")
                     txt = _("Adding Tool works only when Advanced is checked.\n"
                             "Go to Preferences -> General - Show Advanced Options.")
@@ -5191,7 +5191,7 @@ class App(QtCore.QObject):
         # a geometry object before we update it.
         if self.call_source == 'app':
             if self.defaults["global_delete_confirmation"] is True and force_deletion is False:
-                msgbox = FCMessageBox()
+                msgbox = FCMessageBox(parent=self.ui)
                 title = _("Delete objects")
                 txt = _("Are you sure you want to permanently delete\n"
                         "the selected objects?")
@@ -9544,7 +9544,7 @@ class MenuFileHandlers(QtCore.QObject):
                 and not isinstance(obj, CNCJobObject)
                 and not isinstance(obj, ExcellonObject)):
             msg = _("Only Geometry, Gerber and CNCJob objects can be used.")
-            msgbox = FCMessageBox()
+            msgbox = FCMessageBox(parent=self.app.ui)
             msgbox.setWindowTitle(msg)  # taskbar still shows it
             msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
 
@@ -9895,7 +9895,7 @@ class MenuFileHandlers(QtCore.QObject):
         # Check for more compatible types and add as required
         if obj.kind != 'geometry':
             msg = _("Only Geometry objects can be used.")
-            msgbox = FCMessageBox()
+            msgbox = FCMessageBox(parent=self.app.ui)
             msgbox.setWindowTitle(msg)  # taskbar still shows it
             msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
 
@@ -10003,7 +10003,7 @@ class MenuFileHandlers(QtCore.QObject):
         """
 
         if self.app.collection.get_list() and self.app.should_we_save:
-            msgbox = FCMessageBox()
+            msgbox = FCMessageBox(parent=self.app.ui)
             title = _("Save changes")
             txt = _("There are files/objects opened in FlatCAM.\n"
                     "Creating a New project will delete them.\n"
@@ -10130,7 +10130,7 @@ class MenuFileHandlers(QtCore.QObject):
             self.app.ui.plot_tab_area.insertTab(0, self.app.ui.plot_tab, _("Plot Area"))
             self.app.ui.plot_tab_area.protectTab(0)
 
-        msgbox = FCMessageBox()
+        msgbox = FCMessageBox(parent=self.app.ui)
         title = _("Save preferences")
         txt = _("Do you want to save the current settings/preferences?")
         msgbox.setWindowTitle(title)  # taskbar still shows it
