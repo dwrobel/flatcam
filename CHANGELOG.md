@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - fixed the Tcl Command 'set_origin' to work for a specified location
 - updated the Tcl Command 'set_origin' to give the option to set the origin for a specified object
 - fixed the 'cncjob' Tcl Command to work in the new configuration of the data structures
+- fixed the 'save_project' Tcl Command - missing 'f_handlers' in the path
 
 14.01.2022
 
