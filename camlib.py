@@ -3851,7 +3851,11 @@ class CNCjob(Geometry):
         self.z_feedrate = float(tool_dict['tools_mill_feedrate_z'])
         self.feedrate_rapid = float(tool_dict['tools_mill_feedrate_rapid'])
 
-        self.spindlespeed = float(tool_dict['tools_mill_spindlespeed'])
+        try:
+            self.spindlespeed = float(tool_dict['tools_mill_spindlespeed'])
+        except TypeError:
+            self.spindlespeed = 0.0
+
         try:
             self.spindledir = tool_dict['tools_mill_spindledir']
         except KeyError:

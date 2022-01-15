@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - some changes to the FCMessageBox so the dark theme works ok on it
 - fixed the Tcl Command 'set_origin' to work for a specified location
 - updated the Tcl Command 'set_origin' to give the option to set the origin for a specified object
+- fixed the 'cncjob' Tcl Command to work in the new configuration of the data structures
 
 14.01.2022
 

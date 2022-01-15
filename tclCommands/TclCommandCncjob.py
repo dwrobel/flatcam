@@ -135,11 +135,11 @@ class TclCommandCncjob(TclCommandSignaled):
             self.app.defaults["geometry_travelz"]
 
         args["feedrate"] = args["feedrate"] if "feedrate" in args and args["feedrate"] else \
-            self.app.defaults["geometry_feedrate"]
+            self.app.defaults["tools_mill_feedrate"]
         args["feedrate_z"] = args["feedrate_z"] if "feedrate_z" in args and args["feedrate_z"] else \
-            self.app.defaults["geometry_feedrate_z"]
+            self.app.defaults["tools_mill_feedrate_z"]
         args["feedrate_rapid"] = args["feedrate_rapid"] if "feedrate_rapid" in args and args["feedrate_rapid"] else \
-            self.app.defaults["geometry_feedrate_rapid"]
+            self.app.defaults["tools_mill_feedrate_rapid"]
 
         if "extracut_length" in args:
             args["extracut"] = True
@@ -148,28 +148,28 @@ class TclCommandCncjob(TclCommandSignaled):
             else:
                 args["extracut_length"] = float(args["extracut_length"])
         else:
-            args["extracut"] = self.app.defaults["geometry_extracut"]
-            args["extracut_length"] = self.app.defaults["geometry_extracut_length"]
+            args["extracut"] = self.app.defaults["tools_mill_extracut"]
+            args["extracut_length"] = self.app.defaults["tools_mill_extracut_length"]
 
         if "dpp" in args:
             args["multidepth"] = True
             if args["dpp"] is None:
-                args["dpp"] = self.app.defaults["geometry_depthperpass"]
+                args["dpp"] = self.app.defaults["tools_mill_depthperpass"]
             else:
                 args["dpp"] = float(args["dpp"])
         else:
-            args["multidepth"] = self.app.defaults["geometry_multidepth"]
-            args["dpp"] = self.app.defaults["geometry_depthperpass"]
+            args["multidepth"] = self.app.defaults["tools_mill_multidepth"]
+            args["dpp"] = self.app.defaults["tools_mill_depthperpass"]
 
         args["startz"] = args["startz"] if "startz" in args and args["startz"] else \
-            self.app.defaults["geometry_startz"]
-        args["endz"] = args["endz"] if "endz" in args and args["endz"] else self.app.defaults["geometry_endz"]
+            self.app.defaults["tools_mill_startz"]
+        args["endz"] = args["endz"] if "endz" in args and args["endz"] else self.app.defaults["tools_mill_endz"]
 
         if "endxy" in args and args["endxy"]:
             args["endxy"] = args["endxy"]
         else:
-            if self.app.defaults["geometry_endxy"]:
-                args["endxy"] = str(self.app.defaults["geometry_endxy"])
+            if self.app.defaults["tools_mill_endxy"]:
+                args["endxy"] = str(self.app.defaults["tools_mill_endxy"])
             else:
                 args["endxy"] = '0, 0'
         if len(eval(args["endxy"])) != 2:
@@ -185,26 +185,26 @@ class TclCommandCncjob(TclCommandSignaled):
             else:
                 args["dwelltime"] = float(args['dwelltime'])
         else:
-            args["dwell"] = self.app.defaults["geometry_dwell"]
-            args["dwelltime"] = self.app.defaults["geometry_dwelltime"]
+            args["dwell"] = self.app.defaults["tools_mill_dwell"]
+            args["dwelltime"] = self.app.defaults["tools_mill_dwelltime"]
 
-        args["pp"] = args["pp"] if "pp" in args and args["pp"] else self.app.defaults["geometry_ppname_g"]
+        args["pp"] = args["pp"] if "pp" in args and args["pp"] else self.app.defaults["tools_mill_ppname_g"]
 
         if "toolchangez" in args:
             args["toolchange"] = True
             if args["toolchangez"] is not None:
                 args["toolchangez"] = args["toolchangez"]
             else:
-                args["toolchangez"] = self.app.defaults["geometry_toolchangez"]
+                args["toolchangez"] = self.app.defaults["tools_mill_toolchangez"]
         else:
-            args["toolchange"] = self.app.defaults["geometry_toolchange"]
-            args["toolchangez"] = self.app.defaults["geometry_toolchangez"]
+            args["toolchange"] = self.app.defaults["tools_mill_toolchange"]
+            args["toolchangez"] = self.app.defaults["tools_mill_toolchangez"]
 
         if "toolchangexy" in args and args["toolchangexy"]:
             args["toolchangexy"] = args["toolchangexy"]
         else:
-            if self.app.defaults["geometry_toolchangexy"]:
-                args["toolchangexy"] = str(self.app.defaults["geometry_toolchangexy"])
+            if self.app.defaults["tools_mill_toolchangexy"]:
+                args["toolchangexy"] = str(self.app.defaults["tools_mill_toolchangexy"])
             else:
                 args["toolchangexy"] = '0, 0'
         if len(eval(args["toolchangexy"])) != 2:
@@ -238,34 +238,36 @@ class TclCommandCncjob(TclCommandSignaled):
 
             for tool_uid in list(local_tools_dict.keys()):
                 if 'data' in local_tools_dict[tool_uid]:
-                    local_tools_dict[tool_uid]['data']['cutz'] = args["z_cut"]
-                    local_tools_dict[tool_uid]['data']['travelz'] = args["z_move"]
-                    local_tools_dict[tool_uid]['data']['feedrate'] = args["feedrate"]
-                    local_tools_dict[tool_uid]['data']['feedrate_z'] = args["feedrate_z"]
-                    local_tools_dict[tool_uid]['data']['feedrate_rapid'] = args["feedrate_rapid"]
-                    local_tools_dict[tool_uid]['data']['multidepth'] = args["multidepth"]
-                    local_tools_dict[tool_uid]['data']['extracut'] = args["extracut"]
+                    local_tools_dict[tool_uid]['data']['tools_mill_cutz'] = args["z_cut"]
+                    local_tools_dict[tool_uid]['data']['tools_mill_travelz'] = args["z_move"]
+                    local_tools_dict[tool_uid]['data']['tools_mill_feedrate'] = args["feedrate"]
+                    local_tools_dict[tool_uid]['data']['tools_mill_feedrate_z'] = args["feedrate_z"]
+                    local_tools_dict[tool_uid]['data']['tools_mill_feedrate_rapid'] = args["feedrate_rapid"]
+                    local_tools_dict[tool_uid]['data']['tools_mill_multidepth'] = args["multidepth"]
+                    local_tools_dict[tool_uid]['data']['tools_mill_extracut'] = args["extracut"]
 
                     if args["extracut"] is True:
-                        local_tools_dict[tool_uid]['data']['extracut_length'] = args["extracut_length"]
+                        local_tools_dict[tool_uid]['data']['tools_mill_extracut_length'] = args["extracut_length"]
                     else:
-                        local_tools_dict[tool_uid]['data']['extracut_length'] = None
+                        local_tools_dict[tool_uid]['data']['tools_mill_extracut_length'] = None
 
-                    local_tools_dict[tool_uid]['data']['depthperpass'] = args["dpp"]
-                    local_tools_dict[tool_uid]['data']['toolchange'] = args["toolchange"]
-                    local_tools_dict[tool_uid]['data']['toolchangez'] = args["toolchangez"]
-                    local_tools_dict[tool_uid]['data']['toolchangexy'] = args["toolchangexy"]
-                    local_tools_dict[tool_uid]['data']['startz'] = args["startz"]
-                    local_tools_dict[tool_uid]['data']['endz'] = args["endz"]
-                    local_tools_dict[tool_uid]['data']['endxy'] = args["endxy"]
-                    local_tools_dict[tool_uid]['data']['spindlespeed'] = args["spindlespeed"]
-                    local_tools_dict[tool_uid]['data']['dwell'] = args["dwell"]
-                    local_tools_dict[tool_uid]['data']['dwelltime'] = args["dwelltime"]
-                    local_tools_dict[tool_uid]['data']['ppname_g'] = args["pp"]
-            obj.mtool_gen_cncjob(
+                    local_tools_dict[tool_uid]['data']['tools_mill_depthperpass'] = args["dpp"]
+                    local_tools_dict[tool_uid]['data']['tools_mill_toolchange'] = args["toolchange"]
+                    local_tools_dict[tool_uid]['data']['tools_mill_toolchangez'] = args["toolchangez"]
+                    local_tools_dict[tool_uid]['data']['tools_mill_toolchangexy'] = args["toolchangexy"]
+                    local_tools_dict[tool_uid]['data']['tools_mill_startz'] = args["startz"]
+                    local_tools_dict[tool_uid]['data']['tools_mill_endz'] = args["endz"]
+                    local_tools_dict[tool_uid]['data']['tools_mill_endxy'] = args["endxy"]
+                    local_tools_dict[tool_uid]['data']['tools_mill_spindlespeed'] = args["spindlespeed"]
+                    local_tools_dict[tool_uid]['data']['tools_mill_dwell'] = args["dwell"]
+                    local_tools_dict[tool_uid]['data']['tools_mill_dwelltime'] = args["dwelltime"]
+                    local_tools_dict[tool_uid]['data']['tools_mill_ppname_g'] = args["pp"]
+            self.app.milling_tool.mtool_gen_cncjob(
+                geo_obj=obj,
                 outname=args['outname'],
                 tools_dict=local_tools_dict,
                 tools_in_use=[],
+                toolchange=args["toolchange"],
                 use_thread=False,
                 plot=False)
             # self.raise_tcl_error('The object is a multi-geo geometry which is not supported in cncjob Tcl Command')

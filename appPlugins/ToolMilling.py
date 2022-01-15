@@ -3278,29 +3278,69 @@ class ToolMilling(AppTool, Excellon):
                 # #####################################################################################################
 
                 # Toolchange Z
-                tools_dict[tooluid_key]['data']['tools_mill_toolchangez'] = self.ui.toolchangez_entry.get_value()
+                try:
+                    tools_dict[tooluid_key]['data']['tools_mill_toolchangez'] = self.ui.toolchangez_entry.get_value()
+                except AttributeError:
+                    tools_dict[tooluid_key]['data']['tools_mill_toolchangez'] = \
+                        self.app.defaults['tools_mill_toolchangez']
                 # Toolchange X-Y
-                tools_dict[tooluid_key]['data']['tools_mill_toolchangexy'] = self.ui.toolchangexy_entry.get_value()
+                try:
+                    tools_dict[tooluid_key]['data']['tools_mill_toolchangexy'] = self.ui.toolchangexy_entry.get_value()
+                except AttributeError:
+                    tools_dict[tooluid_key]['data']['tools_mill_toolchangexy'] = \
+                        self.app.defaults['tools_mill_toolchangexy']
                 # End Move Z
-                tools_dict[tooluid_key]['data']['tools_mill_endz'] = self.ui.endz_entry.get_value()
+                try:
+                    tools_dict[tooluid_key]['data']['tools_mill_endz'] = self.ui.endz_entry.get_value()
+                except AttributeError:
+                    tools_dict[tooluid_key]['data']['tools_mill_endz'] = self.app.defaults['tools_mill_endz']
                 # End Move XY
-                tools_dict[tooluid_key]['data']['tools_mill_endxy'] = self.ui.endxy_entry.get_value()
+                try:
+                    tools_dict[tooluid_key]['data']['tools_mill_endxy'] = self.ui.endxy_entry.get_value()
+                except AttributeError:
+                    tools_dict[tooluid_key]['data']['tools_mill_endxy'] = self.app.defaults['tools_mill_endxy']
                 # Probe Z
-                tools_dict[tooluid_key]['data']['tools_mill_z_pdepth'] = self.ui.pdepth_entry.get_value()
+                try:
+                    tools_dict[tooluid_key]['data']['tools_mill_z_pdepth'] = self.ui.pdepth_entry.get_value()
+                except AttributeError:
+                    tools_dict[tooluid_key]['data']['tools_mill_z_pdepth'] = self.app.defaults['tools_mill_z_pdepth']
                 # Probe FR
-                tools_dict[tooluid_key]['data']['tools_mill_feedrate_probe'] = self.ui.feedrate_probe_entry.get_value()
+                try:
+                    tools_dict[tooluid_key]['data'][
+                        'tools_mill_feedrate_probe'] = self.ui.feedrate_probe_entry.get_value()
+                except AttributeError:
+                    tools_dict[tooluid_key]['data'][
+                        'tools_mill_feedrate_probe'] = self.app.defaults['tools_mill_feedrate_probe']
 
                 # Exclusion Areas Enable
-                tools_dict[tooluid_key]['data']['tools_mill_area_exclusion'] = self.ui.exclusion_cb.get_value()
+                try:
+                    tools_dict[tooluid_key]['data']['tools_mill_area_exclusion'] = self.ui.exclusion_cb.get_value()
+                except AttributeError:
+                    tools_dict[tooluid_key]['data']['tools_mill_area_exclusion'] = False    # Tcl Command most likely
                 # Exclusion Areas Shape
-                tools_dict[tooluid_key]['data']['tools_mill_area_shape'] = self.ui.area_shape_radio.get_value()
+                try:
+                    tools_dict[tooluid_key]['data']['tools_mill_area_shape'] = self.ui.area_shape_radio.get_value()
+                except AttributeError:
+                    tools_dict[tooluid_key]['data']['tools_mill_area_shape'] = \
+                        self.app.defaults['tools_mill_area_shape']
                 # Exclusion Areas Strategy
-                tools_dict[tooluid_key]['data']['tools_mill_area_strategy'] = self.ui.strategy_radio.get_value()
+                try:
+                    tools_dict[tooluid_key]['data']['tools_mill_area_strategy'] = self.ui.strategy_radio.get_value()
+                except AttributeError:
+                    tools_dict[tooluid_key]['data']['tools_mill_area_strategy'] = \
+                        self.app.defaults['tools_mill_area_strategy']
                 # Exclusion Areas Overz
-                tools_dict[tooluid_key]['data']['tools_mill_area_overz'] = self.ui.over_z_entry.get_value()
+                try:
+                    tools_dict[tooluid_key]['data']['tools_mill_area_overz'] = self.ui.over_z_entry.get_value()
+                except AttributeError:
+                    tools_dict[tooluid_key]['data']['tools_mill_area_overz'] = \
+                        self.app.defaults['tools_mill_area_overz']
 
                 # Preprocessor
-                tools_dict[tooluid_key]['data']['tools_mill_ppname_g'] = self.ui.pp_geo_name_cb.get_value()
+                try:
+                    tools_dict[tooluid_key]['data']['tools_mill_ppname_g'] = self.ui.pp_geo_name_cb.get_value()
+                except AttributeError:
+                    tools_dict[tooluid_key]['data']['tools_mill_ppname_g'] = self.app.defaults['tools_mill_ppname_g']
 
                 # Offset calculation
                 offset_type = dia_cnc_dict['data']['tools_mill_offset_type']
@@ -3309,7 +3349,10 @@ class ToolMilling(AppTool, Excellon):
                 elif offset_type == 2:  # 'out'
                     tool_offset = tooldia_val / 2
                 elif offset_type == 3:  # 'custom'
-                    offset_value = self.ui.offset_entry.get_value()
+                    try:
+                        offset_value = self.ui.offset_entry.get_value()
+                    except AttributeError:
+                        offset_value = self.app.defaults['tools_mill_offset_value']
                     if offset_value:
                         tool_offset = float(offset_value)
                     else:
