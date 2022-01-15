@@ -1,4 +1,4 @@
-from PyQt6 import QtWidgets, QtCore
+from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtCore import QSettings
 
 from appGUI.GUIElements import RadioSet, FCCheckBox, FCComboBox, FCSliderWithSpinner, FCColorEntry, FCLabel, \
@@ -149,7 +149,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.sl_color_label.setToolTip(
             _("Set the line color for the 'left to right' selection box.")
         )
-        self.sl_color_entry = FCColorEntry()
+        self.sl_color_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
 
         grid1.addWidget(self.sl_color_label, 2, 0)
         grid1.addWidget(self.sl_color_entry, 2, 1)
@@ -161,7 +161,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
               "First 6 digits are the color and the last 2\n"
               "digits are for alpha (transparency) level.")
         )
-        self.sf_color_entry = FCColorEntry()
+        self.sf_color_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
 
         grid1.addWidget(self.sf_color_label, 4, 0)
         grid1.addWidget(self.sf_color_entry, 4, 1)
@@ -190,7 +190,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.alt_sl_color_label.setToolTip(
             _("Set the line color for the 'right to left' selection box.")
         )
-        self.alt_sl_color_entry = FCColorEntry()
+        self.alt_sl_color_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
 
         grid1.addWidget(self.alt_sl_color_label, 12, 0)
         grid1.addWidget(self.alt_sl_color_entry, 12, 1)
@@ -203,7 +203,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
               "First 6 digits are the color and the last 2\n"
               "digits are for alpha (transparency) level.")
         )
-        self.alt_sf_color_entry = FCColorEntry()
+        self.alt_sf_color_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
 
         grid1.addWidget(self.alt_sf_color_label, 14, 0)
         grid1.addWidget(self.alt_sf_color_entry, 14, 1)
@@ -235,7 +235,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.alt_sf_color_label.setToolTip(
             _("Set the color for the shape.")
         )
-        self.draw_color_entry = FCColorEntry()
+        self.draw_color_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
 
         grid1.addWidget(self.draw_color_label, 22, 0)
         grid1.addWidget(self.draw_color_entry, 22, 1)
@@ -245,7 +245,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.sel_draw_color_label.setToolTip(
             _("Set the color of the shape when selected.")
         )
-        self.sel_draw_color_entry = FCColorEntry()
+        self.sel_draw_color_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
 
         grid1.addWidget(self.sel_draw_color_label, 24, 0)
         grid1.addWidget(self.sel_draw_color_entry, 24, 1)
@@ -267,7 +267,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.proj_color_label.setToolTip(
             _("Set the color of the items in Project Tab Tree.")
         )
-        self.proj_color_entry = FCColorEntry()
+        self.proj_color_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
 
         grid1.addWidget(self.proj_color_label, 30, 0)
         grid1.addWidget(self.proj_color_entry, 30, 1)
@@ -277,7 +277,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
             _("Set the color of the items in Project Tab Tree,\n"
               "for the case when the items are disabled.")
         )
-        self.proj_color_dis_entry = FCColorEntry()
+        self.proj_color_dis_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
 
         grid1.addWidget(self.proj_color_dis_label, 32, 0)
         grid1.addWidget(self.proj_color_dis_entry, 32, 1)

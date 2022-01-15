@@ -1,4 +1,4 @@
-from PyQt6 import QtWidgets
+from PyQt6 import QtGui
 
 from appGUI.GUIElements import FCSpinner, RadioSet, FCTextArea, FCLabel, FCColorEntry, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
@@ -150,7 +150,7 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         self.fill_color_label.setToolTip(
             _("Set the QRCode fill color (squares color).")
         )
-        self.fill_color_entry = FCColorEntry()
+        self.fill_color_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
 
         param_grid.addWidget(self.fill_color_label, 16, 0)
         param_grid.addWidget(self.fill_color_entry, 16, 1)
@@ -160,7 +160,7 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         self.back_color_label.setToolTip(
             _("Set the QRCode background color.")
         )
-        self.back_color_entry = FCColorEntry()
+        self.back_color_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
 
         param_grid.addWidget(self.back_color_label, 18, 0)
         param_grid.addWidget(self.back_color_entry, 18, 1)

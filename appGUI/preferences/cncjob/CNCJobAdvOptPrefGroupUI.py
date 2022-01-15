@@ -1,4 +1,4 @@
-from PyQt6 import QtWidgets
+from PyQt6 import QtGui
 
 from appGUI.GUIElements import FCSpinner, FCColorEntry, FCLabel, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
@@ -52,7 +52,8 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         self.annotation_color_label.setToolTip(
             _("Set the font color for the annotation texts.")
         )
-        self.annotation_fontcolor_entry = FCColorEntry()
+        self.annotation_fontcolor_entry = FCColorEntry(icon=QtGui.QIcon(
+            self.app.resource_location + '/set_colors64.png'))
 
         param_grid.addWidget(self.annotation_color_label, 2, 0)
         param_grid.addWidget(self.annotation_fontcolor_entry, 2, 1)

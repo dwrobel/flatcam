@@ -1,4 +1,4 @@
-from PyQt6 import QtWidgets
+from PyQt6 import QtGui
 
 from appGUI.GUIElements import FCCheckBox, FCSpinner, FCColorEntry, RadioSet, FCLabel, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
@@ -152,7 +152,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         self.line_color_label.setToolTip(
             _("Set the line color for plotted objects.")
         )
-        self.line_color_entry = FCColorEntry()
+        self.line_color_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
 
         obj_grid.addWidget(self.line_color_label, 0, 0)
         obj_grid.addWidget(self.line_color_entry, 0, 1)

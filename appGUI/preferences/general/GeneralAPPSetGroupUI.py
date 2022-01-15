@@ -1,4 +1,4 @@
-from PyQt6 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtGui
 from PyQt6.QtCore import QSettings
 
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCComboBox, RadioSet, OptionalInputSection, FCSpinner, \
@@ -297,7 +297,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.axis_color_label.setToolTip(
             _("Set the color of the screen axis.")
         )
-        self.axis_color_entry = FCColorEntry()
+        self.axis_color_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
 
         ax_grid.addWidget(self.axis_color_label, 0, 0)
         ax_grid.addWidget(self.axis_color_entry, 0, 1)
@@ -368,7 +368,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.mouse_color_label.setToolTip(
             _("Set the color of the mouse cursor.")
         )
-        self.mouse_cursor_entry = FCColorEntry()
+        self.mouse_cursor_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
 
         m_grid.addWidget(self.mouse_color_label, 8, 0)
         m_grid.addWidget(self.mouse_cursor_entry, 8, 1)

@@ -228,7 +228,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         self.line_color_label.setToolTip(
             _("Set the line color for plotted objects.")
         )
-        self.line_color_entry = FCColorEntry()
+        self.line_color_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
 
         obj_grid.addWidget(self.line_color_label, 0, 0)
         obj_grid.addWidget(self.line_color_entry, 0, 1, 1, 2)
@@ -240,7 +240,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
               "First 6 digits are the color and the last 2\n"
               "digits are for alpha (transparency) level.")
         )
-        self.fill_color_entry = FCColorEntry()
+        self.fill_color_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
 
         obj_grid.addWidget(self.fill_color_label, 2, 0)
         obj_grid.addWidget(self.fill_color_entry, 2, 1, 1, 2)

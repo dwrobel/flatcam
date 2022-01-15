@@ -1,4 +1,4 @@
-from PyQt6 import QtWidgets
+from PyQt6 import QtGui
 
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCColorEntry, FCLabel, FCSpinner, \
     FCGridLayout, FCComboBox2, FCFrame
@@ -222,7 +222,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.film_color_label.setToolTip(
             _("Set the film color when positive film is selected.")
         )
-        self.film_color_entry = FCColorEntry()
+        self.film_color_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
 
         grid_par.addWidget(self.film_color_label, 6, 0)
         grid_par.addWidget(self.film_color_entry, 6, 1)

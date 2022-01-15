@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+15.01.2022
+
+- All FCColorEntry GUI element instances have now a set icon for the title (and taskbar)
+
 14.01.2022
 
 - made sure that new message boxes are always centered on the app UI by setting correctly the parent
