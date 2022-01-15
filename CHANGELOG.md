@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 15.01.2022
 
 - All FCColorEntry GUI element instances have now a set icon for the title (and taskbar)
+- some changes to the FCMessageBox so the dark theme works ok on it
 
 14.01.2022
 

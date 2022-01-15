@@ -268,10 +268,10 @@ class FCMessageBox(QtWidgets.QMessageBox):
         self.moving = None
         self.setWindowFlags(self.windowFlags() | Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowSystemMenuHint)
 
+        #   "background-color: palette(base); "
         self.setStyleSheet(
             "QDialog { "
             "border: 1px solid palette(shadow); "
-            "background-color: palette(base); "
             "}"
         )
 
