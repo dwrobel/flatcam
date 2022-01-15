@@ -43,7 +43,8 @@ class TclCommandSetOrigin(TclCommand):
 
     # Dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
     option_types = collections.OrderedDict([
-        ('auto', str)
+        ('auto', str),
+        ('obj_name', str)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -57,9 +58,11 @@ class TclCommandSetOrigin(TclCommand):
             ('loc', 'Location to offset all the selected objects. NO SPACES ALLOWED in X and Y pair.\n'
                     'Use like this: 2,3'),
             ('auto', 'If set to True it will set the origin to the minimum x, y of the object selection bounding box.'
-                     '-auto=True is not correct but -auto 1 or -auto True is correct. True (1) or False (0).')
+                     '-auto=True is not correct but -auto 1 or -auto True is correct. True (1) or False (0).'),
+            ('obj_name', 'If used and followed by an object name that is already loaded, the origin for that object\n'
+                         'will be set at: "loc" - if used else the command will not be applied')
         ]),
-        'examples': ['set_origin 3,2', 'set_origin -auto 1', 'origin']
+        'examples': ['set_origin 3,2', 'set_origin -auto 1', 'origin', 'set_origin 10,10 -obj_name "my_top_gerber"']
     }
 
     def execute(self, args, unnamed_args):
@@ -87,13 +90,29 @@ class TclCommandSetOrigin(TclCommand):
                 log.debug("TclCommandSetOrigin.execute --> %s" % str(e))
                 location = (0, 0)
 
-            loc.append(location[0])
-            loc.append(location[1])
-
             if len(location) != 2:
                 self.raise_tcl_error('%s: %s' % (
                     _("Expected a pair of (x, y) coordinates. Got"), str(len(location))))
                 return 'fail'
+
+            if 'obj_name' not in args:
+                objs = self.app.collection.get_list()
+                minx, miny, __, ___ = get_bounds(objs)
+
+                loc.append(location[0] - minx)
+                loc.append(location[1] - miny)
+            else:
+                object_name = args['obj_name']
+                obj = self.app.collection.get_by_name(object_name)
+                minx, miny, __, ___ = get_bounds([obj])
+
+                loc.append(location[0] - minx)
+                loc.append(location[1] - miny)
+                obj.offset((loc[0], loc[1]))
+                msg = '[success] Tcl %s %s %s: %s' % (
+                    _("Done."), _("Offsetting..."), object_name, '{0:.4f}, {0:.4f}'.format(loc[0], loc[1]))
+                self.app.inform_shell.emit(msg)
+                return
         else:
             loc = [0, 0]
 

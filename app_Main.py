@@ -5356,6 +5356,7 @@ class App(QtCore.QObject):
 
                 app_obj.inform.emit('[success] %s...' % _('Origin set'))
 
+                # update the source_file container with the new offseted code
                 for obj in obj_list:
                     out_name = obj.options["name"]
 

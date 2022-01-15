@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM beta
 
 - All FCColorEntry GUI element instances have now a set icon for the title (and taskbar)
 - some changes to the FCMessageBox so the dark theme works ok on it
+- fixed the Tcl Command 'set_origin' to work for a specified location
+- updated the Tcl Command 'set_origin' to give the option to set the origin for a specified object
 
 14.01.2022
 
