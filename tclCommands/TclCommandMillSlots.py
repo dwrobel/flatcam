@@ -135,6 +135,13 @@ class TclCommandMillSlots(TclCommandSignaled):
                 # args['milled_dias'] = [x.strip() for x in args['tools'].split(",")]
             else:
                 args['tools'] = 'all'
+
+            # no longer needed
+            if 'milled_dias' in args:
+                del args['milled_dias']
+            if 'diatol' in args:
+                del args['diatol']
+
         except Exception as e:
             self.raise_tcl_error("Bad tools: %s" % str(e))
 

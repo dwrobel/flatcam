@@ -132,8 +132,10 @@ class TclCommandMillDrills(TclCommandSignaled):
                 args['tools'] = 'all'
 
             # no longer needed
-            del args['milled_dias']
-            del args['diatol']
+            if 'milled_dias' in args:
+                del args['milled_dias']
+            if 'diatol' in args:
+                del args['diatol']
         except Exception as e:
             self.raise_tcl_error("Bad tools: %s" % str(e))
 

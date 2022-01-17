@@ -800,7 +800,7 @@ class FlatCAMDefaults:
                                       'endxy, endz, extracut_length, f, feedrate, '
                                       'feedrate_z, grbl_11, GRBL_laser, gridoffsety, gridx, gridy, has_offset, '
                                       'holes, hpgl, iso_type, line_xyz, margin, marlin, method, milled_dias, '
-                                      'minoffset, name, offset, opt_type, order, outname, overlap, '
+                                      'minoffset, name, offset, opt_type, order, outname, overlap, obj_name'
                                       'passes, postamble, pp, ppname_e, ppname_g, preamble, radius, ref, rest, '
                                       'rows, shellvar_, scale_factor, spacing_columns, spacing_rows, spindlespeed, '
                                       'startz, startxy, toolchange_xy, toolchangez, '

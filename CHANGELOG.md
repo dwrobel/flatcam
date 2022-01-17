@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+17.01.2022
+
+- fixed issues in the 'millslots' and 'milldrills' Tcl commands for the case when some parameters are not used
+
 15.01.2022
 
 - All FCColorEntry GUI element instances have now a set icon for the title (and taskbar)
