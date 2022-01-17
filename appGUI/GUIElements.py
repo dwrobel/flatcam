@@ -2019,6 +2019,7 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
         super().__init__(parent)
 
         self.completer = MyCompleter()
+        self.previous_selected_word = ''
 
         self.model = QtCore.QStringListModel()
         self.completer.setModel(self.model)
@@ -2294,6 +2295,50 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
                 self.completer.complete(cr)
             else:
                 self.completer.popup().hide()
+
+    def mouseReleaseEvent(self, e: QtGui.QMouseEvent) -> None:
+        super().mouseReleaseEvent(e)
+        # self.select_word_instances(e.pos())
+
+    def select_word_instances(self, pos):
+        cursor = self.textCursor()
+        cursor.select(QtGui.QTextCursor.SelectionType.WordUnderCursor)
+        sel_word = cursor.selectedText()
+
+        if sel_word != self.previous_selected_word or sel_word == '':
+            cs = self.cursorForPosition(pos)
+            position = cs.position()
+            # first clear a possible previous highlight
+            cursor.select(QtGui.QTextCursor.SelectionType.Document)
+            cursor.setCharFormat(QtGui.QTextCharFormat())
+            cursor.clearSelection()
+            self.setTextCursor(cursor)
+            cursor.setPosition(position, QtGui.QTextCursor.MoveMode.MoveAnchor)
+            # cursor.movePosition(QtGui.QTextCursor.MoveOperation.StartOfWord, QtGui.QTextCursor.MoveMode.KeepAnchor, 1)
+            self.setTextCursor(cursor)
+
+        self.previous_selected_word = sel_word
+        if sel_word == '':
+            return
+
+        # Setup the desired format for matches
+        fmt = QtGui.QTextCharFormat()
+        fmt.setBackground(Qt.GlobalColor.lightGray)
+        text = self.toPlainText()
+
+        pattern = re.compile(r'%s' % sel_word)
+        start = pattern.search(text, 0)
+        idx = 0
+
+        while start and idx < len(text):
+            idx = start.start()
+            # Select the matched text and apply the desired format
+            cursor.setPosition(idx, QtGui.QTextCursor.MoveMode.MoveAnchor)
+            cursor.movePosition(QtGui.QTextCursor.MoveOperation.EndOfWord, QtGui.QTextCursor.MoveMode.KeepAnchor ,1)
+            cursor.mergeCharFormat(fmt)
+            start = pattern.search(text, idx+1)
+
+        cursor.select(QtGui.QTextCursor.SelectionType.WordUnderCursor)
 
     def comment(self):
         """

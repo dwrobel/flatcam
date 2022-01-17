@@ -4975,7 +4975,7 @@ class AppGeoEditor(QtCore.QObject):
                     for poly in el:
                         self.tool_shape.add(
                             shape=poly,
-                            color=(self.app.defaults["global_draw_color"] + '80'),
+                            color=(self.app.defaults["global_draw_color"]),
                             update=False,
                             layer=0,
                             tolerance=None
@@ -4984,7 +4984,7 @@ class AppGeoEditor(QtCore.QObject):
                     for linestring in el:
                         self.tool_shape.add(
                             shape=linestring,
-                            color=(self.app.defaults["global_draw_color"] + '80'),
+                            color=(self.app.defaults["global_draw_color"]),
                             update=False,
                             layer=0,
                             tolerance=None
@@ -4992,14 +4992,14 @@ class AppGeoEditor(QtCore.QObject):
                 else:
                     self.tool_shape.add(
                         shape=el,
-                        color=(self.app.defaults["global_draw_color"] + '80'),
+                        color=(self.app.defaults["global_draw_color"]),
                         update=False,
                         layer=0,
                         tolerance=None
                     )
         except TypeError:
             self.tool_shape.add(
-                shape=geo.geo, color=(self.app.defaults["global_draw_color"] + '80'),
+                shape=geo.geo, color=(self.app.defaults["global_draw_color"]),
                 update=False, layer=0, tolerance=None)
 
         self.tool_shape.redraw()
@@ -5118,8 +5118,8 @@ class AppGeoEditor(QtCore.QObject):
 
         self.shapes.clear(update=True)
 
-        draw_color = self.app.defaults['global_draw_color'] + "FF"
-        sel_color = self.app.defaults['global_sel_draw_color'] + 'FF'
+        draw_color = self.app.defaults['global_draw_color'][:-2] + "FF"
+        sel_color = self.app.defaults['global_sel_draw_color'][:-2] + 'FF'
 
         for shape in self.storage.get_objects():
             if shape.geo and not shape.geo.is_empty and shape.geo.is_valid:

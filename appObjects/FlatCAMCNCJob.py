@@ -1219,12 +1219,16 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         self.ui_disconnect()
         cb_flag = self.ui.plot_cb.isChecked()
-        for row in range(self.ui.cnc_tools_table.rowCount()):
-            table_cb = self.ui.cnc_tools_table.cellWidget(row, 6)
-            if cb_flag:
-                table_cb.setChecked(True)
-            else:
-                table_cb.setChecked(False)
+        try:
+            for row in range(self.ui.cnc_tools_table.rowCount()):
+                table_cb = self.ui.cnc_tools_table.cellWidget(row, 6)
+                if cb_flag:
+                    table_cb.setChecked(True)
+                else:
+                    table_cb.setChecked(False)
+        except AttributeError:
+            # TODO from Tcl commands - should fix it sometime
+            pass
         self.ui_connect()
 
     def on_plot_cb_click_table(self):
@@ -1307,13 +1311,14 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                             # we may have a tuple with only one element and a comma
                             dia_plot = [float(el) for el in self.options["tooldia"].split(',') if el != ''][0]
                     else:
-                        try:
-                            dia_plot = float(self.options["tools_mill_tooldia"])
-                        except ValueError:
-                            # we may have a tuple with only one element and a comma
-                            dia_plot = [
-                                float(el) for el in self.options["tools_mill_tooldia"].split(',') if el != ''
-                            ][0]
+                        # try:
+                        #     dia_plot = float(self.options["tools_mill_tooldia"])
+                        # except ValueError:
+                        #     # we may have a tuple with only one element and a comma
+                        #     dia_plot = [
+                        #         float(el) for el in self.options["tools_mill_tooldia"].split(',') if el != ''
+                        #     ][0]
+                        dia_plot = float(self.options["cncjob_tooldia"])
 
                 self.plot2(tooldia=dia_plot, obj=self, visible=visible, kind=kind)
             else:

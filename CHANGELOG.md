@@ -12,6 +12,9 @@ CHANGELOG for FlatCAM beta
 - fixed issues in the 'millslots' and 'milldrills' Tcl commands for the case when some parameters are not used
 - made sure that in Tcl commands deleting argument keys will not raise an error
 - fixed the 'isolate' Tcl command: updated to the new tools data structure elements
+- fixing an issue with not building the UI for the generated objects when running a script and then trying to enable/disable the plots
+- attempting to add a feature in the text editors to autoselect all words in a document that are the same as the one that was clicked
+- all the colors set in Preferences now have to be in the 8digits format RGBA (including the alpha channel as a suffix) - it is required to delete the current preferences files
 
 15.01.2022
 

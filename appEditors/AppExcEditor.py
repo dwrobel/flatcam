@@ -3673,7 +3673,7 @@ class AppExcEditor(QtCore.QObject):
                     for sub_geo in el.geoms:
                         self.tool_shape.add(
                             shape=sub_geo,
-                            color=(self.app.defaults["global_draw_color"] + '80'),
+                            color=(self.app.defaults["global_draw_color"]),
                             update=False,
                             layer=0,
                             tolerance=None
@@ -3681,14 +3681,14 @@ class AppExcEditor(QtCore.QObject):
                 else:
                     self.tool_shape.add(
                         shape=el,
-                        color=(self.app.defaults["global_draw_color"] + '80'),
+                        color=(self.app.defaults["global_draw_color"]),
                         update=False,
                         layer=0,
                         tolerance=None)
         except TypeError:
             self.tool_shape.add(
                 shape=util_geo,
-                color=(self.app.defaults["global_draw_color"] + '80'),
+                color=(self.app.defaults["global_draw_color"]),
                 update=False,
                 layer=0,
                 tolerance=None)
@@ -3717,7 +3717,7 @@ class AppExcEditor(QtCore.QObject):
                     self.plot_shape(geometry=shape_plus.geo, color=self.app.defaults['global_sel_draw_color'] + 'FF',
                                     linewidth=2)
                     continue
-                self.plot_shape(geometry=shape_plus.geo, color=self.app.defaults['global_draw_color'] + 'FF')
+                self.plot_shape(geometry=shape_plus.geo, color=self.app.defaults['global_draw_color'][:-2] + 'FF')
 
         for shape_form in self.utility:
             self.plot_shape(geometry=shape_form.geo, linewidth=1)

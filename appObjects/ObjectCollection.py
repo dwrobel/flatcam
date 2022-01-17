@@ -476,8 +476,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 return index.internalPointer().data(index.column())
 
         if role == Qt.ItemDataRole.ForegroundRole:
-            color = QColor(self.app.defaults['global_proj_item_color'])
-            color_disabled = QColor(self.app.defaults['global_proj_item_dis_color'])
+            color = QColor(self.app.defaults['global_proj_item_color'][:-2])
+            color_disabled = QColor(self.app.defaults['global_proj_item_dis_color'][:-2])
             obj = index.internalPointer().obj
             if obj:
                 return QtGui.QBrush(color) if obj.options["plot"] else QtGui.QBrush(color_disabled)

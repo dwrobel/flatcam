@@ -5516,7 +5516,7 @@ class AppGerberEditor(QtCore.QObject):
                 geometric_data = el['solid']
                 # Add the new utility shape
                 self.tool_shape.add(
-                    shape=geometric_data, color=(self.app.defaults["global_draw_color"] + '80'),
+                    shape=geometric_data, color=(self.app.defaults["global_draw_color"]),
                     # face_color=self.app.defaults['global_alt_sel_fill'],
                     update=False, layer=0, tolerance=None
                 )
@@ -5525,7 +5525,7 @@ class AppGerberEditor(QtCore.QObject):
             # Add the new utility shape
             self.tool_shape.add(
                 shape=geometric_data,
-                color=(self.app.defaults["global_draw_color"] + '80'),
+                color=(self.app.defaults["global_draw_color"]),
                 # face_color=self.app.defaults['global_alt_sel_fill'],
                 update=False, layer=0, tolerance=None
             )
@@ -5557,7 +5557,7 @@ class AppGerberEditor(QtCore.QObject):
                                                 linewidth=2)
                             else:
                                 self.plot_shape(geometry=geometric_data,
-                                                color=self.app.defaults['global_draw_color'] + 'FF')
+                                                color=self.app.defaults['global_draw_color'][:-2] + 'FF')
 
             if self.utility:
                 for elem in self.utility:

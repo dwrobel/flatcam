@@ -8261,7 +8261,14 @@ class App(QtCore.QObject):
         for plot_obj in self.collection.get_list():
             def worker_task(obj):
                 with self.proc_container.new("Plotting"):
-                    obj.plot(kind=self.defaults["cncjob_plot_kind"])
+                    if obj.kind == 'cncjob':
+                        try:
+                            dia = obj.ui.tooldia_entry.get_value()
+                        except AttributeError:
+                            dia = self.defaults["cncjob_tooldia"]
+                        obj.plot(kind=self.defaults["cncjob_plot_kind"], dia=dia)
+                    else:
+                        obj.plot()
                     if fit_view is True:
                         self.app_obj.object_plotted.emit(obj)
 
@@ -8803,21 +8810,27 @@ class App(QtCore.QObject):
         for obj in objects:
             if obj.options['plot'] is False:
                 obj.options.set_change_callback(lambda x: None)
-                obj.options['plot'] = True
                 try:
-                    # only the Gerber obj has on_plot_cb_click() method
+                    obj.options['plot'] = True
                     obj.ui.plot_cb.stateChanged.disconnect(obj.on_plot_cb_click)
                     # disable this cb while disconnected,
                     # in case the operation takes time the user is not allowed to change it
                     obj.ui.plot_cb.setDisabled(True)
                 except AttributeError:
-                    pass
+                    # try to build the ui
+                    obj.build_ui()
+                    # and try again
+                    self.enable_plots(objects)
+
                 obj.set_form_item("plot")
                 try:
                     obj.ui.plot_cb.stateChanged.connect(obj.on_plot_cb_click)
                     obj.ui.plot_cb.setDisabled(False)
                 except AttributeError:
-                    pass
+                    # try to build the ui
+                    obj.build_ui()
+                    # and try again
+                    self.enable_plots(objects)
                 obj.options.set_change_callback(obj.on_options_change)
         self.collection.update_view()
 
@@ -8846,19 +8859,25 @@ class App(QtCore.QObject):
         for obj in objects:
             if obj.options['plot'] is True:
                 obj.options.set_change_callback(lambda x: None)
-                obj.options['plot'] = False
                 try:
-                    # only the Gerber obj has on_plot_cb_click() method
+                    obj.options['plot'] = False
                     obj.ui.plot_cb.stateChanged.disconnect(obj.on_plot_cb_click)
                     obj.ui.plot_cb.setDisabled(True)
                 except (AttributeError, TypeError):
-                    pass
+                    # try to build the ui
+                    obj.build_ui()
+                    # and try again
+                    self.disable_plots(objects)
+
                 obj.set_form_item("plot")
                 try:
                     obj.ui.plot_cb.stateChanged.connect(obj.on_plot_cb_click)
                     obj.ui.plot_cb.setDisabled(False)
                 except (AttributeError, TypeError):
-                    pass
+                    # try to build the ui
+                    obj.build_ui()
+                    # and try again
+                    self.disable_plots(objects)
                 obj.options.set_change_callback(obj.on_options_change)
 
         try:

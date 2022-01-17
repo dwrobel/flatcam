@@ -1964,7 +1964,7 @@ class CutOut(AppTool):
     def draw_utility_geometry(self, geo):
         self.app.geo_editor.tool_shape.add(
             shape=geo,
-            color=(self.app.defaults["global_draw_color"] + '80'),
+            color=(self.app.defaults["global_draw_color"]),
             update=False,
             layer=0,
             tolerance=None)

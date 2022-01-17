@@ -1584,8 +1584,9 @@ class GeometryObject(FlatCAMObj, Geometry):
                     geo_final.multigeo = True
 
                 try:
-                    new_solid_geometry += deepcopy(geo_obj.solid_geometry)
+                    new_solid_geometry += deepcopy(geo_obj.solid_geometry.geoms)
                 except Exception as e:
+                    new_solid_geometry.append(geo_obj.solid_geometry)
                     log.error("GeometryObject.merge() --> %s" % str(e))
 
                 # find the tool_uid maximum value in the geo_final
