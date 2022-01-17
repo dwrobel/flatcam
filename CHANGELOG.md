@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - in the 'cutout' Tcl command made sure that when an error pop-up then it returns with a "fail" string
 - made sure when running scripts from the interface that if a command will generate an error then the script is aborted
+- added a new Tcl command named 'list_pp' which lists the available preprocessor names
 
 17.01.2022
 
