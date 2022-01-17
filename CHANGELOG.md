@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - attempting to add a feature in the text editors to autoselect all words in a document that are the same as the one that was clicked
 - all the colors set in Preferences now have to be in the 8digits format RGBA (including the alpha channel as a suffix) - it is required to delete the current preferences files
 - fixed an issue with path conversion when using Windows-style of paths in the 'set_path' Tcl command
+- modified the 'new' Tcl command to be silent and to show no popup message
 
 15.01.2022
 

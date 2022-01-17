@@ -10047,18 +10047,19 @@ class MenuFileHandlers(QtCore.QObject):
             elif response == bt_cancel:
                 return
             elif response == bt_no:
-                self.on_file_new_project(threaded=True)
+                self.on_file_new_project(use_thread=True)
         else:
-            self.on_file_new_project(threaded=True)
+            self.on_file_new_project(use_thread=True)
 
-    def on_file_new_project(self, cli=None, reset_tcl=True, threaded=None):
+    def on_file_new_project(self, cli=None, reset_tcl=True, use_thread=None, silenced=None):
         """
         Returns the application to its startup state. This method is thread-safe.
 
         :param cli:         Boolean. If True this method was run from command line
         :param reset_tcl:   Boolean. If False, on new project creation the Tcl instance is not recreated, therefore it
                             will remember all the previous variables. If True then the Tcl is re-instantiated.
-        :param threaded:    Bool. If True some part of the initialization are done threaded
+        :param use_thread:  Bool. If True some part of the initialization are done threaded
+        :param silenced:    Bool or None. If True then the app will not ask to save the current parameters.
         :return:            None
         """
 
@@ -10119,7 +10120,7 @@ class MenuFileHandlers(QtCore.QObject):
         # Re-fresh project options
         self.app.on_options_app2project()
 
-        if threaded is True:
+        if use_thread is True:
             self.app.new_project_signal.emit()
         else:
             # Clear pool
@@ -10150,25 +10151,26 @@ class MenuFileHandlers(QtCore.QObject):
             self.app.ui.plot_tab_area.insertTab(0, self.app.ui.plot_tab, _("Plot Area"))
             self.app.ui.plot_tab_area.protectTab(0)
 
-        msgbox = FCMessageBox(parent=self.app.ui)
-        title = _("Save preferences")
-        txt = _("Do you want to save the current settings/preferences?")
-        msgbox.setWindowTitle(title)  # taskbar still shows it
-        msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
-        msgbox.setText('<b>%s</b>' % title)
-        msgbox.setInformativeText(txt)
-        msgbox.setIconPixmap(QtGui.QPixmap(self.app.resource_location + '/save_as.png'))
+        if silenced is None or silenced is False:
+            msgbox = FCMessageBox(parent=self.app.ui)
+            title = _("Save preferences")
+            txt = _("Do you want to save the loaded project settings as the default settings?")
+            msgbox.setWindowTitle(title)  # taskbar still shows it
+            msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
+            msgbox.setText('<b>%s</b>' % title)
+            msgbox.setInformativeText(txt)
+            msgbox.setIconPixmap(QtGui.QPixmap(self.app.resource_location + '/save_as.png'))
 
-        bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
-        bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
-        # bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
+            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
+            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
+            # bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
 
-        msgbox.setDefaultButton(bt_yes)
-        msgbox.exec()
-        response = msgbox.clickedButton()
+            msgbox.setDefaultButton(bt_yes)
+            msgbox.exec()
+            response = msgbox.clickedButton()
 
-        if response == bt_yes:
-            self.app.preferencesUiManager.save_defaults()
+            if response == bt_yes:
+                self.app.preferencesUiManager.save_defaults()
 
         # take the focus of the Notebook on Project Tab.
         self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
