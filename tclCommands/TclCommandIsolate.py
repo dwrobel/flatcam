@@ -93,5 +93,5 @@ class TclCommandIsolate(TclCommandSignaled):
         if obj.kind != 'gerber':
             self.raise_tcl_error('Expected GerberObject, got %s %s.' % (name, type(obj)))
 
-        del args['name']
+        args.pop('name', None)
         obj.isolate(plot=False, **args)

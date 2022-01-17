@@ -409,7 +409,7 @@ class TclCommandSignaled(TclCommand):
             args, unnamed_args = self.check_args(args)
             if 'timeout' in args:
                 passed_timeout = args['timeout']
-                del args['timeout']
+                args.pop('timeout', None)
             else:
                 passed_timeout = self.app.defaults['global_background_timeout']
 

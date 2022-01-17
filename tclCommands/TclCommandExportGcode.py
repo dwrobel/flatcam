@@ -78,5 +78,5 @@ class TclCommandExportGcode(TclCommandSignaled):
         if self.app.collection.has_promises():
             self.raise_tcl_error('!!!Promises exists, but should not here!!!')
 
-        del args['name']
+        args.pop('name', None)
         return obj.get_gcode(**args)

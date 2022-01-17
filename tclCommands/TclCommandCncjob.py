@@ -211,7 +211,7 @@ class TclCommandCncjob(TclCommandSignaled):
             self.raise_tcl_error("The entered value for 'toolchangexy' needs to have the format x,y or "
                                  "in format (x, y) - no spaces allowed. But always two comma separated values.")
 
-        del args['name']
+        args.pop('name', None)
 
         for arg in args:
             if arg == "toolchange_xy" or arg == "spindlespeed" or arg == "startz":

@@ -58,7 +58,7 @@ class TclCommandFollow(TclCommandSignaled):
         if obj.kind != 'gerber':
             self.raise_tcl_error('Expected GerberObject, got %s %s.' % (name, type(obj)))
 
-        del args['name']
+        args.pop('name', None)
         try:
             obj.follow_geo(**args)
         except Exception as e:

@@ -132,10 +132,8 @@ class TclCommandMillDrills(TclCommandSignaled):
                 args['tools'] = 'all'
 
             # no longer needed
-            if 'milled_dias' in args:
-                del args['milled_dias']
-            if 'diatol' in args:
-                del args['diatol']
+            args.pop('milled_dias', None)
+            args.pop('diatol', None)
         except Exception as e:
             self.raise_tcl_error("Bad tools: %s" % str(e))
 
@@ -147,7 +145,7 @@ class TclCommandMillDrills(TclCommandSignaled):
 
         try:
             # 'name' is not an argument of obj.generate_milling()
-            del args['name']
+            args.pop('name', None)
 
             # This runs in the background... Is blocking handled?
             success, msg = obj.generate_milling_drills(plot=False, **args)

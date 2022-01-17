@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 17.01.2022
 
 - fixed issues in the 'millslots' and 'milldrills' Tcl commands for the case when some parameters are not used
+- made sure that in Tcl commands deleting argument keys will not raise an error
 
 15.01.2022
 

@@ -87,7 +87,7 @@ class TclCommandBbox(TclCommand):
         else:
             rounded = bool(eval(self.app.defaults["gerber_bboxrounded"]))
 
-        del args['name']
+        args.pop('name', None)
 
         try:
             def geo_init(geo_obj, app_obj):

@@ -126,22 +126,14 @@ class TclCommandMillSlots(TclCommandSignaled):
                                          "TclCommand are not actual tool diameters in the Excellon object.")
 
                 args['tools'] = req_tools
-
-                # no longer needed
-                del args['milled_dias']
-                del args['diatol']
-
                 # Split and put back. We are passing the whole dictionary later.
                 # args['milled_dias'] = [x.strip() for x in args['tools'].split(",")]
             else:
                 args['tools'] = 'all'
 
             # no longer needed
-            if 'milled_dias' in args:
-                del args['milled_dias']
-            if 'diatol' in args:
-                del args['diatol']
-
+            args.pop('milled_dias', None)
+            args.pop('diatol', None)
         except Exception as e:
             self.raise_tcl_error("Bad tools: %s" % str(e))
 
@@ -153,7 +145,7 @@ class TclCommandMillSlots(TclCommandSignaled):
 
         try:
             # 'name' is not an argument of obj.generate_milling()
-            del args['name']
+            args.pop('name', None)
 
             # This runs in the background... Is blocking handled?
             success, msg = obj.generate_milling_slots(plot=False, **args)
