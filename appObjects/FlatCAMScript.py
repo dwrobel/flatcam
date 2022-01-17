@@ -264,7 +264,12 @@ class ScriptObject(FlatCAMObj):
                     result = self.app.shell.tcl.eval(str(new_command))
                     if result != 'None':
                         self.app.shell.append_output(result + '\n')
-
+                    if result == 'fail':
+                        self.app.ui.fcinfo.lock_pmaps = False
+                        self.app.shell.close_processing()
+                        self.app.inform.emit("[ERROR] %s: %s" % (_("Tcl Command failed"), str(new_command)))
+                        self.app.inform.emit("[ERROR] %s" % _("Aborting."))
+                        return
                     old_line = ''
                 except tk.TclError:
                     old_line = old_line + tcl_command_line + '\n'

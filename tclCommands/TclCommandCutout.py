@@ -81,7 +81,11 @@ class TclCommandCutout(TclCommand):
             dia_par = float(self.app.defaults["tools_cutout_tooldia"])
 
         if 'gaps' in args:
-            gaps_par = args['gaps']
+            if args['gaps'] not in ["tb", "lr", "4", 4]:
+                self.raise_tcl_error(
+                    "Incorrect -gaps values. Can be only a string from: 'tb', 'lr' and '4'.")
+                return "fail"
+            gaps_par = str(args['gaps'])
         else:
             gaps_par = str(self.app.defaults["tools_cutout_gaps_ff"])
 

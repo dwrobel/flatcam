@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+18.01.2022
+
+- in the 'cutout' Tcl command made sure that when an error pop-up then it returns with a "fail" string
+- made sure when running scripts from the interface that if a command will generate an error then the script is aborted
+
 17.01.2022
 
 - fixed issues in the 'millslots' and 'milldrills' Tcl commands for the case when some parameters are not used

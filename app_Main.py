@@ -6426,7 +6426,8 @@ class App(QtCore.QObject):
         :return:
         """
         if self.abort_flag is False:
-            self.inform.emit(_("Aborting. The current task will be gracefully closed as soon as possible..."))
+            msg = "%s %s" % (_("Aborting."), _("The current task will be gracefully closed as soon as possible..."))
+            self.inform.emit(msg)
             self.abort_flag = True
             self.cleanup.emit()
 
