@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - fixed issues in the 'millslots' and 'milldrills' Tcl commands for the case when some parameters are not used
 - made sure that in Tcl commands deleting argument keys will not raise an error
+- fixed the 'isolate' Tcl command: updated to the new tools data structure elements
 
 15.01.2022
 

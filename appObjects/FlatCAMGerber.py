@@ -555,7 +555,7 @@ class GerberObject(FlatCAMObj, Gerber):
             def iso_init(geo_obj, app_obj):
                 # Propagate options
                 geo_obj.options["tools_mill_tooldia"] = str(dia)
-                geo_obj.tool_type = self.app.defaults["tools_iso_tool_type"]
+                geo_obj.tool_type = self.app.defaults["tools_iso_tool_shape"]
 
                 geo_obj.solid_geometry = []
 
@@ -569,7 +569,7 @@ class GerberObject(FlatCAMObj, Gerber):
                         default_data[opt_key] = self.app.options[opt_key]
 
                 geo_obj.tools = {
-                    '1': {
+                    1: {
                         'tooldia':          dia,
                         'data':             default_data,
                         'solid_geometry':   geo_obj.solid_geometry
@@ -591,7 +591,7 @@ class GerberObject(FlatCAMObj, Gerber):
                     geo_obj.solid_geometry.append(geom)
 
                     # update the geometry in the tools
-                    geo_obj.tools['1']['solid_geometry'] = geo_obj.solid_geometry
+                    geo_obj.tools[1]['solid_geometry'] = geo_obj.solid_geometry
 
                 # detect if solid_geometry is empty and this require list flattening which is "heavy"
                 # or just looking in the lists (they are one level depth) and if any is not empty
@@ -654,7 +654,7 @@ class GerberObject(FlatCAMObj, Gerber):
                 def iso_init(geo_obj, app_obj):
                     # Propagate options
                     geo_obj.options["tools_mill_tooldia"] = str(dia)
-                    geo_obj.tool_type = self.app.defaults["tools_iso_tool_type"]
+                    geo_obj.tool_type = self.app.defaults["tools_iso_tool_shape"]
 
                     # if milling type is climb then the move is counter-clockwise around features
                     mill_dir = 1 if milling_type == 'cl' else 0
@@ -677,7 +677,7 @@ class GerberObject(FlatCAMObj, Gerber):
                             default_data[opt_key] = self.app.options[opt_key]
 
                     geo_obj.tools = {
-                        '1': {
+                        1: {
                             'tooldia':          dia,
                             'data':             default_data,
                             'solid_geometry':   geo_obj.solid_geometry
