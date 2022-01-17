@@ -250,7 +250,8 @@ class ScriptObject(FlatCAMObj):
                 # if FlatCAM is run in Windows then replace all the slashes with
                 # the UNIX style slash that TCL understands
                 if sys.platform == 'win32':
-                    if "open" in tcl_command_line:
+                    tcl_command_line_lowered = tcl_command_line.lower()
+                    if "open" in tcl_command_line_lowered or "path" in tcl_command_line_lowered:
                         tcl_command_line = tcl_command_line.replace('\\', '/')
 
                 if old_line != '':

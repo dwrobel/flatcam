@@ -166,9 +166,6 @@ class TclCommand(object):
         Pre-processes arguments to detect '-keyword value' pairs into dictionary
         and standalone parameters into list.
 
-        This is copy from FlatCAMApp.setup_shell().h() just for accessibility,
-        original should  be removed  after all commands will be converted
-
         :param args: arguments from tcl to parse
         :return: arguments, options
         """
@@ -189,10 +186,11 @@ class TclCommand(object):
                 option_name = match.group(1)
                 continue
 
+            init_arg = args[i]
             if option_name is None:
-                arguments.append(args[i])
+                arguments.append(init_arg)
             else:
-                options[option_name] = args[i]
+                options[option_name] = init_arg
                 option_name = None
 
         if option_name is not None:

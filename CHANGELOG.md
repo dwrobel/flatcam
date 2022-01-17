@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - fixing an issue with not building the UI for the generated objects when running a script and then trying to enable/disable the plots
 - attempting to add a feature in the text editors to autoselect all words in a document that are the same as the one that was clicked
 - all the colors set in Preferences now have to be in the 8digits format RGBA (including the alpha channel as a suffix) - it is required to delete the current preferences files
+- fixed an issue with path conversion when using Windows-style of paths in the 'set_path' Tcl command
 
 15.01.2022
 
