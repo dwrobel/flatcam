@@ -1998,10 +1998,13 @@ class App(QtCore.QObject):
                               pos=self.ui.menufileimport,
                               separator=True)
 
-        self.image_tool = ToolImage(self)
-        self.image_tool.install(icon=QtGui.QIcon(self.resource_location + '/image32.png'),
-                                pos=self.ui.menufileimport,
-                                separator=True)
+        try:
+            self.image_tool = ToolImage(self)
+            self.image_tool.install(icon=QtGui.QIcon(self.resource_location + '/image32.png'),
+                                    pos=self.ui.menufileimport,
+                                    separator=True)
+        except Exception:
+            self.image_tool = lambda x: None
 
         self.pcb_wizard_tool = PcbWizard(self)
         self.pcb_wizard_tool.install(icon=QtGui.QIcon(self.resource_location + '/drill32.png'),

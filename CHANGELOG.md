@@ -17,7 +17,7 @@ CHANGELOG for FlatCAM beta
 - in Geometry object the default self.options dictionary is updated with keys that reflect new data structure
 - added comments in the `default` preprocessors which will help other people create their own preprocessors
 - remade the Image Import plugin in an attempt to fix issues with the latest packages of Gdal and Rasterio but it looks that it is a conflict between the Rasterio 1.2.10, Gdal 3.4.1 and Shapely 1.8.0
-
+- made a hack so if the Image Import plugin can't be loaded due of dependencies errors the app will not crash but this plugin will no longer be available
 
 18.01.2022
 

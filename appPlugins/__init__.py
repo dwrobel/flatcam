@@ -7,7 +7,10 @@ from appPlugins.ToolAlignObjects import AlignObjects
 
 from appPlugins.ToolFilm import Film
 
-from appPlugins.ToolImage import ToolImage
+try:
+    from appPlugins.ToolImage import ToolImage
+except ImportError:
+    pass
 
 from appPlugins.ToolDistance import Distance
 from appPlugins.ToolObjectDistance import ObjectDistance
