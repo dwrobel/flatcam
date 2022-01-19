@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - added comments in the `default` preprocessors which will help other people create their own preprocessors
 - remade the Image Import plugin in an attempt to fix issues with the latest packages of Gdal and Rasterio but it looks that it is a conflict between the Rasterio 1.2.10, Gdal 3.4.1 and Shapely 1.8.0
 
+
 18.01.2022
 
 - in the 'cutout' Tcl command made sure that when an error pop-up then it returns with a "fail" string
