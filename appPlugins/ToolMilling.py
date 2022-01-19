@@ -2972,6 +2972,8 @@ class ToolMilling(AppTool, Excellon):
         :return:                None
         """
 
+        self.app.log.debug("ToolMilling.mtool_gen_cncjob()")
+
         geo_obj = geo_obj if geo_obj is not None else self.target_obj
 
         # use the name of the first tool selected in self.geo_tools_table which has the diameter passed as tool_dia

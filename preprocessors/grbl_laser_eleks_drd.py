@@ -23,7 +23,13 @@ class grbl_laser_eleks_drd(PreProc):
     def start_code(self, p):
         units = ' ' + str(p['units']).lower()
         gcode = '(This preprocessor is made to work with Laser cutters.)\n'
-        gcode += '(It allows movement on the Z axis.)\n\n'
+        gcode += '(This post processor is configured to output code for)\n'
+        gcode += '(lasers without Z Axis and to convert excellon drillcodes into arcs.)\n'
+        gcode += '(Therefore after etching we have small holes in the copper plane)\n'
+        gcode += '(which helps for centering the drill bit for manual drilling)\n'
+        gcode += '(The GRBL Controller has to support G2 commands)\n'
+        gcode += '(The moves are only on horizontal plane X-Y. There are no Z moves.)\n'
+        gcode += '(Assumes manual laser focussing.)\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
         xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
@@ -101,7 +107,7 @@ class grbl_laser_eleks_drd(PreProc):
     def toolchange_code(self, p):
         return ';toolchange'
 
-    def up_to_zero_code(self, p):  # Only use for drilling, so no essentialy need for Laser
+    def up_to_zero_code(self, p):  # Only use for drilling, so no essential need for Laser
         return ';up_to_zero'
 
     def position_code(self, p):

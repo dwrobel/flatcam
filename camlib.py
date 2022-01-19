@@ -6037,22 +6037,23 @@ class CNCjob(Geometry):
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Travel Z parameter is None or zero."))
             return 'fail'
 
-        if self.z_move < 0:
-            self.app.inform.emit('[WARNING] %s' %
-                                 _("The Travel Z parameter has negative value. "
-                                   "It is the height value to travel between cuts.\n"
-                                   "The Z Travel parameter needs to have a positive value, assuming it is a typo "
-                                   "therefore the app will convert the value to positive."
-                                   "Check the resulting CNC code (Gcode etc)."))
-            self.z_move = -self.z_move
-        elif self.z_move == 0:
-            self.app.inform.emit(
-                '[WARNING] %s: %s' % (_("The Z Travel parameter is zero. This is dangerous, skipping file"),
-                                      self.options['name'])
-            )
-            return 'fail'
+        if 'laser' not in self.pp_geometry_name:
+            if self.z_move < 0:
+                self.app.inform.emit('[WARNING] %s' %
+                                     _("The Travel Z parameter has negative value. "
+                                       "It is the height value to travel between cuts.\n"
+                                       "The Z Travel parameter needs to have a positive value, assuming it is a typo "
+                                       "therefore the app will convert the value to positive."
+                                       "Check the resulting CNC code (Gcode etc)."))
+                self.z_move = -self.z_move
+            elif self.z_move == 0:
+                self.app.inform.emit(
+                    '[WARNING] %s: %s' % (_("The Z Travel parameter is zero. This is dangerous, skipping file"),
+                                          self.options['name'])
+                )
+                return 'fail'
 
-        # made sure that depth_per_cut is no more then the z_cut
+        # made sure that depth_per_cut is no more than the z_cut (travelz)
         try:
             if abs(self.z_cut) < self.z_depthpercut:
                 self.z_depthpercut = abs(self.z_cut)

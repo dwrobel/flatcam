@@ -21,7 +21,11 @@ class GRBL_laser(PreProc):
     def start_code(self, p):
         units = ' ' + str(p['units']).lower()
         gcode = '(This preprocessor is used with a motion controller loaded with GRBL firmware. )\n'
-        gcode += '(It is for the case when it is used together with a LASER connected on the SPINDLE connector.)\n\n'
+        gcode += '(It is for the case when it is used together with a LASER connected on the SPINDLE connector.)\n' \
+                 '(This preprocessor makes no moves on the Z axis it will only move horizontally.)\n' \
+                 '(The horizontal move is done with G0 - highest possible speed set in the GRBL controller.)\n' \
+                 '(It assumes a manually focused laser.)\n' \
+                 '(The laser is started with M3 command and stopped with the M5 command.)\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
         xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
@@ -29,10 +33,6 @@ class GRBL_laser(PreProc):
         ymax = '%.*f' % (p.coords_decimals, p['options']['ymax'])
 
         gcode += '(Feedrate: ' + str(p['feedrate']) + units + '/min' + ')\n'
-        gcode += '(Feedrate rapids: ' + str(p['feedrate_rapid']) + units + '/min' + ')\n' + '\n'
-
-        gcode += '(Z Focus: ' + str(p['z_move']) + units + ')\n'
-
         gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
 
         if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
@@ -59,11 +59,10 @@ class GRBL_laser(PreProc):
         return 'M5'
 
     def down_code(self, p):
-        sdir = {'CW': 'M03', 'CCW': 'M04'}[p.spindledir]
         if p.spindlespeed:
-            return '%s S%s' % (sdir, str(p.spindlespeed))
+            return '%s S%s' % ('M3', str(p.spindlespeed))
         else:
-            return sdir
+            return 'M3'
 
     def toolchange_code(self, p):
         return ''
@@ -88,32 +87,31 @@ class GRBL_laser(PreProc):
                (p.coords_decimals, x_pos, p.coords_decimals, y_pos)
 
     def rapid_code(self, p):
-        return ('G00 ' + self.position_code(p)).format(**p)
+        return ('G0 ' + self.position_code(p)).format(**p)
 
     def linear_code(self, p):
-        return ('G01 ' + self.position_code(p)).format(**p) + \
+        return ('G1 ' + self.position_code(p)).format(**p) + \
                ' F' + str(self.feedrate_format % (p.fr_decimals, p.feedrate))
 
     def end_code(self, p):
         coords_xy = p['xy_end']
-        gcode = ('G00 Z' + self.feedrate_format % (p.fr_decimals, p.z_end) + "\n")
+        gcode = ('G0 Z' + self.feedrate_format % (p.fr_decimals, p.z_end) + "\n")
 
         if coords_xy and coords_xy != '':
-            gcode += 'G00 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
+            gcode += 'G0 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
         return gcode
 
     def feedrate_code(self, p):
-        return 'G01 F' + str(self.feedrate_format % (p.fr_decimals, p.feedrate))
+        return 'G1 F' + str(self.feedrate_format % (p.fr_decimals, p.feedrate))
 
     def z_feedrate_code(self, p):
-        return 'G01 F' + str(self.feedrate_format % (p.fr_decimals, p.z_feedrate))
+        return 'G1 F' + str(self.feedrate_format % (p.fr_decimals, p.z_feedrate))
 
     def spindle_code(self, p):
-        sdir = {'CW': 'M03', 'CCW': 'M04'}[p.spindledir]
         if p.spindlespeed:
-            return '%s S%s' % (sdir, str(p.spindlespeed))
+            return '%s S%s' % ('M3', str(p.spindlespeed))
         else:
-            return sdir
+            return 'M3'
 
     def dwell_code(self, p):
         return ''

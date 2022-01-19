@@ -7,6 +7,15 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+19.01.2022
+
+- updated the header of the postprocessos with 'laser' to show essential informations like some of them do not move on the Z axis
+- make sure that the laser postprocessor that do move on the Z axis (like 'GRBL_laser_Z') accept negative values for the Z focus
+- fixed issue in highlighter such that the keywords that have an underscore included are highlighted
+- rearranged the default keywords
+- fixed the generatecncjob() method default parameters to reflect new data structure names
+- in Geometry object the default self.options dictionary is updated with keys that reflect new data structure
+
 18.01.2022
 
 - in the 'cutout' Tcl command made sure that when an error pop-up then it returns with a "fail" string

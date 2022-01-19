@@ -3,6 +3,8 @@
 # http://flatcam.org                                       #
 # File Author: Matthieu Berthomé                           #
 # Date: 5/26/2017                                          #
+# Modified: Marius Stanciu                                 #
+# Date: 01/19/2022                                         #
 # MIT Licence                                              #
 # ##########################################################
 
@@ -12,7 +14,7 @@ from appPreProcessor import *
 # is compatible with almost any version of Grbl.
 
 
-class Z_laser(PreProc):
+class GRBL_laser_Z(PreProc):
 
     include_header = True
     coordinate_format = "%.*f"
@@ -30,10 +32,7 @@ class Z_laser(PreProc):
         ymax = '%.*f' % (p.coords_decimals, p['options']['ymax'])
 
         gcode += '(Feedrate: ' + str(p['feedrate']) + units + '/min' + ')\n'
-        gcode += '(Feedrate rapids: ' + str(p['feedrate_rapid']) + units + '/min' + ')\n' + '\n'
-
         gcode += '(Z Focus: ' + str(p['z_move']) + units + ')\n'
-
         gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
 
         if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
@@ -54,20 +53,20 @@ class Z_laser(PreProc):
         return gcode
 
     def startz_code(self, p):
-        return ''
+        gcode = 'G0 Z' + self.coordinate_format % (p.coords_decimals, p.z_move)
+        return gcode
 
     def lift_code(self, p):
         return 'M5'
 
     def down_code(self, p):
-        sdir = {'CW': 'M03', 'CCW': 'M04'}[p.spindledir]
         if p.spindlespeed:
-            return '%s S%s' % (sdir, str(p.spindlespeed))
+            return '%s S%s' % ('M3', str(p.spindlespeed))
         else:
-            return sdir
+            return 'M3'
 
     def toolchange_code(self, p):
-        return 'G00 Z' + self.coordinate_format % (p.coords_decimals, p.z_move)
+        return 'G0 Z' + self.coordinate_format % (p.coords_decimals, p.z_move)
 
     def up_to_zero_code(self, p):
         return 'M5'
@@ -89,32 +88,31 @@ class Z_laser(PreProc):
                (p.coords_decimals, x_pos, p.coords_decimals, y_pos)
 
     def rapid_code(self, p):
-        return ('G00 ' + self.position_code(p)).format(**p)
+        return ('G0 ' + self.position_code(p)).format(**p)
 
     def linear_code(self, p):
-        return ('G01 ' + self.position_code(p)).format(**p) + \
+        return ('G1 ' + self.position_code(p)).format(**p) + \
                ' F' + str(self.feedrate_format % (p.fr_decimals, p.feedrate))
 
     def end_code(self, p):
         coords_xy = p['xy_end']
-        gcode = ('G00 Z' + self.feedrate_format % (p.fr_decimals, p.z_end) + "\n")
+        gcode = ('G0 Z' + self.feedrate_format % (p.fr_decimals, p.z_end) + "\n")
 
         if coords_xy and coords_xy != '':
-            gcode += 'G00 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
+            gcode += 'G0 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
         return gcode
 
     def feedrate_code(self, p):
-        return 'G01 F' + str(self.feedrate_format % (p.fr_decimals, p.feedrate))
+        return 'G1 F' + str(self.feedrate_format % (p.fr_decimals, p.feedrate))
 
     def z_feedrate_code(self, p):
-        return 'G01 F' + str(self.feedrate_format % (p.fr_decimals, p.z_feedrate))
+        return 'G1 F' + str(self.feedrate_format % (p.fr_decimals, p.z_feedrate))
 
     def spindle_code(self, p):
-        sdir = {'CW': 'M03', 'CCW': 'M04'}[p.spindledir]
         if p.spindlespeed:
-            return '%s S%s' % (sdir, str(p.spindlespeed))
+            return '%s S%s' % ('M3', str(p.spindlespeed))
         else:
-            return sdir
+            return 'M3'
 
     def dwell_code(self, p):
         return ''

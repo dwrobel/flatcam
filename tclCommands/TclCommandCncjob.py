@@ -134,10 +134,16 @@ class TclCommandCncjob(TclCommandSignaled):
         args["z_move"] = args["z_move"] if "z_move" in args and args["z_move"] else \
             self.app.defaults["geometry_travelz"]
 
+        args["pp"] = args["pp"] if "pp" in args and args["pp"] else self.app.defaults["tools_mill_ppname_g"]
+
         args["feedrate"] = args["feedrate"] if "feedrate" in args and args["feedrate"] else \
             self.app.defaults["tools_mill_feedrate"]
-        args["feedrate_z"] = args["feedrate_z"] if "feedrate_z" in args and args["feedrate_z"] else \
-            self.app.defaults["tools_mill_feedrate_z"]
+
+        if 'laser' in args["pp"] and "feedrate_z" not in args:
+            args["feedrate_z"] = args["feedrate"]
+        else:
+            args["feedrate_z"] = args["feedrate_z"] if "feedrate_z" in args and args["feedrate_z"] else \
+                self.app.defaults["tools_mill_feedrate_z"]
         args["feedrate_rapid"] = args["feedrate_rapid"] if "feedrate_rapid" in args and args["feedrate_rapid"] else \
             self.app.defaults["tools_mill_feedrate_rapid"]
 
@@ -187,8 +193,6 @@ class TclCommandCncjob(TclCommandSignaled):
         else:
             args["dwell"] = self.app.defaults["tools_mill_dwell"]
             args["dwelltime"] = self.app.defaults["tools_mill_dwelltime"]
-
-        args["pp"] = args["pp"] if "pp" in args and args["pp"] else self.app.defaults["tools_mill_ppname_g"]
 
         if "toolchangez" in args:
             args["toolchange"] = True

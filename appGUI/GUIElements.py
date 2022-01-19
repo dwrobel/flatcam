@@ -4681,7 +4681,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
 
                     # parameter
                     brush = QtGui.QBrush(Qt.GlobalColor.darkBlue, Qt.BrushStyle.SolidPattern)
-                    pattern = QtCore.QRegularExpression("\-[0-9a-zA-Z]*\s")
+                    pattern = QtCore.QRegularExpression("\-[0-9a-zA-Z_]*\s")
                     parameterOperator.setForeground(brush)
                     parameterOperator.setFontWeight(QtGui.QFont.Weight.Bold)
                     rule = (pattern, parameterOperator)
