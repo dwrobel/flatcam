@@ -30,7 +30,6 @@ import shapely.affinity as affinity
 from shapely.wkt import loads as sloads
 from shapely.wkt import dumps as sdumps
 from shapely.geometry.base import BaseGeometry
-from shapely.geometry import shape
 
 # ---------------------------------------
 # NEEDED for Legacy mode
@@ -40,8 +39,6 @@ from descartes.patch import PolygonPatch
 
 from collections.abc import Iterable
 
-import rasterio
-from rasterio.features import shapes
 import ezdxf
 
 from appCommon.Common import GracefulException as grace
@@ -1384,94 +1381,6 @@ class Geometry(object):
         # if geos_text is not None:
         #     geos_text_f = []
         #     self.solid_geometry = [self.solid_geometry, geos_text_f]
-
-    def import_image(self, filename, flip=True, units='MM', dpi=96, mode='black', mask=None):
-        """
-        Imports shapes from an IMAGE file into the object's geometry.
-
-        :param filename:    Path to the IMAGE file.
-        :type filename:     str
-        :param flip:        Flip the object vertically.
-        :type flip:         bool
-        :param units:       FlatCAM units
-        :type units:        str
-        :param dpi:         dots per inch on the imported image
-        :param mode:        how to import the image: as 'black' or 'color'
-        :type mode:         str
-        :param mask:        level of detail for the import
-        :return:            None
-        """
-        if mask is None:
-            mask = [128, 128, 128, 128]
-
-        scale_factor = 25.4 / dpi if units.lower() == 'mm' else 1 / dpi
-
-        geos = []
-        unscaled_geos = []
-
-        with rasterio.open(filename) as src:
-            # if filename.lower().rpartition('.')[-1] == 'bmp':
-            #     red = green = blue = src.read(1)
-            #     print("BMP")
-            # elif filename.lower().rpartition('.')[-1] == 'png':
-            #     red, green, blue, alpha = src.read()
-            # elif filename.lower().rpartition('.')[-1] == 'jpg':
-            #     red, green, blue = src.read()
-
-            red = green = blue = src.read(1)
-
-            try:
-                green = src.read(2)
-            except Exception:
-                pass
-
-            try:
-                blue = src.read(3)
-            except Exception:
-                pass
-
-        if mode == 'black':
-            mask_setting = red <= mask[0]
-            total = red
-            log.debug("Image import as monochrome.")
-        else:
-            mask_setting = (red <= mask[1]) + (green <= mask[2]) + (blue <= mask[3])
-            total = np.zeros(red.shape, dtype=np.float32)
-            for band in red, green, blue:
-                total += band
-            total /= 3
-            log.debug("Image import as colored. Thresholds are: R = %s , G = %s, B = %s" %
-                      (str(mask[1]), str(mask[2]), str(mask[3])))
-
-        for geom, val in shapes(total, mask=mask_setting):
-            unscaled_geos.append(shape(geom))
-
-        for g in unscaled_geos:
-            geos.append(scale(g, scale_factor, scale_factor, origin=(0, 0)))
-
-        if flip:
-            geos = [translate(scale(g, 1.0, -1.0, origin=(0, 0))) for g in geos]
-
-        # Add to object
-        if self.solid_geometry is None:
-            self.solid_geometry = []
-
-        if type(self.solid_geometry) is list:
-            # self.solid_geometry.append(unary_union(geos))
-            if type(geos) is list:
-                self.solid_geometry += geos
-            else:
-                self.solid_geometry.append(geos)
-        else:  # It's shapely geometry
-            self.solid_geometry = [self.solid_geometry, geos]
-
-        # flatten the self.solid_geometry list for import_svg() to import SVG as Gerber
-        self.solid_geometry = list(self.flatten_list(self.solid_geometry))
-        self.solid_geometry = unary_union(self.solid_geometry)
-
-        # self.solid_geometry = MultiPolygon(self.solid_geometry)
-        # self.solid_geometry = self.solid_geometry.buffer(0.00000001)
-        # self.solid_geometry = self.solid_geometry.buffer(-0.00000001)
 
     def size(self):
         """

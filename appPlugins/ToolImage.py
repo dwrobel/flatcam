@@ -4,13 +4,23 @@
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
 # ##########################################################
+import sys
 
 from PyQt6 import QtGui, QtWidgets
+import os
+
+from shapely.geometry import shape
+from shapely.ops import unary_union
+from shapely.affinity import scale, translate
+
+import numpy as np
+
+# import rasterio
+from rasterio import open as rasterio_open
+from rasterio.features import shapes
 
 from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCComboBox, FCSpinner, FCLabel, VerticalScrollArea, FCGridLayout
-
-import os
 
 import gettext
 import appTranslation as fcTranslate
@@ -184,8 +194,27 @@ class ToolImage(AppTool):
 
         def obj_init(geo_obj, app_obj):
             app_obj.log.debug("ToolIamge.import_image() -> importing image as geometry")
-            geo_obj.import_image(filename, units=units, dpi=dpi, mode=mode, mask=mask)
+            image_geo = self.import_image_handler(filename, units=units, dpi=dpi, mode=mode, mask=mask)
+
+            # # Add to object
+            # if self.solid_geometry is None:
+            #     self.solid_geometry = []
+            #
+            # if type(self.solid_geometry) is list:
+            #     # self.solid_geometry.append(unary_union(geos))
+            #     if type(geos) is list:
+            #         self.solid_geometry += geos
+            #     else:
+            #         self.solid_geometry.append(geos)
+            # else:  # It's shapely geometry
+            #     self.solid_geometry = [self.solid_geometry, geos]
+
+            # flatten the geo_obj.solid_geometry list
+            geo_obj.solid_geometry = list(self.flatten_list(image_geo))
+            geo_obj.solid_geometry = unary_union(geo_obj.solid_geometry)
+
             geo_obj.multigeo = False
+            geo_obj.multitool = False
 
         with self.app.proc_container.new('%s ...' % _("Importing")):
 
@@ -200,6 +229,82 @@ class ToolImage(AppTool):
 
             # GUI feedback
             self.app.inform.emit('[success] %s: %s' % (_("Opened"), filename))
+
+    def import_image_handler(self, filename, flip=True, units='MM', dpi=96, mode='black', mask=None):
+        """
+        Imports shapes from an IMAGE file into the object's geometry.
+
+        :param filename:    Path to the IMAGE file.
+        :type filename:     str
+        :param flip:        Flip the object vertically.
+        :type flip:         bool
+        :param units:       FlatCAM units
+        :type units:        str
+        :param dpi:         dots per inch on the imported image
+        :param mode:        how to import the image: as 'black' or 'color'
+        :type mode:         str
+        :param mask:        level of detail for the import
+        :return:            None
+        """
+        if mask is None:
+            mask = [128, 128, 128, 128]
+
+        scale_factor = 25.4 / dpi if units.lower() == 'mm' else 1 / dpi
+
+        geos = []
+        unscaled_geos = []
+
+        with rasterio_open(filename) as src:
+            # if filename.lower().rpartition('.')[-1] == 'bmp':
+            #     red = green = blue = src.read(1)
+            #     print("BMP")
+            # elif filename.lower().rpartition('.')[-1] == 'png':
+            #     red, green, blue, alpha = src.read()
+            # elif filename.lower().rpartition('.')[-1] == 'jpg':
+            #     red, green, blue = src.read()
+
+            red = green = blue = src.read(1)
+
+            try:
+                green = src.read(2)
+            except Exception:
+                pass
+
+            try:
+                blue = src.read(3)
+            except Exception:
+                pass
+
+        if mode == 'black':
+            mask_setting = red <= mask[0]
+            total = red
+            self.app.log.debug("Image import as monochrome.")
+        else:
+            mask_setting = (red <= mask[1]) + (green <= mask[2]) + (blue <= mask[3])
+            total = np.zeros(red.shape, dtype=np.float32)
+            for band in red, green, blue:
+                total += band
+            total /= 3
+            self.app.log.debug("Image import as colored. Thresholds are: R = %s , G = %s, B = %s" %
+                               (str(mask[1]), str(mask[2]), str(mask[3])))
+
+        for geom, val in shapes(total, mask=mask_setting):
+            unscaled_geos.append(shape(geom))
+
+        for g in unscaled_geos:
+            geos.append(scale(g, scale_factor, scale_factor, origin=(0, 0)))
+
+        if flip:
+            geos = [translate(scale(g, 1.0, -1.0, origin=(0, 0))) for g in geos]
+
+        return geos
+
+    def flatten_list(self, obj_list):
+        for item in obj_list:
+            if hasattr(item, '__iter__') and not isinstance(item, (str, bytes)):
+                yield from self.flatten_list(item)
+            else:
+                yield item
 
 
 class ImageUI:
