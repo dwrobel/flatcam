@@ -3102,7 +3102,7 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.app.fiducial_tool.run(toggle=True)
                     return
 
-                # Punch Gerber Tool
+                # Invert Gerber Tool
                 if key == QtCore.Qt.Key.Key_G:
                     self.app.invert_tool.run(toggle=True)
 

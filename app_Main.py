@@ -6852,10 +6852,10 @@ class App(QtCore.QObject):
             # first do the Plugin cleanup
             # #########################################################################################################
             for plugin in self.app_plugins:
-                # execute this only for the current active plugin
-                if self.ui.notebook.tabText(found_idx) != plugin.pluginName:
-                    continue
                 try:
+                    # execute this only for the current active plugin
+                    if self.ui.notebook.tabText(found_idx) != plugin.pluginName:
+                        continue
                     plugin.on_plugin_cleanup()
                 except AttributeError:
                     # not all plugins have this implemented
@@ -7825,14 +7825,17 @@ class App(QtCore.QObject):
 
         tab_idx = self.ui.notebook.currentIndex()
         for plugin in self.app_plugins:
-            # execute this only for the current active plugin
-            if self.ui.notebook.tabText(tab_idx) != plugin.pluginName:
-                continue
             try:
-                plugin.on_plugin_mouse_click_release(pos)
+                # execute this only for the current active plugin
+                if self.ui.notebook.tabText(tab_idx) != plugin.pluginName:
+                    continue
+                try:
+                    plugin.on_plugin_mouse_click_release(pos)
+                except AttributeError:
+                    # not all plugins have this implemented
+                    # print("This does not have it", self.ui.notebook.tabText(tab_idx))
+                    pass
             except AttributeError:
-                # not all plugins have this implemented
-                # print("This does not have it", self.ui.notebook.tabText(tab_idx))
                 pass
 
     def on_plugin_mouse_move(self, pos):
@@ -7850,13 +7853,16 @@ class App(QtCore.QObject):
         tab_idx = self.ui.notebook.currentIndex()
         for plugin in self.app_plugins:
             # execute this only for the current active plugin
-            if self.ui.notebook.tabText(tab_idx) != plugin.pluginName:
-                continue
             try:
-                plugin.on_plugin_mouse_move(pos)
+                if self.ui.notebook.tabText(tab_idx) != plugin.pluginName:
+                    continue
+                try:
+                    plugin.on_plugin_mouse_move(pos)
+                except AttributeError:
+                    # not all plugins have this implemented
+                    # print("This does not have it", self.ui.notebook.tabText(tab_idx))
+                    pass
             except AttributeError:
-                # not all plugins have this implemented
-                # print("This does not have it", self.ui.notebook.tabText(tab_idx))
                 pass
 
     def delete_hover_shape(self):
