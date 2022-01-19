@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - rearranged the default keywords
 - fixed the generatecncjob() method default parameters to reflect new data structure names
 - in Geometry object the default self.options dictionary is updated with keys that reflect new data structure
+- added comments in the `default` preprocessors which will help other people create their own preprocessors
 
 18.01.2022
 

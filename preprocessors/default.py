@@ -108,18 +108,25 @@ class default(PreProc):
         return gcode
 
     def startz_code(self, p):
+        # executed once at the beginning of the CNC job
         if p.startz is not None:
             return 'G00 Z' + self.coordinate_format % (p.coords_decimals, p.startz)
         else:
             return ''
 
     def lift_code(self, p):
+        # executed each time the router bit is raised at a safe distance above the material in order to travel
+        # for the next location where a new cut into the material will start. It is a lift to a safe Z height.
+        # It is a vertical upward move.
         return 'G00 Z' + self.coordinate_format % (p.coords_decimals, p.z_move)
 
     def down_code(self, p):
+        # a vertical downward move.
+        # Executed each time the router bit is lowered into the material to start a cutting move.
         return 'G01 Z' + self.coordinate_format % (p.coords_decimals, p.z_cut)
 
     def toolchange_code(self, p):
+        # executed each time a tool is changed either manually or automatically
         z_toolchange = p.z_toolchange
         toolchangexy = p.xy_toolchange
         f_plunge = p.f_plunge
@@ -210,9 +217,13 @@ G00 Z{z_toolchange}
             return gcode
 
     def up_to_zero_code(self, p):
+        # this is an optional move that instead of moving vertically upward to the travel position (a safe position
+        # outside the material) it move only up to the top of material. The reason is to break the move into a vertical
+        # move inside the material followed by a vertical move outside the material up to the travel (safe) Z height
         return 'G01 Z0'
 
     def position_code(self, p):
+        # used in for the linear motion
         # formula for skewing on x for example is:
         # x_fin = x_init + y_init/slope where slope = p._bed_limit_y / p._bed_skew_x (a.k.a tangent)
         if p._bed_skew_x == 0:
@@ -229,12 +240,18 @@ G00 Z{z_toolchange}
                (p.coords_decimals, x_pos, p.coords_decimals, y_pos)
 
     def rapid_code(self, p):
+        # a fast linear motion using the G0 command which means: "move as fast as the CNC can handle and is set in the
+        # CNC controller". It is a horizontal move in the X-Y CNC plane.
         return ('G00 ' + self.position_code(p)).format(**p)
 
     def linear_code(self, p):
+        # a linear motion using the G1 command which means: "move with a set feedrate (speed)".
+        # It is a horizontal move in the X-Y CNC plane.
         return ('G01 ' + self.position_code(p)).format(**p)
 
     def end_code(self, p):
+        # a final move at the end of the CNC job. First it moves to a safe parking Z height followed by an X-Y move
+        # to the parking location.
         end_coords_xy = p['xy_end']
         gcode = ('G00 Z' + self.feedrate_format % (p.fr_decimals, p.z_end) + "\n")
 
@@ -243,12 +260,15 @@ G00 Z{z_toolchange}
         return gcode
 
     def feedrate_code(self, p):
+        # set the feedrate for the linear move with G1 command on the X-Y CNC plane (horizontal move)
         return 'G01 F' + str(self.feedrate_format % (p.fr_decimals, p.feedrate))
 
     def z_feedrate_code(self, p):
+        # set the feedrate for the linear move with G1 command on the Z CNC plane (vertical move)
         return 'G01 F' + str(self.feedrate_format % (p.fr_decimals, p.z_feedrate))
 
     def spindle_code(self, p):
+        # set the ON state of the spindle (starts the spindle), the spindle speed and the spindle rotation direction
         sdir = {'CW': 'M03', 'CCW': 'M04'}[p.spindledir]
         if p.spindlespeed:
             return '%s S%s' % (sdir, str(p.spindlespeed))
@@ -256,8 +276,10 @@ G00 Z{z_toolchange}
             return sdir
 
     def dwell_code(self, p):
+        # set a pause after the spindle is started allowing the spindle to reach the set spindle spped, before move
         if p.dwelltime:
             return 'G4 P' + str(p.dwelltime)
 
     def spindle_stop_code(self, p):
+        # stop the spindle
         return 'M05'
