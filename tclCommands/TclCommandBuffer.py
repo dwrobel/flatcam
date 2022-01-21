@@ -48,16 +48,16 @@ class TclCommandBuffer(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Works only on Geometry objects.\n"
+        'main': "Works only on Geometry, Gerber and Excellon objects.\n"
                 "Buffer the object by a distance or to scale each geometric element using \n"
                 "the center of its individual bounding box as a reference.\n"
                 "If 'factor' is True(1) then 'dist' is the scale factor for each geometric element.",
         'args': collections.OrderedDict([
-            ('name', 'Name of the Geometry object to be buffered. Required.'),
+            ('name', 'Name of the Geometry, Gerber or Excellon object to be buffered. Required.'),
             ('dist', 'Distance to which to buffer each geometric element.'),
             ('join', 'How two lines join and make a corner: round (1), square (2) or bevel (3). Default is: round'),
-            ('factor', "If 'factor' is True(1) then 'distance' parameter\n"
-                       "is the scale factor for each geometric element")
+            ('factor', "If 'factor' is True(1) then the 'distance' parameter\n"
+                       "is the scale factor for each geometric element that is scaled (individually)")
 
         ]),
         'examples': [
