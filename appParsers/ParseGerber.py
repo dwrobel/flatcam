@@ -8,6 +8,7 @@ from copy import deepcopy
 from shapely.ops import unary_union, linemerge
 import shapely.affinity as affinity
 from shapely.geometry import box as shply_box
+from shapely.geometry import LinearRing, MultiLineString
 
 from lxml import etree as ET
 import ezdxf
@@ -2488,13 +2489,14 @@ class Gerber(Geometry):
         self.app.inform.emit('[success] %s' % _("Done."))
         self.app.proc_container.new_text = ''
 
-    def buffer(self, distance, join=2, factor=None):
+    def buffer(self, distance, join=2, factor=None, only_exterior=False):
         """
 
-        :param distance:    If 'factor' is True then distance is the factor
-        :param join:        The type of joining used by the Shapely buffer method. Can be: round, square and bevel
-        :param factor:      True or False (None)
-        :return:
+        :param distance:        If 'factor' is True then distance is the factor
+        :param join:            The type of joining used by the Shapely buffer method. Can be: round, square and bevel
+        :param factor:          True or False (None)
+        :param only_exterior:   Bool. If True, the LineStrings are buffered only on the outside
+        :return:                None
         """
         self.app.log.debug("parseGerber.Gerber.buffer()")
 
@@ -2513,23 +2515,20 @@ class Gerber(Geometry):
 
         if factor is None:
             def buffer_geom(obj):
-                if type(obj) is list:
-                    new_obj = []
-                    for g in obj:
+                new_obj = []
+                try:
+                    work_geo = obj.geoms if isinstance(obj, (MultiPolygon, MultiLineString)) else obj
+                    for g in work_geo:
                         new_obj.append(buffer_geom(g))
-                    return new_obj
-                else:
+                except TypeError:
                     try:
-                        self.el_count += 1
-                        disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
-                        if self.old_disp_number < disp_number <= 100:
-                            self.app.proc_container.update_view_text(' %d%%' % disp_number)
-                            self.old_disp_number = disp_number
-
-                        return obj.buffer(distance, resolution=int(self.steps_per_circle), join_style=join)
-
+                        new_obj = obj.buffer(distance, resolution=self.steps_per_circle, join_style=join)
+                        if isinstance(obj, (LinearRing, LineString)) and only_exterior is True:
+                            new_obj = new_obj.exterior
                     except AttributeError:
-                        return obj
+                        new_obj = obj
+
+                return new_obj
 
             self.solid_geometry = flatten_shapely_geometry(buffer_geom(self.solid_geometry))
 

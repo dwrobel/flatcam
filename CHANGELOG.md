@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+21.01.2022
+
+- added a new Tcl command: `buffer` which will buffer the geometry of an object or will scale individually each geometry sub element
+- fixed the buffer() method for the Excellon objects (the resulting tool diameters were calculated less than the what was expected)
+
 19.01.2022
 
 - updated the header of the postprocessos with 'laser' to show essential informations like some of them do not move on the Z axis

@@ -77,7 +77,7 @@ class TclCommandScale(TclCommand):
         try:
             obj_to_scale = self.app.collection.get_by_name(name)
         except Exception as e:
-            log.error("TclCommandCopperClear.execute() --> %s" % str(e))
+            self.app.log.error("TclCommandCopperScale.execute() --> %s" % str(e))
             self.raise_tcl_error("%s: %s" % (_("Could not retrieve object"), name))
             return "Could not retrieve object: %s" % name
 

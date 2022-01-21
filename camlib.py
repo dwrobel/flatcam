@@ -2604,12 +2604,13 @@ class Geometry(object):
         #     self.solid_geometry = affinity.skew(self.solid_geometry, angle_x, angle_y,
         #                                         origin=(px, py))
 
-    def buffer(self, distance, join, factor):
+    def buffer(self, distance, join, factor, only_exterior=False):
         """
 
-        :param distance:    if 'factor' is True then distance is the factor
-        :param join:        The kind of join used by the shapely buffer method: round, square or bevel
-        :param factor:      True or False (None)
+        :param distance:        if 'factor' is True then distance is the scale factor for each geometric element
+        :param join:            The kind of join used by the shapely buffer method: round, square or bevel
+        :param factor:          True or False (None)
+        :param only_exterior:   Bool. If True, the LineStrings are buffered only on the outside
         :return:
         """
 
@@ -2619,57 +2620,34 @@ class Geometry(object):
             return
 
         def buffer_geom(obj):
-            if type(obj) is list:
-                new_obj = []
-                for g in obj:
+            new_obj = []
+            try:
+                work_geo = obj.geoms if isinstance(obj, (MultiPolygon, MultiLineString)) else obj
+                for g in work_geo:
                     new_obj.append(buffer_geom(g))
-                return new_obj
-            else:
+            except TypeError:
                 try:
-                    self.el_count += 1
-                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
-                    if self.old_disp_number < disp_number <= 100:
-                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
-                        self.old_disp_number = disp_number
-
-                    if factor is None:
-                        return obj.buffer(distance, resolution=self.geo_steps_per_circle, join_style=join)
+                    if factor is None or factor is False or factor == 0:
+                        new_obj = obj.buffer(distance, resolution=self.geo_steps_per_circle, join_style=join)
+                        if isinstance(obj, (LinearRing, LineString)) and only_exterior is True:
+                            new_obj = new_obj.exterior
                     else:
-                        return affinity.scale(obj, xfact=distance, yfact=distance, origin='center')
+                        new_obj = affinity.scale(obj, xfact=distance, yfact=distance, origin='center')
                 except AttributeError:
-                    return obj
+                    new_obj = obj
+
+            return new_obj
 
         try:
             if self.multigeo is True:
                 for tool in self.tools:
-                    # variables to display the percentage of work done
-                    self.geo_len = 0
-                    try:
-                        self.geo_len += len(self.tools[tool]['solid_geometry'])
-                    except TypeError:
-                        self.geo_len += 1
-                    self.old_disp_number = 0
-                    self.el_count = 0
-
                     res = buffer_geom(self.tools[tool]['solid_geometry'])
                     self.tools[tool]['solid_geometry'] = flatten_shapely_geometry(res)
 
-            # variables to display the percentage of work done
-            self.geo_len = 0
-            try:
-                self.geo_len = len(self.solid_geometry)
-            except TypeError:
-                self.geo_len = 1
-            self.old_disp_number = 0
-            self.el_count = 0
-
             self.solid_geometry = buffer_geom(self.solid_geometry)
-
             self.app.inform.emit('[success] %s...' % _('Object was buffered'))
         except AttributeError:
             self.app.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed."), _("No object is selected.")))
-
-        self.app.proc_container.new_text = ''
 
 
 class AttrDict(dict):

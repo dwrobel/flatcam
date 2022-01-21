@@ -9,7 +9,7 @@
 from camlib import Geometry, grace
 
 import shapely.affinity as affinity
-from shapely.geometry import Point, LineString
+from shapely.geometry import Point, LineString, LinearRing, MultiLineString, MultiPolygon
 import numpy as np
 
 import re
@@ -1559,13 +1559,14 @@ class Excellon(Geometry):
         self.create_geometry()
         self.app.proc_container.new_text = ''
 
-    def buffer(self, distance, join, factor):
+    def buffer(self, distance, join, factor, only_exterior=False):
         """
 
-        :param distance:    if 'factor' is True then distance is the factor
-        :param factor:      True or False (None)
-        :param join:        The type of line joint used by the shapely buffer method: round, square, bevel
-        :return:            None
+        :param distance:        if 'factor' is True then distance is the factor
+        :param factor:          True or False (None)
+        :param join:            The type of line joint used by the shapely buffer method: round, square, bevel
+        :param only_exterior:   Bool. If True, the LineStrings are buffered only on the outside
+        :return:                None
         """
         self.app.log.debug("appParsers.ParseExcellon.Excellon.buffer()")
 
@@ -1573,19 +1574,22 @@ class Excellon(Geometry):
             return
 
         def buffer_geom(obj):
+            new_obj = []
             try:
-                new_obj = []
-                for g in obj:
+                work_geo = obj.geoms if isinstance(obj, (MultiPolygon, MultiLineString)) else obj
+                for g in work_geo:
                     new_obj.append(buffer_geom(g))
-                return new_obj
             except TypeError:
                 try:
                     if factor is None:
-                        return obj.buffer(distance, resolution=self.excellon_circle_steps)
+                        new_obj = obj.buffer(distance, resolution=self.excellon_circle_steps)
+                        if isinstance(obj, (LinearRing, LineString)) and only_exterior is True:
+                            new_obj = new_obj.exterior
                     else:
-                        return affinity.scale(obj, xfact=distance, yfact=distance, origin='center')
+                        new_obj = affinity.scale(obj, xfact=distance, yfact=distance, origin='center')
                 except AttributeError:
-                    return obj
+                    new_obj = obj
+            return new_obj
 
         # buffer solid_geometry
         for tool, tool_dict in list(self.tools.items()):
@@ -1596,8 +1600,8 @@ class Excellon(Geometry):
             except TypeError:
                 self.tools[tool]['solid_geometry'] = [res]
             if factor is None:
-                self.tools[tool]['tooldia'] += distance
+                self.tools[tool]['tooldia'] += (distance * 2)
             else:
-                self.tools[tool]['tooldia'] *= distance
+                self.tools[tool]['tooldia'] *= (distance * 2)
 
         self.create_geometry()
