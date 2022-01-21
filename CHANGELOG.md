@@ -12,6 +12,8 @@ CHANGELOG for FlatCAM beta
 - added a new Tcl command: `buffer` which will buffer the geometry of an object or will scale individually each geometry sub element
 - fixed the buffer() method for the Excellon objects (the resulting tool diameters were calculated less than the what was expected)
 - fixed the description for the new Tcl command `buffer`
+- fixed more issues with the `cncjob` Tcl command
+- made sure that some autocomplete keywords are correctly processed by the application; needs the delete of the preferences files
 
 19.01.2022
 

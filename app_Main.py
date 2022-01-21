@@ -642,19 +642,20 @@ class App(QtCore.QObject):
                                   'version', 'write_gcode'
                                   ]
 
+        # those need to be duplicated in self.defaults["util_autocomplete_keywords"] but within a string
         self.default_keywords = ['Berta_CNC', 'Default_no_M6', 'Desktop', 'Documents', 'FlatConfig', 'FlatPrj',
                                  'False', 'GRBL_11', 'GRL_11_no_M6', 'GRBL_laser', 'grbl_laser_eleks_drd',
                                  'GRBL_laser_Z', 'ISEL_CNC', 'ISEL_ICP_CNC', 'Line_xyz', 'Marlin',
                                  'Marlin_laser_FAN_pin', 'Marlin_laser_Spindle_pin', 'NCCAD9', 'Marius', 'My Documents',
                                  'Paste_1', 'Repetier', 'Roland_MDX_20', 'Roland_MDX_540',
-                                 'Users', 'Toolchange_Manual', 'Toolchange_Probe_MACH3',
+                                 'Toolchange_Manual', 'Toolchange_Probe_MACH3',
                                  'True', 'Users',
                                  'all', 'auto', 'axis',
                                  'axisoffset', 'box', 'center_x', 'center_y', 'columns', 'combine', 'connect',
                                  'contour', 'default',
                                  'depthperpass', 'dia', 'diatol', 'dist', 'drilled_dias', 'drillz', 'dpp',
-                                 'dwelltime', 'extracut_length', 'endxy', 'enz', 'f', 'factor', 'feedrate',
-                                 'feedrate_z', 'GRBL_11', 'GRBL_laser', 'gridoffsety', 'gridx', 'gridy',
+                                 'dwelltime', 'extracut_length', 'endxy', 'endz', 'f', 'factor', 'feedrate',
+                                 'feedrate_z', 'gridoffsety', 'gridx', 'gridy',
                                  'has_offset', 'holes', 'hpgl', 'iso_type', 'join', 'margin', 'marlin', 'method',
                                  'milled_dias', 'minoffset', 'name', 'offset', 'opt_type', 'order',
                                  'outname', 'overlap', 'obj_name', 'passes', 'postamble', 'pp', 'ppname_e', 'ppname_g',
@@ -7660,27 +7661,31 @@ class App(QtCore.QObject):
         # Populate the list with the overlapped objects on the click position
         curr_x, curr_y = self.pos
 
-        for obj in self.all_objects_list:
-            # ScriptObject and DocumentObject objects can't be selected
-            if obj.kind == 'script' or obj.kind == 'document':
-                continue
-
-            if key == 'multisel' and obj.options['name'] in self.objects_under_the_click_list:
-                continue
-
-            if (curr_x >= obj.options['xmin']) and (curr_x <= obj.options['xmax']) and \
-                    (curr_y >= obj.options['ymin']) and (curr_y <= obj.options['ymax']):
-                if obj.options['name'] not in self.objects_under_the_click_list:
-                    if obj.options['plot']:
-                        # add objects to the objects_under_the_click list only if the object is plotted
-                        # (active and not disabled)
-                        self.objects_under_the_click_list.append(obj.options['name'])
-
         try:
-            if self.objects_under_the_click_list:
-                curr_sel_obj = self.collection.get_active()
-                # case when there is only an object under the click and we toggle it
-                if len(self.objects_under_the_click_list) == 1:
+            for obj in self.all_objects_list:
+                # ScriptObject and DocumentObject objects can't be selected
+                if obj.kind == 'script' or obj.kind == 'document':
+                    continue
+
+                if key == 'multisel' and obj.options['name'] in self.objects_under_the_click_list:
+                    continue
+
+                if (curr_x >= obj.options['xmin']) and (curr_x <= obj.options['xmax']) and \
+                        (curr_y >= obj.options['ymin']) and (curr_y <= obj.options['ymax']):
+                    if obj.options['name'] not in self.objects_under_the_click_list:
+                        if obj.options['plot']:
+                            # add objects to the objects_under_the_click list only if the object is plotted
+                            # (active and not disabled)
+                            self.objects_under_the_click_list.append(obj.options['name'])
+        except Exception as e:
+            self.log.error(
+                "Something went bad in App.select_objects(). Create a list of objects under click pos%s" % str(e))
+
+        if self.objects_under_the_click_list:
+            curr_sel_obj = self.collection.get_active()
+            # case when there is only an object under the click and we toggle it
+            if len(self.objects_under_the_click_list) == 1:
+                try:
                     if curr_sel_obj is None:
                         self.collection.set_active(self.objects_under_the_click_list[0])
                         curr_sel_obj = self.collection.get_active()
@@ -7689,7 +7694,6 @@ class App(QtCore.QObject):
                         if self.defaults['global_selection_shape'] is True:
                             self.draw_selection_shape(curr_sel_obj)
                             curr_sel_obj.selection_shape_drawn = True
-
                     elif curr_sel_obj.options['name'] not in self.objects_under_the_click_list:
                         self.collection.on_objects_selection(False)
                         self.delete_selection_shape()
@@ -7701,9 +7705,7 @@ class App(QtCore.QObject):
                         if self.defaults['global_selection_shape'] is True:
                             self.draw_selection_shape(curr_sel_obj)
                             curr_sel_obj.selection_shape_drawn = True
-
                         self.selected_message(curr_sel_obj=curr_sel_obj)
-
                     elif curr_sel_obj.selection_shape_drawn is False:
                         if self.defaults['global_selection_shape'] is True:
                             self.draw_selection_shape(curr_sel_obj)
@@ -7711,14 +7713,14 @@ class App(QtCore.QObject):
                     else:
                         self.collection.on_objects_selection(False)
                         self.delete_selection_shape()
-
                         if self.call_source != 'app':
                             self.call_source = 'app'
-
                     self.selected_message(curr_sel_obj=curr_sel_obj)
-
-                else:
-                    # If there is no selected object
+                except Exception as e:
+                    self.log.error("Something went bad in App.select_objects(). Single click selection. %s" % str(e))
+            else:
+                # If there is no selected object
+                try:
                     # make active the first element of the overlapped objects list
                     if self.collection.get_active() is None:
                         self.collection.set_active(self.objects_under_the_click_list[0])
@@ -7746,10 +7748,12 @@ class App(QtCore.QObject):
                     if self.defaults['global_selection_shape'] is True:
                         self.draw_selection_shape(curr_sel_obj)
                         curr_sel_obj.selection_shape_drawn = True
-
                     self.selected_message(curr_sel_obj=curr_sel_obj)
-
-            else:
+                except Exception as e:
+                    self.log.error(
+                        "Something went bad in App.select_objects(). Cycle the objects under cursor. %s" % str(e))
+        else:
+            try:
                 # deselect everything
                 self.collection.on_objects_selection(False)
                 # delete the possible selection box around a possible selected object
@@ -7773,8 +7777,8 @@ class App(QtCore.QObject):
                     # self.inform.emit("")
                 else:
                     self.call_source = 'app'
-        except Exception as e:
-            self.log.error("Something went bad in App.select_objects(). %s" % str(e))
+            except Exception as e:
+                self.log.error("Something went bad in App.select_objects(). Deselect everything. %s" % str(e))
 
     def selected_message(self, curr_sel_obj):
         """

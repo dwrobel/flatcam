@@ -119,6 +119,7 @@ class TclCommandCncjob(TclCommandSignaled):
         if obj is None:
             if muted is False:
                 self.raise_tcl_error("Object not found: %s" % str(name))
+                return "fail"
             else:
                 return "fail"
 
@@ -134,7 +135,8 @@ class TclCommandCncjob(TclCommandSignaled):
         args["z_move"] = args["z_move"] if "z_move" in args and args["z_move"] else \
             self.app.defaults["geometry_travelz"]
 
-        args["pp"] = args["pp"] if "pp" in args and args["pp"] else self.app.defaults["tools_mill_ppname_g"]
+        args["pp"] = args["pp"] if "pp" in args and isinstance(args["pp"], str) else \
+            self.app.defaults["tools_mill_ppname_g"]
 
         args["feedrate"] = args["feedrate"] if "feedrate" in args and args["feedrate"] else \
             self.app.defaults["tools_mill_feedrate"]
@@ -242,6 +244,7 @@ class TclCommandCncjob(TclCommandSignaled):
 
             for tool_uid in list(local_tools_dict.keys()):
                 if 'data' in local_tools_dict[tool_uid]:
+                    local_tools_dict[tool_uid]['data']['tools_mill_tooldia'] = args["dia"]
                     local_tools_dict[tool_uid]['data']['tools_mill_cutz'] = args["z_cut"]
                     local_tools_dict[tool_uid]['data']['tools_mill_travelz'] = args["z_move"]
                     local_tools_dict[tool_uid]['data']['tools_mill_feedrate'] = args["feedrate"]
@@ -266,6 +269,7 @@ class TclCommandCncjob(TclCommandSignaled):
                     local_tools_dict[tool_uid]['data']['tools_mill_dwell'] = args["dwell"]
                     local_tools_dict[tool_uid]['data']['tools_mill_dwelltime'] = args["dwelltime"]
                     local_tools_dict[tool_uid]['data']['tools_mill_ppname_g'] = args["pp"]
+
             self.app.milling_tool.mtool_gen_cncjob(
                 geo_obj=obj,
                 outname=args['outname'],
@@ -273,5 +277,6 @@ class TclCommandCncjob(TclCommandSignaled):
                 tools_in_use=[],
                 toolchange=args["toolchange"],
                 use_thread=False,
-                plot=False)
+                plot=False,
+                from_tcl=True)
             # self.raise_tcl_error('The object is a multi-geo geometry which is not supported in cncjob Tcl Command')

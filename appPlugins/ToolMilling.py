@@ -2951,7 +2951,7 @@ class ToolMilling(AppTool, Excellon):
         #     print(tooldia_val)
 
     def mtool_gen_cncjob(self, geo_obj=None, outname=None, tools_dict=None, tools_in_use=None, segx=None, segy=None,
-                         toolchange=None, plot=True, use_thread=True, disable_offset=False):
+                         toolchange=None, plot=True, use_thread=True, disable_offset=False, from_tcl=False):
         """
         Creates a multi-tool CNCJob out of this Geometry object.
         The actual work is done by the target CNCJobObject object's
@@ -2969,6 +2969,7 @@ class ToolMilling(AppTool, Excellon):
         :param plot:            if True the generated object will be plotted; if False will not be plotted
         :param use_thread:      if True use threading
         :param disable_offset:  If True then the set offset for each tool will not be used
+        :param from_tcl:        If True then the method is called by a Tcl command which does not use the UI
         :return:                None
         """
 
@@ -3281,66 +3282,79 @@ class ToolMilling(AppTool, Excellon):
 
                 # Toolchange Z
                 try:
-                    tools_dict[tooluid_key]['data']['tools_mill_toolchangez'] = self.ui.toolchangez_entry.get_value()
+                    if not from_tcl:
+                        tools_dict[tooluid_key]['data']['tools_mill_toolchangez'] = \
+                            self.ui.toolchangez_entry.get_value()
                 except AttributeError:
                     tools_dict[tooluid_key]['data']['tools_mill_toolchangez'] = \
                         self.app.defaults['tools_mill_toolchangez']
                 # Toolchange X-Y
                 try:
-                    tools_dict[tooluid_key]['data']['tools_mill_toolchangexy'] = self.ui.toolchangexy_entry.get_value()
+                    if not from_tcl:
+                        tools_dict[tooluid_key]['data']['tools_mill_toolchangexy'] = \
+                            self.ui.toolchangexy_entry.get_value()
                 except AttributeError:
                     tools_dict[tooluid_key]['data']['tools_mill_toolchangexy'] = \
                         self.app.defaults['tools_mill_toolchangexy']
                 # End Move Z
                 try:
-                    tools_dict[tooluid_key]['data']['tools_mill_endz'] = self.ui.endz_entry.get_value()
+                    if not from_tcl:
+                        tools_dict[tooluid_key]['data']['tools_mill_endz'] = self.ui.endz_entry.get_value()
                 except AttributeError:
                     tools_dict[tooluid_key]['data']['tools_mill_endz'] = self.app.defaults['tools_mill_endz']
                 # End Move XY
                 try:
-                    tools_dict[tooluid_key]['data']['tools_mill_endxy'] = self.ui.endxy_entry.get_value()
+                    if not from_tcl:
+                        tools_dict[tooluid_key]['data']['tools_mill_endxy'] = self.ui.endxy_entry.get_value()
                 except AttributeError:
                     tools_dict[tooluid_key]['data']['tools_mill_endxy'] = self.app.defaults['tools_mill_endxy']
                 # Probe Z
                 try:
-                    tools_dict[tooluid_key]['data']['tools_mill_z_pdepth'] = self.ui.pdepth_entry.get_value()
+                    if not from_tcl:
+                        tools_dict[tooluid_key]['data']['tools_mill_z_pdepth'] = self.ui.pdepth_entry.get_value()
                 except AttributeError:
                     tools_dict[tooluid_key]['data']['tools_mill_z_pdepth'] = self.app.defaults['tools_mill_z_pdepth']
                 # Probe FR
                 try:
-                    tools_dict[tooluid_key]['data'][
-                        'tools_mill_feedrate_probe'] = self.ui.feedrate_probe_entry.get_value()
+                    if not from_tcl:
+                        tools_dict[tooluid_key]['data']['tools_mill_feedrate_probe'] = \
+                            self.ui.feedrate_probe_entry.get_value()
                 except AttributeError:
                     tools_dict[tooluid_key]['data'][
                         'tools_mill_feedrate_probe'] = self.app.defaults['tools_mill_feedrate_probe']
 
                 # Exclusion Areas Enable
                 try:
-                    tools_dict[tooluid_key]['data']['tools_mill_area_exclusion'] = self.ui.exclusion_cb.get_value()
+                    if not from_tcl:
+                        tools_dict[tooluid_key]['data']['tools_mill_area_exclusion'] = self.ui.exclusion_cb.get_value()
                 except AttributeError:
                     tools_dict[tooluid_key]['data']['tools_mill_area_exclusion'] = False    # Tcl Command most likely
                 # Exclusion Areas Shape
                 try:
-                    tools_dict[tooluid_key]['data']['tools_mill_area_shape'] = self.ui.area_shape_radio.get_value()
+                    if not from_tcl:
+                        tools_dict[tooluid_key]['data']['tools_mill_area_shape'] = self.ui.area_shape_radio.get_value()
                 except AttributeError:
                     tools_dict[tooluid_key]['data']['tools_mill_area_shape'] = \
                         self.app.defaults['tools_mill_area_shape']
                 # Exclusion Areas Strategy
                 try:
-                    tools_dict[tooluid_key]['data']['tools_mill_area_strategy'] = self.ui.strategy_radio.get_value()
+                    if not from_tcl:
+                        tools_dict[tooluid_key]['data']['tools_mill_area_strategy'] = self.ui.strategy_radio.get_value()
                 except AttributeError:
                     tools_dict[tooluid_key]['data']['tools_mill_area_strategy'] = \
                         self.app.defaults['tools_mill_area_strategy']
                 # Exclusion Areas Overz
                 try:
-                    tools_dict[tooluid_key]['data']['tools_mill_area_overz'] = self.ui.over_z_entry.get_value()
+                    if not from_tcl:
+                        tools_dict[tooluid_key]['data']['tools_mill_area_overz'] = self.ui.over_z_entry.get_value()
                 except AttributeError:
                     tools_dict[tooluid_key]['data']['tools_mill_area_overz'] = \
                         self.app.defaults['tools_mill_area_overz']
 
                 # Preprocessor
                 try:
-                    tools_dict[tooluid_key]['data']['tools_mill_ppname_g'] = self.ui.pp_geo_name_cb.get_value()
+                    if not from_tcl:
+                        tools_dict[tooluid_key]['data']['tools_mill_ppname_g'] = self.ui.pp_geo_name_cb.get_value()
                 except AttributeError:
                     tools_dict[tooluid_key]['data']['tools_mill_ppname_g'] = self.app.defaults['tools_mill_ppname_g']
 
@@ -3352,7 +3366,10 @@ class ToolMilling(AppTool, Excellon):
                     tool_offset = tooldia_val / 2
                 elif offset_type == 3:  # 'custom'
                     try:
-                        offset_value = self.ui.offset_entry.get_value()
+                        if not from_tcl:
+                            offset_value = self.ui.offset_entry.get_value()
+                        else:
+                            offset_value = tools_dict[tooluid_key]['data']['tools_mill_offset_value']
                     except AttributeError:
                         offset_value = self.app.defaults['tools_mill_offset_value']
                     if offset_value:
@@ -3395,6 +3412,7 @@ class ToolMilling(AppTool, Excellon):
                 is_last = True if tooluid_key == tool_lst[-1] else False
                 last_pt = tools_dict[tooluid_key]['data']['tools_mill_endxy']
 
+                print(tools_dict[tooluid_key]['data']['tools_mill_ppname_g'])
                 res, start_gcode = new_cncjob_obj.geometry_tool_gcode_gen(tooluid_key, tools_dict, first_pt=first_pt,
                                                                           last_pt=last_pt,
                                                                           tolerance=tol,
