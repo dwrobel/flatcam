@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+2.01.2022
+
+- improved the running of scripts when loading from GUI a script as a FlatCAM script
+
 21.01.2022
 
 - added a new Tcl command: `buffer` which will buffer the geometry of an object or will scale individually each geometry sub element
@@ -17,7 +21,7 @@ CHANGELOG for FlatCAM beta
 
 19.01.2022
 
-- updated the header of the postprocessos with 'laser' to show essential informations like some of them do not move on the Z axis
+- updated the header of the preprocessors with 'laser' to show essential information's like some of them do not move on the Z axis
 - make sure that the laser postprocessor that do move on the Z axis (like 'GRBL_laser_Z') accept negative values for the Z focus
 - fixed issue in highlighter such that the keywords that have an underscore included are highlighted
 - rearranged the default keywords

@@ -3412,7 +3412,6 @@ class ToolMilling(AppTool, Excellon):
                 is_last = True if tooluid_key == tool_lst[-1] else False
                 last_pt = tools_dict[tooluid_key]['data']['tools_mill_endxy']
 
-                print(tools_dict[tooluid_key]['data']['tools_mill_ppname_g'])
                 res, start_gcode = new_cncjob_obj.geometry_tool_gcode_gen(tooluid_key, tools_dict, first_pt=first_pt,
                                                                           last_pt=last_pt,
                                                                           tolerance=tol,

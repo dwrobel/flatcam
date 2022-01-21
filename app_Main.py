@@ -39,15 +39,18 @@ from multiprocessing.connection import Listener, Client
 from multiprocessing import Pool
 import socket
 
+import tkinter as tk
+
 import qdarktheme
 import qdarktheme.themes.dark.stylesheet as qdarksheet
-from appGUI import style_sheet
 
 # ####################################################################################################################
 # ###################################      Imports part of FlatCAM       #############################################
 # ####################################################################################################################
 
 # Various
+from appGUI import style_sheet
+
 from appCommon.Common import LoudDict
 from appCommon.Common import color_variant
 from appCommon.Common import ExclusionAreas
@@ -267,6 +270,9 @@ class App(QtCore.QObject):
     locate_signal = pyqtSignal(tuple, str)
 
     proj_selection_changed = pyqtSignal(object, object)
+
+    # used by the FlatCAMScript object to process a script
+    run_script = pyqtSignal(str)
 
     def __init__(self, qapp, user_defaults=True):
         """
@@ -1555,6 +1561,9 @@ class App(QtCore.QObject):
 
         # signal to close the application
         self.close_app_signal.connect(self.kill_app)
+
+        # signal to process the body of a script
+        self.run_script.connect(self.script_processing)
         # ################################# FINISHED CONNECTING SIGNALS #############################################
         # ###########################################################################################################
         # ###########################################################################################################
@@ -9246,6 +9255,79 @@ class App(QtCore.QObject):
                 self.shell.append_output(msg + end)
         except AttributeError:
             self.log.debug("shell_message() is called before Shell Class is instantiated. The message is: %s", str(msg))
+
+    def script_processing(self, script_code):
+        # trying to run a Tcl command without having the Shell open will create some warnings because the Tcl Shell
+        # tries to print on a hidden widget, therefore show the dock if hidden
+        if self.ui.shell_dock.isHidden():
+            self.ui.shell_dock.show()
+
+        self.shell.open_processing()  # Disables input box.
+
+        # make sure that the pixmaps are not updated when running this as they will crash
+        # TODO find why the pixmaps for the whole app load crash when run from this object (perhaps another thread?)
+        # self.ui.fcinfo.lock_pmaps = True
+
+        old_line = ''
+        # set tcl info script to actual scriptfile
+
+        set_tcl_script_name = '''proc procExists p {{
+                            return uplevel 1 [expr {{[llength [info command $p]] > 0}}]
+                        }}
+
+                        if  {{[procExists "info_original"]==0}} {{
+                            rename info info_original
+                        }}
+
+                        proc info args {{
+                            switch [lindex $args 0] {{
+                                script {{
+                                    return "{0}"
+                                }}
+                                default {{
+                                    return [uplevel info_original $args]
+                                }}
+                            }}
+                        }}'''.format(script_code)
+
+        for tcl_command_line in set_tcl_script_name.splitlines() + script_code.splitlines():
+            # do not process lines starting with '#' = comment and empty lines
+            if not tcl_command_line.startswith('#') and tcl_command_line != '':
+                # if FlatCAM is run in Windows then replace all the slashes with
+                # the UNIX style slash that TCL understands
+                if sys.platform == 'win32':
+                    tcl_command_line_lowered = tcl_command_line.lower()
+                    if "open" in tcl_command_line_lowered or "path" in tcl_command_line_lowered:
+                        tcl_command_line = tcl_command_line.replace('\\', '/')
+
+                new_command = '%s%s\n' % (old_line, tcl_command_line) if old_line != '' else tcl_command_line
+
+                # execute the actual Tcl command
+                try:
+                    result = self.shell.tcl.eval(str(new_command))
+                    if result != 'None':
+                        self.shell.append_output(result + '\n')
+                    if result == 'fail':
+                        # self.ui.fcinfo.lock_pmaps = False
+                        self.shell.append_output(result.capitalize() + '\n')
+                        self.shell.close_processing()
+                        self.log.error("%s: %s" % ("Tcl Command failed", str(new_command)))
+                        self.inform.emit("[ERROR] %s" % _("Aborting."))
+                        return
+                    old_line = ''
+                except tk.TclError:
+                    old_line = old_line + tcl_command_line + '\n'
+                except Exception as e:
+                    self.log.error("App.script_processing() --> %s" % str(e))
+
+        if old_line != '':
+            # it means that the script finished with an error
+            result = self.shell.tcl.eval("set errorInfo")
+            self.log.error("Exec command Exception: %s\n" % result)
+            self.shell.append_error('ERROR: %s\n' % result)
+
+        # self.ui.fcinfo.lock_pmaps = False
+        self.shell.close_processing()
 
     def dec_format(self, val, dec=None):
         """

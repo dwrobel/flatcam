@@ -14,9 +14,6 @@ from appEditors.AppTextEditor import AppTextEditor
 from appObjects.FlatCAMObj import *
 from appGUI.ObjectUI import *
 
-import tkinter as tk
-import sys
-
 import gettext
 import appTranslation as fcTranslate
 import builtins
@@ -209,81 +206,8 @@ class ScriptObject(FlatCAMObj):
         self.script_filename = filename
 
     def handle_run_code(self):
-        # trying to run a Tcl command without having the Shell open will create some warnings because the Tcl Shell
-        # tries to print on a hidden widget, therefore show the dock if hidden
-        if self.app.ui.shell_dock.isHidden():
-            self.app.ui.shell_dock.show()
-
-        self.app.shell.open_processing()  # Disables input box.
-
-        # make sure that the pixmaps are not updated when running this as they will crash
-        # TODO find why the pixmaps for the whole app load crash when run from this object (perhaps another thread?)
-        self.app.ui.fcinfo.lock_pmaps = True
-
         self.script_code = self.script_editor_tab.code_editor.toPlainText()
-
-        old_line = ''
-        # set tcl info script to actual scriptfile
-
-        set_tcl_script_name = '''proc procExists p {{
-                    return uplevel 1 [expr {{[llength [info command $p]] > 0}}]
-                }}
-
-                if  {{[procExists "info_original"]==0}} {{
-                    rename info info_original
-                }}
-
-                proc info args {{
-                    switch [lindex $args 0] {{
-                        script {{
-                            return "{0}"
-                        }}
-                        default {{
-                            return [uplevel info_original $args]
-                        }}
-                    }}
-                }}'''.format(self.script_filename)
-
-        for tcl_command_line in set_tcl_script_name.splitlines()+self.script_code.splitlines():
-            # do not process lines starting with '#' = comment and empty lines
-            if not tcl_command_line.startswith('#') and tcl_command_line != '':
-                # if FlatCAM is run in Windows then replace all the slashes with
-                # the UNIX style slash that TCL understands
-                if sys.platform == 'win32':
-                    tcl_command_line_lowered = tcl_command_line.lower()
-                    if "open" in tcl_command_line_lowered or "path" in tcl_command_line_lowered:
-                        tcl_command_line = tcl_command_line.replace('\\', '/')
-
-                if old_line != '':
-                    new_command = old_line + tcl_command_line + '\n'
-                else:
-                    new_command = tcl_command_line
-
-                # execute the actual Tcl command
-                try:
-                    result = self.app.shell.tcl.eval(str(new_command))
-                    if result != 'None':
-                        self.app.shell.append_output(result + '\n')
-                    if result == 'fail':
-                        self.app.ui.fcinfo.lock_pmaps = False
-                        self.app.shell.close_processing()
-                        self.app.inform.emit("[ERROR] %s: %s" % (_("Tcl Command failed"), str(new_command)))
-                        self.app.inform.emit("[ERROR] %s" % _("Aborting."))
-                        return
-                    old_line = ''
-                except tk.TclError:
-                    old_line = old_line + tcl_command_line + '\n'
-                except Exception as e:
-                    log.error("ScriptObject.handleRunCode() --> %s" % str(e))
-
-        if old_line != '':
-            # it means that the script finished with an error
-            result = self.app.shell.tcl.eval("set errorInfo")
-            log.error("Exec command Exception: %s\n" % result)
-            self.app.shell.append_error('ERROR: %s\n' % result)
-
-        self.app.ui.fcinfo.lock_pmaps = False
-        self.app.shell.close_processing()
+        self.app.run_script.emit(self.script_code)
 
     def on_autocomplete_changed(self, state):
         if state:
