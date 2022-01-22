@@ -95,7 +95,7 @@ class GRBL_laser(PreProc):
 
     def end_code(self, p):
         coords_xy = p['xy_end']
-        gcode = ('G0 Z' + self.feedrate_format % (p.fr_decimals, p.z_end) + "\n")
+        gcode = ''
 
         if coords_xy and coords_xy != '':
             gcode += 'G0 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"

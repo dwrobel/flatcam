@@ -7,9 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
-2.01.2022
+22.01.2022
 
 - improved the running of scripts when loading from GUI a script as a FlatCAM script
+- fixed the `GRBL_laser` preprocessor such that it does not have a Z move at the end of the job due of the fact that this preprocessor has moves only in the X-Y plane
+- in Milling Plugin made sure the preprocessors that have the `laser_z` in the name (case insensitive) have the ability to change the Z height at the end of the job (through End_Z parameter)
 
 21.01.2022
 

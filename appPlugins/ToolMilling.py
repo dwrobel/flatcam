@@ -3512,8 +3512,12 @@ class ToolMilling(AppTool, Excellon):
             self.ui.cutzlabel.hide()
             self.ui.cutz_entry.hide()
 
-            self.ui.endz_label.hide()
-            self.ui.endz_entry.hide()
+            if 'laser_z' not in current_pp.lower():
+                self.ui.endz_label.hide()
+                self.ui.endz_entry.hide()
+            else:
+                self.ui.endz_label.show()
+                self.ui.endz_entry.show()
 
             self.ui.travelzlabel.hide()
             self.ui.travelz_entry.hide()
