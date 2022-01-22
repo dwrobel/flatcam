@@ -31,8 +31,30 @@ class GRBL_laser_Z(PreProc):
         ymin = '%.*f' % (p.coords_decimals, p['options']['ymin'])
         ymax = '%.*f' % (p.coords_decimals, p['options']['ymax'])
 
-        gcode += '(Feedrate: ' + str(p['feedrate']) + units + '/min' + ')\n'
-        gcode += '(Z Focus: ' + str(p['z_move']) + units + ')\n'
+        if p['use_ui'] is True and p['multigeo']:
+            gcode += '\n(TOOLS DIAMETER: )\n'
+            for tool, val in p['tools'].items():
+                gcode += '(Tool: %s -> ' % str(tool) + 'Dia: %s' % str(val["tooldia"]) + ')\n'
+            gcode += '\n(FEEDRATE: )\n'
+            for tool, val in p['tools'].items():
+                gcode += '(Tool: %s -> ' % str(tool) + 'Feedrate: %s' % \
+                         str(val['data']["tools_mill_feedrate"]) + ')\n'
+            gcode += '\n(Z FOCUS: )\n'
+            for tool, val in p['tools'].items():
+                gcode += '(Tool: %s -> ' % str(tool) + 'Z: %s' % \
+                         str(val['data']["tools_mill_travelz"]) + ')\n'
+            gcode += '\n(LASER POWER: )\n'
+            for tool, val in p['tools'].items():
+                gcode += '(Tool: %s -> ' % str(tool) + 'Power: %s' % \
+                         str(val['data']["tools_mill_spindlespeed"]) + ')\n'
+        else:
+            gcode += '(Feedrate: ' + str(p['feedrate']) + units + '/min' + ')\n'
+            gcode += '(Z Focus: ' + str(p['z_move']) + units + ')\n'
+            gcode += '(Laser Power: %s)\n' % str(p['spindlespeed'])
+
+        gcode += '\n'
+        gcode += '(X-Y End: ' + str(p['xy_end']) + units + ')\n'
+        gcode += '(Z End: ' + str(p['z_end']) + units + ')\n'
         gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
 
         if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
@@ -42,8 +64,6 @@ class GRBL_laser_Z(PreProc):
 
         gcode += '(X range: ' + '{: >9s}'.format(xmin) + ' ... ' + '{: >9s}'.format(xmax) + ' ' + units + ')\n'
         gcode += '(Y range: ' + '{: >9s}'.format(ymin) + ' ... ' + '{: >9s}'.format(ymax) + ' ' + units + ')\n\n'
-
-        gcode += '(Laser Power (Spindle Speed): ' + str(p['spindlespeed']) + ')\n\n'
 
         gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n"
         gcode += 'G90\n'

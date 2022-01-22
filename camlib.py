@@ -3568,7 +3568,7 @@ class CNCjob(Geometry):
 
     # used in Geometry (and soon in Tool Milling)
     def geometry_tool_gcode_gen(self, tool, tools, first_pt, last_pt, tolerance, is_first=False, is_last=False,
-                                toolchange=False):
+                                toolchange=False, use_ui=True):
         """
         Algorithm to generate GCode from multitool Geometry.
 
@@ -3589,6 +3589,8 @@ class CNCjob(Geometry):
         :type is_last:      bool
         :param toolchange:  add toolchange event
         :type toolchange:   bool
+        :param use_ui:      if the method is called from the GUI
+        :type use_ui:       bool
         :return:            GCode
         :rtype:             str
         """
@@ -3610,7 +3612,7 @@ class CNCjob(Geometry):
         # given under the name 'toolC'
         self.postdata['toolC'] = float(tool_dict['tools_mill_tooldia'])
         self.tooldia = float(tool_dict['tools_mill_tooldia'])
-        self.use_ui = True
+        self.use_ui = use_ui
         self.tolerance = tolerance
 
         # Optimization type. Can be: 'M', 'B', 'T', 'R', 'No'

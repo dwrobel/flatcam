@@ -3199,6 +3199,8 @@ class ToolMilling(AppTool, Excellon):
                     app_obj.inform.emit('[ERROR_NOTCL] %s...' % _('Cancelled. Empty file, it has no geometry'))
                     return 'fail'
 
+            new_cncjob_obj.tools.update(tools_dict)
+
             total_gcode = ''
             for tooluid_key in list(tools_dict.keys()):
                 tool_cnt += 1
@@ -3416,7 +3418,8 @@ class ToolMilling(AppTool, Excellon):
                                                                           last_pt=last_pt,
                                                                           tolerance=tol,
                                                                           is_first=is_first, is_last=is_last,
-                                                                          toolchange=is_toolchange)
+                                                                          toolchange=is_toolchange,
+                                                                          use_ui=not from_tcl)
                 if res == 'fail':
                     self.app.log.debug("ToolMilling.mtool_gen_cncjob() --> geometry_tool_gcode_gen() failed")
                     return 'fail'
@@ -3512,13 +3515,6 @@ class ToolMilling(AppTool, Excellon):
             self.ui.cutzlabel.hide()
             self.ui.cutz_entry.hide()
 
-            if 'laser_z' not in current_pp.lower():
-                self.ui.endz_label.hide()
-                self.ui.endz_entry.hide()
-            else:
-                self.ui.endz_label.show()
-                self.ui.endz_entry.show()
-
             self.ui.travelzlabel.hide()
             self.ui.travelz_entry.hide()
 
@@ -3570,7 +3566,7 @@ class ToolMilling(AppTool, Excellon):
 
             self.ui.spindle_label.setText('%s:' % _('Spindle speed'))
 
-        if ('marlin' in current_pp.lower() and 'laser' in current_pp.lower()) or 'z_laser' in current_pp.lower():
+        if ('marlin' in current_pp.lower() and 'laser' in current_pp.lower()) or 'laser_z' in current_pp.lower():
             self.ui.travelzlabel.setText('%s:' % _("Focus Z"))
             self.ui.travelzlabel.show()
             self.ui.travelz_entry.show()
