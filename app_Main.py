@@ -11906,7 +11906,6 @@ class MenuFileHandlers(QtCore.QObject):
             except Exception as e:
                 self.log.error("save_project() --> There was no active object. Skipping read_form. %s" % str(e))
 
-            # Serialize the whole project
             d = {
                 "objs":     [obj.to_dict() for obj in self.app.collection.get_list()],
                 "options":  self.app.options,
@@ -11925,7 +11924,7 @@ class MenuFileHandlers(QtCore.QObject):
                     out2 = compressor_obj.flush()
                     project_zipped = b"".join([out1, out2])
                 except Exception:
-                    self.log.error("Failed to save file: %s", str(filename))
+                    self.log.error("Failed to save file: %s" % str(filename))
                     self.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                     return
 

@@ -50,6 +50,14 @@ from appCommon.Common import GracefulException as grace
 from appParsers.ParseSVG import *
 from appParsers.ParseDXF import *
 
+import logging
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
+
+import copy
+
 HAS_ORTOOLS = True
 
 if platform.architecture()[0] == '64bit':
@@ -58,12 +66,6 @@ if platform.architecture()[0] == '64bit':
         from ortools.constraint_solver import routing_enums_pb2
     except ModuleNotFoundError:
         HAS_ORTOOLS = False
-
-import logging
-
-import gettext
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 
@@ -2271,10 +2273,10 @@ class Geometry(object):
         :return:    A dictionary-encoded copy of the object.
         :rtype:     dict
         """
-        d = {}
-        for attr in self.ser_attrs:
-            d[attr] = getattr(self, attr)
-        return d
+        # d = {}
+        # for attr in self.ser_attrs:
+        #     d[attr] = getattr(self, attr)
+        return {attr: copy.copy(getattr(self, attr)) for attr in self.ser_attrs}
 
     def from_dict(self, d):
         """

@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+24.01.2022
+
+- fixed a syntax error in a call of the log.error()
+- trying to solve a 'circular reference' error when saving a project in Arch Linux
+
 22.01.2022
 
 - improved the running of scripts when loading from GUI a script as a FlatCAM script
