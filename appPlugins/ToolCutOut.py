@@ -944,17 +944,6 @@ class CutOut(AppTool):
                     geo_obj.multigeo = True
                     geo_obj.solid_geometry = deepcopy(solid_geo)
 
-                    xmin, ymin, xmax, ymax = CutOut.recursive_bounds(geo_obj.solid_geometry)
-                    geo_obj.options['xmin'] = xmin
-                    geo_obj.options['ymin'] = ymin
-                    geo_obj.options['xmax'] = xmax
-                    geo_obj.options['ymax'] = ymax
-
-                    geo_obj.options['tools_mill_tooldia'] = str(cut_dia)
-                    geo_obj.options['tools_mill_cutz'] = self.ui.cutz_entry.get_value()
-                    geo_obj.options['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
-                    geo_obj.options['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
-
                     geo_obj.tools[1] = deepcopy(self.cut_tool_dict)
                     geo_obj.tools[1]['tooldia'] = str(cut_dia)
                     geo_obj.tools[1]['solid_geometry'] = geo_obj.solid_geometry
@@ -962,9 +951,11 @@ class CutOut(AppTool):
                     geo_obj.tools[1]['data']['name'] = outname
                     geo_obj.tools[1]['data']['tools_mill_tooldia'] = str(cut_dia)
                     geo_obj.tools[1]['data']['tools_mill_cutz'] = self.ui.cutz_entry.get_value()
+
                     geo_obj.tools[1]['data']['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
                     geo_obj.tools[1]['data']['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
 
+                    # if there are "thin gaps"
                     if gaps_solid_geo:
                         geo_obj.tools[99] = deepcopy(self.cut_tool_dict)
                         geo_obj.tools[99]['tooldia'] = str(cut_dia)
@@ -977,6 +968,17 @@ class CutOut(AppTool):
                         geo_obj.tools[99]['data']['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
                         # plot this tool in a different color
                         geo_obj.tools[99]['data']['override_color'] = "#29a3a3fa"
+
+                    xmin, ymin, xmax, ymax = CutOut.recursive_bounds(geo_obj.solid_geometry)
+                    geo_obj.options['xmin'] = xmin
+                    geo_obj.options['ymin'] = ymin
+                    geo_obj.options['xmax'] = xmax
+                    geo_obj.options['ymax'] = ymax
+
+                    geo_obj.options['tools_mill_tooldia'] = str(cut_dia)
+                    geo_obj.options['tools_mill_cutz'] = self.ui.cutz_entry.get_value()
+                    geo_obj.options['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
+                    geo_obj.options['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
 
                 def excellon_init(exc_obj, app_o):
                     if not holes:
@@ -1008,6 +1010,7 @@ class CutOut(AppTool):
                         ret = app_obj.app_obj.new_object('excellon', outname_exc, excellon_init, autoselected=False)
                         if ret == 'fail':
                             app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Mouse bites failed."))
+                        app_obj.should_we_save = True
 
                     ret = app_obj.app_obj.new_object('geometry', outname, geo_init, autoselected=False)
                     if ret == 'fail':
@@ -1247,11 +1250,6 @@ class CutOut(AppTool):
                     geo_obj.multigeo = True
                     geo_obj.solid_geometry = deepcopy(solid_geo)
 
-                    geo_obj.options['xmin'] = xmin
-                    geo_obj.options['ymin'] = ymin
-                    geo_obj.options['xmax'] = xmax
-                    geo_obj.options['ymax'] = ymax
-
                     geo_obj.tools[1] = deepcopy(self_c.cut_tool_dict)
                     geo_obj.tools[1]['tooldia'] = str(cut_dia)
                     geo_obj.tools[1]['solid_geometry'] = geo_obj.solid_geometry
@@ -1273,6 +1271,17 @@ class CutOut(AppTool):
                         geo_obj.tools[99]['data']['tools_mill_multidepth'] = self_c.ui.mpass_cb.get_value()
                         geo_obj.tools[99]['data']['tools_mill_depthperpass'] = self_c.ui.maxdepth_entry.get_value()
                         geo_obj.tools[99]['data']['override_color'] = "#29a3a3fa"
+
+                    xmin, ymin, xmax, ymax = CutOut.recursive_bounds(geo_obj.solid_geometry)
+                    geo_obj.options['xmin'] = xmin
+                    geo_obj.options['ymin'] = ymin
+                    geo_obj.options['xmax'] = xmax
+                    geo_obj.options['ymax'] = ymax
+
+                    geo_obj.options['tools_mill_tooldia'] = str(cut_dia)
+                    geo_obj.options['tools_mill_cutz'] = self_c.ui.cutz_entry.get_value()
+                    geo_obj.options['tools_mill_multidepth'] = self_c.ui.mpass_cb.get_value()
+                    geo_obj.options['tools_mill_depthperpass'] = self_c.ui.maxdepth_entry.get_value()
 
                 def excellon_init(exc_obj, app_o):
                     if not holes:

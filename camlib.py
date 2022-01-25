@@ -3597,7 +3597,7 @@ class CNCjob(Geometry):
         :rtype:             str
         """
 
-        log.debug("geometry_tool_gcode_gen()")
+        log.debug("camlib.CNCJob.geometry_tool_gcode_gen()")
 
         t_gcode = ''
         temp_solid_geometry = []
@@ -3868,9 +3868,13 @@ class CNCjob(Geometry):
         log.debug("Starting G-Code...")
 
         current_tooldia = float('%.*f' % (self.decimals, float(self.tooldia)))
-        self.app.inform.emit('%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
-                                            str(current_tooldia),
-                                            str(self.units)))
+        msg = '%s: %s%s.' % (_("Starting G-Code for tool with diameter"), str(current_tooldia), str(self.units))
+        self.app.log.debug(msg)
+        self.app.inform.emit(msg)
+        if not self.multidepth:
+            self.app.log.debug("camlib.CNCJob.geometry_tool_gcode_gen() -> Multidepth OFF -> Single Pass")
+        else:
+            self.app.log.debug("camlib.CNCJob.geometry_tool_gcode_gen() -> Multidepth ON -> Multiple Pass")
 
         # Measurements
         total_travel = 0.0

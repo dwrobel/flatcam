@@ -728,9 +728,12 @@ class ToolMilling(AppTool, Excellon):
                         tool_data['tools_mill_offset_value'] = 0.0
                         tool_data['tools_mill_job_type'] = 0    # _('Roughing')
 
-                        tool_data['tools_mill_multidepth'] = False
-                        tool_data['tools_mill_extracut'] = False
-                        tool_data['tools_mill_dwell'] = False
+                        # we made the decision here what to do with the hidden parameters
+                        # some will disable some of the hidden features but other are set by
+                        # other plugins so we hide them but we do not disable (like the `multidepth`)
+                        # tool_data['tools_mill_multidepth'] = False
+                        tool_data['tools_mill_extracut'] = self.app.defaults["tools_mill_extracut"]
+                        tool_data['tools_mill_dwell'] = self.app.defaults["tools_mill_dwell"]
                         tool_data['tools_mill_area_exclusion'] = False
 
                 self.ui.offset_type_lbl.hide()
@@ -787,7 +790,10 @@ class ToolMilling(AppTool, Excellon):
                         tool_data['tools_mill_offset_value'] = app_defaults['tools_mill_offset_value']
                         tool_data['tools_mill_job_type'] = app_defaults['tools_mill_job_type']
 
-                        tool_data['tools_mill_multidepth'] = app_defaults['tools_mill_multidepth']
+                        # we made the decision here what to do with the hidden parameters
+                        # some will disable some of the hidden features but other are set by
+                        # other plugins so we hide them but we do not disable (like the `multidepth`)
+                        # tool_data['tools_mill_multidepth'] = app_defaults['tools_mill_multidepth']
                         tool_data['tools_mill_extracut'] = app_defaults['tools_mill_extracut']
                         tool_data['tools_mill_dwell'] = app_defaults['tools_mill_dwell']
                         tool_data['tools_mill_area_exclusion'] = app_defaults['tools_mill_area_exclusion']
@@ -1706,6 +1712,15 @@ class ToolMilling(AppTool, Excellon):
     def update_ui(self):
         self.ui_disconnect()
 
+        # load the Milling object
+        self.obj_name = self.ui.object_combo.currentText()
+        # Get source object.
+        try:
+            self.target_obj = self.app.collection.get_by_name(self.obj_name)
+        except Exception:
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
+            return
+
         if self.ui.target_radio.get_value() == 'exc':
             plugin_table = self.ui.tools_table
         else:
@@ -1781,7 +1796,15 @@ class ToolMilling(AppTool, Excellon):
 
     def to_form(self, storage=None):
         if storage is None:
-            storage = self.app.options
+            # load the Milling object
+            self.obj_name = self.ui.object_combo.currentText()
+            # Get source object.
+            try:
+                self.target_obj = self.app.collection.get_by_name(self.obj_name)
+            except Exception:
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
+                return
+            storage = self.app.options if self.target_obj is None else self.target_obj.options
 
         # calculate self.currnet_row for the cellWidgets in the Tools Table
         if self.ui.target_radio.get_value() == 'geo':
@@ -3211,10 +3234,12 @@ class ToolMilling(AppTool, Excellon):
                     float(tools_dict[tooluid_key]['data']['tools_mill_tooldia']), self.decimals)
                 dia_cnc_dict['data']['tools_mill_tooldia'] = deepcopy(tooldia_val)
 
+                # Path optimizations
                 if "optimization_type" not in tools_dict[tooluid_key]['data']:
                     def_optimization_type = geo_obj.options["tools_mill_optimization_type"]
                     tools_dict[tooluid_key]['data']["tools_mill_optimization_type"] = def_optimization_type
 
+                # Polishing
                 job_type = tools_dict[tooluid_key]['data']['tools_mill_job_type']
                 if job_type == 3:   # Polishing
                     self.app.log.debug("Painting the polished area ...")

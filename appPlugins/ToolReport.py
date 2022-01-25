@@ -7,9 +7,9 @@
 
 from PyQt6 import QtGui, QtCore, QtWidgets
 from appTool import AppTool
-from appGUI.GUIElements import FCTree, VerticalScrollArea, FCLabel
+from appGUI.GUIElements import FCTree, VerticalScrollArea
 
-from shapely.geometry import MultiPolygon, Polygon
+from shapely.geometry import MultiPolygon, Polygon, MultiLineString
 from shapely.ops import unary_union
 
 from copy import deepcopy
@@ -458,7 +458,10 @@ class ObjectReport(AppTool):
                     if k == 'solid_geometry':
                         # printed_value = _('Present') if v else _('None')
                         try:
-                            printed_value = str(len(v))
+                            if isinstance(k, (MultiPolygon, MultiLineString)):
+                                printed_value = str(len(v.geoms))
+                            else:
+                                printed_value = str(len(v))
                         except (TypeError, AttributeError):
                             printed_value = '1'
                         self.treeWidget.addChild(geo_tool, [str(k), printed_value], True)

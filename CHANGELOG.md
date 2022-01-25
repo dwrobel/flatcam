@@ -12,6 +12,8 @@ CHANGELOG for FlatCAM beta
 - minor changes
 - fixed the Follow plugin not marking correctly the resulting Geometry objet as a `multigeo`
 - fixed the Cutout plugin not working with Geometry objects that are made out of a MultiLineString
+- fixed the Milling Plugin who changed the tools information "tools_mill_multidepth" when changing from Basic to Advanced mode to the application default value but that defeated the change made by the Cutout plugin
+- fixed a Shapely 2.0 deprecation warning in the Report plugin
 
 24.01.2022
 
