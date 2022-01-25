@@ -318,6 +318,8 @@ class ToolFollow(AppTool, Gerber):
                 self.app.log.warning("ToolFollow.follow_geo() -> Empty Follow Geometry")
                 return 'fail'
 
+            new_obj.multigeo = True
+
             # Propagate options
             new_obj.options["tools_mill_tooldia"] = app_obj.defaults["tools_mill_tooldia"]
             new_obj.solid_geometry = follow_geo
@@ -383,6 +385,7 @@ class ToolFollow(AppTool, Gerber):
             area_follow = flatten_shapely_geometry(area_follow)
             cleaned_area_follow = [g for g in area_follow if not g.is_empty and g.is_valid and g.geom_type != 'Point']
 
+            new_obj.multigeo = True
             new_obj.solid_geometry = deepcopy(cleaned_area_follow)
             new_obj.tools = {
                 1: {

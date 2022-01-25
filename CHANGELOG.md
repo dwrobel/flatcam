@@ -10,6 +10,8 @@ CHANGELOG for FlatCAM beta
 25.01.2022
 
 - minor changes
+- fixed the Follow plugin not marking correctly the resulting Geometry objet as a `multigeo`
+- fixed the Cutout plugin not working with Geometry objects that are made out of a MultiLineString
 
 24.01.2022
 

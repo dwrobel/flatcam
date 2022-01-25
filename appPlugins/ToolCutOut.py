@@ -649,14 +649,14 @@ class CutOut(AppTool):
             self.on_freeform_cutout()
 
     def on_freeform_cutout(self):
-
+        self.app.log.debug("CutOut.on_freeform_cutout() is running....")
         name = self.ui.obj_combo.currentText()
 
         # Get source object.
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
-            log.error("CutOut.on_freeform_cutout() --> %s" % str(e))
+            self.app.log.error("CutOut.on_freeform_cutout() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return "Could not retrieve object: %s" % name
 
@@ -789,7 +789,11 @@ class CutOut(AppTool):
 
         with self.app.proc_container.new("Generating Cutout ..."):
             formatted_name = cutout_obj.options["name"].rpartition('.')[0]
-            outname = "%s_cutout" % formatted_name
+            if formatted_name != '':
+                outname = "%s_cutout" % formatted_name
+            else:
+                outname = "%s_cutout" % cutout_obj.options["name"]
+
             self.app.collection.promise(outname)
 
             has_mouse_bites = True if self.ui.gaptype_combo.get_value() == 2 else False     # "mouse bytes"
@@ -823,7 +827,7 @@ class CutOut(AppTool):
                         else:
                             object_geo = cutout_obj.solid_geometry
                     except Exception as err:
-                        log.error("CutOut.on_freeform_cutout().geo_init() --> %s" % str(err))
+                        self.app.log.error("CutOut.on_freeform_cutout().geo_init() --> %s" % str(err))
                         object_geo = cutout_obj.solid_geometry
                 else:
                     if cutout_obj.multigeo is False:
@@ -848,13 +852,14 @@ class CutOut(AppTool):
                             geo_buf = object_geo.buffer(- margin + abs(cut_dia / 2))
                             geo = unary_union(geo_buf.interiors)
                     else:
-                        if isinstance(object_geo, MultiPolygon):
+                        if isinstance(object_geo, (MultiPolygon, MultiLineString)):
                             x0, y0, x1, y1 = object_geo.bounds
                             object_geo = box(x0, y0, x1, y1)
                         geo_buf = object_geo.buffer(0)
                         geo = geo_buf.exterior
 
                     if geo.is_empty:
+                        self.app.log.debug("Cutout.on_freeform_cutout() -> Empty geometry.")
                         self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                         return 'fail'
 
@@ -877,6 +882,7 @@ class CutOut(AppTool):
                             gaps_solid_geo += r_geo
 
                 if not solid_geo:
+                    self.app.log.debug("Cutout.on_freeform_cutout() -> Empty solid geometry.")
                     self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                     return "fail"
 
@@ -984,6 +990,7 @@ class CutOut(AppTool):
                         }
                     }
 
+                    exc_obj.multigeo = True
                     exc_obj.tools = tools
                     exc_obj.create_geometry()
                     exc_obj.source_file = app_o.f_handlers.export_excellon(obj_name=exc_obj.options['name'],
@@ -1004,6 +1011,7 @@ class CutOut(AppTool):
 
                     ret = app_obj.app_obj.new_object('geometry', outname, geo_init, autoselected=False)
                     if ret == 'fail':
+                        self.app.log.debug("Cutout.on_freeform_cutout() -> Failure in creating an Geometry object..")
                         app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                         return
 
@@ -1017,6 +1025,7 @@ class CutOut(AppTool):
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
     def on_rectangular_cutout(self):
+        self.app.log.debug("CutOut.on_rectangular_cutout() is running....")
         name = self.ui.obj_combo.currentText()
 
         # Get source object.
@@ -1153,6 +1162,7 @@ class CutOut(AppTool):
                         return "fail"
 
                 if not solid_geo:
+                    self.app.log.debug("Cutout.on_rectangular_cutout() -> Empty solid geometry.")
                     app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                     return "fail"
 
@@ -1297,6 +1307,7 @@ class CutOut(AppTool):
 
                     ret = app_obj.app_obj.new_object('geometry', outname, geo_init, autoselected=False)
                     if ret == 'fail':
+                        self.app.log.debug("Cutout.on_rectangular_cutout() -> Could not create a Geometry object.")
                         app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                         return
 

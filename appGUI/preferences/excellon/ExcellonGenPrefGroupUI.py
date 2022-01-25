@@ -375,9 +375,9 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
             # set Excellon path optimizations algorithm to TSA if the app is run on a 32bit platform
             # modes 'M' or 'B' are not allowed when the app is running in 32bit platform
             if val in ['M', 'B']:
-                self.opt_algorithm_radio.blockSignals(True)
+                self.excellon_optimization_radio.blockSignals(True)
                 self.excellon_optimization_radio.set_value('T')
-                self.opt_algorithm_radio.blockSignals(False)
+                self.excellon_optimization_radio.blockSignals(False)
 
         if val == 'M':
             self.optimization_time_label.setDisabled(False)
