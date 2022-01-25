@@ -106,7 +106,7 @@ class GerberObject(FlatCAMObj, Gerber):
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
-        self.ser_attrs += ['options', 'kind', 'fill_color', 'outline_color', 'alpha_level']
+        self.ser_attrs = ['options', 'kind', 'fill_color', 'outline_color', 'alpha_level'] + self.ser_attrs
 
     def set_ui(self, ui):
         """

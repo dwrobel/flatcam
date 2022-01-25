@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+25.01.2022
+
+- minor changes
+
 24.01.2022
 
 - fixed a syntax error in a call of the log.error()
