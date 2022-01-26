@@ -44,7 +44,7 @@ class TclCommandBuffer(TclCommand):
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
-    required = ['name', 'distance']
+    required = ['name', 'dist']
 
     # structured help for current command, args needs to be ordered
     help = {
@@ -67,7 +67,7 @@ class TclCommandBuffer(TclCommand):
             'buffer my_geo -dist 4.2 -factor True',
             'buffer my_geo -dist 4.2 -factor 1',
             '# scale each geo element by a factor of 4.2 in the my_geo Geometry obj and the join is 2 (square)',
-            'buffer my_geo -distance 4.2 -factor True -join 2'
+            'buffer my_geo -dist 4.2 -factor True -join 2'
         ]
     }
 

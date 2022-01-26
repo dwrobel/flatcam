@@ -933,7 +933,8 @@ class Geometry(object):
 
         # ## If iterable, expand recursively.
         try:
-            for geo in geometry:
+            w_geo = geometry.geoms if isinstance(geometry, MultiPolygon) else geometry
+            for geo in w_geo:
                 exteriors.extend(self.get_exteriors(geometry=geo))
 
         # ## Not iterable, get the exterior if polygon.
@@ -2606,13 +2607,14 @@ class Geometry(object):
         #     self.solid_geometry = affinity.skew(self.solid_geometry, angle_x, angle_y,
         #                                         origin=(px, py))
 
-    def buffer(self, distance, join, factor, only_exterior=False):
+    def buffer(self, distance, join, factor, only_exterior=False, muted=False):
         """
 
         :param distance:        if 'factor' is True then distance is the scale factor for each geometric element
         :param join:            The kind of join used by the shapely buffer method: round, square or bevel
         :param factor:          True or False (None)
         :param only_exterior:   Bool. If True, the LineStrings are buffered only on the outside
+        :param muted:           Bool. If True no messages are created.
         :return:
         """
 
@@ -2626,25 +2628,32 @@ class Geometry(object):
             try:
                 work_geo = obj.geoms if isinstance(obj, (MultiPolygon, MultiLineString)) else obj
                 for g in work_geo:
-                    new_obj.append(buffer_geom(g))
+                    new_obj += buffer_geom(g)
             except TypeError:
                 try:
                     if factor is None or factor is False or factor == 0:
                         if distance >= 0:
                             new_obj = obj.buffer(distance, resolution=self.geo_steps_per_circle, join_style=join)
+                            if isinstance(obj, (LinearRing, LineString)) and only_exterior is True:
+                                new_obj = new_obj.exterior
                         else:
+                            if isinstance(obj, LineString):
+                                if not obj.is_closed:
+                                    obj = Polygon(obj).exterior
+
                             new_obj = obj.buffer(abs(distance*2), resolution=self.geo_steps_per_circle, join_style=join)
-                            new_obj = unary_union(new_obj.interiors)
-                            new_obj = new_obj.buffer(-distance, resolution=self.geo_steps_per_circle, join_style=join)
-                            new_obj = new_obj.exterior
-                        if isinstance(obj, (LinearRing, LineString)) and only_exterior is True:
-                            new_obj = new_obj.exterior
+                            new_obj_ints = new_obj.interiors
+                            new_obj_union = unary_union(new_obj_ints)
+                            new_obj = new_obj_union.buffer(
+                                abs(distance), resolution=self.geo_steps_per_circle, join_style=join).exterior
+
                     else:
                         new_obj = affinity.scale(obj, xfact=distance, yfact=distance, origin='center')
-                except AttributeError:
+                except Exception as err:
+                    self.app.log.error("camlib.Geometry.buffer.buffer_geom() -> %s" % str(err))
                     new_obj = obj
 
-            return new_obj
+            return [new_obj]
 
         try:
             if self.multigeo is True:
@@ -2652,8 +2661,15 @@ class Geometry(object):
                     res = buffer_geom(self.tools[tool]['solid_geometry'])
                     self.tools[tool]['solid_geometry'] = flatten_shapely_geometry(res)
 
-            self.solid_geometry = buffer_geom(self.solid_geometry)
-            self.app.inform.emit('[success] %s...' % _('Object was buffered'))
+            buff_geo = flatten_shapely_geometry(buffer_geom(self.solid_geometry))
+            if buff_geo:
+                self.solid_geometry = buff_geo
+                if muted is False:
+                    self.app.inform.emit('[success] %s...' % _('Object was buffered'))
+            else:
+                if muted is False:
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                self.app.log.error("camlib.Geometry.buffer() -> Failed.")
         except AttributeError:
             self.app.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed."), _("No object is selected.")))
 

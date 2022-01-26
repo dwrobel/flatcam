@@ -16,6 +16,8 @@ CHANGELOG for FlatCAM beta
 - fix the Transform plugin, buffer functionality for Geometry objects such that the buffer with negative values will work by crating a buffer toward the interior of that geometry
 - minor changes
 - modified the bounding box utility feature in the Gerber Object UI to work with negative margin values
+- fixed some errors in the `buffer` and `isolate` Tcl commands
+- updated the camlib.Geometry.buffer() method
 
 25.01.2022
 
