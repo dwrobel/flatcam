@@ -2630,7 +2630,13 @@ class Geometry(object):
             except TypeError:
                 try:
                     if factor is None or factor is False or factor == 0:
-                        new_obj = obj.buffer(distance, resolution=self.geo_steps_per_circle, join_style=join)
+                        if distance >= 0:
+                            new_obj = obj.buffer(distance, resolution=self.geo_steps_per_circle, join_style=join)
+                        else:
+                            new_obj = obj.buffer(abs(distance*2), resolution=self.geo_steps_per_circle, join_style=join)
+                            new_obj = unary_union(new_obj.interiors)
+                            new_obj = new_obj.buffer(-distance, resolution=self.geo_steps_per_circle, join_style=join)
+                            new_obj = new_obj.exterior
                         if isinstance(obj, (LinearRing, LineString)) and only_exterior is True:
                             new_obj = new_obj.exterior
                     else:
