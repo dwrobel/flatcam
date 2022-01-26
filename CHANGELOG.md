@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - fixed the Cutout plugin not working with Geometry objects that are made out of a LineString or LinearRing geometric elements
 - fixed the Cutout plugin for the rectangular cutout: the name of the resulting object is now correct if there is no extension in the source file
+- modified the bounding box utility feature in the Gerber Object UI to work with buffer value of 0.0 and rounded corners
 
 25.01.2022
 

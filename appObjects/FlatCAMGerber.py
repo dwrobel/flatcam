@@ -461,7 +461,7 @@ class GerberObject(FlatCAMObj, Gerber):
             non_copper = bounding_box.difference(self.solid_geometry)
             non_copper = flatten_shapely_geometry(non_copper)
 
-            if non_copper is None or non_copper.is_empty:
+            if non_copper is None or (not isinstance(non_copper, list) and non_copper.is_empty):
                 app_obj.inform.emit("[ERROR_NOTCL] %s" % _("Operation could not be done."))
                 return "fail"
             geo_obj.solid_geometry = non_copper
@@ -483,7 +483,15 @@ class GerberObject(FlatCAMObj, Gerber):
                     self.solid_geometry = unary_union(self.solid_geometry)
 
             # Bounding box with rounded corners
-            bounding_box = self.solid_geometry.envelope.buffer(float(self.options["bboxmargin"]))
+            if isinstance(self.solid_geometry, Polygon):
+                bounding_box = self.solid_geometry.buffer(float(self.options["bboxmargin"])).exterior
+            elif isinstance(self.solid_geometry, MultiPolygon):
+                try:
+                    bounding_box = self.solid_geometry.buffer(float(self.options["bboxmargin"])).exterior
+                except Exception:
+                    bounding_box = self.solid_geometry.envelope.buffer(float(self.options["bboxmargin"]))
+            else:
+                bounding_box = self.solid_geometry.envelope.buffer(float(self.options["bboxmargin"]))
             if not self.options["bboxrounded"]:  # Remove rounded corners
                 bounding_box = bounding_box.envelope
 
