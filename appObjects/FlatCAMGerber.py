@@ -482,16 +482,31 @@ class GerberObject(FlatCAMObj, Gerber):
                 except Exception:
                     self.solid_geometry = unary_union(self.solid_geometry)
 
+            distance = float(self.options["bboxmargin"])
+
             # Bounding box with rounded corners
-            if isinstance(self.solid_geometry, Polygon):
-                bounding_box = self.solid_geometry.buffer(float(self.options["bboxmargin"])).exterior
-            elif isinstance(self.solid_geometry, MultiPolygon):
-                try:
-                    bounding_box = self.solid_geometry.buffer(float(self.options["bboxmargin"])).exterior
-                except Exception:
-                    bounding_box = self.solid_geometry.envelope.buffer(float(self.options["bboxmargin"]))
+            if distance >= 0:
+                if isinstance(self.solid_geometry, Polygon):
+                    bounding_box = self.solid_geometry.buffer(distance).exterior
+                elif isinstance(self.solid_geometry, MultiPolygon):
+                    try:
+                        bounding_box = self.solid_geometry.buffer(distance).exterior
+                    except Exception:
+                        bounding_box = self.solid_geometry.envelope.buffer(distance)
+                else:
+                    bounding_box = self.solid_geometry.envelope.buffer(distance)
             else:
-                bounding_box = self.solid_geometry.envelope.buffer(float(self.options["bboxmargin"]))
+                if isinstance(self.solid_geometry, Polygon):
+                    bounding_box = self.solid_geometry.buffer(abs(distance*2)).interiors
+                elif isinstance(self.solid_geometry, MultiPolygon):
+                    try:
+                        bounding_box = self.solid_geometry.buffer(abs(distance*2)).interiors
+                    except Exception:
+                        bounding_box = self.solid_geometry.envelope.buffer(abs(distance*2)).interiors
+                else:
+                    bounding_box = self.solid_geometry.envelope.buffer(abs(distance*2)).interiors
+                bounding_box = unary_union(bounding_box).buffer(-distance).exterior
+
             if not self.options["bboxrounded"]:  # Remove rounded corners
                 bounding_box = bounding_box.envelope
 
