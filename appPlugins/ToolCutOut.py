@@ -1681,11 +1681,6 @@ class CutOut(AppTool):
             return
 
         dia = float(self.ui.dia.get_value())
-        if 0 in {dia}:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Tool Diameter is zero value. Change it to a positive real number."))
-            return
-
         try:
             kind = self.ui.obj_kind_combo.get_value()
         except ValueError:
@@ -1706,7 +1701,11 @@ class CutOut(AppTool):
                         (isinstance(geo_union, list) and len(geo_union) == 1) or \
                         (isinstance(geo_union, MultiPolygon) and len(geo_union.geoms) == 1):
 
-                    buff_geo = geo_union.buffer(margin + abs(dia / 2)).exterior
+                    if dia >= 0:
+                        buff_geo = geo_union.buffer(margin + abs(dia / 2)).exterior
+                    else:
+                        buff_geo = geo_union.buffer(margin + abs(dia / 2)).interiors
+                        buff_geo = unary_union(buff_geo)
                     if shape_type is False:
                         geo_obj.solid_geometry = buff_geo
                     else:
@@ -2345,7 +2344,7 @@ class CutoutUI:
         # Tool Diameter
         self.dia = FCDoubleSpinner(callback=self.confirmation_message)
         self.dia.set_precision(self.decimals)
-        self.dia.set_range(0.0000, 10000.0000)
+        self.dia.set_range(-10000.0000, 10000.0000)
 
         self.dia_label = FCLabel('%s:' % _("Tool Dia"))
         self.dia_label.setToolTip(
