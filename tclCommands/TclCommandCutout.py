@@ -129,14 +129,23 @@ class TclCommandCutout(TclCommand):
                    [maxx, midy + hgap],
                    [maxx, maxy],
                    [midx + hgap, maxy]]
-            cases = {"tb": [[pts[0], pts[1], pts[4], pts[5]],
-                            [pts[6], pts[7], pts[10], pts[11]]],
-                     "lr": [[pts[9], pts[10], pts[1], pts[2]],
-                            [pts[3], pts[4], pts[7], pts[8]]],
-                     "4": [[pts[0], pts[1], pts[2]],
-                           [pts[3], pts[4], pts[5]],
-                           [pts[6], pts[7], pts[8]],
-                           [pts[9], pts[10], pts[11]]]}
+
+            cases = {
+                "tb": [
+                    [pts[0], pts[1], pts[4], pts[5]],
+                    [pts[6], pts[7], pts[10], pts[11]]
+                ],
+                "lr": [
+                    [pts[9], pts[10], pts[1], pts[2]],
+                    [pts[3], pts[4], pts[7], pts[8]]
+                ],
+                "4": [
+                    [pts[0], pts[1], pts[2]],
+                    [pts[3], pts[4], pts[5]],
+                    [pts[6], pts[7], pts[8]],
+                    [pts[9], pts[10], pts[11]]
+                ]
+            }
             cuts = cases[gaps_par]
             geo_obj.solid_geometry = unary_union([LineString(segment) for segment in cuts])
 

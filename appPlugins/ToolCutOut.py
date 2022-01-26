@@ -690,7 +690,7 @@ class CutOut(AppTool):
                                    "Fill in a correct value and retry."))
             return
 
-        def any_cutout_handler(geom, cut_dia, gaps, gapsize, margin):
+        def any_cutout_handler(geom, cut_diameter, gaps, gapsize, margin):
             r_temp_geo = []
             initial_geo = deepcopy(geom)
 
@@ -705,9 +705,9 @@ class CutOut(AppTool):
             if gaps != 'None':
                 if gaps == '8' or gaps == '2LR':
                     points = (
-                        xxmin - (gapsize + cut_dia),          # botleft_x
+                        xxmin - (gapsize + cut_diameter),          # botleft_x
                         py - (gapsize / 2) + leny / 4,        # botleft_y
-                        xxmax + (gapsize + cut_dia),          # topright_x
+                        xxmax + (gapsize + cut_diameter),          # topright_x
                         py + (gapsize / 2) + leny / 4         # topright_y
                     )
                     geom = self.subtract_poly_from_geo(geom, points)
@@ -716,9 +716,9 @@ class CutOut(AppTool):
                     )
 
                     points = (
-                        xxmin - (gapsize + cut_dia),
+                        xxmin - (gapsize + cut_diameter),
                         py - (gapsize / 2) - leny / 4,
-                        xxmax + (gapsize + cut_dia),
+                        xxmax + (gapsize + cut_diameter),
                         py + (gapsize / 2) - leny / 4
                     )
                     geom = self.subtract_poly_from_geo(geom, points)
@@ -729,9 +729,9 @@ class CutOut(AppTool):
                 if gaps == '8' or gaps == '2TB':
                     points = (
                         px - (gapsize / 2) + lenx / 4,
-                        yymin - (gapsize + cut_dia),
+                        yymin - (gapsize + cut_diameter),
                         px + (gapsize / 2) + lenx / 4,
-                        yymax + (gapsize + cut_dia)
+                        yymax + (gapsize + cut_diameter)
                     )
                     geom = self.subtract_poly_from_geo(geom, points)
                     r_temp_geo.append(
@@ -740,9 +740,9 @@ class CutOut(AppTool):
 
                     points = (
                         px - (gapsize / 2) - lenx / 4,
-                        yymin - (gapsize + cut_dia),
+                        yymin - (gapsize + cut_diameter),
                         px + (gapsize / 2) - lenx / 4,
-                        yymax + (gapsize + cut_dia)
+                        yymax + (gapsize + cut_diameter)
                     )
                     geom = self.subtract_poly_from_geo(geom, points)
                     r_temp_geo.append(
@@ -751,9 +751,9 @@ class CutOut(AppTool):
 
                 if gaps == '4' or gaps == 'LR':
                     points = (
-                        xxmin - (gapsize + cut_dia),
+                        xxmin - (gapsize + cut_diameter),
                         py - (gapsize / 2),
-                        xxmax + (gapsize + cut_dia),
+                        xxmax + (gapsize + cut_diameter),
                         py + (gapsize / 2)
                     )
                     geom = self.subtract_poly_from_geo(geom, points)
@@ -764,9 +764,9 @@ class CutOut(AppTool):
                 if gaps == '4' or gaps == 'TB':
                     points = (
                         px - (gapsize / 2),
-                        yymin - (gapsize + cut_dia),
+                        yymin - (gapsize + cut_diameter),
                         px + (gapsize / 2),
-                        yymax + (gapsize + cut_dia)
+                        yymax + (gapsize + cut_diameter)
                     )
                     geom = self.subtract_poly_from_geo(geom, points)
                     r_temp_geo.append(
@@ -855,6 +855,8 @@ class CutOut(AppTool):
                         if isinstance(object_geo, (MultiPolygon, MultiLineString)):
                             x0, y0, x1, y1 = object_geo.bounds
                             object_geo = box(x0, y0, x1, y1)
+                        if isinstance(object_geo, (LinearRing, LineString)):
+                            object_geo = Polygon(object_geo)
                         geo_buf = object_geo.buffer(0)
                         geo = geo_buf.exterior
 
