@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - modified the bounding box utility feature in the Gerber Object UI to work with buffer value of 0.0 and rounded corners
 - in Cutout plugin added the ability to create Manual Geometries with negative tool diameters
 - fix the Transform plugin, buffer functionality for Geometry objects such that the buffer with negative values will work by crating a buffer toward the interior of that geometry
+- minor changes
 
 25.01.2022
 

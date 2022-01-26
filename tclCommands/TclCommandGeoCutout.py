@@ -176,7 +176,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
-            log.error("TclCommandGeoCutout --> %s" % str(e))
+            self.app.log.error("TclCommandGeoCutout.execute() --> %s" % str(e))
             return "Could not retrieve object: %s" % name
 
         if 0 in {dia}:
