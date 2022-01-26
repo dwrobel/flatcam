@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 26.01.2022
 
 - fixed the Cutout plugin not working with Geometry objects that are made out of a LineString or LinearRing geometric elements
+- fixed the Cutout plugin for the rectangular cutout: the name of the resulting object is now correct if there is no extension in the source file
 
 25.01.2022
 

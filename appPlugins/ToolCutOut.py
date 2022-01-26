@@ -1079,7 +1079,7 @@ class CutOut(AppTool):
         has_mouse_bites_val = True if self.ui.gaptype_combo.get_value() == 2 else False  # "mouse bytes"
 
         formatted_name = cutout_obj.options["name"].rpartition('.')[0]
-        outname = "%s_cutout" % formatted_name
+        outname = "%s_cutout" % formatted_name if formatted_name != '' else "%s_cutout" % cutout_obj.options["name"]
         self.app.collection.promise(outname)
 
         outname_exc = cutout_obj.options["name"] + "_mouse_bites"
@@ -1108,6 +1108,12 @@ class CutOut(AppTool):
                 if kind == 'single':
                     # fuse the lines
                     object_geo = unary_union(object_geo)
+
+                    # if isinstance(object_geo, (MultiPolygon, MultiLineString)):
+                    #     x0, y0, x1, y1 = object_geo.bounds
+                    #     geo = box(x0, y0, x1, y1)
+                    # if isinstance(object_geo, (LinearRing, LineString)):
+                    #     geo = Polygon(object_geo)
 
                     xmin, ymin, xmax, ymax = object_geo.bounds
                     geo = box(xmin, ymin, xmax, ymax)
