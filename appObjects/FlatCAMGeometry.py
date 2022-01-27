@@ -991,8 +991,8 @@ class GeometryObject(FlatCAMObj, Geometry):
         :param spindlespeed:    Spindle speed (RPM)
         :param dwell:
         :param dwelltime:
-        :param multidepth:
-        :param dpp:             Depth for each pass when multidepth parameter is True
+        :param multidepth:      Bool: If True use the `dpp` parameter
+        :param dpp:             Depth for each pass when multidepth parameter is True. Positive value.
         :param toolchange:
         :param toolchangez:
         :param toolchangexy:    A sequence ox X,Y coordinates: a 2-length tuple or a string.
@@ -1011,7 +1011,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         :return: None
         """
 
-        self.app.log.debug("FlatCAMGeometry.generatecncjob()")
+        self.app.log.debug("FlatCAMGeometry.GeometryObject.generatecncjob()")
 
         tooldia = dia if dia else float(self.options["tools_mill_tooldia"])
         outname = outname if outname is not None else self.options["name"]

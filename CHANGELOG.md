@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+27.01.2022
+
+- made sure that for the Tcl command `cncjob` when using the `dpp` parameter (multi depth) the value is always positive, as expected
+- the `cutout` Tcl command creates a non-multigeo Geometry object
+
 26.01.2022
 
 - fixed the Cutout plugin not working with Geometry objects that are made out of a LineString or LinearRing geometric elements

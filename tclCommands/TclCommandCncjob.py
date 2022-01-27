@@ -63,7 +63,7 @@ class TclCommandCncjob(TclCommandSignaled):
             ('feedrate_z', 'Moving speed on Z plane when cutting.'),
             ('feedrate_rapid', 'Rapid moving at speed when cutting.'),
             ('extracut_length', 'The value for extra cnccut over the first point in path,in the job end; float'),
-            ('dpp', 'If present then use multidepth cnc cut. Height of one layer for multidepth.'),
+            ('dpp', 'If present then use multidepth cnc cut. Height of one layer for multidepth. Positive value.'),
             ('toolchangez', 'Z distance for toolchange (example: 30.0).\n'
                             'If used in the command then a toolchange event will be included in gcode'),
             ('toolchangexy', 'The X,Y coordinates at Toolchange event in format (x, y) (example: (30.0, 15.2) or '
@@ -79,7 +79,7 @@ class TclCommandCncjob(TclCommandSignaled):
             ('pp', 'Name of the Geometry preprocessor. No quotes, case sensitive'),
             ('muted', 'It will not put errors in the Shell. Can be True (1) or False (0)')
         ]),
-        'examples': ['cncjob geo_name -dia 0.5 -z_cut -1.7 -z_move 2 -feedrate 120 -pp default']
+        'examples': ['cncjob geo_name -dia 0.5 -z_cut -1.8 -dpp 0.6 -z_move 2 -feedrate 120 -pp default']
     }
 
     def execute(self, args, unnamed_args):

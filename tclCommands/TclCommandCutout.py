@@ -106,6 +106,8 @@ class TclCommandCutout(TclCommand):
             return "Could not retrieve object: %s" % name
 
         def geo_init_me(geo_obj, app_obj):
+            geo_obj.multigeo = False
+
             margin = margin_par + dia_par / 2
             gap_size = dia_par + gapsize_par
 

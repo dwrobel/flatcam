@@ -5900,6 +5900,8 @@ class CNCjob(Geometry):
             return 'fail'
 
         self.z_depthpercut = float(depthpercut) if depthpercut is not None and depthpercut != 0 else abs(self.z_cut)
+        # must be a positive value
+        self.z_depthpercut = abs(self.z_depthpercut)
         self.multidepth = multidepth
         self.z_toolchange = float(toolchangez) if toolchangez is not None else \
             self.app.defaults["tools_mill_toolchangez"]
