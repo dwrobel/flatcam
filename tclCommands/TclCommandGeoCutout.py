@@ -184,7 +184,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
                 "[WARNING] %s" % _("Tool Diameter is zero value. Change it to a positive real number."))
             return "Tool Diameter is zero value. Change it to a positive real number."
 
-        if gaps not in ['lr', 'tb', '2lr', '2tb', '4', '8']:
+        if gaps not in ['lr', 'tb', '2lr', '2tb', '4', '8', 4, 8]:
             self.app.inform.emit(
                 "[WARNING] %s" % _("Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8."))
             return
@@ -306,7 +306,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
 
             def geo_init(geo_obj, app_obj):
                 try:
-                    geo = cutout_obj.isolation_geometry((dia / 2), iso_type=0, corner=2, follow=None)
+                    geo = cutout_obj.isolation_geometry((dia / 2), iso_type=0, corner=2)
                 except Exception as exc:
                     log.error("TclCommandGeoCutout.execute() --> %s" % str(exc))
                     return 'fail'

@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+28.01.2022
+
+- in Tcl command `geocutout` fixed an error due of a no longer used parameter
+
 27.01.2022
 
 - made sure that for the Tcl command `cncjob` when using the `dpp` parameter (multi depth) the value is always positive, as expected
