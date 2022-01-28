@@ -2277,7 +2277,7 @@ class App(QtCore.QObject):
         self.ui.popmenu_new_geo.triggered.connect(lambda: self.app_obj.new_geometry_object())
         self.ui.popmenu_new_grb.triggered.connect(lambda: self.app_obj.new_gerber_object())
         self.ui.popmenu_new_exc.triggered.connect(lambda: self.app_obj.new_excellon_object())
-        self.ui.popmenu_new_prj.triggered.connect(lambda: self.f_handlers.on_file_new_project())
+        self.ui.popmenu_new_prj.triggered.connect(lambda: self.f_handlers.on_file_new_project(silenced=True))
 
         # View
         self.ui.zoomfit.triggered.connect(self.on_zoom_fit)
@@ -10146,9 +10146,9 @@ class MenuFileHandlers(QtCore.QObject):
             elif response == bt_cancel:
                 return
             elif response == bt_no:
-                self.on_file_new_project(use_thread=True)
+                self.on_file_new_project(use_thread=True, silenced=True)
         else:
-            self.on_file_new_project(use_thread=True)
+            self.on_file_new_project(use_thread=True, silenced=True)
 
     def on_file_new_project(self, cli=None, reset_tcl=True, use_thread=None, silenced=None):
         """

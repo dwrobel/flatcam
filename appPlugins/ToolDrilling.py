@@ -2139,8 +2139,10 @@ class ToolDrilling(AppTool, Excellon):
 
             # first drill point
             # I can read the toolchange x,y point from any tool since it is the same for all, so I read it
-            # from the first tool
-            job_obj.xy_toolchange = job_obj.tools[1]['data']["tools_drill_toolchangexy"]
+            # from the first tool that is available
+
+            first_tool_available = sel_tools[0]
+            job_obj.xy_toolchange = job_obj.tools[first_tool_available]['data']["tools_drill_toolchangexy"]
 
             x_tc, y_tc = [0, 0]
             try:

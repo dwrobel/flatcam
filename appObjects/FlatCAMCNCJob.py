@@ -196,7 +196,10 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.ui.cnc_tools_table.show()
 
         if self.options['type'].lower() == 'excellon':
-            self.build_excellon_cnc_tools()
+            try:
+                self.build_excellon_cnc_tools()
+            except Exception as err:
+                self.app.log.error("camlib.CNCJobObject.build_ui -> %s" % str(err))
             self.ui.exc_cnc_tools_table.show()
 
         self.ui_connect()
@@ -330,11 +333,10 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         n = len(self.tools)
         self.ui.exc_cnc_tools_table.setRowCount(n)
 
-        row_no = 1
+        row_no = 0
         for t_id, dia_value in self.tools.items():
             tooldia = self.tools[t_id]['tooldia']
 
-            row_no = t_id - 1
             try:
                 offset_val = self.app.dec_format(float(dia_value['offset']), self.decimals) + self.z_cut
             except KeyError:
@@ -367,6 +369,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.ui.exc_cnc_tools_table.setItem(row_no, 4, t_id_item)  # Tool unique ID)
             self.ui.exc_cnc_tools_table.setItem(row_no, 5, cutz_item)
             self.ui.exc_cnc_tools_table.setCellWidget(row_no, 6, plot_item)
+
+            row_no += 1
 
         for row in range(row_no):
             self.ui.exc_cnc_tools_table.item(row, 0).setFlags(
