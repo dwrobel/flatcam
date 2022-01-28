@@ -6570,12 +6570,12 @@ class CNCjob(Geometry):
             toolchange_xy_mill = self.app.defaults["tools_mill_toolchangexy"]
             toolchange_xy_drill = self.app.defaults["tools_drill_toolchangexy"]
         else:
-            if tool_data["tools_mill_toolchange"] is True:
+            if "tools_drill_toolchange" in tool_data and tool_data["tools_mill_toolchange"] is True:
                 toolchange_xy_mill = tool_data["tools_mill_toolchangexy"]
             else:
                 toolchange_xy_mill = (0, 0)
 
-            if tool_data["tools_drill_toolchange"] is True:
+            if "tools_drill_toolchange" in tool_data and tool_data["tools_drill_toolchange"] is True:
                 toolchange_xy_drill = tool_data["tools_drill_toolchangexy"]
             else:
                 toolchange_xy_drill = (0, 0)

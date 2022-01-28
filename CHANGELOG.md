@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 28.01.2022
 
 - in Tcl command `geocutout` fixed an error due of a no longer used parameter
+- in camlib.CNCjob.gcode_parse() fixed an assumption that a certain object is present: tool_data["tools_drill_toolchange"]
 
 27.01.2022
 
