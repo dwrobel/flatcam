@@ -13,6 +13,9 @@ CHANGELOG for FlatCAM beta
 - in camlib.CNCjob.gcode_parse() fixed an assumption that a certain object is present: tool_data["tools_drill_toolchange"]
 - fixed an error in Drilling Plugin when selecting only a few tools and not all for drilling
 - fixed an error when building the UI for a CNCJob object created from drilling an Excellon object with a limited selection of tools
+- fixed an KeyError exception in the GCode Editor regarding the key: 'offset' not existing
+- updated the Tcl command `drillcncjob` to store the tool gcode and the parsed tool gcode in each tool data structure
+- updated the Tcl command `drillcncjob` description and examples
 
 27.01.2022
 

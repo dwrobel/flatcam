@@ -59,7 +59,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             ('name', 'Name of the source object.'),
             ('drilled_dias',
              'Comma separated tool diameters of the drills to be drilled (example: 0.6,1.0 or 3.125). '
-             'WARNING: No space allowed'),
+             'WARNING: No space allowed. Can also take the value "all" which will drill the holes for all tools.'),
             ('drillz', 'Drill depth into material (example: -2.0). Negative value.'),
             ('dpp', 'Progressive drilling into material with a specified step (example: 0.7). Positive value.'),
             ('travelz', 'Travel distance above material (example: 2.0).'),
@@ -89,9 +89,12 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             ('outname', 'Name of the resulting Geometry object.')
         ]),
         'examples': ['drillcncjob test.TXT -drillz -1.5 -travelz 14 -feedrate_z 222 -feedrate_rapid 456 '
-                     '-spindlespeed 777 -toolchangez 33 -endz 22 -pp default\n'
-                     'Usage of -feedrate_rapid matter only when the preprocessor is using it, like -marlin-.',
-                     'drillcncjob test.DRL -drillz -1.7 -dpp 0.5 -travelz 2 -feedrate_z 800 -endxy 3,3']
+                     '-spindlespeed 777 -toolchangez 33 -endz 22 -pp Marlin\n'
+                     'Usage of -feedrate_rapid matter only when the preprocessor is using it, like -Marlin-.\n',
+                     'drillcncjob test.DRL -drillz -1.7 -dpp 0.5 -travelz 2 -feedrate_z 800 -endxy 3,3\n',
+                     'drillcncjob test.DRL -drilled_dias "all" -drillz -1.7 -dpp 0.5 -travelz 2 -feedrate_z 800 '
+                     '-endxy 3,3'
+                     ]
     }
 
     def execute(self, args, unnamed_args):
@@ -233,7 +236,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 toolchange = self.app.defaults["tools_drill_toolchange"]
                 toolchangez = float(self.app.defaults["tools_drill_toolchangez"])
 
-            if "toolchangexy" in args and args["tools_drill_toolchangexy"]:
+            if "toolchangexy" in args and args["toolchangexy"]:
                 xy_toolchange = args["toolchangexy"]
             else:
                 if self.app.defaults["tools_drill_toolchangexy"]:
@@ -269,6 +272,8 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             # ################# Set parameters #########################################################
             # ##########################################################################################
             job_obj.options['type'] = 'Excellon'
+            job_obj.multigeo = True
+            job_obj.multitool = True
 
             pp_excellon_name = args["pp"] if "pp" in args and args["pp"] else self.app.defaults["tools_drill_ppname_e"]
             job_obj.pp_excellon_name = pp_excellon_name
@@ -277,9 +282,9 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             if 'dpp' in args:
                 job_obj.multidepth = True
                 if args['dpp'] is not None:
-                    job_obj.z_depthpercut = float(args['dpp'])
+                    job_obj.z_depthpercut = abs(float(args['dpp']))
                 else:
-                    job_obj.z_depthpercut = float(obj.options["dpp"])
+                    job_obj.z_depthpercut = abs(float(obj.options["dpp"]))
             else:
                 job_obj.multidepth = self.app.defaults["tools_drill_multidepth"]
                 job_obj.z_depthpercut = self.app.defaults["tools_drill_depthperpass"]
@@ -334,20 +339,32 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             job_obj.excellon_optimization_type = opt_type
             job_obj.spindledir = self.app.defaults["tools_drill_spindledir"]
 
-            ret_val = job_obj.generate_from_excellon_by_tool(obj, tools, use_ui=False)
-            job_obj.source_file = ret_val
-
+            ret_val = job_obj.generate_from_excellon_by_tool(obj, tools, is_first=True, use_ui=False)
             if ret_val == 'fail':
                 return 'fail'
+
+            job_obj.source_file = ret_val
+
             job_obj.gc_start = ret_val[1]
 
+            total_gcode_parsed = []
             # from Excellon attribute self.tools
             for t_item in job_obj.tools:
                 job_obj.tools[t_item]['data']['tools_drill_offset'] = \
                     float(job_obj.tools[t_item]['offset_z']) + float(drillz)
                 job_obj.tools[t_item]['data']['tools_drill_ppname_e'] = job_obj.options['ppname_e']
 
-            job_obj.gcode_parse()
+                used_tooldia = obj.tools[t_item]['tooldia']
+                job_obj.tools[t_item]['tooldia'] = used_tooldia
+                tool_gcode = job_obj.tools[t_item]['gcode']
+                first_drill_point = job_obj.tools[t_item]['last_point']
+                gcode_parsed = job_obj.excellon_tool_gcode_parse(used_tooldia, gcode=tool_gcode,
+                                                                 start_pt=first_drill_point)
+                total_gcode_parsed += gcode_parsed
+                job_obj.tools[t_item]['gcode_parsed'] = gcode_parsed
+
+            job_obj.gcode_parsed = total_gcode_parsed
+            # job_obj.gcode_parse()
             job_obj.create_geometry()
 
         self.app.app_obj.new_object("cncjob", args['outname'], job_init, plot=False)

@@ -3013,7 +3013,7 @@ class CNCjob(Geometry):
 
         if assignment:
             # Solution cost.
-            log.info("OR-tools metaheuristics - Total distance: " + str(assignment.ObjectiveValue()))
+            self.app.log.info("OR-tools metaheuristics - Total distance: " + str(assignment.ObjectiveValue()))
 
             # Inspect solution.
             # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1.
@@ -3063,6 +3063,10 @@ class CNCjob(Geometry):
         dist_callback = dist_between_locations.Distance
         transit_callback_index = routing.RegisterTransitCallback(dist_callback)
         routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
+
+        # Setting first solution heuristic.
+        search_parameters.first_solution_strategy = (
+            routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC)
 
         # Solve, returns a solution if any.
         assignment = routing.SolveWithParameters(search_parameters)
@@ -3227,10 +3231,11 @@ class CNCjob(Geometry):
         else:
             return zcut
 
-    # used in Tool Drilling
     def excellon_tool_gcode_gen(self, tool, points, tools, first_pt, is_first=False, is_last=False, opt_type='T',
                                 toolchange=False):
         """
+        Used in Tool Drilling
+
         Creates Gcode for this object from an Excellon object
         for the specified tools.
 
@@ -3344,7 +3349,7 @@ class CNCjob(Geometry):
                     self.app.inform.emit('[ERROR] %s' % _("The Toolchange X,Y format has to be (x, y)."))
                     return 'fail'
         except Exception as e:
-            log.error("camlib.CNCJob.generate_from_excellon_by_tool() xy_toolchange --> %s" % str(e))
+            self.app.log.error("camlib.CNCJob.generate_from_excellon_by_tool() xy_toolchange --> %s" % str(e))
             self.xy_toolchange = [0, 0]
 
         # End position parameters
@@ -3421,7 +3426,7 @@ class CNCjob(Geometry):
 
         # Only if there are locations to drill
         if not optimized_path:
-            log.debug("CNCJob.excellon_tool_gcode_gen() -> Optimized path is empty.")
+            self.app.log.error("CNCJob.excellon_tool_gcode_gen() -> Optimized path is empty.")
             return 'fail'
 
         if self.app.abort_flag:
@@ -4014,9 +4019,12 @@ class CNCjob(Geometry):
         self.gcode = t_gcode
         return self.gcode, start_gcode
 
-    # used by the Tcl command Drillcncjob
     def generate_from_excellon_by_tool(self, exobj, tools="all", order='fwd', is_first=False, use_ui=False):
         """
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        Used by the Tcl command Drillcncjob
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
         Creates Gcode for this object from an Excellon object
         for the specified tools.
 
@@ -4068,7 +4076,7 @@ class CNCjob(Geometry):
                                            "in the format (x, y) \nbut now there is only one value, not two. "))
                     return 'fail'
         except Exception as e:
-            log.error("camlib.CNCJob.generate_from_excellon_by_tool() --> %s" % str(e))
+            self.app.log.error("camlib.CNCJob.generate_from_excellon_by_tool() --> %s" % str(e))
             pass
 
         # XY_end parameter
@@ -4084,7 +4092,7 @@ class CNCjob(Geometry):
         self.pp_excellon = self.app.preprocessors[self.pp_excellon_name]
         p = self.pp_excellon
 
-        log.debug("Creating CNC Job from Excellon...")
+        self.app.log.debug("Creating CNC Job from Excellon...")
 
         # #############################################################################################################
         # #############################################################################################################
@@ -4112,7 +4120,7 @@ class CNCjob(Geometry):
         # Create a sorted list of selected tools from the sorted_tools list
         tools = [i for i, j in sorted_tools for k in selected_tools if i == k]
 
-        log.debug("Tools sorted are: %s" % str(tools))
+        self.app.log.debug("Tools sorted are: %s" % str(tools))
 
         # #############################################################################################################
         # #############################################################################################################
@@ -4153,13 +4161,17 @@ class CNCjob(Geometry):
                         default_data[k] = deepcopy(v)
 
                     # it[1] is the tool diameter
-                    self.tools[to_ol] = {}
-                    self.tools[to_ol]['tooldia'] = it[1]
-                    self.tools[to_ol]['nr_drills'] = drill_no
-                    self.tools[to_ol]['nr_slots'] = slot_no
-                    self.tools[to_ol]['offset_z'] = z_off
-                    self.tools[to_ol]['data'] = default_data
-                    self.tools[to_ol]['solid_geometry'] = deepcopy(sol_geo)
+                    self.tools[to_ol] = {
+                        'tooldia':          it[1],
+                        'nr_drills':        drill_no,
+                        'nr_slots':         slot_no,
+                        'offset_z':         z_off,
+                        'data':             default_data,
+                        'gcode':            '',
+                        'gcode_parsed':     [],
+                        'last_point':       (0, 0),
+                        'solid_geometry':   deepcopy(sol_geo)
+                    }
 
         self.app.inform.emit(_("Creating a list of points to drill..."))
 
@@ -4181,7 +4193,7 @@ class CNCjob(Geometry):
                             points[tool].append(drill_pt)
                         except KeyError:
                             points[tool] = [drill_pt]
-        log.debug("Found %d TOOLS with drills." % len(points))
+        self.app.log.debug("Found %d TOOLS with drills." % len(points))
 
         # check if there are drill points in the exclusion areas.
         # If we find any within the exclusion areas return 'fail'
@@ -4271,6 +4283,8 @@ class CNCjob(Geometry):
 
         if self.toolchange is True:
             for tool in tools:
+                tool_gcode = ''
+
                 # check if it has drills
                 if not self.exc_tools[tool]['drills']:
                     continue
@@ -4287,7 +4301,7 @@ class CNCjob(Geometry):
                     self.z_feedrate = self.exc_tools[tool]['data']['tools_drill_feedrate_z']
                     self.feedrate = self.exc_tools[tool]['data']['tools_drill_feedrate_z']
                     self.z_cut = self.exc_tools[tool]['data']['tools_drill_cutz']
-                    gcode += self.doformat(p.z_feedrate_code)
+                    tool_gcode += self.doformat(p.z_feedrate_code)
 
                     if self.z_cut > 0:
                         self.app.inform.emit('[WARNING] %s' %
@@ -4365,12 +4379,12 @@ class CNCjob(Geometry):
 
                 # Tool change sequence (optional)
                 if self.toolchange:
-                    gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
+                    tool_gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
                 # Spindle start
-                gcode += self.doformat(p.spindle_code)
+                tool_gcode += self.doformat(p.spindle_code)
                 # Dwell time
                 if self.dwell is True:
-                    gcode += self.doformat(p.dwell_code)
+                    tool_gcode += self.doformat(p.dwell_code)
 
                 current_tooldia = float('%.*f' % (self.decimals, float(self.exc_tools[tool]["tooldia"])))
 
@@ -4397,7 +4411,7 @@ class CNCjob(Geometry):
                     geo_len = len(optimized_path)
 
                     old_disp_number = 0
-                    log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
+                    self.app.log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
 
                     loc_nr = 0
                     for point in optimized_path:
@@ -4422,26 +4436,26 @@ class CNCjob(Geometry):
 
                             if travel[0] is not None:
                                 # move to next point
-                                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+                                tool_gcode += self.doformat(p.rapid_code, x=locx, y=locy)
 
                                 # raise to safe Z (travel[0]) each time because safe Z may be different
                                 self.z_move = travel[0]
-                                gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                                tool_gcode += self.doformat(p.lift_code, x=locx, y=locy)
 
                                 # restore z_move
                                 self.z_move = self.exc_tools[tool]['data']['tools_drill_travelz']
                             else:
                                 if prev_z is not None:
                                     # move to next point
-                                    gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+                                    tool_gcode += self.doformat(p.rapid_code, x=locx, y=locy)
 
                                     # we assume that previously the z_move was altered therefore raise to
                                     # the travel_z (z_move)
                                     self.z_move = self.exc_tools[tool]['data']['tools_drill_travelz']
-                                    gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                                    tool_gcode += self.doformat(p.lift_code, x=locx, y=locy)
                                 else:
                                     # move to next point
-                                    gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+                                    tool_gcode += self.doformat(p.rapid_code, x=locx, y=locy)
 
                             # store prev_z
                             prev_z = travel[0]
@@ -4457,32 +4471,32 @@ class CNCjob(Geometry):
                                 self.z_cut -= self.z_depthpercut
                                 if abs(doc) < abs(self.z_cut) < (abs(doc) + self.z_depthpercut):
                                     self.z_cut = doc
-                                gcode += self.doformat(p.down_code, x=locx, y=locy)
+                                tool_gcode += self.doformat(p.down_code, x=locx, y=locy)
 
                                 measured_down_distance += abs(self.z_cut) + abs(self.z_move)
 
                                 if self.f_retract is False:
-                                    gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                    tool_gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
                                     measured_up_to_zero_distance += abs(self.z_cut)
                                     measured_lift_distance += abs(self.z_move)
                                 else:
                                     measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
 
-                                gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                                tool_gcode += self.doformat(p.lift_code, x=locx, y=locy)
 
                         else:
-                            gcode += self.doformat(p.down_code, x=locx, y=locy)
+                            tool_gcode += self.doformat(p.down_code, x=locx, y=locy)
 
                             measured_down_distance += abs(self.z_cut) + abs(self.z_move)
 
                             if self.f_retract is False:
-                                gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                tool_gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
                                 measured_up_to_zero_distance += abs(self.z_cut)
                                 measured_lift_distance += abs(self.z_move)
                             else:
                                 measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
 
-                            gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                            tool_gcode += self.doformat(p.lift_code, x=locx, y=locy)
 
                         measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
                         self.oldx = locx
@@ -4495,6 +4509,9 @@ class CNCjob(Geometry):
                             self.app.proc_container.update_view_text(' %d%%' % disp_number)
                             old_disp_number = disp_number
 
+                    self.tools[tool]['last_point'] = (locx, locy)
+                    self.tools[tool]['gcode'] = tool_gcode
+                    gcode += tool_gcode
                 else:
                     self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
                     return 'fail'
@@ -4731,6 +4748,7 @@ class CNCjob(Geometry):
                 self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
                 return 'fail'
             self.z_cut = deepcopy(old_zcut)
+            self.tools[one_tool]['gcode'] = gcode
 
         if used_excellon_optimization_type == 'M':
             log.debug("The total travel distance with OR-TOOLS Metaheuristics is: %s" % str(measured_distance))

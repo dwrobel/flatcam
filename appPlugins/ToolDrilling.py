@@ -1836,11 +1836,14 @@ class ToolDrilling(AppTool, Excellon):
             selected_uid.add(uid)
         return list(selected_uid)
 
-    def create_drill_points(self, selected_tools, selected_sorted_tools):
+    def create_drill_points(self, selected_tools, selected_sorted_tools, excellon_tools=None):
         points = {}
 
+        if excellon_tools is None:
+            excellon_tools = self.excellon_tools
+
         # create drill points out of the drills locations
-        for tool_key, tl_dict in self.excellon_tools.items():
+        for tool_key, tl_dict in excellon_tools.items():
             if tool_key in selected_tools:
                 if 'drills' in tl_dict and tl_dict['drills']:
                     for drill_pt in tl_dict['drills']:
@@ -1858,7 +1861,7 @@ class ToolDrilling(AppTool, Excellon):
         # convert slots to a sequence of drills and add them to drill points
         should_add_last_pt = self.ui.last_drill_cb.get_value()
 
-        for tool_key, tl_dict in self.excellon_tools.items():
+        for tool_key, tl_dict in excellon_tools.items():
             convert_slots = tl_dict['data']['tools_drill_drill_slots']
             if convert_slots:
                 if tool_key in selected_tools:
@@ -1884,11 +1887,13 @@ class ToolDrilling(AppTool, Excellon):
 
         return points
 
-    def check_intersection(self, points):
+    def check_intersection(self, points, excellon_tools=None):
+        if excellon_tools is None:
+            excellon_tools = self.excellon_tools
         for tool_key in points:
             for pt in points[tool_key]:
                 for area in self.app.exc_areas.exclusion_areas_storage:
-                    pt_buf = pt.buffer(self.excellon_tools[tool_key]['tooldia'] / 2.0)
+                    pt_buf = pt.buffer(excellon_tools[tool_key]['tooldia'] / 2.0)
                     if pt_buf.within(area['shape']) or pt_buf.intersects(area['shape']):
                         return True
         return False
@@ -1968,7 +1973,7 @@ class ToolDrilling(AppTool, Excellon):
         # Create a sorted list of selected sel_tools from the sorted_tools list
         sel_tools = [i for i, j in sorted_tools for k in selected_tools_ids if i == k]
 
-        log.debug("Tools sorted are: %s" % str(sel_tools))
+        self.app.log.debug("Tools sorted are: %s" % str(sel_tools))
 
         # #############################################################################################################
         # #############################################################################################################
@@ -1982,7 +1987,7 @@ class ToolDrilling(AppTool, Excellon):
 
         # check if there are drill points in the exclusion areas (if any areas)
         if self.app.exc_areas.exclusion_areas_storage and self.check_intersection(points) is True:
-            self.app.inform.emit("[ERROR_NOTCL] %s" % _("Failed. Drill points inside the exclusion zones."))
+            self.app.inform.emit("[ERROR_NOTCL] %s %s" % (_("Failed."), _("Drill points inside the exclusion zones.")))
             return 'fail'
 
         # #############################################################################################################

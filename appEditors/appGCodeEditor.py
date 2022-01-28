@@ -288,8 +288,13 @@ class AppGCodeEditor(QtCore.QObject):
             dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooldia)))
             nr_drills_item = QtWidgets.QTableWidgetItem('%d' % int(t_value['nr_drills']))
             nr_slots_item = QtWidgets.QTableWidgetItem('%d' % int(t_value['nr_slots']))
-            cutz_item = QtWidgets.QTableWidgetItem('%.*f' % (
-                self.decimals, float(t_value['offset']) + float(t_value['data']['tools_drill_cutz'])))
+
+            try:
+                cutz_item = QtWidgets.QTableWidgetItem('%.*f' % (
+                    self.decimals, float(t_value['offset']) + float(t_value['data']['tools_drill_cutz'])))
+            except KeyError:
+                cutz_item = QtWidgets.QTableWidgetItem('%.*f' % (
+                    self.decimals, float(t_value['offset_z']) + float(t_value['data']['tools_drill_cutz'])))
 
             t_id.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             dia_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
