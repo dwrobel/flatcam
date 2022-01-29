@@ -1475,7 +1475,7 @@ class Geometry(object):
 
                 # current can be a MultiPolygon
                 try:
-                    for p in current:
+                    for p in current.geoms:
                         geoms.insert(p.exterior)
                         for i in p.interiors:
                             geoms.insert(i)
@@ -1483,7 +1483,7 @@ class Geometry(object):
                                 self.plot_temp_shapes(p)
 
                 # Not a Multipolygon. Must be a Polygon
-                except TypeError:
+                except (TypeError, AttributeError):
                     geoms.insert(current.exterior)
                     if prog_plot:
                         self.plot_temp_shapes(current.exterior)

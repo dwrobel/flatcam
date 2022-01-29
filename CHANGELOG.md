@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - cleaned up Marlin preprocessors
 - in the `panelize`, `cutout` and `geocutout` Tcl commands updated the error strings and made sure that if an error occur then a potential script execution in chain is aborted
 - updated the `new` Tcl command: now it has an argument `-keep_scripts` that when True, will keep the loaded scripts in the new project
+- fixed some issues in the `ncc` Tcl command
 
 28.01.2022
 

@@ -189,14 +189,14 @@ class TclCommandCopperClear(TclCommand):
             select = 2  # 'REFERENCE Object'
 
         # store here the default data for Geometry Data
-        default_data = {}
+        default_data = self.app.options.copy()
         default_data.update({
             "name":             outname,
             "plot":             False,
             "tools_mill_cutz":             self.app.defaults["tools_mill_cutz"],
             "tools_mill_vtipdia":          float(self.app.defaults["tools_mill_vtipdia"]),
             "tools_mill_vtipangle":        float(self.app.defaults["tools_mill_vtipangle"]),
-            "tools_mill_travelz":          self.app.defaults["tools_mill__travelz"],
+            "tools_mill_travelz":          self.app.defaults["tools_mill_travelz"],
             "tools_mill_feedrate":         self.app.defaults["tools_mill_feedrate"],
             "tools_mill_feedrate_z":       self.app.defaults["tools_mill_feedrate_z"],
             "tools_mill_feedrate_rapid":   self.app.defaults["tools_mill_feedrate_rapid"],
@@ -215,24 +215,24 @@ class TclCommandCopperClear(TclCommand):
             "tools_mill_toolchangexy":     self.app.defaults["tools_mill_toolchangexy"],
             "tools_mill_startz":           self.app.defaults["tools_mill_startz"],
 
-            "area_exclusion":   self.app.defaults["geometry_area_exclusion"],
-            "area_shape":       self.app.defaults["geometry_area_shape"],
-            "area_strategy":    self.app.defaults["geometry_area_strategy"],
-            "area_overz":       float(self.app.defaults["geometry_area_overz"]),
+            "area_exclusion":               self.app.defaults["tools_mill_area_exclusion"],
+            "area_shape":                   self.app.defaults["tools_mill_area_shape"],
+            "area_strategy":                self.app.defaults["tools_mill_area_strategy"],
+            "area_overz":                   float(self.app.defaults["tools_mill_area_overz"]),
 
-            "tooldia":                  tooldia,
-            "tools_ncc_operation":      self.app.defaults["tools_ncc_operation"],
+            "tooldia":                      tooldia,
+            "tools_ncc_operation":          self.app.defaults["tools_ncc_operation"],
 
-            "tools_ncc_margin":  margin,
-            "tools_ncc_method":  method_data,
-            "tools_ncc_ref":     select,
-            "tools_ncc_connect": connect,
-            "tools_ncc_contour": contour,
-            "tools_ncc_overlap": overlap,
+            "tools_ncc_margin":             margin,
+            "tools_ncc_method":             method_data,
+            "tools_ncc_ref":                select,
+            "tools_ncc_connect":            connect,
+            "tools_ncc_contour":            contour,
+            "tools_ncc_overlap":            overlap,
 
-            "tools_ncc_offset_choice":  self.app.defaults["tools_ncc_offset_choice"],
-            "tools_ncc_offset_value":   self.app.defaults["tools_ncc_offset_value"],
-            "tools_ncc_milling_type":    self.app.defaults["tools_ncc_milling_type"]
+            "tools_ncc_offset_choice":      self.app.defaults["tools_ncc_offset_choice"],
+            "tools_ncc_offset_value":       self.app.defaults["tools_ncc_offset_value"],
+            "tools_ncc_milling_type":       self.app.defaults["tools_ncc_milling_type"]
         })
         ncc_tools = {}
 
@@ -276,9 +276,10 @@ class TclCommandCopperClear(TclCommand):
             try:
                 box_obj = self.app.collection.get_by_name(str(box_name))
             except Exception as e:
-                log.error("TclCommandCopperClear.execute() --> %s" % str(e))
+                self.app.log.error("TclCommandCopperClear.execute() --> %s" % str(e))
+                self.app.log.error("Could not retrieve object: %s" % name)
                 self.raise_tcl_error("%s: %s" % (_("Could not retrieve object"), name))
-                return "Could not retrieve object: %s" % name
+                return "fail"
 
             self.app.ncclear_tool.clear_copper_tcl(ncc_obj=obj,
                                                    sel_obj=box_obj,
@@ -300,5 +301,6 @@ class TclCommandCopperClear(TclCommand):
             return
 
         # if the program reached this then it's an error because neither -all or -box <value> was used.
+        self.app.log.error("Expected either -box <value> or -all. Copper clearing failed.")
         self.raise_tcl_error('%s' % _("Expected either -box <value> or -all."))
-        return "Expected either -box <value> or -all. Copper clearing failed."
+        return "fail"
