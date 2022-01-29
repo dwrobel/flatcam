@@ -95,9 +95,10 @@ class TclCommandPaint(TclCommand):
         try:
             obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
-            log.error("TclCommandPaint.execute() --> %s" % str(e))
+            self.app.log.error("TclCommandPaint.execute() --> %s" % str(e))
+            self.app.log.error("Could not retrieve object: %s" % name)
             self.raise_tcl_error("%s: %s" % (_("Could not retrieve object"), name))
-            return "Could not retrieve object: %s" % name
+            return "fail"
 
         if 'tooldia' in args:
             tooldia = str(args['tooldia'])
@@ -132,8 +133,10 @@ class TclCommandPaint(TclCommand):
             elif method == "combo":
                 method = 4
             else:
-                return "Method not supported or typo.\n" \
-                       "Supported methods are: 'standard', 'seed', 'lines', 'laser_lines' and 'combo'."
+                msg = "Method not supported or typo.\n" \
+                      "Supported methods are: 'standard', 'seed', 'lines', 'laser_lines' and 'combo'."
+                self.app.log.error(msg)
+                return "fail"
         else:
             method = str(self.app.defaults["tools_paint_method"])
 
@@ -173,37 +176,37 @@ class TclCommandPaint(TclCommand):
         except AttributeError:
             tools = [float(tooldia)]
         # store here the default data for Geometry Data
-        default_data = {}
+        default_data = self.app.options.copy()
         default_data.update({
             "name":                 outname,
             "plot":                 False,
-            "cutz":                 self.app.defaults["geometry_cutz"],
+            "cutz":                 self.app.defaults["tools_mill_cutz"],
             "vtipdia":              float(self.app.defaults["tools_paint_tipdia"]),
             "vtipangle":            float(self.app.defaults["tools_paint_tipangle"]),
-            "travelz":              self.app.defaults["geometry_travelz"],
-            "feedrate":             self.app.defaults["geometry_feedrate"],
-            "feedrate_z":           self.app.defaults["geometry_feedrate_z"],
-            "feedrate_rapid":       self.app.defaults["geometry_feedrate_rapid"],
-            "dwell":                self.app.defaults["geometry_dwell"],
-            "dwelltime":            self.app.defaults["geometry_dwelltime"],
-            "multidepth":           self.app.defaults["geometry_multidepth"],
-            "ppname_g":             self.app.defaults["geometry_ppname_g"],
-            "depthperpass":         self.app.defaults["geometry_depthperpass"],
-            "extracut":             self.app.defaults["geometry_extracut"],
-            "extracut_length":      self.app.defaults["geometry_extracut_length"],
-            "toolchange":           self.app.defaults["geometry_toolchange"],
-            "toolchangez":          self.app.defaults["geometry_toolchangez"],
-            "endz":                 self.app.defaults["geometry_endz"],
-            "endxy":                self.app.defaults["geometry_endxy"],
+            "travelz":              self.app.defaults["tools_mill_travelz"],
+            "feedrate":             self.app.defaults["tools_mill_feedrate"],
+            "feedrate_z":           self.app.defaults["tools_mill_feedrate_z"],
+            "feedrate_rapid":       self.app.defaults["tools_mill_feedrate_rapid"],
+            "dwell":                self.app.defaults["tools_mill_dwell"],
+            "dwelltime":            self.app.defaults["tools_mill_dwelltime"],
+            "multidepth":           self.app.defaults["tools_mill_multidepth"],
+            "ppname_g":             self.app.defaults["tools_mill_ppname_g"],
+            "depthperpass":         self.app.defaults["tools_mill_depthperpass"],
+            "extracut":             self.app.defaults["tools_mill_extracut"],
+            "extracut_length":      self.app.defaults["tools_mill_extracut_length"],
+            "toolchange":           self.app.defaults["tools_mill_toolchange"],
+            "toolchangez":          self.app.defaults["tools_mill_toolchangez"],
+            "endz":                 self.app.defaults["tools_mill_endz"],
+            "endxy":                self.app.defaults["tools_mill_endxy"],
 
-            "spindlespeed":         self.app.defaults["geometry_spindlespeed"],
-            "toolchangexy":         self.app.defaults["geometry_toolchangexy"],
-            "startz":               self.app.defaults["geometry_startz"],
+            "spindlespeed":         self.app.defaults["tools_mill_spindlespeed"],
+            "toolchangexy":         self.app.defaults["tools_mill_toolchangexy"],
+            "startz":               self.app.defaults["tools_mill_startz"],
 
-            "area_exclusion":       self.app.defaults["geometry_area_exclusion"],
-            "area_shape":           self.app.defaults["geometry_area_shape"],
-            "area_strategy":        self.app.defaults["geometry_area_strategy"],
-            "area_overz":           float(self.app.defaults["geometry_area_overz"]),
+            "area_exclusion":       self.app.defaults["tools_mill_area_exclusion"],
+            "area_shape":           self.app.defaults["tools_mill_area_shape"],
+            "area_strategy":        self.app.defaults["tools_mill_area_strategy"],
+            "area_overz":           float(self.app.defaults["tools_mill_area_overz"]),
 
             "tooldia":                  tooldia,
             "tools_paint_offset":       offset,
@@ -232,7 +235,8 @@ class TclCommandPaint(TclCommand):
             paint_tools[int(tooluid)]['data']['tooldia'] = self.app.dec_format(float(tool), self.app.decimals)
 
         if obj is None:
-            return "Object not found: %s" % name
+            self.app.log.error("Object not found: %s" % name)
+            return "fail"
 
         # Paint all polygons in the painted object
         if select == 0:     # 'all' in args
@@ -251,26 +255,30 @@ class TclCommandPaint(TclCommand):
             if not args['single'] or args['single'] == '':
                 self.raise_tcl_error('%s Got: %s' %
                                      (_("Expected a tuple value like -single 3.2,0.1."), str(args['single'])))
+                return "fail"
             else:
                 coords_xy = [float(eval(a)) for a in args['single'].split(",") if a != '']
 
                 if coords_xy and len(coords_xy) != 2:
                     self.raise_tcl_error('%s Got: %s' %
                                          (_("Expected a tuple value like -single 3.2,0.1."), str(coords_xy)))
-                x = coords_xy[0]
-                y = coords_xy[1]
+                    return "fail"
 
-                ret_val = self.app.paint_tool.paint_poly(obj=obj,
-                                                         inside_pt=[x, y],
-                                                         tooldia=tooldia,
-                                                         order=order,
-                                                         method=method,
-                                                         outname=outname,
-                                                         tools_storage=paint_tools,
-                                                         plot=False,
-                                                         run_threaded=False)
-                if ret_val == 'fail':
-                    return "Could not find a Polygon at the specified location."
+            x = coords_xy[0]
+            y = coords_xy[1]
+
+            ret_val = self.app.paint_tool.paint_poly(obj=obj,
+                                                     inside_pt=[x, y],
+                                                     tooldia=tooldia,
+                                                     order=order,
+                                                     method=method,
+                                                     outname=outname,
+                                                     tools_storage=paint_tools,
+                                                     plot=False,
+                                                     run_threaded=False)
+            if ret_val == 'fail':
+                self.app.log.error("Could not find a Polygon at the specified location.")
+                return "fail"
             return
 
         # Paint all polygons found within the box object from the the painted object
@@ -278,15 +286,18 @@ class TclCommandPaint(TclCommand):
             box_name = args['box']
 
             if box_name is None:
+                self.app.log.error('%s' % _("Expected -box <value>."))
                 self.raise_tcl_error('%s' % _("Expected -box <value>."))
+                return "fail"
 
             # Get box source object.
             try:
                 box_obj = self.app.collection.get_by_name(str(box_name))
             except Exception as e:
-                log.error("TclCommandPaint.execute() --> %s" % str(e))
+                self.app.log.error("TclCommandPaint.execute() --> %s" % str(e))
+                self.app.log.error("Could not retrieve object: %s" % name)
                 self.raise_tcl_error("%s: %s" % (_("Could not retrieve object"), name))
-                return "Could not retrieve object: %s" % name
+                return "fail"
 
             self.app.paint_tool.paint_poly_ref(obj=obj,
                                                sel_obj=box_obj,
@@ -299,6 +310,7 @@ class TclCommandPaint(TclCommand):
                                                run_threaded=False)
             return
 
+        self.app.log.error("None of the following args: 'box', 'single', 'all' were used. Paint failed.")
         self.raise_tcl_error("%s:" % _("None of the following args: 'box', 'single', 'all' were used.\n"
                                        "Paint failed."))
-        return "None of the following args: 'box', 'single', 'all' were used. Paint failed."
+        return "fail"
