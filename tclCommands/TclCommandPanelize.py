@@ -1,6 +1,7 @@
 from tclCommands.TclCommand import TclCommand
 
 import shapely.affinity as affinity
+from shapely.geometry import MultiPolygon, MultiLineString
 
 import logging
 from copy import deepcopy
@@ -202,20 +203,36 @@ class TclCommandPanelize(TclCommand):
         # if ret_value == 'fail':
         #     return 'fail'
 
-        def panelize_2():
+        # ############################################################################################################
+        # make a copy of the panelized Excellon or Geometry tools
+        # ############################################################################################################
+        if obj.kind == 'excellon' or obj.kind == 'geometry':
+            copied_tools = {}
+            for tt, tt_val in list(obj.tools.items()):
+                copied_tools[tt] = deepcopy(tt_val)
+
+        # ############################################################################################################
+        # make a copy of the panelized Gerber apertures
+        # ############################################################################################################
+        if obj.kind == 'gerber':
+            copied_apertures = {}
+            for tt, tt_val in list(obj.tools.items()):
+                copied_apertures[tt] = deepcopy(tt_val)
+
+        def panelize_handler():
             if obj is not None:
                 self.app.inform.emit("Generating panel ... Please wait.")
 
                 def job_init_excellon(obj_fin, app_obj):
-                    currenty = 0.0
+                    obj_fin.multitool = True
 
-                    obj_fin.tools = obj.tools.copy()
-                    if 'drills' not in obj_fin.tools:
-                        obj_fin.tools['drills'] = []
-                    if 'slots' not in obj_fin.tools:
-                        obj_fin.tools['slots'] = []
-                    if 'solid_geometry' not in obj_fin.tools:
-                        obj_fin.tools['solid_geometry'] = []
+                    currenty = 0.0
+                    # init the storage for drills and for slots
+                    for tool in copied_tools:
+                        copied_tools[tool]['drills'] = []
+                        copied_tools[tool]['slots'] = []
+                    obj_fin.tools = copied_tools
+                    obj_fin.solid_geometry = []
 
                     for option in obj.options:
                         if option != 'name':
@@ -223,28 +240,54 @@ class TclCommandPanelize(TclCommand):
                                 obj_fin.options[option] = obj.options[option]
                             except Exception as e:
                                 app_obj.log.error("Failed to copy option: %s" % str(option))
-                                app_obj.log.error("TclCommandPanelize.execute().panelize2() --> %s" % str(e))
+                                app_obj.log.error(
+                                    "TclCommandPanelize.execute().panelize2.job_init_excellon() Options:--> %s" %
+                                    str(e))
 
+                    # calculate the total number of drills and slots
+                    geo_len_drills = 0
+                    geo_len_slots = 0
+                    for tool in copied_tools:
+                        geo_len_drills += len(copied_tools[tool]['drills'])
+                        geo_len_slots += len(copied_tools[tool]['slots'])
+
+                    # panelization
                     for row in range(rows):
                         currentx = 0.0
                         for col in range(columns):
-                            if 'drills' in obj.tools:
-                                for drill_pt in obj.tools['drills']:
-                                    point_offseted = affinity.translate(drill_pt, currentx, currenty)
-                                    obj_fin.tools['drills'].append(point_offseted)
-                            if 'slots' in obj.tools:
-                                for slot_tuple in obj.tools['slots']:
-                                    start_offseted = affinity.translate(slot_tuple[0], currentx, currenty)
-                                    stop_offseted = affinity.translate(slot_tuple[1], currentx, currenty)
-                                    obj_fin.tools['slots'].append(
-                                        (start_offseted, stop_offseted)
-                                    )
+                            for tool in obj.tools:
+                                if 'drills' in obj.tools[tool]:
+                                    if obj.tools[tool]['drills']:
+                                        for drill in obj.tools[tool]['drills']:
+                                            # offset / panelization
+                                            point_offseted = affinity.translate(drill, currentx, currenty)
+                                            obj_fin.tools[tool]['drills'].append(point_offseted)
+                                else:
+                                    obj.tools[tool]['drills'] = []
+
+                                if 'slots' in obj.tools[tool]:
+                                    if obj.tools[tool]['slots']:
+                                        for slot in obj.tools[tool]['slots']:
+                                            # offset / panelization
+                                            start_offseted = affinity.translate(slot[0], currentx, currenty)
+                                            stop_offseted = affinity.translate(slot[1], currentx, currenty)
+                                            offseted_slot = (
+                                                start_offseted,
+                                                stop_offseted
+                                            )
+                                            obj_fin.tools[tool]['slots'].append(offseted_slot)
+                                else:
+                                    obj.tools[tool]['slots'] = []
+
                             currentx += lenghtx
                         currenty += lenghty
 
                     obj_fin.create_geometry()
                     obj_fin.zeros = obj.zeros
                     obj_fin.units = obj.units
+                    app_obj.inform.emit('%s' % _("Generating panel ... Adding the source code."))
+                    obj_fin.source_file = app_obj.f_handlers.export_excellon(obj_name=outname, filename=None,
+                                                                             local_use=obj_fin, use_thread=False)
 
                 def job_init_geometry(obj_fin, app_obj):
                     currentx = 0.0
@@ -261,27 +304,42 @@ class TclCommandPanelize(TclCommand):
 
                     obj_fin.solid_geometry = []
 
-                    if obj.kind == 'geometry':
-                        obj_fin.multigeo = obj.multigeo
-                        obj_fin.tools = deepcopy(obj.tools)
-                        if obj.multigeo is True:
-                            for tool in obj.tools:
-                                obj_fin.tools[tool]['solid_geometry'][:] = []
+                    # create the initial structure on which to create the panel
+                    obj_fin.multigeo = obj.multigeo
+                    obj_fin.tools = copied_tools
+                    if obj.multigeo is True:
+                        for tool in obj.tools:
+                            obj_fin.tools[tool]['solid_geometry'][:] = []
 
                     for row in range(rows):
                         currentx = 0.0
-
                         for col in range(columns):
-                            if obj.kind == 'geometry':
-                                if obj.multigeo is True:
-                                    for tool in obj.tools:
-                                        obj_fin.tools[tool]['solid_geometry'].append(translate_recursion(
-                                            obj.tools[tool]['solid_geometry'])
-                                        )
-                                else:
-                                    obj_fin.solid_geometry.append(
-                                        translate_recursion(obj.solid_geometry)
-                                    )
+                            if obj.multigeo is True:
+                                for tool in obj.tools:
+                                    trans_geo = translate_recursion(obj.tools[tool]['solid_geometry'])
+                                    try:
+                                        work_geo = trans_geo.geoms if \
+                                            isinstance(trans_geo, (MultiPolygon, MultiLineString)) else trans_geo
+                                        for trans_it in work_geo:
+                                            if not trans_it.is_empty:
+                                                obj_fin.tools[tool]['solid_geometry'].append(trans_it)
+                                    except TypeError:
+                                        if not trans_geo.is_empty:
+                                            obj_fin.tools[tool]['solid_geometry'].append(trans_geo)
+
+                                    # #############################################################################
+                                    # ##########   Panelize the solid_geometry - always done  #####################
+                                    # #############################################################################
+                                    try:
+                                        sol_geo = obj.solid_geometry
+                                        work_geo = sol_geo.geoms if \
+                                            isinstance(sol_geo, (MultiPolygon, MultiLineString)) else sol_geo
+                                        for geo_el in work_geo:
+                                            trans_geo = translate_recursion(geo_el)
+                                            obj_fin.solid_geometry.append(trans_geo)
+                                    except TypeError:
+                                        trans_geo = translate_recursion(obj.solid_geometry)
+                                        obj_fin.solid_geometry.append(trans_geo)
                             else:
                                 obj_fin.solid_geometry.append(
                                     translate_recursion(obj.solid_geometry)
@@ -289,25 +347,92 @@ class TclCommandPanelize(TclCommand):
 
                             currentx += lenghtx
                         currenty += lenghty
+                    obj_fin.source_file = app_obj.f_handlers.export_dxf(obj_name=outname, filename=None,
+                                                                        local_use=obj_fin, use_thread=False)
+
+                def job_init_gerber(obj_fin, app_obj):
+                    currentx = 0.0
+                    currenty = 0.0
+
+                    def translate_recursion(geom):
+                        if type(geom) == list:
+                            geoms = []
+                            for local_geom in geom:
+                                res_geo = translate_recursion(local_geom)
+                                try:
+                                    geoms += res_geo
+                                except TypeError:
+                                    geoms.append(res_geo)
+                            return geoms
+                        else:
+                            return affinity.translate(geom, xoff=currentx, yoff=currenty)
+
+                    obj_fin.solid_geometry = []
+
+                    # create the initial structure on which to create the panel
+                    obj_fin.tools = copied_apertures
+                    for ap in obj_fin.tools:
+                        obj_fin.tools[ap]['geometry'] = []
+
+                    for row in range(rows):
+                        currentx = 0.0
+                        for col in range(columns):
+                            # Will panelize a Gerber Object
+                            for apid in obj.tools:
+                                if 'geometry' in obj.tools[apid]:
+                                    # panelization -> apertures
+                                    for el in obj.tools[apid]['geometry']:
+                                        new_el = {}
+                                        if 'solid' in el:
+                                            geo_aper = translate_recursion(el['solid'])
+                                            new_el['solid'] = geo_aper
+                                        if 'clear' in el:
+                                            geo_aper = translate_recursion(el['clear'])
+                                            new_el['clear'] = geo_aper
+                                        if 'follow' in el:
+                                            geo_aper = translate_recursion(el['follow'])
+                                            new_el['follow'] = geo_aper
+                                        obj_fin.tools[apid]['geometry'].append(deepcopy(new_el))
+
+                            # #####################################################################################
+                            # ##########   Panelize the solid_geometry - always done  #############################
+                            # #####################################################################################
+                            try:
+                                for geo_el in obj.solid_geometry:
+                                    trans_geo = translate_recursion(geo_el)
+                                    obj_fin.solid_geometry.append(trans_geo)
+                            except TypeError:
+                                trans_geo = translate_recursion(obj.solid_geometry)
+                                obj_fin.solid_geometry.append(trans_geo)
+
+                            currentx += lenghtx
+                        currenty += lenghty
+
+                    obj_fin.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
+                                                                           local_use=obj_fin, use_thread=False)
 
                 if obj.kind == 'excellon':
                     self.app.app_obj.new_object("excellon", outname, job_init_excellon, plot=False, autoselected=True)
-                else:
+                elif obj.kind == 'geometry':
                     self.app.app_obj.new_object("geometry", outname, job_init_geometry, plot=False, autoselected=True)
-
+                else:
+                    self.app.app_obj.new_object("gerber", outname, job_init_gerber, plot=False, autoselected=True)
         if threaded is True:
             self.app.proc_container.new('%s...' % _("Working"))
 
             def job_thread(app_obj):
                 try:
-                    panelize_2()
+                    panelize_handler()
                     app_obj.inform.emit('[success] %s' % _("Done."))
-                except Exception as ee:
-                    log.error(str(ee))
+                except Exception as err:
+                    app_obj.log.error('TclCommandPanelize.execute.job_thread() -> %s' % str(err))
                     return
 
             self.app.collection.promise(outname)
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
         else:
-            panelize_2()
-            self.app.inform.emit('[success] %s' % _("Done."))
+            try:
+                panelize_handler()
+                self.app.inform.emit('[success] %s' % _("Done."))
+            except Exception as ee:
+                self.app.log.error('TclCommandPanelize.execute() non-threaded -> %s' % str(ee))

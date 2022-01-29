@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+29.01.2022
+
+- upgraded/fixed the Panelize Tcl command
+
 28.01.2022
 
 - in Tcl command `geocutout` fixed an error due of a no longer used parameter

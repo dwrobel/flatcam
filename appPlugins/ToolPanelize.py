@@ -408,6 +408,8 @@ class Panelize(AppTool):
                 self.app.inform.emit(_("Generating panel ... "))
 
                 def job_init_excellon(obj_fin, app_obj):
+                    obj_fin.multitool = True
+
                     currenty = 0.0
                     # init the storage for drills and for slots
                     for tool in copied_tools:
@@ -785,7 +787,7 @@ class Panelize(AppTool):
                                 default_data[opt_key] = self.app.options[opt_key]
 
                         new_obj.tools = {}
-                        new_tid = 0
+                        new_tid = 10
                         for apid in new_obj.tools:
                             new_tid += 1
                             new_sgeo = [g['solid'] for g in new_obj.tools[apid]['geometry'] if 'solid' in g]
@@ -809,7 +811,7 @@ class Panelize(AppTool):
                             'data': deepcopy(default_data),
                             'solid_geometry': deepcopy(new_obj.solid_geometry)
                         }
-                        del new_obj.tools
+                        del new_obj.tools   # TODO what the hack is this? First we create and then immediately delete?
 
                     app_obj.inform.emit('%s' % _("Generating panel ... Adding the source code."))
                     new_obj.source_file = self.app.f_handlers.export_dxf(obj_name=self.outname, filename=None,
