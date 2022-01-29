@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - updated the `new` Tcl command: now it has an argument `-keep_scripts` that when True, will keep the loaded scripts in the new project
 - fixed some issues in the `ncc` Tcl command
 - fixed some issues in the `paint` Tcl command
+- minor description update for `export_gcode` Tcl command
 
 28.01.2022
 
