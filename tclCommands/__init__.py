@@ -26,6 +26,7 @@ import tclCommands.TclCommandExportGerber
 import tclCommands.TclCommandExportGcode
 import tclCommands.TclCommandExportSVG
 import tclCommands.TclCommandExteriors
+import tclCommands.TclCommandFollow
 import tclCommands.TclCommandGeoCutout
 import tclCommands.TclCommandGeoUnion
 import tclCommands.TclCommandGetNames
@@ -34,7 +35,6 @@ import tclCommands.TclCommandGetSys
 import tclCommands.TclCommandHelp
 import tclCommands.TclCommandInteriors
 import tclCommands.TclCommandIsolate
-import tclCommands.TclCommandFollow
 import tclCommands.TclCommandJoinExcellon
 import tclCommands.TclCommandJoinGeometry
 import tclCommands.TclCommandListSys

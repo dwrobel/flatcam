@@ -89,7 +89,7 @@ class Marlin(PreProc):
                                                     p.decimals, end_coords_xy[1]) + units + '\n'
         else:
             gcode += ';X,Y End: ' + "None" + units + '\n'
-        gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
+        gcode += ';Steps per circle: ' + str(p['steps_per_circle']) + '\n'
         gcode += ';Steps per circle: ' + str(p['steps_per_circle']) + '\n'
 
         if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
@@ -102,8 +102,7 @@ class Marlin(PreProc):
 
         gcode += ';Spindle Speed: %s RPM)\n' % str(p['spindlespeed'])
 
-        gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n"
-        gcode += 'G90'
+        gcode += 'G20\n' if p.units.upper() == 'IN' else 'G21\n'
 
         return gcode
 

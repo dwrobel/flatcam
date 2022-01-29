@@ -18,10 +18,12 @@ class Marlin_laser_FAN_pin(PreProc):
 
     def start_code(self, p):
         units = ' ' + str(p['units']).lower()
-        coords_xy = p['xy_toolchange']
         end_coords_xy = p['xy_end']
         gcode = ';This preprocessor is used with a motion controller loaded with MARLIN firmware.\n'
-        gcode += ';It is for the case when it is used together with a LASER connected on one of the FAN pins.\n\n'
+        gcode += ';It is for the case when it is used together with a LASER connected on one of the FAN pins.\n'\
+                 ';This preprocessor makes no moves on the Z axis it will only move horizontally.\n' \
+                 ';It assumes a manually focused laser.\n' \
+                 ';The laser is started with M3 command and stopped with the M5 command.\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
         xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
@@ -40,27 +42,24 @@ class Marlin_laser_FAN_pin(PreProc):
         else:
             gcode += ';Preprocessor Geometry: ' + str(p['pp_geometry_name']) + '\n'
         if end_coords_xy is not None:
-            gcode += '(X,Y End: ' + "%.*f, %.*f" % (p.decimals, end_coords_xy[0],
-                                                    p.decimals, end_coords_xy[1]) + units + ')\n'
+            gcode += ';X,Y End: ' + "%.*f, %.*f" % (p.decimals, end_coords_xy[0],
+                                                    p.decimals, end_coords_xy[1]) + units + '\n'
         else:
-            gcode += '(X,Y End: ' + "None" + units + ')\n'
-        gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
+            gcode += ';X,Y End: ' + "None" + units + '\n'
+        gcode += ';Steps per circle: ' + str(p['steps_per_circle']) + '\n'
 
         gcode += ';X range: ' + '{: >9s}'.format(xmin) + ' ... ' + '{: >9s}'.format(xmax) + ' ' + units + '\n'
         gcode += ';Y range: ' + '{: >9s}'.format(ymin) + ' ... ' + '{: >9s}'.format(ymax) + ' ' + units + '\n\n'
 
         gcode += ';Laser Power (Spindle Speed): ' + str(p['spindlespeed']) + '\n' + '\n'
 
-        gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n"
+        gcode += 'G20\n' if p.units.upper() == 'IN' else 'G21\n'
         gcode += 'G90'
 
         return gcode
 
     def startz_code(self, p):
-        if p.startz is not None:
-            return 'G0 Z' + self.coordinate_format % (p.coords_decimals, p.z_move)
-        else:
-            return ''
+        return ''
 
     def lift_code(self, p):
         gcode = 'M400\n'
@@ -105,11 +104,10 @@ class Marlin_laser_FAN_pin(PreProc):
 
     def end_code(self, p):
         coords_xy = p['xy_end']
-        gcode = ('G0 Z' + self.feedrate_format % (p.fr_decimals, p.z_end) + " " + self.feedrate_rapid_code(p) + "\n")
+        gcode = ''
 
         if coords_xy and coords_xy != '':
             gcode += 'G0 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + " " + self.feedrate_rapid_code(p) + "\n"
-
         return gcode
 
     def feedrate_code(self, p):

@@ -9,7 +9,7 @@
 from appPreProcessor import *
 
 
-class Marlin_laser_Spindle_pin(PreProc):
+class Marlin_laser_z(PreProc):
 
     include_header = True
     coordinate_format = "%.*f"
@@ -18,39 +18,64 @@ class Marlin_laser_Spindle_pin(PreProc):
 
     def start_code(self, p):
         units = ' ' + str(p['units']).lower()
+        coords_xy = p['xy_toolchange']
         end_coords_xy = p['xy_end']
         gcode = ';This preprocessor is used with a motion controller loaded with MARLIN firmware.\n'
-        gcode += ';It is for the case when it is used together with a LASER connected on the SPINDLE connector.\n'\
-                 ';This preprocessor makes no moves on the Z axis it will only move horizontally.\n' \
-                 ';It assumes a manually focused laser.\n' \
-                 ';The laser is started with M3 command and stopped with the M5 command.\n\n'
+        gcode += ';It is for the case when it is used together with a LASER connected on the SPINDLE connector.\n' \
+                 ';On toolchange event the laser will move to a defined Z height to change the laser dot size.\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
         xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
         ymin = '%.*f' % (p.coords_decimals, p['options']['ymin'])
         ymax = '%.*f' % (p.coords_decimals, p['options']['ymax'])
 
-        gcode += ';Feedrate: ' + str(p['feedrate']) + units + '/min' + '\n'
-        gcode += ';Feedrate rapids: ' + str(p['feedrate_rapid']) + units + '/min' + '\n' + '\n'
+        if p['use_ui'] is True and p['multigeo']:
+            gcode += '\n;TOOLS DIAMETER: \n'
+            for tool, val in p['tools'].items():
+                gcode += ';Tool: %s -> ' % str(tool) + 'Dia: %s' % str(val["tooldia"]) + '\n'
+            gcode += '\n;FEEDRATE: \n'
+            for tool, val in p['tools'].items():
+                gcode += ';Tool: %s -> ' % str(tool) + 'Feedrate: %s' % \
+                         str(val['data']["tools_mill_feedrate"]) + '\n'
+            gcode += '\n;FEEDRATE RAPIDS: \n'
+            for tool, val in p['tools'].items():
+                gcode += '(Tool: %s -> ' % str(tool) + 'Feedrate rapids: %s' % \
+                         str(val['data']["tools_mill_feedrate_rapid"]) + '\n'
+            gcode += '\n;Z FOCUS: \n'
+            for tool, val in p['tools'].items():
+                gcode += ';Tool: %s -> ' % str(tool) + 'Z: %s' % \
+                         str(val['data']["tools_mill_travelz"]) + '\n'
+            gcode += '\n;LASER POWER: \n'
+            for tool, val in p['tools'].items():
+                gcode += ';Tool: %s -> ' % str(tool) + 'Power: %s' % \
+                         str(val['data']["tools_mill_spindlespeed"]) + '\n'
+        else:
+            gcode += ';Feedrate: %s %s/min\n' % (str(p['feedrate']), units)
+            gcode += ';Feedrate rapids: %s %s/min\n\n' % (str(p['feedrate_rapid']), units)
+            gcode += ';Z Focus: %s %s\n' % (str(p['z_move']), units)
+            gcode += ';Laser Power: %s\n' % str(p['spindlespeed'])
 
-        gcode += ';Z Focus: ' + str(p['z_move']) + units + '\n'
-
+        gcode += '\n'
+        if coords_xy is not None:
+            gcode += ';X,Y Toolchange: ' + "%.*f, %.*f%s\n" % \
+                     (p.decimals, coords_xy[0], p.decimals, coords_xy[1], units)
+        else:
+            gcode += ';X,Y End: None %s\n' % units
+        if end_coords_xy is not None:
+            gcode += ';X,Y End: ' + "%.*f, %.*f" % (p.decimals, end_coords_xy[0],
+                                                    p.decimals, end_coords_xy[1]) + units + '\n'
+        else:
+            gcode += ';X,Y End: ' + "None" + units + '\n'
+        gcode += ';Z End: ' + str(p['z_end']) + units + '\n'
         gcode += ';Steps per circle: ' + str(p['steps_per_circle']) + '\n'
 
         if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
             gcode += ';Preprocessor Excellon: ' + str(p['pp_excellon_name']) + '\n'
         else:
             gcode += ';Preprocessor Geometry: ' + str(p['pp_geometry_name']) + '\n'
-        if end_coords_xy is not None:
-            gcode += ';X,Y End: ' + "%.*f, %.*f" % (p.decimals, end_coords_xy[0],
-                                                    p.decimals, end_coords_xy[1]) + units + '\n'
-        else:
-            gcode += ';X,Y End: ' + "None" + units + '\n\n'
 
         gcode += ';X range: ' + '{: >9s}'.format(xmin) + ' ... ' + '{: >9s}'.format(xmax) + ' ' + units + '\n'
         gcode += ';Y range: ' + '{: >9s}'.format(ymin) + ' ... ' + '{: >9s}'.format(ymax) + ' ' + units + '\n\n'
-
-        gcode += ';Laser Power (Spindle Speed): ' + str(p['spindlespeed']) + '\n' + '\n'
 
         gcode += 'G20\n' if p.units.upper() == 'IN' else 'G21\n'
         gcode += 'G90'
@@ -58,7 +83,10 @@ class Marlin_laser_Spindle_pin(PreProc):
         return gcode
 
     def startz_code(self, p):
-        return ''
+        if p.startz is not None:
+            return 'G0 Z' + self.coordinate_format % (p.coords_decimals, p.z_move)
+        else:
+            return ''
 
     def lift_code(self, p):
         gcode = 'M400\n'
@@ -66,14 +94,13 @@ class Marlin_laser_Spindle_pin(PreProc):
         return gcode
 
     def down_code(self, p):
-        sdir = {'CW': 'M3', 'CCW': 'M4'}[p.spindledir]
         if p.spindlespeed:
-            return '%s S%s' % (sdir, str(p.spindlespeed))
+            return '%s S%s' % ('M3', str(p.spindlespeed))
         else:
-            return sdir
+            return 'M3'
 
     def toolchange_code(self, p):
-        return ''
+        return 'G0 Z' + self.coordinate_format % (p.coords_decimals, p.z_move)
 
     def up_to_zero_code(self, p):
         gcode = 'M400\n'
@@ -103,10 +130,11 @@ class Marlin_laser_Spindle_pin(PreProc):
         return ('G1 ' + self.position_code(p)).format(**p) + " " + self.inline_feedrate_code(p)
 
     def end_code(self, p):
-        gcode = ''
         coords_xy = p['xy_end']
+        gcode = ('G0 Z' + self.feedrate_format % (p.fr_decimals, p.z_end) + " " + self.feedrate_rapid_code(p) + "\n")
+
         if coords_xy and coords_xy != '':
-            gcode = 'G0 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + " " + self.feedrate_rapid_code(p) + "\n"
+            gcode += 'G0 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + " " + self.feedrate_rapid_code(p) + "\n"
 
         return gcode
 
@@ -123,11 +151,10 @@ class Marlin_laser_Spindle_pin(PreProc):
         return 'F' + self.feedrate_rapid_format % (p.fr_decimals, p.feedrate_rapid)
 
     def spindle_code(self, p):
-        sdir = {'CW': 'M3', 'CCW': 'M4'}[p.spindledir]
         if p.spindlespeed:
-            return '%s S%s' % (sdir, str(p.spindlespeed))
+            return '%s S%s' % ('M3', str(p.spindlespeed))
         else:
-            return sdir
+            return 'M3'
 
     def dwell_code(self, p):
         return ''

@@ -65,7 +65,7 @@ class GRBL_laser_Z(PreProc):
         gcode += '(X range: ' + '{: >9s}'.format(xmin) + ' ... ' + '{: >9s}'.format(xmax) + ' ' + units + ')\n'
         gcode += '(Y range: ' + '{: >9s}'.format(ymin) + ' ... ' + '{: >9s}'.format(ymax) + ' ' + units + ')\n\n'
 
-        gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n"
+        gcode += 'G20\n' if p.units.upper() == 'IN' else 'G21\n'
         gcode += 'G90\n'
         gcode += 'G17\n'
         gcode += 'G94'
