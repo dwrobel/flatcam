@@ -792,7 +792,8 @@ class FlatCAMDefaults:
         # Keyword list
         "util_autocomplete_keywords": 'Berta_CNC, Default_no_M6, Desktop, Documents, FlatConfig, FlatPrj, False, '
                                       'GRBL_11, GRL_11_no_M6, GRBL_laser, grbl_laser_eleks_drd, GRBL_laser_Z, '
-                                      'ISEL_CNC, ISEL_ICP_CNC, Line_xyz, Marlin, Marlin_laser_FAN_pin, '
+                                      'ISEL_CNC, ISEL_ICP_CNC, '
+                                      'Line_xyz, Marlin, Marlin_laser_FAN_pin, '
                                       'Marlin_laser_Spindle_pin, NCCAD9, '
                                       'Marius, My Documents, Paste_1, '
                                       'Repetier, Roland_MDX_20, Roland_MDX_540,'
@@ -802,7 +803,7 @@ class FlatCAMDefaults:
                                       'depthperpass, dia, diatol, dist, drilled_dias, drillz, dpp, dwelltime, '
                                       'endxy, endz, extracut_length, f, factor, feedrate, '
                                       'feedrate_z, gridoffsety, gridx, gridy, has_offset, '
-                                      'holes, hpgl, iso_type, join, margin, marlin, method, milled_dias, '
+                                      'holes, hpgl, iso_type, join, keep_scripts, margin, marlin, method, milled_dias, '
                                       'minoffset, name, offset, opt_type, order, outname, overlap, obj_name'
                                       'passes, postamble, pp, ppname_e, ppname_g, preamble, radius, ref, rest, '
                                       'rows, shellvar_, scale_factor, spacing_columns, spacing_rows, spindlespeed, '

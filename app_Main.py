@@ -651,7 +651,8 @@ class App(QtCore.QObject):
         # those need to be duplicated in self.defaults["util_autocomplete_keywords"] but within a string
         self.default_keywords = ['Berta_CNC', 'Default_no_M6', 'Desktop', 'Documents', 'FlatConfig', 'FlatPrj',
                                  'False', 'GRBL_11', 'GRL_11_no_M6', 'GRBL_laser', 'grbl_laser_eleks_drd',
-                                 'GRBL_laser_Z', 'ISEL_CNC', 'ISEL_ICP_CNC', 'Line_xyz', 'Marlin',
+                                 'GRBL_laser_Z', 'ISEL_CNC', 'ISEL_ICP_CNC',
+                                 'Line_xyz', 'Marlin',
                                  'Marlin_laser_FAN_pin', 'Marlin_laser_Spindle_pin', 'NCCAD9', 'Marius', 'My Documents',
                                  'Paste_1', 'Repetier', 'Roland_MDX_20', 'Roland_MDX_540',
                                  'Toolchange_Manual', 'Toolchange_Probe_MACH3',
@@ -662,7 +663,8 @@ class App(QtCore.QObject):
                                  'depthperpass', 'dia', 'diatol', 'dist', 'drilled_dias', 'drillz', 'dpp',
                                  'dwelltime', 'extracut_length', 'endxy', 'endz', 'f', 'factor', 'feedrate',
                                  'feedrate_z', 'gridoffsety', 'gridx', 'gridy',
-                                 'has_offset', 'holes', 'hpgl', 'iso_type', 'join', 'margin', 'marlin', 'method',
+                                 'has_offset', 'holes', 'hpgl', 'iso_type', 'join',  'keep_scripts',
+                                 'margin', 'marlin', 'method',
                                  'milled_dias', 'minoffset', 'name', 'offset', 'opt_type', 'order',
                                  'outname', 'overlap', 'obj_name', 'passes', 'postamble', 'pp', 'ppname_e', 'ppname_g',
                                  'preamble', 'radius', 'ref', 'rest', 'rows', 'shellvar_', 'scale_factor',
@@ -10150,7 +10152,7 @@ class MenuFileHandlers(QtCore.QObject):
         else:
             self.on_file_new_project(use_thread=True, silenced=True)
 
-    def on_file_new_project(self, cli=None, reset_tcl=True, use_thread=None, silenced=None):
+    def on_file_new_project(self, cli=None, reset_tcl=True, use_thread=None, silenced=None, keep_scripts=True):
         """
         Returns the application to its startup state. This method is thread-safe.
 
@@ -10159,6 +10161,7 @@ class MenuFileHandlers(QtCore.QObject):
                             will remember all the previous variables. If True then the Tcl is re-instantiated.
         :param use_thread:  Bool. If True some part of the initialization are done threaded
         :param silenced:    Bool or None. If True then the app will not ask to save the current parameters.
+        :param keep_scripts: Bool. If True the Script objects are not deleted when creating a new project
         :return:            None
         """
 
@@ -10204,7 +10207,12 @@ class MenuFileHandlers(QtCore.QObject):
         self.app.delete_selection_shape()
 
         # delete all FlatCAM objects
-        self.app.collection.delete_all()
+        if keep_scripts is True:
+            for prj_obj in self.app.collection.get_list():
+                if prj_obj.kind != 'script':
+                    self.app.collection.delete_by_name(prj_obj.options['name'], select_project=False)
+        else:
+            self.app.collection.delete_all()
 
         # add in Selected tab an initial text that describe the flow of work in FlatCAm
         self.app.setup_default_properties_tab()
