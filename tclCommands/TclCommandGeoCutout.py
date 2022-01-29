@@ -145,7 +145,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
         else:
             self.app.inform.emit(
                 "[WARNING] %s" % _("The name of the object for which cutout is done is missing. Add it and retry."))
-            return
+            return "fail"
 
         if 'margin' in args:
             margin = float(args['margin'])
@@ -177,17 +177,18 @@ class TclCommandGeoCutout(TclCommandSignaled):
             cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
             self.app.log.error("TclCommandGeoCutout.execute() --> %s" % str(e))
-            return "Could not retrieve object: %s" % name
+            self.app.log.error("Could not retrieve object: %s" % name)
+            return "fail"
 
         if 0 in {dia}:
             self.app.inform.emit(
                 "[WARNING] %s" % _("Tool Diameter is zero value. Change it to a positive real number."))
-            return "Tool Diameter is zero value. Change it to a positive real number."
+            return "fail"
 
         if gaps not in ['lr', 'tb', '2lr', '2tb', '4', '8', 4, 8]:
             self.app.inform.emit(
                 "[WARNING] %s" % _("Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8."))
-            return
+            return "fail"
 
         # Get min and max data for each object as we just cut rectangles across X or Y
         xmin, ymin, xmax, ymax = cutout_obj.bounds()
@@ -308,7 +309,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
                 try:
                     geo = cutout_obj.isolation_geometry((dia / 2), iso_type=0, corner=2)
                 except Exception as exc:
-                    log.error("TclCommandGeoCutout.execute() --> %s" % str(exc))
+                    self.app.log.error("TclCommandGeoCutout.execute() --> %s" % str(exc))
                     return 'fail'
 
                 if gaps_u == 8 or gaps_u == '2lr':
@@ -360,4 +361,4 @@ class TclCommandGeoCutout(TclCommandSignaled):
             cutout_obj = self.app.collection.get_by_name(outname)
         else:
             self.app.inform.emit("[ERROR] %s" % _("Cancelled. Object type is not supported."))
-            return
+            return "fail"

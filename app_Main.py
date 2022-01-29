@@ -11395,7 +11395,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         self.log.debug("open_gerber()")
         if not os.path.exists(filename):
-            self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
+            self.inform.emit('[ERROR_NOTCL] %s. %s' % (filename, _("File no longer available.")))
             return
 
         with self.app.proc_container.new('%s...' % _("Opening")):
@@ -11433,7 +11433,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         self.log.debug("open_excellon()")
         if not os.path.exists(filename):
-            self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
+            self.inform.emit('[ERROR_NOTCL] %s. %s' % (filename, _("File no longer available.")))
             return
 
         # How the object should be initialized

@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - upgraded/fixed the Panelize Tcl command
 - added a new preprocessor for Marlin that has movemements on the Z axis named `Marlin_laser_Z`
 - cleaned up Marlin preprocessors
+- in the `panelize`, `cutout` and `geocutout` Tcl commands updated the error strings and made sure that if an error occur then a potential script execution in chain is aborted
 
 28.01.2022
 

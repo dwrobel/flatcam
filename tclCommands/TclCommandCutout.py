@@ -67,8 +67,8 @@ class TclCommandCutout(TclCommand):
             name = args['name']
         else:
             self.app.inform.emit(
-                "[WARNING]The name of the object for which cutout is done is missing. Add it and retry.")
-            return
+                "[WARNING] The name of the object for which cutout is done is missing. Add it and retry.")
+            return "fail"
 
         if 'margin' in args:
             margin_par = float(args['margin'])
@@ -102,8 +102,9 @@ class TclCommandCutout(TclCommand):
         try:
             obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
-            log.error("TclCommandCutout.execute() --> %s" % str(e))
-            return "Could not retrieve object: %s" % name
+            self.app.log.error("TclCommandCutout.execute(). Missing object: --> %s" % str(e))
+            self.app.log.debug("Could not retrieve object: %s" % name)
+            return "fail"
 
         def geo_init_me(geo_obj, app_obj):
             geo_obj.multigeo = False

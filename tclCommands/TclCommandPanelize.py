@@ -89,17 +89,20 @@ class TclCommandPanelize(TclCommand):
         try:
             obj = self.app.collection.get_by_name(str(name))
         except Exception:
-            return "Could not retrieve object: %s" % name
+            self.app.log.error("Could not retrieve object: %s" % name)
+            return "fail"
 
         if obj is None:
-            return "Object not found: %s" % name
+            self.app.log.error("Object not found: %s" % name)
+            return "fail"
 
         if 'box' in args:
             boxname = args['box']
             try:
                 box = self.app.collection.get_by_name(boxname)
             except Exception:
-                return "Could not retrieve object: %s" % name
+                self.app.log.error("Could not retrieve object: %s" % name)
+                return "fail"
         else:
             box = obj
 
@@ -114,7 +117,8 @@ class TclCommandPanelize(TclCommand):
             rows = int(0)
 
         if 'columns' not in args and 'rows' not in args:
-            return "ERROR: Specify either -columns or -rows. The one not specified it will assumed to be 0"
+            self.app.log.error("ERROR: Specify either -columns or -rows. The one not specified it will assumed to be 0")
+            return "fail"
 
         if 'outname' in args:
             outname = args['outname']
