@@ -270,7 +270,8 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                                    "in format (x, y) - no spaces allowed. But always two comma separated values.")
                 return "fail"
 
-            opt_type = args["opt_type"] if "opt_type" in args and args["opt_type"] else 'B'
+            # Path optimization
+            opt_type = args["opt_type"] if "opt_type" in args and args["opt_type"] else 'R'
 
             # ##########################################################################################
             # ################# Set parameters #########################################################

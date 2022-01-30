@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - fixed not adding the feedrate code in `drillcncjob` Tcl command
 - fixed crash when trying to do a `select all` and there are app Scripts present
 - updated the `drillcncjob` Tcl command to make a script exit in case of an error
+- in `drillcncjob` Tcl command added the usage of `RTree` path optimization and made it the default choice
 
 29.01.2022
 

@@ -4353,9 +4353,7 @@ class CNCjob(Geometry):
                         altPoints.append((point.coords.xy[0][0], point.coords.xy[1][0]))
                     optimized_path = self.optimized_travelling_salesman(altPoints)
                 elif used_excellon_optimization_type == 'R':
-                    for point in points[tool]:
-                        altPoints.append((point.coords.xy[0][0], point.coords.xy[1][0]))
-                    optimized_path = self.exc_optimized_rtree(altPoints)
+                    optimized_path = self.exc_optimized_rtree(points[tool])
                     if optimized_path == 'fail':
                         return 'fail'
                 else:
@@ -4426,6 +4424,9 @@ class CNCjob(Geometry):
                         if used_excellon_optimization_type == 'T':
                             locx = point[0]
                             locy = point[1]
+                        elif used_excellon_optimization_type == 'R':
+                            locx = point[0][0]
+                            locy = point[0][1]
                         else:
                             locx = locations[point][0]
                             locy = locations[point][1]
