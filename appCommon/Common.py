@@ -904,7 +904,7 @@ class ExclusionAreas(QtCore.QObject):
 
 
 class AppLogging:
-    def __init__(self, app):
+    def __init__(self, app, log_level):
         self.app = app
 
         self._log = logging.getLogger('base')
@@ -915,7 +915,19 @@ class AppLogging:
         handler.setFormatter(formatter)
         self._log.addHandler(handler)
 
+        self._log_level = log_level
+
+    @property
+    def log_level(self):
+        return self._log_level
+
+    @log_level.setter
+    def log_level(self, val):
+        self._log = val if val in [0, 1, 2] else 0
+
     def info(self, msg):
+        if self._log_level == 0:
+            return
         # current date now
         date = str(datetime.today()).rpartition('.')[0]
         date = ''.join(c for c in date if c not in ':-')
@@ -925,6 +937,8 @@ class AppLogging:
         self.app.inform_shell.emit('[log]INFO %s ***\t%s' % (date, msg))
 
     def debug(self, msg):
+        if self._log_level == 0:
+            return
         # current date now
         date = str(datetime.today()).rpartition('.')[0]
         date = ''.join(c for c in date if c not in ':-')
@@ -934,6 +948,8 @@ class AppLogging:
         self.app.inform_shell.emit('[log]DEBUG %s ***\t%s' % (date, msg))
 
     def warning(self, msg):
+        if self._log_level == 0:
+            return
         # current date now
         date = str(datetime.today()).rpartition('.')[0]
         date = ''.join(c for c in date if c not in ':-')
@@ -943,6 +959,8 @@ class AppLogging:
         self.app.inform_shell.emit('[log]WARNING %s ***\t%s' % (date, msg))
 
     def error(self, msg):
+        if self._log_level == 0:
+            return
         # current date now
         date = str(datetime.today()).rpartition('.')[0]
         date = ''.join(c for c in date if c not in ':-')

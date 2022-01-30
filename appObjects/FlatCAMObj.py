@@ -151,9 +151,9 @@ class FlatCAMObj(QtCore.QObject):
                 try:
                     setattr(self, attr, d[attr])
                 except KeyError:
-                    log.debug("FlatCAMObj.from_dict() --> KeyError: %s. "
-                              "Means that we are loading an old project that don't"
-                              "have all attributes in the latest application version." % str(attr))
+                    self.app.log.debug("FlatCAMObj.from_dict() --> KeyError: %s. "
+                                       "Means that we are loading an old project that don't"
+                                       "have all attributes in the latest application version." % str(attr))
                     pass
 
     def on_options_change(self, key):
@@ -220,7 +220,7 @@ class FlatCAMObj(QtCore.QObject):
 
     @visible.setter
     def visible(self, value, threaded=True):
-        log.debug("FlatCAMObj.visible()")
+        self.app.log.debug("FlatCAMObj.visible()")
 
         # self.shapes.enabled = not self.shapes.enabled
 
@@ -300,7 +300,7 @@ class FlatCAMObj(QtCore.QObject):
         """
 
         self.muted_ui = True
-        log.debug(str(inspect.stack()[1][3]) + "--> FlatCAMObj.build_ui()")
+        self.app.log.debug(str(inspect.stack()[1][3]) + "--> FlatCAMObj.build_ui()")
 
         try:
             # HACK: disconnect the scale entry signal since on focus out event will trigger an undesired scale()
@@ -336,7 +336,8 @@ class FlatCAMObj(QtCore.QObject):
                 self.app.shell._edit.set_model_data(self.app.myKeywords)
                 self.app.ui.code_editor.set_model_data(self.app.myKeywords)
             except Exception:
-                log.debug("on_name_activate() --> Could not remove the old object name from auto-completer model list")
+                self.app.log.debug(
+                    "on_name_activate() --> Could not remove the old object name from auto-completer model list")
 
             self.options["name"] = self.ui.name_entry.get_value()
             self.default_data["name"] = self.ui.name_entry.get_value()
@@ -369,7 +370,7 @@ class FlatCAMObj(QtCore.QObject):
             factor = float(self.ui.scale_entry.get_value())
         except Exception as e:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Scaling could not be executed."))
-            log.error("FlatCAMObj.on_scale_button_click() -- %s" % str(e))
+            self.app.log.error("FlatCAMObj.on_scale_button_click() -- %s" % str(e))
             return
 
         if type(factor) != float:
@@ -380,7 +381,7 @@ class FlatCAMObj(QtCore.QObject):
             self.app.inform.emit('[success] %s' % _("Scale done."))
             return
 
-        log.debug("FlatCAMObj.on_scale_button_click()")
+        self.app.log.debug("FlatCAMObj.on_scale_button_click()")
 
         def worker_task():
             with self.app.proc_container.new(_("Scaling...")):
@@ -416,7 +417,7 @@ class FlatCAMObj(QtCore.QObject):
 
         :return: None
         """
-        log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMObj.to_form()")
+        self.app.log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMObj.to_form()")
         for option in self.options:
             try:
                 self.set_form_item(option)
@@ -430,7 +431,7 @@ class FlatCAMObj(QtCore.QObject):
         :return: None
         :rtype: None
         """
-        log.debug(str(inspect.stack()[1][3]) + "--> FlatCAMObj.read_form()")
+        self.app.log.debug(str(inspect.stack()[1][3]) + "--> FlatCAMObj.read_form()")
         for option in self.options:
             try:
                 self.read_form_item(option)
@@ -579,7 +580,7 @@ class FlatCAMObj(QtCore.QObject):
                     length = abs(xmax - xmin)
                     width = abs(ymax - ymin)
                 except Exception as ee:
-                    log.error("FlatCAMObj.add_properties_items() -> calculate dimensions --> %s" % str(ee))
+                    self.app.log.error("FlatCAMObj.add_properties_items() -> calculate dimensions --> %s" % str(ee))
 
                 # calculate box area
                 if self.app.app_units.lower() == 'mm':
@@ -611,7 +612,7 @@ class FlatCAMObj(QtCore.QObject):
                             xmax.append(x1)
                             ymax.append(y1)
                     except Exception as ee:
-                        log.error("FlatCAMObj.add_properties_items() cncjob --> %s" % str(ee))
+                        self.app.log.error("FlatCAMObj.add_properties_items() cncjob --> %s" % str(ee))
                 else:
                     try:
                         if obj_prop.tools:
@@ -626,7 +627,7 @@ class FlatCAMObj(QtCore.QObject):
                                 xmax.append(x1)
                                 ymax.append(y1)
                     except Exception as ee:
-                        log.error("FlatCAMObj.add_properties_items() not cncjob tools --> %s" % str(ee))
+                        self.app.log.error("FlatCAMObj.add_properties_items() not cncjob tools --> %s" % str(ee))
 
                 if xmin and ymin and xmax and ymax:
                     xmin = min(xmin)
@@ -687,7 +688,7 @@ class FlatCAMObj(QtCore.QObject):
                             area_chull = max(area_chull_list)
                     except Exception as er:
                         area_chull = None
-                        log.error("FlatCAMObj.add_properties_items() area chull--> %s" % str(er))
+                        self.app.log.error("FlatCAMObj.add_properties_items() area chull--> %s" % str(er))
 
             if self.app.app_units.lower() == 'mm' and area_chull:
                 area_chull = area_chull / 100

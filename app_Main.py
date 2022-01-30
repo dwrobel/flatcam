@@ -868,9 +868,13 @@ class App(QtCore.QObject):
         # ############################################################################################################
         # ################################### Set LOG verbosity ######################################################
         # ############################################################################################################
-        if self.defaults["global_log_verbose"] is True:
+
+        if self.defaults["global_log_verbose"] == 2:
             self.log.handlers.pop()
-            self.log = AppLogging(app=self)
+            self.log = AppLogging(app=self, log_level=2)
+        if self.defaults["global_log_verbose"] == 0:
+            self.log.handlers.pop()
+            self.log = AppLogging(app=self, log_level=0)
 
         # ###########################################################################################################
         # #################################### SETUP OBJECT CLASSES #################################################

@@ -84,7 +84,7 @@ class FlatCAMDefaults:
         "global_graphic_engine": '3D',
         "global_app_level": 'b',
 
-        "global_log_verbose": True,
+        "global_log_verbose": 2,
         "global_portable": False,
 
         "global_languages": ['English', 'Romanian'],
@@ -1001,7 +1001,7 @@ class FlatCAMDefaults:
         an alternative to project options but allows the use
         of values invisible to the user.
         """
-        log.debug("propagate_defaults()")
+        # log.debug("propagate_defaults()")
 
         # Which objects to update the given parameters.
         routes = {
@@ -1020,7 +1020,8 @@ class FlatCAMDefaults:
                 try:
                     routes[param].defaults[param] = self.defaults[param]
                 except KeyError:
-                    log.error("FlatCAMApp.propagate_defaults() --> ERROR: " + param + " not in defaults.")
+                    # log.error("FlatCAMApp.propagate_defaults() --> ERROR: " + param + " not in defaults.")
+                    pass
             else:
                 # Try extracting the name:
                 # classname_param here is param in the object

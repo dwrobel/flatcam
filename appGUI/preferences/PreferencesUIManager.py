@@ -2,7 +2,6 @@ import os
 from PyQt6 import QtGui, QtCore, QtWidgets
 from PyQt6.QtCore import QSettings
 from defaults import FlatCAMDefaults
-import logging
 
 from appGUI.GUIElements import FCMessageBox
 
@@ -13,8 +12,6 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
-
-log = logging.getLogger('base2')
 
 
 class PreferencesUIManager:
@@ -49,7 +46,7 @@ class PreferencesUIManager:
             "units": self.ui.general_pref_form.general_app_group.units_radio,
             "global_graphic_engine": self.ui.general_pref_form.general_app_group.ge_radio,
             "global_app_level": self.ui.general_pref_form.general_app_group.app_level_radio,
-            "global_log_verbose": self.ui.general_pref_form.general_app_group.verbose_cb,
+            "global_log_verbose": self.ui.general_pref_form.general_app_group.verbose_combo,
             "global_portable": self.ui.general_pref_form.general_app_group.portability_cb,
 
             "global_language_current": self.ui.general_pref_form.general_app_group.language_combo,
@@ -733,7 +730,7 @@ class PreferencesUIManager:
             try:
                 self.defaults[option] = self.defaults_form_fields[option].get_value()
             except Exception as e:
-                log.error("App.defaults_read_form() --> %s" % str(e))
+                self.ui.app.log.error("App.defaults_read_form() --> %s" % str(e))
 
     def defaults_write_form(self, factor=None, fl_units=None, source_dict=None):
         """
@@ -781,7 +778,7 @@ class PreferencesUIManager:
         except KeyError:
             pass
         except AttributeError:
-            log.debug(field)
+            self.ui.app.log.debug(field)
 
     def show_preferences_gui(self):
         """
@@ -794,7 +791,7 @@ class PreferencesUIManager:
         try:
             self.ui.general_scroll_area.takeWidget()
         except Exception:
-            log.debug("Nothing to remove")
+            self.ui.app.log.debug("Nothing to remove")
         self.ui.general_scroll_area.setWidget(gen_form)
         gen_form.show()
 
@@ -802,7 +799,7 @@ class PreferencesUIManager:
         try:
             self.ui.gerber_scroll_area.takeWidget()
         except Exception:
-            log.debug("Nothing to remove")
+            self.ui.app.log.debug("Nothing to remove")
         self.ui.gerber_scroll_area.setWidget(ger_form)
         ger_form.show()
 
@@ -810,7 +807,7 @@ class PreferencesUIManager:
         try:
             self.ui.excellon_scroll_area.takeWidget()
         except Exception:
-            log.debug("Nothing to remove")
+            self.ui.app.log.debug("Nothing to remove")
         self.ui.excellon_scroll_area.setWidget(exc_form)
         exc_form.show()
 
@@ -818,7 +815,7 @@ class PreferencesUIManager:
         try:
             self.ui.geometry_scroll_area.takeWidget()
         except Exception:
-            log.debug("Nothing to remove")
+            self.ui.app.log.debug("Nothing to remove")
         self.ui.geometry_scroll_area.setWidget(geo_form)
         geo_form.show()
 
@@ -826,7 +823,7 @@ class PreferencesUIManager:
         try:
             self.ui.cncjob_scroll_area.takeWidget()
         except Exception:
-            log.debug("Nothing to remove")
+            self.ui.app.log.debug("Nothing to remove")
         self.ui.cncjob_scroll_area.setWidget(cnc_form)
         cnc_form.show()
 
@@ -834,7 +831,7 @@ class PreferencesUIManager:
         try:
             self.ui.plugins_engraving_scroll_area.takeWidget()
         except Exception:
-            log.debug("Nothing to remove")
+            self.ui.app.log.debug("Nothing to remove")
         self.ui.plugins_engraving_scroll_area.setWidget(plugins_engraving_form)
         plugins_engraving_form.show()
 
@@ -842,7 +839,7 @@ class PreferencesUIManager:
         try:
             self.ui.tools_scroll_area.takeWidget()
         except Exception:
-            log.debug("Nothing to remove")
+            self.ui.app.log.debug("Nothing to remove")
         self.ui.tools_scroll_area.setWidget(plugins_form)
         plugins_form.show()
 
@@ -850,7 +847,7 @@ class PreferencesUIManager:
         try:
             self.ui.tools2_scroll_area.takeWidget()
         except Exception:
-            log.debug("Nothing to remove")
+            self.ui.app.log.debug("Nothing to remove")
         self.ui.tools2_scroll_area.setWidget(plugins2_form)
         plugins2_form.show()
 
@@ -858,7 +855,7 @@ class PreferencesUIManager:
         try:
             self.ui.fa_scroll_area.takeWidget()
         except Exception:
-            log.debug("Nothing to remove")
+            self.ui.app.log.debug("Nothing to remove")
         self.ui.fa_scroll_area.setWidget(fa_form)
         fa_form.show()
 
@@ -898,47 +895,47 @@ class PreferencesUIManager:
         try:
             self.ui.general_scroll_area.takeWidget()
         except Exception:
-            log.debug("Nothing to remove")
+            self.ui.app.log.debug("Nothing to remove")
 
         try:
             self.ui.gerber_scroll_area.takeWidget()
         except Exception:
-            log.debug("Nothing to remove")
+            self.ui.app.log.debug("Nothing to remove")
 
         try:
             self.ui.excellon_scroll_area.takeWidget()
         except Exception:
-            log.debug("Nothing to remove")
+            self.ui.app.log.debug("Nothing to remove")
 
         try:
             self.ui.geometry_scroll_area.takeWidget()
         except Exception:
-            log.debug("Nothing to remove")
+            self.ui.app.log.debug("Nothing to remove")
 
         try:
             self.ui.cncjob_scroll_area.takeWidget()
         except Exception:
-            log.debug("Nothing to remove")
+            self.ui.app.log.debug("Nothing to remove")
 
         try:
             self.ui.plugins_engraving_scroll_area.takeWidget()
         except Exception:
-            log.debug("Nothing to remove")
+            self.ui.app.log.debug("Nothing to remove")
 
         try:
             self.ui.tools_scroll_area.takeWidget()
         except Exception:
-            log.debug("Nothing to remove")
+            self.ui.app.log.debug("Nothing to remove")
 
         try:
             self.ui.tools2_scroll_area.takeWidget()
         except Exception:
-            log.debug("Nothing to remove")
+            self.ui.app.log.debug("Nothing to remove")
 
         try:
             self.ui.fa_scroll_area.takeWidget()
         except Exception:
-            log.debug("Nothing to remove")
+            self.ui.app.log.debug("Nothing to remove")
 
     def __init_color_pickers(self):
         # Init Gerber Plot Colors
@@ -1028,7 +1025,7 @@ class PreferencesUIManager:
             self.defaults['tools_qrcode_back_color'])
 
     def on_save_button(self, save_to_file=True):
-        log.debug("on_save_button() --> Applying preferences to file.")
+        self.ui.app.log.debug("on_save_button() --> Applying preferences to file.")
 
         # Preferences saved, update flag
         self.preferences_changed_flag = False
@@ -1142,7 +1139,7 @@ class PreferencesUIManager:
 
         :return: None
         """
-        log.debug("on_restore_defaults_preferences()")
+        self.ui.app.log.debug("on_restore_defaults_preferences()")
         self.defaults.reset_to_factory_defaults()
         self.defaults_write_form()
         self.on_preferences_edited()
@@ -1162,7 +1159,7 @@ class PreferencesUIManager:
         :param first_time:  Boolean. If True will execute some code when the app is run first time
         :return:            None
         """
-        log.debug("App.PreferencesUIManager.save_defaults()")
+        self.ui.app.log.debug("App.PreferencesUIManager.save_defaults()")
 
         if data_path is None:
             data_path = self.data_path
@@ -1178,7 +1175,7 @@ class PreferencesUIManager:
         try:
             self.defaults.write(filename=filename)
         except Exception as e:
-            log.error("save_defaults() --> Failed to write defaults to file %s" % str(e))
+            self.ui.app.log.error("save_defaults() --> Failed to write defaults to file %s" % str(e))
             self.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed to write defaults to file."), str(filename)))
             return
 

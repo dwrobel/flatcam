@@ -118,7 +118,7 @@ class GerberObject(FlatCAMObj, Gerber):
         :return: None
         """
         FlatCAMObj.set_ui(self, ui)
-        log.debug("GerberObject.set_ui()")
+        self.app.log.debug("GerberObject.set_ui()")
 
         self.units = self.app.app_units.upper()
 
@@ -910,7 +910,7 @@ class GerberObject(FlatCAMObj, Gerber):
         :param kwargs:  Color and face_color, visible
         :return:
         """
-        log.debug(str(inspect.stack()[1][3]) + " --> GerberObject.plot()")
+        self.app.log.debug(str(inspect.stack()[1][3]) + " --> GerberObject.plot()")
 
         # Does all the required setup and returns False
         # if the 'ptint' option is set to False.
@@ -1666,8 +1666,7 @@ class GerberObject(FlatCAMObj, Gerber):
 
         return gerber_code
 
-    @staticmethod
-    def merge(grb_list, grb_final):
+    def merge(self, grb_list, grb_final):
         """
         Merges the geometry of objects in geo_list into
         the geometry of geo_final.
@@ -1699,7 +1698,7 @@ class GerberObject(FlatCAMObj, Gerber):
                         try:
                             grb_final.options[option] = grb.options[option]
                         except KeyError:
-                            log.warning("Failed to copy option.", option)
+                            self.app.log.warning("Failed to copy option.", option)
 
                 try:
                     for geos in grb.solid_geometry:

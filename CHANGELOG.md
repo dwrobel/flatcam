@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - made sure that when drilling and milling with a `laser` preprocessor the first move is not done with the laser on
 - fixed a minor UI glitch in the CNCJob UI
 - made sure that the `drillcncjob` and `cncjob` Tcl commands will use the `-las_power` parameter to set the laser power when using a preprocessor with `laser` in its name
+- now the `verbose log` parameter from the Preferences can take 3 values (0, 1, 2). Value = 0 means that the logging is disabled (mostly), value = 1 means that the logging is only in console and value = 3 means that the logging is now displayed in the Tcl box
 
 30.01.2022
 

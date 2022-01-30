@@ -3,7 +3,7 @@ import sys
 from PyQt6.QtCore import QSettings
 
 from appGUI.GUIElements import RadioSet, FCSpinner, FCCheckBox, FCComboBox, FCButton, OptionalInputSection, \
-    FCDoubleSpinner, FCLabel, FCGridLayout, RadioSetDefaults, FCFrame
+    FCDoubleSpinner, FCLabel, FCGridLayout, RadioSetDefaults, FCFrame, FCComboBox2
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -150,11 +150,18 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.portability_cb, 6, 0, 1, 2)
 
         # Verbose Log
-        self.verbose_cb = FCCheckBox('%s' % _('Verbose log'))
-        self.verbose_cb.setToolTip(_("Enable log messages in the Tcl Shell.\n"
-                                     "Require restart."))
+        self.verbose_label = FCLabel('%s:' % _('Verbose log'))
+        self.verbose_label.setToolTip(_("Set the log level.\n"
+                                        "Values:\n"
+                                        "0 -> logging is disabled\n"
+                                        "1 -> logging is done only in console\n"
+                                        "2 -> verbose logging with messages in the Tcl Shell\n"
+                                        "Require restart."))
+        self.verbose_combo = FCComboBox2()
+        self.verbose_combo.addItems(['0','1', '2'])
 
-        grid1.addWidget(self.verbose_cb, 8, 0, 1, 2)
+        grid1.addWidget(self.verbose_label, 8, 0)
+        grid1.addWidget(self.verbose_combo, 8, 1)
 
         # #############################################################################################################
         # Grid0 Frame
