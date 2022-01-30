@@ -4268,10 +4268,10 @@ class CNCjob(Geometry):
         if current_platform == '64bit':
             used_excellon_optimization_type = self.excellon_optimization_type
         else:
-            used_excellon_optimization_type = 'T'
+            used_excellon_optimization_type = 'R'
 
         if not HAS_ORTOOLS:
-            used_excellon_optimization_type = 'T'
+            used_excellon_optimization_type = 'R'
 
         # #############################################################################################################
         # #############################################################################################################
@@ -4279,13 +4279,15 @@ class CNCjob(Geometry):
         # #############################################################################################################
         # #############################################################################################################
         if used_excellon_optimization_type == 'M':
-            log.debug("Using OR-Tools Metaheuristic Guided Local Search drill path optimization.")
+            self.app.log.debug("Using OR-Tools Metaheuristic Guided Local Search drill path optimization.")
         elif used_excellon_optimization_type == 'B':
-            log.debug("Using OR-Tools Basic drill path optimization.")
+            self.app.log.debug("Using OR-Tools Basic drill path optimization.")
         elif used_excellon_optimization_type == 'T':
-            log.debug("Using Travelling Salesman drill path optimization.")
+            self.app.log.debug("Using Travelling Salesman drill path optimization.")
+        elif used_excellon_optimization_type == 'R':
+            self.app.log.debug("Using RTree drill path optimization.")
         else:
-            log.debug("Using no path optimization.")
+            self.app.log.debug("Using no path optimization.")
 
         if self.toolchange is True:
             for tool in tools:
@@ -4531,6 +4533,12 @@ class CNCjob(Geometry):
                     self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
                     return 'fail'
                 self.z_cut = deepcopy(old_zcut)
+
+            # add to the last tool the end_gcode
+            end_gcode = self.doformat(p.spindle_stop_code)
+            # Move to End position
+            end_gcode += self.doformat(p.end_code, x=0, y=0)
+            self.tools[tool]['gcode'] += end_gcode
         else:
             # We are not using Toolchange therefore we need to decide which tool properties to use
             one_tool = 1
@@ -4611,6 +4619,8 @@ class CNCjob(Geometry):
                 for point in all_points:
                     altPoints.append((point.coords.xy[0][0], point.coords.xy[1][0]))
                 optimized_path = self.optimized_travelling_salesman(altPoints)
+            elif used_excellon_optimization_type == 'R':
+                optimized_path = self.exc_optimized_rtree(all_points)
             else:
                 # it's actually not optimized path but here we build a list of (x,y) coordinates
                 # out of the tool's drills
@@ -4673,6 +4683,9 @@ class CNCjob(Geometry):
                     if used_excellon_optimization_type == 'T':
                         locx = point[0]
                         locy = point[1]
+                    elif used_excellon_optimization_type == 'R':
+                        locx = point[0][0]
+                        locy = point[0][1]
                     else:
                         locx = locations[point][0]
                         locy = locations[point][1]
@@ -4759,12 +4772,16 @@ class CNCjob(Geometry):
                     if old_disp_number < disp_number <= 100:
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         old_disp_number = disp_number
-
             else:
                 self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
                 return 'fail'
             self.z_cut = deepcopy(old_zcut)
             self.tools[one_tool]['gcode'] = gcode
+
+            # add the end_gcode
+            end_gcode = self.doformat(p.spindle_stop_code)
+            end_gcode += self.doformat(p.end_code, x=0, y=0)
+            self.tools[one_tool]['gcode'] += end_gcode
 
         if used_excellon_optimization_type == 'M':
             log.debug("The total travel distance with OR-TOOLS Metaheuristics is: %s" % str(measured_distance))
@@ -4772,6 +4789,8 @@ class CNCjob(Geometry):
             log.debug("The total travel distance with OR-TOOLS Basic Algorithm is: %s" % str(measured_distance))
         elif used_excellon_optimization_type == 'T':
             log.debug("The total travel distance with Travelling Salesman Algorithm is: %s" % str(measured_distance))
+        elif used_excellon_optimization_type == 'R':
+            log.debug("The total travel distance with Rtree Algorithm is: %s" % str(measured_distance))
         else:
             log.debug("The total travel distance with with no optimization is: %s" % str(measured_distance))
 

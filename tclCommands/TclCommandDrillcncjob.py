@@ -350,9 +350,9 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 else:
                     job_obj.startz = self.app.defaults["tools_drill_travelz"]
             # end Z
-            job_obj.endz = float(endz)
+            job_obj.z_end = float(endz)
             # end X-Y location
-            job_obj.xy_end = xy_end
+            job_obj.xy_end = eval(str(xy_end))
             # Excellon optimization
             job_obj.excellon_optimization_type = opt_type
 
@@ -364,20 +364,35 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             job_obj.gc_start = ret_val[1]
 
             total_gcode_parsed = []
-            # from Excellon attribute self.tools
-            for t_item in job_obj.tools:
-                job_obj.tools[t_item]['data']['tools_drill_offset'] = \
-                    float(job_obj.tools[t_item]['offset_z']) + float(drillz)
-                job_obj.tools[t_item]['data']['tools_drill_ppname_e'] = job_obj.options['ppname_e']
+            if job_obj.toolchange is True:
+                # from Excellon attribute self.tools
+                for t_item in job_obj.tools:
+                    job_obj.tools[t_item]['data']['tools_drill_offset'] = \
+                        float(job_obj.tools[t_item]['offset_z']) + float(drillz)
+                    job_obj.tools[t_item]['data']['tools_drill_ppname_e'] = job_obj.options['ppname_e']
 
-                used_tooldia = obj.tools[t_item]['tooldia']
-                job_obj.tools[t_item]['tooldia'] = used_tooldia
-                tool_gcode = job_obj.tools[t_item]['gcode']
-                first_drill_point = job_obj.tools[t_item]['last_point']
+                    used_tooldia = obj.tools[t_item]['tooldia']
+                    job_obj.tools[t_item]['tooldia'] = used_tooldia
+                    tool_gcode = job_obj.tools[t_item]['gcode']
+                    first_drill_point = job_obj.tools[t_item]['last_point']
+                    gcode_parsed = job_obj.excellon_tool_gcode_parse(used_tooldia, gcode=tool_gcode,
+                                                                     start_pt=first_drill_point)
+                    total_gcode_parsed += gcode_parsed
+                    job_obj.tools[t_item]['gcode_parsed'] = gcode_parsed
+            else:
+                first_tool = 1
+                job_obj.tools[first_tool]['data']['tools_drill_offset'] = \
+                    float(job_obj.tools[first_tool]['offset_z']) + float(drillz)
+                job_obj.tools[first_tool]['data']['tools_drill_ppname_e'] = job_obj.options['ppname_e']
+
+                used_tooldia = obj.tools[first_tool]['tooldia']
+                job_obj.tools[first_tool]['tooldia'] = used_tooldia
+                tool_gcode = job_obj.tools[first_tool]['gcode']
+                first_drill_point = job_obj.tools[first_tool]['last_point']
                 gcode_parsed = job_obj.excellon_tool_gcode_parse(used_tooldia, gcode=tool_gcode,
                                                                  start_pt=first_drill_point)
                 total_gcode_parsed += gcode_parsed
-                job_obj.tools[t_item]['gcode_parsed'] = gcode_parsed
+                job_obj.tools[first_tool]['gcode_parsed'] = gcode_parsed
 
             job_obj.gcode_parsed = total_gcode_parsed
             # job_obj.gcode_parse()

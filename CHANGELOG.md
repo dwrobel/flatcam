@@ -20,6 +20,7 @@ CHANGELOG for FlatCAM beta
 - fixed some UI issues for the Milling and Drilling plugins when using a `laser` preprocessor
 - finished implementing the new feature that add a new parameter `laser minimum power` for the Drillin, Milling Plugins and for the `cncjob` and `drillcncjob` Tcl commands: 
 - modified all the preprocessors that are for `laser` to use the new parameter: `laser minimum power`
+- fixed the `drillcncjob` Tcl command to use the parameters: `endz` and `endxy`
 
 29.01.2022
 
