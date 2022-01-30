@@ -43,6 +43,7 @@ class TclCommandCncjob(TclCommandSignaled):
         ('endxy', str),
         ('spindlespeed', int),
         ('dwelltime', float),
+        ('las_power', float),
         ('las_min_pwr', float),
         ('pp', str),
         ('muted', str),
@@ -77,7 +78,8 @@ class TclCommandCncjob(TclCommandSignaled):
             ('dwelltime', 'Time to pause to allow the spindle to reach the full speed.\n'
                           'If it is not used in command then it will not be included'),
             ('outname', 'Name of the resulting Geometry object.'),
-            ('las_min_pwr', 'Used with "laser" preprocessors. States the laser power when not cutting'),
+            ('las_power', 'Used with "laser" preprocessors. Set the laser power when cutting'),
+            ('las_min_pwr', 'Used with "laser" preprocessors. Set the laser power when not cutting, travelling'),
             ('pp', 'Name of the Geometry preprocessor. No quotes, case sensitive'),
             ('muted', 'It will not put errors in the Shell. Can be True (1) or False (0)')
         ]),
@@ -187,7 +189,11 @@ class TclCommandCncjob(TclCommandSignaled):
                                  "in format (x, y) - no spaces allowed. But always two comma separated values.")
 
         # Spindle speed
-        args["spindlespeed"] = args["spindlespeed"] if "spindlespeed" in args and args["spindlespeed"] != 0 else None
+        if 'laser' not in args["pp"]:
+            args["spindlespeed"] = (args["spindlespeed"] if "spindlespeed" in args and
+                                                            args["spindlespeed"] != 0 else None)
+        else:
+            args["spindlespeed"] = args["las_power"] if "las_power" in args else 0.0
 
         # Laser minimum power
         args["las_min_pwr"] = args["las_min_pwr"] if "las_min_pwr" in args else 0.0

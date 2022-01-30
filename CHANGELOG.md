@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM beta
 
 - fixed all the `laser` preprocessors to work correctly and the resulting GCode to be plotted
 - made sure that when drilling and milling with a `laser` preprocessor the first move is not done with the laser on
+- fixed a minor UI glitch in the CNCJob UI
+- made sure that the `drillcncjob` and `cncjob` Tcl commands will use the `-las_power` parameter to set the laser power when using a preprocessor with `laser` in its name
 
 30.01.2022
 
