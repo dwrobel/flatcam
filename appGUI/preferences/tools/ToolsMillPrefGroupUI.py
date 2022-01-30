@@ -278,8 +278,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
             self.pp_geometry_name_cb.setItemData(it, self.pp_geometry_name_cb.itemText(it),
                                                  QtCore.Qt.ItemDataRole.ToolTipRole)
 
-        param_grid.addWidget(pp_label, 28, 0)
-        param_grid.addWidget(self.pp_geometry_name_cb, 28, 1)
+        param_grid.addWidget(pp_label, 30, 0)
+        param_grid.addWidget(self.pp_geometry_name_cb, 30, 1)
 
         # separator_line = QtWidgets.QFrame()
         # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
@@ -406,6 +406,19 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         adv_grid.addWidget(spindle_dir_label, 12, 0)
         adv_grid.addWidget(self.spindledir_radio, 12, 1)
 
+        # Laser power minimum
+        self.las_min_pwr_label = FCLabel('%s:' % _('Min Power'))
+        self.las_min_pwr_label.setToolTip(
+            _("The laser power when the laser is travelling.")
+        )
+
+        self.las_min_pwr_entry = FCSpinner()
+        self.las_min_pwr_entry.set_range(0, 1000000)
+        self.las_min_pwr_entry.set_step(100)
+
+        adv_grid.addWidget(self.las_min_pwr_label, 14, 0)
+        adv_grid.addWidget(self.las_min_pwr_entry, 14, 1)
+
         # Fast Move from Z Toolchange
         self.fplunge_cb = FCCheckBox('%s' % _('Fast Plunge'))
         self.fplunge_cb.setToolTip(
@@ -414,7 +427,7 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
               "meaning the fastest speed available.\n"
               "WARNING: the move is done at Toolchange X,Y coords.")
         )
-        adv_grid.addWidget(self.fplunge_cb, 14, 0, 1, 2)
+        adv_grid.addWidget(self.fplunge_cb, 16, 0, 1, 2)
 
         # separator_line = QtWidgets.QFrame()
         # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
@@ -606,7 +619,7 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
               "Higher values = slow processing and slow execution on CNC\n"
               "due of too many paths.")
         )
-        self.overlap_entry = FCDoubleSpinner( suffix='%')
+        self.overlap_entry = FCDoubleSpinner(suffix='%')
         self.overlap_entry.set_precision(3)
         self.overlap_entry.setWrapping(True)
         self.overlap_entry.setRange(0.0000, 99.9999)

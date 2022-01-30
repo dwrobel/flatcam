@@ -400,6 +400,7 @@ class FlatCAMDefaults:
         "tools_drill_spindlespeed": 0,
         "tools_drill_dwell": False,
         "tools_drill_dwelltime": 1,
+        "tools_drill_min_power":    0.0,
         "tools_drill_toolchange": False,
         "tools_drill_toolchangez": 15,
         "tools_drill_preprocessor_list": ['default'],
@@ -446,6 +447,7 @@ class FlatCAMDefaults:
 
         "tools_mill_feedrate": 120,
         "tools_mill_feedrate_z": 60,
+        "tools_mill_min_power": 0.0,
         "tools_mill_spindlespeed": 0,
         "tools_mill_dwell": False,
         "tools_mill_dwelltime": 1,

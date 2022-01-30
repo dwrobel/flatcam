@@ -373,6 +373,20 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         adv_grid.addWidget(spindle_dir_label, 12, 0)
         adv_grid.addWidget(self.spindledir_radio, 12, 1, 1, 2)
 
+        # Laser power minimum
+        self.las_min_pwr_label = FCLabel('%s:' % _('Min Power'))
+        self.las_min_pwr_label.setToolTip(
+            _("The laser power when the laser is travelling.")
+        )
+
+        self.las_min_pwr_entry = FCSpinner()
+        self.las_min_pwr_entry.set_range(0, 1000000)
+        self.las_min_pwr_entry.set_step(100)
+
+        adv_grid.addWidget(self.las_min_pwr_label, 14, 0)
+        adv_grid.addWidget(self.las_min_pwr_entry, 14, 1)
+
+        # Fast Plunge
         self.fplunge_cb = FCCheckBox('%s' % _('Fast Plunge'))
         self.fplunge_cb.setToolTip(
             _("By checking this, the vertical move from\n"
@@ -380,8 +394,9 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
               "meaning the fastest speed available.\n"
               "WARNING: the move is done at Toolchange X,Y coords.")
         )
-        adv_grid.addWidget(self.fplunge_cb, 14, 0)
+        adv_grid.addWidget(self.fplunge_cb, 16, 0)
 
+        # Fast retract
         self.fretract_cb = FCCheckBox('%s' % _('Fast Retract'))
         self.fretract_cb.setToolTip(
             _("Exit hole strategy.\n"
@@ -392,7 +407,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
               "(travel height) is done as fast as possible (G0) in one move.")
         )
 
-        adv_grid.addWidget(self.fretract_cb, 14, 1, 1, 2)
+        adv_grid.addWidget(self.fretract_cb, 16, 1, 1, 2)
 
         # separator_line = QtWidgets.QFrame()
         # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)

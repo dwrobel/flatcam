@@ -1524,7 +1524,7 @@ class ToolDrilling(AppTool, Excellon):
             except AttributeError:
                 pass
 
-            if 'marlin' in current_pp.lower():
+            if 'laser_z' in current_pp.lower():
                 self.ui.travelzlabel.setText('%s:' % _("Focus Z"))
                 self.ui.travelzlabel.show()
                 self.ui.travelz_entry.show()
@@ -1538,16 +1538,22 @@ class ToolDrilling(AppTool, Excellon):
                 self.ui.endz_label.hide()
                 self.ui.endz_entry.hide()
 
-            try:
-                self.ui.frzlabel.hide()
-                self.ui.feedrate_z_entry.hide()
-            except AttributeError:
-                pass
+                try:
+                    self.ui.frzlabel.hide()
+                    self.ui.feedrate_z_entry.hide()
+                except AttributeError:
+                    pass
 
             self.ui.dwell_cb.hide()
             self.ui.dwelltime_entry.hide()
 
             self.ui.spindle_label.setText('%s:' % _("Laser Power"))
+            self.ui.spindle_label.setToolTip(
+                _("The laser power when the laser is cutting.")
+            )
+
+            self.ui.las_min_pwr_label.show()
+            self.ui.las_min_pwr_entry.show()
 
             try:
                 self.ui.tool_offset_label.hide()
@@ -1567,6 +1573,10 @@ class ToolDrilling(AppTool, Excellon):
                     pass
 
             self.ui.travelzlabel.setText('%s:' % _('Travel Z'))
+            self.ui.travelzlabel.setToolTip(
+                _("Tool height when travelling\n"
+                  "across the XY plane.")
+            )
 
             self.ui.travelzlabel.show()
             self.ui.travelz_entry.show()
@@ -1581,6 +1591,13 @@ class ToolDrilling(AppTool, Excellon):
                 pass
 
             self.ui.spindle_label.setText('%s:' % _('Spindle speed'))
+            self.ui.spindle_label.setToolTip(
+                _("Speed of the spindle\n"
+                  "in RPM (optional)")
+            )
+
+            self.ui.las_min_pwr_label.hide()
+            self.ui.las_min_pwr_entry.hide()
 
             # if in Advanced Mode
             if self.ui.level.isChecked():
@@ -2600,8 +2617,24 @@ class DrillingUI:
         self.spindlespeed_entry.set_step(100)
         self.spindlespeed_entry.setObjectName("e_spindlespeed")
 
-        param_grid.addWidget(self.spindle_label, 19, 0)
-        param_grid.addWidget(self.spindlespeed_entry, 19, 1)
+        param_grid.addWidget(self.spindle_label, 18, 0)
+        param_grid.addWidget(self.spindlespeed_entry, 18, 1)
+
+        # Laser power minimum
+        self.las_min_pwr_label = FCLabel('%s:' % _('Min Power'))
+        self.las_min_pwr_label.setToolTip(
+            _("The laser power when the laser is travelling.")
+        )
+
+        self.las_min_pwr_entry = FCSpinner(callback=self.confirmation_message_int)
+        self.las_min_pwr_entry.set_range(0, 1000000)
+        self.las_min_pwr_entry.set_step(100)
+        self.las_min_pwr_entry.setObjectName("e_minpower")
+
+        param_grid.addWidget(self.las_min_pwr_label, 20, 0)
+        param_grid.addWidget(self.las_min_pwr_entry, 20, 1)
+        self.las_min_pwr_label.hide()
+        self.las_min_pwr_entry.hide()
 
         # Dwell
         self.dwell_cb = FCCheckBox('%s:' % _('Dwell'))
@@ -2622,8 +2655,8 @@ class DrillingUI:
         )
         self.dwelltime_entry.setObjectName("e_dwelltime")
 
-        param_grid.addWidget(self.dwell_cb, 20, 0)
-        param_grid.addWidget(self.dwelltime_entry, 20, 1)
+        param_grid.addWidget(self.dwell_cb, 22, 0)
+        param_grid.addWidget(self.dwelltime_entry, 22, 1)
 
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 

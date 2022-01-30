@@ -355,6 +355,7 @@ class PreferencesUIManager:
             "tools_mill_z_pdepth": self.ui.plugin_pref_form.tools_mill_group.pdepth_entry,
             "tools_mill_feedrate_probe": self.ui.plugin_pref_form.tools_mill_group.feedrate_probe_entry,
             "tools_mill_spindledir": self.ui.plugin_pref_form.tools_mill_group.spindledir_radio,
+            "tools_mill_min_power": self.ui.plugin_pref_form.tools_mill_group.las_min_pwr_entry,
             "tools_mill_f_plunge": self.ui.plugin_pref_form.tools_mill_group.fplunge_cb,
 
             "tools_mill_area_exclusion": self.ui.plugin_pref_form.tools_mill_group.exclusion_cb,
@@ -418,6 +419,7 @@ class PreferencesUIManager:
             "tools_drill_z_pdepth":         self.ui.plugin_pref_form.tools_drill_group.pdepth_entry,
             "tools_drill_feedrate_probe":   self.ui.plugin_pref_form.tools_drill_group.feedrate_probe_entry,
             "tools_drill_spindledir":       self.ui.plugin_pref_form.tools_drill_group.spindledir_radio,
+            "tools_drill_min_power":        self.ui.plugin_pref_form.tools_drill_group.las_min_pwr_entry,
             "tools_drill_f_plunge":         self.ui.plugin_pref_form.tools_drill_group.fplunge_cb,
             "tools_drill_f_retract":        self.ui.plugin_pref_form.tools_drill_group.fretract_cb,
 

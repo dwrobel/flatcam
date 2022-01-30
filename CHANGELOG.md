@@ -16,6 +16,8 @@ CHANGELOG for FlatCAM beta
 - fixed crash when trying to do a `select all` and there are app Scripts present
 - updated the `drillcncjob` Tcl command to make a script exit in case of an error
 - in `drillcncjob` Tcl command added the usage of `RTree` path optimization and made it the default choice
+- finished the UI for adding a new parameter that is used in conjunction with the `laser` preprocessors: `laser minimum power` parameter which should help in doing a full power up/down cycle (should prolong the lifetime for the laser diode)
+- fixed some UI issues for the Milling and Drilling plugins when using a `laser` preprocessor
 
 29.01.2022
 

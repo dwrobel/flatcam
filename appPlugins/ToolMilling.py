@@ -3529,7 +3529,7 @@ class ToolMilling(AppTool, Excellon):
             self.ui.feedrate_probe_entry.setVisible(False)
             self.ui.feedrate_probe_label.hide()
 
-        if 'marlin' in current_pp.lower() or 'custom' in current_pp.lower():
+        if 'marlin' in current_pp.lower():
             self.ui.feedrate_rapid_label.show()
             self.ui.feedrate_rapid_entry.show()
         else:
@@ -3540,25 +3540,42 @@ class ToolMilling(AppTool, Excellon):
             self.ui.cutzlabel.hide()
             self.ui.cutz_entry.hide()
 
-            self.ui.travelzlabel.hide()
-            self.ui.travelz_entry.hide()
-
             try:
                 self.ui.mpass_cb.hide()
                 self.ui.maxdepth_entry.hide()
             except AttributeError:
                 pass
 
-            try:
-                self.ui.frzlabel.hide()
-                self.ui.feedrate_z_entry.hide()
-            except AttributeError:
-                pass
+            if 'laser_z' in current_pp.lower():
+                self.ui.travelzlabel.setText('%s:' % _("Focus Z"))
+                self.ui.travelzlabel.show()
+                self.ui.travelz_entry.show()
+
+                self.ui.endz_label.show()
+                self.ui.endz_entry.show()
+            else:
+                self.ui.travelzlabel.hide()
+                self.ui.travelz_entry.hide()
+
+                self.ui.endz_label.hide()
+                self.ui.endz_entry.hide()
+
+                try:
+                    self.ui.frzlabel.hide()
+                    self.ui.feedrate_z_entry.hide()
+                except AttributeError:
+                    pass
 
             self.ui.dwell_cb.hide()
             self.ui.dwelltime_entry.hide()
 
             self.ui.spindle_label.setText('%s:' % _("Laser Power"))
+            self.ui.spindle_label.setToolTip(
+                _("The laser power when the laser is cutting.")
+            )
+
+            self.ui.las_min_pwr_label.show()
+            self.ui.las_min_pwr_entry.show()
         else:
             self.ui.cutzlabel.show()
             self.ui.cutz_entry.show()
@@ -3572,6 +3589,11 @@ class ToolMilling(AppTool, Excellon):
                     pass
 
             self.ui.travelzlabel.setText('%s:' % _('Travel Z'))
+            self.ui.travelzlabel.setToolTip(
+                _("Tool height when travelling\n"
+                  "across the XY plane.")
+            )
+
             self.ui.travelzlabel.show()
             self.ui.travelz_entry.show()
 
@@ -3584,20 +3606,19 @@ class ToolMilling(AppTool, Excellon):
             except AttributeError:
                 pass
 
+            self.ui.spindle_label.setText('%s:' % _('Spindle speed'))
+            self.ui.spindle_label.setToolTip(
+                _("Speed of the spindle\n"
+                  "in RPM (optional)")
+            )
+
+            self.ui.las_min_pwr_label.hide()
+            self.ui.las_min_pwr_entry.hide()
+
             # if in Advanced Mode
             if self.ui.level.isChecked():
                 self.ui.dwell_cb.show()
                 self.ui.dwelltime_entry.show()
-
-            self.ui.spindle_label.setText('%s:' % _('Spindle speed'))
-
-        if ('marlin' in current_pp.lower() and 'laser' in current_pp.lower()) or 'laser_z' in current_pp.lower():
-            self.ui.travelzlabel.setText('%s:' % _("Focus Z"))
-            self.ui.travelzlabel.show()
-            self.ui.travelz_entry.show()
-
-            self.ui.endz_label.show()
-            self.ui.endz_entry.show()
 
     def on_plot_cb_click(self):
         self.target_obj.plot()
@@ -3847,7 +3868,7 @@ class ToolMilling(AppTool, Excellon):
         self.builduiSig.emit()
 
     def reset_fields(self):
-        self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.ui.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
 
 
 class MillingUI:
@@ -4660,6 +4681,22 @@ class MillingUI:
 
         param_grid.addWidget(self.spindle_label, 44, 0)
         param_grid.addWidget(self.spindlespeed_entry, 44, 1)
+
+        # Laser power minimum
+        self.las_min_pwr_label = FCLabel('%s:' % _('Min Power'))
+        self.las_min_pwr_label.setToolTip(
+            _("The laser power when the laser is travelling.")
+        )
+
+        self.las_min_pwr_entry = FCSpinner(callback=self.confirmation_message_int)
+        self.las_min_pwr_entry.set_range(0, 1000000)
+        self.las_min_pwr_entry.set_step(100)
+        self.las_min_pwr_entry.setObjectName("mill_minpower")
+
+        param_grid.addWidget(self.las_min_pwr_label, 45, 0)
+        param_grid.addWidget(self.las_min_pwr_entry, 45, 1)
+        self.las_min_pwr_label.hide()
+        self.las_min_pwr_entry.hide()
 
         # Dwell
         self.dwell_cb = FCCheckBox('%s:' % _('Dwell'))

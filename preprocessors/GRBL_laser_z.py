@@ -14,7 +14,7 @@ from appPreProcessor import *
 # is compatible with almost any version of Grbl.
 
 
-class GRBL_laser_Z(PreProc):
+class GRBL_laser_z(PreProc):
 
     include_header = True
     coordinate_format = "%.*f"
