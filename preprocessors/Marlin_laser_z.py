@@ -49,11 +49,20 @@ class Marlin_laser_z(PreProc):
             for tool, val in p['tools'].items():
                 gcode += ';Tool: %s -> ' % str(tool) + 'Power: %s' % \
                          str(val['data']["tools_mill_spindlespeed"]) + '\n'
+            gcode += '\n;LASER MIN POWER: \n'
+            for tool, val in p['tools'].items():
+                if str(p['options']['type']) == 'Excellon':
+                    gcode += ';Tool: %s -> ' % str(tool) + 'Power: %s' % \
+                             str(val['data']["tools_drill_min_power"]) + '\n'
+                else:
+                    gcode += ';Tool: %s -> ' % str(tool) + 'Power: %s' % \
+                             str(val['data']["tools_mill_min_power"]) + '\n'
         else:
             gcode += ';Feedrate: %s %s/min\n' % (str(p['feedrate']), units)
             gcode += ';Feedrate rapids: %s %s/min\n\n' % (str(p['feedrate_rapid']), units)
             gcode += ';Z Focus: %s %s\n' % (str(p['z_move']), units)
             gcode += ';Laser Power: %s\n' % str(p['spindlespeed'])
+            gcode += ';Laser Minimum Power: %s\n\n' % str(p['laser_min_power'])
 
         gcode += '\n'
         if coords_xy is not None:
@@ -89,9 +98,12 @@ class Marlin_laser_z(PreProc):
             return ''
 
     def lift_code(self, p):
-        gcode = 'M400\n'
-        gcode += 'M5'
-        return gcode
+        if float(p.laser_min_power) > 0.0:
+            return 'M3 S%s' % str(p.laser_min_power)
+        else:
+            gcode = 'M400\n'
+            gcode += 'M5'
+            return gcode
 
     def down_code(self, p):
         if p.spindlespeed:
@@ -103,9 +115,12 @@ class Marlin_laser_z(PreProc):
         return 'G0 Z' + self.coordinate_format % (p.coords_decimals, p.z_move)
 
     def up_to_zero_code(self, p):
-        gcode = 'M400\n'
-        gcode += 'M5'
-        return gcode
+        if float(p.laser_min_power) > 0.0:
+            return 'M3 S%s' % str(p.laser_min_power)
+        else:
+            gcode = 'M400\n'
+            gcode += 'M5'
+            return gcode
 
     def position_code(self, p):
         # formula for skewing on x for example is:
@@ -160,6 +175,9 @@ class Marlin_laser_z(PreProc):
         return ''
 
     def spindle_stop_code(self, p):
-        gcode = 'M400\n'
-        gcode += 'M5'
-        return gcode
+        if float(p.laser_min_power) > 0.0:
+            return 'M3 S%s' % str(p.laser_min_power)
+        else:
+            gcode = 'M400\n'
+            gcode += 'M5'
+            return gcode

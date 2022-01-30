@@ -51,7 +51,8 @@ class Marlin_laser_FAN_pin(PreProc):
         gcode += ';X range: ' + '{: >9s}'.format(xmin) + ' ... ' + '{: >9s}'.format(xmax) + ' ' + units + '\n'
         gcode += ';Y range: ' + '{: >9s}'.format(ymin) + ' ... ' + '{: >9s}'.format(ymax) + ' ' + units + '\n\n'
 
-        gcode += ';Laser Power (Spindle Speed): ' + str(p['spindlespeed']) + '\n' + '\n'
+        gcode += ';Laser Power (Spindle Speed): %s\n' % str(p['spindlespeed'])
+        gcode += ';Laser Minimum Power: %s\n\n' % str(p['laser_min_power'])
 
         gcode += 'G20\n' if p.units.upper() == 'IN' else 'G21\n'
         gcode += 'G90'
@@ -62,9 +63,12 @@ class Marlin_laser_FAN_pin(PreProc):
         return ''
 
     def lift_code(self, p):
-        gcode = 'M400\n'
-        gcode += 'M107'
-        return gcode
+        if float(p.laser_min_power) > 0.0:
+            return 'M106 S%s' % str(p.laser_min_power)
+        else:
+            gcode = 'M400\n'
+            gcode += 'M106 S0'
+            return gcode
 
     def down_code(self, p):
         if p.spindlespeed:
@@ -76,9 +80,12 @@ class Marlin_laser_FAN_pin(PreProc):
         return ''
 
     def up_to_zero_code(self, p):
-        gcode = 'M400\n'
-        gcode += 'M107'
-        return gcode
+        if float(p.laser_min_power) > 0.0:
+            return 'M106 S%s' % str(p.laser_min_power)
+        else:
+            gcode = 'M400\n'
+            gcode += 'M106 S0'
+            return gcode
 
     def position_code(self, p):
         # formula for skewing on x for example is:
@@ -132,6 +139,9 @@ class Marlin_laser_FAN_pin(PreProc):
         return ''
 
     def spindle_stop_code(self, p):
-        gcode = 'M400\n'
-        gcode += 'M106 S0'
-        return gcode
+        if float(p.laser_min_power) > 0.0:
+            return 'M106 S%s' % str(p.laser_min_power)
+        else:
+            gcode = 'M400\n'
+            gcode += 'M106 S0'
+            return gcode

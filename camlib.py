@@ -2792,6 +2792,7 @@ class CNCjob(Geometry):
         self.spindledir = spindledir
         self.dwell = dwell
         self.dwelltime = dwelltime
+        self.laser_min_power = 0.0
 
         # For Autolevelling
         self.segx = float(segx) if segx is not None else 0.0
@@ -3245,7 +3246,7 @@ class CNCjob(Geometry):
                             and the start gcode
         :rtype:             tuple
         """
-        log.debug("Creating CNC Job from Excellon for tool: %s" % str(tool))
+        self.app.log.debug("Creating CNC Job from Excellon for tool: %s" % str(tool))
 
         # detect if GCode is segmented for autolevelling or not
         # it does not matter for the Excellon codes because we are not going to autolevel GCode out of Excellon
@@ -3324,6 +3325,8 @@ class CNCjob(Geometry):
         self.dwell = tool_dict['tools_drill_dwell']
         self.dwelltime = tool_dict['tools_drill_dwelltime']
         self.spindledir = tool_dict['tools_drill_spindledir']
+
+        self.laser_min_power = tool_dict['tools_drill_min_power']
 
         self.tooldia = tools[tool]["tooldia"]
         self.postdata['toolC'] = tools[tool]["tooldia"]
@@ -3769,10 +3772,17 @@ class CNCjob(Geometry):
         self.z_feedrate = float(tool_dict['tools_mill_feedrate_z'])
         self.feedrate_rapid = float(tool_dict['tools_mill_feedrate_rapid'])
 
+        self.laser_min_power = float(tool_dict['tools_mill_min_power'])
+
         try:
             self.spindlespeed = float(tool_dict['tools_mill_spindlespeed'])
         except TypeError:
             self.spindlespeed = 0.0
+
+        try:
+            self.spindledir = tool_dict['tools_mill_spindledir']
+        except KeyError:
+            self.spindledir = self.app.defaults["tools_mill_spindledir"]
 
         try:
             self.spindledir = tool_dict['tools_mill_spindledir']
@@ -5743,7 +5753,8 @@ class CNCjob(Geometry):
 
     def generate_from_geometry_2(self, geo_obj, append=True, tooldia=None, offset=0.0, tolerance=0, z_cut=None,
                                  z_move=None, feedrate=None, feedrate_z=None, feedrate_rapid=None, spindlespeed=None,
-                                 spindledir='CW', dwell=False, dwelltime=None, multidepth=False, depthpercut=None,
+                                 spindledir='CW', dwell=False, dwelltime=None, laser_min_power=0.0,
+                                 multidepth=False, depthpercut=None,
                                  toolchange=False, toolchangez=None, toolchangexy="0.0, 0.0", extracut=False,
                                  extracut_length=None, startz=None, endz=None, endxy='', pp_geometry_name=None,
                                  tool_no=1, is_first=False):
@@ -5768,6 +5779,8 @@ class CNCjob(Geometry):
         :param spindledir:
         :param dwell:
         :param dwelltime:
+        :param laser_min_power:     Float value. Used when the preprocessor cotanins 'laser' in its name. Control
+                                    the power when the laser is `OFF`
         :param multidepth:          If True, use multiple passes to reach the desired depth.
         :param depthpercut:         Maximum depth in each pass.
         :param toolchange:
@@ -5907,6 +5920,8 @@ class CNCjob(Geometry):
         self.spindledir = spindledir
         self.dwell = dwell
         self.dwelltime = float(dwelltime) if dwelltime is not None else self.app.defaults["tools_mill_dwelltime"]
+
+        self.laser_min_power = int(laser_min_power)
 
         self.startz = float(startz) if startz is not None and startz != '' else self.app.defaults["tools_mill_startz"]
 

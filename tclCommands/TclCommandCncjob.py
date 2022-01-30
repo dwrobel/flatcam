@@ -43,6 +43,7 @@ class TclCommandCncjob(TclCommandSignaled):
         ('endxy', str),
         ('spindlespeed', int),
         ('dwelltime', float),
+        ('las_min_pwr', float),
         ('pp', str),
         ('muted', str),
         ('outname', str)
@@ -76,6 +77,7 @@ class TclCommandCncjob(TclCommandSignaled):
             ('dwelltime', 'Time to pause to allow the spindle to reach the full speed.\n'
                           'If it is not used in command then it will not be included'),
             ('outname', 'Name of the resulting Geometry object.'),
+            ('las_min_pwr', 'Used with "laser" preprocessors. States the laser power when not cutting'),
             ('pp', 'Name of the Geometry preprocessor. No quotes, case sensitive'),
             ('muted', 'It will not put errors in the Shell. Can be True (1) or False (0)')
         ]),
@@ -184,7 +186,11 @@ class TclCommandCncjob(TclCommandSignaled):
             self.raise_tcl_error("The entered value for 'endxy' needs to have the format x,y or "
                                  "in format (x, y) - no spaces allowed. But always two comma separated values.")
 
+        # Spindle speed
         args["spindlespeed"] = args["spindlespeed"] if "spindlespeed" in args and args["spindlespeed"] != 0 else None
+
+        # Laser minimum power
+        args["las_min_pwr"] = args["las_min_pwr"] if "las_min_pwr" in args else 0.0
 
         if 'dwelltime' in args:
             args["dwell"] = True
@@ -268,6 +274,7 @@ class TclCommandCncjob(TclCommandSignaled):
                     local_tools_dict[tool_uid]['data']['tools_mill_spindlespeed'] = args["spindlespeed"]
                     local_tools_dict[tool_uid]['data']['tools_mill_dwell'] = args["dwell"]
                     local_tools_dict[tool_uid]['data']['tools_mill_dwelltime'] = args["dwelltime"]
+                    local_tools_dict[tool_uid]['data']['tools_mill_min_power'] = args["las_min_pwr"]
                     local_tools_dict[tool_uid]['data']['tools_mill_ppname_g'] = args["pp"]
 
             self.app.milling_tool.mtool_gen_cncjob(

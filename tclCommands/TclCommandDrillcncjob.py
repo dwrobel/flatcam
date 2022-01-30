@@ -42,6 +42,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
         ('endz', float),
         ('endxy', str),
         ('dwelltime', float),
+        ('las_min_pwr', float),
         ('pp', str),
         ('opt_type', str),
         ('diatol', float),
@@ -76,6 +77,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                       'like: 0.3,1.0). WARNING: no spaces allowed in the value.'),
             ('dwelltime', 'Time to pause to allow the spindle to reach the full speed.\n'
                           'If it is not used in command then it will not be included'),
+            ('las_min_pwr', 'Used with "laser" preprocessors. States the laser power when not cutting'),
             ('pp', 'This is the Excellon preprocessor name: case_sensitive, no_quotes'),
             ('opt_type', 'Name of move optimization type. B by default for Basic OR-Tools, M for Metaheuristic OR-Tools'
                          'T from Travelling Salesman Algorithm. B and M works only for 64bit version of FlatCAM and '
@@ -319,6 +321,9 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             else:
                 job_obj.dwell = self.app.defaults["tools_drill_dwell"]
                 job_obj.dwelltime = self.app.defaults["tools_drill_dwelltime"]
+
+            # laser minimum power
+            job_obj.laser_min_power = float(args["las_min_pwr"]) if "las_min_pwr" in args else 0.0
 
             job_obj.coords_decimals = int(self.app.defaults["cncjob_coords_decimals"])
             job_obj.fr_decimals = int(self.app.defaults["cncjob_fr_decimals"])

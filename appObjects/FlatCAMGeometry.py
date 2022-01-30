@@ -971,6 +971,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
     def generatecncjob(self, outname=None, dia=None, offset=None, z_cut=None, z_move=None, feedrate=None,
                        feedrate_z=None, feedrate_rapid=None, spindlespeed=None, dwell=None, dwelltime=None,
+                       las_min_pwr=0.0,
                        multidepth=None, dpp=None, toolchange=None, toolchangez=None, toolchangexy=None,
                        extracut=None, extracut_length=None, startz=None, endz=None, endxy=None, pp=None,
                        segx=None, segy=None, use_thread=True, plot=True):
@@ -991,6 +992,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         :param spindlespeed:    Spindle speed (RPM)
         :param dwell:
         :param dwelltime:
+        :param las_min_pwr:     Float. Set the power for a laser (when used due of a preprocessor) when not cutting
         :param multidepth:      Bool: If True use the `dpp` parameter
         :param dpp:             Depth for each pass when multidepth parameter is True. Positive value.
         :param toolchange:
@@ -1057,6 +1059,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         # int or None.
         spindlespeed = spindlespeed if spindlespeed else self.options['tools_mill_spindlespeed']
+        las_min_pwr = las_min_pwr if las_min_pwr else  self.options['tools_mill_min_power']
         dwell = dwell if dwell else self.options["tools_mill_dwell"]
         dwelltime = dwelltime if dwelltime else float(self.options["tools_mill_dwelltime"])
 
@@ -1094,7 +1097,8 @@ class GeometryObject(FlatCAMObj, Geometry):
             res, start_gcode = job_obj.generate_from_geometry_2(
                 self, tooldia=tooldia, offset=offset, tolerance=tol, z_cut=z_cut, z_move=z_move, feedrate=feedrate,
                 feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid, spindlespeed=spindlespeed, dwell=dwell,
-                dwelltime=dwelltime, multidepth=multidepth, depthpercut=depthperpass, toolchange=toolchange,
+                dwelltime=dwelltime, laser_min_power=las_min_pwr, multidepth=multidepth, depthpercut=depthperpass,
+                toolchange=toolchange,
                 toolchangez=toolchangez, toolchangexy=toolchangexy, extracut=extracut, extracut_length=extracut_length,
                 startz=startz, endz=endz, endxy=endxy, pp_geometry_name=ppname_g, is_first=True)
 

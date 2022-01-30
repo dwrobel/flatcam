@@ -523,6 +523,7 @@ class ToolMilling(AppTool, Excellon):
             "tools_mill_spindlespeed": self.ui.spindlespeed_entry,
             "tools_mill_dwell": self.ui.dwell_cb,
             "tools_mill_dwelltime": self.ui.dwelltime_entry,
+            "tools_mill_min_power": self.ui.las_min_pwr_entry,
         }
 
         self.general_form_fields = {
@@ -580,6 +581,7 @@ class ToolMilling(AppTool, Excellon):
             "mill_spindlespeed": "tools_mill_spindlespeed",
             "mill_dwell": "tools_mill_dwell",
             "mill_dwelltime": "tools_mill_dwelltime",
+            "mill_minpower":"tools_mill_min_power",
 
             # General Parameters
             "mill_toolchange": "tools_mill_toolchange",
@@ -3123,6 +3125,7 @@ class ToolMilling(AppTool, Excellon):
                 spindlespeed = tools_dict[tooluid_key]['data']["tools_mill_spindlespeed"]
                 dwell = tools_dict[tooluid_key]['data']["tools_mill_dwell"]
                 dwelltime = tools_dict[tooluid_key]['data']["tools_mill_dwelltime"]
+                laser_min_power = tools_dict[tooluid_key]['data']["tools_mill_min_power"]
                 pp_geometry_name = tools_dict[tooluid_key]['data']["tools_mill_ppname_g"]
 
                 spindledir = self.app.defaults['tools_mill_spindledir']
@@ -3149,6 +3152,7 @@ class ToolMilling(AppTool, Excellon):
                     z_cut=z_cut, z_move=z_move,
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
                     spindlespeed=spindlespeed, spindledir=spindledir, dwell=dwell, dwelltime=dwelltime,
+                    laser_min_power=laser_min_power,
                     multidepth=multidepth, depthpercut=depthpercut,
                     extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz, endxy=endxy,
                     toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,

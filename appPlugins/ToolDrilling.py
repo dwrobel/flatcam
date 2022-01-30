@@ -351,6 +351,8 @@ class ToolDrilling(AppTool, Excellon):
             "tools_drill_feedrate_rapid": self.ui.feedrate_rapid_entry,
 
             "tools_drill_spindlespeed": self.ui.spindlespeed_entry,
+            "tools_drill_min_power": self.ui.las_min_pwr_entry,
+
             "tools_drill_dwell": self.ui.dwell_cb,
             "tools_drill_dwelltime": self.ui.dwelltime_entry,
 
@@ -390,6 +392,7 @@ class ToolDrilling(AppTool, Excellon):
             "e_fr_rapid": "tools_drill_feedrate_rapid",
 
             "e_spindlespeed": "tools_drill_spindlespeed",
+            "e_minpower": "tools_drill_min_power",
             "e_dwell": "tools_drill_dwell",
             "e_dwelltime": "tools_drill_dwelltime",
 

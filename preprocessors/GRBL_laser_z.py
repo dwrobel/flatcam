@@ -51,6 +51,7 @@ class GRBL_laser_z(PreProc):
             gcode += '(Feedrate: ' + str(p['feedrate']) + units + '/min' + ')\n'
             gcode += '(Z Focus: ' + str(p['z_move']) + units + ')\n'
             gcode += '(Laser Power: %s)\n' % str(p['spindlespeed'])
+            gcode += '(Laser Minimum Power: %s)\n' % str(p['laser_min_power'])
 
         gcode += '\n'
         gcode += '(X-Y End: ' + str(p['xy_end']) + units + ')\n'
@@ -77,19 +78,28 @@ class GRBL_laser_z(PreProc):
         return gcode
 
     def lift_code(self, p):
-        return 'M5'
+        if float(p.laser_min_power) > 0.0:
+            return 'M03 S%s' % str(p.laser_min_power)
+        else:
+            return 'M5'
 
     def down_code(self, p):
         if p.spindlespeed:
             return '%s S%s' % ('M3', str(p.spindlespeed))
         else:
-            return 'M3'
+            if float(p.laser_min_power) > 0.0:
+                return 'M03 S%s' % str(p.laser_min_power)
+            else:
+                return 'M5'
 
     def toolchange_code(self, p):
         return 'G0 Z' + self.coordinate_format % (p.coords_decimals, p.z_move)
 
     def up_to_zero_code(self, p):
-        return 'M5'
+        if float(p.laser_min_power) > 0.0:
+            return 'M03 S%s' % str(p.laser_min_power)
+        else:
+            return 'M5'
 
     def position_code(self, p):
         # formula for skewing on x for example is:
@@ -138,4 +148,7 @@ class GRBL_laser_z(PreProc):
         return ''
 
     def spindle_stop_code(self, p):
-        return 'M5'
+        if float(p.laser_min_power) > 0.0:
+            return 'M03 S%s' % str(p.laser_min_power)
+        else:
+            return 'M5'

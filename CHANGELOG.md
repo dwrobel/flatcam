@@ -18,6 +18,8 @@ CHANGELOG for FlatCAM beta
 - in `drillcncjob` Tcl command added the usage of `RTree` path optimization and made it the default choice
 - finished the UI for adding a new parameter that is used in conjunction with the `laser` preprocessors: `laser minimum power` parameter which should help in doing a full power up/down cycle (should prolong the lifetime for the laser diode)
 - fixed some UI issues for the Milling and Drilling plugins when using a `laser` preprocessor
+- finished implementing the new feature that add a new parameter `laser minimum power` for the Drillin, Milling Plugins and for the `cncjob` and `drillcncjob` Tcl commands: 
+- modified all the preprocessors that are for `laser` to use the new parameter: `laser minimum power`
 
 29.01.2022
 
