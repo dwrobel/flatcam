@@ -1739,13 +1739,21 @@ class ToolIsolation(AppTool, Gerber):
         :return: None
         """
 
+        # use_combine: True/False
         use_combine = args['combine'] if 'combine' in args else self.ui.combine_passes_cb.get_value()
+        # use_iso_except: True/False
         use_iso_except = args['iso_except'] if 'iso_except' in args else self.ui.except_cb.get_value()
+        # use_extra_passes: True/False
         use_extra_passes = args['e_passes'] if 'e_passes' in args else self.ui.pad_passes_entry.get_value()
+        # use_area_exception: True/False
         use_area_exception = args['area_except'] if 'area_except' in args else self.ui.except_cb.get_value()
+        # sel_area_shape: ['square', 'polygon']
         sel_area_shape = args['area_shape'] if 'area_shape' in args else self.ui.area_shape_radio.get_value()
+        # use_rest: True/False
         use_rest = args['rest'] if 'rest' in args else self.ui.rest_cb.get_value()
+        # selection_type: [_("All"), _("Area Selection"), _("Polygon Selection"), _("Reference Object")]
         selection_type = args['sel_type'] if 'sel_type' in args else self.ui.select_combo.get_value()
+        # tool_tip_shape: ["C1", "C2", "C3", "C4", "B", "V"]
         tool_tip_shape = args['tip_shape'] if 'tip_shape' in args else self.ui.tool_shape_combo.get_value()
 
         # update the Common Parameters values in the self.iso_tools
@@ -1922,7 +1930,7 @@ class ToolIsolation(AppTool, Gerber):
 
             # clean the progressive plotted shapes if it was used
 
-            if prog_plot == 'progressive':
+            if plot and prog_plot == 'progressive':
                 try:
                     self.temp_shapes.clear(update=True)
                 except Exception as err:
@@ -2031,7 +2039,8 @@ class ToolIsolation(AppTool, Gerber):
                                                                       env_iso_type=iso_t, negative_dia=negative_dia,
                                                                       forced_rest=forced_rest,
                                                                       prog_plot=prog_plot,
-                                                                      prog_plot_handler=self.plot_temp_shapes)
+                                                                      prog_plot_handler=self.plot_temp_shapes,
+                                                                      plot=plot)
 
                     # ############################################################
                     # ########## AREA SUBTRACTION ################################
@@ -2062,7 +2071,7 @@ class ToolIsolation(AppTool, Gerber):
                         break
 
         # clean the progressive plotted shapes if it was used
-        if self.app.defaults["tools_iso_plotting"] == 'progressive':
+        if plot and self.app.defaults["tools_iso_plotting"] == 'progressive':
             self.temp_shapes.clear(update=True)
 
         # remove tools without geometry
@@ -2270,7 +2279,7 @@ class ToolIsolation(AppTool, Gerber):
             total_solid_geometry += new_solid_geo
 
         # clean the progressive plotted shapes if it was used
-        if prog_plot == 'progressive':
+        if plot and prog_plot == 'progressive':
             try:
                 self.temp_shapes.clear(update=True)
             except Exception as err:
@@ -3102,7 +3111,7 @@ class ToolIsolation(AppTool, Gerber):
     @staticmethod
     def generate_rest_geometry(geometry, tooldia, passes, overlap, invert, env_iso_type=2, negative_dia=None,
                                forced_rest=False,
-                               prog_plot="normal", prog_plot_handler=None):
+                               prog_plot="normal", prog_plot_handler=None, plot=False):
         """
         Will try to isolate the geometry and return a tuple made of list of paths made through isolation
         and a list of Shapely Polygons that could not be isolated
@@ -3127,6 +3136,8 @@ class ToolIsolation(AppTool, Gerber):
         :type prog_plot:            str
         :param prog_plot_handler:   method used to plot shapes if plot_prog is "proggressive"
         :type prog_plot_handler:
+        :param plot:                If True plot
+        :type plot:                 bool
         :return:                    Tuple made from list of isolating paths and list of not isolated Polygons
         :rtype:                     tuple
         """
@@ -3194,7 +3205,7 @@ class ToolIsolation(AppTool, Gerber):
                                         break
 
                     good_pass_iso.append(temp_geo)
-                    if prog_plot == 'progressive':
+                    if plot and prog_plot == 'progressive':
                         prog_plot_handler(temp_geo)
 
             if good_pass_iso:

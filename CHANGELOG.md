@@ -10,11 +10,12 @@ CHANGELOG for FlatCAM beta
 30.01.2022
 
 - refactored the Isolation Plugin class
+- some more work on the Isolation plugin
 
 29.01.2022
 
 - upgraded/fixed the Panelize Tcl command
-- added a new preprocessor for Marlin that has movemements on the Z axis named `Marlin_laser_Z`
+- added a new preprocessor for Marlin that has movements on the Z axis named `Marlin_laser_Z`
 - cleaned up Marlin preprocessors
 - in the `panelize`, `cutout` and `geocutout` Tcl commands updated the error strings and made sure that if an error occur then a potential script execution in chain is aborted
 - updated the `new` Tcl command: now it has an argument `-keep_scripts` that when True, will keep the loaded scripts in the new project
