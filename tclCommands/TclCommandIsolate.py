@@ -82,16 +82,18 @@ class TclCommandIsolate(TclCommandSignaled):
                 par = args['combine'].capitalize()
             except AttributeError:
                 par = args['combine']
-            args['combine'] = bool(eval(par))
+            args['combine'] = bool(eval(str(par)))
         else:
             args['combine'] = bool(eval(str(self.app.defaults["tools_iso_combine_passes"])))
 
         obj = self.app.collection.get_by_name(name)
         if obj is None:
             self.raise_tcl_error("Object not found: %s" % name)
+            return "fail"
 
         if obj.kind != 'gerber':
             self.raise_tcl_error('Expected GerberObject, got %s %s.' % (name, type(obj)))
+            return "fail"
 
         args.pop('name', None)
         obj.isolate(plot=False, **args)

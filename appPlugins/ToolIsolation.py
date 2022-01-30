@@ -1657,10 +1657,20 @@ class ToolIsolation(AppTool, Gerber):
         :type isolated_obj:     AppObjects.FlatCAMGerber.GerberObject
         :return: None
         """
-        selection = self.ui.select_combo.get_value()
 
+        sel_tools = []
+        table_items = self.ui.tools_table.selectedItems()
+        sel_rows = {t.row() for t in table_items}
+        for row in sel_rows:
+            tid = int(self.ui.tools_table.item(row, 3).text())
+            sel_tools.append(tid)
+        if not sel_tools:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("There are no tools selected in the Tool Table."))
+            return 'fail'
+
+        selection = self.ui.select_combo.get_value()
         if selection == 0:  # ALL
-            self.isolate(isolated_obj=isolated_obj)
+            self.isolate(isolated_obj=isolated_obj, sel_tools=sel_tools, tools_storage=self.iso_tools)
         elif selection == 1:    # Area Selection
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the start point of the area."))
 
@@ -1705,14 +1715,19 @@ class ToolIsolation(AppTool, Gerber):
             ref_obj = self.app.collection.get_by_name(self.ui.reference_combo.get_value())
             ref_geo = unary_union(ref_obj.solid_geometry)
             use_geo = unary_union(isolated_obj.solid_geometry).difference(ref_geo)
-            self.isolate(isolated_obj=isolated_obj, geometry=use_geo)
+            self.isolate(isolated_obj=isolated_obj, geometry=use_geo, sel_tools=sel_tools, tools_storage=self.iso_tools)
 
-    def isolate(self, isolated_obj, geometry=None, limited_area=None, negative_dia=None, plot=True):
+    def isolate(self, isolated_obj, sel_tools, tools_storage, geometry=None, limited_area=None, negative_dia=None,
+                plot=True, **args):
         """
         Creates an isolation routing geometry object in the project.
 
         :param isolated_obj:    Gerber object for which to generate the isolating routing geometry
         :type isolated_obj:     AppObjects.FlatCAMGerber.GerberObject
+        :param sel_tools:       A list of tools to be used for isolation
+        :type sel_tools:        list
+        :param tools_storage:   A dictionary that holds the isolation object tools
+        :type tools_storage:    dict
         :param geometry:        specific geometry to isolate
         :type geometry:         List of Shapely polygon
         :param limited_area:    if not None isolate only this area
@@ -1724,43 +1739,40 @@ class ToolIsolation(AppTool, Gerber):
         :return: None
         """
 
-        combine = self.ui.combine_passes_cb.get_value()
-        tools_storage = self.iso_tools
-
-        sorted_tools = []
-        table_items = self.ui.tools_table.selectedItems()
-        sel_rows = {t.row() for t in table_items}
-        for row in sel_rows:
-            tid = int(self.ui.tools_table.item(row, 3).text())
-            sorted_tools.append(tid)
-        if not sorted_tools:
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("There are no tools selected in the Tool Table."))
-            return 'fail'
+        use_combine = args['combine'] if 'combine' in args else self.ui.combine_passes_cb.get_value()
+        use_iso_except = args['iso_except'] if 'iso_except' in args else self.ui.except_cb.get_value()
+        use_extra_passes = args['e_passes'] if 'e_passes' in args else self.ui.pad_passes_entry.get_value()
+        use_area_exception = args['area_except'] if 'area_except' in args else self.ui.except_cb.get_value()
+        sel_area_shape = args['area_shape'] if 'area_shape' in args else self.ui.area_shape_radio.get_value()
+        use_rest = args['rest'] if 'rest' in args else self.ui.rest_cb.get_value()
+        selection_type = args['sel_type'] if 'sel_type' in args else self.ui.select_combo.get_value()
+        tool_tip_shape = args['tip_shape'] if 'tip_shape' in args else self.ui.tool_shape_combo.get_value()
 
         # update the Common Parameters values in the self.iso_tools
-        for tool_iso in self.iso_tools:
-            for key in self.iso_tools[tool_iso]:
+        for tool_iso in tools_storage:
+            for key in tools_storage[tool_iso]:
                 if key == 'data':
-                    self.iso_tools[tool_iso][key]["tools_iso_rest"] = self.ui.rest_cb.get_value()
-                    self.iso_tools[tool_iso][key]["tools_iso_combine_passes"] = combine
-                    self.iso_tools[tool_iso][key]["tools_iso_isoexcept"] = self.ui.except_cb.get_value()
-                    self.iso_tools[tool_iso][key]["tools_iso_selection"] = self.ui.select_combo.get_value()
-                    self.iso_tools[tool_iso][key]["tools_iso_area_shape"] = self.ui.area_shape_radio.get_value()
-                    self.iso_tools[tool_iso][key]["tools_mill_job_type"] = 2    # _("Isolation")
-                    self.iso_tools[tool_iso][key]["tools_mill_tool_shape"] = self.ui.tool_shape_combo.get_value()
+                    tools_storage[tool_iso][key]["tools_iso_rest"] = use_rest
+                    tools_storage[tool_iso][key]["tools_iso_combine_passes"] = use_combine
+                    tools_storage[tool_iso][key]["tools_iso_isoexcept"] = use_iso_except
+                    tools_storage[tool_iso][key]["tools_iso_selection"] = selection_type
+                    tools_storage[tool_iso][key]["tools_iso_area_shape"] = sel_area_shape
+                    tools_storage[tool_iso][key]["tools_mill_job_type"] = 2    # _("Isolation")
+                    tools_storage[tool_iso][key]["tools_mill_tool_shape"] = tool_tip_shape
 
-        if combine:
-            if self.ui.rest_cb.get_value():
+        if use_combine:
+            if use_rest:
                 self.combined_rest(iso_obj=isolated_obj, iso2geo=geometry, tools_storage=tools_storage,
                                    lim_area=limited_area, negative_dia=negative_dia, plot=plot)
             else:
                 self.combined_normal(iso_obj=isolated_obj, iso2geo=geometry, tools_storage=tools_storage,
-                                     lim_area=limited_area, negative_dia=negative_dia, plot=plot)
+                                     sel_tools=sel_tools, iso_except=use_iso_except, lim_area=limited_area,
+                                     negative_dia=negative_dia, extra_passes=use_extra_passes, plot=plot)
 
         else:
             prog_plot = self.app.defaults["tools_iso_plotting"]
 
-            for tool in sorted_tools:
+            for tool in sel_tools:
                 tool_data = tools_storage[tool]['data']
 
                 work_geo = geometry
@@ -1770,8 +1782,8 @@ class ToolIsolation(AppTool, Gerber):
                     work_geo = isolated_obj.solid_geometry
 
                 iso_t = {
-                    'ext': 0,
-                    'int': 1,
+                    'ext':  0,
+                    'int':  1,
                     'full': 2
                 }[tool_data['tools_iso_isotype']]
 
@@ -1780,8 +1792,6 @@ class ToolIsolation(AppTool, Gerber):
                 overlap /= 100.0
 
                 milling_type = tool_data['tools_iso_milling_type']
-
-                iso_except = self.ui.except_cb.get_value()
 
                 tool_dia = tools_storage[tool]['tooldia']
                 for i in range(passes):
@@ -1807,24 +1817,23 @@ class ToolIsolation(AppTool, Gerber):
                     # if milling type is climb then the move is counter-clockwise around features
                     mill_dir = 1 if milling_type == 'cl' else 0
 
-                    iso_geo = self.generate_envelope(iso_offset, mill_dir, geometry=work_geo, env_iso_type=iso_t,
-                                                     nr_passes=i, prog_plot=prog_plot)
+                    iso_geo = self.generate_envelope(isolated_obj, iso_offset, mill_dir, geometry=work_geo,
+                                                     env_iso_type=iso_t, nr_passes=i, prog_plot=prog_plot)
                     if iso_geo == 'fail':
                         self.app.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
                         continue
 
                     # Extra Pads isolations
                     pad_geo = []
-                    extra_passes = self.ui.pad_passes_entry.get_value()
-                    if extra_passes > 0:
+                    if use_extra_passes > 0:
                         solid_geo_union = unary_union(iso_geo)
                         extra_geo = []
-                        for apid in self.grb_obj.tools:
-                            for t_geo_dict in self.grb_obj.tools[apid]['geometry']:
+                        for apid in isolated_obj.tools:
+                            for t_geo_dict in isolated_obj.tools[apid]['geometry']:
                                 if isinstance(t_geo_dict['follow'], Point):
                                     extra_geo.append(t_geo_dict['solid'])
 
-                        for nr_pass in range(i, extra_passes + i):
+                        for nr_pass in range(i, use_extra_passes + i):
                             pad_pass_geo = []
                             for geo in extra_geo:
                                 iso_offset = tool_dia * ((2 * nr_pass + 1) / 2.0000001) - (
@@ -1849,7 +1858,7 @@ class ToolIsolation(AppTool, Gerber):
                     # ############################################################
                     # ########## AREA SUBTRACTION ################################
                     # ############################################################
-                    if iso_except:
+                    if use_iso_except:
                         self.app.proc_container.update_view_text(' %s' % _("Subtracting Geo"))
                         iso_geo = self.area_subtraction(iso_geo)
 
@@ -1874,18 +1883,17 @@ class ToolIsolation(AppTool, Gerber):
                         # ############################################################
                         # ########## AREA SUBTRACTION ################################
                         # ############################################################
-                        if self.ui.except_cb.get_value():
+                        if use_area_exception:
                             self.app.proc_container.update_view_text(' %s' % _("Subtracting Geo"))
                             geo_obj.solid_geometry = self.area_subtraction(geo_obj.solid_geometry)
 
-                        geo_obj.tools = {'1': {}}
-                        geo_obj.tools.update({
-                            '1': {
+                        geo_obj.tools = {
+                            1: {
                                 'tooldia':          float(tool_dia),
                                 'data':             tool_data,
                                 'solid_geometry':   geo_obj.solid_geometry
                             }
-                        })
+                        }
 
                         # detect if solid_geometry is empty and this require list flattening which is "heavy"
                         # or just looking in the lists (they are one level depth) and if any is not empty
@@ -1902,12 +1910,12 @@ class ToolIsolation(AppTool, Gerber):
                                 empty_cnt += 1
 
                         if empty_cnt == len(geo_obj.solid_geometry):
-                            fc_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (
-                                _("Empty Geometry in"), geo_obj.options["name"]))
+                            msg = '[ERROR_NOTCL] %s: %s' % (_("Empty Geometry in"), geo_obj.options["name"])
+                            fc_obj.inform.emit(msg)
                             return 'fail'
                         else:
-                            fc_obj.inform.emit('[success] %s: %s' %
-                                               (_("Isolation geometry created"), geo_obj.options["name"]))
+                            msg = '[success] %s: %s' % (_("Isolation geometry created"), geo_obj.options["name"])
+                            fc_obj.inform.emit(msg)
                         geo_obj.multigeo = True
 
                     self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
@@ -1915,7 +1923,10 @@ class ToolIsolation(AppTool, Gerber):
             # clean the progressive plotted shapes if it was used
 
             if prog_plot == 'progressive':
-                self.temp_shapes.clear(update=True)
+                try:
+                    self.temp_shapes.clear(update=True)
+                except Exception as err:
+                    self.app.log.debug("ToolIsolation.isolate(). Clear temp_shapes -> %s" % str(err))
 
         # Switch notebook to Properties page
         # self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
@@ -1940,7 +1951,7 @@ class ToolIsolation(AppTool, Gerber):
         :rtype:
         """
 
-        log.debug("ToolIsolation.combine_rest()")
+        self.app.log.debug("ToolIsolation.combine_rest()")
 
         total_solid_geometry = []
 
@@ -2116,7 +2127,8 @@ class ToolIsolation(AppTool, Gerber):
                 msg += coords
             self.app.inform_shell.emit(msg=msg)
 
-    def combined_normal(self, iso_obj, iso2geo, tools_storage, lim_area, negative_dia=None, plot=True):
+    def combined_normal(self, iso_obj, iso2geo, tools_storage, lim_area, sel_tools, iso_except, extra_passes=None,
+                        negative_dia=None, plot=True, prog_plot=None):
         """
 
         :param iso_obj:         the isolated Gerber object
@@ -2127,32 +2139,31 @@ class ToolIsolation(AppTool, Gerber):
         :type tools_storage:    dict
         :param lim_area:        if not None restrict isolation to this area
         :type lim_area:         Shapely Polygon or a list of them
+        :param sel_tools:       a list of the selected tools
+        :type sel_tools:        list
+        :param iso_except:      If True it will isolate except a special area
+        :type iso_except:       bool
+        :param extra_passes:    If not None then the value is the nr of extra isolation passes for pads only
+        :type extra_passes:     int
         :param negative_dia:    isolate the geometry with a negative value for the tool diameter
         :type negative_dia:     bool
         :param plot:            if to plot the resulting geometry object
         :type plot:             bool
+        :param prog_plot:       If True a progressive plot is used
+        :type prog_plot:        bool
         :return:                Isolated solid geometry
         :rtype:
         """
-        log.debug("ToolIsolation.combined_normal()")
+        self.app.log.debug("ToolIsolation.combined_normal()")
 
         total_solid_geometry = []
 
         iso_name = iso_obj.options["name"] + '_iso_combined'
         geometry = iso2geo
-        prog_plot = self.app.defaults["tools_iso_plotting"]
+        if prog_plot is None:
+            prog_plot = self.app.defaults["tools_iso_plotting"]
 
-        sorted_tools = []
-        table_items = self.ui.tools_table.selectedItems()
-        sel_rows = {t.row() for t in table_items}
-        for row in sel_rows:
-            tid = int(self.ui.tools_table.item(row, 3).text())
-            sorted_tools.append(tid)
-        if not sorted_tools:
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("There are no tools selected in the Tool Table."))
-            return 'fail'
-
-        for tool in sorted_tools:
+        for tool in sel_tools:
             tool_dia = tools_storage[tool]['tooldia']
             tool_has_offset = tools_storage[tool]['data']['tools_mill_offset_type']
             tool_offset_value = tools_storage[tool]['data']['tools_mill_offset_value']
@@ -2175,8 +2186,6 @@ class ToolIsolation(AppTool, Gerber):
 
             milling_type = tool_data['tools_iso_milling_type']
 
-            iso_except = self.ui.except_cb.get_value()
-
             outname = "%s_%.*f" % (iso_obj.options["name"], self.decimals, float(tool_dia))
 
             internal_name = outname + "_iso"
@@ -2198,7 +2207,7 @@ class ToolIsolation(AppTool, Gerber):
                 # if milling type is climb then the move is counter-clockwise around features
                 mill_dir = 1 if milling_type == 'cl' else 0
 
-                iso_geo = self.generate_envelope(iso_offset, mill_dir, geometry=work_geo, env_iso_type=iso_t,
+                iso_geo = self.generate_envelope(iso_obj, iso_offset, mill_dir, geometry=work_geo, env_iso_type=iso_t,
                                                  nr_passes=nr_pass, prog_plot=prog_plot)
                 if iso_geo == 'fail':
                     self.app.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
@@ -2212,12 +2221,11 @@ class ToolIsolation(AppTool, Gerber):
 
             # Extra Pads isolations
             pad_geo = []
-            extra_passes = self.ui.pad_passes_entry.get_value()
-            if extra_passes > 0:
+            if extra_passes is not None and extra_passes > 0:
                 solid_geo_union = unary_union(solid_geo)
                 extra_geo = []
-                for apid in self.grb_obj.tools:
-                    for t_geo_dict in self.grb_obj.tools[apid]['geometry']:
+                for apid in iso_obj.tools:
+                    for t_geo_dict in iso_obj.tools[apid]['geometry']:
                         if 'follow' in t_geo_dict:
                             if isinstance(t_geo_dict['follow'], Point):
                                 extra_geo.append(t_geo_dict['solid'])
@@ -2263,7 +2271,10 @@ class ToolIsolation(AppTool, Gerber):
 
         # clean the progressive plotted shapes if it was used
         if prog_plot == 'progressive':
-            self.temp_shapes.clear(update=True)
+            try:
+                self.temp_shapes.clear(update=True)
+            except Exception as err:
+                self.app.log.debug("ToolIsolation.combined_normal(). Progressive plotting -> %s" % str(err))
 
         # remove tools without geometry
         for tool, tool_dict in list(tools_storage.items()):
@@ -2507,16 +2518,29 @@ class ToolIsolation(AppTool, Gerber):
 
             self.app.tool_shapes.clear(update=True)
 
+            sel_tools = []
+            table_items = self.ui.tools_table.selectedItems()
+            sel_rows = {t.row() for t in table_items}
+            for row in sel_rows:
+                tid = int(self.ui.tools_table.item(row, 3).text())
+                sel_tools.append(tid)
+            if not sel_tools:
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("There are no tools selected in the Tool Table."))
+                return 'fail'
+
             if self.poly_dict:
                 poly_list = deepcopy(list(self.poly_dict.values()))
                 if self.ui.poly_int_cb.get_value() is True:
                     # isolate the interior polygons with a negative tool
-                    self.isolate(isolated_obj=self.grb_obj, geometry=poly_list, negative_dia=True)
+                    self.isolate(isolated_obj=self.grb_obj, geometry=poly_list, negative_dia=True, sel_tools=sel_tools,
+                                 tools_storage=self.iso_tools)
                 else:
-                    self.isolate(isolated_obj=self.grb_obj, geometry=poly_list)
+                    self.isolate(isolated_obj=self.grb_obj, geometry=poly_list, sel_tools=sel_tools,
+                                 tools_storage=self.iso_tools)
                 self.poly_dict.clear()
             else:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("List of single polygons is empty. Aborting."))
+                return "fail"
 
     def on_select_all_polygons(self):
         self.app.log.debug("ToolIsolation.on_select_all_polygons()")
@@ -2738,8 +2762,19 @@ class ToolIsolation(AppTool, Gerber):
             if len(self.sel_rect) == 0:
                 return
 
+            sel_tools = []
+            table_items = self.ui.tools_table.selectedItems()
+            sel_rows = {t.row() for t in table_items}
+            for row in sel_rows:
+                tid = int(self.ui.tools_table.item(row, 3).text())
+                sel_tools.append(tid)
+            if not sel_tools:
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("There are no tools selected in the Tool Table."))
+                return 'fail'
+
             self.sel_rect = unary_union(self.sel_rect)
-            self.isolate(isolated_obj=self.grb_obj, limited_area=self.sel_rect, plot=True)
+            self.isolate(isolated_obj=self.grb_obj, limited_area=self.sel_rect, sel_tools=sel_tools,
+                         tools_storage=self.iso_tools, plot=True)
             self.sel_rect = []
 
     # called on mouse move
@@ -3002,7 +3037,7 @@ class ToolIsolation(AppTool, Gerber):
     def poly2ints(poly):
         return [interior for interior in poly.interiors]
 
-    def generate_envelope(self, offset, invert, geometry=None, env_iso_type=2, nr_passes=0,
+    def generate_envelope(self, iso_obj, offset, invert, geometry=None, env_iso_type=2, nr_passes=0,
                           prog_plot=False):
         """
         Isolation_geometry produces an envelope that is going on the left of the geometry
@@ -3012,6 +3047,7 @@ class ToolIsolation(AppTool, Gerber):
         the other passes overlap preceding ones and cut the left over copper. It is better for them
         to cut on the right side of the left over copper i.e on the left side of the features.
 
+        :param iso_obj:         The Gerber object to be isolated
         :param offset:          Offset distance to be passed to the obj.isolation_geometry() method
         :type offset:           float
         :param invert:          If to invert the direction of geometry (CW to CCW or reverse)
@@ -3029,10 +3065,10 @@ class ToolIsolation(AppTool, Gerber):
         """
 
         try:
-            geom_shp = self.grb_obj.isolation_geometry(offset, geometry=geometry, iso_type=env_iso_type,
-                                                       passes=nr_passes, prog_plot=prog_plot)
+            geom_shp = iso_obj.isolation_geometry(offset, geometry=geometry, iso_type=env_iso_type,
+                                                  passes=nr_passes, prog_plot=prog_plot)
         except Exception as e:
-            log.error('ToolIsolation.generate_envelope() --> %s' % str(e))
+            self.app.log.error('ToolIsolation.generate_envelope() --> %s' % str(e))
             return 'fail'
 
         if isinstance(geom_shp, (MultiPolygon, MultiLineString)):
@@ -3056,10 +3092,10 @@ class ToolIsolation(AppTool, Gerber):
                 elif isinstance(geom, LinearRing) and geom is not None:
                     geom = Polygon(geom.coords[::-1])
                 else:
-                    log.debug("ToolIsolation.generate_envelope() Error --> Unexpected Geometry %s" %
-                              type(geom))
+                    msg = "ToolIsolation.generate_envelope() Error --> Unexpected Geometry %s" % type(geom)
+                    self.app.log.debug(msg)
             except Exception as e:
-                log.error("ToolIsolation.generate_envelope() Error --> %s" % str(e))
+                self.app.log.error("ToolIsolation.generate_envelope() Error --> %s" % str(e))
                 return 'fail'
         return geom
 

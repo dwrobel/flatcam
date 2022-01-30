@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+30.01.2022
+
+- refactored the Isolation Plugin class
+
 29.01.2022
 
 - upgraded/fixed the Panelize Tcl command
