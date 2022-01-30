@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - refactored the Isolation Plugin class
 - some more work on the Isolation plugin
+- fixed more issues in the `ncc` and `paint` Tcl commands (missing `segx` and `segy` keys)
 
 29.01.2022
 

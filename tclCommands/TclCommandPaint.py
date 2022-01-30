@@ -180,54 +180,28 @@ class TclCommandPaint(TclCommand):
         default_data.update({
             "name":                 outname,
             "plot":                 False,
-            "cutz":                 self.app.defaults["tools_mill_cutz"],
-            "vtipdia":              float(self.app.defaults["tools_paint_tipdia"]),
-            "vtipangle":            float(self.app.defaults["tools_paint_tipangle"]),
-            "travelz":              self.app.defaults["tools_mill_travelz"],
-            "feedrate":             self.app.defaults["tools_mill_feedrate"],
-            "feedrate_z":           self.app.defaults["tools_mill_feedrate_z"],
-            "feedrate_rapid":       self.app.defaults["tools_mill_feedrate_rapid"],
-            "dwell":                self.app.defaults["tools_mill_dwell"],
-            "dwelltime":            self.app.defaults["tools_mill_dwelltime"],
-            "multidepth":           self.app.defaults["tools_mill_multidepth"],
-            "ppname_g":             self.app.defaults["tools_mill_ppname_g"],
-            "depthperpass":         self.app.defaults["tools_mill_depthperpass"],
-            "extracut":             self.app.defaults["tools_mill_extracut"],
-            "extracut_length":      self.app.defaults["tools_mill_extracut_length"],
-            "toolchange":           self.app.defaults["tools_mill_toolchange"],
-            "toolchangez":          self.app.defaults["tools_mill_toolchangez"],
-            "endz":                 self.app.defaults["tools_mill_endz"],
-            "endxy":                self.app.defaults["tools_mill_endxy"],
-
-            "spindlespeed":         self.app.defaults["tools_mill_spindlespeed"],
-            "toolchangexy":         self.app.defaults["tools_mill_toolchangexy"],
-            "startz":               self.app.defaults["tools_mill_startz"],
-
-            "area_exclusion":       self.app.defaults["tools_mill_area_exclusion"],
-            "area_shape":           self.app.defaults["tools_mill_area_shape"],
-            "area_strategy":        self.app.defaults["tools_mill_area_strategy"],
-            "area_overz":           float(self.app.defaults["tools_mill_area_overz"]),
-
-            "tooldia":                  tooldia,
+            "tooldia":              tooldia,
+            "tools_mill_cutz":                 self.app.defaults["tools_mill_cutz"],
+            "tools_paint_tipdia":              float(self.app.defaults["tools_paint_tipdia"]),
+            "tools_paint_tipangle":            float(self.app.defaults["tools_paint_tipangle"]),
             "tools_paint_offset":       offset,
             "tools_paint_method":       method,
             "tools_paint_selectmethod": select,
             "tools_paint_connect":      connect,
             "tools_paint_contour":      contour,
-            "tools_paint_overlap":      overlap
+            "tools_paint_overlap":      overlap,
+            "segx": self.app.defaults["geometry_segx"],
+            "segy": self.app.defaults["geometry_segy"]
         })
-        paint_tools = {}
 
+        # create a `tools` dict
+        paint_tools = {}
         tooluid = 0
         for tool in tools:
             tooluid += 1
             paint_tools.update({
                 int(tooluid): {
                     'tooldia': self.app.dec_format(float(tool), self.app.decimals),
-                    'offset': 'Path',
-                    'offset_value': 0.0,
-                    'type': 'Iso',
-                    'tool_type': 'C1',
                     'data': dict(default_data),
                     'solid_geometry': []
                 }

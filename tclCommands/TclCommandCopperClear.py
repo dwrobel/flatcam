@@ -193,35 +193,7 @@ class TclCommandCopperClear(TclCommand):
         default_data.update({
             "name":             outname,
             "plot":             False,
-            "tools_mill_cutz":             self.app.defaults["tools_mill_cutz"],
-            "tools_mill_vtipdia":          float(self.app.defaults["tools_mill_vtipdia"]),
-            "tools_mill_vtipangle":        float(self.app.defaults["tools_mill_vtipangle"]),
-            "tools_mill_travelz":          self.app.defaults["tools_mill_travelz"],
-            "tools_mill_feedrate":         self.app.defaults["tools_mill_feedrate"],
-            "tools_mill_feedrate_z":       self.app.defaults["tools_mill_feedrate_z"],
-            "tools_mill_feedrate_rapid":   self.app.defaults["tools_mill_feedrate_rapid"],
-            "tools_mill_dwell":            self.app.defaults["tools_mill_dwell"],
-            "tools_mill_dwelltime":        self.app.defaults["tools_mill_dwelltime"],
-            "tools_mill_multidepth":       self.app.defaults["tools_mill_multidepth"],
-            "tools_mill_ppname_g":         self.app.defaults["tools_mill_ppname_g"],
-            "tools_mill_depthperpass":     self.app.defaults["tools_mill_depthperpass"],
-            "tools_mill_extracut":         self.app.defaults["tools_mill_extracut"],
-            "tools_mill_extracut_length":  self.app.defaults["tools_mill_extracut_length"],
-            "tools_mill_toolchange":       self.app.defaults["tools_mill_toolchange"],
-            "tools_mill_toolchangez":      self.app.defaults["tools_mill_toolchangez"],
-            "tools_mill_endz":             self.app.defaults["tools_mill_endz"],
-            "tools_mill_endxy":            self.app.defaults["tools_mill_endxy"],
-            "tools_mill_spindlespeed":     self.app.defaults["tools_mill_spindlespeed"],
-            "tools_mill_toolchangexy":     self.app.defaults["tools_mill_toolchangexy"],
-            "tools_mill_startz":           self.app.defaults["tools_mill_startz"],
-
-            "area_exclusion":               self.app.defaults["tools_mill_area_exclusion"],
-            "area_shape":                   self.app.defaults["tools_mill_area_shape"],
-            "area_strategy":                self.app.defaults["tools_mill_area_strategy"],
-            "area_overz":                   float(self.app.defaults["tools_mill_area_overz"]),
-
-            "tooldia":                      tooldia,
-            "tools_ncc_operation":          self.app.defaults["tools_ncc_operation"],
+            "tooldia": tooldia,
 
             "tools_ncc_margin":             margin,
             "tools_ncc_method":             method_data,
@@ -230,9 +202,8 @@ class TclCommandCopperClear(TclCommand):
             "tools_ncc_contour":            contour,
             "tools_ncc_overlap":            overlap,
 
-            "tools_ncc_offset_choice":      self.app.defaults["tools_ncc_offset_choice"],
-            "tools_ncc_offset_value":       self.app.defaults["tools_ncc_offset_value"],
-            "tools_ncc_milling_type":       self.app.defaults["tools_ncc_milling_type"]
+            "segx":                         self.app.defaults["geometry_segx"],
+            "segy":                         self.app.defaults["geometry_segy"]
         })
         ncc_tools = {}
 
