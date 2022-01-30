@@ -117,7 +117,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                           ...
               }
            It is populated in the ExcellonObject.on_create_cncjob_click() but actually 
-           it's done in camlib.CNCJob.generate_from_excellon_by_tool()
+           it's done in camlib.CNCJob.tcl_gcode_from_excellon_by_tool()
            BEWARE: I rely on the ordered nature of the Python 3.7 dictionary. Things might change ...
        '''
         self.tools = {}

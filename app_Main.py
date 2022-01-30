@@ -6460,7 +6460,6 @@ class App(QtCore.QObject):
 
         :return:
         """
-        self.defaults.report_usage("on_selectall()")
 
         # delete the possible selection box around a possible selected object
         self.delete_selection_shape()
@@ -6469,7 +6468,11 @@ class App(QtCore.QObject):
             curr_sel_obj = self.collection.get_by_name(name)
             # create the selection box around the selected object
             if self.defaults['global_selection_shape'] is True:
-                self.draw_selection_shape(curr_sel_obj)
+                try:
+                    self.draw_selection_shape(curr_sel_obj)
+                except Exception as err:
+                    self.log.error(
+                        "App.on_select_all(). Object %s can't be selected on canvas. Error: %s" % (name, str(err)))
 
     def on_toggle_preferences(self):
         pref_open = False

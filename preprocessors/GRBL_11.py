@@ -90,7 +90,6 @@ class GRBL_11(PreProc):
         else:
             gcode += '(X,Y End: ' + "None" + units + ')\n'
         gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
-        gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
 
         if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
             gcode += '(Preprocessor Excellon: ' + str(p['pp_excellon_name']) + ')\n' + '\n'
@@ -258,8 +257,10 @@ G00 Z{z_toolchange}
             return sdir
 
     def dwell_code(self, p):
+        gcode = ''
         if p.dwelltime:
-            return 'G4 P' + str(p.dwelltime)
+            gcode += 'G4 P' + str(p.dwelltime)
+        return gcode
 
     def spindle_stop_code(self, p):
         return 'M05'

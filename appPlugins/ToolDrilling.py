@@ -1932,8 +1932,8 @@ class ToolDrilling(AppTool, Excellon):
         obj.pp_excellon_name = self.ui.pp_excellon_name_cb.get_value()
 
         if self.is_valid_excellon() is False:
-            log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
-                      "The loaded Excellon file has no drills ...")
+            self.app.log.debug("ToolDrilling.on_cnc_button_click() --> "
+                               "The loaded Excellon file has no drills ...")
             self.app.inform.emit('[ERROR_NOTCL] %s...' % _('The loaded Excellon file has no drills'))
             return
 

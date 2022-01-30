@@ -2751,7 +2751,7 @@ class CNCjob(Geometry):
 
         self.tolerance = self.drawing_tolerance
 
-        # used by the self.generate_from_excellon_by_tool() method
+        # used by the self.tcl_gcode_from_excellon_by_tool() method
         # but set directly before the actual usage of the method with obj.excellon_optimization_type = value
         self.excellon_optimization_type = 'No'
 
@@ -3349,7 +3349,7 @@ class CNCjob(Geometry):
                     self.app.inform.emit('[ERROR] %s' % _("The Toolchange X,Y format has to be (x, y)."))
                     return 'fail'
         except Exception as e:
-            self.app.log.error("camlib.CNCJob.generate_from_excellon_by_tool() xy_toolchange --> %s" % str(e))
+            self.app.log.error("camlib.CNCJob.tcl_gcode_from_excellon_by_tool() xy_toolchange --> %s" % str(e))
             self.xy_toolchange = [0, 0]
 
         # End position parameters
@@ -3374,7 +3374,7 @@ class CNCjob(Geometry):
                     self.app.inform.emit('[ERROR] %s' % _("The End X,Y format has to be (x, y)."))
                     return 'fail'
         except Exception as e:
-            log.error("camlib.CNCJob.generate_from_excellon_by_tool() xy_end --> %s" % str(e))
+            log.error("camlib.CNCJob.tcl_gcode_from_excellon_by_tool() xy_end --> %s" % str(e))
             self.xy_end = [0, 0]
 
         # Probe parameters
@@ -4019,7 +4019,7 @@ class CNCjob(Geometry):
         self.gcode = t_gcode
         return self.gcode, start_gcode
 
-    def generate_from_excellon_by_tool(self, exobj, tools="all", order='fwd', is_first=False, use_ui=False):
+    def tcl_gcode_from_excellon_by_tool(self, exobj, tools="all", order='fwd', is_first=False, use_ui=False):
         """
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         Used by the Tcl command Drillcncjob
@@ -4057,8 +4057,6 @@ class CNCjob(Geometry):
         self.z_cut = self.check_zcut(zcut=self.z_cut)
         if self.z_cut == 'fail':
             return 'fail'
-        # multidepth use this
-        # old_zcut = deepcopy(self.z_cut)
 
         # XY_toolchange parameter
         try:
@@ -4076,7 +4074,7 @@ class CNCjob(Geometry):
                                            "in the format (x, y) \nbut now there is only one value, not two. "))
                     return 'fail'
         except Exception as e:
-            self.app.log.error("camlib.CNCJob.generate_from_excellon_by_tool() --> %s" % str(e))
+            self.app.log.error("camlib.CNCJob.tcl_gcode_from_excellon_by_tool() --> %s" % str(e))
             pass
 
         # XY_end parameter
@@ -4193,7 +4191,7 @@ class CNCjob(Geometry):
                             points[tool].append(drill_pt)
                         except KeyError:
                             points[tool] = [drill_pt]
-        self.app.log.debug("Found %d TOOLS with drills." % len(points))
+        self.app.log.debug("Found %d TOOLS with drill points." % len(points))
 
         # check if there are drill points in the exclusion areas.
         # If we find any within the exclusion areas return 'fail'
@@ -4206,7 +4204,7 @@ class CNCjob(Geometry):
                         return 'fail'
 
         # this holds the resulting GCode
-        self.gcode = []
+        self.gcode = ''
         # #############################################################################################################
         # #############################################################################################################
         # Initialization
@@ -4216,17 +4214,15 @@ class CNCjob(Geometry):
         start_gcode = ''
         if is_first:
             start_gcode = self.doformat(p.start_code)
+            start_gcode += self.doformat(p.z_feedrate_code)
 
-        if use_ui is False:
-            gcode += self.doformat(p.z_feedrate_code)
-
-        if self.toolchange is False:
-            if self.xy_toolchange is not None:
-                gcode += self.doformat(p.lift_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
-                gcode += self.doformat(p.startz_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
-            else:
-                gcode += self.doformat(p.lift_code, x=0.0, y=0.0)
-                gcode += self.doformat(p.startz_code, x=0.0, y=0.0)
+            if self.toolchange is False:
+                if self.xy_toolchange is not None:
+                    start_gcode += self.doformat(p.lift_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
+                    start_gcode += self.doformat(p.startz_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
+                else:
+                    start_gcode += self.doformat(p.lift_code, x=0.0, y=0.0)
+                    start_gcode += self.doformat(p.startz_code, x=0.0, y=0.0)
 
         if self.xy_toolchange is not None:
             self.oldx = self.xy_toolchange[0]
@@ -4253,7 +4249,7 @@ class CNCjob(Geometry):
                 has_drills = True
                 break
         if not has_drills:
-            log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
+            log.debug("camlib.CNCJob.tcl_gcode_from_excellon_by_tool() --> "
                       "The loaded Excellon file has no drills ...")
             self.app.inform.emit('[ERROR_NOTCL] %s...' % _('The loaded Excellon file has no drills'))
             return 'fail'
@@ -4301,7 +4297,6 @@ class CNCjob(Geometry):
                     self.z_feedrate = self.exc_tools[tool]['data']['tools_drill_feedrate_z']
                     self.feedrate = self.exc_tools[tool]['data']['tools_drill_feedrate_z']
                     self.z_cut = self.exc_tools[tool]['data']['tools_drill_cutz']
-                    tool_gcode += self.doformat(p.z_feedrate_code)
 
                     if self.z_cut > 0:
                         self.app.inform.emit('[WARNING] %s' %
@@ -4357,10 +4352,16 @@ class CNCjob(Geometry):
                     for point in points[tool]:
                         altPoints.append((point.coords.xy[0][0], point.coords.xy[1][0]))
                     optimized_path = self.optimized_travelling_salesman(altPoints)
+                elif used_excellon_optimization_type == 'R':
+                    for point in points[tool]:
+                        altPoints.append((point.coords.xy[0][0], point.coords.xy[1][0]))
+                    optimized_path = self.exc_optimized_rtree(altPoints)
+                    if optimized_path == 'fail':
+                        return 'fail'
                 else:
                     # it's actually not optimized path but here we build a list of (x,y) coordinates
                     # out of the tool's drills
-                    for drill in self.exc_tools[tool]['drills']:
+                    for drill in exobj[tool]['drills']:
                         unoptimized_coords = (
                             drill.x,
                             drill.y
@@ -4380,6 +4381,9 @@ class CNCjob(Geometry):
                 # Tool change sequence (optional)
                 if self.toolchange:
                     tool_gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
+
+                tool_gcode += self.doformat(p.z_feedrate_code)
+
                 # Spindle start
                 tool_gcode += self.doformat(p.spindle_code)
                 # Dwell time
@@ -4535,11 +4539,12 @@ class CNCjob(Geometry):
             self.tooldia = self.exc_tools[one_tool]["tooldia"]
             self.postdata['toolC'] = self.tooldia
 
+            gcode += self.doformat(p.z_feedrate_code)
+
             if self.use_ui:
                 self.z_feedrate = self.exc_tools[one_tool]['data']['tools_drill_feedrate_z']
                 self.feedrate = self.exc_tools[one_tool]['data']['tools_drill_feedrate_z']
                 self.z_cut = self.exc_tools[one_tool]['data']['tools_drill_cutz']
-                gcode += self.doformat(p.z_feedrate_code)
 
                 if self.z_cut > 0:
                     self.app.inform.emit('[WARNING] %s' %
@@ -4955,7 +4960,7 @@ class CNCjob(Geometry):
         #                     return 'fail'
         #             self.z_cut = deepcopy(old_zcut)
         #     else:
-        #         log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
+        #         log.debug("camlib.CNCJob.tcl_gcode_from_excellon_by_tool() --> "
         #                   "The loaded Excellon file has no drills ...")
         #         self.app.inform.emit('[ERROR_NOTCL] %s...' % _('The loaded Excellon file has no drills'))
         #         return 'fail'
@@ -5160,7 +5165,7 @@ class CNCjob(Geometry):
         #                     return 'fail'
         #             self.z_cut = deepcopy(old_zcut)
         #     else:
-        #         log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
+        #         log.debug("camlib.CNCJob.tcl_gcode_from_excellon_by_tool() --> "
         #                   "The loaded Excellon file has no drills ...")
         #         self.app.inform.emit('[ERROR_NOTCL] %s...' % _('The loaded Excellon file has no drills'))
         #         return 'fail'
@@ -5362,7 +5367,7 @@ class CNCjob(Geometry):
         #                     self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
         #                     return 'fail'
         #             else:
-        #                 log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
+        #                 log.debug("camlib.CNCJob.tcl_gcode_from_excellon_by_tool() --> "
         #                           "The loaded Excellon file has no drills ...")
         #                 self.app.inform.emit('[ERROR_NOTCL] %s...' % _('The loaded Excellon file has no drills'))
         #                 return 'fail'
@@ -5370,7 +5375,7 @@ class CNCjob(Geometry):
         #     log.debug("The total travel distance with Travelling Salesman Algorithm is: %s" % str(measured_distance))
         #
         # else:
-        #     log.debug("camlib.CNCJob.generate_from_excellon_by_tool(): Chosen drill optimization doesn't exist.")
+        #     log.debug("camlib.CNCJob.tcl_gcode_from_excellon_by_tool(): Chosen drill optimization doesn't exist.")
         #     return 'fail'
 
         # Spindle stop
@@ -5382,7 +5387,7 @@ class CNCjob(Geometry):
         # ############################# Calculate DISTANCE and ESTIMATED TIME #########################################
         # #############################################################################################################
         measured_distance += abs(distance_euclidian(self.oldx, self.oldy, 0, 0))
-        log.debug("The total travel distance including travel to end position is: %s" %
+        self.app.log.debug("The total travel distance including travel to end position is: %s" %
                   str(measured_distance) + '\n')
         self.travel_distance = measured_distance
 

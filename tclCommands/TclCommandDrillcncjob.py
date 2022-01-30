@@ -126,14 +126,14 @@ class TclCommandDrillcncjob(TclCommandSignaled):
         if obj is None:
             if muted is False:
                 self.raise_tcl_error("Object not found: %s" % name)
-
-            return "Object not found: %s" % name
+            self.app.log.error("Object not found: %s" % name)
+            return "fail"
 
         if obj.kind != 'excellon':
             if muted is False:
                 self.raise_tcl_error('Expected ExcellonObject, got %s %s.' % (name, type(obj)))
-
-            return 'Expected ExcellonObject, got %s %s.' % (name, type(obj))
+            self.app.log.error('Expected ExcellonObject, got %s %s.' % (name, type(obj)))
+            return "fail"
 
         xmin = obj.options['xmin']
         ymin = obj.options['ymin']
@@ -143,6 +143,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
         def job_init(job_obj, app_obj):
             # tools = args["tools"] if "tools" in args else 'all'
 
+            # drilled tools diameters
             try:
                 if 'drilled_dias' in args and args['drilled_dias'] != 'all':
                     diameters = [x.strip() for x in args['drilled_dias'].split(",") if x != '']
@@ -175,7 +176,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                             return "One or more tool diameters of the drills to be drilled passed to the "\
                                    "TclCommand are not actual tool diameters in the Excellon object."
 
-                    # make a string of diameters separated by comma; this is what generate_from_excellon_by_tool() is
+                    # make a string of diameters separated by comma; this is what tcl_gcode_from_excellon_by_tool() is
                     # expecting as tools parameter
                     tools = ','.join(req_tools)
 
@@ -194,7 +195,8 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 if muted is False:
                     self.raise_tcl_error("Bad tools: %s" % str(e))
 
-                return "Bad tools: %s" % str(e)
+                self.app.log.error("Bad tools: %s" % str(e))
+                return "fail"
 
             used_tools_info = []
             used_tools_info.insert(0, [_("Tool_nr"), _("Diameter"), _("Drills_Nr"), _("Slots_Nr")])
@@ -246,8 +248,9 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             if len(eval(xy_toolchange)) != 2:
                 self.raise_tcl_error("The entered value for 'toolchangexy' needs to have the format x,y or "
                                      "in format (x, y) - no spaces allowed. But always two comma separated values.")
-                return "The entered value for 'toolchangexy' needs to have the format x,y or "\
-                       "in format (x, y) - no spaces allowed. But always two comma separated values."
+                self.app.log.error("The entered value for 'toolchangexy' needs to have the format x,y or "
+                                   "in format (x, y) - no spaces allowed. But always two comma separated values.")
+                return "fail"
 
             endz = args["endz"] if "endz" in args and args["endz"] is not None else \
                 self.app.defaults["tools_drill_endz"]
@@ -263,8 +266,9 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             if len(eval(xy_end)) != 2:
                 self.raise_tcl_error("The entered value for 'xy_end' needs to have the format x,y or "
                                      "in format (x, y) - no spaces allowed. But always two comma separated values.")
-                return "The entered value for 'xy_end' needs to have the format x,y or "\
-                       "in format (x, y) - no spaces allowed. But always two comma separated values."
+                self.app.log.error("The entered value for 'xy_end' needs to have the format x,y or "
+                                   "in format (x, y) - no spaces allowed. But always two comma separated values.")
+                return "fail"
 
             opt_type = args["opt_type"] if "opt_type" in args and args["opt_type"] else 'B'
 
@@ -275,10 +279,11 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             job_obj.multigeo = True
             job_obj.multitool = True
 
+            # preprocessor
             pp_excellon_name = args["pp"] if "pp" in args and args["pp"] else self.app.defaults["tools_drill_ppname_e"]
             job_obj.pp_excellon_name = pp_excellon_name
             job_obj.options['ppname_e'] = pp_excellon_name
-
+            # multidepth
             if 'dpp' in args:
                 job_obj.multidepth = True
                 if args['dpp'] is not None:
@@ -288,21 +293,22 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             else:
                 job_obj.multidepth = self.app.defaults["tools_drill_multidepth"]
                 job_obj.z_depthpercut = self.app.defaults["tools_drill_depthperpass"]
-
+            # travel Z
             job_obj.z_move = float(args["travelz"]) if "travelz" in args and args["travelz"] else \
                 self.app.defaults["tools_drill_travelz"]
-
+            # Feedrate
             job_obj.feedrate = float(args["feedrate_z"]) if "feedrate_z" in args and args["feedrate_z"] else \
                 self.app.defaults["tools_drill_feedrate_z"]
             job_obj.z_feedrate = float(args["feedrate_z"]) if "feedrate_z" in args and args["feedrate_z"] else \
                 self.app.defaults["tools_drill_feedrate_z"]
-
             job_obj.feedrate_rapid = float(args["feedrate_rapid"]) \
                 if "feedrate_rapid" in args and args["feedrate_rapid"] else \
                 self.app.defaults["tools_drill_feedrate_rapid"]
-
+            # SpindleSpped
             job_obj.spindlespeed = float(args["spindlespeed"]) if "spindlespeed" in args else None
-            job_obj.spindledir = self.app.defaults['tools_drill_spindlespeed']
+            # spindle direction
+            job_obj.spindledir = self.app.defaults["tools_drill_spindledir"]
+            # dwell and dwelltime
             if 'dwelltime' in args:
                 job_obj.dwell = True
                 if args['dwelltime'] is not None:
@@ -321,11 +327,15 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             job_obj.options['xmax'] = xmax
             job_obj.options['ymax'] = ymax
 
+            # Cut Z
             job_obj.z_cut = float(drillz)
+            # toolchange
             job_obj.toolchange = toolchange
+            # toolchange X-Y location
             job_obj.xy_toolchange = xy_toolchange
+            # toolchange Z location
             job_obj.z_toolchange = float(toolchangez)
-
+            # start Z
             if "startz" in args and args["startz"] is not None:
                 job_obj.startz = float(args["startz"])
             else:
@@ -333,18 +343,18 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                     job_obj.startz = self.app.defaults["tools_drill_startz"]
                 else:
                     job_obj.startz = self.app.defaults["tools_drill_travelz"]
-
+            # end Z
             job_obj.endz = float(endz)
+            # end X-Y location
             job_obj.xy_end = xy_end
+            # Excellon optimization
             job_obj.excellon_optimization_type = opt_type
-            job_obj.spindledir = self.app.defaults["tools_drill_spindledir"]
 
-            ret_val = job_obj.generate_from_excellon_by_tool(obj, tools, is_first=True, use_ui=False)
+            ret_val = job_obj.tcl_gcode_from_excellon_by_tool(obj, tools, is_first=True, use_ui=False)
             if ret_val == 'fail':
                 return 'fail'
 
             job_obj.source_file = ret_val
-
             job_obj.gc_start = ret_val[1]
 
             total_gcode_parsed = []

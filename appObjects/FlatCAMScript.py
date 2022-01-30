@@ -148,14 +148,14 @@ class ScriptObject(FlatCAMObj):
         tab_here = False
         # try to not add too many times a tab that it is already installed
         for idx in range(self.app.ui.plot_tab_area.count()):
-            if self.app.ui.plot_tab_area.widget(idx).objectName() == self.options['name']:
+            if self.app.ui.plot_tab_area.widget(idx).objectName() == (self.options['name'] + "_editor_tab"):
                 tab_here = True
                 break
 
         # add the tab if it is not already added
         if tab_here is False:
             self.app.ui.plot_tab_area.addTab(self.script_editor_tab, '%s' % _("Script Editor"))
-            self.script_editor_tab.setObjectName(self.options['name'])
+            self.script_editor_tab.setObjectName(self.options['name'] + "_editor_tab")
             self.app.ui.plot_tab_area.setCurrentWidget(self.script_editor_tab)
 
     def change_level(self, level):

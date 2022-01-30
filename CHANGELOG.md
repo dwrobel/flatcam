@@ -12,6 +12,9 @@ CHANGELOG for FlatCAM beta
 - refactored the Isolation Plugin class
 - some more work on the Isolation plugin
 - fixed more issues in the `ncc` and `paint` Tcl commands (missing `segx` and `segy` keys)
+- fixed not adding the feedrate code in `drillcncjob` Tcl command
+- fixed crash when trying to do a `select all` and there are app Scripts present
+- updated the `drillcncjob` Tcl command to make a script exit in case of an error
 
 29.01.2022
 

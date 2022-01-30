@@ -700,7 +700,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         # some objects add a Tab on creation, close it here
         for idx in range(self.app.ui.plot_tab_area.count()):
-            if self.app.ui.plot_tab_area.widget(idx).objectName() == active.obj.options['name']:
+            widget_name = self.app.ui.plot_tab_area.widget(idx).objectName()
+            if widget_name == active.obj.options['name'] or widget_name == (active.obj.options['name'] + "_editor_tab"):
                 self.app.ui.plot_tab_area.removeTab(idx)
                 break
 
@@ -753,7 +754,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         # some objects add a Tab on creation, close it here
         for idx in range(self.app.ui.plot_tab_area.count()):
-            if self.app.ui.plot_tab_area.widget(idx).objectName() == deleted.obj.options['name']:
+            wdg_name = self.app.ui.plot_tab_area.widget(idx).objectName()
+            if wdg_name == deleted.obj.options['name'] or wdg_name == (deleted.obj.options['name'] + "_editor_tab"):
                 self.app.ui.plot_tab_area.removeTab(idx)
                 break
 
