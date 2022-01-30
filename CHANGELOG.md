@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+31.02.2022
+
+- fixed all the `laser` preprocessors to work correctly and the resulting GCode to be plotted
+- made sure that when drilling and milling with a `laser` preprocessor the first move is not done with the laser on
+
 30.01.2022
 
 - refactored the Isolation Plugin class

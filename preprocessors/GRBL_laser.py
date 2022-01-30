@@ -58,7 +58,8 @@ class GRBL_laser(PreProc):
 
     def lift_code(self, p):
         if float(p.laser_min_power) > 0.0:
-            return 'M03 S%s' % str(p.laser_min_power)
+            # the formatted text: laser OFF must always be like this else the plotting will not be done correctly
+            return 'M3 S%s (laser OFF)\n' % str(p.laser_min_power)
         else:
             return 'M5'
 
@@ -66,19 +67,13 @@ class GRBL_laser(PreProc):
         if p.spindlespeed:
             return '%s S%s' % ('M3', str(p.spindlespeed))
         else:
-            if float(p.laser_min_power) > 0.0:
-                return 'M03 S%s' % str(p.laser_min_power)
-            else:
-                return 'M5'
+            return 'M3'
 
     def toolchange_code(self, p):
         return ''
 
     def up_to_zero_code(self, p):
-        if float(p.laser_min_power) > 0.0:
-            return 'M03 S%s' % str(p.laser_min_power)
-        else:
-            return 'M5'
+        return ''
 
     def position_code(self, p):
         # formula for skewing on x for example is:
@@ -128,6 +123,7 @@ class GRBL_laser(PreProc):
 
     def spindle_stop_code(self, p):
         if float(p.laser_min_power) > 0.0:
-            return 'M03 S%s' % str(p.laser_min_power)
+            # the formatted text: laser OFF must always be like this else the plotting will not be done correctly
+            return 'M3 S%s (laser OFF)\n' % str(p.laser_min_power)
         else:
             return 'M5'

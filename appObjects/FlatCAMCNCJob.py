@@ -1335,6 +1335,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                             dia_plot = self.app.dec_format(float(self.tools[toolid_key]['tooldia']), self.decimals)
                             gcode_parsed = self.tools[toolid_key]['gcode_parsed']
                             if not gcode_parsed:
+                                self.app.log.debug("Tool %s has no 'gcode_parsed'." % str(toolid_key))
                                 continue
                             # gcode_parsed = self.gcode_parsed
                             self.plot2(tooldia=dia_plot, obj=self, visible=visible, gcode_parsed=gcode_parsed,

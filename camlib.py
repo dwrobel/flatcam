@@ -3627,7 +3627,7 @@ class CNCjob(Geometry):
         :rtype:             str
         """
 
-        log.debug("camlib.CNCJob.geometry_tool_gcode_gen()")
+        self.app.log.debug("camlib.CNCJob.geometry_tool_gcode_gen()")
 
         t_gcode = ''
         temp_solid_geometry = []
@@ -3932,7 +3932,7 @@ class CNCjob(Geometry):
                 t_gcode += self.doformat(p.spindle_code)  # Spindle start
             else:
                 # for laser this will disable the laser
-                t_gcode += self.doformat(p.lift_code, x=self.oldx, y=self.oldy)  # Move (up) to travel height
+                t_gcode += self.doformat(p.spindle_stop_code)
 
             if self.dwell:
                 t_gcode += self.doformat(p.dwell_code)  # Dwell time
@@ -3942,6 +3942,9 @@ class CNCjob(Geometry):
 
             if 'laser' not in self.pp_geometry_name.lower():
                 t_gcode += self.doformat(p.spindle_code)  # Spindle start
+            else:
+                # for laser this will disable the laser
+                t_gcode += self.doformat(p.spindle_stop_code)
 
             if self.dwell is True:
                 t_gcode += self.doformat(p.dwell_code)  # Dwell time
@@ -4394,11 +4397,15 @@ class CNCjob(Geometry):
 
                 tool_gcode += self.doformat(p.z_feedrate_code)
 
-                # Spindle start
-                tool_gcode += self.doformat(p.spindle_code)
-                # Dwell time
-                if self.dwell is True:
-                    tool_gcode += self.doformat(p.dwell_code)
+                if 'laser' not in self.pp_excellon_name.lower():
+                    # Spindle start
+                    tool_gcode += self.doformat(p.spindle_code)
+                    # Dwell time
+                    if self.dwell is True:
+                        tool_gcode += self.doformat(p.dwell_code)
+                else:
+                    # Spindle stop
+                    tool_gcode += self.doformat(p.spindle_stop_code)
 
                 current_tooldia = float('%.*f' % (self.decimals, float(self.exc_tools[tool]["tooldia"])))
 
@@ -4641,11 +4648,15 @@ class CNCjob(Geometry):
                 # graceful abort requested by the user
                 raise grace
 
-            # Spindle start
-            gcode += self.doformat(p.spindle_code)
-            # Dwell time
-            if self.dwell is True:
-                gcode += self.doformat(p.dwell_code)
+            if 'laser' not in self.pp_excellon_name.lower():
+                # Spindle start
+                gcode += self.doformat(p.spindle_code)
+                # Dwell time
+                if self.dwell is True:
+                    gcode += self.doformat(p.dwell_code)
+            else:
+                # Spindle stop
+                gcode += self.doformat(p.spindle_stop_code)
 
             current_tooldia = float('%.*f' % (self.decimals, float(self.exc_tools[one_tool]["tooldia"])))
 
@@ -5816,7 +5827,7 @@ class CNCjob(Geometry):
         :param is_first:            if the processed tool is the first one and if we should process the start gcode
         :return:                    None
         """
-        log.debug("Executing camlib.CNCJob.generate_from_geometry_2()")
+        self.app.log.debug("Executing camlib.CNCJob.generate_from_geometry_2()")
 
         # if solid_geometry is empty raise an exception
         if not geo_obj.solid_geometry:
@@ -6047,7 +6058,7 @@ class CNCjob(Geometry):
         storage.get_points = get_pts
 
         # Store the geometry
-        log.debug("Indexing geometry before generating G-Code...")
+        self.app.log.debug("Indexing geometry before generating G-Code...")
         self.app.inform.emit(_("Indexing geometry before generating G-Code..."))
 
         for geo_shape in temp_solid_geometry:
@@ -6102,13 +6113,16 @@ class CNCjob(Geometry):
                 self.gcode += self.doformat(p.spindle_code)  # Spindle start
             else:
                 # for laser this will disable the laser
-                self.gcode += self.doformat(p.lift_code, x=self.oldx, y=self.oldy)  # Move (up) to travel height
+                self.gcode += self.doformat(p.spindle_stop_code)
 
             if self.dwell is True:
                 self.gcode += self.doformat(p.dwell_code)  # Dwell time
         else:
             if 'laser' not in self.pp_geometry_name:
                 self.gcode += self.doformat(p.spindle_code)  # Spindle start
+            else:
+                # for laser this will disable the laser
+                self.gcode += self.doformat(p.spindle_stop_code)
 
             if self.dwell is True:
                 self.gcode += self.doformat(p.dwell_code)  # Dwell time
@@ -6117,14 +6131,14 @@ class CNCjob(Geometry):
         total_cut = 0.0
 
         # Iterate over geometry paths getting the nearest each time.
-        log.debug("Starting G-Code...")
+        self.app.log.debug("Starting G-Code...")
         self.app.inform.emit('%s...' % _("Starting G-Code"))
 
         # variables to display the percentage of work done
         geo_len = len(temp_solid_geometry)
 
         old_disp_number = 0
-        log.warning("Number of paths for which to generate GCode: %s" % str(geo_len))
+        self.app.log.debug("Number of paths for which to generate GCode: %s" % str(geo_len))
 
         current_tooldia = float('%.*f' % (self.decimals, float(self.tooldia)))
 
@@ -6581,6 +6595,14 @@ class CNCjob(Geometry):
                     command['Z'] = 1
                 else:
                     command['Z'] = 0
+
+            match_lsr_pos_3 = re.search(r"^.*(laser OFF).*", gline)
+            if match_lsr_pos_3:
+                if 'laser OFF' in match_lsr_pos_3.group(1):
+                    command['Z'] = 1
+                else:
+                    command['Z'] = 0
+
         elif self.pp_solderpaste_name is not None:
             if 'Paste' in self.pp_solderpaste_name:
                 match_paste = re.search(r"X([\+-]?\d+.[\+-]?\d+)\s*Y([\+-]?\d+.[\+-]?\d+)", gline)

@@ -64,7 +64,8 @@ class Marlin_laser_FAN_pin(PreProc):
 
     def lift_code(self, p):
         if float(p.laser_min_power) > 0.0:
-            return 'M106 S%s' % str(p.laser_min_power)
+            # the formatted text: laser OFF must always be like this else the plotting will not be done correctly
+            return 'M106 S%s ;laser OFF\n' % str(p.laser_min_power)
         else:
             gcode = 'M400\n'
             gcode += 'M106 S0'
@@ -80,12 +81,7 @@ class Marlin_laser_FAN_pin(PreProc):
         return ''
 
     def up_to_zero_code(self, p):
-        if float(p.laser_min_power) > 0.0:
-            return 'M106 S%s' % str(p.laser_min_power)
-        else:
-            gcode = 'M400\n'
-            gcode += 'M106 S0'
-            return gcode
+        return ''
 
     def position_code(self, p):
         # formula for skewing on x for example is:
@@ -140,7 +136,8 @@ class Marlin_laser_FAN_pin(PreProc):
 
     def spindle_stop_code(self, p):
         if float(p.laser_min_power) > 0.0:
-            return 'M106 S%s' % str(p.laser_min_power)
+            # the formatted text: laser OFF must always be like this else the plotting will not be done correctly
+            return 'M106 S%s ;laser OFF\n' % str(p.laser_min_power)
         else:
             gcode = 'M400\n'
             gcode += 'M106 S0'

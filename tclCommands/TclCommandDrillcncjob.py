@@ -230,6 +230,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             drillz = args["drillz"] if "drillz" in args and args["drillz"] is not None else \
                 obj.options["tools_drill_cutz"]
 
+            toolchange = self.app.defaults["tools_drill_toolchange"]
             if "toolchangez" in args:
                 toolchange = True
                 if args["toolchangez"] is not None:
@@ -237,10 +238,10 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 else:
                     toolchangez = obj.options["tools_drill_toolchangez"]
             else:
-                toolchange = self.app.defaults["tools_drill_toolchange"]
                 toolchangez = float(self.app.defaults["tools_drill_toolchangez"])
 
             if "toolchangexy" in args and args["toolchangexy"]:
+                toolchange = True
                 xy_toolchange = args["toolchangexy"]
             else:
                 if self.app.defaults["tools_drill_toolchangexy"]:
