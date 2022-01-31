@@ -594,10 +594,12 @@ class GeometryObject(FlatCAMObj, Geometry):
             multigeo_solid = []
             if self.multigeo:
                 for tool in self.tools:
-                    multigeo_solid += self.tools[tool]['solid_geometry']
+                    w_geo_list = list(self.tools[tool]['solid_geometry'].geoms) if \
+                        isinstance(self.tools[tool]['solid_geometry'], (MultiPolygon, MultiLineString)) else \
+                        self.tools[tool]['solid_geometry']
+                    multigeo_solid += w_geo_list
             else:
                 multigeo_solid = self.solid_geometry
-
 
             w_geo = multigeo_solid.geoms \
                 if isinstance(multigeo_solid, (MultiPolygon, MultiLineString)) else multigeo_solid
@@ -1062,7 +1064,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         # int or None.
         spindlespeed = spindlespeed if spindlespeed else self.options['tools_mill_spindlespeed']
-        las_min_pwr = las_min_pwr if las_min_pwr else  self.options['tools_mill_min_power']
+        las_min_pwr = las_min_pwr if las_min_pwr else self.options['tools_mill_min_power']
         dwell = dwell if dwell else self.options["tools_mill_dwell"]
         dwelltime = dwelltime if dwelltime else float(self.options["tools_mill_dwelltime"])
 
@@ -1566,6 +1568,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         :param geo_final:   Destination GerberObject object.
         :param multi_geo:   if the merged geometry objects are of type MultiGeo
         :param fuse_tools:  If True will try to fuse tools of the same type for the Geometry objects
+        :param log:         A logging object
         :return: None
         """
 

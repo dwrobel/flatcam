@@ -24,6 +24,7 @@ CHANGELOG for FlatCAM beta
 - updated the `isolate`, `cutout` and `geocutout` Tcl commands and now they yield multigeo Geometry objects
 - fixed an issue in `panelize` Tcl command where some parameters (`spacing_columns` and `spacing_rows` where forced into integers where correct was to keep them as floats)
 - fixed a performance issue in `panelize` Tcl command: when panelizing a Geometry object the total solid_geometry was calculated for each tool, but it was enough to be calculated once
+- yet another fix for a Shapely 2.0 deprecation warning
 
 30.01.2022
 
