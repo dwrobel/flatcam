@@ -53,4 +53,4 @@ class TclCommandQuit(TclCommand):
         :return:
         """
 
-        self.app.quit_application()
+        self.app.quit_application(silent=True)

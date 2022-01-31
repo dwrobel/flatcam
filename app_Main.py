@@ -585,8 +585,8 @@ class App(QtCore.QObject):
         # This will fail under cx_freeze ...
         self.app_home = os.path.dirname(os.path.realpath(__file__))
 
-        self.log.debug("Application path is " + self.app_home)
-        self.log.debug("Started in " + os.getcwd())
+        # self.log.debug("Application path is " + self.app_home)
+        # self.log.debug("Started in " + os.getcwd())
 
         # cx_freeze workaround
         if os.path.isfile(self.app_home):
@@ -4045,7 +4045,7 @@ class App(QtCore.QObject):
                 pass
             self.quit_application()
 
-    def quit_application(self):
+    def quit_application(self, silent=False):
         """
         Called (as a pyslot or not) when the application is quit.
 
@@ -4133,7 +4133,8 @@ class App(QtCore.QObject):
             # self.new_launch.thread_exit = True
             # self.new_launch.listener.close()
             if sys.platform == 'win32' or sys.platform == 'linux':
-                self.new_launch.stop.emit()
+                self.new_launch.close_listener()
+                # self.new_launch.stop.emit()
         except Exception as err:
             self.log.error("App.quit_application() --> %s" % str(err))
 
@@ -4152,7 +4153,11 @@ class App(QtCore.QObject):
         # quit app by signalling for self.kill_app() method
         # self.close_app_signal.emit()
         # sys.exit(0)
-        QtWidgets.QApplication.quit()
+
+        if silent:
+            os._exit(0)
+        else:
+            QtWidgets.QApplication.quit()
 
     @staticmethod
     def kill_app():
@@ -9392,6 +9397,8 @@ class ArgsThread(QtCore.QObject):
                     while True:
                         conn = self.listener.accept()
                         self.serve(conn)
+        except Exception as err:
+            print(str(err))
 
     def serve(self, conn):
         while self.thread_exit is False:

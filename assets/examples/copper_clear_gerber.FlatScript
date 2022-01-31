@@ -1,0 +1,34 @@
+# #####################################################################################
+# DESCRIPTION:
+# Will copper clear all the areas in a Gerber file that are not Gerber elements
+# #####################################################################################
+
+puts "\n**************** RUNNING an EXAMPLE SCRIPT = Copper Clear a Gerber file *******************\n"
+
+# ----------- START: This is needed only for the examples ----------------
+# first set the default location where to search for the files to be open and store it to the ROOT_FOLDER variable
+set ROOT_FOLDER  [get_sys root_folder_path]
+
+# calculate the resources path for the examples we need to run and store it inside the PATH varaible
+set PATH ${ROOT_FOLDER}/assets/examples/files
+# ----------- END: This is needed only for the examples ----------------
+
+# set the working path to the path that holds the files we are going to work with
+set_path $PATH
+
+# load the GERBER file
+open_gerber test.gbr -outname gerber_file
+
+# copper clear the Gerber file
+ncc gerber_file -overlap 10 -tooldia 0.254 -method seed -connect 1 -margin 2 -all -outname gerber_ncc
+
+# create a CNCJob object which holds the Gcode
+cncjob gerber_ncc -dia 0.254 -z_cut -0.05 -z_move 3 -feedrate 100 -outname gerber_ncc_cnc
+
+# plot the objects so we can see them; not required for the script but in this script we want to see the results
+plot_all
+
+# write the GCode to a file
+# write_gcode gerber_ncc_cnc  ${ROOT_FOLDER}/assets/examples/copper_clear.gcode
+
+

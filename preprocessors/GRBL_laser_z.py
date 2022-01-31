@@ -143,8 +143,4 @@ class GRBL_laser_z(PreProc):
         return ''
 
     def spindle_stop_code(self, p):
-        if float(p.laser_min_power) > 0.0:
-            # the formatted text: laser OFF must always be like this else the plotting will not be done correctly
-            return 'M3 S%s (laser OFF)\n' % str(p.laser_min_power)
-        else:
-            return 'M5'
+        return 'M5'

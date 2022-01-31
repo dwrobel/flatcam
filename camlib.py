@@ -3934,7 +3934,7 @@ class CNCjob(Geometry):
                 t_gcode += self.doformat(p.spindle_code)  # Spindle start
             else:
                 # for laser this will disable the laser
-                t_gcode += self.doformat(p.spindle_stop_code)
+                t_gcode += self.doformat(p.lift_code, x=self.oldx, y=self.oldy)  # Move (up) to travel height
 
             if self.dwell:
                 t_gcode += self.doformat(p.dwell_code)  # Dwell time
@@ -3946,7 +3946,7 @@ class CNCjob(Geometry):
                 t_gcode += self.doformat(p.spindle_code)  # Spindle start
             else:
                 # for laser this will disable the laser
-                t_gcode += self.doformat(p.spindle_stop_code)
+                t_gcode += self.doformat(p.lift_code, x=self.oldx, y=self.oldy)  # Move (up) to travel height
 
             if self.dwell is True:
                 t_gcode += self.doformat(p.dwell_code)  # Dwell time
@@ -4017,8 +4017,13 @@ class CNCjob(Geometry):
 
         # Finish
         if is_last:
-            t_gcode += self.doformat(p.spindle_stop_code)
-            t_gcode += self.doformat(p.lift_code, x=current_pt[0], y=current_pt[1])
+            if 'laser' not in self.pp_geometry_name.lower():
+                t_gcode += self.doformat(p.spindle_stop_code)
+                t_gcode += self.doformat(p.lift_code, x=current_pt[0], y=current_pt[1])
+            else:
+                t_gcode += self.doformat(p.lift_code, x=current_pt[0], y=current_pt[1])
+                t_gcode += self.doformat(p.spindle_stop_code)
+
             if isinstance(self.xy_end, tuple):
                 endx = self.xy_end[0]
                 endy = self.xy_end[1]
@@ -4407,7 +4412,7 @@ class CNCjob(Geometry):
                         tool_gcode += self.doformat(p.dwell_code)
                 else:
                     # Spindle stop
-                    tool_gcode += self.doformat(p.spindle_stop_code)
+                    tool_gcode += self.doformat(p.lift_code, x=self.oldx, y=self.oldy)  # Move (up) to travel height
 
                 current_tooldia = float('%.*f' % (self.decimals, float(self.exc_tools[tool]["tooldia"])))
 
@@ -4658,7 +4663,7 @@ class CNCjob(Geometry):
                     gcode += self.doformat(p.dwell_code)
             else:
                 # Spindle stop
-                gcode += self.doformat(p.spindle_stop_code)
+                gcode += self.doformat(p.lift_code, x=self.oldx, y=self.oldy)  # Move (up) to travel height
 
             current_tooldia = float('%.*f' % (self.decimals, float(self.exc_tools[one_tool]["tooldia"])))
 
@@ -6115,21 +6120,19 @@ class CNCjob(Geometry):
 
             if 'laser' not in self.pp_geometry_name:
                 self.gcode += self.doformat(p.spindle_code)  # Spindle start
+                if self.dwell is True:
+                    self.gcode += self.doformat(p.dwell_code)  # Dwell time
             else:
                 # for laser this will disable the laser
-                self.gcode += self.doformat(p.spindle_stop_code)
-
-            if self.dwell is True:
-                self.gcode += self.doformat(p.dwell_code)  # Dwell time
+                self.gcode += self.doformat(p.lift_code, x=self.oldx, y=self.oldy)  # Move (up) to travel height
         else:
             if 'laser' not in self.pp_geometry_name:
                 self.gcode += self.doformat(p.spindle_code)  # Spindle start
+                if self.dwell is True:
+                    self.gcode += self.doformat(p.dwell_code)  # Dwell time
             else:
                 # for laser this will disable the laser
-                self.gcode += self.doformat(p.spindle_stop_code)
-
-            if self.dwell is True:
-                self.gcode += self.doformat(p.dwell_code)  # Dwell time
+                self.gcode += self.doformat(p.lift_code, x=self.oldx, y=self.oldy)  # Move (up) to travel height
 
         total_travel = 0.0
         total_cut = 0.0
@@ -6219,8 +6222,13 @@ class CNCjob(Geometry):
         self.routing_time += total_cut / self.feedrate
 
         # Finish
-        self.gcode += self.doformat(p.spindle_stop_code)
-        self.gcode += self.doformat(p.lift_code, x=current_pt[0], y=current_pt[1])
+        if 'laser' not in self.pp_geometry_name:
+            self.gcode += self.doformat(p.spindle_stop_code)
+            self.gcode += self.doformat(p.lift_code, x=current_pt[0], y=current_pt[1])
+        else:
+            self.gcode += self.doformat(p.lift_code, x=current_pt[0], y=current_pt[1])
+            self.gcode += self.doformat(p.spindle_stop_code)
+
         self.gcode += self.doformat(p.end_code, x=0, y=0)
         self.app.inform.emit(
             '%s... %s %s.' % (_("Finished G-Code generation"), str(path_count), _("paths traced"))
