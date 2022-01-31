@@ -20,6 +20,7 @@ CHANGELOG for FlatCAM beta
 - improved the quit application process; now the `quit_flatcam` Tcl command works properly
 - another fix for Shapely 2.0 deprecation warning
 - yet another fix for Shapely 2.0 deprecation warnings
+- updated the `join_geometry` and `join_excellon` Tcl commands format to follow the format of other commands
 
 30.01.2022
 

@@ -1285,7 +1285,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.build_ui()
 
     @staticmethod
-    def merge(exc_list, exc_final, decimals=None, fuse_tools=True):
+    def merge(exc_list, exc_final, decimals=None, fuse_tools=True, log=None):
         """
         Merge Excellon objects found in exc_list parameter into exc_final object.
         Options are always copied from source .
@@ -1330,7 +1330,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
                     try:
                         exc_final.options[option] = deepcopy(exc.options[option])
                     except Exception:
-                        exc.app.log.warning("Failed to copy option.", option)
+                        if log:
+                            log.warning("Failed to copy option.", option)
 
             for tool in exc.tools:
                 toolid += 1

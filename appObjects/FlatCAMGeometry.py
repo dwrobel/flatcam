@@ -1557,7 +1557,8 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.read_form_item('multicolored')
         self.plot()
 
-    def merge(self, geo_list, geo_final, multi_geo=None, fuse_tools=None):
+    @staticmethod
+    def merge(geo_list, geo_final, multi_geo=None, fuse_tools=None, log=None):
         """
         Merges the geometry of objects in grb_list into the geometry of geo_final.
 
@@ -1582,11 +1583,12 @@ class GeometryObject(FlatCAMObj, Geometry):
                     try:
                         new_options[option] = deepcopy(geo_obj.options[option])
                     except Exception as e:
-                        self.app.log.error("Failed to copy option %s. Error: %s" % (str(option), str(e)))
+                        if log:
+                            log.error("Failed to copy option %s. Error: %s" % (str(option), str(e)))
 
             # Expand lists
             if type(geo_obj) is list:
-                GeometryObject.merge(geo_list=geo_obj, geo_final=geo_final)
+                GeometryObject.merge(geo_list=geo_obj, geo_final=geo_final, log=log)
             # If not list, just append
             else:
                 if multi_geo is None or multi_geo is False:
@@ -1598,7 +1600,8 @@ class GeometryObject(FlatCAMObj, Geometry):
                     new_solid_geometry += deepcopy(geo_obj.solid_geometry.geoms)
                 except Exception as e:
                     new_solid_geometry.append(geo_obj.solid_geometry)
-                    self.app.log.error("GeometryObject.merge() --> %s" % str(e))
+                    if log:
+                        log.error("GeometryObject.merge() --> %s" % str(e))
 
                 # find the tool_uid maximum value in the geo_final
                 try:

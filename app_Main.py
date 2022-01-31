@@ -4568,7 +4568,8 @@ class App(QtCore.QObject):
         # if at least one True object is in the list then due of the previous check, all list elements are True objects
         if True in geo_type_set:
             def initialize(geo_obj, app):
-                GeometryObject.merge(geo_list=objs, geo_final=geo_obj, multi_geo=True, fuse_tools=fuse_tools)
+                GeometryObject.merge(geo_list=objs, geo_final=geo_obj, multi_geo=True, fuse_tools=fuse_tools,
+                                     log=app.log)
                 app.inform.emit('[success] %s.' % _("Geometry merging finished"))
 
                 # rename all the ['name] key in obj.tools[tooluid]['data'] to the obj_name_multi
@@ -4578,7 +4579,8 @@ class App(QtCore.QObject):
             self.app_obj.new_object("geometry", obj_name_multi, initialize)
         else:
             def initialize(geo_obj, app):
-                GeometryObject.merge(geo_list=objs, geo_final=geo_obj, multi_geo=False, fuse_tools=fuse_tools)
+                GeometryObject.merge(geo_list=objs, geo_final=geo_obj, multi_geo=False, fuse_tools=fuse_tools,
+                                     log=app.log)
                 app.inform.emit('[success] %s.' % _("Geometry merging finished"))
 
                 # rename all the ['name] key in obj.tools[tooluid]['data'] to the obj_name_multi
@@ -4613,7 +4615,8 @@ class App(QtCore.QObject):
         fuse_tools = self.defaults["excellon_merge_fuse_tools"]
 
         def initialize(exc_obj, app):
-            ExcellonObject.merge(exc_list=objs, exc_final=exc_obj, decimals=self.decimals, fuse_tools=fuse_tools)
+            ExcellonObject.merge(exc_list=objs, exc_final=exc_obj, decimals=self.decimals, fuse_tools=fuse_tools,
+                                 log=app.log)
             app.inform.emit('[success] %s.' % _("Excellon merging finished"))
 
         self.app_obj.new_object("excellon", 'Combo_Excellon', initialize)
