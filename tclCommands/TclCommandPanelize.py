@@ -331,19 +331,19 @@ class TclCommandPanelize(TclCommand):
                                         if not trans_geo.is_empty:
                                             obj_fin.tools[tool]['solid_geometry'].append(trans_geo)
 
-                                    # #############################################################################
-                                    # ##########   Panelize the solid_geometry - always done  #####################
-                                    # #############################################################################
-                                    try:
-                                        sol_geo = obj.solid_geometry
-                                        work_geo = sol_geo.geoms if \
-                                            isinstance(sol_geo, (MultiPolygon, MultiLineString)) else sol_geo
-                                        for geo_el in work_geo:
-                                            trans_geo = translate_recursion(geo_el)
-                                            obj_fin.solid_geometry.append(trans_geo)
-                                    except TypeError:
-                                        trans_geo = translate_recursion(obj.solid_geometry)
+                                # #############################################################################
+                                # ##########   Panelize the solid_geometry - always done  #####################
+                                # #############################################################################
+                                try:
+                                    sol_geo = obj.solid_geometry
+                                    work_geo = sol_geo.geoms if \
+                                        isinstance(sol_geo, (MultiPolygon, MultiLineString)) else sol_geo
+                                    for geo_el in work_geo:
+                                        trans_geo = translate_recursion(geo_el)
                                         obj_fin.solid_geometry.append(trans_geo)
+                                except TypeError:
+                                    trans_geo = translate_recursion(obj.solid_geometry)
+                                    obj_fin.solid_geometry.append(trans_geo)
                             else:
                                 obj_fin.solid_geometry.append(
                                     translate_recursion(obj.solid_geometry)

@@ -20,7 +20,7 @@ class TclCommandBounds(TclCommand):
 
     """
 
-    # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
+    # List of all command aliases, to be able to use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['get_bounds', 'bounds']
 
     description = '%s %s' % ("--", "Return in the console a list of bounds values for a list of objects.")
