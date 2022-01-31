@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - made sure that for laser preprocessors, the laser is always turned off completely at the end of a job
 - added a new script example
 - improved the quit application process; now the `quit_flatcam` Tcl command works properly
+- another fix for Shapely 2.0 deprecation warning
 
 30.01.2022
 

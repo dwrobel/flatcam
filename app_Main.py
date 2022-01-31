@@ -474,10 +474,10 @@ class App(QtCore.QObject):
 
         # Folder for user settings.
         if sys.platform == 'win32':
-            if platform.architecture()[0] == '32bit':
-                self.log.debug("Win32!")
-            else:
-                self.log.debug("Win64!")
+            # if platform.architecture()[0] == '32bit':
+            #     self.log.debug("Win32!")
+            # else:
+            #     self.log.debug("Win64!")
 
             # #######################################################################################################
             # ####### CONFIG FILE WITH PARAMETERS REGARDING PORTABILITY #############################################

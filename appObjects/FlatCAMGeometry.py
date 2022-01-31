@@ -591,14 +591,17 @@ class GeometryObject(FlatCAMObj, Geometry):
                 if isinstance(geo_obj, LineString) or isinstance(geo_obj, LinearRing):
                     dxf_space.add_lwpolyline(list(geo_obj.coords))
 
-            multigeo_solid_geometry = []
+            multigeo_solid = []
             if self.multigeo:
                 for tool in self.tools:
-                    multigeo_solid_geometry += self.tools[tool]['solid_geometry']
+                    multigeo_solid += self.tools[tool]['solid_geometry']
             else:
-                multigeo_solid_geometry = self.solid_geometry
+                multigeo_solid = self.solid_geometry
 
-            for geo in multigeo_solid_geometry:
+
+            w_geo = multigeo_solid.geoms \
+                if isinstance(multigeo_solid, (MultiPolygon, MultiLineString)) else multigeo_solid
+            for geo in w_geo:
                 if type(geo) == list:
                     for g in geo:
                         g2dxf(msp, g)
