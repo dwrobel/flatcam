@@ -4161,7 +4161,11 @@ class App(QtCore.QObject):
         # self.close_app_signal.emit()
         # sys.exit(0)
         QtWidgets.QApplication.quit()
-        self.new_launch.close_command()
+        if sys.platform == 'win32' or sys.platform == 'linux':
+            try:
+                self.new_launch.close_command()
+            except Exception:
+                pass
 
     @staticmethod
     def kill_app():

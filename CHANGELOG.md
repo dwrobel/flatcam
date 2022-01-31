@@ -17,7 +17,7 @@ CHANGELOG for FlatCAM beta
 - most of the logging (except in the Editors) is now done by the AppLogging class
 - made sure that for laser preprocessors, the laser is always turned off completely at the end of a job
 - added a new script example
-- improved the quit application process; now the `quit_flatcam` Tcl command works properly
+- improved the quit application process; now the `quit_app` Tcl command works properly
 - another fix for Shapely 2.0 deprecation warning
 - yet another fix for Shapely 2.0 deprecation warnings
 - updated the `join_geometry` and `join_excellon` Tcl commands format to follow the format of other commands
@@ -25,6 +25,7 @@ CHANGELOG for FlatCAM beta
 - fixed an issue in `panelize` Tcl command where some parameters (`spacing_columns` and `spacing_rows` where forced into integers where correct was to keep them as floats)
 - fixed a performance issue in `panelize` Tcl command: when panelizing a Geometry object the total solid_geometry was calculated for each tool, but it was enough to be calculated once
 - yet another fix for a Shapely 2.0 deprecation warning
+- minor change in the way the app quits
 
 30.01.2022
 
