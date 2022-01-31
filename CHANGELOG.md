@@ -17,6 +17,7 @@ CHANGELOG for FlatCAM beta
 - most of the logging (except in the Editors) is now done by the AppLogging class
 - made sure that for laser preprocessors, the laser is always turned off completely at the end of a job
 - added a new script example
+- improved the quit application process; now the `quit_flatcam` Tcl command works properly
 
 30.01.2022
 

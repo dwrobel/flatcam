@@ -4,6 +4,7 @@
 # Date: 8/17/2019                                          #
 # MIT Licence                                              #
 # ##########################################################
+import sys
 
 from tclCommands.TclCommand import TclCommand
 
@@ -19,7 +20,7 @@ class TclCommandQuit(TclCommand):
     """
 
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
-    aliases = ['quit_flatcam']
+    aliases = ['quit_app']
 
     description = '%s %s' % ("--", "Tcl shell command to quit FlatCAM from Tcl shell.")
 
@@ -42,7 +43,7 @@ class TclCommandQuit(TclCommand):
         'args': collections.OrderedDict([
 
         ]),
-        'examples': ['quit_flatcam']
+        'examples': ['quit_app']
     }
 
     def execute(self, args, unnamed_args):
@@ -53,4 +54,8 @@ class TclCommandQuit(TclCommand):
         :return:
         """
 
-        self.app.quit_application(silent=True)
+        try:
+            self.app.quit_application(silent=True)
+        except Exception:
+            import os
+            os._exit(0)

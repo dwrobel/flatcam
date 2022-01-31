@@ -26,9 +26,12 @@ ncc gerber_file -overlap 10 -tooldia 0.254 -method seed -connect 1 -margin 2 -al
 cncjob gerber_ncc -dia 0.254 -z_cut -0.05 -z_move 3 -feedrate 100 -outname gerber_ncc_cnc
 
 # plot the objects so we can see them; not required for the script but in this script we want to see the results
-plot_all
+# plot_all
 
 # write the GCode to a file
-# write_gcode gerber_ncc_cnc  ${ROOT_FOLDER}/assets/examples/copper_clear.gcode
+write_gcode gerber_ncc_cnc  ${ROOT_FOLDER}/assets/examples/copper_clear.gcode
+
+# in the end, the script is executed so we exit the application
+quit_app
 
 

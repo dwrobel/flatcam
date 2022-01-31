@@ -7,6 +7,7 @@
 # Modified by Marius Stanciu (2019)                         #
 # ###########################################################
 import os.path
+import sys
 import urllib.request
 import urllib.parse
 import urllib.error
@@ -641,7 +642,7 @@ class App(QtCore.QObject):
                                   'offset',
                                   'open_dxf', 'open_excellon', 'open_gcode', 'open_gerber', 'open_project', 'open_svg',
                                   'options', 'origin',
-                                  'paint', 'panelize', 'plot_all', 'plot_objects', 'plot_status', 'quit_flatcam',
+                                  'paint', 'panelize', 'plot_all', 'plot_objects', 'plot_status', 'quit_app',
                                   'save', 'save_project',
                                   'save_sys', 'scale', 'set_active', 'set_origin', 'set_path', 'set_sys',
                                   'skew', 'subtract_poly', 'subtract_rectangle',
@@ -4059,7 +4060,8 @@ class App(QtCore.QObject):
                 self.geo_editor.disconnect()
             except TypeError:
                 pass
-            self.log.debug("App.quit_application() --> Geo Editor deactivated.")
+            if silent is False:
+                self.log.debug("App.quit_application() --> Geo Editor deactivated.")
 
         if self.call_source == 'exc_editor':
             self.exc_editor.deactivate()
@@ -4067,7 +4069,8 @@ class App(QtCore.QObject):
                 self.grb_editor.disconnect()
             except TypeError:
                 pass
-            self.log.debug("App.quit_application() --> Excellon Editor deactivated.")
+            if silent is False:
+                self.log.debug("App.quit_application() --> Excellon Editor deactivated.")
 
         if self.call_source == 'grb_editor':
             self.grb_editor.deactivate_grb_editor()
@@ -4075,7 +4078,8 @@ class App(QtCore.QObject):
                 self.exc_editor.disconnect()
             except TypeError:
                 pass
-            self.log.debug("App.quit_application() --> Gerber Editor deactivated.")
+                if silent is False:
+                    self.log.debug("App.quit_application() --> Gerber Editor deactivated.")
 
         # disconnect the mouse events
         if self.use_3d_engine:
@@ -4093,7 +4097,8 @@ class App(QtCore.QObject):
             self.plotcanvas.graph_event_disconnect(self.kp)
 
         self.preferencesUiManager.save_defaults(silent=True)
-        self.log.debug("App.quit_application() --> App Defaults saved.")
+        if silent is False:
+            self.log.debug("App.quit_application() --> App Defaults saved.")
 
         if self.cmd_line_headless != 1:
             # save app state to file
@@ -4126,17 +4131,18 @@ class App(QtCore.QObject):
             # This will write the setting to the platform specific storage.
             del stgs
 
-        self.log.debug("App.quit_application() --> App UI state saved.")
+        if silent is False:
+            self.log.debug("App.quit_application() --> App UI state saved.")
 
         # try to quit the Socket opened by ArgsThread class
-        try:
-            # self.new_launch.thread_exit = True
-            # self.new_launch.listener.close()
-            if sys.platform == 'win32' or sys.platform == 'linux':
-                self.new_launch.close_listener()
-                # self.new_launch.stop.emit()
-        except Exception as err:
-            self.log.error("App.quit_application() --> %s" % str(err))
+        # try:
+        #     # self.new_launch.thread_exit = True
+        #     # self.new_launch.listener.close()
+        #     if sys.platform == 'win32' or sys.platform == 'linux':
+        #         self.new_launch.close_listener()
+        #         # self.new_launch.stop.emit()
+        # except Exception as err:
+        #     self.log.error("App.quit_application() --> %s" % str(err))
 
         # try to quit the QThread that run ArgsThread class
         try:
@@ -4144,7 +4150,8 @@ class App(QtCore.QObject):
             if sys.platform == 'win32' or sys.platform == 'linux':
                 self.listen_th.quit()
         except Exception as e:
-            self.log.error("App.quit_application() --> %s" % str(e))
+            if silent is False:
+                self.log.error("App.quit_application() --> %s" % str(e))
 
         # terminate workers
         # self.workers.__del__()
@@ -4153,11 +4160,8 @@ class App(QtCore.QObject):
         # quit app by signalling for self.kill_app() method
         # self.close_app_signal.emit()
         # sys.exit(0)
-
-        if silent:
-            os._exit(0)
-        else:
-            QtWidgets.QApplication.quit()
+        QtWidgets.QApplication.quit()
+        self.new_launch.close_command()
 
     @staticmethod
     def kill_app():
@@ -9337,8 +9341,9 @@ class App(QtCore.QObject):
         if old_line != '':
             # it means that the script finished with an error
             result = self.shell.tcl.eval("set errorInfo")
-            self.log.error("Exec command Exception: %s\n" % result)
-            self.shell.append_error('ERROR: %s\n' % result)
+            if "quit_app" not in result:
+                self.log.error("Exec command Exception: %s\n" % result)
+                self.shell.append_error('ERROR: %s\n' % result)
 
         # self.ui.fcinfo.lock_pmaps = False
         self.shell.close_processing()
@@ -9417,7 +9422,18 @@ class ArgsThread(QtCore.QObject):
     @pyqtSlot()
     def close_listener(self):
         self.thread_exit = True
-        self.listener.close()
+        try:
+            self.listener.close()
+        except Exception:
+            pass
+
+    def close_command(self):
+        conn = Client(*self.address)
+        conn.send(['quit'])
+        try:
+            self.listener.close()
+        except Exception:
+            pass
 
 
 class MenuFileHandlers(QtCore.QObject):
