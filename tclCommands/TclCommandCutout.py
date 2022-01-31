@@ -2,6 +2,7 @@ from tclCommands.TclCommand import TclCommand
 
 import collections
 import logging
+from copy import deepcopy
 
 from shapely.ops import unary_union
 from shapely.geometry import LineString
@@ -107,7 +108,7 @@ class TclCommandCutout(TclCommand):
             return "fail"
 
         def geo_init_me(geo_obj, app_obj):
-            geo_obj.multigeo = False
+            geo_obj.multigeo = True
 
             margin = margin_par + dia_par / 2
             gap_size = dia_par + gapsize_par
@@ -152,8 +153,30 @@ class TclCommandCutout(TclCommand):
             cuts = cases[gaps_par]
             geo_obj.solid_geometry = unary_union([LineString(segment) for segment in cuts])
 
+            if not geo_obj.solid_geometry:
+                app_obj.log("TclCommandCutout.execute(). No geometry after cutout.")
+                return "fail"
+
+            default_tool_data = self.app.options.copy()
+
+            geo_obj.tools = {
+                1: {
+                    'tooldia': dia_par,
+                    'data': default_tool_data,
+                    'solid_geometry': deepcopy(geo_obj.solid_geometry)
+                }
+            }
+            geo_obj.tools[1]['data']['tools_cutout_tooldia'] = dia_par
+            geo_obj.tools[1]['data']['tools_cutout_gaps_ff'] = gaps_par
+            geo_obj.tools[1]['data']['tools_cutout_margin'] = margin_par
+            geo_obj.tools[1]['data']['tools_cutout_gapsize'] = gapsize_par
+
         try:
-            self.app.app_obj.new_object("geometry", outname, geo_init_me, plot=False)
+            ret = self.app.app_obj.new_object("geometry", outname, geo_init_me, plot=False)
+            if ret == 'fail':
+                self.app.log.error("Could not create a cutout Geometry object." )
+                return "fail"
             self.app.inform.emit("[success] Rectangular-form Cutout operation finished.")
         except Exception as e:
-            return "Operation failed: %s" % str(e)
+            self.app.log.error("Cutout operation failed: %s" % str(e))
+            return "fail"

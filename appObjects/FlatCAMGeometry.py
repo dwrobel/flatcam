@@ -110,7 +110,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             tool_id of the tools and the value is another dict that will hold the data under the following form:
                 {tooluid:   {
                             'tooldia': 1,
-                            'data': self.default_tool_data
+                            'data': self.default_tool_data,
                             'solid_geometry': []
                             }
                 }

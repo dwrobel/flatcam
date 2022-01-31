@@ -579,6 +579,7 @@ class GerberObject(FlatCAMObj, Gerber):
                 # Propagate options
                 geo_obj.options["tools_mill_tooldia"] = str(dia)
                 geo_obj.tool_type = self.app.defaults["tools_iso_tool_shape"]
+                geo_obj.multigeo = True
 
                 geo_obj.solid_geometry = []
 
@@ -639,9 +640,6 @@ class GerberObject(FlatCAMObj, Gerber):
                     msg = '[success] %s: %s' % (_("Isolation geometry created"), geo_obj.options["name"])
                     app_obj.inform.emit(msg)
 
-                # even if combine is checked, one pass is still single-geo
-                geo_obj.multigeo = True if passes > 1 else False
-
                 # ############################################################
                 # ########## AREA SUBTRACTION ################################
                 # ############################################################
@@ -679,6 +677,7 @@ class GerberObject(FlatCAMObj, Gerber):
                     # Propagate options
                     geo_obj.options["tools_mill_tooldia"] = str(dia)
                     geo_obj.tool_type = self.app.defaults["tools_iso_tool_shape"]
+                    geo_obj.multigeo = True
 
                     # if milling type is climb then the move is counter-clockwise around features
                     mill_dir = 1 if milling_type == 'cl' else 0
@@ -731,7 +730,6 @@ class GerberObject(FlatCAMObj, Gerber):
                     elif plot:
                         msg = '[success] %s: %s' % (_("Isolation geometry created"), geo_obj.options["name"])
                         app_obj.inform.emit(msg)
-                    geo_obj.multigeo = False
 
                     # ############################################################
                     # ########## AREA SUBTRACTION ################################
