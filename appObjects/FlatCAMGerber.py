@@ -625,18 +625,19 @@ class GerberObject(FlatCAMObj, Gerber):
                         not isinstance(geo_obj.solid_geometry, MultiPolygon):
                     geo_obj.solid_geometry = [geo_obj.solid_geometry]
 
-                for g in geo_obj.solid_geometry:
+                w_geo = geo_obj.solid_geometry.geoms \
+                    if isinstance(geo_obj.solid_geometry, (MultiPolygon, MultiLineString)) else geo_obj.solid_geometry
+                for g in w_geo:
                     if g:
                         break
                     else:
                         empty_cnt += 1
 
-                if empty_cnt == len(geo_obj.solid_geometry):
+                if empty_cnt == len(w_geo):
                     raise ValidationError("Empty Geometry", None)
-                else:
-                    if plot:
-                        app_obj.inform.emit('[success] %s: %s' %
-                                            (_("Isolation geometry created"), geo_obj.options["name"]))
+                elif plot:
+                    msg = '[success] %s: %s' % (_("Isolation geometry created"), geo_obj.options["name"])
+                    app_obj.inform.emit(msg)
 
                 # even if combine is checked, one pass is still single-geo
                 geo_obj.multigeo = True if passes > 1 else False
@@ -712,21 +713,24 @@ class GerberObject(FlatCAMObj, Gerber):
                     # proceed with object creation, if there are empty and the number of them is the length
                     # of the list then we have an empty solid_geometry which should raise a Custom Exception
                     empty_cnt = 0
-                    if not isinstance(geo_obj.solid_geometry, list):
+                    if not isinstance(geo_obj.solid_geometry, list) and \
+                            not isinstance(geo_obj.solid_geometry, (MultiPolygon, MultiLineString)):
                         geo_obj.solid_geometry = [geo_obj.solid_geometry]
 
-                    for g in geo_obj.solid_geometry:
+                    w_geo = geo_obj.solid_geometry.geoms \
+                        if isinstance(geo_obj.solid_geometry,
+                                      (MultiPolygon, MultiLineString)) else geo_obj.solid_geometry
+                    for g in w_geo:
                         if g:
                             break
                         else:
                             empty_cnt += 1
 
-                    if empty_cnt == len(geo_obj.solid_geometry):
+                    if empty_cnt == len(w_geo):
                         raise ValidationError("Empty Geometry", None)
-                    else:
-                        if plot:
-                            app_obj.inform.emit('[success] %s: %s' %
-                                                (_("Isolation geometry created"), geo_obj.options["name"]))
+                    elif plot:
+                        msg = '[success] %s: %s' % (_("Isolation geometry created"), geo_obj.options["name"])
+                        app_obj.inform.emit(msg)
                     geo_obj.multigeo = False
 
                     # ############################################################
@@ -755,7 +759,8 @@ class GerberObject(FlatCAMObj, Gerber):
         if invert:
             try:
                 pl = []
-                for p in geom:
+                w_geo = geom.geoms if isinstance(geom, (MultiPolygon, MultiLineString)) else geom
+                for p in w_geo:
                     if p is not None:
                         if isinstance(p, Polygon):
                             pl.append(Polygon(p.exterior.coords[::-1], p.interiors))

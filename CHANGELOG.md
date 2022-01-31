@@ -19,6 +19,7 @@ CHANGELOG for FlatCAM beta
 - added a new script example
 - improved the quit application process; now the `quit_flatcam` Tcl command works properly
 - another fix for Shapely 2.0 deprecation warning
+- yet another fix for Shapely 2.0 deprecation warnings
 
 30.01.2022
 
