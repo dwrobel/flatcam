@@ -135,12 +135,12 @@ class TclCommandPanelize(TclCommand):
             threaded = False
 
         if 'spacing_columns' in args:
-            spacing_columns = int(args['spacing_columns'])
+            spacing_columns = float(args['spacing_columns'])
         else:
             spacing_columns = 5
 
         if 'spacing_rows' in args:
-            spacing_rows = int(args['spacing_rows'])
+            spacing_rows = float(args['spacing_rows'])
         else:
             spacing_rows = 5
 

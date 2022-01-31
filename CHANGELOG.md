@@ -22,6 +22,7 @@ CHANGELOG for FlatCAM beta
 - yet another fix for Shapely 2.0 deprecation warnings
 - updated the `join_geometry` and `join_excellon` Tcl commands format to follow the format of other commands
 - updated the `isolate`, `cutout` and `geocutout` Tcl commands and now they yield multigeo Geometry objects
+- fixed an issue in `panelize` Tcl command where the some parameters (`spacing_columns` and `spacing_rows` where forced into integers where correct was to keep them as floats)
 
 30.01.2022
 
