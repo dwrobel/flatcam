@@ -282,7 +282,7 @@ class ToolSub(AppTool):
         try:
             self.target_grb_obj = self.app.collection.get_by_name(self.target_grb_obj_name)
         except Exception as e:
-            log.error("ToolSub.on_subtract_gerber_click() --> %s" % str(e))
+            self.app.log.error("ToolSub.on_subtract_gerber_click() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.obj_name))
             return "Could not retrieve object: %s" % self.target_grb_obj_name
 
@@ -300,7 +300,7 @@ class ToolSub(AppTool):
         try:
             self.sub_grb_obj = self.app.collection.get_by_name(self.sub_grb_obj_name)
         except Exception as e:
-            log.error("ToolSub.on_subtract_gerber_click() --> %s" % str(e))
+            self.app.log.error("ToolSub.on_subtract_gerber_click() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.obj_name))
             return "Could not retrieve object: %s" % self.sub_grb_obj_name
 
@@ -514,7 +514,7 @@ class ToolSub(AppTool):
         try:
             self.target_geo_obj = self.app.collection.get_by_name(self.target_geo_obj_name)
         except Exception as e:
-            log.error("ToolSub.on_subtract_geo_click() --> %s" % str(e))
+            self.app.log.error("ToolSub.on_subtract_geo_click() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.target_geo_obj_name))
             return "Could not retrieve object: %s" % self.target_grb_obj_name
 
@@ -527,7 +527,7 @@ class ToolSub(AppTool):
         try:
             self.sub_geo_obj = self.app.collection.get_by_name(self.sub_geo_obj_name)
         except Exception as e:
-            log.error("ToolSub.on_subtract_geo_click() --> %s" % str(e))
+            self.app.log.error("ToolSub.on_subtract_geo_click() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.sub_geo_obj_name))
             return "Could not retrieve object: %s" % self.sub_geo_obj_name
 
@@ -570,7 +570,7 @@ class ToolSub(AppTool):
 
     def toolgeo_intersection(self, tool, geo):
         new_geometry = []
-        log.debug("Working on promise: %s" % str(tool))
+        self.app.log.debug("Working on promise: %s" % str(tool))
 
         if tool == "single":
             text = _("Parsing solid_geometry ...")
@@ -644,7 +644,7 @@ class ToolSub(AppTool):
 
             self.promises.remove(tool)
             time.sleep(0.5)
-        log.debug("Promise fulfilled: %s" % str(tool))
+        self.app.log.debug("Promise fulfilled: %s" % str(tool))
 
     def new_geo_object(self, outname):
         geo_name = outname
@@ -700,7 +700,7 @@ class ToolSub(AppTool):
         :return:
         """
 
-        log.debug("ToolSub --> Periodic Check started.")
+        self.app.log.debug("ToolSub --> Periodic Check started.")
 
         try:
             self.check_thread.stop()
@@ -732,10 +732,10 @@ class ToolSub(AppTool):
                 # reset the type of substraction for next time
                 self.sub_type = None
 
-                log.debug("ToolSub --> Periodic check finished.")
+                self.app.log.debug("ToolSub --> Periodic check finished.")
         except Exception as e:
             self.job_finished.emit(False)
-            log.error("ToolSub().periodic_check_handler() --> %s" % str(e))
+            self.app.log.error("ToolSub().periodic_check_handler() --> %s" % str(e))
             traceback.print_exc()
 
     def on_job_finished(self, succcess):

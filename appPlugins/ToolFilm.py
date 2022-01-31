@@ -307,7 +307,7 @@ class Film(AppTool):
             self.ui.film_scale_stroke_entry.set_value(float(scale_stroke_width))
 
     def on_film_creation(self):
-        log.debug("ToolFilm.Film.on_film_creation() started ...")
+        self.app.log.debug("ToolFilm.Film.on_film_creation() started ...")
 
         try:
             name = self.ui.tf_object_combo.currentText()
@@ -347,7 +347,7 @@ class Film(AppTool):
             self.generate_negative_film(name, boxname, factor=scale_stroke_width, ftype=file_type)
 
     def generate_positive_normal_film(self, name, boxname, factor, ftype='svg'):
-        log.debug("ToolFilm.Film.generate_positive_normal_film() started ...")
+        self.app.log.debug("ToolFilm.Film.generate_positive_normal_film() started ...")
 
         scale_factor_x = 1
         scale_factor_y = 1
@@ -418,7 +418,7 @@ class Film(AppTool):
         film_obj = self.app.collection.get_by_name(name)
 
         if source == 'exc':
-            log.debug("ToolFilm.Film.generate_positive_punched_film() with Excellon source started ...")
+            self.app.log.debug("ToolFilm.Film.generate_positive_punched_film() with Excellon source started ...")
 
             try:
                 exc_name = self.ui.exc_combo.currentText()
@@ -439,7 +439,7 @@ class Film(AppTool):
 
             self.generate_positive_normal_film(outname, boxname, factor=factor, ftype=ftype)
         else:
-            log.debug("ToolFilm.Film.generate_positive_punched_film() with Pad center source started ...")
+            self.app.log.debug("ToolFilm.Film.generate_positive_punched_film() with Pad center source started ...")
 
             punch_size = float(self.ui.punch_size_spinner.get_value())
 
@@ -491,7 +491,7 @@ class Film(AppTool):
             self.generate_positive_normal_film(outname, boxname, factor=factor, ftype=ftype)
 
     def generate_negative_film(self, name, boxname, factor, ftype='svg'):
-        log.debug("ToolFilm.Film.generate_negative_film() started ...")
+        self.app.log.debug("ToolFilm.Film.generate_negative_film() started ...")
 
         use_convex_hull = self.ui.convex_box_cb.get_value()
         rounded_box = self.ui.rounded_cb.get_value()
@@ -643,7 +643,7 @@ class Film(AppTool):
         transparency_level = opacity_val
 
         def make_negative_film(color, transparency_level, scale_factor_x, scale_factor_y, use_convex_hull, rounded_box):
-            log.debug("FilmTool.export_negative().make_negative_film()")
+            self.app.log.debug("FilmTool.export_negative().make_negative_film()")
 
             self.screen_dpi = self.app.qapp.screens()[0].logicalDotsPerInch()
 
@@ -909,7 +909,7 @@ class Film(AppTool):
                                            scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
                                            use_convex_hull=use_convex_hull, rounded_box=rounded_box)
                     except Exception as e:
-                        log.error("export_negative() process -> %s" % str(e))
+                        self.app.log.error("export_negative() process -> %s" % str(e))
                         return
 
             self.app.worker_task.emit({'fcn': job_thread_film, 'params': []})
@@ -976,7 +976,7 @@ class Film(AppTool):
         transparency_level = opacity_val
 
         def make_positive_film(color, transparency_level, scale_factor_x, scale_factor_y):
-            log.debug("FilmTool.export_positive().make_positive_film()")
+            self.app.log.debug("FilmTool.export_positive().make_positive_film()")
 
             self.screen_dpi = self.app.qapp.screens()[0].logicalDotsPerInch()
 

@@ -48,7 +48,7 @@ class ToolInvertGerber(AppTool):
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolInvertGerber()")
-        log.debug("ToolInvertGerber() is running ...")
+        self.app.log.debug("ToolInvertGerber() is running ...")
 
         if toggle:
             # if the splitter is hidden, display it

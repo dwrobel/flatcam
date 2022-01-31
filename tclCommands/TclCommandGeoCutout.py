@@ -137,7 +137,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
                 if type(target) == LineString or type(target) == LinearRing:
                     diffs.append(target.difference(toolgeo))
                 else:
-                    log.warning("Not implemented.")
+                    self.app.log.warning("Not implemented.")
             return unary_union(diffs)
 
         if 'name' in args:

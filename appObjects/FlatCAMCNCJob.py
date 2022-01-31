@@ -408,7 +408,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
 
-        log.debug("FlatCAMCNCJob.set_ui()")
+        self.app.log.debug("FlatCAMCNCJob.set_ui()")
 
         assert isinstance(self.ui, CNCObjectUI), \
             "Expected a CNCObjectUI, got %s" % type(self.ui)
@@ -1403,7 +1403,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         :return:
         """
 
-        log.debug("FlatCAMObj.FlatCAMECNCjob.convert_units()")
+        self.app.log.debug("FlatCAMObj.FlatCAMECNCjob.convert_units()")
 
         factor = CNCjob.convert_units(self, units)
         self.options["tooldia"] = float(self.options["tooldia"]) * factor

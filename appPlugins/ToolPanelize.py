@@ -316,7 +316,7 @@ class Panelize(AppTool):
         try:
             panel_source_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
-            log.error("Panelize.on_panelize() --> %s" % str(e))
+            self.app.log.error("Panelize.on_panelize() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return
 
@@ -330,7 +330,7 @@ class Panelize(AppTool):
         try:
             box = self.app.collection.get_by_name(boxname)
         except Exception as e:
-            log.error("Panelize.on_panelize() --> %s" % str(e))
+            self.app.log.error("Panelize.on_panelize() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), boxname))
             return
 
@@ -423,7 +423,7 @@ class Panelize(AppTool):
                             try:
                                 obj_fin.options[option] = panel_source_obj.options[option]
                             except KeyError:
-                                log.warning("Failed to copy option. %s" % str(option))
+                                app_obj.log.warning("Failed to copy option. %s" % str(option))
 
                     # calculate the total number of drills and slots
                     geo_len_drills = 0

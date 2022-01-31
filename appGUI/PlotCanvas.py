@@ -421,7 +421,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             else:
                 dims = (self.pagesize_dict[workspace_size][0]/25.4, self.pagesize_dict[workspace_size][1]/25.4)
         except Exception as e:
-            log.error("PlotCanvas.draw_workspace() --> %s" % str(e))
+            self.app.log.error("PlotCanvas.draw_workspace() --> %s" % str(e))
             return
 
         if self.fcapp.defaults['global_workspace_orientation'] == 'l':

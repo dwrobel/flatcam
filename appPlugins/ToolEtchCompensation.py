@@ -49,7 +49,7 @@ class ToolEtchCompensation(AppTool):
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolEtchCompensation()")
-        log.debug("ToolEtchCompensation() is running ...")
+        self.app.log.debug("ToolEtchCompensation() is running ...")
 
         if toggle:
             # if the splitter is hidden, display it
@@ -178,7 +178,7 @@ class ToolEtchCompensation(AppTool):
         self.ui.mils_to_um_entry.set_value(val, self.decimals)
 
     def on_compensate(self):
-        log.debug("ToolEtchCompensation.on_compensate()")
+        self.app.log.debug("ToolEtchCompensation.on_compensate()")
 
         ratio_type = self.ui.ratio_radio.get_value()
         thickness = self.ui.thick_entry.get_value() / 1000     # in microns

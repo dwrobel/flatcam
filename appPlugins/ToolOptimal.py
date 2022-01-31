@@ -219,7 +219,7 @@ class ToolOptimal(AppTool):
         try:
             fcobj = model_index.internalPointer().obj
         except Exception as e:
-            log.error("ToolOptimal.find_minimum_distance() --> %s" % str(e))
+            self.app.log.error("ToolOptimal.find_minimum_distance() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
 
@@ -335,7 +335,7 @@ class ToolOptimal(AppTool):
             else:
                 return 'fail'
         except Exception as e:
-            log.error("ToolOptimal.on_locate_position() --> first try %s" % str(e))
+            self.app.log.error("ToolOptimal.on_locate_position() --> first try %s" % str(e))
             self.app.inform.emit("[ERROR_NOTCL] The selected text is no valid location in the format "
                                  "((x0, y0), (x1, y1)).")
             return
@@ -349,7 +349,7 @@ class ToolOptimal(AppTool):
                    float('%.*f' % (self.decimals, (min(loc_1[1], loc_2[1]) + (abs(dy) / 2)))))
             self.app.on_jump_to(custom_location=loc)
         except Exception as e:
-            log.error("ToolOptimal.on_locate_position() --> sec try %s" % str(e))
+            self.app.log.error("ToolOptimal.on_locate_position() --> sec try %s" % str(e))
             return
 
     def on_update_text(self, data):
@@ -448,7 +448,7 @@ class ToolOptimal(AppTool):
             else:
                 return
         except Exception as e:
-            log.error("ToolOptimal.on_locate_sec_position() --> first try %s" % str(e))
+            self.app.log.error("ToolOptimal.on_locate_sec_position() --> first try %s" % str(e))
             self.app.inform.emit("[ERROR_NOTCL] The selected text is no valid location in the format "
                                  "((x0, y0), (x1, y1)).")
             return
@@ -462,7 +462,7 @@ class ToolOptimal(AppTool):
                    float('%.*f' % (self.decimals, (min(loc_1[1], loc_2[1]) + (abs(dy) / 2)))))
             self.app.on_jump_to(custom_location=loc)
         except Exception as e:
-            log.error("ToolOptimal.on_locate_sec_position() --> sec try %s" % str(e))
+            self.app.log.error("ToolOptimal.on_locate_sec_position() --> sec try %s" % str(e))
             return
 
     def reset_fields(self):

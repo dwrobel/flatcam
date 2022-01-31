@@ -549,7 +549,7 @@ class Distance(AppTool):
             self.app.ui.update_location_labels(dx=dx, dy=dy, x=pos[0], y=pos[1])
 
         except Exception as e:
-            log.error("Distance.on_mouse_move() position --> %s" % str(e))
+            self.app.log.error("Distance.on_mouse_move() position --> %s" % str(e))
             self.app.ui.position_label.setText("")
             self.app.ui.rel_position_label.setText("")
             return

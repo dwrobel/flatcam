@@ -93,7 +93,7 @@ class TclCommandCopperClear(TclCommand):
         try:
             obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
-            log.error("TclCommandCopperClear.execute() --> %s" % str(e))
+            self.app.log.error("TclCommandCopperClear.execute() --> %s" % str(e))
             self.raise_tcl_error("%s: %s" % (_("Could not retrieve object"), name))
             return "Could not retrieve object: %s" % name
 

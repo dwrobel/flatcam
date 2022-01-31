@@ -33,7 +33,7 @@ class ScriptObject(FlatCAMObj):
     def __init__(self, name):
         self.decimals = self.app.decimals
 
-        log.debug("Creating a ScriptObject object...")
+        self.app.log.debug("Creating a ScriptObject object...")
         FlatCAMObj.__init__(self, name)
 
         self.kind = "script"
@@ -62,7 +62,7 @@ class ScriptObject(FlatCAMObj):
         :return:
         """
         FlatCAMObj.set_ui(self, ui)
-        log.debug("ScriptObject.set_ui()")
+        self.app.log.debug("ScriptObject.set_ui()")
 
         assert isinstance(self.ui, ScriptObjectUI), \
             "Expected a ScriptObjectUI, got %s" % type(self.ui)
@@ -135,7 +135,7 @@ class ScriptObject(FlatCAMObj):
             # self.script_editor_tab.code_editor.setPlainText(self.source_file)
             self.script_editor_tab.load_text(self.source_file, move_to_end=True)
         except Exception as e:
-            log.error("ScriptObject.set_ui() --> %s" % str(e))
+            self.app.log.error("ScriptObject.set_ui() --> %s" % str(e))
 
         self.script_editor_tab.t_frame.show()
 

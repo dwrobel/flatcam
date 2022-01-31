@@ -785,7 +785,7 @@ class ToolExtract(AppTool):
             try:
                 self.app.app_obj.new_object("gerber", outname, obj_init, autoselected=False)
             except Exception as e:
-                log.error("Error on Extracted Soldermask Gerber object creation: %s" % str(e))
+                self.app.log.error("Error on Extracted Soldermask Gerber object creation: %s" % str(e))
                 return
 
     def on_extract_cutout_click(self):
@@ -860,7 +860,7 @@ class ToolExtract(AppTool):
             try:
                 self.app.app_obj.new_object("gerber", outname, obj_init)
             except Exception as e:
-                log.error("Error on Extracted Cutout Gerber object creation: %s" % str(e))
+                self.app.log.error("Error on Extracted Cutout Gerber object creation: %s" % str(e))
                 return
 
     def on_extract_drills_method_changed(self, val):

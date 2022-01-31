@@ -217,7 +217,7 @@ class HPGL2:
                 # ###################
                 match = self.comment_re.search(gline)
                 if match:
-                    log.debug(str(match.group(1)))
+                    self.app.log.debug(str(match.group(1)))
                     continue
 
                 # search for the initialization
@@ -410,13 +410,13 @@ class HPGL2:
                             continue
 
                 # ## Line did not match any pattern. Warn user.
-                log.warning("Line ignored (%d): %s" % (line_num, gline))
+                self.app.log.warning("Line ignored (%d): %s" % (line_num, gline))
 
             if not geo_buffer and not self.solid_geometry:
-                log.error("Object is not HPGL2 file or empty. Aborting Object creation.")
+                self.app.log.error("Object is not HPGL2 file or empty. Aborting Object creation.")
                 return 'fail'
 
-            log.warning("Joining %d polygons." % len(geo_buffer))
+            self.app.log.warning("Joining %d polygons." % len(geo_buffer))
             self.app.inform.emit('%s: %d.' % (_("Gerber processing. Joining polygons"), len(geo_buffer)))
 
             new_poly = unary_union(geo_buffer)
@@ -427,7 +427,7 @@ class HPGL2:
             traceback.print_tb(tb)
             print(traceback.format_exc())
 
-            log.error("HPGL2 PARSING FAILED. Line %d: %s" % (line_num, gline))
+            self.app.log.error("HPGL2 PARSING FAILED. Line %d: %s" % (line_num, gline))
 
             loc = '%s #%d %s: %s\n' % (_("HPGL2 Line"), line_num, _("HPGL2 Line Content"), gline) + repr(err)
             self.app.inform.emit('[ERROR] %s\n%s:' % (_("HPGL2 Parser ERROR"), loc))

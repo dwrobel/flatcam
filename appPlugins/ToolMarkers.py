@@ -318,7 +318,7 @@ class ToolMarkers(AppTool):
         try:
             self.grb_object = model_index.internalPointer().obj
         except Exception as e:
-            log.error("ToolMarkers.add_markers() --> %s" % str(e))
+            self.app.log.error("ToolMarkers.add_markers() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             self.app.call_source = "app"
             return
@@ -353,7 +353,7 @@ class ToolMarkers(AppTool):
         try:
             self.grb_object = model_index.internalPointer().obj
         except Exception as e:
-            log.error("ToolMarkers.add_markers() --> %s" % str(e))
+            self.app.log.error("ToolMarkers.add_markers() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             self.on_exit()
             return
@@ -413,7 +413,7 @@ class ToolMarkers(AppTool):
             try:
                 self.grb_object = model_index.internalPointer().obj
             except Exception as e:
-                log.error("ToolMarkers.add_markers() --> %s" % str(e))
+                self.app.log.error("ToolMarkers.add_markers() --> %s" % str(e))
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
                 self.on_exit()
                 return
@@ -748,7 +748,7 @@ class ToolMarkers(AppTool):
         try:
             self.grb_object = model_index.internalPointer().obj
         except Exception as e:
-            log.error("ToolMarkers.add_markers() --> %s" % str(e))
+            self.app.log.error("ToolMarkers.add_markers() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             self.app.call_source = "app"
             return
@@ -857,7 +857,7 @@ class ToolMarkers(AppTool):
         try:
             self.grb_object = model_index.internalPointer().obj
         except Exception as e:
-            log.error("ToolMarkers.add_markers() --> %s" % str(e))
+            self.app.log.error("ToolMarkers.add_markers() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             self.app.call_source = "app"
             return
@@ -1037,7 +1037,7 @@ class ToolMarkers(AppTool):
             self.grb_object.options['xmax'] = c
             self.grb_object.options['ymax'] = d
         except Exception as e:
-            log.error("ToolMarkers.on_exit() copper_obj bounds error --> %s" % str(e))
+            self.app.log.error("ToolMarkers.on_exit() copper_obj bounds error --> %s" % str(e))
 
         self.app.call_source = "app"
         self.app.ui.notebook.setDisabled(False)

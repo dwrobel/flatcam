@@ -1955,7 +1955,7 @@ class MainGUI(QtWidgets.QMainWindow):
         if flat_settings.contains("saved_gui_state"):
             saved_gui_state = flat_settings.value('saved_gui_state')
             self.restoreState(saved_gui_state)
-            log.debug("MainGUI.__init__() --> UI state restored from QSettings.")
+            self.app.log.debug("MainGUI.__init__() --> UI state restored from QSettings.")
 
         self.corner_snap_btn.setVisible(False)
         self.snap_magnet.setVisible(False)
@@ -1966,7 +1966,7 @@ class MainGUI(QtWidgets.QMainWindow):
             self.geo_edit_toolbar.setDisabled(True)
             self.grb_edit_toolbar.setDisabled(True)
 
-            log.debug("MainGUI.__init__() --> UI layout restored from QSettings. Layout = %s" % str(layout))
+            self.app.log.debug("MainGUI.__init__() --> UI layout restored from QSettings. Layout = %s" % str(layout))
         else:
             self.exc_edit_toolbar.setDisabled(True)
             self.geo_edit_toolbar.setDisabled(True)
@@ -1975,7 +1975,7 @@ class MainGUI(QtWidgets.QMainWindow):
             flat_settings.setValue('layout', "standard")
             # This will write the setting to the platform specific storage.
             del flat_settings
-            log.debug("MainGUI.__init__() --> UI layout restored from defaults. QSettings set to 'standard'")
+            self.app.log.debug("MainGUI.__init__() --> UI layout restored from defaults. QSettings set to 'standard'")
 
         # construct the Toolbar Lock menu entry to the context menu of the QMainWindow
         self.lock_action = QtGui.QAction()
@@ -2177,7 +2177,7 @@ class MainGUI(QtWidgets.QMainWindow):
                              self.app.defaults["global_def_win_h"])
             self.splitter.setSizes([self.app.defaults["global_def_notebook_width"], 0])
         except KeyError as e:
-            log.debug("appGUI.MainGUI.restore_main_win_geom() --> %s" % str(e))
+            self.app.log.debug("appGUI.MainGUI.restore_main_win_geom() --> %s" % str(e))
 
     def restore_toolbar_view(self):
         """
@@ -2327,7 +2327,7 @@ class MainGUI(QtWidgets.QMainWindow):
         """
         Will clear the settings that are stored in QSettings.
         """
-        log.debug("Clearing the settings in QSettings. GUI settings cleared.")
+        self.app.log.debug("Clearing the settings in QSettings. GUI settings cleared.")
 
         theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
         theme_settings.setValue('theme', 'white')

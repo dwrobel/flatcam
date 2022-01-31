@@ -669,7 +669,7 @@ class ToolDrilling(AppTool, Excellon):
         QtCore.QTimer.singleShot(20, self.build_tool_ui)
 
     def build_tool_ui(self):
-        log.debug("ToolDrilling.build_tool_ui()")
+        self.app.log.debug("ToolDrilling.build_tool_ui()")
         self.ui_disconnect()
 
         # order the tools by tool diameter if it's the case
@@ -927,7 +927,7 @@ class ToolDrilling(AppTool, Excellon):
             )
 
     def on_object_changed(self):
-        log.debug("ToolDrilling.on_object_changed()")
+        self.app.log.debug("ToolDrilling.on_object_changed()")
         # updated units
         self.units = self.app.app_units.upper()
 
@@ -1173,7 +1173,7 @@ class ToolDrilling(AppTool, Excellon):
         self.replace_tools()
 
     def replace_tools(self):
-        log.debug("ToolDrilling.replace_tools()")
+        self.app.log.debug("ToolDrilling.replace_tools()")
 
         if self.excellon_obj:
             new_tools_dict = deepcopy(self.excellon_tools)
@@ -1318,7 +1318,7 @@ class ToolDrilling(AppTool, Excellon):
                 self.ui_connect()
                 return
         except Exception as e:
-            log.error("Tool missing. Add a tool in the Tool Table. %s" % str(e))
+            self.app.log.error("Tool missing. Add a tool in the Tool Table. %s" % str(e))
             self.blockSignals(False)
             self.ui_connect()
             return
@@ -1345,7 +1345,7 @@ class ToolDrilling(AppTool, Excellon):
                     try:
                         self.tool_form_fields[form_key].set_value(dict_storage[form_key])
                     except Exception as e:
-                        log.error("ToolDrilling.storage_to_form() tool parameters --> %s" % str(e))
+                        self.app.log.error("ToolDrilling.storage_to_form() tool parameters --> %s" % str(e))
                         pass
 
         # update the Common parameters
@@ -1355,7 +1355,7 @@ class ToolDrilling(AppTool, Excellon):
                     try:
                         self.general_form_fields[form_key].set_value(dict_storage[form_key])
                     except Exception as e:
-                        log.error("ToolDrilling.storage_to_form() -> common parameters --> %s" % str(e))
+                        self.app.log.error("ToolDrilling.storage_to_form() -> common parameters --> %s" % str(e))
                         pass
 
     def form_to_storage(self):
@@ -1444,7 +1444,7 @@ class ToolDrilling(AppTool, Excellon):
     def on_apply_param_to_all_clicked(self):
         if self.ui.tools_table.rowCount() == 0:
             # there is no tool in tool table so we can't save the GUI elements values to storage
-            log.debug("ToolDrilling.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
+            self.app.log.debug("ToolDrilling.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
             return
 
         self.blockSignals(True)
@@ -1872,7 +1872,7 @@ class ToolDrilling(AppTool, Excellon):
                         except KeyError:
                             points[tool_key] = [drill_pt]
 
-        log.debug("Found %d TOOLS with drills." % len(points))
+        self.app.log.debug("Found %d TOOLS with drills." % len(points))
 
         # #############################################################################################################
         # ############ SLOTS TO DRILLS CONVERSION SECTION #############################################################
@@ -1903,7 +1903,7 @@ class ToolDrilling(AppTool, Excellon):
                                 points[tool_key] += new_drills
                             except Exception:
                                 points[tool_key] = new_drills
-        log.debug("Found %d TOOLS with drills after converting slots to drills." % len(points))
+        self.app.log.debug("Found %d TOOLS with drills after converting slots to drills." % len(points))
 
         return points
 
@@ -2288,18 +2288,18 @@ class ToolDrilling(AppTool, Excellon):
             job_obj.create_geometry()
 
             if used_exc_optim_type == 'M':
-                log.debug("The total travel distance with OR-TOOLS Metaheuristics is: %s" %
-                          str(job_obj.measured_distance))
+                app_obj.log.debug("The total travel distance with OR-TOOLS Metaheuristics is: %s" %
+                                  str(job_obj.measured_distance))
             elif used_exc_optim_type == 'B':
-                log.debug("The total travel distance with OR-TOOLS Basic Algorithm is: %s" %
-                          str(job_obj.measured_distance))
+                app_obj.log.debug("The total travel distance with OR-TOOLS Basic Algorithm is: %s" %
+                                  str(job_obj.measured_distance))
             elif used_exc_optim_type == 'T':
-                log.debug(
+                app_obj.log.debug(
                     "The total travel distance with Travelling Salesman Algorithm is: %s" %
                     str(job_obj.measured_distance))
             else:
-                log.debug("The total travel distance with with no optimization is: %s" %
-                          str(job_obj.measured_distance))
+                app_obj.log.debug("The total travel distance with with no optimization is: %s" %
+                                  str(job_obj.measured_distance))
 
             # #########################################################################################################
             # ############################# Calculate DISTANCE and ESTIMATED TIME #####################################
@@ -2310,8 +2310,8 @@ class ToolDrilling(AppTool, Excellon):
             job_obj.measured_distance += abs(distance_euclidian(
                 job_obj.oldx, job_obj.oldy, job_obj.xy_end[0], job_obj.xy_end[1])
             )
-            log.debug("The total travel distance including travel to end position is: %s" %
-                      str(job_obj.measured_distance) + '\n')
+            app_obj.log.debug("The total travel distance including travel to end position is: %s" %
+                              str(job_obj.measured_distance) + '\n')
             job_obj.travel_distance = job_obj.measured_distance
 
             # I use the value of self.feedrate_rapid for the feadrate in case of the measure_lift_distance and for

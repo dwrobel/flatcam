@@ -295,7 +295,7 @@ class ToolFollow(AppTool, Gerber):
                         float(eval(dia)) for dia in temp_tools if dia != ''
                     ]
                 except Exception as e:
-                    log.error("ToolFollow.follow_geo -> At least one tool diameter needed. -> %s" % str(e))
+                    self.app.log.error("ToolFollow.follow_geo -> At least one tool diameter needed. -> %s" % str(e))
                     return 'fail'
 
             # store here the default data for Geometry Data
@@ -360,7 +360,7 @@ class ToolFollow(AppTool, Gerber):
                         float(eval(dia)) for dia in temp_tools if dia != ''
                     ]
                 except Exception as e:
-                    log.error("ToolFollow.follow_geo -> At least one tool diameter needed. -> %s" % str(e))
+                    app_obj.log.error("ToolFollow.follow_geo -> At least one tool diameter needed. -> %s" % str(e))
                     return 'fail'
 
             # store here the default data for Geometry Data
@@ -642,7 +642,7 @@ class ToolFollow(AppTool, Gerber):
                         self.app.plotcanvas.graph_event_disconnect(self.mm)
                         self.app.plotcanvas.graph_event_disconnect(self.kp)
                 except Exception as e:
-                    log.error("ToolFollow.on_key_press() _1 --> %s" % str(e))
+                    self.app.log.error("ToolFollow.on_key_press() _1 --> %s" % str(e))
 
                 self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
                                                                       self.app.on_mouse_click_over_plot)

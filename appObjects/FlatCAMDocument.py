@@ -9,8 +9,6 @@
 # ##########################################################
 # File modified by: Marius Stanciu                         #
 # ##########################################################
-from PyQt6 import QtGui
-
 from appEditors.AppTextEditor import AppTextEditor
 from appObjects.FlatCAMObj import *
 
@@ -33,7 +31,7 @@ class DocumentObject(FlatCAMObj):
     def __init__(self, name):
         self.decimals = self.app.decimals
 
-        log.debug("Creating a Document object...")
+        self.app.log.debug("Creating a Document object...")
         FlatCAMObj.__init__(self, name)
 
         self.kind = "document"
@@ -55,7 +53,7 @@ class DocumentObject(FlatCAMObj):
 
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
-        log.debug("DocumentObject.set_ui()")
+        self.app.log.debug("DocumentObject.set_ui()")
 
         assert isinstance(self.ui, DocumentObjectUI), \
             "Expected a DocumentObjectUI, got %s" % type(self.ui)

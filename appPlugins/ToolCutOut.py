@@ -1025,7 +1025,7 @@ class CutOut(AppTool):
                     # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
                     app_obj.should_we_save = True
                 except Exception as ee:
-                    log.error(str(ee))
+                    app_obj.app.log.error(str(ee))
 
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
@@ -1037,7 +1037,7 @@ class CutOut(AppTool):
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
-            log.error("CutOut.on_rectangular_cutout() --> %s" % str(e))
+            self.app.log.error("CutOut.on_rectangular_cutout() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return "Could not retrieve object: %s" % name
 
@@ -1333,7 +1333,7 @@ class CutOut(AppTool):
                     # self_c.app.ui.notebook.setCurrentWidget(self_c.app.ui.project_tab)
                     app_obj.should_we_save = True
                 except Exception as ee:
-                    log.error(str(ee))
+                    app_obj.log.error(str(ee))
 
             self.app.worker_task.emit(
                 {
@@ -1425,7 +1425,7 @@ class CutOut(AppTool):
         try:
             obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
-            log.error("CutOut.on_freeform_cutout() --> %s" % str(e))
+            self.app.log.error("CutOut.on_freeform_cutout() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return "Could not retrieve object: %s" % name
 
@@ -1504,7 +1504,7 @@ class CutOut(AppTool):
             try:
                 ret = self.app.app_obj.new_object("excellon", outname, obj_init, autoselected=False)
             except Exception as e:
-                log.error("Error on Drill Cutting Excellon object creation: %s" % str(e))
+                self.app.log.error("Error on Drill Cutting Excellon object creation: %s" % str(e))
                 return
 
             if ret != 'fail':
@@ -1517,7 +1517,7 @@ class CutOut(AppTool):
         try:
             self.man_cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
-            log.error("CutOut.on_manual_cutout() --> %s" % str(e))
+            self.app.log.error("CutOut.on_manual_cutout() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return
 
@@ -1561,7 +1561,7 @@ class CutOut(AppTool):
         try:
             self.man_cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
-            log.error("CutOut.on_manual_cutout() --> %s" % str(e))
+            self.app.log.error("CutOut.on_manual_cutout() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return
 
@@ -1664,7 +1664,7 @@ class CutOut(AppTool):
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
-            log.error("CutOut.on_manual_geo() --> %s" % str(e))
+            self.app.log.error("CutOut.on_manual_geo() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return "Could not retrieve object: %s" % name
 
@@ -2073,8 +2073,7 @@ class CutOut(AppTool):
             geo = self.cutting_geo(pos=(l_x, l_y))
             self.draw_utility_geometry(geo=geo)
 
-    @staticmethod
-    def subtract_poly_from_geo(solid_geo, pts):
+    def subtract_poly_from_geo(self, solid_geo, pts):
         """
         Subtract polygon made from points from the given object.
         This only operates on the paths in the original geometry,
@@ -2102,7 +2101,7 @@ class CutOut(AppTool):
         # pathonly should be always True, otherwise polygons are not subtracted
         flat_geometry = CutOut.flatten(geometry=solid_geo)
 
-        log.debug("%d paths" % len(flat_geometry))
+        self.app.log.debug("%d paths" % len(flat_geometry))
 
         polygon = Polygon(points)
         toolgeo = unary_union(polygon)
@@ -2111,7 +2110,7 @@ class CutOut(AppTool):
             if type(target) == LineString or type(target) == LinearRing:
                 diffs.append(target.difference(toolgeo))
             else:
-                log.warning("Not implemented.")
+                self.app.log.warning("Not implemented.")
 
         return unary_union(diffs)
 
@@ -2188,7 +2187,7 @@ class CutOut(AppTool):
 
         # flatten() takes care of possible empty geometry making sure that is filtered
         flat_geometry = CutOut.flatten(target_geo)
-        log.debug("%d paths" % len(flat_geometry))
+        self.app.log.debug("%d paths" % len(flat_geometry))
 
         toolgeo = unary_union(subtractor)
 

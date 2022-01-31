@@ -599,7 +599,7 @@ class Geometry(object):
             try:
                 self.solid_geometry = self.solid_geometry.union(new_circle)
             except Exception as e:
-                log.error("Failed to run union on polygons. %s" % str(e))
+                self.app.log.error("Failed to run union on polygons. %s" % str(e))
                 return "fail"
 
         # add in tools solid_geometry
@@ -640,7 +640,7 @@ class Geometry(object):
             try:
                 self.solid_geometry = self.solid_geometry.union(Polygon(points))
             except Exception as e:
-                log.error("Failed to run union on polygons. %s" % str(e))
+                self.app.log.error("Failed to run union on polygons. %s" % str(e))
                 return "fail"
 
         # add in tools solid_geometry
@@ -724,7 +724,7 @@ class Geometry(object):
 
         # pathonly should be allways True, otherwise polygons are not subtracted
         flat_geometry = self.flatten(pathonly=True)
-        log.debug("%d paths" % len(flat_geometry))
+        self.app.log.debug("%d paths" % len(flat_geometry))
 
         if not isinstance(points, Polygon):
             polygon = Polygon(points)
@@ -1179,7 +1179,7 @@ class Geometry(object):
             self.app.proc_container.update_view_text(' %s' % _("Get Interiors"))
             ret_geo = self.get_interiors(geo_iso)
         else:
-            log.debug("Geometry.isolation_geometry() --> Type of isolation not supported")
+            self.app.log.debug("Geometry.isolation_geometry() --> Type of isolation not supported")
             return "fail"
 
         if prog_plot == 'progressive':
@@ -1323,7 +1323,7 @@ class Geometry(object):
         :param units:       Application units
         :return: None
         """
-        log.debug("Parsing DXF file geometry into a Geometry object solid geometry.")
+        self.app.log.debug("Parsing DXF file geometry into a Geometry object solid geometry.")
 
         # Parse into list of shapely objects
         dxf = ezdxf.readfile(filename)
@@ -1492,7 +1492,7 @@ class Geometry(object):
                         if prog_plot:
                             self.plot_temp_shapes(i)
             else:
-                log.debug("camlib.Geometry.clear_polygon() --> Current Area is zero")
+                self.app.log.debug("camlib.Geometry.clear_polygon() --> Current Area is zero")
                 break
 
         if prog_plot:
@@ -1641,7 +1641,7 @@ class Geometry(object):
 
         # log.debug("camlib.clear_polygon3()")
         if not isinstance(polygon, Polygon):
-            log.debug("camlib.Geometry.clear_polygon3() --> Not a Polygon but %s" % str(type(polygon)))
+            self.app.log.debug("camlib.Geometry.clear_polygon3() --> Not a Polygon but %s" % str(type(polygon)))
             return None
 
         # ## The toolpaths
@@ -1660,7 +1660,7 @@ class Geometry(object):
         try:
             margin_poly = polygon.buffer(-tooldia / 1.99999999, (int(steps_per_circle)))
         except Exception:
-            log.debug("camlib.Geometry.clear_polygon3() --> Could not buffer the Polygon")
+            self.app.log.debug("camlib.Geometry.clear_polygon3() --> Could not buffer the Polygon")
             return None
 
         # decide the direction of the lines
@@ -1700,7 +1700,7 @@ class Geometry(object):
                     if prog_plot:
                         self.plot_temp_shapes(lines_geometry)
             except Exception as e:
-                log.error('camlib.Geometry.clear_polygon3() Processing poly --> %s' % str(e))
+                self.app.log.error('camlib.Geometry.clear_polygon3() Processing poly --> %s' % str(e))
                 return None
         else:
             # First line
@@ -1738,7 +1738,7 @@ class Geometry(object):
                     if prog_plot:
                         self.plot_temp_shapes(lines_geometry)
             except Exception as e:
-                log.error('camlib.Geometry.clear_polygon3() Processing poly --> %s' % str(e))
+                self.app.log.error('camlib.Geometry.clear_polygon3() Processing poly --> %s' % str(e))
                 return None
 
         if prog_plot:
@@ -1754,7 +1754,7 @@ class Geometry(object):
                     if not line.is_empty:
                         geoms.insert(line)
                 else:
-                    log.debug("camlib.Geometry.clear_polygon3(). Not a line: %s" % str(type(line)))
+                    self.app.log.debug("camlib.Geometry.clear_polygon3(). Not a line: %s" % str(type(line)))
         except TypeError:
             # in case lines_trimmed are not iterable (Linestring, LinearRing)
             if not lines_trimmed.is_empty:
@@ -1818,7 +1818,8 @@ class Geometry(object):
 
         # log.debug("camlib.fill_with_lines()")
         if not isinstance(line, LineString):
-            log.debug("camlib.Geometry.fill_with_lines() --> Not a LineString/MultiLineString but %s" % str(type(line)))
+            self.app.log.debug(
+                "camlib.Geometry.fill_with_lines() --> Not a LineString/MultiLineString but %s" % str(type(line)))
             return None
 
         # ## The toolpaths
@@ -1870,7 +1871,8 @@ class Geometry(object):
         try:
             margin_poly = polygon.buffer(-tooldia / 2.0, int(steps_per_circle))
         except Exception:
-            log.debug("camlib.Geometry.fill_with_lines() --> Could not buffer the Polygon, tool diameter too high")
+            self.app.log.debug(
+                "camlib.Geometry.fill_with_lines() --> Could not buffer the Polygon, tool diameter too high")
             return None
 
         # First line
@@ -1903,7 +1905,7 @@ class Geometry(object):
             new_line = prepared_line.parallel_offset(distance=delta, side='left', resolution=int(steps_per_circle))
             new_line = new_line.intersection(margin_poly)
         except Exception as e:
-            log.error('camlib.Geometry.fill_with_lines() Processing poly --> %s' % str(e))
+            self.app.log.error('camlib.Geometry.fill_with_lines() Processing poly --> %s' % str(e))
             return None
 
         lines_geometry = new_line.geoms if isinstance(new_line, MultiLineString) else new_line
@@ -1943,7 +1945,7 @@ class Geometry(object):
                 if isinstance(line_g, LineString) or isinstance(line_g, LinearRing):
                     geoms.insert(line_g)
                 else:
-                    log.debug("camlib.Geometry.fill_with_lines(). Not a line: %s" % str(type(line_g)))
+                    self.app.log.debug("camlib.Geometry.fill_with_lines(). Not a line: %s" % str(type(line_g)))
         except TypeError:
             # in case lines_trimmed are not iterable (Linestring, LinearRing)
             geoms.insert(lines_geometry)
@@ -2130,7 +2132,7 @@ class Geometry(object):
         :rtype:             FlatCAMRTreeStorage
         """
 
-        log.debug("path_connect()")
+        # log.debug("path_connect()")
 
         # ## Index first and last points in paths
         def get_pts(o):
@@ -2230,7 +2232,7 @@ class Geometry(object):
             optimized_geometry.insert(geo)
 
         # print path_count
-        log.debug("path_count = %d" % path_count)
+        # log.debug("path_count = %d" % path_count)
 
         return optimized_geometry
 
@@ -2247,18 +2249,18 @@ class Geometry(object):
         """
 
         if obj_units.upper() == self.units.upper():
-            log.debug("camlib.Geometry.convert_units() --> Factor: 1")
+            self.app.log.debug("camlib.Geometry.convert_units() --> Factor: 1")
             return 1.0
 
         if obj_units.upper() == "MM":
             factor = 25.4
-            log.debug("camlib.Geometry.convert_units() --> Factor: 25.4")
+            self.app.log.debug("camlib.Geometry.convert_units() --> Factor: 25.4")
         elif obj_units.upper() == "IN":
             factor = 1 / 25.4
-            log.debug("camlib.Geometry.convert_units() --> Factor: %s" % str(1 / 25.4))
+            self.app.log.debug("camlib.Geometry.convert_units() --> Factor: %s" % str(1 / 25.4))
         else:
-            log.error("Unsupported units: %s" % str(obj_units))
-            log.debug("camlib.Geometry.convert_units() --> Factor: 1")
+            self.app.log.error("Unsupported units: %s" % str(obj_units))
+            self.app.log.debug("camlib.Geometry.convert_units() --> Factor: 1")
             return 1.0
 
         self.units = obj_units
@@ -2406,7 +2408,7 @@ class Geometry(object):
         :type point:    list
         :return:        None
         """
-        log.debug("camlib.Geometry.mirror()")
+        self.app.log.debug("camlib.Geometry.mirror()")
 
         px, py = point
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
@@ -2474,7 +2476,7 @@ class Geometry(object):
 
         See shapely manual for more information: http://toblerity.org/shapely/manual.html#affine-transformations
         """
-        log.debug("camlib.Geometry.rotate()")
+        self.app.log.debug("camlib.Geometry.rotate()")
 
         px, py = point
 
@@ -2548,7 +2550,7 @@ class Geometry(object):
 
         See shapely manual for more information: http://toblerity.org/shapely/manual.html#affine-transformations
         """
-        log.debug("camlib.Geometry.skew()")
+        self.app.log.debug("camlib.Geometry.skew()")
 
         px, py = point
 
@@ -2618,7 +2620,7 @@ class Geometry(object):
         :return:
         """
 
-        log.debug("camlib.Geometry.buffer()")
+        self.app.log.debug("camlib.Geometry.buffer()")
 
         if distance == 0:
             return
@@ -2865,7 +2867,7 @@ class CNCjob(Geometry):
         :return:        conversion factor
         :rtype:         float
         """
-        log.debug("camlib.CNCJob.convert_units()")
+        self.app.log.debug("camlib.CNCJob.convert_units()")
 
         factor = Geometry.convert_units(self, units)
 
@@ -2929,7 +2931,7 @@ class CNCjob(Geometry):
                 except AttributeError:
                     self.app.inform.emit('[ERROR] %s: %s' %
                                          (_("There is no such parameter"), str(match)))
-                    log.debug("CNCJob.parse_custom_toolchange_code() --> AttributeError ")
+                    self.app.log.debug("CNCJob.parse_custom_toolchange_code() --> AttributeError ")
                     return 'fail'
                 text = text.replace(match, str(value))
             return text
@@ -2981,7 +2983,7 @@ class CNCjob(Geometry):
 
         # Create routing model.
         if tsp_size == 0:
-            log.warning('OR-tools metaheuristics - Specify an instance greater than 0.')
+            self.app.log.warning('OR-tools metaheuristics - Specify an instance greater than 0.')
             return optimized_path
 
         manager = pywrapcp.RoutingIndexManager(tsp_size, num_routes, depot)
@@ -3030,7 +3032,7 @@ class CNCjob(Geometry):
                 optimized_path.append(node)
                 node = assignment.Value(routing.NextVar(node))
         else:
-            log.warning('OR-tools metaheuristics - No solution found.')
+            self.app.log.warning('OR-tools metaheuristics - No solution found.')
 
         return optimized_path
         # ############################################# ##
@@ -3046,7 +3048,7 @@ class CNCjob(Geometry):
 
         # Create routing model.
         if tsp_size == 0:
-            log.warning('Specify an instance greater than 0.')
+            self.app.log.warning('Specify an instance greater than 0.')
             return optimized_path
 
         manager = pywrapcp.RoutingIndexManager(tsp_size, num_routes, depot)
@@ -3074,7 +3076,7 @@ class CNCjob(Geometry):
 
         if assignment:
             # Solution cost.
-            log.info("Total distance: " + str(assignment.ObjectiveValue()))
+            self.app.log.info("Total distance: " + str(assignment.ObjectiveValue()))
 
             # Inspect solution.
             # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1.
@@ -3086,7 +3088,7 @@ class CNCjob(Geometry):
                 optimized_path.append(node)
                 node = assignment.Value(routing.NextVar(node))
         else:
-            log.warning('No solution found.')
+            self.app.log.warning('No solution found.')
 
         return optimized_path
         # ############################################# ##
@@ -3142,7 +3144,7 @@ class CNCjob(Geometry):
         storage.get_points = get_pts
 
         # Store the geometry
-        log.debug("Indexing geometry before generating G-Code...")
+        self.app.log.debug("Indexing geometry before generating G-Code...")
         self.app.inform.emit(_("Indexing geometry before generating G-Code..."))
 
         work_geo = geometry.geoms if isinstance(geometry, (MultiPolygon, MultiLineString)) else geometry
@@ -3186,7 +3188,7 @@ class CNCjob(Geometry):
         storage.get_points = get_pts
 
         # Store the geometry
-        log.debug("Indexing geometry before generating G-Code...")
+        self.app.log.debug("Indexing geometry before generating G-Code...")
         self.app.inform.emit(_("Indexing geometry before generating G-Code..."))
 
         for geo_shape in geometry:
@@ -3273,20 +3275,20 @@ class CNCjob(Geometry):
                 opt_type = 'R'
 
         if opt_type == 'M':
-            log.debug("Using OR-Tools Metaheuristic Guided Local Search drill path optimization.")
+            self.app.log.debug("Using OR-Tools Metaheuristic Guided Local Search drill path optimization.")
         elif opt_type == 'B':
-            log.debug("Using OR-Tools Basic drill path optimization.")
+            self.app.log.debug("Using OR-Tools Basic drill path optimization.")
         elif opt_type == 'T':
-            log.debug("Using Travelling Salesman drill path optimization.")
+            self.app.log.debug("Using Travelling Salesman drill path optimization.")
         elif opt_type == 'R':
-            log.debug("Using RTree path optimization.")
+            self.app.log.debug("Using RTree path optimization.")
         else:
-            log.debug("Using no path optimization.")
+            self.app.log.debug("Using no path optimization.")
 
         tool_dict = tools[tool]['data']
         # check if it has drills
         if not points:
-            log.debug("Failed. No drills for tool: %s" % str(tool))
+            self.app.log.debug("Failed. No drills for tool: %s" % str(tool))
             return 'fail'
 
         if self.app.abort_flag:
@@ -3377,7 +3379,7 @@ class CNCjob(Geometry):
                     self.app.inform.emit('[ERROR] %s' % _("The End X,Y format has to be (x, y)."))
                     return 'fail'
         except Exception as e:
-            log.error("camlib.CNCJob.tcl_gcode_from_excellon_by_tool() xy_end --> %s" % str(e))
+            self.app.log.error("camlib.CNCJob.tcl_gcode_from_excellon_by_tool() xy_end --> %s" % str(e))
             self.xy_end = [0, 0]
 
         # Probe parameters
@@ -3478,7 +3480,7 @@ class CNCjob(Geometry):
             geo_len = len(optimized_path)
 
             old_disp_number = 0
-            log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
+            self.app.log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
 
             loc_nr = 0
             for point in optimized_path:
@@ -3655,15 +3657,15 @@ class CNCjob(Geometry):
         opt_time = tool_dict['tools_mill_search_time'] if 'tools_mill_search_time' in tool_dict else 'R'
 
         if opt_type == 'M':
-            log.debug("Using OR-Tools Metaheuristic Guided Local Search path optimization.")
+            self.app.log.debug("Using OR-Tools Metaheuristic Guided Local Search path optimization.")
         elif opt_type == 'B':
-            log.debug("Using OR-Tools Basic path optimization.")
+            self.app.log.debug("Using OR-Tools Basic path optimization.")
         elif opt_type == 'T':
-            log.debug("Using Travelling Salesman path optimization.")
+            self.app.log.debug("Using Travelling Salesman path optimization.")
         elif opt_type == 'R':
-            log.debug("Using RTree path optimization.")
+            self.app.log.debug("Using RTree path optimization.")
         else:
-            log.debug("Using no path optimization.")
+            self.app.log.debug("Using no path optimization.")
 
         # Preprocessor
         self.pp_geometry_name = tool_dict['tools_mill_ppname_g']
@@ -3687,7 +3689,7 @@ class CNCjob(Geometry):
         flat_ext_geo, flat_ints_geo = self.flatten_exterior_interiors(geometry)
         flat_geometry = flat_ext_geo + flat_ints_geo
         # flat_geometry = self.flatten(geometry, reset=True, pathonly=True)
-        log.debug("%d paths" % len(flat_geometry))
+        self.app.log.debug("%d paths" % len(flat_geometry))
 
         if tool_offset != 0.0:
             # for it in flat_geometry:
@@ -3814,7 +3816,7 @@ class CNCjob(Geometry):
                     self.app.inform.emit('[ERROR] %s' % _("The End X,Y format has to be (x, y)."))
                     return 'fail'
         except Exception as e:
-            log.error("camlib.CNCJob.geometry_tool_gcode_gen xy_end --> %s" % str(e))
+            self.app.log.error("camlib.CNCJob.geometry_tool_gcode_gen xy_end --> %s" % str(e))
             self.xy_end = [0, 0]
 
         self.z_toolchange = tool_dict['tools_mill_toolchangez']
@@ -3834,7 +3836,7 @@ class CNCjob(Geometry):
                     self.app.inform.emit('[ERROR] %s' % _("The Toolchange X,Y format has to be (x, y)."))
                     return 'fail'
         except Exception as e:
-            log.error("camlib.CNCJob.geometry_from_excellon_by_tool() --> %s" % str(e))
+            self.app.log.error("camlib.CNCJob.geometry_from_excellon_by_tool() --> %s" % str(e))
             pass
 
         self.extracut = tool_dict['tools_mill_extracut']
@@ -3890,7 +3892,7 @@ class CNCjob(Geometry):
 
         # Only if there are locations to mill
         if not optimized_path:
-            log.debug("camlib.CNCJob.geometry_tool_gcode_gen() -> Optimized path is empty.")
+            self.app.log.debug("camlib.CNCJob.geometry_tool_gcode_gen() -> Optimized path is empty.")
             return 'fail'
 
         if self.app.abort_flag:
@@ -3902,7 +3904,7 @@ class CNCjob(Geometry):
         # ################# MILLING !!! ##############################################################################
         # #############################################################################################################
         # #############################################################################################################
-        log.debug("Starting G-Code...")
+        self.app.log.debug("Starting G-Code...")
 
         current_tooldia = float('%.*f' % (self.decimals, float(self.tooldia)))
         msg = '%s: %s%s.' % (_("Starting G-Code for tool with diameter"), str(current_tooldia), str(self.units))
@@ -3955,7 +3957,7 @@ class CNCjob(Geometry):
 
         # variables to display the percentage of work done
         geo_len = len(flat_geometry)
-        log.warning("Number of paths for which to generate GCode: %s" % str(geo_len))
+        self.app.log.warning("Number of paths for which to generate GCode: %s" % str(geo_len))
         old_disp_number = 0
 
         current_pt = first_pt
@@ -4006,7 +4008,7 @@ class CNCjob(Geometry):
                 self.app.proc_container.update_view_text(' %d%%' % disp_number)
                 old_disp_number = disp_number
 
-        log.debug("Finished G-Code... %s paths traced." % path_count)
+        self.app.log.debug("Finished G-Code... %s paths traced." % path_count)
 
         # add move to end position
         total_travel += abs(distance_euclidian(current_pt[0], current_pt[1], 0, 0))
@@ -4262,8 +4264,8 @@ class CNCjob(Geometry):
                 has_drills = True
                 break
         if not has_drills:
-            log.debug("camlib.CNCJob.tcl_gcode_from_excellon_by_tool() --> "
-                      "The loaded Excellon file has no drills ...")
+            self.app.log.debug("camlib.CNCJob.tcl_gcode_from_excellon_by_tool() --> "
+                               "The loaded Excellon file has no drills ...")
             self.app.inform.emit('[ERROR_NOTCL] %s...' % _('The loaded Excellon file has no drills'))
             return 'fail'
 
@@ -4683,7 +4685,7 @@ class CNCjob(Geometry):
                 geo_len = len(optimized_path)
 
                 old_disp_number = 0
-                log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
+                self.app.log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
 
                 loc_nr = 0
                 for point in optimized_path:
@@ -4795,15 +4797,17 @@ class CNCjob(Geometry):
             self.tools[one_tool]['gcode'] += end_gcode
 
         if used_excellon_optimization_type == 'M':
-            log.debug("The total travel distance with OR-TOOLS Metaheuristics is: %s" % str(measured_distance))
+            self.app.log.debug("The total travel distance with OR-TOOLS Metaheuristics is: %s" % str(measured_distance))
         elif used_excellon_optimization_type == 'B':
-            log.debug("The total travel distance with OR-TOOLS Basic Algorithm is: %s" % str(measured_distance))
+            self.app.log.debug(
+                "The total travel distance with OR-TOOLS Basic Algorithm is: %s" % str(measured_distance))
         elif used_excellon_optimization_type == 'T':
-            log.debug("The total travel distance with Travelling Salesman Algorithm is: %s" % str(measured_distance))
+            self.app.log.debug(
+                "The total travel distance with Travelling Salesman Algorithm is: %s" % str(measured_distance))
         elif used_excellon_optimization_type == 'R':
-            log.debug("The total travel distance with Rtree Algorithm is: %s" % str(measured_distance))
+            self.app.log.debug("The total travel distance with Rtree Algorithm is: %s" % str(measured_distance))
         else:
-            log.debug("The total travel distance with with no optimization is: %s" % str(measured_distance))
+            self.app.log.debug("The total travel distance with with no optimization is: %s" % str(measured_distance))
 
         # if used_excellon_optimization_type == 'M':
         #     log.debug("Using OR-Tools Metaheuristic Guided Local Search drill path optimization.")
@@ -5495,7 +5499,7 @@ class CNCjob(Geometry):
         :return:                    GCode - string
         """
 
-        log.debug("generate_from_multitool_geometry()")
+        self.app.log.debug("generate_from_multitool_geometry()")
 
         temp_solid_geometry = []
         if offset != 0.0:
@@ -5511,7 +5515,7 @@ class CNCjob(Geometry):
 
         # ## Flatten the geometry. Only linear elements (no polygons) remain.
         flat_geometry = self.flatten(temp_solid_geometry, pathonly=True)
-        log.debug("%d paths" % len(flat_geometry))
+        self.app.log.debug("%d paths" % len(flat_geometry))
 
         try:
             self.tooldia = float(tooldia)
@@ -5568,7 +5572,7 @@ class CNCjob(Geometry):
                                                            "but now there is only one value, not two."))
                     return 'fail'
         except Exception as e:
-            log.error("camlib.CNCJob.generate_from_multitool_geometry() --> %s" % str(e))
+            self.app.log.error("camlib.CNCJob.generate_from_multitool_geometry() --> %s" % str(e))
             pass
 
         self.pp_geometry_name = pp_geometry_name if pp_geometry_name else 'default'
@@ -5629,7 +5633,7 @@ class CNCjob(Geometry):
         storage.get_points = get_pts
 
         # Store the geometry
-        log.debug("Indexing geometry before generating G-Code...")
+        self.app.log.debug("Indexing geometry before generating G-Code...")
         self.app.inform.emit(_("Indexing geometry before generating G-Code..."))
 
         for geo_shape in flat_geometry:
@@ -5690,7 +5694,7 @@ class CNCjob(Geometry):
         total_cut = 0.0
 
         # ## Iterate over geometry paths getting the nearest each time.
-        log.debug("Starting G-Code...")
+        self.app.log.debug("Starting G-Code...")
         self.app.inform.emit('%s...' % _("Starting G-Code"))
 
         path_count = 0
@@ -5700,7 +5704,7 @@ class CNCjob(Geometry):
         geo_len = len(flat_geometry)
 
         old_disp_number = 0
-        log.warning("Number of paths for which to generate GCode: %s" % str(geo_len))
+        self.app.log.warning("Number of paths for which to generate GCode: %s" % str(geo_len))
 
         current_tooldia = float('%.*f' % (self.decimals, float(self.tooldia)))
 
@@ -5765,7 +5769,7 @@ class CNCjob(Geometry):
         except StopIteration:  # Nothing found in storage.
             pass
 
-        log.debug("Finished G-Code... %s paths traced." % path_count)
+        self.app.log.debug("Finished G-Code... %s paths traced." % path_count)
 
         # add move to end position
         total_travel += abs(distance_euclidian(current_pt[0], current_pt[1], 0, 0))
@@ -5869,7 +5873,7 @@ class CNCjob(Geometry):
         # flat_geometry = self.flatten(temp_solid_geometry, pathonly=True)
         flat_ext_geo, flat_ints_geo = self.flatten_exterior_interiors(geo_obj.solid_geometry)
         flat_geometry = flat_ext_geo + flat_ints_geo
-        log.debug("%d paths" % len(flat_geometry))
+        self.app.log.debug("%d paths" % len(flat_geometry))
 
         # Create the solid geometry which will be used to generate GCode
         temp_solid_geometry = []
@@ -5990,7 +5994,7 @@ class CNCjob(Geometry):
                     self.app.inform.emit('[ERROR] %s' % _("The Toolchange X,Y format has to be (x, y)."))
                     return 'fail'
         except Exception as e:
-            log.error("camlib.CNCJob.generate_from_geometry_2() --> %s" % str(e))
+            self.app.log.error("camlib.CNCJob.generate_from_geometry_2() --> %s" % str(e))
             pass
 
         self.pp_geometry_name = pp_geometry_name if pp_geometry_name else 'default'
@@ -6207,7 +6211,7 @@ class CNCjob(Geometry):
         except StopIteration:  # Nothing found in storage.
             pass
 
-        log.debug("Finishing G-Code... %s paths traced." % path_count)
+        self.app.log.debug("Finishing G-Code... %s paths traced." % path_count)
 
         # add move to end position
         total_travel += abs(distance_euclidian(current_pt[0], current_pt[1], 0, 0))
@@ -6238,7 +6242,7 @@ class CNCjob(Geometry):
                :return: Gcode string
                """
 
-        log.debug("Generate_from_solderpaste_geometry()")
+        self.app.log.debug("Generate_from_solderpaste_geometry()")
 
         # ## Index first and last points in paths
         # What points to index.
@@ -6248,7 +6252,7 @@ class CNCjob(Geometry):
         self.gcode = ""
 
         if not kwargs:
-            log.debug("camlib.generate_from_solderpaste_geo() --> No tool in the solderpaste geometry.")
+            self.app.log.debug("camlib.generate_from_solderpaste_geo() --> No tool in the solderpaste geometry.")
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("There is no tool data in the SolderPaste geometry."))
 
@@ -6278,14 +6282,14 @@ class CNCjob(Geometry):
 
         # ## Flatten the geometry. Only linear elements (no polygons) remain.
         flat_geometry = self.flatten(kwargs['solid_geometry'], pathonly=True)
-        log.debug("%d paths" % len(flat_geometry))
+        self.app.log.debug("%d paths" % len(flat_geometry))
 
         # Create the indexed storage.
         storage = FlatCAMRTreeStorage()
         storage.get_points = get_pts
 
         # Store the geometry
-        log.debug("Indexing geometry before generating G-Code...")
+        self.app.log.debug("Indexing geometry before generating G-Code...")
         for geo_shape in flat_geometry:
             if self.app.abort_flag:
                 # graceful abort requested by the user
@@ -6300,7 +6304,7 @@ class CNCjob(Geometry):
         self.gcode += self.doformat(p.toolchange_code)
 
         # ## Iterate over geometry paths getting the nearest each time.
-        log.debug("Starting SolderPaste G-Code...")
+        self.app.log.debug("Starting SolderPaste G-Code...")
         path_count = 0
         current_pt = (0, 0)
 
@@ -6338,7 +6342,7 @@ class CNCjob(Geometry):
         except StopIteration:  # Nothing found in storage.
             pass
 
-        log.debug("Finishing SolderPste G-Code... %s paths traced." % path_count)
+        self.app.log.debug("Finishing SolderPste G-Code... %s paths traced." % path_count)
         self.app.inform.emit(
             '%s... %s %s.' % (_("Finished SolderPaste G-Code generation"), str(path_count), _("paths traced"))
         )
@@ -6452,7 +6456,7 @@ class CNCjob(Geometry):
         elif type(geometry) == Point:
             gcode_single_pass = self.point2gcode(geometry, cdia, z_move=z_move, old_point=old_point)
         else:
-            log.warning("G-code generation not implemented for %s" % (str(type(geometry))))
+            self.app.log.warning("G-code generation not implemented for %s" % (str(type(geometry))))
             return
 
         return gcode_single_pass
@@ -6521,7 +6525,7 @@ class CNCjob(Geometry):
                 gcode_multi_pass += self.point2gcode(geometry, cdia, z_move=z_move, old_point=old_point)
                 break  # Ignoring ...
             else:
-                log.warning("G-code generation not implemented for %s" % (str(type(geometry))))
+                self.app.log.warning("G-code generation not implemented for %s" % (str(type(geometry))))
 
             # Reverse coordinates if not a loop so we can continue cutting without returning to the beginning.
             if type(geometry) == LineString:
@@ -6720,8 +6724,8 @@ class CNCjob(Geometry):
                     if self.pp_geometry_name == 'Line_xyz' or self.pp_excellon_name == 'Line_xyz':
                         pass
                     else:
-                        log.warning("Non-orthogonal motion: From %s" % str(current))
-                        log.warning("  To: %s" % str(gobj))
+                        self.app.log.warning("Non-orthogonal motion: From %s" % str(current))
+                        self.app.log.warning("  To: %s" % str(gobj))
 
                 current['Z'] = gobj['Z']
                 # Store the path into geometry and reset path
@@ -6892,8 +6896,8 @@ class CNCjob(Geometry):
                     if self.pp_geometry_name == 'Line_xyz' or self.pp_excellon_name == 'Line_xyz':
                         pass
                     else:
-                        log.warning("Non-orthogonal motion: From %s" % str(current))
-                        log.warning("  To: %s" % str(gobj))
+                        self.app.log.warning("Non-orthogonal motion: From %s" % str(current))
+                        self.app.log.warning("  To: %s" % str(gobj))
 
                 current['Z'] = gobj['Z']
                 # Store the path into geometry and reset path
@@ -7169,7 +7173,7 @@ class CNCjob(Geometry):
                                    font_size=self.app.defaults["cncjob_annotation_fontsize"],
                                    color=new_color)
         except Exception as e:
-            log.error("CNCJob.plot2() --> annotations --> %s" % str(e))
+            self.app.log.error("CNCJob.plot2() --> annotations --> %s" % str(e))
             if self.app.use_3d_engine:
                 obj.annotation.clear(update=True)
 
@@ -7877,9 +7881,9 @@ class CNCjob(Geometry):
                 return obj.bounds
 
         if self.multitool is False:
-            log.debug("CNCJob->bounds()")
+            self.app.log.debug("CNCJob->bounds()")
             if self.solid_geometry is None:
-                log.debug("solid_geometry is None")
+                self.app.log.debug("solid_geometry is None")
                 return 0, 0, 0, 0
 
             bounds_coords = bounds_rec(self.solid_geometry)
@@ -7953,7 +7957,7 @@ class CNCjob(Geometry):
         :return:        None
         :rtype:         None
         """
-        log.debug("camlib.CNCJob.scale()")
+        self.app.log.debug("camlib.CNCJob.scale()")
 
         if yfactor is None:
             yfactor = xfactor
@@ -8139,7 +8143,7 @@ class CNCjob(Geometry):
         :type vect:     tuple
         :return:        None
         """
-        log.debug("camlib.CNCJob.offset()")
+        self.app.log.debug("camlib.CNCJob.offset()")
 
         dx, dy = vect
 
@@ -8244,7 +8248,7 @@ class CNCjob(Geometry):
         :param point:   tuple of coordinates (x,y). Point of origin for Mirror
         :return:
         """
-        log.debug("camlib.CNCJob.mirror()")
+        self.app.log.debug("camlib.CNCJob.mirror()")
 
         px, py = point
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
@@ -8288,7 +8292,7 @@ class CNCjob(Geometry):
 
         See shapely manual for more information: http://toblerity.org/shapely/manual.html#affine-transformations
         """
-        log.debug("camlib.CNCJob.skew()")
+        self.app.log.debug("camlib.CNCJob.skew()")
 
         px, py = point
 
@@ -8324,7 +8328,7 @@ class CNCjob(Geometry):
         :param point:   tuple of coordinates (x,y). Origin point for Rotation
         :return:
         """
-        log.debug("camlib.CNCJob.rotate()")
+        self.app.log.debug("camlib.CNCJob.rotate()")
 
         px, py = point
 
@@ -8393,7 +8397,8 @@ def get_bounds(geometry_list):
             xmax = max([xmax, gxmax])
             ymax = max([ymax, gymax])
         except Exception:
-            log.warning("DEVELOPMENT: Tried to get bounds of empty geometry.")
+            # log.warning("DEVELOPMENT: Tried to get bounds of empty geometry.")
+            pass
 
     return [xmin, ymin, xmax, ymax]
 
@@ -8868,7 +8873,7 @@ def three_point_circle(p1, p2, p3):
     try:
         T = solve(np.transpose(np.array([-b1, b2])), a1 - a2)
     except Exception as e:
-        log.error("camlib.three_point_circle() --> %s" % str(e))
+        # log.error("camlib.three_point_circle() --> %s" % str(e))
         return
 
     # Center

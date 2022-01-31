@@ -602,7 +602,7 @@ class NonCopperClear(AppTool, Gerber):
                 else:
                     return
             except Exception as e:
-                log.error("Tool missing. Add a tool in the Tool Table. %s" % str(e))
+                self.app.log.error("Tool missing. Add a tool in the Tool Table. %s" % str(e))
                 return
 
             # update the QLabel that shows for which Tool we have the parameters in the UI form
@@ -619,7 +619,7 @@ class NonCopperClear(AppTool, Gerber):
                                 if key == 'data':
                                     self.storage_to_form(tooluid_value['data'])
                 except Exception as e:
-                    log.error("NonCopperClear ---> update_ui() " + str(e))
+                    self.app.log.error("NonCopperClear ---> update_ui() " + str(e))
             else:
                 self.ui.tool_data_label.setText(
                     "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
@@ -634,7 +634,7 @@ class NonCopperClear(AppTool, Gerber):
                     try:
                         self.form_fields[form_key].set_value(dict_storage[form_key])
                     except Exception as e:
-                        log.error("NonCopperClear.storage_to_form() --> %s" % str(e))
+                        self.app.log.error("NonCopperClear.storage_to_form() --> %s" % str(e))
                         pass
 
     def form_to_storage(self):
@@ -668,7 +668,7 @@ class NonCopperClear(AppTool, Gerber):
     def on_apply_param_to_all_clicked(self):
         if self.ui.tools_table.rowCount() == 0:
             # there is no tool in tool table so we can't save the GUI elements values to storage
-            log.debug("NonCopperClear.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
+            self.app.log.debug("NonCopperClear.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
             return
 
         self.blockSignals(True)
@@ -1069,7 +1069,7 @@ class NonCopperClear(AppTool, Gerber):
                     # reset the value to prepare for another isolation
                     self.safe_tooldia = None
                 except Exception as ee:
-                    log.error(str(ee))
+                    self.app.log.error(str(ee))
                     return
 
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
@@ -1165,7 +1165,7 @@ class NonCopperClear(AppTool, Gerber):
                                         (_("Optimal tool diameter found"), str(min_dist_truncated),
                                          self.units.lower()))
                 except Exception as ee:
-                    log.error(str(ee))
+                    app_obj.log.error(str(ee))
                     return
 
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
@@ -1943,11 +1943,11 @@ class NonCopperClear(AppTool, Gerber):
         :return:            an geometric element (Polygon or MultiPolygon) that specify the area to be copper cleared
         """
 
-        log.debug("NCC Tool. Preparing non-copper polygons.")
+        self.app.log.debug("NCC Tool. Preparing non-copper polygons.")
         self.app.inform.emit(_("NCC Tool. Preparing non-copper polygons."))
 
         if bbox is None:
-            log.debug("NonCopperClear.apply_margin_to_bounding_box() --> The object is None")
+            self.app.log.debug("NonCopperClear.apply_margin_to_bounding_box() --> The object is None")
             return 'fail'
 
         new_bounding_box = None
@@ -1982,7 +1982,7 @@ class NonCopperClear(AppTool, Gerber):
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("The reference object type is not supported."))
                 return 'fail'
 
-        log.debug("NCC Tool. Finished non-copper polygons.")
+        self.app.log.debug("NCC Tool. Finished non-copper polygons.")
         return new_bounding_box
 
     def get_tool_empty_area(self, name, ncc_obj, geo_obj, isotooldia, has_offset, ncc_offset, ncc_margin,
@@ -2003,7 +2003,7 @@ class NonCopperClear(AppTool, Gerber):
         :return:
         """
 
-        log.debug("NCC Tool. Calculate 'empty' area.")
+        self.app.log.debug("NCC Tool. Calculate 'empty' area.")
         self.app.inform.emit(_("NCC Tool. Calculate 'empty' area."))
 
         # a flag to signal that the isolation is broken by the bounding box in 'area' and 'box' cases
@@ -2026,7 +2026,7 @@ class NonCopperClear(AppTool, Gerber):
             if type(empty) is Polygon:
                 empty = MultiPolygon([empty])
 
-            log.debug("NCC Tool. Finished calculation of 'empty' area.")
+            self.app.log.debug("NCC Tool. Finished calculation of 'empty' area.")
             self.app.inform.emit(_("NCC Tool. Finished calculation of 'empty' area."))
 
             return empty, warning_flag
@@ -2176,7 +2176,7 @@ class NonCopperClear(AppTool, Gerber):
         if type(empty) is Polygon:
             empty = MultiPolygon([empty])
 
-        log.debug("NCC Tool. Finished calculation of 'empty' area.")
+        self.app.log.debug("NCC Tool. Finished calculation of 'empty' area.")
         self.app.inform.emit(_("NCC Tool. Finished calculation of 'empty' area."))
 
         return empty, warning_flag
@@ -2284,7 +2284,7 @@ class NonCopperClear(AppTool, Gerber):
         :type run_threaded:     bool
         :return:
         """
-        log.debug("Executing the handler ...")
+        self.app.log.debug("Executing the clear_copper handler ...")
 
         if run_threaded:
             proc = self.app.proc_container.new('%s...' % _("Non-Copper Clearing"))
@@ -2322,7 +2322,7 @@ class NonCopperClear(AppTool, Gerber):
         # ######### #####Initializes the new geometry object #####################################################
         # ########################################################################################################
         def gen_clear_area(geo_obj, app_obj):
-            log.debug("NCC Tool. Normal copper clearing task started.")
+            app_obj.log.debug("NCC Tool. Normal copper clearing task started.")
             self.app.inform.emit(_("NCC Tool. Finished non-copper polygons. Normal copper clearing task started."))
 
             # provide the app with a way to process the GUI events when in a blocking loop
@@ -2512,7 +2512,8 @@ class NonCopperClear(AppTool, Gerber):
                             _("with diameter"),
                             str(uid_val['tooldia']))
                         self.app.inform.emit(msg)
-                        log.debug("Empty geometry for tool: %s with diameter: %s" % (str(uid), str(uid_val['tooldia'])))
+                        self.app.log.debug(
+                            "Empty geometry for tool: %s with diameter: %s" % (str(uid), str(uid_val['tooldia'])))
                         tools_storage.pop(uid, None)
                 except KeyError:
                     tools_storage.pop(uid, None)
@@ -2569,7 +2570,7 @@ class NonCopperClear(AppTool, Gerber):
         # Initializes the new geometry object for the case of the rest-machining ####################
         # ###########################################################################################
         def gen_clear_area_rest(geo_obj, app_obj):
-            log.debug("NCC Tool. Rest machining copper clearing task started.")
+            app_obj.log.debug("NCC Tool. Rest machining copper clearing task started.")
             app_obj.inform.emit(_("NCC Tool. Rest machining copper clearing task started."))
 
             # provide the app with a way to process the GUI events when in a blocking loop
@@ -2726,11 +2727,11 @@ class NonCopperClear(AppTool, Gerber):
                         tools_storage[tool_uid]["data"]["name"] = name + '_' + str(tool)
                         geo_obj.tools[tool_uid] = dict(tools_storage[tool_uid])
                     else:
-                        log.debug("There are no geometries in the cleared polygon.")
+                        app_obj.log.debug("There are no geometries in the cleared polygon.")
 
-                    log.warning("Total number of polygons failed to be cleared: %s" % str(poly_failed))
+                    app_obj.log.warning("Total number of polygons failed to be cleared: %s" % str(poly_failed))
                 else:
-                    log.warning("The area to be cleared has no polygons.")
+                    app_obj.log.warning("The area to be cleared has no polygons.")
 
                 # # Area to clear next
                 # try:
@@ -2889,7 +2890,7 @@ class NonCopperClear(AppTool, Gerber):
 
         units = self.app.app_units
 
-        log.debug("NCC Tool started. Reading parameters.")
+        self.app.log.debug("NCC Tool started. Reading parameters.")
         self.app.inform.emit(_("NCC Tool started. Reading parameters."))
 
         ncc_method = method
@@ -2928,7 +2929,7 @@ class NonCopperClear(AppTool, Gerber):
         # ##############################################################################################################
         # Prepare non-copper polygons. Create the bounding box area from which the copper features will be subtracted ##
         # ##############################################################################################################
-        log.debug("NCC Tool. Preparing non-copper polygons.")
+        self.app.log.debug("NCC Tool. Preparing non-copper polygons.")
         self.app.inform.emit(_("NCC Tool. Preparing non-copper polygons."))
 
         try:
@@ -2993,7 +2994,7 @@ class NonCopperClear(AppTool, Gerber):
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("The reference object type is not supported."))
                 return 'fail'
 
-        log.debug("NCC Tool. Finished non-copper polygons.")
+        self.app.log.debug("NCC Tool. Finished non-copper polygons.")
         # ########################################################################################################
         # set the name for the future Geometry object
         # I do it here because it is also stored inside the gen_clear_area() and gen_clear_area_rest() methods
@@ -3015,7 +3016,7 @@ class NonCopperClear(AppTool, Gerber):
             if not run_threaded:
                 QtWidgets.QApplication.processEvents()
 
-            log.debug("NCC Tool. Normal copper clearing task started.")
+            self.app.log.debug("NCC Tool. Normal copper clearing task started.")
             self.app.inform.emit(_("NCC Tool. Finished non-copper polygons. Normal copper clearing task started."))
 
             # a flag to signal that the isolation is broken by the bounding box in 'area' and 'box' cases
@@ -3047,7 +3048,7 @@ class NonCopperClear(AppTool, Gerber):
             # ###################################################################################################
             # Calculate the empty area by subtracting the solid_geometry from the object bounding box geometry ##
             # ###################################################################################################
-            log.debug("NCC Tool. Calculate 'empty' area.")
+            self.app.log.debug("NCC Tool. Calculate 'empty' area.")
             self.app.inform.emit(_("NCC Tool. Calculate 'empty' area."))
 
             if ncc_obj.kind == 'gerber' and not isotooldia:
@@ -3200,7 +3201,7 @@ class NonCopperClear(AppTool, Gerber):
             if type(empty) is Polygon:
                 empty = MultiPolygon([empty])
 
-            log.debug("NCC Tool. Finished calculation of 'empty' area.")
+            self.app.log.debug("NCC Tool. Finished calculation of 'empty' area.")
             self.app.inform.emit(_("NCC Tool. Finished calculation of 'empty' area."))
 
             tool = 1
@@ -3283,10 +3284,11 @@ class NonCopperClear(AppTool, Gerber):
                                                 poly_processed.append(True)
                                             else:
                                                 poly_processed.append(False)
-                                                log.warning("Polygon in MultiPolygon can not be cleared.")
+                                                self.app.log.warning("Polygon in MultiPolygon can not be cleared.")
                                         else:
-                                            log.warning("Geo in Iterable can not be cleared because it is not Polygon. "
-                                                        "It is: %s" % str(type(pol)))
+                                            self.app.log.warning(
+                                                "Geo in Iterable can not be cleared because it is not Polygon. "
+                                                "It is: %s" % str(type(pol)))
                                 except TypeError:
                                     if isinstance(p, Polygon):
                                         if ncc_method == 0:    # standard
@@ -3306,7 +3308,7 @@ class NonCopperClear(AppTool, Gerber):
                                             poly_processed.append(True)
                                         else:
                                             poly_processed.append(False)
-                                            log.warning("Polygon can not be cleared.")
+                                            self.app.log.warning("Polygon can not be cleared.")
                                     else:
                                         self.app.log.warning("Geo can not be cleared because it is: %s" % str(type(p)))
 
@@ -3351,7 +3353,7 @@ class NonCopperClear(AppTool, Gerber):
                                     break
                             geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
                         else:
-                            log.debug("There are no geometries in the cleared polygon.")
+                            app_obj.log.debug("There are no geometries in the cleared polygon.")
 
             # delete tools with empty geometry
             # look for keys in the tools_storage dict that have 'solid_geometry' values empty
@@ -3415,7 +3417,7 @@ class NonCopperClear(AppTool, Gerber):
             assert geo_obj.kind == 'geometry', \
                 "Initializer expected a GeometryObject, got %s" % type(geo_obj)
 
-            log.debug("NCC Tool. Rest machining copper clearing task started.")
+            app_obj.log.debug("NCC Tool. Rest machining copper clearing task started.")
             app_obj.inform.emit('_(NCC Tool. Rest machining copper clearing task started.')
 
             # provide the app with a way to process the GUI events when in a blocking loop
@@ -3439,7 +3441,7 @@ class NonCopperClear(AppTool, Gerber):
 
             # repurposed flag for final object, geo_obj. True if it has any solid_geometry, False if not.
             app_obj.poly_not_cleared = True
-            log.debug("NCC Tool. Calculate 'empty' area.")
+            app_obj.log.debug("NCC Tool. Calculate 'empty' area.")
             app_obj.inform.emit("NCC Tool. Calculate 'empty' area.")
 
             # ###################################################################################################
@@ -3588,7 +3590,7 @@ class NonCopperClear(AppTool, Gerber):
 
             area = empty.buffer(0)
 
-            log.debug("NCC Tool. Finished calculation of 'empty' area.")
+            app_obj.log.debug("NCC Tool. Finished calculation of 'empty' area.")
             app_obj.inform.emit("NCC Tool. Finished calculation of 'empty' area.")
 
             # Generate area for each tool
@@ -3760,7 +3762,7 @@ class NonCopperClear(AppTool, Gerber):
 
                             geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
                         else:
-                            log.debug("There are no geometries in the cleared polygon.")
+                            app_obj.log.debug("There are no geometries in the cleared polygon.")
 
             geo_obj.multigeo = True
             geo_obj.options["tools_mill_tooldia"] = str(tool)
@@ -3918,8 +3920,8 @@ class NonCopperClear(AppTool, Gerber):
                     elif isinstance(geom, LinearRing) and geom is not None:
                         geom = Polygon(geom.coords[::-1])
                     else:
-                        log.debug("NonCopperClear.generate_envelope() Error --> Unexpected Geometry %s" %
-                                  type(geom))
+                        self.app.log.debug("NonCopperClear.generate_envelope() Error --> Unexpected Geometry %s" %
+                                           type(geom))
             except Exception as e:
                 self.app.log.error("NonCopperClear.generate_envelope() Error --> %s" % str(e))
                 return 'fail'

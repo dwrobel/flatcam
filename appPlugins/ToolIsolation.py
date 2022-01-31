@@ -421,7 +421,8 @@ class ToolIsolation(AppTool, Gerber):
                 dias = self.app.defaults["tools_iso_tooldia"]
 
         if not dias:
-            log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> Plugins -> Isolation Tools.")
+            self.app.log.error(
+                "At least one tool diameter needed. Verify in Edit -> Preferences -> Plugins -> Isolation Tools.")
             return
 
         self.tooluid = 0
@@ -906,7 +907,7 @@ class ToolIsolation(AppTool, Gerber):
                     self.ui_connect()
                     return
             except Exception as e:
-                log.error("Tool missing. Add a tool in the Tool Table. %s" % str(e))
+                self.app.log.error("Tool missing. Add a tool in the Tool Table. %s" % str(e))
                 self.ui_connect()
                 return
 
@@ -924,7 +925,7 @@ class ToolIsolation(AppTool, Gerber):
                                 if key == 'data':
                                     self.storage_to_form(tooluid_value['data'])
                 except Exception as e:
-                    log.error("ToolIsolation ---> update_ui() " + str(e))
+                    self.app.log.error("ToolIsolation ---> update_ui() " + str(e))
             else:
                 self.ui.tool_data_label.setText(
                     "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
@@ -939,7 +940,7 @@ class ToolIsolation(AppTool, Gerber):
                     try:
                         self.form_fields[form_key].set_value(dict_storage[form_key])
                     except Exception as e:
-                        log.error("ToolIsolation.storage_to_form() --> %s" % str(e))
+                        self.app.log.error("ToolIsolation.storage_to_form() --> %s" % str(e))
                         pass
 
     def form_to_storage(self):
@@ -973,7 +974,7 @@ class ToolIsolation(AppTool, Gerber):
     def on_apply_param_to_all_clicked(self):
         if self.ui.tools_table.rowCount() == 0:
             # there is no tool in tool table so we can't save the GUI elements values to storage
-            log.debug("ToolIsolation.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
+            self.app.log.debug("ToolIsolation.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
             return
 
         self.blockSignals(True)
@@ -1223,7 +1224,7 @@ class ToolIsolation(AppTool, Gerber):
                         # reset the value to prepare for another isolation
                         self.safe_tooldia = None
                 except Exception as ee:
-                    log.error(str(ee))
+                    self.app.log.error(str(ee))
                     return
 
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
@@ -1319,7 +1320,7 @@ class ToolIsolation(AppTool, Gerber):
                                         (_("Optimal tool diameter found"), str(min_dist_truncated),
                                          self.units.lower()))
                 except Exception as ee:
-                    log.error(str(ee))
+                    self.app.log.error(str(ee))
                     return
 
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
@@ -1592,7 +1593,7 @@ class ToolIsolation(AppTool, Gerber):
             self.ui_connect()
             return
         except Exception as e:
-            log.error(str(e))
+            self.app.log.error(str(e))
 
         self.app.inform.emit('[success] %s' % _("Tool(s) deleted from Tool Table."))
         self.build_ui()
@@ -3108,8 +3109,7 @@ class ToolIsolation(AppTool, Gerber):
                 return 'fail'
         return geom
 
-    @staticmethod
-    def generate_rest_geometry(geometry, tooldia, passes, overlap, invert, env_iso_type=2, negative_dia=None,
+    def generate_rest_geometry(self, geometry, tooldia, passes, overlap, invert, env_iso_type=2, negative_dia=None,
                                forced_rest=False,
                                prog_plot="normal", prog_plot_handler=None, plot=False):
         """
@@ -3230,10 +3230,10 @@ class ToolIsolation(AppTool, Gerber):
                 elif isinstance(work_geo_shp, LinearRing) and work_geo_shp is not None:
                     work_geo_shp = [Polygon(work_geo_shp.coords[::-1])]
                 else:
-                    log.debug("ToolIsolation.generate_rest_geometry() Error --> Unexpected Geometry %s" %
+                    self.app.log.debug("ToolIsolation.generate_rest_geometry() Error --> Unexpected Geometry %s" %
                               type(work_geo))
             except Exception as e:
-                log.error("ToolIsolation.generate_rest_geometry() Error --> %s" % str(e))
+                self.app.log.error("ToolIsolation.generate_rest_geometry() Error --> %s" % str(e))
                 return 'fail', 'fail'
 
         actual_geo = work_geo_shp.geoms if isinstance(work_geo, MultiPolygon) else work_geo_shp

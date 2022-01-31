@@ -148,7 +148,7 @@ class ObjectReport(AppTool):
         try:
             self.app.delete_selection_shape()
         except Exception as e:
-            log.error("ToolReport.Properties.properties() --> %s" % str(e))
+            self.app.log.error("ToolReport.Properties.properties() --> %s" % str(e))
 
         # populate the properties items
         for obj in obj_list:
@@ -216,7 +216,7 @@ class ObjectReport(AppTool):
                                      ],
                                      True)
         except Exception as e:
-            log.error("Properties.addItems() --> %s" % str(e))
+            self.app.log.error("Properties.addItems() --> %s" % str(e))
 
         self.treeWidget.addChild(obj_name, [obj.options['name']])
 
@@ -237,7 +237,7 @@ class ObjectReport(AppTool):
                     length = abs(xmax - xmin)
                     width = abs(ymax - ymin)
                 except Exception as ee:
-                    log.error("PropertiesTool.addItems() -> calculate dimensions --> %s" % str(ee))
+                    self.app.log.error("PropertiesTool.addItems() -> calculate dimensions --> %s" % str(ee))
 
                 # calculate box area
                 if self.app.app_units.lower() == 'mm':
@@ -269,7 +269,7 @@ class ObjectReport(AppTool):
                             xmax.append(x1)
                             ymax.append(y1)
                     except Exception as ee:
-                        log.error("PropertiesTool.addItems() --> %s" % str(ee))
+                        self.app.log.error("PropertiesTool.addItems() --> %s" % str(ee))
 
                     try:
                         for tool_k in obj_prop.tools:
@@ -279,7 +279,7 @@ class ObjectReport(AppTool):
                             xmax.append(x1)
                             ymax.append(y1)
                     except Exception as ee:
-                        log.error("PropertiesTool.addItems() --> %s" % str(ee))
+                        self.app.log.error("PropertiesTool.addItems() --> %s" % str(ee))
                 else:
                     try:
                         for tool_k in obj_prop.tools:
@@ -289,7 +289,7 @@ class ObjectReport(AppTool):
                             xmax.append(x1)
                             ymax.append(y1)
                     except Exception as ee:
-                        log.error("PropertiesTool.addItems() --> %s" % str(ee))
+                        self.app.log.error("PropertiesTool.addItems() --> %s" % str(ee))
 
                 try:
                     xmin = min(xmin)
@@ -323,7 +323,7 @@ class ObjectReport(AppTool):
                             copper_area += geo_tools.area
                         copper_area /= 100
                 except Exception as err:
-                    log.error("Properties.addItems() --> %s" % str(err))
+                    self.app.log.error("Properties.addItems() --> %s" % str(err))
 
             area_chull = 0.0
             if obj_prop.kind.lower() != 'cncjob':
@@ -352,7 +352,7 @@ class ObjectReport(AppTool):
                         area_chull = max(area_chull)
                     except Exception as er:
                         area_chull = None
-                        log.error("Properties.addItems() --> %s" % str(er))
+                        self.app.log.error("Properties.addItems() --> %s" % str(er))
 
             if self.app.app_units.lower() == 'mm' and area_chull:
                 area_chull = area_chull / 100

@@ -210,7 +210,7 @@ class ToolPDF(AppTool):
 
             if self.pdf_decompressed[short_name] == '':
                 self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open"), str(filename)))
-                log.debug("ToolPDF.open_pdf().obj_init() --> Empty file or error on decompression")
+                self.app.log.debug("ToolPDF.open_pdf().obj_init() --> Empty file or error on decompression")
                 self.parsing_promises.remove(short_name)
                 return
 
@@ -226,7 +226,7 @@ class ToolPDF(AppTool):
                 self.parsing_promises.remove(short_name)
                 time.sleep(0.1)
         except Exception as e:
-            log.error("ToolPDF.open_pdf() --> %s" % str(e))
+            self.app.log.error("ToolPDF.open_pdf() --> %s" % str(e))
         self.app.inform.emit('[success] %s: %s' % (_("Opened"),  str(filename)))
 
     def layer_rendering_as_excellon(self, filename, ap_dict, layer_nr):
@@ -276,7 +276,7 @@ class ToolPDF(AppTool):
 
             ret = new_obj.create_geometry()
             if ret == 'fail':
-                log.debug("Could not create geometry for Excellon object.")
+                self.app.log.debug("Could not create geometry for Excellon object.")
                 return "fail"
 
             new_obj.source_file = app_obj.f_handlers.export_excellon(obj_name=outname, local_use=new_obj,
@@ -382,7 +382,7 @@ class ToolPDF(AppTool):
 
         # self.plot_thread = threading.Thread(target=lambda: self.check_plot_finished(check_period))
         # self.plot_thread.start()
-        log.debug("ToolPDF --> Periodic Check started.")
+        self.app.log.debug("ToolPDF --> Periodic Check started.")
 
         try:
             self.check_thread.stop()
@@ -408,7 +408,7 @@ class ToolPDF(AppTool):
         try:
             if not self.parsing_promises:
                 self.check_thread.stop()
-                log.debug("PDF --> start rendering")
+                self.app.log.debug("PDF --> start rendering")
                 # parsing finished start the layer rendering
                 if self.pdf_parsed:
                     obj_to_delete = []
@@ -441,6 +441,6 @@ class ToolPDF(AppTool):
                         if obj_name in self.pdf_parsed:
                             self.pdf_parsed.pop(obj_name)
 
-                log.debug("ToolPDF --> Periodic check finished.")
+                self.app.log.debug("ToolPDF --> Periodic check finished.")
         except Exception:
             traceback.print_exc()

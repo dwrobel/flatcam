@@ -392,7 +392,8 @@ class ToolPaint(AppTool, Gerber):
                 diameters = self.app.defaults["tools_paint_tooldia"]
 
         if not diameters:
-            log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> Plugins -> NCC Tools.")
+            self.app.log.error(
+                "At least one tool diameter needed. Verify in Edit -> Preferences -> Plugins -> NCC Tools.")
             self.build_ui()
 
             # if the Paint Method is "Single" disable the tool table context menu
@@ -579,7 +580,7 @@ class ToolPaint(AppTool, Gerber):
                     return 'fail'
                 tooluid = int(item.text())
             except Exception as e:
-                log.error("Tool missing. Add a tool in the Tool Table. %s" % str(e))
+                self.app.log.error("Tool missing. Add a tool in the Tool Table. %s" % str(e))
                 return
 
             # update the QLabel that shows for which Tool we have the parameters in the UI form
@@ -595,7 +596,7 @@ class ToolPaint(AppTool, Gerber):
                         if int(tooluid_key) == tooluid:
                             self.storage_to_form(tooluid_value['data'])
                 except Exception as e:
-                    log.error("ToolPaint ---> update_ui() " + str(e))
+                    self.app.log.error("ToolPaint ---> update_ui() " + str(e))
             else:
                 self.ui.tool_data_label.setText(
                     "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
@@ -608,7 +609,7 @@ class ToolPaint(AppTool, Gerber):
             try:
                 self.form_fields[k].set_value(dict_storage[k])
             except Exception as err:
-                log.error("ToolPaint.storage.form() --> %s" % str(err))
+                self.app.log.error("ToolPaint.storage.form() --> %s" % str(err))
 
     def form_to_storage(self):
         if self.ui.tools_table.rowCount() == 0:
@@ -641,7 +642,7 @@ class ToolPaint(AppTool, Gerber):
     def on_apply_param_to_all_clicked(self):
         if self.ui.tools_table.rowCount() == 0:
             # there is no tool in tool table so we can't save the GUI elements values to storage
-            log.debug("NonCopperClear.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
+            self.app.log.debug("NonCopperClear.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
             return
 
         self.blockSignals(True)
@@ -1116,7 +1117,7 @@ class ToolPaint(AppTool, Gerber):
             self.blockSignals(False)
             return
         except Exception as e:
-            log.error(str(e))
+            self.app.log.error(str(e))
 
         self.app.inform.emit('[success] %s' % _("Tool(s) deleted from Tool Table."))
         self.blockSignals(False)
@@ -1149,7 +1150,7 @@ class ToolPaint(AppTool, Gerber):
         try:
             self.paint_obj = self.app.collection.get_by_name(str(self.obj_name))
         except Exception as e:
-            log.error("ToolPaint.on_paint_button_click() --> %s" % str(e))
+            self.app.log.error("ToolPaint.on_paint_button_click() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.obj_name))
             return
 
@@ -1571,7 +1572,7 @@ class ToolPaint(AppTool, Gerber):
                         self.app.plotcanvas.graph_event_disconnect(self.mm)
                         self.app.plotcanvas.graph_event_disconnect(self.kp)
                 except Exception as e:
-                    log.error("ToolPaint.on_key_press() _1 --> %s" % str(e))
+                    self.app.log.error("ToolPaint.on_key_press() _1 --> %s" % str(e))
 
                 self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
                                                                       self.app.on_mouse_click_over_plot)
@@ -1595,7 +1596,7 @@ class ToolPaint(AppTool, Gerber):
 
                     self.app.tool_shapes.clear(update=True)
                 except Exception as e:
-                    log.error("ToolPaint.on_key_press() _2 --> %s" % str(e))
+                    self.app.log.error("ToolPaint.on_key_press() _2 --> %s" % str(e))
 
                 self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
                                                                       self.app.on_mouse_click_release_over_plot)
@@ -1627,7 +1628,7 @@ class ToolPaint(AppTool, Gerber):
             except grace:
                 return "fail"
             except Exception as ee:
-                log.error("ToolPaint.paint_polygon_worker() Standard --> %s" % str(ee))
+                self.app.log.error("ToolPaint.paint_polygon_worker() Standard --> %s" % str(ee))
         elif paint_method == 1:  # _("Seed")
             try:
                 # Type(cp) == FlatCAMRTreeStorage | None
@@ -1641,7 +1642,7 @@ class ToolPaint(AppTool, Gerber):
             except grace:
                 return "fail"
             except Exception as ee:
-                log.error("ToolPaint.paint_polygon_worker() Seed --> %s" % str(ee))
+                self.app.log.error("ToolPaint.paint_polygon_worker() Seed --> %s" % str(ee))
         elif paint_method == 2:  # _("Lines")
             try:
                 # Type(cp) == FlatCAMRTreeStorage | None
@@ -1655,7 +1656,7 @@ class ToolPaint(AppTool, Gerber):
             except grace:
                 return "fail"
             except Exception as ee:
-                log.error("ToolPaint.paint_polygon_worker() Lines --> %s" % str(ee))
+                self.app.log.error("ToolPaint.paint_polygon_worker() Lines --> %s" % str(ee))
         elif paint_method == 3:  # _("Laser_lines")
             # line = None
             # aperture_size = None
@@ -1702,7 +1703,7 @@ class ToolPaint(AppTool, Gerber):
             except grace:
                 return "fail"
             except Exception as ee:
-                log.error("ToolPaint.paint_polygon_worker() Laser Lines -> Identify flashes/traces--> %s" % str(ee))
+                self.app.log.error("ToolPaint.paint_polygon_worker() Laser Lines -> Identify flashes/traces--> %s" % str(ee))
 
             cpoly = FlatCAMRTreeStorage()
             pads_lines_list = []
@@ -1750,7 +1751,7 @@ class ToolPaint(AppTool, Gerber):
             except grace:
                 return "fail"
             except Exception as ee:
-                log.error("ToolPaint.paint_polygon_worker() Laser Lines -> Process flashes--> %s" % str(ee))
+                self.app.log.error("ToolPaint.paint_polygon_worker() Laser Lines -> Process flashes--> %s" % str(ee))
 
             # add the lines from pads to the storage
             try:
@@ -1782,7 +1783,7 @@ class ToolPaint(AppTool, Gerber):
             except grace:
                 return "fail"
             except Exception as ee:
-                log.error("ToolPaint.paint_polygon_worker() Laser Lines -> Process traces--> %s" % str(ee))
+                self.app.log.error("ToolPaint.paint_polygon_worker() Laser Lines -> Process traces--> %s" % str(ee))
 
             # add the lines from copper features to storage but first try to make as few lines as possible
             # by trying to fuse them
@@ -1830,7 +1831,7 @@ class ToolPaint(AppTool, Gerber):
             except grace:
                 return "fail"
             except Exception as ee:
-                log.error("ToolPaint.paint_polygon_worker() Combo --> %s" % str(ee))
+                self.app.log.error("ToolPaint.paint_polygon_worker() Combo --> %s" % str(ee))
 
         if cpoly and cpoly.objects:
             return cpoly
@@ -1910,7 +1911,7 @@ class ToolPaint(AppTool, Gerber):
                 pass
 
             for tool_dia in sorted_tools:
-                log.debug("Starting geometry processing for tool: %s" % str(tool_dia))
+                self.app.log.debug("Starting geometry processing for tool: %s" % str(tool_dia))
                 msg = '[success] %s %s%s %s' % (_('Painting with tool diameter = '),
                                                 str(tool_dia),
                                                 self.units.lower(),
@@ -1947,7 +1948,7 @@ class ToolPaint(AppTool, Gerber):
                 # variables to display the percentage of work done
                 geo_len = len(poly_buf)
 
-                log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
+                self.app.log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
 
                 pol_nr = 0
 
@@ -2000,7 +2001,7 @@ class ToolPaint(AppTool, Gerber):
                 except grace:
                     return "fail"
                 except Exception as e:
-                    log.error("Could not Paint the polygons. %s" % str(e))
+                    self.app.log.error("Could not Paint the polygons. %s" % str(e))
                     mssg = '[ERROR] %s\n%s' % (_("Could not do Paint. Try a different combination of parameters. "
                                                  "Or a different method of Paint"), str(e))
                     self.app.inform.emit(mssg)
@@ -2045,7 +2046,7 @@ class ToolPaint(AppTool, Gerber):
                 geo_obj.options['xmax'] = c
                 geo_obj.options['ymax'] = d
             except Exception as ee:
-                log.error("ToolPaint.paint_poly.job_init() bounds error --> %s" % str(ee))
+                self.app.log.error("ToolPaint.paint_poly.job_init() bounds error --> %s" % str(ee))
                 return
 
             # test if at least one tool has solid_geometry. If no tool has solid_geometry we raise an Exception
@@ -2096,10 +2097,10 @@ class ToolPaint(AppTool, Gerber):
             # variables to display the percentage of work done
             geo_len = len(poly_buf)
 
-            log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
+            self.app.log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
 
             for tool_dia in sorted_tools:
-                log.debug("Starting geometry processing for tool: %s" % str(tool_dia))
+                self.app.log.debug("Starting geometry processing for tool: %s" % str(tool_dia))
                 msg = '[success] %s %s%s %s' % (_('Painting with tool diameter = '),
                                                 str(tool_dia),
                                                 self.units.lower(),
@@ -2210,7 +2211,7 @@ class ToolPaint(AppTool, Gerber):
                 except grace:
                     return "fail"
                 except Exception as e:
-                    log.error("Could not Paint the polygons. %s" % str(e))
+                    self.app.log.error("Could not Paint the polygons. %s" % str(e))
                     msg = '[ERROR] %s\n%s' % (_("Could not do Paint. Try a different combination of parameters. "
                                                 "Or a different method of Paint"), str(e))
                     self.app.inform.emit(msg)
@@ -2225,10 +2226,10 @@ class ToolPaint(AppTool, Gerber):
                     tools_storage[current_uid]['data']['name'] = name
                     geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
                 else:
-                    log.debug("There are no geometries in the cleared polygon.")
+                    self.app.log.debug("There are no geometries in the cleared polygon.")
 
                 # Area to clear next
-                log.debug("Generating rest geometry for the next tool.")
+                self.app.log.debug("Generating rest geometry for the next tool.")
 
                 buffered_cleared = unary_union(cleared_geo)
                 buffered_cleared = buffered_cleared.buffer(tool_dia / 2.0)
@@ -2250,7 +2251,7 @@ class ToolPaint(AppTool, Gerber):
                     poly_buf = unary_union(tmp)
 
                 if not poly_buf or poly_buf.is_empty or not poly_buf.is_valid:
-                    log.debug("Rest geometry empty. Breaking.")
+                    app_obj.log.debug("Rest geometry empty. Breaking.")
                     break
 
             geo_obj.multigeo = True
@@ -2301,7 +2302,7 @@ class ToolPaint(AppTool, Gerber):
                 geo_obj.options['xmax'] = c
                 geo_obj.options['ymax'] = d
             except Exception as ee:
-                log.error("ToolPaint.paint_poly.job_init() bounds error --> %s" % str(ee))
+                app_obj.log.error("ToolPaint.paint_poly.job_init() bounds error --> %s" % str(ee))
                 return
 
             # Experimental...
@@ -2638,7 +2639,7 @@ class ToolPaint(AppTool, Gerber):
                 env_obj = env_obj.convex_hull
             sel_rect = env_obj.buffer(distance=0.0000001, join_style=base.JOIN_STYLE.mitre)
         except Exception as e:
-            log.error("ToolPaint.paint_poly_ref() --> %s" % str(e))
+            self.app.log.error("ToolPaint.paint_poly_ref() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object available."))
             return
 
@@ -2780,7 +2781,7 @@ class ToolPaint(AppTool, Gerber):
                     try:
                         minx_, miny_, maxx_, maxy_ = bounds_rec(k)
                     except Exception as e:
-                        log.error("ToolPaint.bounds() --> %s" % str(e))
+                        # log.error("ToolPaint.bounds() --> %s" % str(e))
                         return
 
                     minx = min(minx, minx_)

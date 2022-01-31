@@ -1486,7 +1486,7 @@ class Gerber(Geometry):
 
                     # Flash should not happen here
                     if current_operation_code == 3:
-                        log.error("Trying to flash within arc. (%d)" % line_num)
+                        self.app.log.error("Trying to flash within arc. (%d)" % line_num)
                         continue
 
                     if quadrant_mode == 'MULTI':
@@ -1531,7 +1531,7 @@ class Gerber(Geometry):
                         ]
 
                         valid = False
-                        log.debug("I: %f  J: %f" % (i, j))
+                        # self.app.log.debug("I: %f  J: %f" % (i, j))
                         for center in center_candidates:
                             radius = np.sqrt(i ** 2 + j ** 2)
 
@@ -1547,14 +1547,14 @@ class Gerber(Geometry):
                             start = np.arctan2(-j, -i)  # Start angle
                             stop = np.arctan2(-center[1] + circular_y, -center[0] + circular_x)  # Stop angle
                             angle = abs(arc_angle(start, stop, arcdir[current_interpolation_mode]))
-                            log.debug("ARC START: %f, %f  CENTER: %f, %f  STOP: %f, %f" %
-                                      (current_x, current_y, center[0], center[1], circular_x, circular_y))
-                            log.debug("START Ang: %f, STOP Ang: %f, DIR: %s, ABS: %.12f <= %.12f: %s" %
-                                      (start * 180 / np.pi, stop * 180 / np.pi, arcdir[current_interpolation_mode],
-                                       angle * 180 / np.pi, np.pi / 2 * 180 / np.pi, angle <= (np.pi + 1e-6) / 2))
+                            # self.app.log.debug("ARC START: %f, %f  CENTER: %f, %f  STOP: %f, %f" %
+                            #           (current_x, current_y, center[0], center[1], circular_x, circular_y))
+                            # self.app.log.debug("START Ang: %f, STOP Ang: %f, DIR: %s, ABS: %.12f <= %.12f: %s" %
+                            #           (start * 180 / np.pi, stop * 180 / np.pi, arcdir[current_interpolation_mode],
+                            #            angle * 180 / np.pi, np.pi / 2 * 180 / np.pi, angle <= (np.pi + 1e-6) / 2))
 
                             if angle <= (np.pi + 1e-6) / 2:
-                                log.debug("########## ACCEPTING ARC ############")
+                                # self.app.log.debug("########## ACCEPTING ARC ############")
                                 this_arc = arc(center, radius, start, stop,
                                                arcdir[current_interpolation_mode],
                                                self.steps_per_circle)
@@ -1744,8 +1744,7 @@ class Gerber(Geometry):
         if is_excellon_gx2 is True:
             return 'drill'
 
-    @staticmethod
-    def create_flash_geometry(location, aperture, steps_per_circle=None):
+    def create_flash_geometry(self, location, aperture, steps_per_circle=None):
 
         # self.app.log.debug('Flashing @%s, Aperture: %s' % (location, aperture))
 
@@ -1799,10 +1798,10 @@ class Gerber(Geometry):
             loc = location.coords[0]
             flash_geo = aperture['macro'].make_geometry(aperture['modifiers'])
             if flash_geo.is_empty:
-                log.warning("Empty geometry for Aperture Macro: %s" % str(aperture['macro'].name))
+                self.app.log.warning("Empty geometry for Aperture Macro: %s" % str(aperture['macro'].name))
             return affinity.translate(flash_geo, xoff=loc[0], yoff=loc[1])
 
-        log.warning("Unknown aperture type: %s" % aperture['type'])
+        self.app.log.warning("Unknown aperture type: %s" % aperture['type'])
         return None
 
     def create_geometry(self):

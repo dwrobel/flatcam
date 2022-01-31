@@ -273,7 +273,7 @@ class ToolCopperThieving(AppTool):
         try:
             self.grb_object = model_index.internalPointer().obj
         except Exception as e:
-            log.error("ToolCopperThieving.on_add_robber_bar_click() --> %s" % str(e))
+            self.app.log.error("ToolCopperThieving.on_add_robber_bar_click() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
 
@@ -371,7 +371,7 @@ class ToolCopperThieving(AppTool):
         try:
             self.grb_object = model_index.internalPointer().obj
         except Exception as e:
-            log.error("ToolCopperThieving.on_add_copper_thieving_click() --> %s" % str(e))
+            self.app.log.error("ToolCopperThieving.on_add_copper_thieving_click() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
 
@@ -556,7 +556,7 @@ class ToolCopperThieving(AppTool):
         # ####### Read the parameters #########################################
         # #####################################################################
 
-        log.debug("Copper Thieving Tool started. Reading parameters.")
+        self.app.log.debug("Copper Thieving Tool started. Reading parameters.")
         self.app.inform.emit(_("Copper Thieving Tool started. Reading parameters."))
 
         ref_selected = self.ui.reference_combo.get_value()
@@ -582,7 +582,7 @@ class ToolCopperThieving(AppTool):
             # #########################################################################################################
             # Prepare isolation polygon. This will create the clearance over the Gerber features
             # #########################################################################################################
-            log.debug("Copper Thieving Tool. Preparing isolation polygons.")
+            self.app.log.debug("Copper Thieving Tool. Preparing isolation polygons.")
             tool_obj.app.inform.emit(_("Copper Thieving Tool. Preparing isolation polygons."))
 
             # variables to display the percentage of work done
@@ -628,7 +628,7 @@ class ToolCopperThieving(AppTool):
             # #########################################################################################################
             # Prepare the area to fill with copper.
             # #########################################################################################################
-            log.debug("Copper Thieving Tool. Preparing areas to fill with copper.")
+            tool_obj.app.log.debug("Copper Thieving Tool. Preparing areas to fill with copper.")
             tool_obj.app.inform.emit(_("Copper Thieving Tool. Preparing areas to fill with copper."))
 
             try:
@@ -637,7 +637,7 @@ class ToolCopperThieving(AppTool):
                 else:
                     working_obj = ref_obj
             except Exception as e:
-                log.error("ToolCopperThieving.copper_thieving() --> %s" % str(e))
+                tool_obj.app.log.error("ToolCopperThieving.copper_thieving() --> %s" % str(e))
                 return 'fail'
 
             tool_obj.app.proc_container.update_view_text(' %s' % _("Working..."))
@@ -678,7 +678,7 @@ class ToolCopperThieving(AppTool):
                             return 'fail'
 
                 except Exception as e:
-                    log.error("ToolCopperFIll.copper_thieving()  'itself'  --> %s" % str(e))
+                    tool_obj.app.log.error("ToolCopperFIll.copper_thieving()  'itself'  --> %s" % str(e))
                     tool_obj.app.inform.emit('[ERROR_NOTCL] %s' % _("No object available."))
                     return 'fail'
             elif ref_selected == 1:     # 'area'
@@ -985,7 +985,7 @@ class ToolCopperThieving(AppTool):
         try:
             self.sm_object = model_index.internalPointer().obj
         except Exception as e:
-            log.error("ToolCopperThieving.on_add_ppm_click() --> %s" % str(e))
+            self.app.log.error("ToolCopperThieving.on_add_ppm_click() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
 

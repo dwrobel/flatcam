@@ -87,7 +87,7 @@ class TclCommandSetOrigin(TclCommand):
             try:
                 location = [float(eval(coord)) for coord in str(args['loc']).split(",") if coord != '']
             except AttributeError as e:
-                log.debug("TclCommandSetOrigin.execute --> %s" % str(e))
+                self.app.log.debug("TclCommandSetOrigin.execute --> %s" % str(e))
                 location = (0, 0)
 
             if len(location) != 2:

@@ -60,7 +60,7 @@ class TclCommandBounds(TclCommand):
             try:
                 obj_list = [str(obj_name) for obj_name in str(args['objects']).split(",") if obj_name != '']
             except AttributeError as e:
-                log.debug("TclCommandBounds.execute --> %s" % str(e))
+                self.app.log.debug("TclCommandBounds.execute --> %s" % str(e))
 
             if not obj_list:
                 self.raise_tcl_error('%s: %s:' % (
