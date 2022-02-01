@@ -659,21 +659,21 @@ class App(QtCore.QObject):
                                  'Toolchange_Manual', 'Toolchange_Probe_MACH3',
                                  'True', 'Users',
                                  'all', 'auto', 'axis',
-                                 'axisoffset', 'box', 'center_x', 'center_y', 'columns', 'combine', 'connect',
+                                 'axisoffset', 'box', 'center_x', 'center_y', 'center', 'columns', 'combine', 'connect',
                                  'contour', 'default',
                                  'depthperpass', 'dia', 'diatol', 'dist', 'drilled_dias', 'drillz', 'dpp',
                                  'dwelltime', 'extracut_length', 'endxy', 'endz', 'f', 'factor', 'feedrate',
                                  'feedrate_z', 'gridoffsety', 'gridx', 'gridy',
                                  'has_offset', 'holes', 'hpgl', 'iso_type', 'join',  'keep_scripts',
                                  'las_min_pwr', 'las_power', 'margin', 'marlin', 'method',
-                                 'milled_dias', 'minoffset', 'name', 'offset', 'opt_type', 'order',
+                                 'milled_dias', 'minoffset', 'min_bounds', 'name', 'offset', 'opt_type', 'order',
                                  'outname', 'overlap', 'obj_name', 'passes', 'postamble', 'pp', 'ppname_e', 'ppname_g',
                                  'preamble', 'radius', 'ref', 'rest', 'rows', 'shellvar_', 'scale_factor',
                                  'spacing_columns',
                                  'spacing_rows', 'spindlespeed', 'startz', 'startxy',
                                  'toolchange_xy', 'toolchangez', 'travelz',
                                  'tooldia', 'use_threads', 'value',
-                                 'x', 'x0', 'x1', 'y', 'y0', 'y1', 'z_cut', 'z_move'
+                                 'x', 'x0', 'x1', 'x_dist', 'y', 'y0', 'y1', 'y_dist', 'z_cut', 'z_move'
                                  ]
 
         self.tcl_keywords = [

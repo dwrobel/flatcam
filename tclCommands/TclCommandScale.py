@@ -1,7 +1,6 @@
 from tclCommands.TclCommand import TclCommand
 
 import collections
-import logging
 
 import gettext
 import appTranslation as fcTranslate
@@ -10,8 +9,6 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
-
-log = logging.getLogger('base')
 
 
 class TclCommandScale(TclCommand):
@@ -74,14 +71,14 @@ class TclCommandScale(TclCommand):
         :param unnamed_args:
         :return:
         """
-        if 'x' not in args and 'y' not in args and 'factor' not in args:
+        if ('x' not in args or 'X' not in args) and ('y' not in args or 'Y' not in args) and 'factor' not in args:
             self.app.log.warning('%s' % "Expected -x <value> -y <value> or -factor <value>")
             self.raise_tcl_error('%s' % "Expected -x <value> -y <value> or -factor <value>")
             return 'fail'
 
         obj_names = unnamed_args
         if not obj_names:
-            self.app.log.error("Missing objects to be offset. Exiting.")
+            self.app.log.error("Missing objects to be scale. Exiting.")
             return "fail"
 
         # calculate the bounds

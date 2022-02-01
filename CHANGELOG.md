@@ -16,7 +16,8 @@ CHANGELOG for FlatCAM beta
 - updated the `offset` and `scale` Tcl commands to work on a selection of objects
 - minor changed in camlib.py regarding the self.check_zcut() method setting the self.z_cut to 'fail'
 - upgraded the `mirror` Tcl command to work on a selection of objects and also fixed a plot issue
-
+- upgraded the `skew` Tcl command to work on a selection of objects and added the ability to skew not only in degrees but also by distances
+- 
 31.02.2022
 
 - fixed all the `laser` preprocessors to work correctly and the resulting GCode to be plotted

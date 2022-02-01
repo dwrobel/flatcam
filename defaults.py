@@ -801,17 +801,19 @@ class FlatCAMDefaults:
                                       'Repetier, Roland_MDX_20, Roland_MDX_540,'
                                       'Toolchange_Manual, Toolchange_Probe_MACH3, True, '
                                       'Users, all, auto, axis, axisoffset, '
-                                      'box, center_x, center_y, columns, combine, connect, contour, default, '
+                                      'box, center_x, center_y, center, columns, combine, connect, contour, default, '
                                       'depthperpass, dia, diatol, dist, drilled_dias, drillz, dpp, dwelltime, '
                                       'endxy, endz, extracut_length, f, factor, feedrate, '
                                       'feedrate_z, gridoffsety, gridx, gridy, has_offset, '
                                       'holes, hpgl, iso_type, join, '
                                       'las_min_pwr, las_power, keep_scripts, margin, marlin, method, milled_dias, '
-                                      'minoffset, name, offset, opt_type, order, outname, overlap, obj_name'
+                                      'minoffset, min_bounds, name, offset, opt_type, order, '
+                                      'outname, overlap, obj_name, '
                                       'passes, postamble, pp, ppname_e, ppname_g, preamble, radius, ref, rest, '
                                       'rows, shellvar_, scale_factor, spacing_columns, spacing_rows, spindlespeed, '
                                       'startz, startxy, toolchange_xy, toolchangez, '
-                                      'tooldia, travelz, use_threads, value, x, x0, x1, y, y0, y1, z_cut, '
+                                      'tooldia, travelz, use_threads, value, '
+                                      'x, x0, x1, x_dist, y, y0, y1, y_dist, z_cut, '
                                       'z_move',
         "script_autocompleter": True,
         "script_text": "",
