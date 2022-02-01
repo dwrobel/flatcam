@@ -313,7 +313,7 @@ class TclCommandPanelize(TclCommand):
                     obj_fin.tools = copied_tools
                     if obj.multigeo is True:
                         for tool in obj.tools:
-                            obj_fin.tools[tool]['solid_geometry'][:] = []
+                            obj_fin.tools[tool]['solid_geometry'] = []
 
                     for row in range(rows):
                         currentx = 0.0

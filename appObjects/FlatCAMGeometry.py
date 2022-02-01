@@ -979,7 +979,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                        las_min_pwr=0.0,
                        multidepth=None, dpp=None, toolchange=None, toolchangez=None, toolchangexy=None,
                        extracut=None, extracut_length=None, startz=None, endz=None, endxy=None, pp=None,
-                       segx=None, segy=None, use_thread=True, plot=True):
+                       segx=None, segy=None, use_thread=True, plot=True, **args):
         """
         Only used by the TCL Command Cncjob.
         Creates a CNCJob out of this Geometry object. The actual

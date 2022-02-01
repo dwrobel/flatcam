@@ -106,6 +106,8 @@ class TclCommandMirror(TclCommandSignaled):
             if 'axis' in args:
                 try:
                     axis = args['axis'].upper()
+                    # fix so the Tcl command works just like in GUI
+                    axis = 'X' if axis == 'Y' else 'Y'
                 except KeyError:
                     axis = 'Y'
             else:

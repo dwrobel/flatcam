@@ -137,9 +137,9 @@ class TclCommandCncjob(TclCommandSignaled):
 
         args["dia"] = args["dia"] if "dia" in args and args["dia"] else self.app.defaults["tools_mill_tooldia"]
 
-        args["z_cut"] = args["z_cut"] if "z_cut" in args and args["z_cut"] else self.app.defaults["geometry_cutz"]
+        args["z_cut"] = args["z_cut"] if "z_cut" in args and args["z_cut"] else self.app.defaults["tools_mill_cutz"]
         args["z_move"] = args["z_move"] if "z_move" in args and args["z_move"] else \
-            self.app.defaults["geometry_travelz"]
+            self.app.defaults["tools_mill_travelz"]
 
         args["pp"] = args["pp"] if "pp" in args and isinstance(args["pp"], str) else \
             self.app.defaults["tools_mill_ppname_g"]
@@ -233,8 +233,6 @@ class TclCommandCncjob(TclCommandSignaled):
             return "fail"
 
         args.pop('name', None)
-        args.pop('las_power', None)
-        args.pop('las_min_pwr', None)
 
         for arg in args:
             if arg == "toolchange_xy" or arg == "spindlespeed" or arg == "startz":
@@ -249,10 +247,6 @@ class TclCommandCncjob(TclCommandSignaled):
                         return "fail"
                     else:
                         return "fail"
-
-        # HACK !!! Should be solved elsewhere!!!
-        # default option for multidepth is False
-        # obj.options['multidepth'] = False
 
         if not obj.multigeo:
             obj.generatecncjob(use_thread=False, plot=False, **args)
@@ -286,7 +280,7 @@ class TclCommandCncjob(TclCommandSignaled):
                     local_tools_dict[tool_uid]['data']['tools_mill_spindlespeed'] = args["spindlespeed"]
                     local_tools_dict[tool_uid]['data']['tools_mill_dwell'] = args["dwell"]
                     local_tools_dict[tool_uid]['data']['tools_mill_dwelltime'] = args["dwelltime"]
-                    local_tools_dict[tool_uid]['data']['tools_mill_min_power'] = args["las_min_pwr"]
+                    local_tools_dict[tool_uid]['data']['tools_mill_min_power'] = args['las_min_pwr']
                     local_tools_dict[tool_uid]['data']['tools_mill_ppname_g'] = args["pp"]
 
             self.app.milling_tool.mtool_gen_cncjob(

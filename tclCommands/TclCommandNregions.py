@@ -15,7 +15,7 @@ if '_' not in builtins.__dict__:
 
 class TclCommandNregions(TclCommand):
     """
-    Tcl shell command to follow a Gerber file
+    Tcl shell command that creates a Geometry object with the non-copper regions.
     """
 
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)

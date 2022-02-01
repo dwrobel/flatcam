@@ -53,7 +53,7 @@ class TclCommandCutout(TclCommand):
             ('gaps', "Type of gaps. Can be: 'tb' = top-bottom, 'lr' = left-right and '4' = one each side."),
             ('outname', 'Name of the object to create.')
         ]),
-        'examples': ['cutout new_geo -dia 1.2 -margin 0.1 -gapsize 1 -gaps "tb" -outname cut_geo']
+        'examples': ['cutout cut_object -dia 1.2 -margin 0.1 -gapsize 1 -gaps "tb" -outname cutout_geo']
     }
 
     def execute(self, args, unnamed_args):
