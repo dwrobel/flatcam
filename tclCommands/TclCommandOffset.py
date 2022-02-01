@@ -14,13 +14,11 @@ class TclCommandOffset(TclCommand):
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['offset']
 
-    description = '%s %s' % ("--", "Will offset the geometry of a named object. Does not create a new object.")
+    description = '%s %s' % ("--", "Will offset the geometry of named objects. Does not create a new object.")
 
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
-        ('name', str),
-        ('x', float),
-        ('y', float)
+
     ])
 
     # Dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
@@ -30,17 +28,19 @@ class TclCommandOffset(TclCommand):
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
-    required = ['name']
+    required = []
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Changes the position of the object on X and/or Y axis.",
+        'main': "Changes the position of the named object(s) on X and/or Y axis.\n"
+                "The names of the objects to be offset will be entered after the command,\n"
+                "separated by spaces. See the example below.\n"
+                "WARNING: if the name of an object has spaces, enclose the name with quotes.",
         'args': collections.OrderedDict([
-            ('name', 'Name of the object to offset. Required.'),
             ('x', 'Offset distance in the X axis. If it is not used it will be assumed to be 0.0'),
             ('y', 'Offset distance in the Y axis. If it is not used it will be assumed to be 0.0')
         ]),
-        'examples': ['offset my_geometry -x 1.2 -y -0.3', 'offset my_geometry -x 1.0']
+        'examples': ['offset my_object_1 "my object_1" -x 1.2 -y -0.3', 'offset my_object -x 1.0']
     }
 
     def execute(self, args, unnamed_args):
@@ -51,13 +51,24 @@ class TclCommandOffset(TclCommand):
         :return:
         """
 
-        name = args['name']
         off_x = args['x'] if 'x' in args else 0.0
         off_y = args['y'] if 'y' in args else 0.0
 
         x, y = float(off_x), float(off_y)
 
         if (x, y) == (0.0, 0.0):
+            self.app.log.warning("Offset by 0.0. Nothing to be done.")
             return
 
-        self.app.collection.get_by_name(name).offset((x, y))
+        obj_names = unnamed_args
+        if not obj_names:
+            self.app.log.error("Missing objects to be offset. Exiting.")
+            return "fail"
+
+        for name in obj_names:
+            obj = self.app.collection.get_by_name(str(name))
+            if obj is None or obj == '':
+                self.app.log.error("Object not found: %s" % name)
+                return "fail"
+
+            obj.offset((x, y))

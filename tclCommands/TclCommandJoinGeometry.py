@@ -53,6 +53,9 @@ class TclCommandJoinGeometry(TclCommand):
 
         outname = args['outname'] if 'outname' in args else "joined_geo"
         obj_names = unnamed_args
+        if not obj_names:
+            self.app.log.error("Missing objects to be joined. Exiting.")
+            return "fail"
 
         objs = []
         for obj_n in obj_names:

@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - fixed the multi-color feature in the Gerber object UI
 - fixed the marking of apertures in Gerber object UI and in Extract plugin
 - minor changes in `cncjob` Tcl command
+- updated the `offset` and `scale` Tcl commands to work on a selection of objects
 
 31.02.2022
 

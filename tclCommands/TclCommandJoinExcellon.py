@@ -57,6 +57,10 @@ class TclCommandJoinExcellon(TclCommand):
         outname = args['outname'] if 'outname' in args else "joined_exc"
         obj_names = unnamed_args
 
+        if not obj_names:
+            self.app.log.error("Missing objects to be joined. Exiting.")
+            return "fail"
+
         objs = []
         for obj_n in obj_names:
             obj = self.app.collection.get_by_name(str(obj_n))
