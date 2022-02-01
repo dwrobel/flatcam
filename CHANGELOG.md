@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+1.02.2022
+
+- fixed the `cncjob` Tcl command: forgot to pop the arguments that are not recognized by the non-multigo handler
+
 31.02.2022
 
 - fixed all the `laser` preprocessors to work correctly and the resulting GCode to be plotted

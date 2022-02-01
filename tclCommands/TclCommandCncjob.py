@@ -230,6 +230,8 @@ class TclCommandCncjob(TclCommandSignaled):
                                  "in format (x, y) - no spaces allowed. But always two comma separated values.")
 
         args.pop('name', None)
+        args.pop('las_power', None)
+        args.pop('las_min_pwr', None)
 
         for arg in args:
             if arg == "toolchange_xy" or arg == "spindlespeed" or arg == "startz":
