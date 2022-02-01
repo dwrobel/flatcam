@@ -19,6 +19,7 @@ CHANGELOG for FlatCAM beta
 - upgraded the `skew` Tcl command to work on a selection of objects and added the ability to skew not only in degrees but also by distances
 - fixed some issues in `panelize` and `cncjob` Tcl commands
 - reversed the mirroring axis in the `mirror` Tcl command to be consistent with the action in GUI
+- solved some more exceptions in the `cncjob` Tcl command
 
 31.02.2022
 

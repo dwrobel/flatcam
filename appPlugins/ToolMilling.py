@@ -3015,8 +3015,8 @@ class ToolMilling(AppTool, Excellon):
             # the segx and segy values are the same for all tools os we just take the values from the first tool
             sel_tool = tools_list[0]
             data_dict = geo_obj.tools[sel_tool]['data']
-            segx = data_dict['segx']
-            segy = data_dict['segy']
+            segx = data_dict.get('segx') or data_dict.get('geometry_segx')
+            segy = data_dict.get('segy') or data_dict.get('geometry_segy')
 
         try:
             xmin = geo_obj.options['xmin']

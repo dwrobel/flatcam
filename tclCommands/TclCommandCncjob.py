@@ -256,6 +256,8 @@ class TclCommandCncjob(TclCommandSignaled):
 
             for tool_uid in list(local_tools_dict.keys()):
                 if 'data' in local_tools_dict[tool_uid]:
+                    local_tools_dict[tool_uid]['data']['segx'] = self.app.defaults['geometry_segx']
+                    local_tools_dict[tool_uid]['data']['segy'] = self.app.defaults['geometry_segx']
                     local_tools_dict[tool_uid]['data']['tools_mill_tooldia'] = args["dia"]
                     local_tools_dict[tool_uid]['data']['tools_mill_cutz'] = args["z_cut"]
                     local_tools_dict[tool_uid]['data']['tools_mill_travelz'] = args["z_move"]
