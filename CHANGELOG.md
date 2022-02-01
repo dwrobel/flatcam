@@ -9,7 +9,9 @@ CHANGELOG for FlatCAM beta
 
 1.02.2022
 
-- fixed the `cncjob` Tcl command: forgot to pop the arguments that are not recognized by the non-multigo handler
+- fixed the `cncjob` Tcl command: forgot to pop the arguments that are not recognized by the non-multigeo handler
+- fixed the multi-color feature in the Gerber object UI
+- fixed the marking of apertures in Gerber object UI and in Extract plugin
 
 31.02.2022
 

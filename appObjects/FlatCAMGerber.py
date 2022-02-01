@@ -963,22 +963,29 @@ class GerberObject(FlatCAMObj, Gerber):
                 return new_color
 
         try:
-            if self.options["solid"]:
-                used_color = color
-                used_face_color = random_color() if self.options['multicolored'] else face_color
-            else:
-                used_color = random_color() if self.options['multicolored'] else 'black'
-                used_face_color = None
-
             plot_geometry = geometry.geoms if isinstance(geometry, (MultiPolygon, MultiLineString)) else geometry
             try:
                 for g in plot_geometry:
+                    if self.options["solid"]:
+                        used_color = color
+                        used_face_color = random_color() if self.options['multicolored'] else face_color
+                    else:
+                        used_color = random_color() if self.options['multicolored'] else 'black'
+                        used_face_color = None
+
                     if isinstance(g, (Polygon, LineString)):
                         self.add_shape(shape=g, color=used_color, face_color=used_face_color, visible=visible)
                     elif isinstance(g, LinearRing):
                         g = LineString(g)
                         self.add_shape(shape=g, color=used_color, face_color=used_face_color, visible=visible)
             except TypeError:
+                if self.options["solid"]:
+                    used_color = color
+                    used_face_color = random_color() if self.options['multicolored'] else face_color
+                else:
+                    used_color = random_color() if self.options['multicolored'] else 'black'
+                    used_face_color = None
+
                 if isinstance(plot_geometry, (Polygon, LineString)):
                     self.add_shape(shape=plot_geometry, color=used_color, face_color=used_face_color, visible=visible)
                 elif isinstance(plot_geometry, LinearRing):
@@ -1045,9 +1052,7 @@ class GerberObject(FlatCAMObj, Gerber):
                                     shape_key = app_obj.add_mark_shape(shape=geo, color=color, face_color=color,
                                                                        visible=visibility)
                                     app_obj.mark_shapes_storage[aperture_to_plot_mark].append(shape_key)
-
                     app_obj.mark_shapes.redraw()
-
                 except (ObjectDeleted, AttributeError):
                     app_obj.clear_plot_apertures()
                 except Exception as e:
@@ -1111,8 +1116,9 @@ class GerberObject(FlatCAMObj, Gerber):
         if self.ui.apertures_table.cellWidget(cw_row, 5).isChecked():
             self.marked_rows.append(True)
             # self.plot_aperture(color='#2d4606bf', marked_aperture=aperture, visible=True)
-            self.plot_aperture(color=self.app.defaults['global_sel_draw_color'] + 'AF',
-                               marked_aperture=aperture, visible=True, run_thread=True)
+            color = self.app.defaults['global_sel_draw_color']
+            color = (color + 'AF') if len(color) == 7 else (color[:-2] + 'AF')
+            self.plot_aperture(color=color, marked_aperture=aperture, visible=True, run_thread=True)
         else:
             self.marked_rows.append(False)
             self.clear_plot_apertures(aperture=aperture)
@@ -1148,8 +1154,9 @@ class GerberObject(FlatCAMObj, Gerber):
         if mark_all:
             for aperture in self.tools:
                 # self.plot_aperture(color='#2d4606bf', marked_aperture=aperture, visible=True)
-                self.plot_aperture(color=self.app.defaults['global_sel_draw_color'] + 'AF',
-                                   marked_aperture=aperture, visible=True)
+                color = self.app.defaults['global_sel_draw_color']
+                color = (color + 'AF') if len(color) == 7 else (color[:-2] + 'AF')
+                self.plot_aperture(color=color, marked_aperture=aperture, visible=True)
             # HACK: enable/disable the grid for a better look
             self.app.ui.grid_snap_btn.trigger()
             self.app.ui.grid_snap_btn.trigger()

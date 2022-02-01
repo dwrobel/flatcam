@@ -928,8 +928,9 @@ class ToolExtract(AppTool):
 
         if self.ui.apertures_table.cellWidget(cw_row, 3).isChecked():
             # self.plot_aperture(color='#2d4606bf', marked_aperture=aperture, visible=True)
-            grb_obj.plot_aperture(color=self.app.defaults['global_sel_draw_color'] + 'AA',
-                                  marked_aperture=aperture, visible=True, run_thread=True)
+            color = self.app.defaults['global_sel_draw_color']
+            color = (color + 'AA') if len(color) == 7 else (color[:-2] + 'AA')
+            grb_obj.plot_aperture(color=color, marked_aperture=aperture, visible=True, run_thread=True)
         else:
             grb_obj.clear_plot_apertures(aperture=aperture)
 
