@@ -3230,6 +3230,7 @@ class CNCjob(Geometry):
             return -zcut
         elif zcut == 0:
             self.app.inform.emit('[WARNING] %s.' % _("The Cut Z parameter is zero. There will be no cut, aborting"))
+
             return 'fail'
         else:
             return zcut
@@ -3304,8 +3305,10 @@ class CNCjob(Geometry):
         p = self.pp_excellon
 
         # Z_cut parameter
+        o_z_cut = deepcopy(self.z_cut)
         self.z_cut = self.check_zcut(zcut=tool_dict["tools_drill_cutz"])
         if self.z_cut == 'fail':
+            self.z_cut = o_z_cut
             return 'fail'
 
         # Depth parameters
@@ -4074,8 +4077,10 @@ class CNCjob(Geometry):
         self.use_ui = True if use_ui else False
 
         # Z_cut parameter
+        o_z_cut = deepcopy(self.z_cut)
         self.z_cut = self.check_zcut(zcut=self.z_cut)
         if self.z_cut == 'fail':
+            self.z_cut = o_z_cut
             return 'fail'
 
         # XY_toolchange parameter
