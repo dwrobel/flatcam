@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - minor changes in `cncjob` Tcl command
 - updated the `offset` and `scale` Tcl commands to work on a selection of objects
 - minor changed in camlib.py regarding the self.check_zcut() method setting the self.z_cut to 'fail'
+- upgraded the `mirror` Tcl command to work on a selection of objects and also fixed a plot issue
 
 31.02.2022
 
