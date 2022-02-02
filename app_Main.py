@@ -11367,7 +11367,6 @@ class MenuFileHandlers(QtCore.QObject):
             else:
                 return "fail"
 
-            geo_obj.multigeo = True
             with open(filename) as f:
                 file_content = f.read()
             geo_obj.source_file = file_content

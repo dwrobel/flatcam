@@ -83,6 +83,7 @@ class TclCommandOpenDXF(TclCommandSignaled):
 
         if obj_type != "geometry" and obj_type != "gerber":
             self.raise_tcl_error("Option type can be 'geometry' or 'gerber' only, got '%s'." % obj_type)
+            return "fail"
 
         units = self.app.app_units.upper()
 
@@ -93,14 +94,12 @@ class TclCommandOpenDXF(TclCommandSignaled):
             if ret_val == 'fail':
                 filename = self.app.defaults['global_tcl_path'] + '/' + outname
                 ret_val = self.app.app_obj.new_object(obj_type, outname, obj_init, plot=False)
-                self.app.shell.append_output(
-                    "No path provided or path is wrong. Using the default Path... \n")
+                # self.app.shell.append_output(
+                #     "No path provided or path is wrong. Using the default Path... \n")
 
                 if ret_val == 'fail':
-                    return "Failed. The OpenDXF command was used but could not open the DXF file"
+                    self.app.log.error("Failed. The OpenDXF command was used but could not open the DXF file")
+                    return "fail"
 
             # Register recent file
             self.app.file_opened.emit("dxf", filename)
-
-            # GUI feedback
-            self.app.inform.emit("Opened: " + filename)

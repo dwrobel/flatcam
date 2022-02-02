@@ -2022,11 +2022,32 @@ class Gerber(Geometry):
         """
 
         self.app.log.debug("Parsing DXF file geometry into a Gerber object geometry.")
+
+        self.multigeo = True
+
         # Parse into list of shapely objects
         dxf = ezdxf.readfile(filename)
         geos = getdxfgeo(dxf)
+
         # trying to optimize the resulting geometry by merging contiguous lines
-        geos = linemerge(geos)
+        geos = list(self.flatten_list(geos))
+        geos_polys = []
+        geos_lines = []
+        for g in geos:
+            if isinstance(g, (Polygon, MultiPolygon)):
+                geos_polys.append(g)
+            else:
+                geos_lines.append(g)
+
+        merged_lines = linemerge(geos_lines)
+        geos = geos_polys
+
+        try:
+            w_geo = merged_lines.geoms if isinstance(merged_lines, MultiLineString) else merged_lines
+            for ml in w_geo:
+                geos.append(ml)
+        except TypeError:
+            geos.append(merged_lines)
 
         # Add to object
         if self.solid_geometry is None:

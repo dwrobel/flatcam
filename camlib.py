@@ -1325,6 +1325,9 @@ class Geometry(object):
         """
         self.app.log.debug("Parsing DXF file geometry into a Geometry object solid geometry.")
 
+        # Multi-geo Geometry Object
+        self.multigeo = True
+
         # Parse into list of shapely objects
         dxf = ezdxf.readfile(filename)
         geos = getdxfgeo(dxf)
@@ -1334,7 +1337,7 @@ class Geometry(object):
         geos_polys = []
         geos_lines = []
         for g in geos:
-            if isinstance(g, Polygon):
+            if isinstance(g, (Polygon, MultiPolygon)):
                 geos_polys.append(g)
             else:
                 geos_lines.append(g)
@@ -1343,7 +1346,8 @@ class Geometry(object):
         geos = geos_polys
 
         try:
-            for ml in merged_lines:
+            w_geo = merged_lines.geoms if isinstance(merged_lines, MultiLineString) else merged_lines
+            for ml in w_geo:
                 geos.append(ml)
         except TypeError:
             geos.append(merged_lines)
@@ -3921,7 +3925,6 @@ class CNCjob(Geometry):
         # Measurements
         total_travel = 0.0
         total_cut = 0.0
-
         # Start GCode
         start_gcode = ''
         if is_first:
@@ -7222,7 +7225,9 @@ class CNCjob(Geometry):
         :rtype:         list
         """
 
-        if len(coords) < 2 or self.segx <= 0 and self.segy <= 0:
+        if len(coords) < 2:
+            return list(coords)
+        if self.segx <= 0 and self.segy <= 0:
             return list(coords)
 
         # flag that the generated gcode was segmented for autolevelling

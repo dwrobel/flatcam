@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+2.02.2022
+
+- fixed some issue regarding Milling Plugin, importing DXF file as Geometry
+
 1.02.2022
 
 - fixed the `cncjob` Tcl command: forgot to pop the arguments that are not recognized by the non-multigeo handler
