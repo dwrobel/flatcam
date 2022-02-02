@@ -37,9 +37,11 @@ from shapely.geometry import shape
 # Used for solid polygons in Matplotlib
 from descartes.patch import PolygonPatch
 # ---------------------------------------
-
-from collections import Iterable
-
+# Fix for python 3.10
+try:
+    from collections import Iterable
+except ImportError:
+    from collections.abc import Iterable
 import rasterio
 from rasterio.features import shapes
 import ezdxf
@@ -1264,7 +1266,7 @@ class Geometry(object):
 
         merged_lines = linemerge(geos_lines)
         geos = geos_polys
-        for l in merged_lines:
+        for l in list(map(LineString, zip(merged_lines.coords[:-1], merged_lines.coords[1:]))):
             geos.append(l)
 
         # Add to object

@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from shapely.geometry import LineString
+from shapely.geometry import LineString, Point
 from shapely.affinity import rotate
 # Vector was an older name for Vec3; try both for backward compatibility:
 try:

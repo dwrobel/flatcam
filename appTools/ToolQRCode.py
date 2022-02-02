@@ -18,7 +18,10 @@ from shapely.affinity import translate
 from shapely.geometry import box
 
 from io import StringIO, BytesIO
-from collections import Iterable
+try:
+    from collections import Iterable
+except ImportError:
+    from collections.abc import Iterable
 import logging
 from copy import deepcopy
 
