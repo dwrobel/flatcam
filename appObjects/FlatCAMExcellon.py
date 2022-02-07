@@ -727,18 +727,21 @@ class ExcellonObject(FlatCAMObj, Excellon):
                 break
 
         # drills processing
-        try:
-            if has_drills:
-                length = whole + fract
-                for tool in self.tools:
-                    excellon_code += 'T0%s\n' % str(tool) if int(tool) < 10 else 'T%s\n' % str(tool)
+        if has_drills:
+            length = whole + fract
+            for tool in self.tools:
+                excellon_code += 'T0%s\n' % str(tool) if int(tool) < 10 else 'T%s\n' % str(tool)
 
-                    for drill in self.tools[tool]['drills']:
-                        if form == 'dec':
+                for drill in self.tools[tool]['drills']:
+                    if form == 'dec':
+                        try:
                             drill_x = drill.x * factor
                             drill_y = drill.y * factor
                             excellon_code += "X{:.{dec}f}Y{:.{dec}f}\n".format(drill_x, drill_y, dec=fract)
-                        elif e_zeros == 'LZ':
+                        except Exception as e:
+                            self.app.log.error('ExcellonObject.export_excellon() drills "dec" -> %s' % str(e))
+                    elif e_zeros == 'LZ':
+                        try:
                             drill_x = drill.x * factor
                             drill_y = drill.y * factor
 
@@ -750,17 +753,19 @@ class ExcellonObject(FlatCAMObj, Excellon):
                             exc_y_formatted = exc_y_formatted.partition('.')
 
                             # left pad the 'whole' part with zeros
-                            x_whole = exc_x_formatted[0].rjust(whole, 0)
-                            y_whole = exc_y_formatted[0].rjust(whole, 0)
+                            x_whole = exc_x_formatted[0].rjust(whole, '0')
+                            y_whole = exc_y_formatted[0].rjust(whole, '0')
 
                             # restore the coordinate padded in the left with 0 and added the decimal part
                             # without the decinal dot
                             exc_x_formatted = x_whole + exc_x_formatted[2]
                             exc_y_formatted = y_whole + exc_y_formatted[2]
 
-                            excellon_code += "X{xform}Y{yform}\n".format(xform=exc_x_formatted,
-                                                                         yform=exc_y_formatted)
-                        else:
+                            excellon_code += "X{xform}Y{yform}\n".format(xform=exc_x_formatted, yform=exc_y_formatted)
+                        except Exception as e:
+                            self.app.log.error('ExcellonObject.export_excellon() drills "LZ" -> %s' % str(e))
+                    else:
+                        try:
                             drill_x = drill.x * factor
                             drill_y = drill.y * factor
 
@@ -768,27 +773,26 @@ class ExcellonObject(FlatCAMObj, Excellon):
                             exc_y_formatted = "{:.{dec}f}".format(drill_y, dec=fract).replace('.', '')
 
                             # pad with rear zeros
-                            exc_x_formatted.ljust(length, 0)
-                            exc_y_formatted.ljust(length, 0)
+                            exc_x_formatted.ljust(length, '0')
+                            exc_y_formatted.ljust(length, '0')
 
-                            excellon_code += "X{xform}Y{yform}\n".format(xform=exc_x_formatted,
-                                                                         yform=exc_y_formatted)
-        except Exception as e:
-            self.app.log.error('ExcellonObject.export_excellon() drills -> %s' % str(e))
+                            excellon_code += "X{xform}Y{yform}\n".format(xform=exc_x_formatted, yform=exc_y_formatted)
+                        except Exception as e:
+                            self.app.log.error('ExcellonObject.export_excellon() drills "TZ" -> %s' % str(e))
 
         # slots processing
-        try:
-            if has_slots:
-                for tool in self.tools:
-                    excellon_code += 'G05\n'
+        if has_slots:
+            for tool in self.tools:
+                excellon_code += 'G05\n'
 
-                    if int(tool) < 10:
-                        excellon_code += 'T0' + str(tool) + '\n'
-                    else:
-                        excellon_code += 'T' + str(tool) + '\n'
+                if int(tool) < 10:
+                    excellon_code += 'T0' + str(tool) + '\n'
+                else:
+                    excellon_code += 'T' + str(tool) + '\n'
 
-                    for slot in self.tools[tool]['slots']:
-                        if form == 'dec':
+                for slot in self.tools[tool]['slots']:
+                    if form == 'dec':
+                        try:
                             start_slot_x = slot.x * factor
                             start_slot_y = slot.y * factor
                             stop_slot_x = slot.x * factor
@@ -804,8 +808,10 @@ class ExcellonObject(FlatCAMObj, Excellon):
                                 excellon_code += "X{:.{dec}f}Y{:.{dec}f}G85X{:.{dec}f}Y{:.{dec}f}\nG05\n".format(
                                     start_slot_x, start_slot_y, stop_slot_x, stop_slot_y, dec=fract
                                 )
-
-                        elif e_zeros == 'LZ':
+                        except Exception as err:
+                            self.app.log.error('ExcellonObject.export_excellon() slots "dec" -> %s' % str(err))
+                    elif e_zeros == 'LZ':
+                        try:
                             start_slot_x = slot.x * factor
                             start_slot_y = slot.y * factor
                             stop_slot_x = slot.x * factor
@@ -823,10 +829,10 @@ class ExcellonObject(FlatCAMObj, Excellon):
                             stop_slot_y_formatted = stop_slot_y_formatted.partition('.')
 
                             # left pad the 'whole' part with zeros
-                            start_x_whole = start_slot_x_formatted[0].rjust(whole, 0)
-                            start_y_whole = start_slot_y_formatted[0].rjust(whole, 0)
-                            stop_x_whole = stop_slot_x_formatted[0].rjust(whole, 0)
-                            stop_y_whole = stop_slot_y_formatted[0].rjust(whole, 0)
+                            start_x_whole = start_slot_x_formatted[0].rjust(whole, '0')
+                            start_y_whole = start_slot_y_formatted[0].rjust(whole, '0')
+                            stop_x_whole = stop_slot_x_formatted[0].rjust(whole, '0')
+                            stop_y_whole = stop_slot_y_formatted[0].rjust(whole, '0')
 
                             # restore the coordinate padded in the left with 0 and added the decimal part
                             # without the decinal dot
@@ -845,7 +851,10 @@ class ExcellonObject(FlatCAMObj, Excellon):
                                     xstart=start_slot_x_formatted, ystart=start_slot_y_formatted,
                                     xstop=stop_slot_x_formatted, ystop=stop_slot_y_formatted
                                 )
-                        else:
+                        except Exception as err:
+                            self.app.log.error('ExcellonObject.export_excellon() slots "LZ" -> %s' % str(err))
+                    else:
+                        try:
                             start_slot_x = slot.x * factor
                             start_slot_y = slot.y * factor
                             stop_slot_x = slot.x * factor
@@ -858,10 +867,10 @@ class ExcellonObject(FlatCAMObj, Excellon):
                             stop_slot_y_formatted = "{:.{dec}f}".format(stop_slot_y, dec=fract).replace('.', '')
 
                             # pad with rear zeros
-                            start_slot_x_formatted.ljust(length, 0)
-                            start_slot_y_formatted.ljust(length, 0)
-                            stop_slot_x_formatted.ljust(length, 0)
-                            stop_slot_y_formatted.ljust(length, 0)
+                            start_slot_x_formatted.ljust(length, '0')
+                            start_slot_y_formatted.ljust(length, '0')
+                            stop_slot_x_formatted.ljust(length, '0')
+                            stop_slot_y_formatted.ljust(length, '0')
 
                             if slot_type == 'routing':
                                 excellon_code += "G00X{xstart}Y{ystart}\nM15\n".format(xstart=start_slot_x_formatted,
@@ -873,9 +882,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
                                     xstart=start_slot_x_formatted, ystart=start_slot_y_formatted,
                                     xstop=stop_slot_x_formatted, ystop=stop_slot_y_formatted
                                 )
-        except Exception as e:
-            self.app.log.error('ExcellonObject.export_excellon() slots -> %s' % str(e))
-
+                        except Exception as err:
+                            self.app.log.error('ExcellonObject.export_excellon() slots "TZ" -> %s' % str(err))
         if not has_drills and not has_slots:
             self.app.log.debug("ExcellonObject.export_excellon() --> Excellon Object is empty: no drills, no slots.")
             return 'fail'
@@ -1098,16 +1106,14 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         return True, ""
 
-    def on_generate_milling_button_click(self, *args):
+    def on_generate_milling_button_click(self):
         self.app.defaults.report_usage("excellon_on_create_milling_drills button")
         self.read_form()
-
         self.generate_milling_drills(use_thread=False, plot=True)
 
-    def on_generate_milling_slots_button_click(self, *args):
+    def on_generate_milling_slots_button_click(self):
         self.app.defaults.report_usage("excellon_on_create_milling_slots_button")
         self.read_form()
-
         self.generate_milling_slots(use_thread=False, plot=True)
 
     def convert_units(self, units):
@@ -1139,7 +1145,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         #     self.options['startz'] = float(self.options['startz']) * factor
         # self.options['endz'] = float(self.options['endz']) * factor
 
-    def on_solid_cb_click(self, *args):
+    def on_solid_cb_click(self):
         if self.muted_ui:
             return
         self.read_form_item('solid')
@@ -1156,7 +1162,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
     def on_autoload_db_toggled(self, state):
         self.app.defaults["excellon_autoload_db"] = True if state else False
 
-    def on_plot_cb_click(self, val):
+    def on_plot_cb_click(self):
         if self.muted_ui:
             return
         # self.plot()
@@ -1186,7 +1192,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             try:
                 # suggested by an user that may fix issues when run in Linux
                 # I don't see the reason for the .copy() but ...
-                #TODO may need removal of the .copy() method if the reason is not found
+                # TODO may need removal of the .copy() method if the reason is not found
                 self.shapes.update_visibility(state, indexes=self.shape_indexes_dict[tool_key]).copy()
             except Exception:
                 pass
@@ -1304,6 +1310,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         :type decimals:     int
         :param fuse_tools:  If True will try to fuse tools of the same diameter for the Excellon objects
         :type fuse_tools:   bool
+        :param log:         the logging object used
         :return:            None
         """
 

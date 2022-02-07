@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+7.02.2022
+
+- fixed some issues when exporting Excellon objects
+
 2.02.2022
 
 - fixed some issue regarding Milling Plugin, importing DXF file as Geometry
