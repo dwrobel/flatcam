@@ -388,7 +388,7 @@ class NonCopperClear(AppTool, Gerber):
         self.bound_obj_name = ""
         self.bound_obj = None
 
-        self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
+        self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V", "L"]
         self.units = self.app.app_units.upper()
 
         self.first_click = False
@@ -4180,7 +4180,8 @@ class NccUI:
               "Can be:\n"
               "C1 ... C4 = circular tool with x flutes\n"
               "B = ball tip milling tool\n"
-              "V = v-shape milling tool"))
+              "V = v-shape milling tool\n"
+              "L = laser"))
 
         # Tool order
         self.ncc_order_label = FCLabel('%s:' % _('Tool order'))

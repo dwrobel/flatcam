@@ -151,11 +151,12 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
               "Can be:\n"
               "C1 ... C4 = circular tool with x flutes\n"
               "B = ball tip milling tool\n"
-              "V = v-shape milling tool")
+              "V = v-shape milling tool\n"
+              "L = laser")
         )
 
         self.tool_shape_combo = FCComboBox2(policy=False)
-        self.tool_shape_combo.addItems(["C1", "C2", "C3", "C4", "B", "V"])
+        self.tool_shape_combo.addItems(["C1", "C2", "C3", "C4", "B", "V", "L"])
 
         tool_grid.addWidget(tool_shape_label, 0, 0)
         tool_grid.addWidget(self.tool_shape_combo, 0, 1, 1, 2)

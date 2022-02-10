@@ -1093,7 +1093,9 @@ class GeometryObjectUI(ObjectUI):
               "Can be:\n"
               "C1 ... C4 = circular tool with x flutes\n"
               "B = ball tip milling tool\n"
-              "V = v-shape milling tool"))
+              "V = v-shape milling tool\n"
+              "L = laser")
+        )
         self.geo_tools_table.horizontalHeaderItem(6).setToolTip(
             _("Plot column. It is visible only for MultiGeo Geometry objects.\n"
               "Enable plot for the selected tool geometry."))

@@ -237,7 +237,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             offset_item = QtWidgets.QTableWidgetItem(''.join(offset_txt))
 
             job_item_options = [_('Roughing'), _('Finishing'), _('Isolation'), _('Polishing')]
-            tool_shape_options = ["C1", "C2", "C3", "C4", "B", "V"]
+            tool_shape_options = ["C1", "C2", "C3", "C4", "B", "V", "L"]
 
             try:
                 job_item_txt = job_item_options[dia_value['data']['tools_mill_job_type']]

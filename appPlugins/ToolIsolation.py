@@ -444,7 +444,7 @@ class ToolIsolation(AppTool, Gerber):
 
         self.sel_rect = []
 
-        self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
+        self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V", "L"]
 
         self.on_rest_machining_check(state=self.app.defaults["tools_iso_rest"])
 
@@ -1754,7 +1754,7 @@ class ToolIsolation(AppTool, Gerber):
         use_rest = args['rest'] if 'rest' in args else self.ui.rest_cb.get_value()
         # selection_type: [_("All"), _("Area Selection"), _("Polygon Selection"), _("Reference Object")]
         selection_type = args['sel_type'] if 'sel_type' in args else self.ui.select_combo.get_value()
-        # tool_tip_shape: ["C1", "C2", "C3", "C4", "B", "V"]
+        # tool_tip_shape: ["C1", "C2", "C3", "C4", "B", "V", "L"]
         tool_tip_shape = args['tip_shape'] if 'tip_shape' in args else self.ui.tool_shape_combo.get_value()
 
         # update the Common Parameters values in the self.iso_tools
@@ -3544,12 +3544,13 @@ class IsoUI:
               "Can be:\n"
               "C1 ... C4 = circular tool with x flutes\n"
               "B = ball tip milling tool\n"
-              "V = v-shape milling tool")
+              "V = v-shape milling tool\n"
+              "L = laser")
         )
 
         self.tool_shape_combo = FCComboBox2(policy=False)
         self.tool_shape_combo.setObjectName('i_tool_shape')
-        self.tool_shape_combo.addItems(["C1", "C2", "C3", "C4", "B", "V"])
+        self.tool_shape_combo.addItems(["C1", "C2", "C3", "C4", "B", "V", "L"])
 
         idx = int(self.app.defaults['tools_iso_tool_shape'])
         # protection against having this translated or loading a project with translated values

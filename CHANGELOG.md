@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+10.02.2022
+
+- added a new preprocessor: `default_laser`
+- in the app added a new tool type: "L" (laser) which when selected will autoselect the `default_laser` preprocessor in Milling Plugin
+
 7.02.2022
 
 - fixed some issues when exporting Excellon objects

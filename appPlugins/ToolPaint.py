@@ -103,7 +103,7 @@ class ToolPaint(AppTool, Gerber):
         # store here the default data for Geometry Data
         self.default_data = {}
 
-        self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
+        self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V", "L"]
 
         self.form_fields = {
             "tools_paint_overlap":   self.ui.paintoverlap_entry,
@@ -3056,7 +3056,8 @@ class PaintUI:
               "Can be:\n"
               "C1 ... C4 = circular tool with x flutes\n"
               "B = ball tip milling tool\n"
-              "V = v-shape milling tool"))
+              "V = v-shape milling tool\n"
+              "L = laser"))
 
         # Tool Order
         self.order_label = FCLabel('<b>%s:</b>' % _('Tool order'))

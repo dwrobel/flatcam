@@ -19,7 +19,7 @@ class default(PreProc):
         units = ' ' + str(p['units']).lower()
         coords_xy = p['xy_toolchange']
         end_coords_xy = p['xy_end']
-        gcode = '(This preprocessor is the default preprocessor used by FlatCAM.)\n'
+        gcode = '(This preprocessor is the default preprocessor.)\n'
         gcode += '(It is made to work with MACH3 compatible motion controllers.)\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])

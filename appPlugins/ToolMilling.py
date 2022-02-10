@@ -1018,7 +1018,7 @@ class ToolMilling(AppTool, Excellon):
 
             # -------------------- TOOL TYPE ------------------------------------- #
             # tool_type_item = FCComboBox(policy=False)
-            # for item in ["C1", "C2", "C3", "C4", "B", "V"]:
+            # for item in ["C1", "C2", "C3", "C4", "B", "V", "L"]:
             #     tool_type_item.addItem(item)
             # idx = tool_type_item.findText(tooluid_value['data']['tools_mill_tool_type'])
             # # protection against having this translated or loading a project with translated values
@@ -1943,8 +1943,16 @@ class ToolMilling(AppTool, Excellon):
 
         tool_type = cw.currentText()
         self.ui_update_v_shape(tool_type)
+        self.ui_update_l_shape(tool_type)
 
         self.form_to_storage()
+
+    def ui_update_l_shape(self, t_type):
+        if t_type.upper() == 'L':
+            self.ui.pp_geo_name_cb.set_value('default_laser')
+        else:
+            self.ui.pp_geo_name_cb.set_value(self.app.defaults['tools_mill_ppname_g'])
+        self.on_pp_changed()
 
     def ui_update_v_shape(self, tool_type_txt):
         if tool_type_txt == 'V':
@@ -4403,12 +4411,13 @@ class MillingUI:
               "Can be:\n"
               "C1 ... C4 = circular tool with x flutes\n"
               "B = ball tip milling tool\n"
-              "V = v-shape milling tool")
+              "V = v-shape milling tool\n"
+              "L = laser")
         )
 
         self.tool_shape_combo = FCComboBox2(policy=False)
         self.tool_shape_combo.setObjectName('mill_tool_shape')
-        self.tool_shape_combo.addItems(["C1", "C2", "C3", "C4", "B", "V"])
+        self.tool_shape_combo.addItems(["C1", "C2", "C3", "C4", "B", "V", "L"])
 
         idx = int(self.app.defaults['tools_mill_tool_shape'])
         # protection against having this translated or loading a project with translated values

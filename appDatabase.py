@@ -4,7 +4,7 @@ from appGUI.GUIElements import FCEntry, FCButton, FCDoubleSpinner, FCComboBox, F
 from camlib import to_dict
 
 import sys
-import json
+import simplejson as json
 
 from copy import deepcopy
 from datetime import datetime
@@ -27,7 +27,7 @@ class ToolsDB2UI:
 
         self.offset_item_options = [_("Path"), _("In"), _("Out"), _("Custom")]
         self.job_item_options = [_('Roughing'), _('Finishing'), _('Isolation'), _('Polishing')]
-        self.tool_job_options = ["C1", "C2", "C3", "C4", "B", "V"]
+        self.tool_job_options = ["C1", "C2", "C3", "C4", "B", "V", "L"]
 
         self.g_lay = grid_layout
 
@@ -288,7 +288,8 @@ class ToolsDB2UI:
               "Can be:\n"
               "C1 ... C4 = circular tool with x flutes\n"
               "B = ball tip milling tool\n"
-              "V = v-shape milling tool")
+              "V = v-shape milling tool\n"
+              "L = laser")
         )
 
         self.mill_shape_combo = FCComboBox()
@@ -2710,7 +2711,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #
 #         self.offset_item_options = ["Path", "In", "Out", "Custom"]
 #         self.type_item_options = ["Iso", "Rough", "Finish"]
-#         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
+#         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V", "L"]
 #
 #         '''
 #         dict to hold all the tools in the Tools DB
