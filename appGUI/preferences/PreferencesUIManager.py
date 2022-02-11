@@ -123,6 +123,7 @@ class PreferencesUIManager:
             "gerber_def_zeros": self.ui.gerber_pref_form.gerber_gen_group.gerber_zeros_radio,
             "gerber_clean_apertures": self.ui.gerber_pref_form.gerber_gen_group.gerber_clean_cb,
             "gerber_extra_buffering": self.ui.gerber_pref_form.gerber_gen_group.gerber_extra_buffering,
+            "gerber_plot_on_select": self.ui.gerber_pref_form.gerber_gen_group.gerber_plot_on_select_cb,
             "gerber_plot_fill": self.ui.gerber_pref_form.gerber_gen_group.fill_color_entry,
             "gerber_plot_line": self.ui.gerber_pref_form.gerber_gen_group.line_color_entry,
 

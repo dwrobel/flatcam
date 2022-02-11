@@ -162,6 +162,13 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         )
         param_grid.addWidget(self.gerber_extra_buffering, 2, 0, 1, 3)
 
+        # Plot on Select
+        self.gerber_plot_on_select_cb = FCCheckBox(label='%s' % _('Plot on Select'))
+        self.gerber_plot_on_select_cb.setToolTip(
+            _("When active, selecting an object in the Project tab will replot it above the others.")
+        )
+        param_grid.addWidget(self.gerber_plot_on_select_cb, 4, 0, 1, 3)
+
         # #############################################################################################################
         # Layers Frame
         # #############################################################################################################

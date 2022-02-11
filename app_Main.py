@@ -8834,11 +8834,13 @@ class App(QtCore.QObject):
         self.enable_plots(self.collection.get_non_selected())
         self.inform.emit('[success] %s' % _("All non selected plots enabled."))
 
-    def on_enable_sel_plots(self):
-        self.log.debug("App.on_enable_sel_plot()")
+    def on_enable_sel_plots(self, par=None, silent=False):
+        if silent is False:
+            self.log.debug("App.on_enable_sel_plots()")
         object_list = self.collection.get_selected()
-        self.enable_plots(objects=object_list)
-        self.inform.emit('[success] %s' % _("Selected plots enabled..."))
+        self.enable_plots(objects=object_list, silent=silent)
+        if silent is False:
+            self.inform.emit('[success] %s' % _("Selected plots enabled..."))
 
     def on_disable_sel_plots(self):
         self.log.debug("App.on_disable_sel_plot()")
@@ -8848,14 +8850,16 @@ class App(QtCore.QObject):
         self.disable_plots(objects=object_list)
         self.inform.emit('[success] %s' % _("Selected plots disabled..."))
 
-    def enable_plots(self, objects):
+    def enable_plots(self, objects, silent=False):
         """
         Enable plots
 
         :param objects: list of Objects to be enabled
+        :param silent: If True there are no messages from this method
         :return:
         """
-        self.log.debug("Enabling plots ...")
+        if silent is False:
+            self.log.debug("Enabling plots ...")
         # self.inform.emit('%s...' % _("Working"))
 
         for obj in objects:

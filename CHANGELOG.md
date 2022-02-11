@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+11.02.2022
+
+- a new feature that when selecting an object in the Project Tab, that object is redrawn over the other objects, in top position. Feature controlled from Preferences -> Gerber -> General.
+
 10.02.2022
 
 - added a new preprocessor: `default_laser`

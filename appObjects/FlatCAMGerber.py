@@ -913,7 +913,7 @@ class GerberObject(FlatCAMObj, Gerber):
         :param kwargs:  Color and face_color, visible
         :return:
         """
-        self.app.log.debug(str(inspect.stack()[1][3]) + " --> GerberObject.plot()")
+        # self.app.log.debug(str(inspect.stack()[1][3]) + " --> GerberObject.plot()")
 
         # Does all the required setup and returns False
         # if the 'ptint' option is set to False.

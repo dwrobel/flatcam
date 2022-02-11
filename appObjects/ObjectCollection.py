@@ -999,7 +999,10 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         # make sure that if the Properties Tab is selected then the Object UI is updated (built)
         self.app.on_notebook_tab_changed()
 
-        # don't emit the signal if there more than one objects selected
+        if self.app.defaults["gerber_plot_on_select"] is True:
+            self.app.on_enable_sel_plots(silent=True)
+
+        # don't emit the signal if there is more than one objects selected
         # this signal is intended to be emitted for a single selection in the collection view
         if len(self.get_selected()) == 1:
             self.app.proj_selection_changed.emit(current, previous)
