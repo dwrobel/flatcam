@@ -32,7 +32,7 @@ from appGUI.preferences.tools.Plugins2PreferencesUI import Plugins2PreferencesUI
 from appGUI.preferences.tools.PluginsEngravingPreferencesUI import PluginsEngravingPreferencesUI
 
 from appGUI.preferences.utilities.UtilPreferencesUI import UtilPreferencesUI
-from appObjects.ObjectCollection import KeySensitiveListView
+from appObjects.ObjectCollection import EventSensitiveListView
 
 import subprocess
 import os
@@ -3267,9 +3267,9 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Select the object in the Tree above the current one
                 if key == QtCore.Qt.Key.Key_Up:
-                    # make sure it works only for the Project Tab who is an instance of KeySensitiveListView
+                    # make sure it works only for the Project Tab who is an instance of EventSensitiveListView
                     focused_wdg = QtWidgets.QApplication.focusWidget()
-                    if isinstance(focused_wdg, KeySensitiveListView):
+                    if isinstance(focused_wdg, EventSensitiveListView):
                         self.app.collection.set_all_inactive()
                         if active is None:
                             return
@@ -3282,9 +3282,9 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Select the object in the Tree below the current one
                 if key == QtCore.Qt.Key.Key_Down:
-                    # make sure it works only for the Project Tab who is an instance of KeySensitiveListView
+                    # make sure it works only for the Project Tab who is an instance of EventSensitiveListView
                     focused_wdg = QtWidgets.QApplication.focusWidget()
-                    if isinstance(focused_wdg, KeySensitiveListView):
+                    if isinstance(focused_wdg, EventSensitiveListView):
                         self.app.collection.set_all_inactive()
                         if active is None:
                             return

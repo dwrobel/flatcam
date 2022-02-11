@@ -8994,14 +8994,18 @@ class App(QtCore.QObject):
         self.clear_pool()
 
     def gerber_redraw(self):
+        # the Gerber redraw should work only if there is only one object of type Gerber and active in the selection
+        sel_gerb_objs = [o for o in self.collection.get_selected() if o.kind == 'gerber' and o.options['plot']]
+        if len(sel_gerb_objs) > 1:
+            return
+
         obj = self.collection.get_active()
-        if obj.options['plot'] is False or obj.kind != 'gerber':
+        if not obj or (obj.options['plot'] is False or obj.kind != 'gerber'):
             # we don't replot something that is disabled or if it is not Gerber type
             return
 
         def worker_task(plot_obj):
-            with self.proc_container.new(''):
-                plot_obj.plot(visible=True)
+            plot_obj.plot(visible=True)
 
         self.worker_task.emit({'fcn': worker_task, 'params': [obj]})
 

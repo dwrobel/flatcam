@@ -13,6 +13,8 @@ CHANGELOG for FlatCAM beta
 - made sure that the new feature of redrawing Gerber on top is not activated when that Gerber object is disabled
 - added ability to turn off the outline plotting for Gerber objects (will speed up the plotting but the plotting visual quality will degrade); controlled from Preferences -> Gerber -> General
 - plotting visuals in 3d graphic mode will no longer create some unnecessary lists
+- made sure that the `redraw_on_top_on_project_click` works properly and only on mouse click release in the Project list
+- made sure that the `redraw_on_top_on_project_click` works only on single object selections
 
 10.02.2022
 

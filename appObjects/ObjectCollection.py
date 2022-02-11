@@ -42,13 +42,13 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class KeySensitiveListView(QtWidgets.QTreeView):
+class EventSensitiveListView(QtWidgets.QTreeView):
     """
     QtGui.QListView extended to emit a signal on key press.
     """
 
     def __init__(self, app, parent=None):
-        super(KeySensitiveListView, self).__init__(parent)
+        super(EventSensitiveListView, self).__init__(parent)
         self.setHeaderHidden(True)
 
         # self.setRootIsDecorated(False)
@@ -72,11 +72,16 @@ class KeySensitiveListView(QtWidgets.QTreeView):
         # self.dropped_obj = None
 
     keyPressed = QtCore.pyqtSignal(int)
+    mouseReleased = QtCore.pyqtSignal(int)
 
     def keyPressEvent(self, event):
-        # super(KeySensitiveListView, self).keyPressEvent(event)
+        # super(EventSensitiveListView, self).keyPressEvent(event)
         # print(QtGui.QKeySequence(event.key()).toString())
         self.keyPressed.emit(event.key())
+
+    def mouseReleaseEvent(self, event: QtGui.QMouseEvent) -> None:
+        self.mouseReleased.emit(event.button())
+        super().mouseReleaseEvent(event)
 
     def dragEnterEvent(self, event):
         # if event.source():
@@ -165,7 +170,7 @@ class KeySensitiveListView(QtWidgets.QTreeView):
             event.ignore()
 
 
-class TreeItem(KeySensitiveListView):
+class TreeItem(EventSensitiveListView):
     """
     Item of a tree model
     """
@@ -307,7 +312,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         self.plot_promises = set()
 
         # ## View
-        self.view = KeySensitiveListView(self.app)
+        self.view = EventSensitiveListView(self.app)
         self.view.setModel(self)
 
         self.view.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
@@ -338,6 +343,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         self.view.selectionModel().selectionChanged.connect(self.on_list_selection_change)
         # self.view.activated.connect(self.on_item_activated)
         self.view.keyPressed.connect(self.app.ui.keyPressEvent)
+        self.view.mouseReleased.connect(self.on_list_click_release)
         # self.view.clicked.connect(self.on_mouse_down)
         self.view.customContextMenuRequested.connect(self.on_menu_request)
 
@@ -999,14 +1005,15 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         # make sure that if the Properties Tab is selected then the Object UI is updated (built)
         self.app.on_notebook_tab_changed()
 
-        # on Gerber object selection it will redrawn on top of the other Gerber objects
-        if self.app.defaults["gerber_plot_on_select"] is True:
-            self.app.gerber_redraw()
-
         # don't emit the signal if there is more than one objects selected
         # this signal is intended to be emitted for a single selection in the collection view
         if len(self.get_selected()) == 1:
             self.app.proj_selection_changed.emit(current, previous)
+
+    def on_list_click_release(self):
+        # on Gerber object selection it will redrawn on top of the other Gerber objects
+        if self.app.defaults["gerber_plot_on_select"] is True:
+            self.app.gerber_redraw()
 
     def on_item_activated(self, index):
         """
