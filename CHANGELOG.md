@@ -10,6 +10,9 @@ CHANGELOG for FlatCAM beta
 11.02.2022
 
 - a new feature that when selecting an object in the Project Tab, that object is redrawn over the other objects, in top position. Feature controlled from Preferences -> Gerber -> General.
+- made sure that the new feature of redrawing Gerber on top is not activated when that Gerber object is disabled
+- added ability to turn off the outline plotting for Gerber objects (will speed up the plotting but the plotting visual quality will degrade); controlled from Preferences -> Gerber -> General
+- plotting visuals in 3d graphic mode will no longer create some unnecessary lists
 
 10.02.2022
 

@@ -973,6 +973,8 @@ class GerberObject(FlatCAMObj, Gerber):
                         used_color = random_color() if self.options['multicolored'] else 'black'
                         used_face_color = None
 
+                    if self.app.defaults["gerber_plot_line_enable"] is False:
+                        used_color = None
                     if isinstance(g, (Polygon, LineString)):
                         self.add_shape(shape=g, color=used_color, face_color=used_face_color, visible=visible)
                     elif isinstance(g, LinearRing):
@@ -986,6 +988,8 @@ class GerberObject(FlatCAMObj, Gerber):
                     used_color = random_color() if self.options['multicolored'] else 'black'
                     used_face_color = None
 
+                if self.app.defaults["gerber_plot_line_disable"] is True:
+                    used_color = None
                 if isinstance(plot_geometry, (Polygon, LineString)):
                     self.add_shape(shape=plot_geometry, color=used_color, face_color=used_face_color, visible=visible)
                 elif isinstance(plot_geometry, LinearRing):

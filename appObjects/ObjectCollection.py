@@ -999,8 +999,9 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         # make sure that if the Properties Tab is selected then the Object UI is updated (built)
         self.app.on_notebook_tab_changed()
 
+        # on Gerber object selection it will redrawn on top of the other Gerber objects
         if self.app.defaults["gerber_plot_on_select"] is True:
-            self.app.on_enable_sel_plots(silent=True)
+            self.app.gerber_redraw()
 
         # don't emit the signal if there is more than one objects selected
         # this signal is intended to be emitted for a single selection in the collection view

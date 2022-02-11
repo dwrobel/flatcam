@@ -1,7 +1,7 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
-from appGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCButton, FCSliderWithSpinner, FCColorEntry, FCLabel, \
-    FCGridLayout, FCFrame, FCTable, FCColorEntry
+from appGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCButton, FCSliderWithSpinner, FCLabel, \
+    FCGridLayout, FCFrame, FCTable, FCColorEntry, OptionalInputSection
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 from copy import deepcopy
@@ -230,6 +230,14 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         obj_frame.setLayout(obj_grid)
 
+        # Enable Outline plotting
+        self.enable_line_cb = FCCheckBox(label='%s' % _('Outline'))
+        self.enable_line_cb.setToolTip(
+            _("If checked, the polygon outline will be plotted on canvas.\n"
+              "Plotting the outline require more processing power but looks nicer.")
+        )
+        obj_grid.addWidget(self.enable_line_cb, 0, 0, 1, 2)
+
         # Plot Line Color
         self.line_color_label = FCLabel('%s:' % _('Outline'))
         self.line_color_label.setToolTip(
@@ -237,8 +245,10 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         )
         self.line_color_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
 
-        obj_grid.addWidget(self.line_color_label, 0, 0)
-        obj_grid.addWidget(self.line_color_entry, 0, 1, 1, 2)
+        obj_grid.addWidget(self.line_color_label, 2, 0)
+        obj_grid.addWidget(self.line_color_entry, 2, 1, 1, 2)
+
+        self.outline_ois = OptionalInputSection(self.enable_line_cb, [self.line_color_label, self.line_color_entry])
 
         # Plot Fill Color
         self.fill_color_label = FCLabel('%s:' % _('Fill'))
@@ -249,8 +259,8 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         )
         self.fill_color_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
 
-        obj_grid.addWidget(self.fill_color_label, 2, 0)
-        obj_grid.addWidget(self.fill_color_entry, 2, 1, 1, 2)
+        obj_grid.addWidget(self.fill_color_label, 4, 0)
+        obj_grid.addWidget(self.fill_color_entry, 4, 1, 1, 2)
 
         # Plot Fill Transparency Level
         self.gerber_alpha_label = FCLabel('%s:' % _('Alpha'))
@@ -259,8 +269,8 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         )
         self.gerber_alpha_entry = FCSliderWithSpinner(0, 255, 1)
 
-        obj_grid.addWidget(self.gerber_alpha_label, 4, 0)
-        obj_grid.addWidget(self.gerber_alpha_entry, 4, 1, 1, 2)
+        obj_grid.addWidget(self.gerber_alpha_label, 6, 0)
+        obj_grid.addWidget(self.gerber_alpha_entry, 6, 1, 1, 2)
 
         FCGridLayout.set_common_column_size([plot_grid, param_grid, def_grid, obj_grid], 0)
 

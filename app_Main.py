@@ -8993,6 +8993,18 @@ class App(QtCore.QObject):
         # Clear pool to free memory
         self.clear_pool()
 
+    def gerber_redraw(self):
+        obj = self.collection.get_active()
+        if obj.options['plot'] is False or obj.kind != 'gerber':
+            # we don't replot something that is disabled or if it is not Gerber type
+            return
+
+        def worker_task(plot_obj):
+            with self.proc_container.new(''):
+                plot_obj.plot(visible=True)
+
+        self.worker_task.emit({'fcn': worker_task, 'params': [obj]})
+
     def on_set_color_action_triggered(self):
         """
         This slot gets called by clicking on the menu entry in the Set Color submenu of the context menu in Project Tab

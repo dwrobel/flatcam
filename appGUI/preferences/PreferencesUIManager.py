@@ -126,6 +126,7 @@ class PreferencesUIManager:
             "gerber_plot_on_select": self.ui.gerber_pref_form.gerber_gen_group.gerber_plot_on_select_cb,
             "gerber_plot_fill": self.ui.gerber_pref_form.gerber_gen_group.fill_color_entry,
             "gerber_plot_line": self.ui.gerber_pref_form.gerber_gen_group.line_color_entry,
+            "gerber_plot_line_enable": self.ui.gerber_pref_form.gerber_gen_group.enable_line_cb,
 
             # Gerber Options
             "gerber_noncoppermargin": self.ui.gerber_pref_form.gerber_opt_group.noncopper_margin_entry,

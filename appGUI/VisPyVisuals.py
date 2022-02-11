@@ -52,11 +52,11 @@ def _update_shape_buffers(data, triangulation='glu'):
 
         if type(geo) == LineString:
             # Prepare lines
-            pts = _linestring_to_segments(list(simplified_geo.coords))
+            pts = _linestring_to_segments(simplified_geo.coords)
 
         elif type(geo) == LinearRing:
             # Prepare lines
-            pts = _linearring_to_segments(list(simplified_geo.coords))
+            pts = _linearring_to_segments(simplified_geo.coords)
 
         elif type(geo) == Polygon:
             # Prepare polygon faces
@@ -69,9 +69,9 @@ def _update_shape_buffers(data, triangulation='glu'):
 
             # Prepare polygon edges
             if color is not None:
-                pts = _linearring_to_segments(list(simplified_geo.exterior.coords))
+                pts = _linearring_to_segments(simplified_geo.exterior.coords)
                 for ints in simplified_geo.interiors:
-                    pts += _linearring_to_segments(list(ints.coords))
+                    pts += _linearring_to_segments(ints.coords)
 
         # Appending data for mesh
         if len(tri_pts) > 0 and len(tri_tris) > 0:
