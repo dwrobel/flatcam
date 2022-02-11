@@ -72,7 +72,7 @@ class EventSensitiveListView(QtWidgets.QTreeView):
         # self.dropped_obj = None
 
     keyPressed = QtCore.pyqtSignal(int)
-    mouseReleased = QtCore.pyqtSignal(int)
+    mouseReleased = QtCore.pyqtSignal(object)
 
     def keyPressEvent(self, event):
         # super(EventSensitiveListView, self).keyPressEvent(event)
@@ -1010,10 +1010,12 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         if len(self.get_selected()) == 1:
             self.app.proj_selection_changed.emit(current, previous)
 
-    def on_list_click_release(self):
-        # on Gerber object selection it will redrawn on top of the other Gerber objects
-        if self.app.defaults["gerber_plot_on_select"] is True:
-            self.app.gerber_redraw()
+    def on_list_click_release(self, button):
+        # works only for mouse button 1 (left click)
+        if button == Qt.MouseButton.LeftButton:
+            # on Gerber object selection it will redrawn on top of the other Gerber objects
+            if self.app.defaults["gerber_plot_on_select"] is True:
+                self.app.gerber_redraw()
 
     def on_item_activated(self, index):
         """

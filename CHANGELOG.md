@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - plotting visuals in 3d graphic mode will no longer create some unnecessary lists
 - made sure that the `redraw_on_top_on_project_click` works properly and only on mouse click release in the Project list
 - made sure that the `redraw_on_top_on_project_click` works only on single object selections
+- `redraw_on_top_on_project_click` works only for left mouse clicks on the Project objects list
 
 10.02.2022
 
