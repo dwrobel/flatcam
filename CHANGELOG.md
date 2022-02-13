@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+13.02.2022
+
+- fixed issue when doing a custom origin set
+
 11.02.2022
 
 - a new feature that when selecting an object in the Project Tab, that object is redrawn over the other objects, in top position. Feature controlled from Preferences -> Gerber -> General.

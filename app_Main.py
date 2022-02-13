@@ -2020,7 +2020,8 @@ class App(QtCore.QObject):
             self.image_tool.install(icon=QtGui.QIcon(self.resource_location + '/image32.png'),
                                     pos=self.ui.menufileimport,
                                     separator=True)
-        except Exception:
+        except Exception as err:
+            self.log.error("Image Import plugin could not be started due of: %s" % str(err))
             self.image_tool = lambda x: None
 
         self.pcb_wizard_tool = PcbWizard(self)
@@ -5437,9 +5438,9 @@ class App(QtCore.QObject):
             y = 0 - pos[1]
 
             if use_thread is True:
-                self.worker_task.emit({'fcn': worker_task, 'params': []})
+                self.worker_task.emit({'fcn': worker_task, 'params': [self]})
             else:
-                worker_task()
+                worker_task(self)
             self.should_we_save = True
         elif event is not None and event.button == right_button:
             if self.ui.popMenu.mouse_is_panning is False:
@@ -9125,9 +9126,7 @@ class App(QtCore.QObject):
                     new_line_color = sel_obj.outline_color
                     sel_obj.alpha_level = alpha_str
                     sel_obj.fill_color = new_color
-                    sel_obj.shapes.redraw(
-                        update_colors=(sel_obj.fill_color, sel_obj.outline_color)
-                    )
+                    sel_obj.shapes.redraw(update_colors=(new_color, new_line_color))
 
                     if sel_obj.kind == 'gerber':
                         item = sel_obj.item
