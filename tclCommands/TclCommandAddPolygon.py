@@ -17,7 +17,9 @@ class TclCommandAddPolygon(TclCommandSignaled):
     ])
 
     # dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
-    option_types = collections.OrderedDict()
+    option_types = collections.OrderedDict([
+        ('p_coords', str)
+    ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
     required = ['name']
@@ -27,10 +29,13 @@ class TclCommandAddPolygon(TclCommandSignaled):
         'main': "Creates a polygon in the given Geometry object.",
         'args': collections.OrderedDict([
             ('name', 'Name of the Geometry object to which to append the polygon.'),
+            ('p_coords', 'Optional. If used it needs to be a list of tuple point coords (x,y). '
+                         'Brackets: "[" or "]" are not allowed. If spaces are used then enclose with quotes.'),
             ('xi, yi', 'Coordinates of points in the polygon.')
         ]),
         'examples': [
-            'add_polygon <name> <x0> <y0> <x1> <y1> <x2> <y2> [x3 y3 [...]]'
+            'add_polygon <name> <x0> <y0> <x1> <y1> <x2> <y2> [x3 y3 [...]]',
+            'add_poly <name> -p_coords "(5.0, 5.0), (6.0, 5.0), (6.0, 6.0), (5.0, 6.0), (5.0, 5.0)"'
         ]
     }
 
@@ -45,7 +50,6 @@ class TclCommandAddPolygon(TclCommandSignaled):
         """
 
         name = args['name']
-
         obj = self.app.collection.get_by_name(name)
         if obj is None:
             self.raise_tcl_error("Object not found: %s" % name)
@@ -53,10 +57,18 @@ class TclCommandAddPolygon(TclCommandSignaled):
         if obj.kind != 'geometry':
             self.raise_tcl_error('Expected Geometry, got %s %s.' % (name, type(obj)))
 
-        if len(unnamed_args) % 2 != 0:
+        if 'p_coords' in args:
+            try:
+                points = list(eval(args['p_coords']))
+            except Exception as err:
+                self.app.log.error("TclCommandAddPolygon.execute() -> %s" % str(err))
+                return
+
+            obj.add_polygon(points)
+        elif len(unnamed_args) % 2 != 0:
             self.raise_tcl_error("Incomplete coordinates.")
 
-        nr_points = int(len(unnamed_args) / 2)
-        points = [[float(unnamed_args[2*i]), float(unnamed_args[2*i+1])] for i in range(nr_points)]
+            nr_points = int(len(unnamed_args) / 2)
+            points = [[float(unnamed_args[2*i]), float(unnamed_args[2*i+1])] for i in range(nr_points)]
 
-        obj.add_polygon(points)
+            obj.add_polygon(points)
