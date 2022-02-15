@@ -306,6 +306,10 @@ class ToolDrilling(AppTool, Excellon):
         # #############################################################################################################
         self.ui.exclusion_table.setupContextMenu()
         self.ui.exclusion_table.addContextMenu(
+            '%s %s' % (_("Copy"), _("coords")), self.on_copy_exclusion_area_coords,
+            icon=QtGui.QIcon(self.app.resource_location + "/copy16.png")
+        )
+        self.ui.exclusion_table.addContextMenu(
             _("Delete"), self.on_delete_sel_areas, icon=QtGui.QIcon(self.app.resource_location + "/trash16.png")
         )
 
@@ -1693,6 +1697,27 @@ class ToolDrilling(AppTool, Excellon):
 
         self.app.exc_areas.delete_sel_shapes(idxs=list(sel_rows))
         self.app.exc_areas.e_shape_modified.emit()
+
+    def on_copy_exclusion_area_coords(self):
+        sel_model = self.ui.exclusion_table.selectionModel()
+        sel_indexes = sel_model.selectedIndexes()
+
+        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        # so the duplicate rows will not be added
+        sel_rows = set()
+        for idx in sel_indexes:
+            sel_rows.add(idx.row())
+
+        if len(sel_rows) != 1:
+            self.app.inform.emit("[WARNING_NOTCL] %s" % _("Multiple areas selected. Only one area is allowed."))
+            return
+
+        row_idx = list(sel_rows)[0]
+        poly = self.app.exc_areas.exclusion_areas_storage[row_idx]['shape']
+        poly_coords = list(poly.exterior.coords)
+
+        self.app.clipboard.setText(str(poly_coords))
+        self.app.inform.emit('[success] %s' % _("Coordinates copied to clipboard."))
 
     def draw_sel_shape(self):
         sel_model = self.ui.exclusion_table.selectionModel()

@@ -601,7 +601,7 @@ class ExclusionAreas(QtCore.QObject):
         #                                    "<b>Y</b>: %.4f&nbsp;" % (curr_pos[0], curr_pos[1]))
         # self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
         #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
-        self.app.ui.update_location_labels(self.dx, self.dy, curr_pos[0], curr_pos[1])
+        self.app.ui.update_location_labels(self.app.dx, self.app.dy, curr_pos[0], curr_pos[1])
 
         units = self.app.app_units.lower()
         # self.app.plotcanvas.text_hud.text = \
@@ -740,7 +740,7 @@ class ExclusionAreas(QtCore.QObject):
         origin_point = Point(start_point)
 
         buffered_storage = []
-        # add a little something to the half diameter, to make sure that we really don't enter in the exclusion zones
+        # add a little something to the half diameter, to make sure that we really don't enter the exclusion zones
         buffered_distance = (tooldia / 2.0) + (0.1 if self.app.app_units == 'MM' else 0.00393701)
 
         for area in self.exclusion_areas_storage:

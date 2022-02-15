@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+15.02.2022
+
+- fixed an issue with the moving shape when creating an exclusion area
+- added ability to copy the coordinates of the exclusion area with the context menu actions in the Exclusion areas table found in the Milling/Drilling plugins
+
 13.02.2022
 
 - fixed issue when doing a custom origin set

@@ -2246,13 +2246,14 @@ class Gerber(Geometry):
             return
 
         # variables to display the percentage of work done
-        self.geo_len = 0
-        try:
-            self.geo_len = len(self.solid_geometry)
-        except AttributeError:
+        if isinstance(self.solid_geometry, (MultiPolygon, MultiLineString)):
             self.geo_len = len(self.solid_geometry.geoms)
-        except TypeError:
+        elif isinstance(self.solid_geometry, list):
+            self.geo_len = len(self.solid_geometry)
+        elif isinstance(self.solid_geometry, Polygon):
             self.geo_len = 1
+        else:
+            self.geo_len = 0
 
         self.old_disp_number = 0
         self.el_count = 0
