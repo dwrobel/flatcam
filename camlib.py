@@ -3456,7 +3456,9 @@ class CNCjob(Geometry):
             t_gcode += self.doformat(p.toolchange_code, toolchangexy=(temp_locx, temp_locy))
             t_gcode += self.doformat(p.z_feedrate_code)
         else:
-            t_gcode += self.doformat(p.lift_code)
+            if self.startz is None or 'laser' in self.pp_excellon_name.lower():
+                t_gcode += self.doformat(p.lift_code)
+            t_gcode += self.doformat(p.startz_code)
 
         # Spindle start
         t_gcode += self.doformat(p.spindle_code)
@@ -3937,7 +3939,7 @@ class CNCjob(Geometry):
             t_gcode += self.doformat(p.toolchange_code)
         else:
             if self.startz is None or 'laser' in self.pp_geometry_name.lower():
-                t_gcode += self.doformat(p.lift_code, x=0, y=0)  # Move (up) to travel height
+                t_gcode += self.doformat(p.lift_code, x=0, y=0)
             t_gcode += self.doformat(p.startz_code, x=0, y=0)
 
         # Spindle start

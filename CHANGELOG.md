@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - in Tcl command `add_polygon` added ability to use `-p_coords` optional parameter where the value of this argument should be a list of tuple coordinates
 - minor fixes in the Milling Plugin
 - if `Start Z` parameter is set in Edit -> Preferences now there is no extra lift GCode because it is replaced by the startz GCode (except for `laser` preprocessors)
+- if `Start Z` parameter is set in Edit -> Preferences now there is no extra lift GCode because it is replaced by the startz GCode (except for `laser` preprocessors) - for Drilling Plugin too
 
 13.02.2022
 
