@@ -3607,7 +3607,7 @@ class CNCjob(Geometry):
 
         return t_gcode, (locx, locy), start_gcode
 
-    # used in Geometry (and soon in Tool Milling)
+    # used in Geometry (and in Tool Milling)
     def geometry_tool_gcode_gen(self, tool, tools, first_pt, last_pt, tolerance, is_first=False, is_last=False,
                                 toolchange=False, use_ui=True):
         """

@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - fixed an issue with the moving shape when creating an exclusion area
 - added ability to copy the coordinates of the exclusion area with the context menu actions in the Exclusion areas table found in the Milling/Drilling plugins
 - in Tcl command `add_polygon` added ability to use `-p_coords` optional parameter where the value of this argument should be a list of tuple coordinates
+- minor fixes in the Milling Plugin
 
 13.02.2022
 

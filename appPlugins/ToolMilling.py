@@ -853,8 +853,10 @@ class ToolMilling(AppTool, Excellon):
         new_uid = 1
 
         for current_uid in current_uid_list:
-            new_tools[new_uid] = deepcopy(self.iso_tools[current_uid])
+            new_tools[new_uid] = deepcopy(self.target_obj.tools[current_uid])
             new_uid += 1
+
+        self.target_obj.tools = new_tools
 
         # the tools table changed therefore we need to rebuild it
         QtCore.QTimer.singleShot(20, self.build_ui)
