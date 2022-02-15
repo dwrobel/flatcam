@@ -3451,12 +3451,11 @@ class CNCjob(Geometry):
             # t_gcode += start_gcode
 
         # do the ToolChange event
+        t_gcode += self.doformat(p.z_feedrate_code)
         if toolchange:
-            t_gcode += self.doformat(p.z_feedrate_code)
             t_gcode += self.doformat(p.toolchange_code, toolchangexy=(temp_locx, temp_locy))
             t_gcode += self.doformat(p.z_feedrate_code)
         else:
-            t_gcode += self.doformat(p.z_feedrate_code)
             t_gcode += self.doformat(p.lift_code)
 
         # Spindle start
@@ -3925,40 +3924,36 @@ class CNCjob(Geometry):
         # Measurements
         total_travel = 0.0
         total_cut = 0.0
+
         # Start GCode
         start_gcode = ''
         if is_first:
             start_gcode = self.doformat(p.start_code)
             # t_gcode += start_gcode
 
-        # Toolchange code
+        # ToolChange code
         t_gcode += self.doformat(p.feedrate_code)  # sets the feed rate
         if toolchange:
             t_gcode += self.doformat(p.toolchange_code)
-
-            if 'laser' not in self.pp_geometry_name.lower():
-                t_gcode += self.doformat(p.spindle_code)  # Spindle start
-            else:
-                # for laser this will disable the laser
-                t_gcode += self.doformat(p.lift_code, x=self.oldx, y=self.oldy)  # Move (up) to travel height
-
-            if self.dwell:
-                t_gcode += self.doformat(p.dwell_code)  # Dwell time
         else:
-            t_gcode += self.doformat(p.lift_code, x=0, y=0)  # Move (up) to travel height
+            if self.startz is None or 'laser' in self.pp_geometry_name.lower():
+                t_gcode += self.doformat(p.lift_code, x=0, y=0)  # Move (up) to travel height
             t_gcode += self.doformat(p.startz_code, x=0, y=0)
 
-            if 'laser' not in self.pp_geometry_name.lower():
-                t_gcode += self.doformat(p.spindle_code)  # Spindle start
-            else:
-                # for laser this will disable the laser
-                t_gcode += self.doformat(p.lift_code, x=self.oldx, y=self.oldy)  # Move (up) to travel height
+        # Spindle start
+        if 'laser' not in self.pp_geometry_name.lower():
+            t_gcode += self.doformat(p.spindle_code)
+        else:
+            # for laser this will disable the laser
+            t_gcode += self.doformat(p.lift_code, x=self.oldx, y=self.oldy)  # Move (up) to travel height
+        # Dwell time
+        if self.dwell:
+            t_gcode += self.doformat(p.dwell_code)
 
-            if self.dwell is True:
-                t_gcode += self.doformat(p.dwell_code)  # Dwell time
-        t_gcode += self.doformat(p.feedrate_code)  # sets the feed rate
+        # Feed rate set
+        t_gcode += self.doformat(p.feedrate_code)
 
-        # ## Iterate over geometry paths getting the nearest each time.
+        # Iterate over geometry paths getting the nearest each time.
         path_count = 0
 
         # variables to display the percentage of work done
