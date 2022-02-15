@@ -3253,7 +3253,7 @@ class CNCjob(Geometry):
                             and the start gcode
         :rtype:             tuple
         """
-        self.app.log.debug("Creating CNC Job from Excellon for tool: %s" % str(tool))
+        self.app.log.debug("camlib.CNCJob.excellon_tool_gcode_gen() -> Generating GCode for tool: %s" % str(tool))
 
         # detect if GCode is segmented for autolevelling or not
         # it does not matter for the Excellon codes because we are not going to autolevel GCode out of Excellon
@@ -3637,7 +3637,7 @@ class CNCjob(Geometry):
         :rtype:             str
         """
 
-        self.app.log.debug("camlib.CNCJob.geometry_tool_gcode_gen()")
+        self.app.log.debug("camlib.CNCJob.geometry_tool_gcode_gen() -> Generating GCode for tool: %s" % str(tool))
 
         t_gcode = ''
         temp_solid_geometry = []

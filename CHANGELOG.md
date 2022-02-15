@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - minor fixes in the Milling Plugin
 - if `Start Z` parameter is set in Edit -> Preferences now there is no extra lift GCode because it is replaced by the startz GCode (except for `laser` preprocessors)
 - if `Start Z` parameter is set in Edit -> Preferences now there is no extra lift GCode because it is replaced by the startz GCode (except for `laser` preprocessors) - for Drilling Plugin too
+- minor debug log message change 
 
 13.02.2022
 
