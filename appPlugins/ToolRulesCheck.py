@@ -61,7 +61,7 @@ class RulesCheck(AppTool):
         self.decimals = 4
 
     # def on_object_loaded(self, index, row):
-    #     print(index.internalPointer().child_items[row].obj.options['name'], index.data())
+    #     print(index.internalPointer().child_items[row].obj.obj_options['name'], index.data())
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolRulesCheck()")

@@ -186,7 +186,7 @@ class ToolFiducials(AppTool):
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
         if obj and obj.kind == 'gerber':
-            obj_name = obj.options['name']
+            obj_name = obj.obj_options['name']
             self.ui.grb_object_combo.set_value(obj_name)
 
         if obj is None:
@@ -294,7 +294,7 @@ class ToolFiducials(AppTool):
             self.app.call_source = "app"
             return
 
-        self.copper_obj_set.add(self.grb_object.options['name'])
+        self.copper_obj_set.add(self.grb_object.obj_options['name'])
 
         if self.mode_method == 'auto':
             xmin, ymin, xmax, ymax = self.grb_object.bounds()
@@ -558,14 +558,14 @@ class ToolFiducials(AppTool):
             for poly in geo_buff_list:
                 s_list.append(poly)
 
-        outname = '%s_%s' % (str(g_obj.options['name']), 'fid')
+        outname = '%s_%s' % (str(g_obj.obj_options['name']), 'fid')
 
         def initialize(grb_obj, app_obj):
-            grb_obj.options = LoudDict()
-            for opt in g_obj.options:
+            grb_obj.obj_options = LoudDict()
+            for opt in g_obj.obj_options:
                 if opt != 'name':
-                    grb_obj.options[opt] = deepcopy(g_obj.options[opt])
-            grb_obj.options['name'] = outname
+                    grb_obj.obj_options[opt] = deepcopy(g_obj.obj_options[opt])
+            grb_obj.obj_options['name'] = outname
             grb_obj.multitool = False
             grb_obj.multigeo = False
             grb_obj.follow = deepcopy(g_obj.follow)
@@ -594,7 +594,7 @@ class ToolFiducials(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
 
-        self.sm_obj_set.add(self.sm_object.options['name'])
+        self.sm_obj_set.add(self.sm_object.obj_options['name'])
         ret_val = self.add_fiducials_geo(
             self.click_points, g_obj=self.sm_object, fid_size=sm_opening_dia, fid_type='circular')
         self.app.call_source = "app"
@@ -706,10 +706,10 @@ class ToolFiducials(AppTool):
             # update the bounding box values
             try:
                 a, b, c, d = copper_obj.bounds()
-                copper_obj.options['xmin'] = a
-                copper_obj.options['ymin'] = b
-                copper_obj.options['xmax'] = c
-                copper_obj.options['ymax'] = d
+                copper_obj.obj_options['xmin'] = a
+                copper_obj.obj_options['ymin'] = b
+                copper_obj.obj_options['xmax'] = c
+                copper_obj.obj_options['ymax'] = d
             except Exception as e:
                 self.app.log.error("ToolFiducials.on_exit() copper_obj bounds error --> %s" % str(e))
 
@@ -726,10 +726,10 @@ class ToolFiducials(AppTool):
             # update the bounding box values
             try:
                 a, b, c, d = sm_obj.bounds()
-                sm_obj.options['xmin'] = a
-                sm_obj.options['ymin'] = b
-                sm_obj.options['xmax'] = c
-                sm_obj.options['ymax'] = d
+                sm_obj.obj_options['xmin'] = a
+                sm_obj.obj_options['ymin'] = b
+                sm_obj.obj_options['xmax'] = c
+                sm_obj.obj_options['ymax'] = d
             except Exception as e:
                 self.app.log.error("ToolFiducials.on_exit() sm_obj bounds error --> %s" % str(e))
 

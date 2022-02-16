@@ -153,7 +153,7 @@ class ToolMove(AppTool):
 
                     # move only the objects selected and plotted and visible
                     obj_list = [obj for obj in self.app.collection.get_selected()
-                                if obj.options['plot'] and obj.visible is True]
+                                if obj.obj_options['plot'] and obj.visible is True]
 
                     def job_move(app_obj):
                         with self.app.proc_container.new('%s...' % _("Moving")):
@@ -180,10 +180,10 @@ class ToolMove(AppTool):
 
                                     # Update the object bounding box options
                                     a, b, c, d = sel_obj.bounds()
-                                    sel_obj.options['xmin'] = a
-                                    sel_obj.options['ymin'] = b
-                                    sel_obj.options['xmax'] = c
-                                    sel_obj.options['ymax'] = d
+                                    sel_obj.obj_options['xmin'] = a
+                                    sel_obj.obj_options['ymin'] = b
+                                    sel_obj.obj_options['xmax'] = c
+                                    sel_obj.obj_options['ymax'] = d
 
                                     try:
                                         sel_obj.set_offset_values()
@@ -193,7 +193,7 @@ class ToolMove(AppTool):
 
                                 # update the source_file with the new positions
                                 for sel_obj in obj_list:
-                                    out_name = sel_obj.options["name"]
+                                    out_name = sel_obj.obj_options["name"]
                                     if sel_obj.kind == 'gerber':
                                         sel_obj.source_file = self.app.f_handlers.export_gerber(
                                             obj_name=out_name, filename=None, local_use=sel_obj, use_thread=False)
@@ -278,7 +278,7 @@ class ToolMove(AppTool):
         # first get a bounding box to fit all
         for obj in obj_list:
             # don't move disabled objects, move only plotted objects
-            if obj.options['plot']:
+            if obj.obj_options['plot']:
                 xmin, ymin, xmax, ymax = obj.bounds()
                 xminlist.append(xmin)
                 yminlist.append(ymin)

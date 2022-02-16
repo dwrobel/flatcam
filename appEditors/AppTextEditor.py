@@ -244,7 +244,7 @@ class AppTextEditor(QtWidgets.QWidget):
             obj_name = name
         else:
             try:
-                obj_name = self.app.collection.get_active().options['name']
+                obj_name = self.app.collection.get_active().obj_options['name']
             except AttributeError:
                 obj_name = 'file'
                 if filt is None:

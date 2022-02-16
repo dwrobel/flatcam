@@ -3273,7 +3273,7 @@ class MainGUI(QtWidgets.QMainWindow):
                         self.app.collection.set_all_inactive()
                         if active is None:
                             return
-                        active_name = active.options['name']
+                        active_name = active.obj_options['name']
                         active_index = names_list.index(active_name)
                         if active_index == 0:
                             self.app.collection.set_active(names_list[-1])
@@ -3288,7 +3288,7 @@ class MainGUI(QtWidgets.QMainWindow):
                         self.app.collection.set_all_inactive()
                         if active is None:
                             return
-                        active_name = active.options['name']
+                        active_name = active.obj_options['name']
                         active_index = names_list.index(active_name)
                         if active_index == len(names_list) - 1:
                             self.app.collection.set_active(names_list[0])
@@ -3536,7 +3536,7 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.app.ui.grid_snap_btn.trigger()
 
                     # make sure that the cursor shape is enabled/disabled, too
-                    if self.app.geo_editor.options['grid_snap'] is True:
+                    if self.app.geo_editor.obj_options['grid_snap'] is True:
                         self.app.app_cursor.enabled = True
                     else:
                         self.app.app_cursor.enabled = False
@@ -3841,7 +3841,7 @@ class MainGUI(QtWidgets.QMainWindow):
                     if key == QtCore.Qt.Key.Key_G or key == 'G':
                         self.app.grb_editor.launched_from_shortcuts = True
                         # make sure that the cursor shape is enabled/disabled, too
-                        if self.app.grb_editor.options['grid_snap'] is True:
+                        if self.app.grb_editor.obj_options['grid_snap'] is True:
                             self.app.app_cursor.enabled = False
                         else:
                             self.app.app_cursor.enabled = True
@@ -4014,7 +4014,7 @@ class MainGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key.Key_G or key == 'G':
                     self.app.exc_editor.launched_from_shortcuts = True
                     # make sure that the cursor shape is enabled/disabled, too
-                    if self.app.exc_editor.options['grid_snap'] is True:
+                    if self.app.exc_editor.obj_options['grid_snap'] is True:
                         self.app.app_cursor.enabled = False
                     else:
                         self.app.app_cursor.enabled = True

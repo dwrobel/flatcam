@@ -218,7 +218,7 @@ class ObjectReport(AppTool):
         except Exception as e:
             self.app.log.error("Properties.addItems() --> %s" % str(e))
 
-        self.treeWidget.addChild(obj_name, [obj.options['name']])
+        self.treeWidget.addChild(obj_name, [obj.obj_options['name']])
 
         def job_thread(obj_prop):
             self.app.proc_container.new('%s...' % _("Working"))
@@ -377,10 +377,10 @@ class ObjectReport(AppTool):
         self.treeWidget.addChild(units, ['Object units:', o_unit], True)
 
         # Options items
-        for option in obj.options:
+        for option in obj.obj_options:
             if option == 'name':
                 continue
-            self.treeWidget.addChild(options, [str(option), str(obj.options[option])], True)
+            self.treeWidget.addChild(options, [str(option), str(obj.obj_options[option])], True)
 
         # Items that depend on the object type
         if obj.kind.lower() == 'gerber':
@@ -474,7 +474,7 @@ class ObjectReport(AppTool):
                         self.treeWidget.addChild(geo_tool, [str(k), str(v)], True)
         elif obj.kind.lower() == 'cncjob':
             # for CNCJob objects made from Gerber or Geometry objects
-            if obj.options['type'].lower() == 'geometry':
+            if obj.obj_options['type'].lower() == 'geometry':
                 for tool, value in obj.tools.items():
                     geo_tool = self.treeWidget.addParent(
                         tools, str(tool), expanded=True, color=p_color, font=font)
@@ -500,7 +500,7 @@ class ObjectReport(AppTool):
                         self.treeWidget.addChild(tool_data, [str(data_k).capitalize(), str(data_v)], True)
 
             # for CNCJob objects made from Excellon objects
-            if obj.options['type'].lower() == 'excellon':
+            if obj.obj_options['type'].lower() == 'excellon':
                 for tool_id, value in obj.tools.items():
                     tool_dia = obj.tools[tool_id]['tooldia']
                     exc_tool = self.treeWidget.addParent(

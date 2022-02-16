@@ -335,7 +335,7 @@ class ToolDrilling(AppTool, Excellon):
         try:
             selected_obj = self.app.collection.get_active()
             if selected_obj.kind == 'excellon':
-                current_name = selected_obj.options['name']
+                current_name = selected_obj.obj_options['name']
                 self.ui.object_combo.set_value(current_name)
         except Exception:
             pass
@@ -430,7 +430,7 @@ class ToolDrilling(AppTool, Excellon):
         # reset the Excellon preprocessor combo
         self.ui.pp_excellon_name_cb.clear()
         # populate Excellon preprocessor combobox list
-        if loaded_obj and loaded_obj.options['tools_drill_ppname_e'] == 'Check_points':
+        if loaded_obj and loaded_obj.obj_options['tools_drill_ppname_e'] == 'Check_points':
             pp_list = ['Check_points']
         else:
             pp_list = []
@@ -453,14 +453,14 @@ class ToolDrilling(AppTool, Excellon):
         self.ui.order_combo.set_value(self.app.defaults["tools_drill_tool_order"])
 
         if loaded_obj:
-            outname = loaded_obj.options['name']
+            outname = loaded_obj.obj_options['name']
         else:
             outname = ''
 
         # init the working variables
         self.default_data.clear()
 
-        # fill in self.default_data values from self.options
+        # fill in self.default_data values from self.obj_options
         # for opt_key, opt_val in self.app.options.items():
         #     if opt_key.find('excellon_') == 0:
         #         oname = opt_key[len('excellon_'):]
@@ -471,7 +471,7 @@ class ToolDrilling(AppTool, Excellon):
         #         self.default_data[opt_key] = deepcopy(opt_val)
         #
         if loaded_obj:
-            self.default_data.update(loaded_obj.options)
+            self.default_data.update(loaded_obj.obj_options)
         else:
             self.default_data.update(self.app.options)
 
@@ -611,7 +611,7 @@ class ToolDrilling(AppTool, Excellon):
 
             # Tool parameters section
             if loaded_obj:
-                options = loaded_obj.options
+                options = loaded_obj.obj_options
                 for tool in loaded_obj.tools:
                     tool_data = loaded_obj.tools[tool]['data']
 
@@ -987,7 +987,7 @@ class ToolDrilling(AppTool, Excellon):
         if found_idx:
             try:
                 sel_obj = current.indexes()[0].internalPointer().obj
-                name = sel_obj.options['name']
+                name = sel_obj.obj_options['name']
                 kind = sel_obj.kind
                 if kind in ['geometry', 'excellon']:
                     self.ui.object_combo.set_value(name)
@@ -1968,12 +1968,12 @@ class ToolDrilling(AppTool, Excellon):
         # we don't do it here since it will break any changes we've done in the Drilling Tool UI
         # self.excellon_tools = obj.tools
 
-        xmin = obj.options['xmin']
-        ymin = obj.options['ymin']
-        xmax = obj.options['xmax']
-        ymax = obj.options['ymax']
+        xmin = obj.obj_options['xmin']
+        ymin = obj.obj_options['ymin']
+        xmax = obj.obj_options['xmax']
+        ymax = obj.obj_options['ymax']
 
-        job_name = obj.options["name"] + "_cnc"
+        job_name = obj.obj_options["name"] + "_cnc"
         obj.pp_excellon_name = self.ui.pp_excellon_name_cb.get_value()
 
         if self.is_valid_excellon() is False:
@@ -2168,13 +2168,13 @@ class ToolDrilling(AppTool, Excellon):
             job_obj.pp_excellon_name = self.ui.pp_excellon_name_cb.get_value()
             job_obj.pp_excellon = self.app.preprocessors[job_obj.pp_excellon_name]
 
-            job_obj.options['type'] = 'Excellon'
-            job_obj.options['ppname_e'] = obj.pp_excellon_name
+            job_obj.obj_options['type'] = 'Excellon'
+            job_obj.obj_options['ppname_e'] = obj.pp_excellon_name
 
-            job_obj.options['xmin'] = xmin
-            job_obj.options['ymin'] = ymin
-            job_obj.options['xmax'] = xmax
-            job_obj.options['ymax'] = ymax
+            job_obj.obj_options['xmin'] = xmin
+            job_obj.obj_options['ymin'] = ymin
+            job_obj.obj_options['xmax'] = xmax
+            job_obj.obj_options['ymax'] = ymax
 
             job_obj.use_ui = True
 

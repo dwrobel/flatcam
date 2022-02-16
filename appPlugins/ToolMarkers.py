@@ -87,7 +87,7 @@ class ToolMarkers(AppTool):
 
         if found_idx:
             try:
-                name = current.indexes()[0].internalPointer().obj.options['name']
+                name = current.indexes()[0].internalPointer().obj.obj_options['name']
                 kind = current.indexes()[0].internalPointer().obj.kind
 
                 if kind in ['gerber', 'geometry']:
@@ -202,7 +202,7 @@ class ToolMarkers(AppTool):
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
         if obj and obj.kind == 'gerber':
-            obj_name = obj.options['name']
+            obj_name = obj.obj_options['name']
             self.ui.object_combo.set_value(obj_name)
 
         if obj is None:
@@ -379,7 +379,7 @@ class ToolMarkers(AppTool):
             return "fail"
 
         assert isinstance(geo_list, list), 'Geometry list should be a list but the type is: %s' % str(type(geo_list))
-        new_name = '%s_%s' % (str(self.grb_object.options['name']), 'markers')
+        new_name = '%s_%s' % (str(self.grb_object.obj_options['name']), 'markers')
 
         return_val = self.generate_gerber_obj_with_markers(new_grb_obj=g_obj, marker_geometry=geo_list, outname=new_name)
 
@@ -622,11 +622,11 @@ class ToolMarkers(AppTool):
             s_list.append(geo_buff_list)
 
         def initialize(grb_obj, app_obj):
-            grb_obj.options = LoudDict()
-            for opt in new_grb_obj.options:
+            grb_obj.obj_options = LoudDict()
+            for opt in new_grb_obj.obj_options:
                 if opt != 'name':
-                    grb_obj.options[opt] = deepcopy(new_grb_obj.options[opt])
-            grb_obj.options['name'] = outname
+                    grb_obj.obj_options[opt] = deepcopy(new_grb_obj.obj_options[opt])
+            grb_obj.obj_options['name'] = outname
             grb_obj.multitool = False
             grb_obj.multigeo = False
             grb_obj.follow = deepcopy(new_grb_obj.follow)
@@ -709,13 +709,13 @@ class ToolMarkers(AppTool):
             s_list.append(marker_geometry)
 
         def initialize(geo_obj, app_obj):
-            geo_obj.options = LoudDict()
-            for opt in new_geo_obj.options:
-                geo_obj.options[opt] = deepcopy(new_geo_obj.options[opt])
-            geo_obj.options['name'] = outname
+            geo_obj.obj_options = LoudDict()
+            for opt in new_geo_obj.obj_options:
+                geo_obj.obj_options[opt] = deepcopy(new_geo_obj.obj_options[opt])
+            geo_obj.obj_options['name'] = outname
 
             # Propagate options
-            geo_obj.options["tools_mill_tooldia"] = app_obj.defaults["tools_mill_tooldia"]
+            geo_obj.obj_options["tools_mill_tooldia"] = app_obj.defaults["tools_mill_tooldia"]
             geo_obj.solid_geometry = flatten_shapely_geometry(s_list)
 
             geo_obj.multitool = True
@@ -816,17 +816,17 @@ class ToolMarkers(AppTool):
         }
 
         def obj_init(obj_inst, app_inst):
-            obj_inst.options.update({
+            obj_inst.obj_options.update({
                 'name': outname
             })
             obj_inst.tools = deepcopy(tools)
             obj_inst.create_geometry()
-            obj_inst.source_file = app_inst.f_handlers.export_excellon(obj_name=obj_inst.options['name'],
+            obj_inst.source_file = app_inst.f_handlers.export_excellon(obj_name=obj_inst.obj_options['name'],
                                                                        local_use=obj_inst,
                                                                        filename=None,
                                                                        use_thread=False)
 
-        outname = '%s_%s' % (str(self.grb_object.options['name']), 'corner_drills')
+        outname = '%s_%s' % (str(self.grb_object.obj_options['name']), 'corner_drills')
         ret_val = self.app.app_obj.new_object("excellon", outname, obj_init, autoselected=False)
 
         self.app.call_source = "app"
@@ -932,17 +932,17 @@ class ToolMarkers(AppTool):
                 new_obj.tools[tool]['data']['tools_drill_ppname_e'] = 'Check_points'
 
             new_obj.create_geometry()
-            new_obj.options.update({
+            new_obj.obj_options.update({
                 'name': outname,
                 'tools_drill_cutz': -0.1,
                 'tools_drill_ppname_e': 'Check_points'
             })
-            new_obj.source_file = app_inst.f_handlers.export_excellon(obj_name=new_obj.options['name'],
+            new_obj.source_file = app_inst.f_handlers.export_excellon(obj_name=new_obj.obj_options['name'],
                                                                       local_use=new_obj,
                                                                       filename=None,
                                                                       use_thread=False)
 
-        outname = '%s_%s' % (str(self.grb_object.options['name']), 'verification')
+        outname = '%s_%s' % (str(self.grb_object.obj_options['name']), 'verification')
         ret_val = self.app.app_obj.new_object("excellon", outname, obj_init, autoselected=False)
 
         self.app.call_source = "app"
@@ -974,7 +974,7 @@ class ToolMarkers(AppTool):
                 self.app.call_source = "app"
                 return
 
-            new_name = '%s_%s' % (str(new_grb_obj.options['name']), 'markers')
+            new_name = '%s_%s' % (str(new_grb_obj.obj_options['name']), 'markers')
             return_val = self.generate_gerber_obj_with_markers(new_grb_obj=new_grb_obj, marker_geometry=geo_list,
                                                                outname=new_name)
         else:
@@ -989,7 +989,7 @@ class ToolMarkers(AppTool):
                 self.app.call_source = "app"
                 return
 
-            new_name = '%s_%s' % (str(new_geo_obj.options['name']), 'markers')
+            new_name = '%s_%s' % (str(new_geo_obj.obj_options['name']), 'markers')
             return_val = self.generate_geo_obj_with_markers(new_geo_obj=new_geo_obj, marker_geometry=geo_list,
                                                             outname=new_name)
         if return_val == "fail":
@@ -1032,10 +1032,10 @@ class ToolMarkers(AppTool):
         # update the bounding box values
         try:
             a, b, c, d = self.grb_object.bounds()
-            self.grb_object.options['xmin'] = a
-            self.grb_object.options['ymin'] = b
-            self.grb_object.options['xmax'] = c
-            self.grb_object.options['ymax'] = d
+            self.grb_object.obj_options['xmin'] = a
+            self.grb_object.obj_options['ymin'] = b
+            self.grb_object.obj_options['xmax'] = c
+            self.grb_object.obj_options['ymax'] = d
         except Exception as e:
             self.app.log.error("ToolMarkers.on_exit() copper_obj bounds error --> %s" % str(e))
 

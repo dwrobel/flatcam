@@ -53,7 +53,7 @@ class SolderPaste(AppTool):
         self.tooltable_tools = {}
         self.tooluid = 0
 
-        self.options = LoudDict()
+        self.obj_options = LoudDict()
         self.form_fields = {}
 
         self.units = ''
@@ -185,7 +185,7 @@ class SolderPaste(AppTool):
 
         for option in self.app.options:
             if option.find('tools_') == 0:
-                self.options[option] = deepcopy(self.app.options[option] )
+                self.obj_options[option] = deepcopy(self.app.options[option] )
         self.read_form_to_options()
 
         self.clear_context_menu()
@@ -210,7 +210,7 @@ class SolderPaste(AppTool):
             self.tooltable_tools.update({
                 int(self.tooluid): {
                     'tooldia': float('%.*f' % (self.decimals, tool_dia)),
-                    'data': deepcopy(self.options),
+                    'data': deepcopy(self.obj_options),
                     'solid_geometry': []
                 }
             })
@@ -231,7 +231,7 @@ class SolderPaste(AppTool):
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
         if obj and obj.kind == 'gerber':
-            obj_name = obj.options['name']
+            obj_name = obj.obj_options['name']
             self.ui.obj_combo.set_value(obj_name)
 
     def build_ui(self):
@@ -427,7 +427,7 @@ class SolderPaste(AppTool):
         :return:
         """
         try:
-            obj_name = obj.options['name']
+            obj_name = obj.obj_options['name']
         except AttributeError:
             # this happen when the 'delete all' is emitted since in that case the obj is set to None and None has no
             # attribute named 'options'
@@ -448,12 +448,12 @@ class SolderPaste(AppTool):
 
     def read_form_to_options(self):
         """
-        Will read all the parameters from Solder Paste Tool UI and update the self.options dictionary
+        Will read all the parameters from Solder Paste Tool UI and update the self.obj_options dictionary
         :return:
         """
 
         for key in self.form_fields:
-            self.options[key] = self.form_fields[key].get_value()
+            self.obj_options[key] = self.form_fields[key].get_value()
 
     def form_to_storage(self, tooluid=None):
         """
@@ -558,7 +558,7 @@ class SolderPaste(AppTool):
             self.tooltable_tools.update({
                 int(self.tooluid): {
                     'tooldia':          float('%.*f' % (self.decimals, tool_dia)),
-                    'data':             deepcopy(self.options),
+                    'data':             deepcopy(self.obj_options),
                     'solid_geometry':   []
                 }
             })
@@ -717,7 +717,7 @@ class SolderPaste(AppTool):
             return
 
         obj = self.app.collection.get_by_name(name)
-        # update the self.options
+        # update the self.obj_options
         self.read_form_to_options()
 
         self.on_create_geo(name=name, work_object=obj)
@@ -794,7 +794,7 @@ class SolderPaste(AppTool):
             return
 
         def geo_init(geo_obj, app_obj):
-            geo_obj.options.update(self.options)
+            geo_obj.obj_options.update(self.obj_options)
             geo_obj.solid_geometry = []
 
             geo_obj.tools = {}
@@ -947,7 +947,7 @@ class SolderPaste(AppTool):
             return
 
         # use the name of the first tool selected in self.geo_tools_table which has the diameter passed as tool_dia
-        originar_name = obj.options['name'].partition('_')[0]
+        originar_name = obj.obj_options['name'].partition('_')[0]
         outname = "%s_%s" % (originar_name, 'cnc_solderpaste')
 
         self.on_create_gcode(name=outname, workobject=obj)
@@ -964,10 +964,10 @@ class SolderPaste(AppTool):
         obj = workobject
 
         try:
-            xmin = obj.options['xmin']
-            ymin = obj.options['ymin']
-            xmax = obj.options['xmax']
-            ymax = obj.options['ymax']
+            xmin = obj.obj_options['xmin']
+            ymin = obj.obj_options['ymin']
+            xmax = obj.obj_options['xmax']
+            ymax = obj.obj_options['ymax']
         except Exception as e:
             self.app.log.error("SolderPaste.on_create_gcode() --> %s\n" % str(e))
             msg = '[ERROR] %s' % _("An internal error has occurred. See shell.\n")
@@ -989,10 +989,10 @@ class SolderPaste(AppTool):
             new_obj.tools.clear()
             new_obj.special_group = 'solder_paste_tool'
 
-            new_obj.options['xmin'] = xmin
-            new_obj.options['ymin'] = ymin
-            new_obj.options['xmax'] = xmax
-            new_obj.options['ymax'] = ymax
+            new_obj.obj_options['xmin'] = xmin
+            new_obj.obj_options['ymin'] = ymin
+            new_obj.obj_options['xmax'] = xmax
+            new_obj.obj_options['ymax'] = ymax
 
             total_gcode = ''
             for tooluid_key, tooluid_value in obj.tools.items():
@@ -1005,8 +1005,8 @@ class SolderPaste(AppTool):
                 new_obj.tool = int(tooluid_key)
 
                 # Propagate options
-                new_obj.options["tooldia"] = tool_dia
-                new_obj.options['tool_dia'] = tool_dia
+                new_obj.obj_options["tooldia"] = tool_dia
+                new_obj.obj_options['tool_dia'] = tool_dia
 
                 # ## CREATE GCODE # ##
                 res = new_obj.generate_gcode_from_solderpaste_geo(**tooluid_value)
@@ -1083,7 +1083,7 @@ class SolderPaste(AppTool):
                 (str(self.app.version), str(self.app.version_date)) + '\n'
 
         gcode += '(Name: ' + str(name) + ')\n'
-        gcode += '(Type: ' + "G-code from " + str(obj.options['type']) + " for Solder Paste dispenser" + ')\n'
+        gcode += '(Type: ' + "G-code from " + str(obj.obj_options['type']) + " for Solder Paste dispenser" + ')\n'
 
         gcode += '(Units: ' + self.units.upper() + ')\n' + "\n"
         gcode += '(Created on ' + time_str + ')\n' + '\n'
@@ -1154,7 +1154,7 @@ class SolderPaste(AppTool):
                 (str(self.app.version), str(self.app.version_date)) + '\n'
 
         gcode += '(Name: ' + str(name) + ')\n'
-        gcode += '(Type: ' + "G-code from " + str(obj.options['type']) + " for Solder Paste dispenser" + ')\n'
+        gcode += '(Type: ' + "G-code from " + str(obj.obj_options['type']) + " for Solder Paste dispenser" + ')\n'
 
         gcode += '(Units: ' + self.units.upper() + ')\n' + "\n"
         gcode += '(Created on ' + time_str + ')\n' + '\n'

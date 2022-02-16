@@ -47,7 +47,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         self.kind = "excellon"
 
-        self.options.update({
+        self.obj_options.update({
             "plot": True,
             "solid": False,
             "multicolored": False,
@@ -123,12 +123,12 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         self.units = self.app.app_units.upper()
 
-        # # fill in self.options values  for the Drilling Tool from self.app.options
+        # # fill in self.obj_options values  for the Drilling Tool from self.app.options
         # for opt_key, opt_val in self.app.options.items():
         #     if opt_key.find('tools_drill_') == 0:
-        #         self.options[opt_key] = deepcopy(opt_val)
+        #         self.obj_options[opt_key] = deepcopy(opt_val)
         #
-        # # fill in self.default_data values from self.options
+        # # fill in self.default_data values from self.obj_options
         # for opt_key, opt_val in self.app.options.items():
         #     if opt_key.find('excellon_') == 0 or opt_key.find('tools_drill_') == 0:
         #         self.default_data[opt_key] = deepcopy(opt_val)
@@ -282,8 +282,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
         tools = [i[0] for i in sorted_tools]
 
         new_options = {}
-        for opt in self.options:
-            new_options[opt] = self.options[opt]
+        for opt in self.obj_options:
+            new_options[opt] = self.obj_options[opt]
 
         for tool_no in tools:
             try:
@@ -919,7 +919,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             tools = self.get_selected_tools_list()
 
         if outname is None:
-            outname = self.options["name"] + "_mill"
+            outname = self.obj_options["name"] + "_mill"
 
         if tooldia is None:
             tooldia = self.ui.tooldia_entry.get_value()
@@ -962,9 +962,9 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
             # ## Add properties to the object
 
-            geo_obj.options['type'] = 'Excellon Geometry'
-            geo_obj.options["tools_mill_tooldia"] = str(tooldia)
-            geo_obj.options["multidepth"] = app_obj.defaults["tools_mill_multidepth"]
+            geo_obj.obj_options['type'] = 'Excellon Geometry'
+            geo_obj.obj_options["tools_mill_tooldia"] = str(tooldia)
+            geo_obj.obj_options["multidepth"] = app_obj.defaults["tools_mill_multidepth"]
             geo_obj.solid_geometry = []
 
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution
@@ -1024,10 +1024,10 @@ class ExcellonObject(FlatCAMObj, Excellon):
             tools = self.get_selected_tools_list()
 
         if outname is None:
-            outname = self.options["name"] + "_mill"
+            outname = self.obj_options["name"] + "_mill"
 
         if tooldia is None:
-            tooldia = float(self.options["slot_tooldia"])
+            tooldia = float(self.obj_options["slot_tooldia"])
 
         # Sort tools by diameter. items() -> [('name', diameter), ...]
         # sorted_tools = sorted(list(self.tools.items()), key=lambda tl: tl[1]) # no longer works in Python3
@@ -1059,9 +1059,9 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
             # ## Add properties to the object
 
-            geo_obj.options['type'] = 'Excellon Geometry'
-            geo_obj.options["tools_mill_tooldia"] = str(tooldia)
-            geo_obj.options["tools_mill_multidepth"] = app_obj.defaults["tools_mill_multidepth"]
+            geo_obj.obj_options['type'] = 'Excellon Geometry'
+            geo_obj.obj_options["tools_mill_tooldia"] = str(tooldia)
+            geo_obj.obj_options["tools_mill_multidepth"] = app_obj.defaults["tools_mill_multidepth"]
             geo_obj.solid_geometry = []
 
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution
@@ -1122,14 +1122,14 @@ class ExcellonObject(FlatCAMObj, Excellon):
         Excellon.convert_units(self, units)
 
         # factor = Excellon.convert_units(self, units)
-        # self.options['drillz'] = float(self.options['drillz']) * factor
-        # self.options['travelz'] = float(self.options['travelz']) * factor
-        # self.options['feedrate'] = float(self.options['feedrate']) * factor
-        # self.options['feedrate_rapid'] = float(self.options['feedrate_rapid']) * factor
-        # self.options['toolchangez'] = float(self.options['toolchangez']) * factor
+        # self.obj_options['drillz'] = float(self.obj_options['drillz']) * factor
+        # self.obj_options['travelz'] = float(self.obj_options['travelz']) * factor
+        # self.obj_options['feedrate'] = float(self.obj_options['feedrate']) * factor
+        # self.obj_options['feedrate_rapid'] = float(self.obj_options['feedrate_rapid']) * factor
+        # self.obj_options['toolchangez'] = float(self.obj_options['toolchangez']) * factor
         #
         # if self.app.defaults["excellon_toolchangexy"] == '':
-        #     self.options['toolchangexy'] = "0.0, 0.0"
+        #     self.obj_options['toolchangexy'] = "0.0, 0.0"
         # else:
         #     coords_xy = [float(eval(coord)) for coord in self.app.defaults["excellon_toolchangexy"].split(",")]
         #     if len(coords_xy) < 2:
@@ -1139,11 +1139,11 @@ class ExcellonObject(FlatCAMObj, Excellon):
         #         return 'fail'
         #     coords_xy[0] *= factor
         #     coords_xy[1] *= factor
-        #     self.options['toolchangexy'] = "%f, %f" % (coords_xy[0], coords_xy[1])
+        #     self.obj_options['toolchangexy'] = "%f, %f" % (coords_xy[0], coords_xy[1])
         #
-        # if self.options['startz'] is not None:
-        #     self.options['startz'] = float(self.options['startz']) * factor
-        # self.options['endz'] = float(self.options['endz']) * factor
+        # if self.obj_options['startz'] is not None:
+        #     self.obj_options['startz'] = float(self.obj_options['startz']) * factor
+        # self.obj_options['endz'] = float(self.obj_options['endz']) * factor
 
     def on_solid_cb_click(self):
         if self.muted_ui:
@@ -1332,10 +1332,10 @@ class ExcellonObject(FlatCAMObj, Excellon):
         for exc in flattened_list:
             # copy options of the current excellon obj to the final excellon obj
             # only the last object options will survive
-            for option in exc.options:
+            for option in exc.obj_options:
                 if option != 'name':
                     try:
-                        exc_final.options[option] = deepcopy(exc.options[option])
+                        exc_final.obj_options[option] = deepcopy(exc.obj_options[option])
                     except Exception:
                         if log:
                             log.warning("Failed to copy option.", option)

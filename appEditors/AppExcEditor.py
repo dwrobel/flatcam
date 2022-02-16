@@ -1833,7 +1833,7 @@ class AppExcEditor(QtCore.QObject):
 
         self.complete = False
 
-        self.options = {
+        self.editor_options = {
             "global_gridx":     0.1,
             "global_gridy":     0.1,
             "snap_max":         0.05,
@@ -1841,11 +1841,11 @@ class AppExcEditor(QtCore.QObject):
             "corner_snap":      False,
             "grid_gap_link":    True
         }
-        self.options.update(self.app.options)
+        self.editor_options.update(self.app.options)
 
-        for option in self.options:
+        for option in self.editor_options:
             if option in self.app.options:
-                self.options[option] = self.app.options[option]
+                self.editor_options[option] = self.app.options[option]
 
         self.data_defaults = {}
 
@@ -1866,7 +1866,7 @@ class AppExcEditor(QtCore.QObject):
         self.tool_row = 0
 
         # def entry2option(option, entry):
-        #     self.options[option] = float(entry.text())
+        #     self.editor_options[option] = float(entry.text())
 
         # Event signals disconnect id holders
         self.mp = None
@@ -2045,7 +2045,7 @@ class AppExcEditor(QtCore.QObject):
         self.units = self.app.app_units.upper()
 
         # make a new name for the new Excellon object (the one with edited content)
-        self.edited_obj_name = self.edited_obj.options['name']
+        self.edited_obj_name = self.edited_obj.obj_options['name']
         self.ui.name_entry.set_value(self.edited_obj_name)
 
         sort_temp = []
@@ -2758,7 +2758,7 @@ class AppExcEditor(QtCore.QObject):
         edited_obj.visible = False
 
         if self.edited_obj:
-            outname = self.edited_obj.options['name']
+            outname = self.edited_obj.obj_options['name']
         else:
             outname = ''
 
@@ -2812,7 +2812,7 @@ class AppExcEditor(QtCore.QObject):
             "tools_drill_area_overz":       self.app.defaults["tools_drill_area_overz"],
         }
 
-        # fill in self.default_data values from self.options
+        # fill in self.default_data values from self.obj_options
         for opt_key, opt_val in self.app.options.items():
             if opt_key.find('excellon_') == 0:
                 self.data_defaults[opt_key] = deepcopy(opt_val)
@@ -3090,13 +3090,13 @@ class AppExcEditor(QtCore.QObject):
     @staticmethod
     def update_options(obj):
         try:
-            if not obj.options:
-                obj.options = {'xmin': 0, 'ymin': 0, 'xmax': 0, 'ymax': 0}
+            if not obj.obj_options:
+                obj.obj_options = {'xmin': 0, 'ymin': 0, 'xmax': 0, 'ymax': 0}
                 return True
             else:
                 return False
         except AttributeError:
-            obj.options = {}
+            obj.obj_options = {}
             return True
 
     def new_edited_excellon(self, outname,  n_tools):
@@ -3112,7 +3112,7 @@ class AppExcEditor(QtCore.QObject):
         """
 
         self.app.log.debug("Update the Excellon object with edited content. Source is %s" %
-                           self.edited_obj.options['name'])
+                           self.edited_obj.obj_options['name'])
 
         new_tools = n_tools
 
@@ -3120,7 +3120,7 @@ class AppExcEditor(QtCore.QObject):
         def obj_init(new_obj, app_obj):
             new_obj.tools = deepcopy(new_tools)
 
-            new_obj.options['name'] = outname
+            new_obj.obj_options['name'] = outname
 
             # add a 'data' dict for each tool with the default values
             for tool in new_obj.tools:
@@ -3144,7 +3144,7 @@ class AppExcEditor(QtCore.QObject):
 
             try:
                 edited_obj = self.app.app_obj.new_object("excellon", outname, obj_init)
-                edited_obj.source_file = self.app.f_handlers.export_excellon(obj_name=edited_obj.options['name'],
+                edited_obj.source_file = self.app.f_handlers.export_excellon(obj_name=edited_obj.obj_options['name'],
                                                                              local_use=edited_obj,
                                                                              filename=None,
                                                                              use_thread=False)

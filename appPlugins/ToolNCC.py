@@ -315,7 +315,7 @@ class NonCopperClear(AppTool, Gerber):
             self.on_type_obj_index_changed(val=kind)
             self.on_reference_combo_changed()
 
-            self.ui.object_combo.set_value(active.options['name'])
+            self.ui.object_combo.set_value(active.obj_options['name'])
         else:
             kind = 'gerber'
             self.ui.type_obj_radio.set_value('gerber')
@@ -524,7 +524,7 @@ class NonCopperClear(AppTool, Gerber):
 
         if found_idx:
             try:
-                name = current.indexes()[0].internalPointer().obj.options['name']
+                name = current.indexes()[0].internalPointer().obj.obj_options['name']
                 kind = current.indexes()[0].internalPointer().obj.kind
 
                 if kind in ['gerber', 'geometry']:
@@ -2518,7 +2518,7 @@ class NonCopperClear(AppTool, Gerber):
                 except KeyError:
                     tools_storage.pop(uid, None)
 
-            geo_obj.options["tools_mill_tooldia"] = str(tool)
+            geo_obj.obj_options["tools_mill_tooldia"] = str(tool)
 
             geo_obj.multigeo = True
             geo_obj.tools = dict(tools_storage)
@@ -2780,7 +2780,7 @@ class NonCopperClear(AppTool, Gerber):
                 # area = unary_union(area)
 
             geo_obj.multigeo = True
-            geo_obj.options["tools_mill_tooldia"] = '0.0'
+            geo_obj.obj_options["tools_mill_tooldia"] = '0.0'
 
             # clean the progressive plotted shapes if it was used
             if self.app.defaults["tools_ncc_plotting"] == 'progressive':
@@ -3365,7 +3365,7 @@ class NonCopperClear(AppTool, Gerber):
                 except KeyError:
                     tools_storage.pop(uid, None)
 
-            geo_obj.options["tools_mill_tooldia"] = str(tool)
+            geo_obj.obj_options["tools_mill_tooldia"] = str(tool)
 
             geo_obj.multigeo = True
             geo_obj.tools.clear()
@@ -3765,7 +3765,7 @@ class NonCopperClear(AppTool, Gerber):
                             app_obj.log.debug("There are no geometries in the cleared polygon.")
 
             geo_obj.multigeo = True
-            geo_obj.options["tools_mill_tooldia"] = str(tool)
+            geo_obj.obj_options["tools_mill_tooldia"] = str(tool)
 
             # check to see if geo_obj.tools is empty
             # it will be updated only if there is a solid_geometry for tools

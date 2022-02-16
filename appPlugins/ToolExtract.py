@@ -69,7 +69,7 @@ class ToolExtract(AppTool):
             for ap_code in grb_obj.tools:
                 grb_obj.mark_shapes_storage[ap_code] = []
 
-            self.old_name = grb_obj.options['name']
+            self.old_name = grb_obj.obj_options['name']
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+I', **kwargs)
@@ -212,7 +212,7 @@ class ToolExtract(AppTool):
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
         if obj and obj.kind == 'gerber':
-            obj_name = obj.options['name']
+            obj_name = obj.obj_options['name']
             self.ui.gerber_object_combo.set_value(obj_name)
 
     def build_tool_ui(self):
@@ -384,7 +384,7 @@ class ToolExtract(AppTool):
         except Exception:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
-        outname = "%s_%s" % (fcobj.options['name'].rpartition('.')[0], _("extracted"))
+        outname = "%s_%s" % (fcobj.obj_options['name'].rpartition('.')[0], _("extracted"))
 
         # selected codes in the apertures UI table
         sel_g_tools = [int(it.text()) for it in self.ui.apertures_table.selectedItems()]
@@ -699,7 +699,7 @@ class ToolExtract(AppTool):
         except Exception:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
-        outname = '%s_esm' % obj.options['name'].rpartition('.')[0]
+        outname = '%s_esm' % obj.obj_options['name'].rpartition('.')[0]
 
         # new_apertures = deepcopy(obj.tools)
         new_apertures = {}
@@ -803,7 +803,7 @@ class ToolExtract(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
 
-        outname = '%s_ecut' % obj.options['name'].rpartition('.')[0]
+        outname = '%s_ecut' % obj.obj_options['name'].rpartition('.')[0]
 
         cut_solid_geometry = obj.solid_geometry
         if isinstance(obj.solid_geometry, list):

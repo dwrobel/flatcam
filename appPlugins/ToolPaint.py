@@ -373,7 +373,7 @@ class ToolPaint(AppTool, Gerber):
             self.on_type_obj_changed(val=kind)
             self.on_reference_combo_changed()
 
-            self.ui.obj_combo.set_value(active.options['name'])
+            self.ui.obj_combo.set_value(active.obj_options['name'])
         else:
             kind = 'geometry'
             self.ui.type_obj_radio.set_value('geometry')
@@ -542,7 +542,7 @@ class ToolPaint(AppTool, Gerber):
 
         if found_idx:
             try:
-                name = current.indexes()[0].internalPointer().obj.options['name']
+                name = current.indexes()[0].internalPointer().obj.obj_options['name']
                 kind = current.indexes()[0].internalPointer().obj.kind
 
                 if kind in ['gerber', 'geometry']:
@@ -2026,7 +2026,7 @@ class ToolPaint(AppTool, Gerber):
             if not tools_storage:
                 return 'fail'
 
-            geo_obj.options["tools_mill_tooldia"] = str(tool_dia)
+            geo_obj.obj_options["tools_mill_tooldia"] = str(tool_dia)
             # this will turn on the FlatCAMCNCJob plot for multiple tools
             geo_obj.multigeo = True
             geo_obj.multitool = True
@@ -2041,10 +2041,10 @@ class ToolPaint(AppTool, Gerber):
                 else:
                     a, b, c, d = geo_obj.solid_geometry.bounds
 
-                geo_obj.options['xmin'] = a
-                geo_obj.options['ymin'] = b
-                geo_obj.options['xmax'] = c
-                geo_obj.options['ymax'] = d
+                geo_obj.obj_options['xmin'] = a
+                geo_obj.obj_options['ymin'] = b
+                geo_obj.obj_options['xmax'] = c
+                geo_obj.obj_options['ymax'] = d
             except Exception as ee:
                 self.app.log.error("ToolPaint.paint_poly.job_init() bounds error --> %s" % str(ee))
                 return
@@ -2255,7 +2255,7 @@ class ToolPaint(AppTool, Gerber):
                     break
 
             geo_obj.multigeo = True
-            geo_obj.options["tools_mill_tooldia"] = '0.0'
+            geo_obj.obj_options["tools_mill_tooldia"] = '0.0'
 
             # clean the progressive plotted shapes if it was used
             if self.app.defaults["tools_paint_plotting"] == 'progressive':
@@ -2297,10 +2297,10 @@ class ToolPaint(AppTool, Gerber):
                 else:
                     a, b, c, d = geo_obj.solid_geometry.bounds
 
-                geo_obj.options['xmin'] = a
-                geo_obj.options['ymin'] = b
-                geo_obj.options['xmax'] = c
-                geo_obj.options['ymax'] = d
+                geo_obj.obj_options['xmin'] = a
+                geo_obj.obj_options['ymin'] = b
+                geo_obj.obj_options['xmax'] = c
+                geo_obj.obj_options['ymax'] = d
             except Exception as ee:
                 app_obj.log.error("ToolPaint.paint_poly.job_init() bounds error --> %s" % str(ee))
                 return

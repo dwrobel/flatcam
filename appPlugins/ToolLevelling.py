@@ -250,14 +250,14 @@ class ToolLevelling(AppTool, CNCjob):
         try:
             selected_obj = self.app.collection.get_active()
             if selected_obj.kind == 'cncjob':
-                current_name = selected_obj.options['name']
+                current_name = selected_obj.obj_options['name']
                 self.ui.object_combo.set_value(current_name)
         except Exception:
             pass
 
         loaded_obj = self.app.collection.get_by_name(self.ui.object_combo.get_value())
         if loaded_obj and loaded_obj.kind == 'cncjob':
-            name = loaded_obj.options['name']
+            name = loaded_obj.obj_options['name']
         else:
             name = ''
 
@@ -311,13 +311,13 @@ class ToolLevelling(AppTool, CNCjob):
         self.ui.al_method_radio.setDisabled(True)
         self.ui.al_method_radio.set_value('v')
 
-        if loaded_obj and loaded_obj.is_segmented_gcode is True and loaded_obj.options["type"] == 'Geometry':
+        if loaded_obj and loaded_obj.is_segmented_gcode is True and loaded_obj.obj_options["type"] == 'Geometry':
             self.ui.al_frame.setDisabled(False)
-            self.ui.al_mode_radio.set_value(loaded_obj.options['tools_al_mode'])
+            self.ui.al_mode_radio.set_value(loaded_obj.obj_options['tools_al_mode'])
             self.on_controller_change()
 
-            self.on_mode_radio(val=loaded_obj.options['tools_al_mode'])
-            self.on_method_radio(val=loaded_obj.options['tools_al_method'])
+            self.on_mode_radio(val=loaded_obj.obj_options['tools_al_mode'])
+            self.on_method_radio(val=loaded_obj.obj_options['tools_al_method'])
         else:
             self.ui.al_frame.setDisabled(True)
 
@@ -346,7 +346,7 @@ class ToolLevelling(AppTool, CNCjob):
             return
 
         if target_obj is not None and target_obj.is_segmented_gcode is True and \
-                target_obj.options["type"] == 'Geometry':
+                target_obj.obj_options["type"] == 'Geometry':
 
             self.ui.al_frame.setDisabled(False)
 
@@ -369,7 +369,7 @@ class ToolLevelling(AppTool, CNCjob):
         if found_idx:
             try:
                 sel_obj = current.indexes()[0].internalPointer().obj
-                name = sel_obj.options['name']
+                name = sel_obj.obj_options['name']
                 kind = sel_obj.kind
 
                 if kind == 'cncjob':
@@ -1395,7 +1395,7 @@ class ToolLevelling(AppTool, CNCjob):
         header += '(This is a autolevelling probing GCode.)\n' \
                   '(Make sure that before you start the job you first do a zero for all axis.)\n\n'
 
-        header += '(Name: ' + str(target_obj.options['name']) + ')\n'
+        header += '(Name: ' + str(target_obj.obj_options['name']) + ')\n'
         header += '(Type: ' + "Autolevelling Probing GCode " + ')\n'
 
         header += '(Units: ' + self.units.upper() + ')\n'

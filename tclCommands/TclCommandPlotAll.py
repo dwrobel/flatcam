@@ -72,7 +72,7 @@ class TclCommandPlotAll(TclCommandSignaled):
                 plot_status = True
 
         for obj in self.app.collection.get_list():
-            obj.options["plot"] = True if plot_status is True else False
+            obj.obj_options["plot"] = True if plot_status is True else False
 
         if self.app.cmd_line_headless != 1:
             self.app.plot_all(use_thread=threaded)

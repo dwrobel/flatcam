@@ -139,10 +139,10 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             self.app.log.error('Expected ExcellonObject, got %s %s.' % (name, type(obj)))
             return "fail"
 
-        xmin = obj.options['xmin']
-        ymin = obj.options['ymin']
-        xmax = obj.options['xmax']
-        ymax = obj.options['ymax']
+        xmin = obj.obj_options['xmin']
+        ymin = obj.obj_options['ymin']
+        xmax = obj.obj_options['xmax']
+        ymax = obj.obj_options['ymax']
 
         def job_init(job_obj, app_obj):
             # tools = args["tools"] if "tools" in args else 'all'
@@ -230,7 +230,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                     used_tools_info.append([str(tool_no), str(tool_dia_used), str(drill_cnt), str(slot_cnt)])
 
             drillz = args["drillz"] if "drillz" in args and args["drillz"] is not None else \
-                obj.options["tools_drill_cutz"]
+                obj.obj_options["tools_drill_cutz"]
 
             toolchange = self.app.defaults["tools_drill_toolchange"]
             if "toolchangez" in args:
@@ -238,7 +238,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 if args["toolchangez"] is not None:
                     toolchangez = args["toolchangez"]
                 else:
-                    toolchangez = obj.options["tools_drill_toolchangez"]
+                    toolchangez = obj.obj_options["tools_drill_toolchangez"]
             else:
                 toolchangez = float(self.app.defaults["tools_drill_toolchangez"])
 
@@ -281,14 +281,14 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             # ##########################################################################################
             # ################# Set parameters #########################################################
             # ##########################################################################################
-            job_obj.options['type'] = 'Excellon'
+            job_obj.obj_options['type'] = 'Excellon'
             job_obj.multigeo = True
             job_obj.multitool = True
 
             # preprocessor
             pp_excellon_name = args["pp"] if "pp" in args and args["pp"] else self.app.defaults["tools_drill_ppname_e"]
             job_obj.pp_excellon_name = pp_excellon_name
-            job_obj.options['ppname_e'] = pp_excellon_name
+            job_obj.obj_options['ppname_e'] = pp_excellon_name
 
             # multidepth
             if 'dpp' in args:
@@ -296,7 +296,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 if args['dpp'] is not None:
                     job_obj.z_depthpercut = abs(float(args['dpp']))
                 else:
-                    job_obj.z_depthpercut = abs(float(obj.options["dpp"]))
+                    job_obj.z_depthpercut = abs(float(obj.obj_options["dpp"]))
             else:
                 job_obj.multidepth = self.app.defaults["tools_drill_multidepth"]
                 job_obj.z_depthpercut = self.app.defaults["tools_drill_depthperpass"]
@@ -337,10 +337,10 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             job_obj.coords_decimals = int(self.app.defaults["cncjob_coords_decimals"])
             job_obj.fr_decimals = int(self.app.defaults["cncjob_fr_decimals"])
 
-            job_obj.options['xmin'] = xmin
-            job_obj.options['ymin'] = ymin
-            job_obj.options['xmax'] = xmax
-            job_obj.options['ymax'] = ymax
+            job_obj.obj_options['xmin'] = xmin
+            job_obj.obj_options['ymin'] = ymin
+            job_obj.obj_options['xmax'] = xmax
+            job_obj.obj_options['ymax'] = ymax
 
             # Cut Z
             job_obj.z_cut = float(drillz)
@@ -378,7 +378,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 for t_item in job_obj.tools:
                     job_obj.tools[t_item]['data']['tools_drill_offset'] = \
                         float(job_obj.tools[t_item]['offset_z']) + float(drillz)
-                    job_obj.tools[t_item]['data']['tools_drill_ppname_e'] = job_obj.options['ppname_e']
+                    job_obj.tools[t_item]['data']['tools_drill_ppname_e'] = job_obj.obj_options['ppname_e']
 
                     used_tooldia = obj.tools[t_item]['tooldia']
                     job_obj.tools[t_item]['tooldia'] = used_tooldia
@@ -392,7 +392,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 first_tool = 1
                 job_obj.tools[first_tool]['data']['tools_drill_offset'] = \
                     float(job_obj.tools[first_tool]['offset_z']) + float(drillz)
-                job_obj.tools[first_tool]['data']['tools_drill_ppname_e'] = job_obj.options['ppname_e']
+                job_obj.tools[first_tool]['data']['tools_drill_ppname_e'] = job_obj.obj_options['ppname_e']
 
                 used_tooldia = obj.tools[first_tool]['tooldia']
                 job_obj.tools[first_tool]['tooldia'] = used_tooldia

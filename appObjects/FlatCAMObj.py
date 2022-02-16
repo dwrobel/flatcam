@@ -79,8 +79,8 @@ class FlatCAMObj(QtCore.QObject):
         # set True by the collection.append() when the object load is complete
         self.load_complete = None
 
-        self.options = LoudDict(name=name)
-        self.options.set_change_callback(self.on_options_change)
+        self.obj_options = LoudDict(name=name)
+        self.obj_options.set_change_callback(self.on_options_change)
 
         self.form_fields = {}
 
@@ -128,14 +128,14 @@ class FlatCAMObj(QtCore.QObject):
         pass
 
     def __str__(self):
-        return "<FlatCAMObj({:12s}): {:20s}>".format(self.kind, self.options["name"])
+        return "<FlatCAMObj({:12s}): {:20s}>".format(self.kind, self.obj_options["name"])
 
     def from_dict(self, d):
         """
         This supersedes ``from_dict`` in derived classes. Derived classes
         must inherit from FlatCAMObj first, then from derivatives of Geometry.
 
-        ``self.options`` is only updated, not overwritten. This ensures that
+        ``self.obj_options`` is only updated, not overwritten. This ensures that
         options set by the app do not vanish when reading the objects
         from a project file.
 
@@ -146,7 +146,7 @@ class FlatCAMObj(QtCore.QObject):
         for attr in self.ser_attrs:
 
             if attr == 'options':
-                self.options.update(d[attr])
+                self.obj_options.update(d[attr])
             else:
                 try:
                     setattr(self, attr, d[attr])
@@ -162,7 +162,7 @@ class FlatCAMObj(QtCore.QObject):
 
         # Set object visibility for objects that are edited
         if key == 'plot' and self.app.call_source != 'app':
-            self.visible = self.options['plot']
+            self.visible = self.obj_options['plot']
 
         self.optionChanged.emit(key)
 
@@ -325,7 +325,7 @@ class FlatCAMObj(QtCore.QObject):
         self.muted_ui = False
 
     def on_name_activate(self, silent=None):
-        old_name = copy(self.options["name"])
+        old_name = copy(self.obj_options["name"])
         new_name = self.ui.name_entry.get_value()
 
         if new_name != old_name:
@@ -339,7 +339,7 @@ class FlatCAMObj(QtCore.QObject):
                 self.app.log.debug(
                     "on_name_activate() --> Could not remove the old object name from auto-completer model list")
 
-            self.options["name"] = self.ui.name_entry.get_value()
+            self.obj_options["name"] = self.ui.name_entry.get_value()
             self.default_data["name"] = self.ui.name_entry.get_value()
             self.app.collection.update_view()
             if silent:
@@ -418,7 +418,7 @@ class FlatCAMObj(QtCore.QObject):
         :return: None
         """
         self.app.log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMObj.to_form()")
-        for option in self.options:
+        for option in self.obj_options:
             try:
                 self.set_form_item(option)
             except Exception as err:
@@ -426,13 +426,13 @@ class FlatCAMObj(QtCore.QObject):
 
     def read_form(self):
         """
-        Reads form into ``self.options``.
+        Reads form into ``self.obj_options``.
 
         :return: None
         :rtype: None
         """
         self.app.log.debug(str(inspect.stack()[1][3]) + "--> FlatCAMObj.read_form()")
-        for option in self.options:
+        for option in self.obj_options:
             try:
                 self.read_form_item(option)
             except Exception:
@@ -442,27 +442,27 @@ class FlatCAMObj(QtCore.QObject):
         """
         Copies the specified option to the UI form.
 
-        :param option: Name of the option (Key in ``self.options``).
+        :param option: Name of the option (Key in ``self.obj_options``).
         :type option: str
         :return: None
         """
 
         try:
-            self.form_fields[option].set_value(self.options[option])
+            self.form_fields[option].set_value(self.obj_options[option])
         except KeyError:
             # self.app.log.warn("Tried to set an option or field that does not exist: %s" % option)
             pass
 
     def read_form_item(self, option):
         """
-        Reads the specified option from the UI form into ``self.options``.
+        Reads the specified option from the UI form into ``self.obj_options``.
 
         :param option: Name of the option.
         :type option: str
         :return: None
         """
         try:
-            self.options[option] = self.form_fields[option].get_value()
+            self.obj_options[option] = self.form_fields[option].get_value()
         except KeyError:
             pass
             # self.app.log.warning("Failed to read option from field: %s" % option)
@@ -701,10 +701,10 @@ class FlatCAMObj(QtCore.QObject):
         self.app.worker_task.emit({'fcn': job_thread, 'params': [obj]})
 
         # Options items
-        for option in obj.options:
+        for option in obj.obj_options:
             if option == 'name':
                 continue
-            self.treeWidget.addChild(options, [str(option), str(obj.options[option])], True)
+            self.treeWidget.addChild(options, [str(option), str(obj.obj_options[option])], True)
 
         # Items that depend on the object type
         if obj.kind.lower() == 'gerber' and obj.tools:
@@ -809,7 +809,7 @@ class FlatCAMObj(QtCore.QObject):
                         self.treeWidget.addChild(geo_tool, [str(k), str(v)], True)
         elif obj.kind.lower() == 'cncjob':
             # for CNCJob objects made from Gerber or Geometry
-            if obj.options['type'].lower() == 'geometry':
+            if obj.obj_options['type'].lower() == 'geometry':
                 for tool, value in obj.tools.items():
                     geo_tool = self.treeWidget.addParent(
                         tools, str(tool), expanded=False, color=p_color, font=font)
@@ -835,7 +835,7 @@ class FlatCAMObj(QtCore.QObject):
                         self.treeWidget.addChild(tool_data, [str(data_k).capitalize(), str(data_v)], True)
 
             # for CNCJob objects made from Excellon
-            if obj.options['type'].lower() == 'excellon':
+            if obj.obj_options['type'].lower() == 'excellon':
                 for tool_id, value in obj.tools.items():
                     tool_dia = value['tooldia']
                     exc_tool = self.treeWidget.addParent(
@@ -994,7 +994,7 @@ class FlatCAMObj(QtCore.QObject):
     def delete(self):
         # Free resources
         del self.ui
-        del self.options
+        del self.obj_options
 
         # Set flag
         self.deleted = True

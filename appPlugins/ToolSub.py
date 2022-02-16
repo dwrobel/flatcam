@@ -173,7 +173,7 @@ class ToolSub(AppTool):
 
         if found_idx:
             try:
-                name = current.indexes()[0].internalPointer().obj.options['name']
+                name = current.indexes()[0].internalPointer().obj.obj_options['name']
                 kind = current.indexes()[0].internalPointer().obj.kind
 
                 if kind == 'gerber':
@@ -213,7 +213,7 @@ class ToolSub(AppTool):
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
         if obj and obj.kind == 'gerber':
-            obj_name = obj.options['name']
+            obj_name = obj.obj_options['name']
             self.ui.target_gerber_combo.set_value(obj_name)
 
         # Show/Hide Advanced Options
@@ -538,7 +538,7 @@ class ToolSub(AppTool):
 
         # create the target_options obj
         # self.target_options = {}
-        # for k, v in self.target_geo_obj.options.items():
+        # for k, v in self.target_geo_obj.obj_options.items():
         #     if k != 'name':
         #         self.target_options[k] = v
 
@@ -650,11 +650,11 @@ class ToolSub(AppTool):
         geo_name = outname
         def obj_init(geo_obj, app_obj):
 
-            # geo_obj.options = self.target_options
+            # geo_obj.obj_options = self.target_options
             # create the target_options obj
-            for k, v in self.target_geo_obj.options.items():
-                geo_obj.options[k] = v
-            geo_obj.options['name'] = geo_name
+            for k, v in self.target_geo_obj.obj_options.items():
+                geo_obj.obj_options[k] = v
+            geo_obj.obj_options['name'] = geo_name
 
             if self.target_geo_obj.multigeo:
                 geo_obj.tools = deepcopy(self.new_tools)

@@ -203,7 +203,7 @@ class TclCommandCncjob(TclCommandSignaled):
         if 'dwelltime' in args:
             args["dwell"] = True
             if args['dwelltime'] is None:
-                args["dwelltime"] = float(obj.options["dwelltime"])
+                args["dwelltime"] = float(obj.obj_options["dwelltime"])
             else:
                 args["dwelltime"] = float(args['dwelltime'])
         else:

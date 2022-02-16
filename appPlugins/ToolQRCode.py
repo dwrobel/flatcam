@@ -176,7 +176,7 @@ class QRCode(AppTool):
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
         if obj and obj.kind == 'gerber':
-            obj_name = obj.options['name']
+            obj_name = obj.obj_options['name']
             self.ui.grb_object_combo.set_value(obj_name)
 
         # Show/Hide Advanced Options
@@ -383,10 +383,10 @@ class QRCode(AppTool):
 
         try:
             a, b, c, d = self.grb_object.bounds()
-            self.grb_object.options['xmin'] = a
-            self.grb_object.options['ymin'] = b
-            self.grb_object.options['xmax'] = c
-            self.grb_object.options['ymax'] = d
+            self.grb_object.obj_options['xmin'] = a
+            self.grb_object.obj_options['ymin'] = b
+            self.grb_object.obj_options['xmax'] = c
+            self.grb_object.obj_options['ymax'] = d
         except Exception as e:
             self.app.log.error("QRCode.make() bounds error --> %s" % str(e))
 
@@ -402,7 +402,7 @@ class QRCode(AppTool):
             self.grb_object.tools[new_apid]['geometry'].append(deepcopy(geo_elem))
 
         # update the source file with the new geometry:
-        self.grb_object.source_file = self.app.f_handlers.export_gerber(obj_name=self.grb_object.options['name'],
+        self.grb_object.source_file = self.app.f_handlers.export_gerber(obj_name=self.grb_object.obj_options['name'],
                                                                         filename=None,
                                                                         local_use=self.grb_object, use_thread=False)
 

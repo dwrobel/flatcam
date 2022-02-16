@@ -3702,7 +3702,7 @@ class AppGeoEditor(QtCore.QObject):
         # this will flag if the Editor "tools" are launched from key shortcuts (True) or from menu toolbar (False)
         self.launched_from_shortcuts = False
 
-        self.options = {
+        self.editor_options = {
             "global_gridx": 0.1,
             "global_gridy": 0.1,
             "global_snap_max": 0.05,
@@ -3710,15 +3710,15 @@ class AppGeoEditor(QtCore.QObject):
             "corner_snap": False,
             "grid_gap_link": True
         }
-        self.options.update(self.app.options)
+        self.editor_options.update(self.app.options)
 
-        for option in self.options:
+        for option in self.editor_options:
             if option in self.app.options:
-                self.options[option] = self.app.options[option]
+                self.editor_options[option] = self.app.options[option]
 
-        self.app.ui.grid_gap_x_entry.setText(str(self.options["global_gridx"]))
-        self.app.ui.grid_gap_y_entry.setText(str(self.options["global_gridy"]))
-        self.app.ui.snap_max_dist_entry.setText(str(self.options["global_snap_max"]))
+        self.app.ui.grid_gap_x_entry.setText(str(self.editor_options["global_gridx"]))
+        self.app.ui.grid_gap_y_entry.setText(str(self.editor_options["global_gridy"]))
+        self.app.ui.snap_max_dist_entry.setText(str(self.editor_options["global_snap_max"]))
         self.app.ui.grid_gap_link_cb.setChecked(True)
 
         self.rtree_index = rtindex.Index()
@@ -3840,7 +3840,7 @@ class AppGeoEditor(QtCore.QObject):
     def entry2option(self, opt, entry):
         """
 
-        :param opt:     A option from the self.options dictionary
+        :param opt:     A option from the self.editor_options dictionary
         :param entry:   A GUI element which text value is used
         :return:
         """
@@ -3848,7 +3848,7 @@ class AppGeoEditor(QtCore.QObject):
             text_value = entry.text()
             if ',' in text_value:
                 text_value = text_value.replace(',', '.')
-            self.options[opt] = float(text_value)
+            self.editor_options[opt] = float(text_value)
         except Exception as e:
             entry.set_value(self.app.defaults[opt])
             self.app.log.error("AppGeoEditor.__init__().entry2option() --> %s" % str(e))
@@ -4587,14 +4587,14 @@ class AppGeoEditor(QtCore.QObject):
         """
         It is used as a slot by the Snap buttons.
 
-        :param key:     Key in the self.options dictionary that is to be updated
+        :param key:     Key in the self.editor_options dictionary that is to be updated
         :return:        Boolean. Status of the checkbox that toggled the Editor Tool
         """
         cb_widget = self.sender()
         assert isinstance(cb_widget, QtGui.QAction), "Expected a QAction got %s" % type(cb_widget)
-        self.options[key] = cb_widget.isChecked()
+        self.editor_options[key] = cb_widget.isChecked()
 
-        return 1 if self.options[key] is True else 0
+        return 1 if self.editor_options[key] is True else 0
 
     def clear(self):
         """
@@ -4656,7 +4656,7 @@ class AppGeoEditor(QtCore.QObject):
         self.toolbar_tool_toggle("grid_snap")
 
         # make sure that the cursor shape is enabled/disabled, too
-        if self.options['grid_snap'] is True:
+        if self.editor_options['grid_snap'] is True:
             self.app.defaults['global_grid_snap'] = True
             self.app.inform[str, bool].emit(_("Grid Snap enabled."), False)
             self.app.app_cursor.enabled = True
@@ -5253,22 +5253,22 @@ class AppGeoEditor(QtCore.QObject):
         # # ## Object (corner?) snap
         # # ## No need for the objects, just the coordinates
         # # ## in the index.
-        if self.options["corner_snap"]:
+        if self.editor_options["corner_snap"]:
             try:
                 nearest_pt, shape = self.storage.nearest((x, y))
 
                 nearest_pt_distance = distance((x, y), nearest_pt)
-                if nearest_pt_distance <= float(self.options["global_snap_max"]):
+                if nearest_pt_distance <= float(self.editor_options["global_snap_max"]):
                     snap_distance = nearest_pt_distance
                     snap_x, snap_y = nearest_pt
             except (StopIteration, AssertionError):
                 pass
 
         # # ## Grid snap
-        if self.options["grid_snap"]:
-            if self.options["global_gridx"] != 0:
+        if self.editor_options["grid_snap"]:
+            if self.editor_options["global_gridx"] != 0:
                 try:
-                    snap_x_ = round(x / float(self.options["global_gridx"])) * float(self.options['global_gridx'])
+                    snap_x_ = round(x / float(self.editor_options["global_gridx"])) * float(self.editor_options['global_gridx'])
                 except TypeError:
                     snap_x_ = x
             else:
@@ -5277,17 +5277,17 @@ class AppGeoEditor(QtCore.QObject):
             # If the Grid_gap_linked on Grid Toolbar is checked then the snap distance on GridY entry will be ignored
             # and it will use the snap distance from GridX entry
             if self.app.ui.grid_gap_link_cb.isChecked():
-                if self.options["global_gridx"] != 0:
+                if self.editor_options["global_gridx"] != 0:
                     try:
-                        snap_y_ = round(y / float(self.options["global_gridx"])) * float(self.options['global_gridx'])
+                        snap_y_ = round(y / float(self.editor_options["global_gridx"])) * float(self.editor_options['global_gridx'])
                     except TypeError:
                         snap_y_ = y
                 else:
                     snap_y_ = y
             else:
-                if self.options["global_gridy"] != 0:
+                if self.editor_options["global_gridy"] != 0:
                     try:
-                        snap_y_ = round(y / float(self.options["global_gridy"])) * float(self.options['global_gridy'])
+                        snap_y_ = round(y / float(self.editor_options["global_gridy"])) * float(self.editor_options['global_gridy'])
                     except TypeError:
                         snap_y_ = y
                 else:
@@ -5389,7 +5389,7 @@ class AppGeoEditor(QtCore.QObject):
                     self.tooldia_entry.set_value(
                         float(fcgeometry.tools[self.multigeo_tool]['data']['tools_mill_tooldia']))
                 else:
-                    self.tooldia_entry.set_value(float(fcgeometry.options['tools_mill_tooldia']))
+                    self.tooldia_entry.set_value(float(fcgeometry.obj_options['tools_mill_tooldia']))
 
         self.app.worker_task.emit({'fcn': task_job, 'params': [self]})
 
@@ -5425,11 +5425,11 @@ class AppGeoEditor(QtCore.QObject):
                         fcgeometry.tools[self.multigeo_tool]['solid_geometry'].append(new_geo)
                     editor_obj.multigeo_tool = None
                 else:
-                    edited_dia = float(fcgeometry.options['tools_mill_tooldia'])
+                    edited_dia = float(fcgeometry.obj_options['tools_mill_tooldia'])
                     new_dia = self.tooldia_entry.get_value()
 
                     if new_dia != edited_dia:
-                        fcgeometry.options['tools_mill_tooldia'] = new_dia
+                        fcgeometry.obj_options['tools_mill_tooldia'] = new_dia
 
                 fcgeometry.solid_geometry = []
                 # for shape in self.shape_buffer:
@@ -5443,10 +5443,10 @@ class AppGeoEditor(QtCore.QObject):
 
                 try:
                     bounds = fcgeometry.bounds()
-                    fcgeometry.options['xmin'] = bounds[0]
-                    fcgeometry.options['ymin'] = bounds[1]
-                    fcgeometry.options['xmax'] = bounds[2]
-                    fcgeometry.options['ymax'] = bounds[3]
+                    fcgeometry.obj_options['xmin'] = bounds[0]
+                    fcgeometry.obj_options['ymin'] = bounds[1]
+                    fcgeometry.obj_options['xmax'] = bounds[2]
+                    fcgeometry.obj_options['ymax'] = bounds[3]
                 except Exception:
                     pass
 
@@ -5457,7 +5457,7 @@ class AppGeoEditor(QtCore.QObject):
 
     def update_options(self, obj):
         if self.paint_tooldia:
-            obj.options['tools_mill_tooldia'] = deepcopy(str(self.paint_tooldia))
+            obj.obj_options['tools_mill_tooldia'] = deepcopy(str(self.paint_tooldia))
             self.paint_tooldia = None
             return True
         else:

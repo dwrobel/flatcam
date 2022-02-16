@@ -50,9 +50,9 @@ class GerberObject(FlatCAMObj, Gerber):
 
         self.kind = "gerber"
 
-        # The 'name' is already in self.options from FlatCAMObj
+        # The 'name' is already in self.obj_options from FlatCAMObj
         # Automatically updates the UI
-        self.options.update({
+        self.obj_options.update({
             "plot": True,
             "multicolored": False,
             "solid": False,
@@ -444,7 +444,7 @@ class GerberObject(FlatCAMObj, Gerber):
         self.app.defaults.report_usage("gerber_on_generatenoncopper_button")
 
         self.read_form()
-        name = self.options["name"] + "_noncopper"
+        name = self.obj_options["name"] + "_noncopper"
 
         def geo_init(geo_obj, app_obj):
             assert geo_obj.kind == 'geometry', "Expected a Geometry object got %s" % type(geo_obj)
@@ -455,8 +455,8 @@ class GerberObject(FlatCAMObj, Gerber):
                 except Exception:
                     self.solid_geometry = unary_union(self.solid_geometry)
 
-            bounding_box = self.solid_geometry.envelope.buffer(float(self.options["noncoppermargin"]))
-            if not self.options["noncopperrounded"]:
+            bounding_box = self.solid_geometry.envelope.buffer(float(self.obj_options["noncoppermargin"]))
+            if not self.obj_options["noncopperrounded"]:
                 bounding_box = bounding_box.envelope
             non_copper = bounding_box.difference(self.solid_geometry)
             non_copper = flatten_shapely_geometry(non_copper)
@@ -471,7 +471,7 @@ class GerberObject(FlatCAMObj, Gerber):
     def on_generatebb_button_click(self, *args):
         self.app.defaults.report_usage("gerber_on_generatebb_button")
         self.read_form()
-        name = self.options["name"] + "_bbox"
+        name = self.obj_options["name"] + "_bbox"
 
         def geo_init(geo_obj, app_obj):
             assert geo_obj.kind == 'geometry', "Expected a Geometry object got %s" % type(geo_obj)
@@ -482,7 +482,7 @@ class GerberObject(FlatCAMObj, Gerber):
                 except Exception:
                     self.solid_geometry = unary_union(self.solid_geometry)
 
-            distance = float(self.options["bboxmargin"])
+            distance = float(self.obj_options["bboxmargin"])
 
             # Bounding box with rounded corners
             if distance >= 0:
@@ -507,7 +507,7 @@ class GerberObject(FlatCAMObj, Gerber):
                     bounding_box = self.solid_geometry.envelope.buffer(abs(distance*2)).interiors
                 bounding_box = unary_union(bounding_box).buffer(-distance).exterior
 
-            if not self.options["bboxrounded"]:  # Remove rounded corners
+            if not self.obj_options["bboxrounded"]:  # Remove rounded corners
                 bounding_box = bounding_box.envelope
 
             if bounding_box is None or bounding_box.is_empty:
@@ -562,7 +562,7 @@ class GerberObject(FlatCAMObj, Gerber):
         else:
             iso_t = iso_type
 
-        base_name = self.options["name"]
+        base_name = self.obj_options["name"]
 
         if combine:
             if outname is None:
@@ -577,7 +577,7 @@ class GerberObject(FlatCAMObj, Gerber):
 
             def iso_init(geo_obj, app_obj):
                 # Propagate options
-                geo_obj.options["tools_mill_tooldia"] = str(dia)
+                geo_obj.obj_options["tools_mill_tooldia"] = str(dia)
                 geo_obj.tool_type = self.app.defaults["tools_iso_tool_shape"]
                 geo_obj.multigeo = True
 
@@ -585,7 +585,7 @@ class GerberObject(FlatCAMObj, Gerber):
 
                 # store here the default data for Geometry Data
                 default_data = {}
-                for opt_key, opt_val in app_obj.options.items():
+                for opt_key, opt_val in app_obj.obj_options.items():
                     if opt_key.find('geometry' + "_") == 0:
                         oname = opt_key[len('geometry') + 1:]
                         default_data[oname] = self.app.options[opt_key]
@@ -637,7 +637,7 @@ class GerberObject(FlatCAMObj, Gerber):
                 if empty_cnt == len(w_geo):
                     raise ValidationError("Empty Geometry", None)
                 elif plot:
-                    msg = '[success] %s: %s' % (_("Isolation geometry created"), geo_obj.options["name"])
+                    msg = '[success] %s: %s' % (_("Isolation geometry created"), geo_obj.obj_options["name"])
                     app_obj.inform.emit(msg)
 
                 # ############################################################
@@ -675,7 +675,7 @@ class GerberObject(FlatCAMObj, Gerber):
 
                 def iso_init(geo_obj, app_obj):
                     # Propagate options
-                    geo_obj.options["tools_mill_tooldia"] = str(dia)
+                    geo_obj.obj_options["tools_mill_tooldia"] = str(dia)
                     geo_obj.tool_type = self.app.defaults["tools_iso_tool_shape"]
                     geo_obj.multigeo = True
 
@@ -692,7 +692,7 @@ class GerberObject(FlatCAMObj, Gerber):
 
                     # store here the default data for Geometry Data
                     default_data = {}
-                    for opt_key, opt_val in app_obj.options.items():
+                    for opt_key, opt_val in app_obj.obj_options.items():
                         if opt_key.find('geometry' + "_") == 0:
                             oname = opt_key[len('geometry') + 1:]
                             default_data[oname] = self.app.options[opt_key]
@@ -728,7 +728,7 @@ class GerberObject(FlatCAMObj, Gerber):
                     if empty_cnt == len(w_geo):
                         raise ValidationError("Empty Geometry", None)
                     elif plot:
-                        msg = '[success] %s: %s' % (_("Isolation geometry created"), geo_obj.options["name"])
+                        msg = '[success] %s: %s' % (_("Isolation geometry created"), geo_obj.obj_options["name"])
                         app_obj.inform.emit(msg)
 
                     # ############################################################
@@ -786,7 +786,7 @@ class GerberObject(FlatCAMObj, Gerber):
         """
 
         if outname is None:
-            follow_name = self.options["name"] + "_follow"
+            follow_name = self.obj_options["name"] + "_follow"
         else:
             follow_name = outname
 
@@ -805,14 +805,14 @@ class GerberObject(FlatCAMObj, Gerber):
 
             # Propagate options
             new_obj.multigeo = True
-            # new_obj.options["tools_mill_tooldia"] = str(self.app.defaults["tools_iso_tooldia"])
+            # new_obj.obj_options["tools_mill_tooldia"] = str(self.app.defaults["tools_iso_tooldia"])
             new_obj.solid_geometry = deepcopy(self.follow_geometry)
 
-            new_obj.options["tools_mill_tooldia"] = app_obj.defaults["tools_mill_tooldia"]
+            new_obj.obj_options["tools_mill_tooldia"] = app_obj.defaults["tools_mill_tooldia"]
 
             # store here the default data for Geometry Data
             default_data = {}
-            for opt_key, opt_val in app_obj.options.items():
+            for opt_key, opt_val in app_obj.obj_options.items():
                 if opt_key.find('geometry' + "_") == 0:
                     oname = opt_key[len('geometry') + 1:]
                     default_data[oname] = self.app.options[opt_key]
@@ -903,8 +903,8 @@ class GerberObject(FlatCAMObj, Gerber):
 
         Gerber.convert_units(self, units)
 
-        # self.options['isotooldia'] = float(self.options['isotooldia']) * factor
-        # self.options['bboxmargin'] = float(self.options['bboxmargin']) * factor
+        # self.obj_options['isotooldia'] = float(self.obj_options['isotooldia']) * factor
+        # self.obj_options['bboxmargin'] = float(self.obj_options['bboxmargin']) * factor
 
     def plot(self, kind=None, **kwargs):
         """
@@ -931,7 +931,7 @@ class GerberObject(FlatCAMObj, Gerber):
             face_color = self.fill_color
 
         if 'visible' not in kwargs:
-            visible = self.options['plot']
+            visible = self.obj_options['plot']
         else:
             visible = kwargs['visible']
 
@@ -966,11 +966,11 @@ class GerberObject(FlatCAMObj, Gerber):
             plot_geometry = geometry.geoms if isinstance(geometry, (MultiPolygon, MultiLineString)) else geometry
             try:
                 for g in plot_geometry:
-                    if self.options["solid"]:
+                    if self.obj_options["solid"]:
                         used_color = color
-                        used_face_color = random_color() if self.options['multicolored'] else face_color
+                        used_face_color = random_color() if self.obj_options['multicolored'] else face_color
                     else:
-                        used_color = random_color() if self.options['multicolored'] else 'black'
+                        used_color = random_color() if self.obj_options['multicolored'] else 'black'
                         used_face_color = None
 
                     if self.app.defaults["gerber_plot_line_enable"] is False:
@@ -981,11 +981,11 @@ class GerberObject(FlatCAMObj, Gerber):
                         g = LineString(g)
                         self.add_shape(shape=g, color=used_color, face_color=used_face_color, visible=visible)
             except TypeError:
-                if self.options["solid"]:
+                if self.obj_options["solid"]:
                     used_color = color
-                    used_face_color = random_color() if self.options['multicolored'] else face_color
+                    used_face_color = random_color() if self.obj_options['multicolored'] else face_color
                 else:
-                    used_color = random_color() if self.options['multicolored'] else 'black'
+                    used_color = random_color() if self.obj_options['multicolored'] else 'black'
                     used_face_color = None
 
                 if self.app.defaults["gerber_plot_line_disable"] is True:
@@ -1707,10 +1707,10 @@ class GerberObject(FlatCAMObj, Gerber):
             if type(grb) is list:
                 GerberObject.merge(grb_list=grb, grb_final=grb_final)
             else:   # If not list, just append
-                for option in grb.options:
+                for option in grb.obj_options:
                     if option != 'name':
                         try:
-                            grb_final.options[option] = grb.options[option]
+                            grb_final.obj_options[option] = grb.obj_options[option]
                         except KeyError:
                             self.app.log.warning("Failed to copy option.", option)
 
@@ -1758,12 +1758,12 @@ class GerberObject(FlatCAMObj, Gerber):
         Gerber.skew(self, angle_x=angle_x, angle_y=angle_y, point=point)
         self.replotApertures.emit()
 
-    def buffer(self, distance, join=2, factor=None):
-        Gerber.buffer(self, distance=distance, join=join, factor=factor)
+    def buffer(self, distance, join=2, factor=None, only_exterior=False):
+        Gerber.buffer(self, distance=distance, join=join, factor=factor, only_exterior=only_exterior)
         self.replotApertures.emit()
 
     def serialize(self):
         return {
-            "options": self.options,
+            "obj_options": self.obj_options,
             "kind": self.kind
         }

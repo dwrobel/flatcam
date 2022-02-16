@@ -50,5 +50,5 @@ class TclCommandOptions(TclCommandSignaled):
 
         name = args['name']
 
-        ops = self.app.collection.get_by_name(str(name)).options
+        ops = self.app.collection.get_by_name(str(name)).obj_options
         return '\n'.join(["%s: %s" % (o, ops[o]) for o in ops])

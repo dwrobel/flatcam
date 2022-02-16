@@ -68,7 +68,7 @@ class TclCommandPlotObjects(TclCommand):
             objs = []
             for name in names:
                 obj = self.app.collection.get_by_name(name)
-                obj.options["plot"] = True if plot_status is True else False
+                obj.obj_options["plot"] = True if plot_status is True else False
                 objs.append(obj)
 
             for obj in objs:

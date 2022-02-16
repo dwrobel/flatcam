@@ -121,7 +121,7 @@ class CutOut(AppTool):
         if found_idx:
             try:
                 found_obj = current.indexes()[0].internalPointer().obj
-                name = found_obj.options['name']
+                name = found_obj.obj_options['name']
                 kind = found_obj.kind
 
                 if kind in ['gerber', 'geometry']:
@@ -241,7 +241,7 @@ class CutOut(AppTool):
             else:
                 self.on_type_obj_changed(val='geo')
 
-            self.ui.obj_combo.set_value(active.options['name'])
+            self.ui.obj_combo.set_value(active.obj_options['name'])
         else:
             kind = 'gerber'
             self.ui.type_obj_radio.set_value('grb')
@@ -788,11 +788,11 @@ class CutOut(AppTool):
             return proc_geometry, rest_geometry
 
         with self.app.proc_container.new("Generating Cutout ..."):
-            formatted_name = cutout_obj.options["name"].rpartition('.')[0]
+            formatted_name = cutout_obj.obj_options["name"].rpartition('.')[0]
             if formatted_name != '':
                 outname = "%s_cutout" % formatted_name
             else:
-                outname = "%s_cutout" % cutout_obj.options["name"]
+                outname = "%s_cutout" % cutout_obj.obj_options["name"]
 
             self.app.collection.promise(outname)
 
@@ -972,15 +972,15 @@ class CutOut(AppTool):
                         geo_obj.tools[99]['data']['override_color'] = "#29a3a3fa"
 
                     xmin, ymin, xmax, ymax = CutOut.recursive_bounds(geo_obj.solid_geometry)
-                    geo_obj.options['xmin'] = xmin
-                    geo_obj.options['ymin'] = ymin
-                    geo_obj.options['xmax'] = xmax
-                    geo_obj.options['ymax'] = ymax
+                    geo_obj.obj_options['xmin'] = xmin
+                    geo_obj.obj_options['ymin'] = ymin
+                    geo_obj.obj_options['xmax'] = xmax
+                    geo_obj.obj_options['ymax'] = ymax
 
-                    geo_obj.options['tools_mill_tooldia'] = str(cut_dia)
-                    geo_obj.options['tools_mill_cutz'] = self.ui.cutz_entry.get_value()
-                    geo_obj.options['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
-                    geo_obj.options['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
+                    geo_obj.obj_options['tools_mill_tooldia'] = str(cut_dia)
+                    geo_obj.obj_options['tools_mill_cutz'] = self.ui.cutz_entry.get_value()
+                    geo_obj.obj_options['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
+                    geo_obj.obj_options['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
 
                 def excellon_init(exc_obj, app_o):
                     if not holes:
@@ -997,15 +997,15 @@ class CutOut(AppTool):
                     exc_obj.multigeo = True
                     exc_obj.tools = tools
                     exc_obj.create_geometry()
-                    exc_obj.source_file = app_o.f_handlers.export_excellon(obj_name=exc_obj.options['name'],
+                    exc_obj.source_file = app_o.f_handlers.export_excellon(obj_name=exc_obj.obj_options['name'],
                                                                            local_use=exc_obj, filename=None,
                                                                            use_thread=False)
                     # calculate the bounds
                     xmin, ymin, xmax, ymax = CutOut.recursive_bounds(exc_obj.solid_geometry)
-                    exc_obj.options['xmin'] = xmin
-                    exc_obj.options['ymin'] = ymin
-                    exc_obj.options['xmax'] = xmax
-                    exc_obj.options['ymax'] = ymax
+                    exc_obj.obj_options['xmin'] = xmin
+                    exc_obj.obj_options['ymin'] = ymin
+                    exc_obj.obj_options['xmax'] = xmax
+                    exc_obj.obj_options['ymax'] = ymax
 
                 try:
                     if self.ui.gaptype_combo.get_value() == 2:  # "mouse bytes"
@@ -1078,11 +1078,11 @@ class CutOut(AppTool):
         thin_entry_val = self.ui.thin_depth_entry.get_value()
         has_mouse_bites_val = True if self.ui.gaptype_combo.get_value() == 2 else False  # "mouse bytes"
 
-        formatted_name = cutout_obj.options["name"].rpartition('.')[0]
-        outname = "%s_cutout" % formatted_name if formatted_name != '' else "%s_cutout" % cutout_obj.options["name"]
+        formatted_name = cutout_obj.obj_options["name"].rpartition('.')[0]
+        outname = "%s_cutout" % formatted_name if formatted_name != '' else "%s_cutout" % cutout_obj.obj_options["name"]
         self.app.collection.promise(outname)
 
-        outname_exc = cutout_obj.options["name"] + "_mouse_bites"
+        outname_exc = cutout_obj.obj_options["name"] + "_mouse_bites"
         if has_mouse_bites_val is True:
             self.app.collection.promise(outname_exc)
 
@@ -1281,15 +1281,15 @@ class CutOut(AppTool):
                         geo_obj.tools[99]['data']['override_color'] = "#29a3a3fa"
 
                     xmin, ymin, xmax, ymax = CutOut.recursive_bounds(geo_obj.solid_geometry)
-                    geo_obj.options['xmin'] = xmin
-                    geo_obj.options['ymin'] = ymin
-                    geo_obj.options['xmax'] = xmax
-                    geo_obj.options['ymax'] = ymax
+                    geo_obj.obj_options['xmin'] = xmin
+                    geo_obj.obj_options['ymin'] = ymin
+                    geo_obj.obj_options['xmax'] = xmax
+                    geo_obj.obj_options['ymax'] = ymax
 
-                    geo_obj.options['tools_mill_tooldia'] = str(cut_dia)
-                    geo_obj.options['tools_mill_cutz'] = self_c.ui.cutz_entry.get_value()
-                    geo_obj.options['tools_mill_multidepth'] = self_c.ui.mpass_cb.get_value()
-                    geo_obj.options['tools_mill_depthperpass'] = self_c.ui.maxdepth_entry.get_value()
+                    geo_obj.obj_options['tools_mill_tooldia'] = str(cut_dia)
+                    geo_obj.obj_options['tools_mill_cutz'] = self_c.ui.cutz_entry.get_value()
+                    geo_obj.obj_options['tools_mill_multidepth'] = self_c.ui.mpass_cb.get_value()
+                    geo_obj.obj_options['tools_mill_depthperpass'] = self_c.ui.maxdepth_entry.get_value()
 
                 def excellon_init(exc_obj, app_o):
                     if not holes:
@@ -1305,16 +1305,16 @@ class CutOut(AppTool):
 
                     exc_obj.tools = tools
                     exc_obj.create_geometry()
-                    exc_obj.source_file = app_o.f_handlers.export_excellon(obj_name=exc_obj.options['name'],
+                    exc_obj.source_file = app_o.f_handlers.export_excellon(obj_name=exc_obj.obj_options['name'],
                                                                            local_use=exc_obj,
                                                                            filename=None,
                                                                            use_thread=False)
                     # calculate the bounds
                     e_xmin, e_ymin, e_xmax, e_ymax = CutOut.recursive_bounds(exc_obj.solid_geometry)
-                    exc_obj.options['xmin'] = e_xmin
-                    exc_obj.options['ymin'] = e_ymin
-                    exc_obj.options['xmax'] = e_xmax
-                    exc_obj.options['ymax'] = e_ymax
+                    exc_obj.obj_options['xmin'] = e_xmin
+                    exc_obj.obj_options['ymin'] = e_ymin
+                    exc_obj.obj_options['xmax'] = e_xmax
+                    exc_obj.obj_options['ymax'] = e_ymax
 
                 try:
                     if self_c.ui.gaptype_combo.get_value() == 2:  # "mouse bytes"
@@ -1488,9 +1488,9 @@ class CutOut(AppTool):
             }
         }
 
-        formatted_name = obj.options['name'].rpartition('.')[0]
+        formatted_name = obj.obj_options['name'].rpartition('.')[0]
         if formatted_name == '':
-            formatted_name = obj.options['name']
+            formatted_name = obj.obj_options['name']
         outname = '%s_drillcut' % formatted_name
 
         def obj_init(obj_inst, app_inst):
@@ -1627,7 +1627,7 @@ class CutOut(AppTool):
             self.man_cutout_obj.multigeo = True
 
             self.man_cutout_obj.tools[1]['solid_geometry'] = new_solid_geometry
-            self.man_cutout_obj.tools[1]['data']['name'] = self.man_cutout_obj.options['name'] + '_cutout'
+            self.man_cutout_obj.tools[1]['data']['name'] = self.man_cutout_obj.obj_options['name'] + '_cutout'
             self.man_cutout_obj.tools[1]['data']['tools_mill_cutz'] = self.ui.cutz_entry.get_value()
             self.man_cutout_obj.tools[1]['data']['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
             self.man_cutout_obj.tools[1]['data']['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
@@ -1644,7 +1644,7 @@ class CutOut(AppTool):
                 self.man_cutout_obj.tools[99]['tooldia'] = str(dia)
                 self.man_cutout_obj.tools[99]['solid_geometry'] = [gaps_solid_geo]
 
-                self.man_cutout_obj.tools[99]['data']['name'] = self.man_cutout_obj.options['name'] + '_cutout'
+                self.man_cutout_obj.tools[99]['data']['name'] = self.man_cutout_obj.obj_options['name'] + '_cutout'
                 self.man_cutout_obj.tools[99]['data']['tools_mill_cutz'] = self.ui.thin_depth_entry.get_value()
                 self.man_cutout_obj.tools[99]['data']['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
                 self.man_cutout_obj.tools[99]['data']['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
@@ -1758,7 +1758,7 @@ class CutOut(AppTool):
             geo_obj.tools[1]['data']['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
             geo_obj.tools[1]['data']['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
 
-        outname = cutout_obj.options["name"] + "_cutout"
+        outname = cutout_obj.obj_options["name"] + "_cutout"
         self.app.app_obj.new_object('geometry', outname, geo_init, autoselected=False)
 
     def cutting_geo(self, pos):
@@ -1844,7 +1844,7 @@ class CutOut(AppTool):
             # mouse bytes
             if self.ui.gaptype_combo.get_value() == 2:  # "mouse bytes"
                 with self.app.proc_container.new("Generating Excellon ..."):
-                    outname_exc = self.man_cutout_obj.options["name"] + "_mouse_bites"
+                    outname_exc = self.man_cutout_obj.obj_options["name"] + "_mouse_bites"
                     self.app.collection.promise(outname_exc)
 
                     def job_thread(app_obj):
@@ -1873,16 +1873,16 @@ class CutOut(AppTool):
 
                             exc_obj.tools = tools
                             exc_obj.create_geometry()
-                            exc_obj.source_file = app_o.f_handlers.export_excellon(obj_name=exc_obj.options['name'],
+                            exc_obj.source_file = app_o.f_handlers.export_excellon(obj_name=exc_obj.obj_options['name'],
                                                                                    local_use=exc_obj,
                                                                                    filename=None,
                                                                                    use_thread=False)
                             # calculate the bounds
                             xmin, ymin, xmax, ymax = CutOut.recursive_bounds(exc_obj.solid_geometry)
-                            exc_obj.options['xmin'] = xmin
-                            exc_obj.options['ymin'] = ymin
-                            exc_obj.options['xmax'] = xmax
-                            exc_obj.options['ymax'] = ymax
+                            exc_obj.obj_options['xmin'] = xmin
+                            exc_obj.obj_options['ymin'] = ymin
+                            exc_obj.obj_options['xmax'] = xmax
+                            exc_obj.obj_options['ymax'] = ymax
 
                         ret = app_obj.app_obj.new_object('excellon', outname_exc, excellon_init, autoselected=False)
                         if ret == 'fail':

@@ -153,7 +153,7 @@ class ToolFollow(AppTool, Gerber):
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
         if obj and obj.kind == 'gerber':
-            obj_name = obj.options['name']
+            obj_name = obj.obj_options['name']
             self.ui.object_combo.set_value(obj_name)
 
         # Show/Hide Advanced Options
@@ -321,7 +321,7 @@ class ToolFollow(AppTool, Gerber):
             new_obj.multigeo = True
 
             # Propagate options
-            new_obj.options["tools_mill_tooldia"] = app_obj.defaults["tools_mill_tooldia"]
+            new_obj.obj_options["tools_mill_tooldia"] = app_obj.defaults["tools_mill_tooldia"]
             new_obj.solid_geometry = follow_geo
             new_obj.tools = {
                 1: {
@@ -374,7 +374,7 @@ class ToolFollow(AppTool, Gerber):
                     new_data[opt_key] = app_obj.options[opt_key]
 
             # Propagate options
-            new_obj.options["tools_mill_tooldia"] = app_obj.defaults["tools_mill_tooldia"]
+            new_obj.obj_options["tools_mill_tooldia"] = app_obj.defaults["tools_mill_tooldia"]
             new_data["tools_mill_tooldia"] = app_obj.defaults["tools_mill_tooldia"]
 
             target_geo = unary_union(followed_obj.follow_geometry)

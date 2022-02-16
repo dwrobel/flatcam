@@ -304,7 +304,7 @@ class ToolIsolation(AppTool, Gerber):
         try:
             selected_obj = self.app.collection.get_active()
             if selected_obj is not None and selected_obj.kind == 'gerber':
-                current_name = selected_obj.options['name']
+                current_name = selected_obj.obj_options['name']
                 self.ui.object_combo.set_value(current_name)
             if selected_obj is None and [self.ui.object_combo.itemText(i) for i in range(self.ui.object_combo.count())]:
                 self.ui.object_combo.setCurrentIndex(0)
@@ -355,7 +355,7 @@ class ToolIsolation(AppTool, Gerber):
 
         # loaded_obj = self.app.collection.get_by_name(self.ui.object_combo.get_value())
         # if loaded_obj:
-        #     outname = loaded_obj.options['name']
+        #     outname = loaded_obj.obj_options['name']
         # else:
         #     outname = ''
 
@@ -1808,7 +1808,7 @@ class ToolIsolation(AppTool, Gerber):
                     if negative_dia:
                         iso_offset = -iso_offset
 
-                    outname = "%s_%.*f" % (isolated_obj.options["name"], self.decimals, float(tool_dia))
+                    outname = "%s_%.*f" % (isolated_obj.obj_options["name"], self.decimals, float(tool_dia))
 
                     if passes > 1:
                         iso_name = outname + "_iso" + str(i + 1)
@@ -1884,7 +1884,7 @@ class ToolIsolation(AppTool, Gerber):
 
                     def iso_init(geo_obj, fc_obj):
                         # Propagate options
-                        geo_obj.options["tools_mill_tooldia"] = str(tool_dia)
+                        geo_obj.obj_options["tools_mill_tooldia"] = str(tool_dia)
                         tool_data["tools_mill_tooldia"] = float(tool_dia)
 
                         geo_obj.solid_geometry = deepcopy(new_solid_geo)
@@ -1919,11 +1919,11 @@ class ToolIsolation(AppTool, Gerber):
                                 empty_cnt += 1
 
                         if empty_cnt == len(geo_obj.solid_geometry):
-                            msg = '[ERROR_NOTCL] %s: %s' % (_("Empty Geometry in"), geo_obj.options["name"])
+                            msg = '[ERROR_NOTCL] %s: %s' % (_("Empty Geometry in"), geo_obj.obj_options["name"])
                             fc_obj.inform.emit(msg)
                             return 'fail'
                         else:
-                            msg = '[success] %s: %s' % (_("Isolation geometry created"), geo_obj.options["name"])
+                            msg = '[success] %s: %s' % (_("Isolation geometry created"), geo_obj.obj_options["name"])
                             fc_obj.inform.emit(msg)
                         geo_obj.multigeo = True
 
@@ -1964,7 +1964,7 @@ class ToolIsolation(AppTool, Gerber):
 
         total_solid_geometry = []
 
-        iso_name = iso_obj.options["name"] + '_iso_rest'
+        iso_name = iso_obj.obj_options["name"] + '_iso_rest'
         work_geo = iso_obj.solid_geometry if iso2geo is None else iso2geo
 
         # sorted_tools = []
@@ -2024,7 +2024,7 @@ class ToolIsolation(AppTool, Gerber):
                     forced_rest = self.ui.forced_rest_iso_cb.get_value()
                     iso_except = self.ui.except_cb.get_value()
 
-                    outname = "%s_%.*f" % (iso_obj.options["name"], self.decimals, float(tool_dia))
+                    outname = "%s_%.*f" % (iso_obj.obj_options["name"], self.decimals, float(tool_dia))
                     internal_name = outname + "_iso"
                     if iso_t == 0:
                         internal_name = outname + "_ext_iso"
@@ -2081,7 +2081,7 @@ class ToolIsolation(AppTool, Gerber):
                 tools_storage.pop(tool, None)
 
         def iso_init(geo_obj, app_obj):
-            geo_obj.options["tools_mill_tooldia"] = str(tool_dia)
+            geo_obj.obj_options["tools_mill_tooldia"] = str(tool_dia)
 
             geo_obj.tools = dict(tools_storage)
             geo_obj.solid_geometry = total_solid_geometry
@@ -2116,10 +2116,10 @@ class ToolIsolation(AppTool, Gerber):
                     empty_cnt += 1
 
             if empty_cnt == len(geo_obj.solid_geometry):
-                app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Empty Geometry in"), geo_obj.options["name"]))
+                app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Empty Geometry in"), geo_obj.obj_options["name"]))
                 return 'fail'
             else:
-                app_obj.inform.emit('[success] %s: %s' % (_("Isolation geometry created"), geo_obj.options["name"]))
+                app_obj.inform.emit('[success] %s: %s' % (_("Isolation geometry created"), geo_obj.obj_options["name"]))
 
         self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
 
@@ -2168,7 +2168,7 @@ class ToolIsolation(AppTool, Gerber):
 
         total_solid_geometry = []
 
-        iso_name = iso_obj.options["name"] + '_iso_combined'
+        iso_name = iso_obj.obj_options["name"] + '_iso_combined'
         geometry = iso2geo
         if prog_plot is None:
             prog_plot = self.app.defaults["tools_iso_plotting"]
@@ -2196,7 +2196,7 @@ class ToolIsolation(AppTool, Gerber):
 
             milling_type = tool_data['tools_iso_milling_type']
 
-            outname = "%s_%.*f" % (iso_obj.options["name"], self.decimals, float(tool_dia))
+            outname = "%s_%.*f" % (iso_obj.obj_options["name"], self.decimals, float(tool_dia))
 
             internal_name = outname + "_iso"
             if iso_t == 0:
@@ -2292,7 +2292,7 @@ class ToolIsolation(AppTool, Gerber):
                 tools_storage.pop(tool, None)
 
         def iso_init(geo_obj, app_obj):
-            geo_obj.options["tools_mill_tooldia"] = str(tool_dia)
+            geo_obj.obj_options["tools_mill_tooldia"] = str(tool_dia)
 
             geo_obj.tools = dict(tools_storage)
             geo_obj.solid_geometry = total_solid_geometry
@@ -2324,10 +2324,10 @@ class ToolIsolation(AppTool, Gerber):
                     empty_cnt += 1
 
             if empty_cnt == len(geo_obj.solid_geometry):
-                app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Empty Geometry in"), geo_obj.options["name"]))
+                app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Empty Geometry in"), geo_obj.obj_options["name"]))
                 return 'fail'
             else:
-                app_obj.inform.emit('[success] %s: %s' % (_("Isolation geometry created"), geo_obj.options["name"]))
+                app_obj.inform.emit('[success] %s: %s' % (_("Isolation geometry created"), geo_obj.obj_options["name"]))
 
         self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
 

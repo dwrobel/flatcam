@@ -138,7 +138,7 @@ class Panelize(AppTool):
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
         if obj:
-            obj_name = obj.options['name']
+            obj_name = obj.obj_options['name']
             if obj.kind == 'gerber':
                 # run once to make sure that the obj_type attribute is updated in the FCComboBox
                 self.ui.type_obj_combo.set_value(_("Gerber"))
@@ -250,7 +250,7 @@ class Panelize(AppTool):
 
         if found_idx:
             try:
-                name = current.indexes()[0].internalPointer().obj.options['name']
+                name = current.indexes()[0].internalPointer().obj.obj_options['name']
                 kind = current.indexes()[0].internalPointer().obj.kind
 
                 if kind in ['gerber', 'excellon', 'geometry']:
@@ -418,10 +418,10 @@ class Panelize(AppTool):
                     obj_fin.tools = copied_tools
                     obj_fin.solid_geometry = []
 
-                    for option in panel_source_obj.options:
+                    for option in panel_source_obj.obj_options:
                         if option != 'name':
                             try:
-                                obj_fin.options[option] = panel_source_obj.options[option]
+                                obj_fin.obj_options[option] = panel_source_obj.obj_options[option]
                             except KeyError:
                                 app_obj.log.warning("Failed to copy option. %s" % str(option))
 

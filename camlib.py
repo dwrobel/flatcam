@@ -611,10 +611,10 @@ class Geometry(object):
         try:
             xmin, ymin, xmax, ymax = self.bounds()
 
-            self.options['xmin'] = xmin
-            self.options['ymin'] = ymin
-            self.options['xmax'] = xmax
-            self.options['ymax'] = ymax
+            self.obj_options['xmin'] = xmin
+            self.obj_options['ymin'] = ymin
+            self.obj_options['xmax'] = xmax
+            self.obj_options['ymax'] = ymax
         except Exception as e:
             self.app.log.error("Failed. The object has no bounds properties. %s" % str(e))
 
@@ -652,10 +652,10 @@ class Geometry(object):
         try:
             xmin, ymin, xmax, ymax = self.bounds()
 
-            self.options['xmin'] = xmin
-            self.options['ymin'] = ymin
-            self.options['xmax'] = xmax
-            self.options['ymax'] = ymax
+            self.obj_options['xmin'] = xmin
+            self.obj_options['ymin'] = ymin
+            self.obj_options['xmax'] = xmax
+            self.obj_options['ymax'] = ymax
         except Exception as e:
             self.app.log.error("Failed. The object has no bounds properties. %s" % str(e))
 
@@ -693,10 +693,10 @@ class Geometry(object):
         try:
             xmin, ymin, xmax, ymax = self.bounds()
 
-            self.options['xmin'] = xmin
-            self.options['ymin'] = ymin
-            self.options['xmax'] = xmax
-            self.options['ymax'] = ymax
+            self.obj_options['xmin'] = xmin
+            self.obj_options['ymin'] = ymin
+            self.obj_options['xmax'] = xmax
+            self.obj_options['ymax'] = ymax
         except Exception as e:
             self.app.log.error("Failed. The object has no bounds properties. %s" % str(e))
 
@@ -1298,7 +1298,7 @@ class Geometry(object):
         tooldia = float(self.app.defaults["tools_mill_tooldia"])
         tooldia = float('%.*f' % (self.decimals, tooldia))
 
-        new_data = {k: v for k, v in self.options.items()}
+        new_data = {k: v for k, v in self.obj_options.items()}
 
         self.tools.update({
             1: {
@@ -1312,7 +1312,7 @@ class Geometry(object):
             }
         })
 
-        self.tools[1]['data']['name'] = self.options['name']
+        self.tools[1]['data']['name'] = self.obj_options['name']
 
     def import_dxf_as_geo(self, filename, units='MM'):
         """
@@ -1367,7 +1367,7 @@ class Geometry(object):
         tooldia = float(self.app.defaults["tools_mill_tooldia"])
         tooldia = float('%.*f' % (self.decimals, tooldia))
 
-        new_data = {k: v for k, v in self.options.items()}
+        new_data = {k: v for k, v in self.obj_options.items()}
 
         self.tools.update({
             1: {
@@ -1381,7 +1381,7 @@ class Geometry(object):
             }
         })
 
-        self.tools[1]['data']['name'] = self.options['name']
+        self.tools[1]['data']['name'] = self.obj_options['name']
 
         # commented until this function is ready
         # geos_text = getdxftext(dxf, object_type, units=units)
@@ -3746,7 +3746,7 @@ class CNCjob(Geometry):
         elif self.z_cut == 0 and 'laser' not in self.pp_geometry_name:
             self.app.inform.emit('[WARNING] %s: %s' %
                                  (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
-                                  self.options['name']))
+                                  self.obj_options['name']))
             return 'fail'
 
         if self.z_move is None:
@@ -3764,7 +3764,7 @@ class CNCjob(Geometry):
         elif self.z_move == 0:
             self.app.inform.emit('[WARNING] %s: %s' %
                                  (_("The Z Travel parameter is zero. This is dangerous, skipping file"),
-                                  self.options['name']))
+                                  self.obj_options['name']))
             return 'fail'
 
         # made sure that depth_per_cut is no more then the z_cut
@@ -4180,7 +4180,7 @@ class CNCjob(Geometry):
                         z_off = 0
 
                     default_data = {}
-                    for k, v in list(self.options.items()):
+                    for k, v in list(self.obj_options.items()):
                         default_data[k] = deepcopy(v)
 
                     # it[1] is the tool diameter
@@ -4339,7 +4339,7 @@ class CNCjob(Geometry):
                                              (_(
                                                  "The Cut Z parameter is zero. There will be no cut, "
                                                  "skipping file"),
-                                              exobj.options['name']))
+                                              exobj.obj_options['name']))
                         return 'fail'
 
                     old_zcut = deepcopy(self.z_cut)
@@ -4598,7 +4598,7 @@ class CNCjob(Geometry):
                                          (_(
                                              "The Cut Z parameter is zero. There will be no cut, "
                                              "skipping file"),
-                                          exobj.options['name']))
+                                          exobj.obj_options['name']))
                     return 'fail'
 
                 old_zcut = deepcopy(self.z_cut)
@@ -4853,7 +4853,7 @@ class CNCjob(Geometry):
         #                                              (_(
         #                                                  "The Cut Z parameter is zero. There will be no cut, "
         #                                                  "skipping file"),
-        #                                               exobj.options['name']))
+        #                                               exobj.obj_options['name']))
         #                         return 'fail'
         #
         #                 old_zcut = deepcopy(self.z_cut)
@@ -5056,7 +5056,7 @@ class CNCjob(Geometry):
         #                                              (_(
         #                                                  "The Cut Z parameter is zero. There will be no cut, "
         #                                                  "skipping file"),
-        #                                               exobj.options['name']))
+        #                                               exobj.obj_options['name']))
         #                         return 'fail'
         #
         #                 old_zcut = deepcopy(self.z_cut)
@@ -5262,7 +5262,7 @@ class CNCjob(Geometry):
         #                                              (_(
         #                                                  "The Cut Z parameter is zero. There will be no cut, "
         #                                                  "skipping file"),
-        #                                               exobj.options['name']))
+        #                                               exobj.obj_options['name']))
         #                         return 'fail'
         #
         #                 old_zcut = deepcopy(self.z_cut)
@@ -5608,7 +5608,7 @@ class CNCjob(Geometry):
         elif self.z_cut == 0 and 'laser' not in self.pp_geometry_name:
             self.app.inform.emit('[WARNING] %s: %s' %
                                  (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
-                                  self.options['name']))
+                                  self.obj_options['name']))
             return 'fail'
 
         if self.z_move is None:
@@ -5626,7 +5626,7 @@ class CNCjob(Geometry):
         elif self.z_move == 0:
             self.app.inform.emit('[WARNING] %s: %s' %
                                  (_("The Z Travel parameter is zero. This is dangerous, skipping file"),
-                                  self.options['name']))
+                                  self.obj_options['name']))
             return 'fail'
 
         # made sure that depth_per_cut is no more then the z_cut
@@ -6031,7 +6031,7 @@ class CNCjob(Geometry):
         elif self.z_cut == 0 and 'laser' not in self.pp_geometry_name:
             self.app.inform.emit(
                 '[WARNING] %s: %s' % (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
-                                      geo_obj.options['name'])
+                                      geo_obj.obj_options['name'])
             )
             return 'fail'
 
@@ -6051,7 +6051,7 @@ class CNCjob(Geometry):
             elif self.z_move == 0:
                 self.app.inform.emit(
                     '[WARNING] %s: %s' % (_("The Z Travel parameter is zero. This is dangerous, skipping file"),
-                                          self.options['name'])
+                                          self.obj_options['name'])
                 )
                 return 'fail'
 
@@ -6679,7 +6679,7 @@ class CNCjob(Geometry):
 
         # Current path: temporary storage until tool is
         # lifted or lowered.
-        if self.options['type'].lower() == "excellon":
+        if self.obj_options['type'].lower() == "excellon":
             if toolchange_xy_drill == '' or toolchange_xy_drill is None:
                 pos_xy = (0, 0)
             else:
@@ -6748,7 +6748,7 @@ class CNCjob(Geometry):
                     path = [path[-1]]  # Start with the last point of last path.
 
                 # create the geometry for the holes created when drilling Excellon drills
-                if self.options['type'].lower() == 'excellon':
+                if self.obj_options['type'].lower() == 'excellon':
                     if current['Z'] < 0:
                         current_drill_point_coords = (
                             float('%.*f' % (self.decimals, current['X'])),
@@ -7099,7 +7099,7 @@ class CNCjob(Geometry):
                             obj.annotations_dict[tooldia]['text'].append(str(path_num))
 
                     # plot the geometry of Excellon objects
-                    if self.options['type'].lower() == 'excellon':
+                    if self.obj_options['type'].lower() == 'excellon':
                         try:
                             # if the geos are travel lines
                             if geo['kind'][0] == 'T':
@@ -7166,7 +7166,7 @@ class CNCjob(Geometry):
 
         try:
             if self.app.defaults['global_theme'] == 'white':
-                obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
+                obj.annotation.set(text=text, pos=pos, visible=obj.obj_options['plot'],
                                    font_size=self.app.defaults["cncjob_annotation_fontsize"],
                                    color=self.app.defaults["cncjob_annotation_fontcolor"])
             else:
@@ -7182,7 +7182,7 @@ class CNCjob(Geometry):
                 for x in range(len(old_color)):
                     new_color += code[old_color[x]]
 
-                obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
+                obj.annotation.set(text=text, pos=pos, visible=obj.obj_options['plot'],
                                    font_size=self.app.defaults["cncjob_annotation_fontsize"],
                                    color=new_color)
         except Exception as e:
@@ -7802,7 +7802,7 @@ class CNCjob(Geometry):
         # This is quite a useful feature for svg's used with visicut
 
         if scale_stroke_factor <= 0:
-            scale_stroke_factor = self.options['tooldia'] / 2
+            scale_stroke_factor = self.obj_options['tooldia'] / 2
 
         # If still 0 then default to 0.05
         # This value appears to work for zooming, and getting the output svg line width
@@ -7908,7 +7908,7 @@ class CNCjob(Geometry):
             maxx = -np.Inf
             maxy = -np.Inf
             # for CNCJob objects made from Gerber or Geometry objects
-            if self.options['type'].lower() == 'geometry':
+            if self.obj_options['type'].lower() == 'geometry':
                 for k, v in self.tools.items():
                     minx = np.Inf
                     miny = np.Inf
@@ -7934,7 +7934,7 @@ class CNCjob(Geometry):
                         maxx = max(maxx, maxx_)
                         maxy = max(maxy, maxy_)
 
-            if self.options['type'].lower() == 'excellon':
+            if self.obj_options['type'].lower() == 'excellon':
                 for k, v in self.tools.items():
                     minx = np.Inf
                     miny = np.Inf

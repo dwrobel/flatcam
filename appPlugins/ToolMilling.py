@@ -59,7 +59,7 @@ class HybridGeoExc:
                         }
             }
         """
-        self.options = {}
+        self.obj_options = {}
         self.tools = {}
         self.solid_geometry = []
 
@@ -67,18 +67,18 @@ class HybridGeoExc:
         for option in self.app.options:
             if option.find(kind + "_") == 0:
                 oname = option[len(kind) + 1:]
-                self.options[oname] = self.app.options[option]
+                self.obj_options[oname] = self.app.options[option]
         for option in self.app.options:
             if option.find('tools_mill_') == 0:
-                self.options[option] = self.app.options[option]
+                self.obj_options[option] = self.app.options[option]
         for option in self.app.options:
             if option.find('tools_') == 0:
-                self.options[option] = self.app.options[option]
+                self.obj_options[option] = self.app.options[option]
 
-        self.options['xmin'] = 0
-        self.options['ymin'] = 0
-        self.options['xmax'] = 0
-        self.options['ymax'] = 0
+        self.obj_options['xmin'] = 0
+        self.obj_options['ymin'] = 0
+        self.obj_options['xmax'] = 0
+        self.obj_options['ymax'] = 0
 
         self.multigeo = True
         self.multitool = True
@@ -479,10 +479,10 @@ class ToolMilling(AppTool, Excellon):
             else:
                 if selected_obj.kind == 'excellon':
                     self.ui.target_radio.set_value('exc')
-                    self.ui.object_combo.set_value(selected_obj.options['name'])
+                    self.ui.object_combo.set_value(selected_obj.obj_options['name'])
                 elif selected_obj.kind == 'geometry':
                     self.ui.target_radio.set_value('geo')
-                    self.ui.object_combo.set_value(selected_obj.options['name'])
+                    self.ui.object_combo.set_value(selected_obj.obj_options['name'])
                 else:
                     self.ui.target_radio.set_value('geo')
                     self.ui.object_combo.setCurrentIndex(0)
@@ -688,11 +688,11 @@ class ToolMilling(AppTool, Excellon):
 
         self.ui.plot_cb.stateChanged.connect(self.on_plot_clicked)
         if self.target_obj is not None:
-            self.ui.plot_cb.set_value(self.target_obj.options['plot'])
+            self.ui.plot_cb.set_value(self.target_obj.obj_options['plot'])
 
     def on_plot_clicked(self, state):
         if self.target_obj:
-            self.target_obj.options['plot'] = True if state else False
+            self.target_obj.obj_options['plot'] = True if state else False
 
     def change_level(self, level):
         """
@@ -788,7 +788,7 @@ class ToolMilling(AppTool, Excellon):
             # Tool parameters section
             if self.ui.target_radio.get_value() == 'geo':
                 if self.target_obj:
-                    app_defaults = self.target_obj.options
+                    app_defaults = self.target_obj.obj_options
                     for tool in self.target_obj.tools:
                         tool_data = self.target_obj.tools[tool]['data']
 
@@ -1417,7 +1417,7 @@ class ToolMilling(AppTool, Excellon):
         if found_idx:
             try:
                 sel_obj = current.indexes()[0].internalPointer().obj
-                name = sel_obj.options['name']
+                name = sel_obj.obj_options['name']
                 kind = sel_obj.kind
                 if kind == 'excellon':
                     self.ui.target_radio.set_value('exc')
@@ -1812,7 +1812,7 @@ class ToolMilling(AppTool, Excellon):
             except Exception:
                 self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
                 return
-            storage = self.app.options if self.target_obj is None else self.target_obj.options
+            storage = self.app.options if self.target_obj is None else self.target_obj.obj_options
 
         # calculate self.currnet_row for the cellWidgets in the Tools Table
         if self.ui.target_radio.get_value() == 'geo':
@@ -2239,7 +2239,7 @@ class ToolMilling(AppTool, Excellon):
                 }
             })
 
-        self.target_obj.tools[self.tooluid]['data']['name'] = deepcopy(self.target_obj.options['name'])
+        self.target_obj.tools[self.tooluid]['data']['name'] = deepcopy(self.target_obj.obj_options['name'])
 
         # we do this HACK to make sure the tools attribute to be serialized is updated in the self.ser_attrs list
         try:
@@ -2314,7 +2314,7 @@ class ToolMilling(AppTool, Excellon):
             }
         })
 
-        self.target_obj.tools[self.tooluid]['data']['name'] = deepcopy(self.target_obj.options['name'])
+        self.target_obj.tools[self.tooluid]['data']['name'] = deepcopy(self.target_obj.obj_options['name'])
 
         # we do this HACK to make sure the tools attribute to be serialized is updated in the self.ser_attrs list
         try:
@@ -2495,23 +2495,23 @@ class ToolMilling(AppTool, Excellon):
         # we make it back SingleGeo
         if self.ui.geo_tools_table.rowCount() <= 0:
             obj_active.multigeo = False
-            obj_active.options['xmin'] = 0
-            obj_active.options['ymin'] = 0
-            obj_active.options['xmax'] = 0
-            obj_active.options['ymax'] = 0
+            obj_active.obj_options['xmin'] = 0
+            obj_active.obj_options['ymin'] = 0
+            obj_active.obj_options['xmax'] = 0
+            obj_active.obj_options['ymax'] = 0
 
         if obj_active.multigeo is True:
             try:
                 xmin, ymin, xmax, ymax = obj_active.bounds()
-                obj_active.options['xmin'] = xmin
-                obj_active.options['ymin'] = ymin
-                obj_active.options['xmax'] = xmax
-                obj_active.options['ymax'] = ymax
+                obj_active.obj_options['xmin'] = xmin
+                obj_active.obj_options['ymin'] = ymin
+                obj_active.obj_options['xmax'] = xmax
+                obj_active.obj_options['ymax'] = ymax
             except Exception:
-                obj_active.options['xmin'] = 0
-                obj_active.options['ymin'] = 0
-                obj_active.options['xmax'] = 0
-                obj_active.options['ymax'] = 0
+                obj_active.obj_options['xmin'] = 0
+                obj_active.obj_options['ymin'] = 0
+                obj_active.obj_options['xmax'] = 0
+                obj_active.obj_options['ymax'] = 0
 
         # if there is no tool left in the Tools Table, disable the parameters appGUI
         if self.ui.geo_tools_table.rowCount() == 0:
@@ -2546,10 +2546,10 @@ class ToolMilling(AppTool, Excellon):
             tools = self.get_selected_tools_list()
 
         if outname is None:
-            outname = self.target_obj.options["name"] + "_mill"
+            outname = self.target_obj.obj_options["name"] + "_mill"
 
         if tooldia is None:
-            tooldia = float(self.target_obj.options["tooldia"])
+            tooldia = float(self.target_obj.obj_options["tooldia"])
 
         # Sort tools by diameter. items() -> [('name', diameter), ...]
         sorted_tools = sorted(list(self.tools.items()), key=lambda tl: tl[1]['tooldia'])
@@ -2595,9 +2595,9 @@ class ToolMilling(AppTool, Excellon):
 
             # ## Add properties to the object
 
-            geo_obj.options['type'] = 'Excellon Geometry'
-            geo_obj.options["tools_mill_tooldia"] = str(tooldia)
-            geo_obj.options["tools_mill_multidepth"] = self.target_obj.options["tools_mill_multidepth"]
+            geo_obj.obj_options['type'] = 'Excellon Geometry'
+            geo_obj.obj_options["tools_mill_tooldia"] = str(tooldia)
+            geo_obj.obj_options["tools_mill_multidepth"] = self.target_obj.obj_options["tools_mill_multidepth"]
             geo_obj.solid_geometry = []
 
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution
@@ -2656,10 +2656,10 @@ class ToolMilling(AppTool, Excellon):
             tools = self.get_selected_tools_list()
 
         if outname is None:
-            outname = self.target_obj.options["name"] + "_slots"
+            outname = self.target_obj.obj_options["name"] + "_slots"
 
         if tooldia is None:
-            tooldia = float(self.target_obj.options["slot_tooldia"])
+            tooldia = float(self.target_obj.obj_options["slot_tooldia"])
 
         # Sort tools by diameter. items() -> [('name', diameter), ...]
         sorted_tools = sorted(list(self.tools.items()), key=lambda tl: tl[1]['tooldia'])
@@ -2694,9 +2694,9 @@ class ToolMilling(AppTool, Excellon):
 
             # ## Add properties to the object
 
-            geo_obj.options['type'] = 'Excellon Geometry'
-            geo_obj.options["tools_mill_tooldia"] = str(tooldia)
-            geo_obj.options["tools_mill_multidepth"] = self.target_obj.options["tools_mill_multidepth"]
+            geo_obj.obj_options['type'] = 'Excellon Geometry'
+            geo_obj.obj_options["tools_mill_tooldia"] = str(tooldia)
+            geo_obj.obj_options["tools_mill_multidepth"] = self.target_obj.obj_options["tools_mill_multidepth"]
             geo_obj.solid_geometry = []
 
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution
@@ -2818,20 +2818,20 @@ class ToolMilling(AppTool, Excellon):
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No tool selected in the tool table ..."))
 
     def paint_excellon_cncjpb(self):
-        outname = "%s_%s" % (self.target_obj.options["name"], 'exc_cnc')
+        outname = "%s_%s" % (self.target_obj.obj_options["name"], 'exc_cnc')
         tools_dict = self.sel_tools
 
         new_obj = HybridGeoExc(app=self.app)
-        new_obj.options = dict()
-        for opt, val in self.target_obj.options.items():
-            new_obj.options[opt] = val
-        new_obj.options['name'] = outname
+        new_obj.obj_options = dict()
+        for opt, val in self.target_obj.obj_options.items():
+            new_obj.obj_options[opt] = val
+        new_obj.obj_options['name'] = outname
         new_obj.units = self.app.options["units"]
         kind = 'geometry'
         for option in self.app.options:
             if option.find(kind + "_") == 0:
                 oname = option[len(kind) + 1:]
-                new_obj.options[oname] = self.app.options[option]
+                new_obj.obj_options[oname] = self.app.options[option]
 
         for tool in tools_dict:
             old_disp_number = 0
@@ -3017,13 +3017,13 @@ class ToolMilling(AppTool, Excellon):
         geo_obj = geo_obj if geo_obj is not None else self.target_obj
 
         # use the name of the first tool selected in self.geo_tools_table which has the diameter passed as tool_dia
-        outname = "%s_%s" % (geo_obj.options["name"], 'cnc') if outname is None else outname
+        outname = "%s_%s" % (geo_obj.obj_options["name"], 'cnc') if outname is None else outname
 
         tools_dict = self.sel_tools if tools_dict is None else tools_dict
 
         if not geo_obj.tools:
-            segx = segx if segx is not None else float(geo_obj.options['segx'])
-            segy = segy if segy is not None else float(geo_obj.options['segy'])
+            segx = segx if segx is not None else float(geo_obj.obj_options['segx'])
+            segy = segy if segy is not None else float(geo_obj.obj_options['segy'])
         else:
             tools_list = list(geo_obj.tools.keys())
             # the segx and segy values are the same for all tools os we just take the values from the first tool
@@ -3036,7 +3036,7 @@ class ToolMilling(AppTool, Excellon):
                     segx = data_dict['geometry_segx']
                 except KeyError:
                     try:
-                        segx = geo_obj.options['segx']
+                        segx = geo_obj.obj_options['segx']
                     except KeyError:
                         segx = self.app.defaults['geometry_segx']
             try:
@@ -3046,15 +3046,15 @@ class ToolMilling(AppTool, Excellon):
                     segy = data_dict['geometry_segy']
                 except KeyError:
                     try:
-                        segy = geo_obj.options['segy']
+                        segy = geo_obj.obj_options['segy']
                     except KeyError:
                         segy = self.app.defaults['geometry_segy']
 
         try:
-            xmin = geo_obj.options['xmin']
-            ymin = geo_obj.options['ymin']
-            xmax = geo_obj.options['xmax']
-            ymax = geo_obj.options['ymax']
+            xmin = geo_obj.obj_options['xmin']
+            ymin = geo_obj.obj_options['ymin']
+            xmax = geo_obj.obj_options['xmax']
+            ymax = geo_obj.obj_options['ymax']
         except Exception as e:
             self.app.log.error("FlatCAMObj.GeometryObject.mtool_gen_cncjob() --> %s\n" % str(e))
 
@@ -3075,10 +3075,10 @@ class ToolMilling(AppTool, Excellon):
             self.app.log.debug("Creating a CNCJob out of a single-geometry")
             assert new_cncjob_obj.kind == 'cncjob', "Initializer expected a CNCJobObject, got %s" % type(new_cncjob_obj)
 
-            new_cncjob_obj.options['xmin'] = xmin
-            new_cncjob_obj.options['ymin'] = ymin
-            new_cncjob_obj.options['xmax'] = xmax
-            new_cncjob_obj.options['ymax'] = ymax
+            new_cncjob_obj.obj_options['xmin'] = xmin
+            new_cncjob_obj.obj_options['ymin'] = ymin
+            new_cncjob_obj.obj_options['xmax'] = xmax
+            new_cncjob_obj.obj_options['ymax'] = ymax
 
             # count the tools
             tool_cnt = 0
@@ -3093,8 +3093,8 @@ class ToolMilling(AppTool, Excellon):
             new_cncjob_obj.segx = segx
             new_cncjob_obj.segy = segy
 
-            new_cncjob_obj.z_pdepth = float(geo_obj.options["tools_mill_z_pdepth"])
-            new_cncjob_obj.feedrate_probe = float(geo_obj.options["tools_mill_feedrate_probe"])
+            new_cncjob_obj.z_pdepth = float(geo_obj.obj_options["tools_mill_z_pdepth"])
+            new_cncjob_obj.feedrate_probe = float(geo_obj.obj_options["tools_mill_feedrate_probe"])
 
             total_gcode = ''
             for tooluid_key in list(tools_dict.keys()):
@@ -3106,7 +3106,7 @@ class ToolMilling(AppTool, Excellon):
                 dia_cnc_dict['data']['tools_mill_tooldia'] = tooldia_val
 
                 if "optimization_type" not in tools_dict[tooluid_key]['data']:
-                    def_optimization_type = geo_obj.options["tools_mill_optimization_type"]
+                    def_optimization_type = geo_obj.obj_options["tools_mill_optimization_type"]
                     tools_dict[tooluid_key]['data']["tools_mill_optimization_type"] = def_optimization_type
 
                 if dia_cnc_dict['data']['tools_mill_offset_type'] == 1:  # 'in'
@@ -3167,9 +3167,9 @@ class ToolMilling(AppTool, Excellon):
                 new_cncjob_obj.fr_decimals = self.app.defaults["cncjob_fr_decimals"]
 
                 # Propagate options
-                new_cncjob_obj.options["tooldia"] = tooldia_val
-                new_cncjob_obj.options['type'] = 'Geometry'
-                new_cncjob_obj.options['tool_dia'] = tooldia_val
+                new_cncjob_obj.obj_options["tooldia"] = tooldia_val
+                new_cncjob_obj.obj_options['type'] = 'Geometry'
+                new_cncjob_obj.obj_options['tool_dia'] = tooldia_val
 
                 tool_lst = list(tools_dict.keys())
                 is_first = True if tooluid_key == tool_lst[0] else False
@@ -3227,10 +3227,10 @@ class ToolMilling(AppTool, Excellon):
             self.app.log.debug("Creating a CNCJob out of a multi-geometry")
             assert new_cncjob_obj.kind == 'cncjob', "Initializer expected a CNCJobObject, got %s" % type(new_cncjob_obj)
 
-            new_cncjob_obj.options['xmin'] = xmin
-            new_cncjob_obj.options['ymin'] = ymin
-            new_cncjob_obj.options['xmax'] = xmax
-            new_cncjob_obj.options['ymax'] = ymax
+            new_cncjob_obj.obj_options['xmin'] = xmin
+            new_cncjob_obj.obj_options['ymin'] = ymin
+            new_cncjob_obj.obj_options['xmax'] = xmax
+            new_cncjob_obj.obj_options['ymax'] = ymax
 
             # count the tools
             tool_cnt = 0
@@ -3245,8 +3245,8 @@ class ToolMilling(AppTool, Excellon):
             new_cncjob_obj.segx = segx
             new_cncjob_obj.segy = segy
 
-            new_cncjob_obj.z_pdepth = float(geo_obj.options["tools_mill_z_pdepth"])
-            new_cncjob_obj.feedrate_probe = float(geo_obj.options["tools_mill_feedrate_probe"])
+            new_cncjob_obj.z_pdepth = float(geo_obj.obj_options["tools_mill_z_pdepth"])
+            new_cncjob_obj.feedrate_probe = float(geo_obj.obj_options["tools_mill_feedrate_probe"])
 
             # make sure that trying to make a CNCJob from an empty file is not creating an app crash
             if not geo_obj.solid_geometry:
@@ -3272,7 +3272,7 @@ class ToolMilling(AppTool, Excellon):
 
                 # Path optimizations
                 if "optimization_type" not in tools_dict[tooluid_key]['data']:
-                    def_optimization_type = geo_obj.options["tools_mill_optimization_type"]
+                    def_optimization_type = geo_obj.obj_options["tools_mill_optimization_type"]
                     tools_dict[tooluid_key]['data']["tools_mill_optimization_type"] = def_optimization_type
 
                 # Polishing
@@ -3460,9 +3460,9 @@ class ToolMilling(AppTool, Excellon):
                 new_cncjob_obj.fr_decimals = self.app.defaults["cncjob_fr_decimals"]
 
                 # Propagate options
-                new_cncjob_obj.options["tooldia"] = tooldia_val
-                new_cncjob_obj.options['type'] = 'Geometry'
-                new_cncjob_obj.options['tool_dia'] = tooldia_val
+                new_cncjob_obj.obj_options["tooldia"] = tooldia_val
+                new_cncjob_obj.obj_options['type'] = 'Geometry'
+                new_cncjob_obj.obj_options['tool_dia'] = tooldia_val
 
                 # it seems that the tolerance needs to be a lot lower value than 0.01 and it was hardcoded initially
                 # to a value of 0.0005 which is 20 times less than 0.01

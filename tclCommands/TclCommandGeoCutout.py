@@ -188,10 +188,10 @@ class TclCommandGeoCutout(TclCommandSignaled):
 
         # Get min and max data for each object as we just cut rectangles across X or Y
         xmin, ymin, xmax, ymax = cutout_obj.bounds()
-        cutout_obj.options['xmin'] = xmin
-        cutout_obj.options['ymin'] = ymin
-        cutout_obj.options['xmax'] = xmax
-        cutout_obj.options['ymax'] = ymax
+        cutout_obj.obj_options['xmin'] = xmin
+        cutout_obj.obj_options['ymin'] = ymin
+        cutout_obj.obj_options['xmax'] = xmax
+        cutout_obj.obj_options['ymax'] = ymax
 
         px = 0.5 * (xmin + xmax) + margin
         py = 0.5 * (ymin + ymax) + margin
@@ -260,10 +260,10 @@ class TclCommandGeoCutout(TclCommandSignaled):
                                               ymax + gapsize)
 
             geo_obj.solid_geometry = deepcopy(geo)
-            geo_obj.options['xmin'] = cutout_obj.options['xmin']
-            geo_obj.options['ymin'] = cutout_obj.options['ymin']
-            geo_obj.options['xmax'] = cutout_obj.options['xmax']
-            geo_obj.options['ymax'] = cutout_obj.options['ymax']
+            geo_obj.obj_options['xmin'] = cutout_obj.obj_options['xmin']
+            geo_obj.obj_options['ymin'] = cutout_obj.obj_options['ymin']
+            geo_obj.obj_options['xmax'] = cutout_obj.obj_options['xmax']
+            geo_obj.obj_options['ymax'] = cutout_obj.obj_options['ymax']
 
             if not geo_obj.solid_geometry:
                 app_obj.log("TclCommandGeoCutout.execute(). No geometry after geo-cutout.")

@@ -198,7 +198,7 @@ class TclCommandPanelize(TclCommand):
         #         # deselect all  to avoid  delete selected object when run  delete  from  shell
         #         self.app.collection.set_all_inactive()
         #         for delobj in objs:
-        #             self.app.collection.set_active(delobj.options['name'])
+        #             self.app.collection.set_active(delobj.obj_options['name'])
         #             self.app.on_delete()
         #     else:
         #         return "fail"
@@ -238,10 +238,10 @@ class TclCommandPanelize(TclCommand):
                     obj_fin.tools = copied_tools
                     obj_fin.solid_geometry = []
 
-                    for option in obj.options:
+                    for option in obj.obj_options:
                         if option != 'name':
                             try:
-                                obj_fin.options[option] = obj.options[option]
+                                obj_fin.obj_options[option] = obj.obj_options[option]
                             except Exception as e:
                                 app_obj.log.error("Failed to copy option: %s" % str(option))
                                 app_obj.log.error(

@@ -3013,8 +3013,8 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
 
         for obj in self.app.collection.get_list():
             # only Gerber objects and only those that are active and not the edited object
-            if obj.kind == 'gerber' and obj.options['plot'] is True and \
-                    obj.options['name'] != self.draw_app.gerber_obj.options['name']:
+            if obj.kind == 'gerber' and obj.obj_options['plot'] is True and \
+                    obj.obj_options['name'] != self.draw_app.gerber_obj.obj_options['name']:
                 for apid in obj.tools:
                     if 'geometry' in obj.tools[apid]:
                         for geo_el in obj.tools[apid]['geometry']:
@@ -3073,8 +3073,8 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
 
         for obj in self.app.collection.get_list():
             # only Gerber objects and only those that are active and not the edited object
-            if obj.kind == 'gerber' and obj.options['plot'] is True and \
-                    obj.options['name'] != self.draw_app.gerber_obj.options['name']:
+            if obj.kind == 'gerber' and obj.obj_options['plot'] is True and \
+                    obj.obj_options['name'] != self.draw_app.gerber_obj.obj_options['name']:
                 for apid in obj.tools:
                     if 'geometry' in obj.tools[apid]:
                         for geo_el in obj.tools[apid]['geometry']:
@@ -3351,7 +3351,7 @@ class AppGerberEditor(QtCore.QObject):
         self.tolerance = def_tol_val if self.units == 'MM' else def_tol_val / 25.4
 
         # options of this widget (AppGerberEditor class is a widget)
-        self.options = {
+        self.editor_options = {
             "global_gridx": 0.1,
             "global_gridy": 0.1,
             "snap_max": 0.05,
@@ -3360,11 +3360,11 @@ class AppGerberEditor(QtCore.QObject):
             "grid_gap_link": True
         }
         # fill it with the application options (application preferences)
-        self.options.update(self.app.options)
+        self.editor_options.update(self.app.options)
 
-        for option in self.options:
+        for option in self.editor_options:
             if option in self.app.options:
-                self.options[option] = self.app.options[option]
+                self.editor_options[option] = self.app.options[option]
 
         # flag to show if the object was modified
         self.is_modified = False
@@ -3384,7 +3384,7 @@ class AppGerberEditor(QtCore.QObject):
         self.thread = QtCore.QThread()
 
         # def entry2option(option, entry):
-        #     self.options[option] = float(entry.text())
+        #     self.editor_options[option] = float(entry.text())
 
         self.transform_tool = TransformEditorTool(self.app, self)
 
@@ -3579,7 +3579,7 @@ class AppGerberEditor(QtCore.QObject):
         self.units = self.app.app_units.upper()
 
         # make a new name for the new Excellon object (the one with edited content)
-        self.edited_obj_name = self.gerber_obj.options['name']
+        self.edited_obj_name = self.gerber_obj.obj_options['name']
         self.ui.name_entry.set_value(self.edited_obj_name)
 
         self.apertures_row = 0
@@ -4537,7 +4537,7 @@ class AppGerberEditor(QtCore.QObject):
 
         # create a reference to the source object
         self.gerber_obj = orig_grb_obj
-        self.gerber_obj_options = orig_grb_obj.options
+        self.gerber_obj_options = orig_grb_obj.obj_options
 
         file_units = self.gerber_obj.units if self.gerber_obj.units else 'IN'
         app_units = self.app.app_units
@@ -4832,13 +4832,13 @@ class AppGerberEditor(QtCore.QObject):
     @staticmethod
     def update_options(obj):
         try:
-            if not obj.options:
-                obj.options = {'xmin': 0, 'ymin': 0, 'xmax': 0, 'ymax': 0}
+            if not obj.obj_options:
+                obj.obj_options = {'xmin': 0, 'ymin': 0, 'xmax': 0, 'ymax': 0}
                 return True
             else:
                 return False
         except AttributeError:
-            obj.options = {}
+            obj.obj_options = {}
             return True
 
     def new_edited_gerber(self, outname, aperture_storage):
@@ -4853,7 +4853,7 @@ class AppGerberEditor(QtCore.QObject):
         """
 
         self.app.log.debug("Update the Gerber object with edited content. Source is: %s" %
-                           self.gerber_obj.options['name'].upper())
+                           self.gerber_obj.obj_options['name'].upper())
 
         out_name = outname
         storage_dict = aperture_storage
@@ -4921,9 +4921,9 @@ class AppGerberEditor(QtCore.QObject):
 
             for k, v in self.gerber_obj_options.items():
                 if k == 'name':
-                    grb_obj.options[k] = out_name
+                    grb_obj.obj_options[k] = out_name
                 else:
-                    grb_obj.options[k] = deepcopy(v)
+                    grb_obj.obj_options[k] = deepcopy(v)
 
             grb_obj.multigeo = False
             grb_obj.follow = False

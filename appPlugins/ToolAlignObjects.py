@@ -321,10 +321,10 @@ class AlignObjects(AppTool):
 
         # Update the object bounding box options
         a, b, c, d = self.aligned_obj.bounds()
-        self.aligned_obj.options['xmin'] = a
-        self.aligned_obj.options['ymin'] = b
-        self.aligned_obj.options['xmax'] = c
-        self.aligned_obj.options['ymax'] = d
+        self.aligned_obj.obj_options['xmin'] = a
+        self.aligned_obj.obj_options['ymin'] = b
+        self.aligned_obj.obj_options['xmax'] = c
+        self.aligned_obj.obj_options['ymax'] = d
 
     def align_rotate(self):
         dx = self.clicked_points[1][0] - self.clicked_points[0][0]

@@ -198,7 +198,7 @@ class ToolCopperThieving(AppTool):
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
         if obj and obj.kind == 'gerber':
-            obj_name = obj.options['name']
+            obj_name = obj.obj_options['name']
             self.ui.grb_object_combo.set_value(obj_name)
 
         if obj is None:
@@ -327,14 +327,14 @@ class ToolCopperThieving(AppTool):
         elif isinstance(geo_obj, Polygon):
             geo_obj = MultiPolygon([geo_obj, deepcopy(self.robber_geo)])
 
-        outname = '%s_%s' % (str(self.grb_object.options['name']), 'robber')
+        outname = '%s_%s' % (str(self.grb_object.obj_options['name']), 'robber')
 
         def initialize(grb_obj, app_obj):
-            grb_obj.options = LoudDict()
-            for opt in self.grb_object.options:
+            grb_obj.obj_options = LoudDict()
+            for opt in self.grb_object.obj_options:
                 if opt != 'name':
-                    grb_obj.options[opt] = deepcopy(self.grb_object.options[opt])
-            grb_obj.options['name'] = outname
+                    grb_obj.obj_options[opt] = deepcopy(self.grb_object.obj_options[opt])
+            grb_obj.obj_options['name'] = outname
             grb_obj.multitool = False
             grb_obj.multigeo = False
             grb_obj.follow = deepcopy(self.grb_object.follow)
@@ -922,14 +922,14 @@ class ToolCopperThieving(AppTool):
             # prepare also the solid_geometry for the new object having the thieving geometry
             new_solid_geo = MultiPolygon(geo_list).buffer(0.0000001).buffer(-0.0000001)
 
-            outname = '%s_%s' % (str(self.grb_object.options['name']), 'thief')
+            outname = '%s_%s' % (str(self.grb_object.obj_options['name']), 'thief')
 
             def initialize(grb_obj, app_obj):
-                grb_obj.options = LoudDict()
-                for opt in self.grb_object.options:
+                grb_obj.obj_options = LoudDict()
+                for opt in self.grb_object.obj_options:
                     if opt != 'name':
-                        grb_obj.options[opt] = deepcopy(self.grb_object.options[opt])
-                grb_obj.options['name'] = outname
+                        grb_obj.obj_options[opt] = deepcopy(self.grb_object.obj_options[opt])
+                grb_obj.obj_options['name'] = outname
                 grb_obj.multitool = False
                 grb_obj.multigeo = False
                 grb_obj.follow = deepcopy(self.grb_object.follow)
@@ -1132,11 +1132,11 @@ class ToolCopperThieving(AppTool):
         new_solid_geometry = MultiPolygon(geo_list).buffer(0.0000001).buffer(-0.0000001)
 
         def obj_init(grb_obj, app_obj):
-            grb_obj.options = LoudDict()
-            for opt in self.sm_object.options:
+            grb_obj.obj_options = LoudDict()
+            for opt in self.sm_object.obj_options:
                 if opt != 'name':
-                    grb_obj.options[opt] = deepcopy(self.sm_object.options[opt])
-            grb_obj.options['name'] = outname
+                    grb_obj.obj_options[opt] = deepcopy(self.sm_object.obj_options[opt])
+            grb_obj.obj_options['name'] = outname
             grb_obj.multitool = False
             grb_obj.source_file = []
             grb_obj.multigeo = False
@@ -1152,7 +1152,7 @@ class ToolCopperThieving(AppTool):
             app_obj.proc_container.update_view_text(' %s' % '')
 
         # Object name
-        obj_name, separatpr, obj_extension = self.sm_object.options['name'].rpartition('.')
+        obj_name, separatpr, obj_extension = self.sm_object.obj_options['name'].rpartition('.')
         outname = '%s_%s.%s' % (obj_name, 'plating_mask', obj_extension)
 
         ret_val = self.app.app_obj.new_object('gerber', outname, obj_init, autoselected=False)

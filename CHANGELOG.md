@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+16.02.2022
+
+- refactoring all the references to object `options` property to `obj_options` to make a difference with the application `options` property
+
 15.02.2022
 
 - fixed an issue with the moving shape when creating an exclusion area

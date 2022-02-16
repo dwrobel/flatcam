@@ -98,7 +98,7 @@ class ToolPunchGerber(AppTool, Gerber):
             for ap_code in grb_obj.tools:
                 grb_obj.mark_shapes_storage[ap_code] = []
 
-            self.old_name = grb_obj.options['name']
+            self.old_name = grb_obj.obj_options['name']
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolPunchGerber()")
@@ -244,7 +244,7 @@ class ToolPunchGerber(AppTool, Gerber):
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
         if obj and obj.kind == 'gerber':
-            obj_name = obj.options['name']
+            obj_name = obj.obj_options['name']
             self.ui.gerber_object_combo.set_value(obj_name)
 
         # Show/Hide Advanced Options
@@ -515,9 +515,9 @@ class ToolPunchGerber(AppTool, Gerber):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
 
-        name = self.grb_obj.options['name'].rpartition('.')[0]
+        name = self.grb_obj.obj_options['name'].rpartition('.')[0]
         if name == '':
-            name = self.grb_obj.options['name']
+            name = self.grb_obj.obj_options['name']
         outname = name + "_punched"
 
         if punch_type == 'a':
@@ -581,8 +581,8 @@ class ToolPunchGerber(AppTool, Gerber):
             return
 
         new_options = {}
-        for opt in grb_obj.options:
-            new_options[opt] = deepcopy(grb_obj.options[opt])
+        for opt in grb_obj.obj_options:
+            new_options[opt] = deepcopy(grb_obj.obj_options[opt])
 
         # selected codes in the apertures UI table
         sel_apid = []
@@ -661,8 +661,8 @@ class ToolPunchGerber(AppTool, Gerber):
             new_apertures[new_apid] = deepcopy(ap_val)
 
         def init_func(new_obj, app_obj):
-            new_obj.options.update(new_options)
-            new_obj.options['name'] = outname
+            new_obj.obj_options.update(new_options)
+            new_obj.obj_options['name'] = outname
             new_obj.fill_color = deepcopy(grb_obj.fill_color)
             new_obj.outline_color = deepcopy(grb_obj.outline_color)
 
@@ -686,8 +686,8 @@ class ToolPunchGerber(AppTool, Gerber):
             return
 
         new_options = {}
-        for opt in self.grb_obj.options:
-            new_options[opt] = deepcopy(self.grb_obj.options[opt])
+        for opt in self.grb_obj.obj_options:
+            new_options[opt] = deepcopy(self.grb_obj.obj_options[opt])
 
         # selected codes in the apertures UI table
         sel_apid = []
@@ -782,8 +782,8 @@ class ToolPunchGerber(AppTool, Gerber):
             new_apertures[new_apid] = deepcopy(ap_val)
 
         def init_func(new_obj, app_obj):
-            new_obj.options.update(new_options)
-            new_obj.options['name'] = outname
+            new_obj.obj_options.update(new_options)
+            new_obj.obj_options['name'] = outname
             new_obj.fill_color = deepcopy(self.grb_obj.fill_color)
             new_obj.outline_color = deepcopy(self.grb_obj.outline_color)
 
@@ -805,8 +805,8 @@ class ToolPunchGerber(AppTool, Gerber):
                      " some of the apertures in the Gerber object.")
 
         new_options = {}
-        for opt in grb_obj.options:
-            new_options[opt] = deepcopy(grb_obj.options[opt])
+        for opt in grb_obj.obj_options:
+            new_options[opt] = deepcopy(grb_obj.obj_options[opt])
 
         # selected codes in the apertures UI table
         sel_apid = []
@@ -915,8 +915,8 @@ class ToolPunchGerber(AppTool, Gerber):
             new_apertures[new_apid] = deepcopy(ap_val)
 
         def init_func(new_obj, app_obj):
-            new_obj.options.update(new_options)
-            new_obj.options['name'] = outname
+            new_obj.obj_options.update(new_options)
+            new_obj.obj_options['name'] = outname
             new_obj.fill_color = deepcopy(grb_obj.fill_color)
             new_obj.outline_color = deepcopy(grb_obj.outline_color)
 
@@ -938,8 +938,8 @@ class ToolPunchGerber(AppTool, Gerber):
                      " some of the apertures in the Gerber object.")
 
         new_options = {}
-        for opt in self.grb_obj.options:
-            new_options[opt] = deepcopy(self.grb_obj.options[opt])
+        for opt in self.grb_obj.obj_options:
+            new_options[opt] = deepcopy(self.grb_obj.obj_options[opt])
 
         # selected codes in the apertures UI table
         sel_apid = []
@@ -1010,8 +1010,8 @@ class ToolPunchGerber(AppTool, Gerber):
             new_apertures[new_apid] = deepcopy(ap_val)
 
         def init_func(new_obj, app_obj):
-            new_obj.options.update(new_options)
-            new_obj.options['name'] = outname
+            new_obj.obj_options.update(new_options)
+            new_obj.obj_options['name'] = outname
             new_obj.fill_color = deepcopy(self.grb_obj.fill_color)
             new_obj.outline_color = deepcopy(self.grb_obj.outline_color)
 
@@ -1032,8 +1032,8 @@ class ToolPunchGerber(AppTool, Gerber):
         dia = None
 
         new_options = {}
-        for opt in grb_obj.options:
-            new_options[opt] = deepcopy(grb_obj.options[opt])
+        for opt in grb_obj.obj_options:
+            new_options[opt] = deepcopy(grb_obj.obj_options[opt])
 
         if isinstance(grb_obj.solid_geometry, list):
             temp_solid_geometry = MultiPolygon(grb_obj.solid_geometry)
@@ -1159,8 +1159,8 @@ class ToolPunchGerber(AppTool, Gerber):
             new_apertures[new_apid] = deepcopy(ap_val)
 
         def init_func(new_obj, app_obj):
-            new_obj.options.update(new_options)
-            new_obj.options['name'] = outname
+            new_obj.obj_options.update(new_options)
+            new_obj.obj_options['name'] = outname
             new_obj.fill_color = deepcopy(grb_obj.fill_color)
             new_obj.outline_color = deepcopy(grb_obj.outline_color)
 
@@ -1181,8 +1181,8 @@ class ToolPunchGerber(AppTool, Gerber):
         dia = None
 
         new_options = {}
-        for opt in self.grb_obj.options:
-            new_options[opt] = deepcopy(self.grb_obj.options[opt])
+        for opt in self.grb_obj.obj_options:
+            new_options[opt] = deepcopy(self.grb_obj.obj_options[opt])
 
         if isinstance(self.grb_obj.solid_geometry, list):
             temp_solid_geometry = MultiPolygon(self.grb_obj.solid_geometry)
@@ -1299,8 +1299,8 @@ class ToolPunchGerber(AppTool, Gerber):
             new_apertures[new_apid] = deepcopy(ap_val)
 
         def init_func(new_obj, app_obj):
-            new_obj.options.update(new_options)
-            new_obj.options['name'] = outname
+            new_obj.obj_options.update(new_options)
+            new_obj.obj_options['name'] = outname
             new_obj.fill_color = deepcopy(self.grb_obj.fill_color)
             new_obj.outline_color = deepcopy(self.grb_obj.outline_color)
 
@@ -1316,8 +1316,8 @@ class ToolPunchGerber(AppTool, Gerber):
         prop_factor = self.ui.factor_entry.get_value() / 100.0
         dia = None
         new_options = {}
-        for opt in grb_obj.options:
-            new_options[opt] = deepcopy(grb_obj.options[opt])
+        for opt in grb_obj.obj_options:
+            new_options[opt] = deepcopy(grb_obj.obj_options[opt])
 
         if isinstance(grb_obj.solid_geometry, list):
             temp_solid_geometry = MultiPolygon(grb_obj.solid_geometry)
@@ -1443,8 +1443,8 @@ class ToolPunchGerber(AppTool, Gerber):
             new_apertures[new_apid] = deepcopy(ap_val)
 
         def init_func(new_obj, app_obj):
-            new_obj.options.update(new_options)
-            new_obj.options['name'] = outname
+            new_obj.obj_options.update(new_options)
+            new_obj.obj_options['name'] = outname
             new_obj.fill_color = deepcopy(grb_obj.fill_color)
             new_obj.outline_color = deepcopy(grb_obj.outline_color)
 
@@ -1460,8 +1460,8 @@ class ToolPunchGerber(AppTool, Gerber):
         prop_factor = self.ui.factor_entry.get_value() / 100.0
         dia = None
         new_options = {}
-        for opt in self.grb_obj.options:
-            new_options[opt] = deepcopy(self.grb_obj.options[opt])
+        for opt in self.grb_obj.obj_options:
+            new_options[opt] = deepcopy(self.grb_obj.obj_options[opt])
 
         if isinstance(self.grb_obj.solid_geometry, list):
             temp_solid_geometry = MultiPolygon(self.grb_obj.solid_geometry)
@@ -1579,8 +1579,8 @@ class ToolPunchGerber(AppTool, Gerber):
             new_apertures[new_apid] = deepcopy(ap_val)
 
         def init_func(new_obj, app_obj):
-            new_obj.options.update(new_options)
-            new_obj.options['name'] = outname
+            new_obj.obj_options.update(new_options)
+            new_obj.obj_options['name'] = outname
             new_obj.fill_color = deepcopy(self.grb_obj.fill_color)
             new_obj.outline_color = deepcopy(self.grb_obj.outline_color)
 
@@ -1641,9 +1641,9 @@ class ToolPunchGerber(AppTool, Gerber):
             'clear': Shapely Polygon
         }
         '''
-        name = self.grb_obj.options['name'].rpartition('.')[0]
+        name = self.grb_obj.obj_options['name'].rpartition('.')[0]
         if name == '':
-            name = self.grb_obj.options['name']
+            name = self.grb_obj.obj_options['name']
         outname = name + "_punched"
 
         if punch_method == 'exc':

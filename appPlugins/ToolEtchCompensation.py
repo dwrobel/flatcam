@@ -123,7 +123,7 @@ class ToolEtchCompensation(AppTool):
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
         if obj and obj.kind == 'gerber':
-            obj_name = obj.options['name']
+            obj_name = obj.obj_options['name']
             self.ui.gerber_combo.set_value(obj_name)
 
     def on_ratio_change(self, val):
@@ -234,8 +234,8 @@ class ToolEtchCompensation(AppTool):
         new_solid_geometry = unary_union(new_solid_geometry)
 
         new_options = {}
-        for opt in grb_obj.options:
-            new_options[opt] = deepcopy(grb_obj.options[opt])
+        for opt in grb_obj.obj_options:
+            new_options[opt] = deepcopy(grb_obj.obj_options[opt])
 
         new_apertures = deepcopy(grb_obj.tools)
 
@@ -276,8 +276,8 @@ class ToolEtchCompensation(AppTool):
             :return:            None
             :rtype:
             """
-            new_obj.options.update(new_options)
-            new_obj.options['name'] = outname
+            new_obj.obj_options.update(new_options)
+            new_obj.obj_options['name'] = outname
             new_obj.fill_color = deepcopy(grb_obj.fill_color)
             new_obj.outline_color = deepcopy(grb_obj.outline_color)
 

@@ -173,7 +173,7 @@ class DblSidedTool(AppTool):
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
         if obj:
-            obj_name = obj.options['name']
+            obj_name = obj.obj_options['name']
             if obj.kind == 'gerber':
                 # run once to make sure that the obj_type attribute is updated in the FCComboBox
                 self.ui.object_type_combo.set_value(0)
@@ -279,7 +279,7 @@ class DblSidedTool(AppTool):
 
         if found_idx:
             try:
-                name = current.indexes()[0].internalPointer().obj.options['name']
+                name = current.indexes()[0].internalPointer().obj.obj_options['name']
                 kind = current.indexes()[0].internalPointer().obj.kind
 
                 if kind in ['gerber', 'excellon', 'geometry']:
@@ -363,7 +363,7 @@ class DblSidedTool(AppTool):
         def obj_init(obj_inst, app_inst):
             obj_inst.tools = deepcopy(tools)
             obj_inst.create_geometry()
-            obj_inst.source_file = app_inst.f_handlers.export_excellon(obj_name=obj_inst.options['name'],
+            obj_inst.source_file = app_inst.f_handlers.export_excellon(obj_name=obj_inst.obj_options['name'],
                                                                        local_use=obj_inst,
                                                                        filename=None,
                                                                        use_thread=False)
@@ -542,7 +542,7 @@ class DblSidedTool(AppTool):
         fcobj.mirror(axis, [px, py])
         self.app.app_obj.object_changed.emit(fcobj)
         fcobj.plot()
-        self.app.inform.emit('[success] %s: %s' % (_("Object was mirrored"), str(fcobj.options['name'])))
+        self.app.inform.emit('[success] %s: %s' % (_("Object was mirrored"), str(fcobj.obj_options['name'])))
 
     def on_point_add(self):
         val = self.app.defaults["global_point_clipboard_format"] % \

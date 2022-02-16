@@ -206,7 +206,7 @@ class ToolOptimal(AppTool):
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
         if obj and obj.kind == 'gerber':
-            obj_name = obj.options['name']
+            obj_name = obj.obj_options['name']
             self.ui.gerber_object_combo.set_value(obj_name)
 
     def find_minimum_distance(self):

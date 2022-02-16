@@ -638,7 +638,7 @@ class ToolCalibration(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
 
-        obj_name = self.cal_object.options["name"] + "_calibrated"
+        obj_name = self.cal_object.obj_options["name"] + "_calibrated"
 
         self.app.worker_task.emit({'fcn': self.new_calibrated_object, 'params': [obj_name]})
 

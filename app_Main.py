@@ -2790,10 +2790,10 @@ class App(QtCore.QObject):
                     # update the geo object options so it is including the bounding box values
                     try:
                         xmin, ymin, xmax, ymax = edited_obj.bounds(flatten=True)
-                        edited_obj.options['xmin'] = xmin
-                        edited_obj.options['ymin'] = ymin
-                        edited_obj.options['xmax'] = xmax
-                        edited_obj.options['ymax'] = ymax
+                        edited_obj.obj_options['xmin'] = xmin
+                        edited_obj.obj_options['ymin'] = ymin
+                        edited_obj.obj_options['xmax'] = xmax
+                        edited_obj.obj_options['ymax'] = ymax
                     except (AttributeError, ValueError) as e:
                         self.inform.emit('[WARNING] %s' % _("Object empty after edit."))
                         self.log.debug("App.editor2object() --> Geometry --> %s" % str(e))
@@ -2810,7 +2810,7 @@ class App(QtCore.QObject):
                     # delete the old object (the source object) if it was an empty one
                     try:
                         if len(edited_obj.solid_geometry) == 0:
-                            old_name = edited_obj.options['name']
+                            old_name = edited_obj.obj_options['name']
                             self.collection.delete_by_name(old_name)
                     except TypeError:
                         # if the solid_geometry is a single Polygon the len() will not work
@@ -2847,7 +2847,7 @@ class App(QtCore.QObject):
                             has_slots = True
                             break
                     if has_drills is None and has_slots is None:
-                        old_name = edited_obj.options['name']
+                        old_name = edited_obj.obj_options['name']
                         self.collection.delete_by_name(name=old_name)
                     self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
 
@@ -5272,7 +5272,7 @@ class App(QtCore.QObject):
                                 obj_active.probing_shapes.clear(update=True)
                             except AttributeError as e:
                                 self.log.debug(
-                                    "App.on_delete() --> CNCJob object: %s. %s" % (str(obj_active.options['name']),
+                                    "App.on_delete() --> CNCJob object: %s. %s" % (str(obj_active.obj_options['name']),
                                                                                    str(e))
                                 )
 
@@ -5299,8 +5299,8 @@ class App(QtCore.QObject):
             else:
                 sel_obj = self.collection.get_active()
 
-            name = sel_obj.options["name"]
-            isPlotted = sel_obj.options["plot"]
+            name = sel_obj.obj_options["name"]
+            isPlotted = sel_obj.obj_options["plot"]
         except AttributeError:
             self.log.debug("Nothing selected for deletion")
             return
@@ -5382,10 +5382,10 @@ class App(QtCore.QObject):
 
                     # Update the object bounding box options
                     a, b, c, d = obj.bounds()
-                    obj.options['xmin'] = a
-                    obj.options['ymin'] = b
-                    obj.options['xmax'] = c
-                    obj.options['ymax'] = d
+                    obj.obj_options['xmin'] = a
+                    obj.obj_options['ymin'] = b
+                    obj.obj_options['xmax'] = c
+                    obj.obj_options['ymax'] = d
 
                     # make sure to update the Offset field in Properties Tab
                     try:
@@ -5398,7 +5398,7 @@ class App(QtCore.QObject):
 
                 # update the source_file container with the new offseted code
                 for obj in obj_list:
-                    out_name = obj.options["name"]
+                    out_name = obj.obj_options["name"]
 
                     if obj.kind == 'gerber':
                         obj.source_file = app_obj.f_handlers.export_gerber(
@@ -5487,10 +5487,10 @@ class App(QtCore.QObject):
 
                     # Update the object bounding box options
                     a, b, c, d = obj.bounds()
-                    obj.options['xmin'] = a
-                    obj.options['ymin'] = b
-                    obj.options['xmax'] = c
-                    obj.options['ymax'] = d
+                    obj.obj_options['xmin'] = a
+                    obj.obj_options['ymin'] = b
+                    obj.obj_options['xmax'] = c
+                    obj.obj_options['ymax'] = d
 
                     # make sure to update the Offset field in Properties Tab
                     try:
@@ -5504,7 +5504,7 @@ class App(QtCore.QObject):
                 self.plotcanvas.fit_view()
 
                 for obj in obj_list:
-                    out_name = obj.options["name"]
+                    out_name = obj.obj_options["name"]
 
                     if obj.kind == 'gerber':
                         obj.source_file = self.f_handlers.export_gerber(
@@ -5629,10 +5629,10 @@ class App(QtCore.QObject):
 
                     # Update the object bounding box options
                     a, b, c, d = obj.bounds()
-                    obj.options['xmin'] = a
-                    obj.options['ymin'] = b
-                    obj.options['xmax'] = c
-                    obj.options['ymax'] = d
+                    obj.obj_options['xmin'] = a
+                    obj.obj_options['ymin'] = b
+                    obj.obj_options['xmax'] = c
+                    obj.obj_options['ymax'] = d
 
                     # make sure to update the Offset field in Properties Tab
                     try:
@@ -5646,7 +5646,7 @@ class App(QtCore.QObject):
                 self.plotcanvas.fit_view()
 
                 for obj in obj_list:
-                    out_name = obj.options["name"]
+                    out_name = obj.obj_options["name"]
 
                     if obj.kind == 'gerber':
                         obj.source_file = self.f_handlers.export_gerber(
@@ -5999,7 +5999,7 @@ class App(QtCore.QObject):
             new_obj.source_file = deepcopy(obj.source_file)
 
         for obj in self.collection.get_selected():
-            obj_name = obj.options["name"]
+            obj_name = obj.obj_options["name"]
 
             try:
                 if obj.kind == 'excellon':
@@ -6053,7 +6053,7 @@ class App(QtCore.QObject):
                                                                      filename=None, use_thread=False)
 
         for obj in self.collection.get_selected():
-            obj_name = obj.options["name"]
+            obj_name = obj.obj_options["name"]
             outname = str(obj_name) + custom_name
 
             try:
@@ -6081,7 +6081,7 @@ class App(QtCore.QObject):
                 self.on_rename_object(text)
             else:
                 try:
-                    obj.options['name'] = text
+                    obj.obj_options['name'] = text
                 except Exception as e:
                     self.log.error(
                         "App.on_rename_object() --> Could not rename the object in the list. --> %s" % str(e))
@@ -6136,8 +6136,8 @@ class App(QtCore.QObject):
             except AttributeError:
                 pass
 
-            new_obj.options.update(deepcopy(default_data))
-            new_obj.options["tools_mill_tooldia"] = tools_diameters[0] if tools_diameters else 0.0
+            new_obj.obj_options.update(deepcopy(default_data))
+            new_obj.obj_options["tools_mill_tooldia"] = tools_diameters[0] if tools_diameters else 0.0
             new_obj.tools = deepcopy(tools)
             for k in new_obj.tools:
                 new_obj.tools[k]['solid_geometry'] = deepcopy(obj.solid_geometry)
@@ -6152,8 +6152,8 @@ class App(QtCore.QObject):
                 app_obj.log("convert_any2geo() failed")
                 return 'fail'
 
-            new_obj.options.update(deepcopy(default_data))
-            new_obj.options["tools_mill_tooldia"] = tools_diameters[0] if tools_diameters else 0.0
+            new_obj.obj_options.update(deepcopy(default_data))
+            new_obj.obj_options["tools_mill_tooldia"] = tools_diameters[0] if tools_diameters else 0.0
             new_obj.tools = deepcopy(tools)
             for k in new_obj.tools:
                 new_obj.tools[k]['solid_geometry'] = deepcopy(obj.solid_geometry)
@@ -6164,7 +6164,7 @@ class App(QtCore.QObject):
             return
 
         for obj in self.collection.get_selected():
-            outname = '%s_conv' % obj.options["name"]
+            outname = '%s_conv' % obj.obj_options["name"]
 
             try:
                 if obj.kind == 'excellon':
@@ -6250,7 +6250,7 @@ class App(QtCore.QObject):
 
         for obj in self.collection.get_selected():
 
-            outname = '%s_conv' % obj.options["name"]
+            outname = '%s_conv' % obj.obj_options["name"]
 
             try:
                 if obj.kind == 'excellon':
@@ -6430,7 +6430,7 @@ class App(QtCore.QObject):
 
             for obj in self.collection.get_selected():
 
-                obj_name = obj.options["name"]
+                obj_name = obj.obj_options["name"]
                 outname = "%s_conv" % str(obj_name)
                 try:
                     if obj.kind == 'gerber':
@@ -7281,7 +7281,7 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         try:
-            name = obj.options["name"]
+            name = obj.obj_options["name"]
         except AttributeError:
             self.log.debug("on_copy_name() --> No object selected to copy it's name")
             self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
@@ -7422,13 +7422,13 @@ class App(QtCore.QObject):
                     for obj in self.collection.get_list():
                         try:
                             # select the object(s) only if it is enabled (plotted)
-                            if obj.options['plot']:
+                            if obj.obj_options['plot']:
                                 if obj not in self.collection.get_selected():
                                     poly_obj = Polygon(
-                                        [(obj.options['xmin'], obj.options['ymin']),
-                                         (obj.options['xmax'], obj.options['ymin']),
-                                         (obj.options['xmax'], obj.options['ymax']),
-                                         (obj.options['xmin'], obj.options['ymax'])]
+                                        [(obj.obj_options['xmin'], obj.obj_options['ymin']),
+                                         (obj.obj_options['xmax'], obj.obj_options['ymin']),
+                                         (obj.obj_options['xmax'], obj.obj_options['ymax']),
+                                         (obj.obj_options['xmin'], obj.obj_options['ymax'])]
                                     )
                                     if Point(pos).within(poly_obj):
                                         if obj.isHovering is False:
@@ -7650,16 +7650,17 @@ class App(QtCore.QObject):
         for obj in self.collection.get_list():
             try:
                 # select the object(s) only if it is enabled (plotted)
-                if obj.options['plot']:
+                if obj.obj_options['plot']:
                     # it's a line without area
-                    if obj.options['xmin'] == obj.options['xmax'] or obj.options['ymin'] == obj.options['ymax']:
+                    if obj.obj_options['xmin'] == obj.obj_options['xmax'] or \
+                            obj.obj_options['ymin'] == obj.obj_options['ymax']:
                         poly_obj = unary_union(obj.solid_geometry).buffer(0.001)
                     # it's a geometry with area
                     else:
-                        poly_obj = Polygon([(obj.options['xmin'], obj.options['ymin']),
-                                            (obj.options['xmax'], obj.options['ymin']),
-                                            (obj.options['xmax'], obj.options['ymax']),
-                                            (obj.options['xmin'], obj.options['ymax'])])
+                        poly_obj = Polygon([(obj.obj_options['xmin'], obj.obj_options['ymin']),
+                                            (obj.obj_options['xmax'], obj.obj_options['ymin']),
+                                            (obj.obj_options['xmax'], obj.obj_options['ymax']),
+                                            (obj.obj_options['xmin'], obj.obj_options['ymax'])])
                     if poly_obj.is_empty or not poly_obj.is_valid:
                         continue
 
@@ -7668,13 +7669,13 @@ class App(QtCore.QObject):
                             # create the selection box around the selected object
                             if self.defaults['global_selection_shape'] is True:
                                 self.draw_selection_shape(obj)
-                            self.collection.set_active(obj.options['name'])
+                            self.collection.set_active(obj.obj_options['name'])
                     else:
                         if poly_selection.intersects(poly_obj):
                             # create the selection box around the selected object
                             if self.defaults['global_selection_shape'] is True:
                                 self.draw_selection_shape(obj)
-                            self.collection.set_active(obj.options['name'])
+                            self.collection.set_active(obj.obj_options['name'])
                     obj.selection_shape_drawn = True
             except Exception as e:
                 # the Exception here will happen if we try to select on screen and we have an newly (and empty)
@@ -7703,16 +7704,16 @@ class App(QtCore.QObject):
                 if obj.kind == 'script' or obj.kind == 'document':
                     continue
 
-                if key == 'multisel' and obj.options['name'] in self.objects_under_the_click_list:
+                if key == 'multisel' and obj.obj_options['name'] in self.objects_under_the_click_list:
                     continue
 
-                if (curr_x >= obj.options['xmin']) and (curr_x <= obj.options['xmax']) and \
-                        (curr_y >= obj.options['ymin']) and (curr_y <= obj.options['ymax']):
-                    if obj.options['name'] not in self.objects_under_the_click_list:
-                        if obj.options['plot']:
+                if (curr_x >= obj.obj_options['xmin']) and (curr_x <= obj.obj_options['xmax']) and \
+                        (curr_y >= obj.obj_options['ymin']) and (curr_y <= obj.obj_options['ymax']):
+                    if obj.obj_options['name'] not in self.objects_under_the_click_list:
+                        if obj.obj_options['plot']:
                             # add objects to the objects_under_the_click list only if the object is plotted
                             # (active and not disabled)
-                            self.objects_under_the_click_list.append(obj.options['name'])
+                            self.objects_under_the_click_list.append(obj.obj_options['name'])
         except Exception as e:
             self.log.error(
                 "Something went bad in App.select_objects(). Create a list of objects under click pos%s" % str(e))
@@ -7730,7 +7731,7 @@ class App(QtCore.QObject):
                         if self.defaults['global_selection_shape'] is True:
                             self.draw_selection_shape(curr_sel_obj)
                             curr_sel_obj.selection_shape_drawn = True
-                    elif curr_sel_obj.options['name'] not in self.objects_under_the_click_list:
+                    elif curr_sel_obj.obj_options['name'] not in self.objects_under_the_click_list:
                         self.collection.on_objects_selection(False)
                         self.delete_selection_shape()
                         curr_sel_obj.selection_shape_drawn = False
@@ -7762,7 +7763,7 @@ class App(QtCore.QObject):
                         self.collection.set_active(self.objects_under_the_click_list[0])
                         self.collection.get_by_name(self.objects_under_the_click_list[0]).selection_shape_drawn = True
 
-                    name_sel_obj = self.collection.get_active().options['name']
+                    name_sel_obj = self.collection.get_active().obj_options['name']
                     # In case that there is a selected object but it is not in the overlapped object list
                     # make that object inactive and activate the first element in the overlapped object list
                     if name_sel_obj not in self.objects_under_the_click_list:
@@ -7829,25 +7830,25 @@ class App(QtCore.QObject):
             if curr_sel_obj.kind == 'gerber':
                 self.inform.emit('[selected] <span style="color:{color};">{name}</span> {tx}'.format(
                     color='green',
-                    name=str(curr_sel_obj.options['name']),
+                    name=str(curr_sel_obj.obj_options['name']),
                     tx=_("selected"))
                 )
             elif curr_sel_obj.kind == 'excellon':
                 self.inform.emit('[selected] <span style="color:{color};">{name}</span> {tx}'.format(
                     color='brown',
-                    name=str(curr_sel_obj.options['name']),
+                    name=str(curr_sel_obj.obj_options['name']),
                     tx=_("selected"))
                 )
             elif curr_sel_obj.kind == 'cncjob':
                 self.inform.emit('[selected] <span style="color:{color};">{name}</span> {tx}'.format(
                     color='blue',
-                    name=str(curr_sel_obj.options['name']),
+                    name=str(curr_sel_obj.obj_options['name']),
                     tx=_("selected"))
                 )
             elif curr_sel_obj.kind == 'geometry':
                 self.inform.emit('[selected] <span style="color:{color};">{name}</span> {tx}'.format(
                     color='red',
-                    name=str(curr_sel_obj.options['name']),
+                    name=str(curr_sel_obj.obj_options['name']),
                     tx=_("selected"))
                 )
 
@@ -7917,10 +7918,10 @@ class App(QtCore.QObject):
         :return:        None
         """
 
-        pt1 = (float(sel_obj.options['xmin']), float(sel_obj.options['ymin']))
-        pt2 = (float(sel_obj.options['xmax']), float(sel_obj.options['ymin']))
-        pt3 = (float(sel_obj.options['xmax']), float(sel_obj.options['ymax']))
-        pt4 = (float(sel_obj.options['xmin']), float(sel_obj.options['ymax']))
+        pt1 = (float(sel_obj.obj_options['xmin']), float(sel_obj.obj_options['ymin']))
+        pt2 = (float(sel_obj.obj_options['xmax']), float(sel_obj.obj_options['ymin']))
+        pt3 = (float(sel_obj.obj_options['xmax']), float(sel_obj.obj_options['ymax']))
+        pt4 = (float(sel_obj.obj_options['xmin']), float(sel_obj.obj_options['ymax']))
 
         hover_rect = Polygon([pt1, pt2, pt3, pt4])
         if self.app_units.upper() == 'MM':
@@ -7969,14 +7970,15 @@ class App(QtCore.QObject):
             return
 
         # it's a line without area
-        if sel_obj.options['xmin'] == sel_obj.options['xmax'] or sel_obj.options['ymin'] == sel_obj.options['ymax']:
+        if sel_obj.obj_options['xmin'] == sel_obj.obj_options['xmax'] or \
+                sel_obj.obj_options['ymin'] == sel_obj.obj_options['ymax']:
             sel_rect = unary_union(sel_obj.solid_geometry).buffer(0.100001)
         # it's a geometry with area
         else:
-            pt1 = (float(sel_obj.options['xmin']), float(sel_obj.options['ymin']))
-            pt2 = (float(sel_obj.options['xmax']), float(sel_obj.options['ymin']))
-            pt3 = (float(sel_obj.options['xmax']), float(sel_obj.options['ymax']))
-            pt4 = (float(sel_obj.options['xmin']), float(sel_obj.options['ymax']))
+            pt1 = (float(sel_obj.obj_options['xmin']), float(sel_obj.obj_options['ymin']))
+            pt2 = (float(sel_obj.obj_options['xmax']), float(sel_obj.obj_options['ymin']))
+            pt3 = (float(sel_obj.obj_options['xmax']), float(sel_obj.obj_options['ymax']))
+            pt4 = (float(sel_obj.obj_options['xmin']), float(sel_obj.obj_options['ymax']))
 
             sel_rect = Polygon([pt1, pt2, pt3, pt4])
 
@@ -8107,7 +8109,7 @@ class App(QtCore.QObject):
 
                 for ob in sel_objects:
                     ob.read_form()
-                    fname = os.path.join(path, '%s.%s' % (ob.options['name'], file_extension))
+                    fname = os.path.join(path, '%s.%s' % (ob.obj_options['name'], file_extension))
                     ob.export_gcode_handler(fname, is_gcode=True, rename_object=False)
                 return
 
@@ -8865,10 +8867,10 @@ class App(QtCore.QObject):
         # self.inform.emit('%s...' % _("Working"))
 
         for obj in objects:
-            if obj.options['plot'] is False:
-                obj.options.set_change_callback(lambda x: None)
+            if obj.obj_options['plot'] is False:
+                obj.obj_options.set_change_callback(lambda x: None)
                 try:
-                    obj.options['plot'] = True
+                    obj.obj_options['plot'] = True
                     obj.ui.plot_cb.stateChanged.disconnect(obj.on_plot_cb_click)
                     # disable this cb while disconnected,
                     # in case the operation takes time the user is not allowed to change it
@@ -8888,13 +8890,13 @@ class App(QtCore.QObject):
                     obj.build_ui()
                     # and try again
                     self.enable_plots(objects)
-                obj.options.set_change_callback(obj.on_options_change)
+                obj.obj_options.set_change_callback(obj.on_options_change)
         self.collection.update_view()
 
         def worker_task(objs):
             with self.proc_container.new(_("Enabling plots ...")):
                 for plot_obj in objs:
-                    # obj.options['plot'] = True
+                    # obj.obj_options['plot'] = True
                     if isinstance(plot_obj, CNCJobObject):
                         plot_obj.plot(visible=True, kind=self.defaults["cncjob_plot_kind"])
                     else:
@@ -8914,10 +8916,10 @@ class App(QtCore.QObject):
         # self.inform.emit('%s...' % _("Working"))
 
         for obj in objects:
-            if obj.options['plot'] is True:
-                obj.options.set_change_callback(lambda x: None)
+            if obj.obj_options['plot'] is True:
+                obj.obj_options.set_change_callback(lambda x: None)
                 try:
-                    obj.options['plot'] = False
+                    obj.obj_options['plot'] = False
                     obj.ui.plot_cb.stateChanged.disconnect(obj.on_plot_cb_click)
                     obj.ui.plot_cb.setDisabled(True)
                 except (AttributeError, TypeError):
@@ -8935,7 +8937,7 @@ class App(QtCore.QObject):
                     obj.build_ui()
                     # and try again
                     self.disable_plots(objects)
-                obj.options.set_change_callback(obj.on_options_change)
+                obj.obj_options.set_change_callback(obj.on_options_change)
 
         try:
             self.delete_selection_shape()
@@ -8947,7 +8949,7 @@ class App(QtCore.QObject):
         def worker_task(objs):
             with self.proc_container.new(_("Disabling plots ...")):
                 for plot_obj in objs:
-                    # obj.options['plot'] = True
+                    # obj.obj_options['plot'] = True
                     if isinstance(plot_obj, CNCJobObject):
                         plot_obj.plot(visible=False, kind=self.defaults["cncjob_plot_kind"])
                     else:
@@ -8970,10 +8972,10 @@ class App(QtCore.QObject):
         self.log.debug("Toggling plots ...")
         # self.inform.emit('%s...' % _("Working"))
         for obj in objects:
-            if obj.options['plot'] is False:
-                obj.options['plot'] = True
+            if obj.obj_options['plot'] is False:
+                obj.obj_options['plot'] = True
             else:
-                obj.options['plot'] = False
+                obj.obj_options['plot'] = False
         try:
             self.delete_selection_shape()
         except Exception:
@@ -8997,12 +8999,12 @@ class App(QtCore.QObject):
 
     def gerber_redraw(self):
         # the Gerber redraw should work only if there is only one object of type Gerber and active in the selection
-        sel_gerb_objs = [o for o in self.collection.get_selected() if o.kind == 'gerber' and o.options['plot']]
+        sel_gerb_objs = [o for o in self.collection.get_selected() if o.kind == 'gerber' and o.obj_options['plot']]
         if len(sel_gerb_objs) > 1:
             return
 
         obj = self.collection.get_active()
-        if not obj or (obj.options['plot'] is False or obj.kind != 'gerber'):
+        if not obj or (obj.obj_options['plot'] is False or obj.kind != 'gerber'):
             # we don't replot something that is disabled or if it is not Gerber type
             return
 
@@ -9264,8 +9266,6 @@ class App(QtCore.QObject):
 
         :return:    None
         """
-
-        self.defaults.report_usage("on_options_app2project")
 
         self.preferencesUiManager.defaults_read_form()
         self.options.update(self.defaults)
@@ -9734,7 +9734,7 @@ class MenuFileHandlers(QtCore.QObject):
             msgbox.exec()
             return
 
-        name = obj.options["name"]
+        name = obj.obj_options["name"]
 
         _filter = "SVG File (*.svg);;All Files (*.*)"
         try:
@@ -9818,7 +9818,7 @@ class MenuFileHandlers(QtCore.QObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Gerber objects can be saved as Gerber files..."))
             return
 
-        name = self.app.collection.get_active().options["name"]
+        name = self.app.collection.get_active().obj_options["name"]
 
         _filter = "Gerber File (*.GBR);;Gerber File (*.GRB);;All Files (*.*)"
         try:
@@ -9860,7 +9860,7 @@ class MenuFileHandlers(QtCore.QObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Script objects can be saved as TCL Script files..."))
             return
 
-        name = self.app.collection.get_active().options["name"]
+        name = self.app.collection.get_active().obj_options["name"]
 
         _filter = "FlatCAM Scripts (*.FlatScript);;All Files (*.*)"
         try:
@@ -9902,7 +9902,7 @@ class MenuFileHandlers(QtCore.QObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Document objects can be saved as Document files..."))
             return
 
-        name = self.app.collection.get_active().options["name"]
+        name = self.app.collection.get_active().obj_options["name"]
 
         _filter = "FlatCAM Documents (*.FlatDoc);;All Files (*.*)"
         try:
@@ -9944,7 +9944,7 @@ class MenuFileHandlers(QtCore.QObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Excellon objects can be saved as Excellon files..."))
             return
 
-        name = self.app.collection.get_active().options["name"]
+        name = self.app.collection.get_active().obj_options["name"]
 
         _filter = "Excellon File (*.DRL);;Excellon File (*.TXT);;All Files (*.*)"
         try:
@@ -9985,7 +9985,7 @@ class MenuFileHandlers(QtCore.QObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Excellon objects can be saved as Excellon files..."))
             return
 
-        name = self.app.collection.get_active().options["name"]
+        name = self.app.collection.get_active().obj_options["name"]
 
         _filter = self.defaults["excellon_save_filters"]
         try:
@@ -10030,7 +10030,7 @@ class MenuFileHandlers(QtCore.QObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Gerber objects can be saved as Gerber files..."))
             return
 
-        name = self.app.collection.get_active().options["name"]
+        name = self.app.collection.get_active().obj_options["name"]
 
         _filter_ = self.defaults['gerber_save_filters']
         try:
@@ -10088,7 +10088,7 @@ class MenuFileHandlers(QtCore.QObject):
             msgbox.exec()
             return
 
-        name = self.app.collection.get_active().options["name"]
+        name = self.app.collection.get_active().obj_options["name"]
 
         _filter_ = "DXF File .dxf (*.DXF);;All Files (*.*)"
         try:
@@ -10267,7 +10267,7 @@ class MenuFileHandlers(QtCore.QObject):
         if keep_scripts is True:
             for prj_obj in self.app.collection.get_list():
                 if prj_obj.kind != 'script':
-                    self.app.collection.delete_by_name(prj_obj.options['name'], select_project=False)
+                    self.app.collection.delete_by_name(prj_obj.obj_options['name'], select_project=False)
         else:
             self.app.collection.delete_all()
 
@@ -10582,7 +10582,7 @@ class MenuFileHandlers(QtCore.QObject):
         try:
             obj_selection = self.app.collection.get_selected()
             if len(obj_selection) == 1:
-                obj_name = str(obj_selection[0].options['name'])
+                obj_name = str(obj_selection[0].obj_options['name'])
             else:
                 obj_name = _("FlatCAM objects print")
         except AttributeError as err:
@@ -11878,7 +11878,7 @@ class MenuFileHandlers(QtCore.QObject):
         self.app.project_filename = filename
 
         # for some reason, setting ui_title does not work when this method is called from Tcl Shell
-        # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
+        # it's because the TclCommand is run in another thread (it inherits TclCommandSignaled)
         if cli is None:
             self.app.set_screen_units(self.app.options["units"])
 
@@ -11971,9 +11971,9 @@ class MenuFileHandlers(QtCore.QObject):
                 self.log.error("save_project() --> There was no active object. Skipping read_form. %s" % str(e))
 
             d = {
-                "objs":     [obj.to_dict() for obj in self.app.collection.get_list()],
-                "options":  self.app.options,
-                "version":  self.app.version
+                "objs":             [obj.to_dict() for obj in self.app.collection.get_list()],
+                "options":          self.app.options,
+                "version":          self.app.version
             }
 
             if self.defaults["global_save_compressed"] is True:

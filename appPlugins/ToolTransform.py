@@ -345,7 +345,7 @@ class ToolTransform(AppTool):
                                 pass
 
                         # add information to the object that it was changed and how much
-                        sel_obj.options['rotate'] = num
+                        sel_obj.obj_options['rotate'] = num
                         sel_obj.plot()
                     self.app.inform.emit('[success] %s...' % _('Rotate done'))
                 except Exception as e:
@@ -372,19 +372,19 @@ class ToolTransform(AppTool):
                                 sel_obj.mirror('X', (px, py))
                                 # add information to the object that it was changed and how much
                                 # the axis is reversed because of the reference
-                                if 'mirror_y' in sel_obj.options:
-                                    sel_obj.options['mirror_y'] = not sel_obj.options['mirror_y']
+                                if 'mirror_y' in sel_obj.obj_options:
+                                    sel_obj.obj_options['mirror_y'] = not sel_obj.obj_options['mirror_y']
                                 else:
-                                    sel_obj.options['mirror_y'] = True
+                                    sel_obj.obj_options['mirror_y'] = True
                                 self.app.inform.emit('[success] %s...' % _('Flip on Y axis done'))
                             elif axis == 'Y':
                                 sel_obj.mirror('Y', (px, py))
                                 # add information to the object that it was changed and how much
                                 # the axis is reversed because of the reference
-                                if 'mirror_x' in sel_obj.options:
-                                    sel_obj.options['mirror_x'] = not sel_obj.options['mirror_x']
+                                if 'mirror_x' in sel_obj.obj_options:
+                                    sel_obj.obj_options['mirror_x'] = not sel_obj.obj_options['mirror_x']
                                 else:
-                                    sel_obj.options['mirror_x'] = True
+                                    sel_obj.obj_options['mirror_x'] = True
                                 self.app.inform.emit('[success] %s...' % _('Flip on X axis done'))
                             self.app.app_obj.object_changed.emit(sel_obj)
                         sel_obj.plot()
@@ -414,8 +414,8 @@ class ToolTransform(AppTool):
                         else:
                             sel_obj.skew(xvalue, yvalue, point=(px, py))
                             # add information to the object that it was changed and how much
-                            sel_obj.options['skew_x'] = xvalue
-                            sel_obj.options['skew_y'] = yvalue
+                            sel_obj.obj_options['skew_x'] = xvalue
+                            sel_obj.obj_options['skew_y'] = yvalue
 
                             # make sure to update the Offset field in Properties Tab
                             try:
@@ -448,8 +448,8 @@ class ToolTransform(AppTool):
                         else:
                             sel_obj.scale(xfactor, yfactor, point=(px, py))
                             # add information to the object that it was changed and how much
-                            sel_obj.options['scale_x'] = xfactor
-                            sel_obj.options['scale_y'] = yfactor
+                            sel_obj.obj_options['scale_x'] = xfactor
+                            sel_obj.obj_options['scale_y'] = yfactor
 
                             # make sure to update the Offset field in Properties Tab
                             try:
@@ -482,11 +482,11 @@ class ToolTransform(AppTool):
                             if axis == 'X':
                                 sel_obj.offset((num, 0))
                                 # add information to the object that it was changed and how much
-                                sel_obj.options['offset_x'] = num
+                                sel_obj.obj_options['offset_x'] = num
                             elif axis == 'Y':
                                 sel_obj.offset((0, num))
                                 # add information to the object that it was changed and how much
-                                sel_obj.options['offset_y'] = num
+                                sel_obj.obj_options['offset_y'] = num
 
                             # make sure to update the Offset field in Properties Tab
                             try:
@@ -517,12 +517,12 @@ class ToolTransform(AppTool):
                             self.app.inform.emit(_("CNCJob objects can't be buffered."))
                         elif sel_obj.kind.lower() == 'gerber':
                             sel_obj.buffer(value, join, factor)
-                            sel_obj.source_file = self.app.f_handlers.export_gerber(obj_name=sel_obj.options['name'],
+                            sel_obj.source_file = self.app.f_handlers.export_gerber(obj_name=sel_obj.obj_options['name'],
                                                                                     filename=None, local_use=sel_obj,
                                                                                     use_thread=False)
                         elif sel_obj.kind.lower() == 'excellon':
                             sel_obj.buffer(value, join, factor)
-                            sel_obj.source_file = self.app.f_handlers.export_excellon(obj_name=sel_obj.options['name'],
+                            sel_obj.source_file = self.app.f_handlers.export_excellon(obj_name=sel_obj.obj_options['name'],
                                                                                       filename=None, local_use=sel_obj,
                                                                                       use_thread=False)
                         elif sel_obj.kind.lower() == 'geometry':

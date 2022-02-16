@@ -87,7 +87,7 @@ class Film(AppTool):
 
         if found_idx:
             try:
-                name = current.indexes()[0].internalPointer().obj.options['name']
+                name = current.indexes()[0].internalPointer().obj.obj_options['name']
                 kind = current.indexes()[0].internalPointer().obj.kind
 
                 if kind in ['gerber', 'geometry']:
@@ -223,7 +223,7 @@ class Film(AppTool):
 
         obj = self.app.collection.get_active()
         if obj:
-            obj_name = obj.options['name']
+            obj_name = obj.obj_options['name']
             if obj.kind == 'gerber':
                 # run once to make sure that the obj_type attribute is updated in the FCComboBox
                 self.ui.tf_type_obj_combo.set_value('grb')
@@ -639,7 +639,7 @@ class Film(AppTool):
 
         p_size = self.ui.pagesize_combo.get_value()
         orientation = self.ui.orientation_radio.get_value()
-        color = obj.options['tools_film_color']
+        color = obj.obj_options['tools_film_color']
         transparency_level = opacity_val
 
         def make_negative_film(color, transparency_level, scale_factor_x, scale_factor_y, use_convex_hull, rounded_box):
@@ -972,7 +972,7 @@ class Film(AppTool):
 
         p_size = self.ui.pagesize_combo.get_value()
         orientation = self.ui.orientation_radio.get_value()
-        color = obj.options['tools_film_color']
+        color = obj.obj_options['tools_film_color']
         transparency_level = opacity_val
 
         def make_positive_film(color, transparency_level, scale_factor_x, scale_factor_y):

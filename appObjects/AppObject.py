@@ -119,12 +119,12 @@ class AppObject(QtCore.QObject):
         obj.notHovering = True
 
         # IMPORTANT
-        # The key names in defaults and options dictionary's are not random:
+        # The key names in defaults and options dictionaries are not random:
         # they have to have in name first the type of the object (geometry, excellon, cncjob and gerber) or how it's
         # called here, the 'kind' followed by an underline. Above the App default values from self.defaults are
-        # copied to self.options. After that, below, depending on the type of
+        # copied to self.obj_options. After that, below, depending on the type of
         # object that is created, it will strip the name of the object and the underline (if the original key was
-        # let's say "excellon_toolchange", it will strip the excellon_) and to the obj.options the key will become
+        # let's say "excellon_toolchange", it will strip the excellon_) and to the obj.obj_options the key will become
         # "toolchange"
 
         # ############################################################################################################
@@ -133,27 +133,27 @@ class AppObject(QtCore.QObject):
         for option in self.app.options:
             if option.find(kind + "_") == 0:
                 oname = option[len(kind) + 1:]
-                obj.options[oname] = self.app.options[option]
+                obj.obj_options[oname] = self.app.options[option]
 
         # add some of the FlatCAM Tools related properties
         # it is done like this to preserve some kind of order in the keys
         if kind == 'excellon':
             for option in self.app.options:
                 if option.find('tools_drill_') == 0:
-                    obj.options[option] = self.app.options[option]
+                    obj.obj_options[option] = self.app.options[option]
         if kind == 'gerber':
             for option in self.app.options:
                 if option.find('tools_iso_') == 0:
-                    obj.options[option] = self.app.options[option]
+                    obj.obj_options[option] = self.app.options[option]
 
         # the milling options should be inherited by all manufacturing objects
         if kind in ['excellon', 'gerber', 'geometry', 'cncjob']:
             for option in self.app.options:
                 if option.find('tools_mill_') == 0:
-                    obj.options[option] = self.app.options[option]
+                    obj.obj_options[option] = self.app.options[option]
             for option in self.app.options:
                 if option.find('tools_') == 0:
-                    obj.options[option] = self.app.options[option]
+                    obj.obj_options[option] = self.app.options[option]
         # ############################################################################################################
         # ############################################################################################################
 
@@ -193,16 +193,16 @@ class AppObject(QtCore.QObject):
             self.app.log.debug("%f seconds converting units." % (t3 - t2))
 
         # ############################################################################################################
-        # Create the bounding box for the object and then add the results to the obj.options
+        # Create the bounding box for the object and then add the results to the obj.obj_options
         # But not for Scripts or for Documents
         # ############################################################################################################
         if kind != 'document' and kind != 'script':
             try:
                 xmin, ymin, xmax, ymax = obj.bounds()
-                obj.options['xmin'] = xmin
-                obj.options['ymin'] = ymin
-                obj.options['xmax'] = xmax
-                obj.options['ymax'] = ymax
+                obj.obj_options['xmin'] = xmin
+                obj.obj_options['ymin'] = ymin
+                obj.obj_options['xmax'] = xmax
+                obj.obj_options['ymax'] = ymax
             except Exception as e:
                 self.app.log.error("AppObject.new_object() -> The object has no bounds properties. %s" % str(e))
                 return "fail"
@@ -252,7 +252,7 @@ class AppObject(QtCore.QObject):
         self.app.all_objects_list = self.app.collection.get_list()
 
         # self.app.inform.emit('[selected] %s created & selected: %s' %
-        #                  (str(obj.kind).capitalize(), str(obj.options['name'])))
+        #                  (str(obj.kind).capitalize(), str(obj.obj_options['name'])))
 
         # #############################################################################################################
         # ######################  Set colors for the message in the Status Bar  #######################################
@@ -261,37 +261,37 @@ class AppObject(QtCore.QObject):
             self.app.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
                 kind=obj.kind.capitalize(),
                 color='green',
-                name=str(obj.options['name']), tx=_("created/selected"))
+                name=str(obj.obj_options['name']), tx=_("created/selected"))
             )
         elif obj.kind == 'excellon':
             self.app.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
                 kind=obj.kind.capitalize(),
                 color='brown',
-                name=str(obj.options['name']), tx=_("created/selected"))
+                name=str(obj.obj_options['name']), tx=_("created/selected"))
             )
         elif obj.kind == 'cncjob':
             self.app.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
                 kind=obj.kind.capitalize(),
                 color='blue',
-                name=str(obj.options['name']), tx=_("created/selected"))
+                name=str(obj.obj_options['name']), tx=_("created/selected"))
             )
         elif obj.kind == 'geometry':
             self.app.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
                 kind=obj.kind.capitalize(),
                 color='red',
-                name=str(obj.options['name']), tx=_("created/selected"))
+                name=str(obj.obj_options['name']), tx=_("created/selected"))
             )
         elif obj.kind == 'script':
             self.app.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
                 kind=obj.kind.capitalize(),
                 color='orange',
-                name=str(obj.options['name']), tx=_("created/selected"))
+                name=str(obj.obj_options['name']), tx=_("created/selected"))
             )
         elif obj.kind == 'document':
             self.app.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
                 kind=obj.kind.capitalize(),
                 color='darkCyan',
-                name=str(obj.options['name']), tx=_("created/selected"))
+                name=str(obj.obj_options['name']), tx=_("created/selected"))
             )
 
         # ############################################################################################################
@@ -344,7 +344,7 @@ class AppObject(QtCore.QObject):
         if auto_select or self.app.ui.notebook.currentWidget() is self.app.ui.properties_tab:
             # select the just opened object but deselect the previous ones
             self.app.collection.set_all_inactive()
-            self.app.collection.set_active(obj.options["name"])
+            self.app.collection.set_active(obj.obj_options["name"])
         else:
             self.app.collection.set_all_inactive()
 
@@ -380,7 +380,7 @@ class AppObject(QtCore.QObject):
         """
         Called whenever the geometry of the object was changed in some way.
         This require the update of it's bounding values so it can be the selected on canvas.
-        Update the bounding box data from obj.options
+        Update the bounding box data from obj.obj_options
 
         :param obj: the object that was changed
         :return: None
@@ -390,12 +390,12 @@ class AppObject(QtCore.QObject):
             xmin, ymin, xmax, ymax = obj.bounds()
         except TypeError:
             return
-        obj.options['xmin'] = xmin
-        obj.options['ymin'] = ymin
-        obj.options['xmax'] = xmax
-        obj.options['ymax'] = ymax
+        obj.obj_options['xmin'] = xmin
+        obj.obj_options['ymin'] = ymin
+        obj.obj_options['xmax'] = xmax
+        obj.obj_options['ymax'] = ymax
 
-        self.app.log.debug("Object changed, updating the bounding box data on self.options")
+        self.app.log.debug("Object changed, updating the bounding box data on self.obj_options")
         # delete the old selection shape
         self.app.delete_selection_shape()
         self.app.should_we_save = True
@@ -489,10 +489,10 @@ class AppObject(QtCore.QObject):
             new_obj.follow_geometry = []
 
             try:
-                new_obj.options['xmin'] = 0
-                new_obj.options['ymin'] = 0
-                new_obj.options['xmax'] = 0
-                new_obj.options['ymax'] = 0
+                new_obj.obj_options['xmin'] = 0
+                new_obj.obj_options['ymin'] = 0
+                new_obj.obj_options['xmax'] = 0
+                new_obj.obj_options['ymax'] = 0
             except KeyError:
                 pass
 

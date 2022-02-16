@@ -1288,7 +1288,7 @@ class ShapeCollectionLegacy:
         self._linewidth = linewidth
 
         if name is None:
-            axes_name = self.obj.options['name']
+            axes_name = self.obj.obj_options['name']
         else:
             axes_name = name
 
@@ -1433,7 +1433,7 @@ class ShapeCollectionLegacy:
             if local_shapes[element]['visible'] is True:
                 if obj_type == 'excellon':
                     # Plot excellon (All polygons?)
-                    if self.obj.options["solid"] and isinstance(local_shapes[element]['shape'], Polygon):
+                    if self.obj.obj_options["solid"] and isinstance(local_shapes[element]['shape'], Polygon):
                         try:
                             patch = PolygonPatch(local_shapes[element]['shape'],
                                                  facecolor=local_shapes[element]['face_color'],
@@ -1483,12 +1483,12 @@ class ShapeCollectionLegacy:
                         except Exception as e:
                             self.app.log.error("ShapeCollectionLegacy.redraw() geometry no poly --> %s" % str(e))
                 elif obj_type == 'gerber':
-                    if self.obj.options["multicolored"]:
+                    if self.obj.obj_options["multicolored"]:
                         linespec = '-'
                     else:
                         linespec = 'k-'
 
-                    if self.obj.options["solid"]:
+                    if self.obj.obj_options["solid"]:
                         if update_colors:
                             gerber_fill_color = update_colors[0]
                             gerber_outline_color = update_colors[1]

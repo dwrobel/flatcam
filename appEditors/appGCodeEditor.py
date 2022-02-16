@@ -115,7 +115,7 @@ class AppGCodeEditor(QtCore.QObject):
         self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
         # make a new name for the new Excellon object (the one with edited content)
-        self.edited_obj_name = self.gcode_obj.options['name']
+        self.edited_obj_name = self.gcode_obj.obj_options['name']
         self.ui.name_entry.set_value(self.edited_obj_name)
 
         self.activate()
@@ -135,12 +135,12 @@ class AppGCodeEditor(QtCore.QObject):
 
         # if the FlatCAM object is Excellon don't build the CNC Tools Table but hide it
         self.ui.cnc_tools_table.hide()
-        if self.gcode_obj.options['type'].lower() == 'geometry':
+        if self.gcode_obj.obj_options['type'].lower() == 'geometry':
             self.ui.cnc_tools_table.show()
             self.build_cnc_tools_table()
 
         self.ui.exc_cnc_tools_table.hide()
-        if self.gcode_obj.options['type'].lower() == 'excellon':
+        if self.gcode_obj.obj_options['type'].lower() == 'excellon':
             self.ui.exc_cnc_tools_table.show()
             self.build_excellon_cnc_tools()
 
@@ -345,11 +345,11 @@ class AppGCodeEditor(QtCore.QObject):
         :rtype:
         """
         # rows selected
-        if self.gcode_obj.options['type'].lower() == 'geometry':
+        if self.gcode_obj.obj_options['type'].lower() == 'geometry':
             self.ui.cnc_tools_table.clicked.connect(self.on_row_selection_change)
             self.ui.cnc_tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
 
-        if self.gcode_obj.options['type'].lower() == 'excellon':
+        if self.gcode_obj.obj_options['type'].lower() == 'excellon':
             self.ui.exc_cnc_tools_table.clicked.connect(self.on_row_selection_change)
             self.ui.exc_cnc_tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
 
@@ -360,7 +360,7 @@ class AppGCodeEditor(QtCore.QObject):
         :rtype:
         """
         # rows selected
-        if self.gcode_obj.options['type'].lower() == 'geometry':
+        if self.gcode_obj.obj_options['type'].lower() == 'geometry':
             try:
                 self.ui.cnc_tools_table.clicked.disconnect(self.on_row_selection_change)
             except (TypeError, AttributeError):
@@ -370,7 +370,7 @@ class AppGCodeEditor(QtCore.QObject):
             except (TypeError, AttributeError):
                 pass
 
-        if self.gcode_obj.options['type'].lower() == 'excellon':
+        if self.gcode_obj.obj_options['type'].lower() == 'excellon':
             try:
                 self.ui.exc_cnc_tools_table.clicked.disconnect(self.on_row_selection_change)
             except (TypeError, AttributeError):
@@ -389,9 +389,9 @@ class AppGCodeEditor(QtCore.QObject):
         flags = QtGui.QTextDocument.FindFlag.FindCaseSensitively
         self.edit_area.moveCursor(QtGui.QTextCursor.MoveOperation.Start)
 
-        if self.gcode_obj.options['type'].lower() == 'geometry':
+        if self.gcode_obj.obj_options['type'].lower() == 'geometry':
             t_table = self.ui.cnc_tools_table
-        elif self.gcode_obj.options['type'].lower() == 'excellon':
+        elif self.gcode_obj.obj_options['type'].lower() == 'excellon':
             t_table = self.ui.exc_cnc_tools_table
         else:
             return
@@ -455,9 +455,9 @@ class AppGCodeEditor(QtCore.QObject):
                 tool_no = int(t_table.item(row, 0).text())
 
                 text_to_be_found = None
-                if self.gcode_obj.options['type'].lower() == 'geometry':
+                if self.gcode_obj.obj_options['type'].lower() == 'geometry':
                     text_to_be_found = self.gcode_obj.tools[tool_no]['gcode']
-                elif self.gcode_obj.options['type'].lower() == 'excellon':
+                elif self.gcode_obj.obj_options['type'].lower() == 'excellon':
                     tool_dia = self.app.dec_format(float(t_table.item(row, 1).text()), dec=self.decimals)
                     for tool_id in self.gcode_obj.tools:
                         tool_d = self.gcode_obj.tools[tool_id]['tooldia']
@@ -565,9 +565,9 @@ class AppGCodeEditor(QtCore.QObject):
         :return:
         :rtype:
         """
-        if self.gcode_obj.options['type'].lower() == 'geometry':
+        if self.gcode_obj.obj_options['type'].lower() == 'geometry':
             t_table = self.ui.cnc_tools_table
-        elif self.gcode_obj.options['type'].lower() == 'excellon':
+        elif self.gcode_obj.obj_options['type'].lower() == 'excellon':
             t_table = self.ui.exc_cnc_tools_table
         else:
             return
