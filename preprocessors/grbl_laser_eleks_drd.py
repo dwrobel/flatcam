@@ -31,14 +31,14 @@ class grbl_laser_eleks_drd(PreProc):
         gcode += '(The moves are only on horizontal plane X-Y. There are no Z moves.)\n'
         gcode += '(Assumes manual laser focussing.)\n\n'
 
-        xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
-        xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
-        ymin = '%.*f' % (p.coords_decimals, p['options']['ymin'])
-        ymax = '%.*f' % (p.coords_decimals, p['options']['ymax'])
+        xmin = '%.*f' % (p.coords_decimals, p['obj_options']['xmin'])
+        xmax = '%.*f' % (p.coords_decimals, p['obj_options']['xmax'])
+        ymin = '%.*f' % (p.coords_decimals, p['obj_options']['ymin'])
+        ymax = '%.*f' % (p.coords_decimals, p['obj_options']['ymax'])
         gcode += '(Feedrate: ' + str(p['feedrate']) + units + '/min' + ')\n'
         gcode += '(Feedrate rapids ' + str(p['feedrate_rapid']) + units + '/min' + ')\n'
         gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
-        if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
+        if str(p['obj_options']['type']) == 'Excellon' or str(p['obj_options']['type']) == 'Excellon Geometry':
             gcode += '(Preprocessor Excellon: ' + str(p['pp_excellon_name']) + ')\n'
         else:
             gcode += '(Preprocessor Geometry: ' + str(p['pp_geometry_name']) + ')\n'
@@ -75,7 +75,7 @@ class grbl_laser_eleks_drd(PreProc):
         else:
             gcode = 'M03'
         gcode += ';down'
-        if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
+        if str(p['obj_options']['type']) == 'Excellon' or str(p['obj_options']['type']) == 'Excellon Geometry':
             gcode += '\n'
             gcode += 'G02 '  # Draw Top Little Arc
             gcode += ('X' + self.coordinate_format + ' Y' + self.coordinate_format) % \
@@ -136,7 +136,7 @@ class grbl_laser_eleks_drd(PreProc):
 
     def rapid_code(self, p):
         gcode = 'G00 '
-        if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
+        if str(p['obj_options']['type']) == 'Excellon' or str(p['obj_options']['type']) == 'Excellon Geometry':
             gcode += (self.position_ldos_code(p)).format(**p)
         else:
             gcode += (self.position_code(p)).format(**p)

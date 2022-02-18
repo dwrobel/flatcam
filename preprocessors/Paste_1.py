@@ -24,12 +24,12 @@ class Paste_1(AppPreProcTools):
             coords_xy = p['xy_toolchange']
         gcode = '(This preprocessor is to be used only with the SolderPaste Plugin.)\n\n'
 
-        xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
-        xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
-        ymin = '%.*f' % (p.coords_decimals, p['options']['ymin'])
-        ymax = '%.*f' % (p.coords_decimals, p['options']['ymax'])
+        xmin = '%.*f' % (p.coords_decimals, p['obj_options']['xmin'])
+        xmax = '%.*f' % (p.coords_decimals, p['obj_options']['xmax'])
+        ymin = '%.*f' % (p.coords_decimals, p['obj_options']['ymin'])
+        ymax = '%.*f' % (p.coords_decimals, p['obj_options']['ymax'])
 
-        gcode += '(TOOL DIAMETER: ' + str(p['options']['tool_dia']) + units + ')\n'
+        gcode += '(TOOL DIAMETER: ' + str(p['obj_options']['tool_dia']) + units + ')\n'
         gcode += '(Feedrate_XY: ' + str(p['frxy']) + units + '/min' + ')\n'
         gcode += '(Feedrate_Z: ' + str(p['frz']) + units + '/min' + ')\n'
         gcode += '(Feedrate_Z_Dispense: ' + str(p['frz_dispense']) + units + '/min' + ')\n'

@@ -22,13 +22,13 @@ class GRBL_11(PreProc):
         gcode = '(This preprocessor is used with a motion controller loaded with GRBL firmware.)\n'
         gcode += '(It is configured to be compatible with almost any version of GRBL firmware.)\n\n'
 
-        xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
-        xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
-        ymin = '%.*f' % (p.coords_decimals, p['options']['ymin'])
-        ymax = '%.*f' % (p.coords_decimals, p['options']['ymax'])
+        xmin = '%.*f' % (p.coords_decimals, p['obj_options']['xmin'])
+        xmax = '%.*f' % (p.coords_decimals, p['obj_options']['xmax'])
+        ymin = '%.*f' % (p.coords_decimals, p['obj_options']['ymin'])
+        ymax = '%.*f' % (p.coords_decimals, p['obj_options']['ymax'])
 
-        if str(p['options']['type']) == 'Geometry':
-            gcode += '(TOOL DIAMETER: ' + str(p['options']['tool_dia']) + units + ')\n'
+        if str(p['obj_options']['type']) == 'Geometry':
+            gcode += '(TOOL DIAMETER: ' + str(p['obj_options']['tool_dia']) + units + ')\n'
             gcode += '(Feedrate_XY: ' + str(p['feedrate']) + units + '/min' + ')\n'
             gcode += '(Feedrate_Z: ' + str(p['z_feedrate']) + units + '/min' + ')\n'
             gcode += '(Feedrate rapids ' + str(p['feedrate_rapid']) + units + '/min' + ')\n' + '\n'
@@ -38,7 +38,7 @@ class GRBL_11(PreProc):
                          str(math.ceil(abs(p['z_cut']) / p['z_depthpercut'])) + ' passes' + ')\n'
             gcode += '(Z_Move: ' + str(p['z_move']) + units + ')\n'
 
-        elif str(p['options']['type']) == 'Excellon' and p['use_ui'] is True:
+        elif str(p['obj_options']['type']) == 'Excellon' and p['use_ui'] is True:
             gcode += '\n(TOOLS DIAMETER: )\n'
             for tool, val in p['tools'].items():
                 gcode += '(Tool: %s -> ' % str(tool) + 'Dia: %s' % str(val["tooldia"]) + ')\n'
@@ -91,7 +91,7 @@ class GRBL_11(PreProc):
             gcode += '(X,Y End: ' + "None" + units + ')\n'
         gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
 
-        if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
+        if str(p['obj_options']['type']) == 'Excellon' or str(p['obj_options']['type']) == 'Excellon Geometry':
             gcode += '(Preprocessor Excellon: ' + str(p['pp_excellon_name']) + ')\n' + '\n'
         else:
             gcode += '(Preprocessor Geometry: ' + str(p['pp_geometry_name']) + ')\n' + '\n'
@@ -139,7 +139,7 @@ class GRBL_11(PreProc):
 
         toolC_formatted = '%.*f' % (p.decimals, p.toolC)
 
-        if str(p['options']['type']) == 'Excellon':
+        if str(p['obj_options']['type']) == 'Excellon':
             no_drills = p['tools'][int(p['tool'])]['nr_drills']
 
             if toolchangexy is not None:

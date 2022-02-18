@@ -26,10 +26,10 @@ class GRBL_laser_z(PreProc):
         gcode += '(It is for the case when it is used together with a LASER connected on the SPINDLE connector.)\n'
         gcode += '(On toolchange event the laser will move to a defined Z height to change the laser dot size.)\n\n'
 
-        xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
-        xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
-        ymin = '%.*f' % (p.coords_decimals, p['options']['ymin'])
-        ymax = '%.*f' % (p.coords_decimals, p['options']['ymax'])
+        xmin = '%.*f' % (p.coords_decimals, p['obj_options']['xmin'])
+        xmax = '%.*f' % (p.coords_decimals, p['obj_options']['xmax'])
+        ymin = '%.*f' % (p.coords_decimals, p['obj_options']['ymin'])
+        ymax = '%.*f' % (p.coords_decimals, p['obj_options']['ymax'])
 
         if p['use_ui'] is True and p['multigeo']:
             gcode += '\n(TOOLS DIAMETER: )\n'
@@ -58,7 +58,7 @@ class GRBL_laser_z(PreProc):
         gcode += '(Z End: ' + str(p['z_end']) + units + ')\n'
         gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
 
-        if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
+        if str(p['obj_options']['type']) == 'Excellon' or str(p['obj_options']['type']) == 'Excellon Geometry':
             gcode += '(Preprocessor Excellon: ' + str(p['pp_excellon_name']) + ')\n'
         else:
             gcode += '(Preprocessor Geometry: ' + str(p['pp_geometry_name']) + ')\n' + '\n'

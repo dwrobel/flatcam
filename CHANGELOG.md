@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+18.02.2022
+
+- completed the refactoring of object `options` property to `obj_options` in preprocessors too
+
 16.02.2022
 
 - refactoring all the references to object `options` property to `obj_options` to make a difference with the application `options` property
