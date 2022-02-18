@@ -171,6 +171,10 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.gc_start = ''
         self.gc_end = ''
 
+        # it is possible that the user will process only a few tools not all in the parent object
+        # here we store the used tools so the UI will build only those that were generated
+        self.used_tools = []
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
@@ -214,73 +218,73 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         if not self.tools:
             self.ui.cnc_tools_table.setRowCount(1)
         else:
-            n = len(self.tools)
+            n = len(self.used_tools)
             self.ui.cnc_tools_table.setRowCount(n)
 
         for dia_key, dia_value in self.tools.items():
+            if dia_key in self.used_tools:
+                tool_idx += 1
+                row_no = tool_idx - 1
 
-            tool_idx += 1
-            row_no = tool_idx - 1
+                t_id = QtWidgets.QTableWidgetItem('%d' % int(tool_idx))
+                # id.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+                self.ui.cnc_tools_table.setItem(row_no, 0, t_id)  # Tool name/id
 
-            t_id = QtWidgets.QTableWidgetItem('%d' % int(tool_idx))
-            # id.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
-            self.ui.cnc_tools_table.setItem(row_no, 0, t_id)  # Tool name/id
+                # Make sure that the tool diameter when in MM is with no more than 2 decimals.
+                # There are no tool bits in MM with more than 2 decimals diameter.
+                # For INCH the decimals should be no more than 4. There are no tools under 10mils.
 
-            # Make sure that the tool diameter when in MM is with no more than 2 decimals.
-            # There are no tool bits in MM with more than 2 decimals diameter.
-            # For INCH the decimals should be no more than 4. There are no tools under 10mils.
+                dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(dia_value['tooldia'])))
 
-            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(dia_value['tooldia'])))
+                offset_txt = list(str(dia_value['data']['tools_mill_offset_value']))
+                offset_txt[0] = offset_txt[0].upper()
+                offset_item = QtWidgets.QTableWidgetItem(''.join(offset_txt))
 
-            offset_txt = list(str(dia_value['data']['tools_mill_offset_value']))
-            offset_txt[0] = offset_txt[0].upper()
-            offset_item = QtWidgets.QTableWidgetItem(''.join(offset_txt))
+                job_item_options = [_('Roughing'), _('Finishing'), _('Isolation'), _('Polishing')]
+                tool_shape_options = ["C1", "C2", "C3", "C4", "B", "V", "L"]
 
-            job_item_options = [_('Roughing'), _('Finishing'), _('Isolation'), _('Polishing')]
-            tool_shape_options = ["C1", "C2", "C3", "C4", "B", "V", "L"]
+                try:
+                    job_item_txt = job_item_options[dia_value['data']['tools_mill_job_type']]
+                except TypeError:
+                    job_item_txt = dia_value['data']['tools_mill_job_type']
+                job_item = QtWidgets.QTableWidgetItem(job_item_txt)
 
-            try:
-                job_item_txt = job_item_options[dia_value['data']['tools_mill_job_type']]
-            except TypeError:
-                job_item_txt = dia_value['data']['tools_mill_job_type']
-            job_item = QtWidgets.QTableWidgetItem(job_item_txt)
+                try:
+                    tool_shape_item_txt = tool_shape_options[dia_value['data']['tools_mill_tool_shape']]
+                except TypeError:
+                    tool_shape_item_txt = dia_value['data']['tools_mill_tool_shape']
+                tool_shape_item = QtWidgets.QTableWidgetItem(tool_shape_item_txt)
 
-            try:
-                tool_shape_item_txt = tool_shape_options[dia_value['data']['tools_mill_tool_shape']]
-            except TypeError:
-                tool_shape_item_txt = dia_value['data']['tools_mill_tool_shape']
-            tool_shape_item = QtWidgets.QTableWidgetItem(tool_shape_item_txt)
+                t_id.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+                dia_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+                offset_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+                job_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+                tool_shape_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
-            t_id.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
-            dia_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
-            offset_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
-            job_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
-            tool_shape_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+                # hack so the checkbox stay centered in the table cell
+                # used this:
+                # https://stackoverflow.com/questions/32458111/pyqt-allign-checkbox-and-put-it-in-every-row
+                # plot_item = QtWidgets.QWidget()
+                # checkbox = FCCheckBox()
+                # checkbox.setCheckState(QtCore.Qt.Checked)
+                # qhboxlayout = QtWidgets.QHBoxLayout(plot_item)
+                # qhboxlayout.addWidget(checkbox)
+                # qhboxlayout.setAlignment(QtCore.Qt.AlignCenter)
+                # qhboxlayout.setContentsMargins(0, 0, 0, 0)
+                plot_item = FCCheckBox()
+                plot_item.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
+                tool_uid_item = QtWidgets.QTableWidgetItem(str(dia_key))
+                if self.ui.plot_cb.isChecked():
+                    plot_item.setChecked(True)
 
-            # hack so the checkbox stay centered in the table cell
-            # used this:
-            # https://stackoverflow.com/questions/32458111/pyqt-allign-checkbox-and-put-it-in-every-row
-            # plot_item = QtWidgets.QWidget()
-            # checkbox = FCCheckBox()
-            # checkbox.setCheckState(QtCore.Qt.Checked)
-            # qhboxlayout = QtWidgets.QHBoxLayout(plot_item)
-            # qhboxlayout.addWidget(checkbox)
-            # qhboxlayout.setAlignment(QtCore.Qt.AlignCenter)
-            # qhboxlayout.setContentsMargins(0, 0, 0, 0)
-            plot_item = FCCheckBox()
-            plot_item.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-            tool_uid_item = QtWidgets.QTableWidgetItem(str(dia_key))
-            if self.ui.plot_cb.isChecked():
-                plot_item.setChecked(True)
+                self.ui.cnc_tools_table.setItem(row_no, 1, dia_item)  # Diameter
+                self.ui.cnc_tools_table.setItem(row_no, 2, offset_item)  # Offset
+                self.ui.cnc_tools_table.setItem(row_no, 3, job_item)  # Job Type
+                self.ui.cnc_tools_table.setItem(row_no, 4, tool_shape_item)  # Tool Shape
 
-            self.ui.cnc_tools_table.setItem(row_no, 1, dia_item)  # Diameter
-            self.ui.cnc_tools_table.setItem(row_no, 2, offset_item)  # Offset
-            self.ui.cnc_tools_table.setItem(row_no, 3, job_item)  # Job Type
-            self.ui.cnc_tools_table.setItem(row_no, 4, tool_shape_item)  # Tool Shape
-
-            # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY # ##
-            self.ui.cnc_tools_table.setItem(row_no, 5, tool_uid_item)  # Tool unique ID)
-            self.ui.cnc_tools_table.setCellWidget(row_no, 6, plot_item)
+                # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY # ##
+                self.ui.cnc_tools_table.setItem(row_no, 5, tool_uid_item)  # Tool unique ID)
+                self.ui.cnc_tools_table.setCellWidget(row_no, 6, plot_item)
 
         # make the diameter column editable
         # for row in range(tool_idx):
@@ -331,47 +335,50 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # reset the Tools Table
         self.ui.exc_cnc_tools_table.setRowCount(0)
 
-        n = len(self.tools)
+        n = len(self.used_tools)
         self.ui.exc_cnc_tools_table.setRowCount(n)
 
         row_no = 0
         for t_id, dia_value in self.tools.items():
-            tooldia = self.tools[t_id]['tooldia']
+            if t_id in self.used_tools:
+                tooldia = self.tools[t_id]['tooldia']
 
-            try:
-                offset_val = self.app.dec_format(float(dia_value['offset']), self.decimals) + self.z_cut
-            except KeyError:
-                offset_val = self.app.dec_format(float(dia_value['offset_z']), self.decimals) + self.z_cut
+                try:
+                    offset_val = self.app.dec_format(float(dia_value['offset']), self.decimals) + self.z_cut
+                except KeyError:
+                    offset_val = self.app.dec_format(float(dia_value['offset_z']), self.decimals) + self.z_cut
 
-            t_id_item = QtWidgets.QTableWidgetItem('%d' % int(t_id))
-            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooldia)))
-            nr_drills_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_drills']))
-            nr_slots_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_slots']))
-            cutz_item = QtWidgets.QTableWidgetItem('%f' % offset_val)
+                t_id_item = QtWidgets.QTableWidgetItem('%d' % int(t_id))
+                dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooldia)))
+                nr_drills_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_drills']))
+                nr_slots_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_slots']))
+                cutz_item = QtWidgets.QTableWidgetItem('%f' % offset_val)
+                t_id_item_2 = QtWidgets.QTableWidgetItem('%d' % int(t_id))
 
-            t_id_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
-            dia_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
-            nr_drills_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
-            nr_slots_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
-            cutz_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+                t_id_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+                dia_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+                nr_drills_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+                nr_slots_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+                t_id_item_2.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+                cutz_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
-            plot_item = FCCheckBox()
-            plot_item.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
+                plot_cnc_exc_item = FCCheckBox()
+                plot_cnc_exc_item.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
 
-            if self.ui.plot_cb.isChecked():
-                plot_item.setChecked(True)
+                if self.ui.plot_cb.isChecked():
+                    plot_cnc_exc_item.setChecked(True)
 
-            self.ui.exc_cnc_tools_table.setItem(row_no, 0, t_id_item)  # Tool name/id
-            self.ui.exc_cnc_tools_table.setItem(row_no, 1, dia_item)  # Diameter
-            self.ui.exc_cnc_tools_table.setItem(row_no, 2, nr_drills_item)  # Nr of drills
-            self.ui.exc_cnc_tools_table.setItem(row_no, 3, nr_slots_item)  # Nr of slots
+                self.ui.exc_cnc_tools_table.setItem(row_no, 0, t_id_item)  # Tool name/id
+                self.ui.exc_cnc_tools_table.setItem(row_no, 1, dia_item)  # Diameter
+                self.ui.exc_cnc_tools_table.setItem(row_no, 2, nr_drills_item)  # Nr of drills
+                self.ui.exc_cnc_tools_table.setItem(row_no, 3, nr_slots_item)  # Nr of slots
 
-            # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY # ##
-            self.ui.exc_cnc_tools_table.setItem(row_no, 4, t_id_item)  # Tool unique ID)
-            self.ui.exc_cnc_tools_table.setItem(row_no, 5, cutz_item)
-            self.ui.exc_cnc_tools_table.setCellWidget(row_no, 6, plot_item)
+                # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY # ##
+                self.ui.exc_cnc_tools_table.setItem(row_no, 4, t_id_item_2)  # Tool unique ID)
+                self.ui.exc_cnc_tools_table.setItem(row_no, 5, cutz_item)
+                self.ui.exc_cnc_tools_table.setCellWidget(row_no, 6, plot_cnc_exc_item)
 
-            row_no += 1
+                row_no += 1
 
         for row in range(row_no):
             self.ui.exc_cnc_tools_table.item(row, 0).setFlags(
@@ -1332,7 +1339,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 # don't know the origin
                 if self.obj_options['type'].lower() == "excellon":
                     if self.tools:
-                        for toolid_key in self.tools:
+                        for toolid_key in self.used_tools:
                             dia_plot = self.app.dec_format(float(self.tools[toolid_key]['tooldia']), self.decimals)
                             gcode_parsed = self.tools[toolid_key]['gcode_parsed']
                             if not gcode_parsed:
@@ -1344,7 +1351,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 else:
                     # multiple tools usage
                     if self.tools:
-                        for tooluid_key in self.tools:
+                        for tooluid_key in self.used_tools:
                             dia_plot = self.app.dec_format(
                                 float(self.tools[tooluid_key]['tooldia']),
                                 self.decimals

@@ -144,8 +144,9 @@ class TclCommandDrillcncjob(TclCommandSignaled):
         xmax = obj.obj_options['xmax']
         ymax = obj.obj_options['ymax']
 
-        def job_init(job_obj, app_obj):
+        def job_init(cnc_job_obj, app_obj):
             # tools = args["tools"] if "tools" in args else 'all'
+            use_tools = []
 
             # drilled tools diameters
             try:
@@ -155,8 +156,8 @@ class TclCommandDrillcncjob(TclCommandSignaled):
 
                     req_tools = set()
                     for tool in obj.tools:
+                        obj_dia_form = float('%.*f' % (obj.decimals, float(obj.tools[tool]["tooldia"])))
                         for req_dia in diameters:
-                            obj_dia_form = float('%.*f' % (obj.decimals, float(obj.tools[tool]["tooldia"])))
                             req_dia_form = float('%.*f' % (obj.decimals, float(req_dia)))
 
                             if 'diatol' in args:
@@ -167,18 +168,21 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                                 if math.isclose(obj_dia_form, req_dia_form, rel_tol=tolerance):
                                     req_tools.add(str(tool))
                                     nr_diameters -= 1
+                                    use_tools.append(tool)
                             else:
                                 if obj_dia_form == req_dia_form:
                                     req_tools.add(str(tool))
                                     nr_diameters -= 1
+                                    use_tools.append(tool)
 
                     if nr_diameters > 0:
                         if muted is False:
                             self.raise_tcl_error("One or more tool diameters of the drills to be drilled passed to the "
                                                  "TclCommand are not actual tool diameters in the Excellon object.")
                         else:
-                            return "One or more tool diameters of the drills to be drilled passed to the "\
-                                   "TclCommand are not actual tool diameters in the Excellon object."
+                            app_obj.log.error("One or more tool diameters of the drills to be drilled passed to the "\
+                                              "TclCommand are not actual tool diameters in the Excellon object.")
+                            return "fail"
 
                     # make a string of diameters separated by comma; this is what tcl_gcode_from_excellon_by_tool() is
                     # expecting as tools parameter
@@ -281,130 +285,140 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             # ##########################################################################################
             # ################# Set parameters #########################################################
             # ##########################################################################################
-            job_obj.obj_options['type'] = 'Excellon'
-            job_obj.multigeo = True
-            job_obj.multitool = True
+            cnc_job_obj.obj_options['type'] = 'Excellon'
+            cnc_job_obj.multigeo = True
+            cnc_job_obj.multitool = True
+            cnc_job_obj.used_tools = use_tools
 
             # preprocessor
             pp_excellon_name = args["pp"] if "pp" in args and args["pp"] else self.app.defaults["tools_drill_ppname_e"]
-            job_obj.pp_excellon_name = pp_excellon_name
-            job_obj.obj_options['ppname_e'] = pp_excellon_name
+            cnc_job_obj.pp_excellon_name = pp_excellon_name
+            cnc_job_obj.obj_options['ppname_e'] = pp_excellon_name
 
             # multidepth
             if 'dpp' in args:
-                job_obj.multidepth = True
+                cnc_job_obj.multidepth = True
                 if args['dpp'] is not None:
-                    job_obj.z_depthpercut = abs(float(args['dpp']))
+                    cnc_job_obj.z_depthpercut = abs(float(args['dpp']))
                 else:
-                    job_obj.z_depthpercut = abs(float(obj.obj_options["dpp"]))
+                    cnc_job_obj.z_depthpercut = abs(float(obj.obj_options["dpp"]))
             else:
-                job_obj.multidepth = self.app.defaults["tools_drill_multidepth"]
-                job_obj.z_depthpercut = self.app.defaults["tools_drill_depthperpass"]
+                cnc_job_obj.multidepth = self.app.defaults["tools_drill_multidepth"]
+                cnc_job_obj.z_depthpercut = self.app.defaults["tools_drill_depthperpass"]
             # travel Z
-            job_obj.z_move = float(args["travelz"]) if "travelz" in args and args["travelz"] else \
+            cnc_job_obj.z_move = float(args["travelz"]) if "travelz" in args and args["travelz"] else \
                 self.app.defaults["tools_drill_travelz"]
             # Feedrate
-            job_obj.feedrate = float(args["feedrate_z"]) if "feedrate_z" in args and args["feedrate_z"] else \
+            cnc_job_obj.feedrate = float(args["feedrate_z"]) if "feedrate_z" in args and args["feedrate_z"] else \
                 self.app.defaults["tools_drill_feedrate_z"]
-            job_obj.z_feedrate = float(args["feedrate_z"]) if "feedrate_z" in args and args["feedrate_z"] else \
+            cnc_job_obj.z_feedrate = float(args["feedrate_z"]) if "feedrate_z" in args and args["feedrate_z"] else \
                 self.app.defaults["tools_drill_feedrate_z"]
-            job_obj.feedrate_rapid = float(args["feedrate_rapid"]) \
+            cnc_job_obj.feedrate_rapid = float(args["feedrate_rapid"]) \
                 if "feedrate_rapid" in args and args["feedrate_rapid"] else \
                 self.app.defaults["tools_drill_feedrate_rapid"]
 
             # SpindleSpped / Laser Power
             if 'laser' not in pp_excellon_name:
-                job_obj.spindlespeed = float(args["spindlespeed"]) if "spindlespeed" in args else None
+                cnc_job_obj.spindlespeed = float(args["spindlespeed"]) if "spindlespeed" in args else None
             else:
-                job_obj.spindlespeed = float(args["las_power"]) if "las_power" in args else 0.0
+                cnc_job_obj.spindlespeed = float(args["las_power"]) if "las_power" in args else 0.0
 
             # laser minimum power
-            job_obj.laser_min_power = float(args["las_min_pwr"]) if "las_min_pwr" in args else 0.0
+            cnc_job_obj.laser_min_power = float(args["las_min_pwr"]) if "las_min_pwr" in args else 0.0
 
             # spindle direction
-            job_obj.spindledir = self.app.defaults["tools_drill_spindledir"]
+            cnc_job_obj.spindledir = self.app.defaults["tools_drill_spindledir"]
             # dwell and dwelltime
             if 'dwelltime' in args:
-                job_obj.dwell = True
+                cnc_job_obj.dwell = True
                 if args['dwelltime'] is not None:
-                    job_obj.dwelltime = float(args['dwelltime'])
+                    cnc_job_obj.dwelltime = float(args['dwelltime'])
                 else:
-                    job_obj.dwelltime = float(self.app.defaults["tools_drill_dwelltime"])
+                    cnc_job_obj.dwelltime = float(self.app.defaults["tools_drill_dwelltime"])
             else:
-                job_obj.dwell = self.app.defaults["tools_drill_dwell"]
-                job_obj.dwelltime = self.app.defaults["tools_drill_dwelltime"]
+                cnc_job_obj.dwell = self.app.defaults["tools_drill_dwell"]
+                cnc_job_obj.dwelltime = self.app.defaults["tools_drill_dwelltime"]
 
-            job_obj.coords_decimals = int(self.app.defaults["cncjob_coords_decimals"])
-            job_obj.fr_decimals = int(self.app.defaults["cncjob_fr_decimals"])
+            cnc_job_obj.coords_decimals = int(self.app.defaults["cncjob_coords_decimals"])
+            cnc_job_obj.fr_decimals = int(self.app.defaults["cncjob_fr_decimals"])
 
-            job_obj.obj_options['xmin'] = xmin
-            job_obj.obj_options['ymin'] = ymin
-            job_obj.obj_options['xmax'] = xmax
-            job_obj.obj_options['ymax'] = ymax
+            cnc_job_obj.obj_options['xmin'] = xmin
+            cnc_job_obj.obj_options['ymin'] = ymin
+            cnc_job_obj.obj_options['xmax'] = xmax
+            cnc_job_obj.obj_options['ymax'] = ymax
 
             # Cut Z
-            job_obj.z_cut = float(drillz)
+            cnc_job_obj.z_cut = float(drillz)
             # toolchange
-            job_obj.toolchange = toolchange
+            cnc_job_obj.toolchange = toolchange
             # toolchange X-Y location
-            job_obj.xy_toolchange = xy_toolchange
+            cnc_job_obj.xy_toolchange = xy_toolchange
             # toolchange Z location
-            job_obj.z_toolchange = float(toolchangez)
+            cnc_job_obj.z_toolchange = float(toolchangez)
             # start Z
             if "startz" in args and args["startz"] is not None:
-                job_obj.startz = float(args["startz"])
+                cnc_job_obj.startz = float(args["startz"])
             else:
                 if self.app.defaults["tools_drill_startz"]:
-                    job_obj.startz = self.app.defaults["tools_drill_startz"]
+                    cnc_job_obj.startz = self.app.defaults["tools_drill_startz"]
                 else:
-                    job_obj.startz = self.app.defaults["tools_drill_travelz"]
+                    cnc_job_obj.startz = self.app.defaults["tools_drill_travelz"]
             # end Z
-            job_obj.z_end = float(endz)
+            cnc_job_obj.z_end = float(endz)
             # end X-Y location
-            job_obj.xy_end = eval(str(xy_end))
+            cnc_job_obj.xy_end = eval(str(xy_end))
             # Excellon optimization
-            job_obj.excellon_optimization_type = opt_type
+            cnc_job_obj.excellon_optimization_type = opt_type
 
-            ret_val = job_obj.tcl_gcode_from_excellon_by_tool(obj, tools, is_first=True, use_ui=False)
+            ret_val = cnc_job_obj.tcl_gcode_from_excellon_by_tool(obj, tools, is_first=True, use_ui=False)
             if ret_val == 'fail':
                 return 'fail'
 
-            job_obj.source_file = ret_val
-            job_obj.gc_start = ret_val[1]
+            cnc_job_obj.source_file = ret_val
+            cnc_job_obj.gc_start = ret_val[1]
 
             total_gcode_parsed = []
-            if job_obj.toolchange is True:
+            if cnc_job_obj.toolchange is True:
+                if tools == "all":
+                    processed_tools = list(cnc_job_obj.tools.keys())
+                else:
+                    processed_tools = use_tools
+
                 # from Excellon attribute self.tools
-                for t_item in job_obj.tools:
-                    job_obj.tools[t_item]['data']['tools_drill_offset'] = \
-                        float(job_obj.tools[t_item]['offset_z']) + float(drillz)
-                    job_obj.tools[t_item]['data']['tools_drill_ppname_e'] = job_obj.obj_options['ppname_e']
+                for t_item in processed_tools:
+                    cnc_job_obj.tools[t_item]['data']['tools_drill_offset'] = \
+                        float(cnc_job_obj.tools[t_item]['offset_z']) + float(drillz)
+                    cnc_job_obj.tools[t_item]['data']['tools_drill_ppname_e'] = cnc_job_obj.obj_options['ppname_e']
 
                     used_tooldia = obj.tools[t_item]['tooldia']
-                    job_obj.tools[t_item]['tooldia'] = used_tooldia
-                    tool_gcode = job_obj.tools[t_item]['gcode']
-                    first_drill_point = job_obj.tools[t_item]['last_point']
-                    gcode_parsed = job_obj.excellon_tool_gcode_parse(used_tooldia, gcode=tool_gcode,
-                                                                     start_pt=first_drill_point)
+                    cnc_job_obj.tools[t_item]['tooldia'] = used_tooldia
+                    tool_gcode = cnc_job_obj.tools[t_item]['gcode']
+                    first_drill_point = cnc_job_obj.tools[t_item]['last_point']
+                    gcode_parsed = cnc_job_obj.excellon_tool_gcode_parse(used_tooldia, gcode=tool_gcode,
+                                                                         start_pt=first_drill_point)
                     total_gcode_parsed += gcode_parsed
-                    job_obj.tools[t_item]['gcode_parsed'] = gcode_parsed
+                    cnc_job_obj.tools[t_item]['gcode_parsed'] = gcode_parsed
             else:
-                first_tool = 1
-                job_obj.tools[first_tool]['data']['tools_drill_offset'] = \
-                    float(job_obj.tools[first_tool]['offset_z']) + float(drillz)
-                job_obj.tools[first_tool]['data']['tools_drill_ppname_e'] = job_obj.obj_options['ppname_e']
+                if tools == "all":
+                    first_tool = 1
+                else:
+                    first_tool = use_tools[0]
+
+                cnc_job_obj.tools[first_tool]['data']['tools_drill_offset'] = \
+                    float(cnc_job_obj.tools[first_tool]['offset_z']) + float(drillz)
+                cnc_job_obj.tools[first_tool]['data']['tools_drill_ppname_e'] = cnc_job_obj.obj_options['ppname_e']
 
                 used_tooldia = obj.tools[first_tool]['tooldia']
-                job_obj.tools[first_tool]['tooldia'] = used_tooldia
-                tool_gcode = job_obj.tools[first_tool]['gcode']
-                first_drill_point = job_obj.tools[first_tool]['last_point']
-                gcode_parsed = job_obj.excellon_tool_gcode_parse(used_tooldia, gcode=tool_gcode,
-                                                                 start_pt=first_drill_point)
+                cnc_job_obj.tools[first_tool]['tooldia'] = used_tooldia
+                tool_gcode = cnc_job_obj.tools[first_tool]['gcode']
+                first_drill_point = cnc_job_obj.tools[first_tool]['last_point']
+                gcode_parsed = cnc_job_obj.excellon_tool_gcode_parse(used_tooldia, gcode=tool_gcode,
+                                                                     start_pt=first_drill_point)
                 total_gcode_parsed += gcode_parsed
-                job_obj.tools[first_tool]['gcode_parsed'] = gcode_parsed
+                cnc_job_obj.tools[first_tool]['gcode_parsed'] = gcode_parsed
 
-            job_obj.gcode_parsed = total_gcode_parsed
-            # job_obj.gcode_parse()
-            job_obj.create_geometry()
+            cnc_job_obj.gcode_parsed = total_gcode_parsed
+            # cnc_job_obj.gcode_parse()
+            cnc_job_obj.create_geometry()
 
         self.app.app_obj.new_object("cncjob", args['outname'], job_init, plot=False)

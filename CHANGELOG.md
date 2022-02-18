@@ -10,6 +10,9 @@ CHANGELOG for FlatCAM beta
 18.02.2022
 
 - completed the refactoring of object `options` property to `obj_options` in preprocessors too
+- made sure that the CNCJob UI building no longer have issues with table items added from an already existing table
+- fixed CNCJob UI showing all tools in the Tools Table even when only some tools were selected for processing
+- fixed the `drillcncjob` Tcl Command to work in the case of drilling a selection of tools instead of all, with toolchange inactive
 
 16.02.2022
 

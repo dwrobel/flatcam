@@ -4139,6 +4139,8 @@ class CNCjob(Geometry):
             selected_tools = [i[0] for i in all_tools]  # we get a array of ordered tools
         else:
             selected_tools = eval(tools)
+            if not isinstance(selected_tools, list):
+                selected_tools = [selected_tools]
 
         # Create a sorted list of selected tools from the sorted_tools list
         tools = [i for i, j in sorted_tools for k in selected_tools if i == k]
@@ -4560,7 +4562,7 @@ class CNCjob(Geometry):
             self.tools[tool]['gcode'] += end_gcode
         else:
             # We are not using Toolchange therefore we need to decide which tool properties to use
-            one_tool = 1
+            one_tool = tools[0]
 
             all_points = []
             for tool in points:
@@ -4799,12 +4801,21 @@ class CNCjob(Geometry):
                 self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
                 return 'fail'
             self.z_cut = deepcopy(old_zcut)
-            self.tools[one_tool]['gcode'] = gcode
+            try:
+                self.tools[one_tool]['gcode'] = gcode
+            except KeyError:
+                # just a hack because I am lazy and I don't want to fix the Tcl command drillcncjob which needs this
+                self.tools[str(one_tool)]['gcode'] = gcode
+
 
             # add the end_gcode
             end_gcode = self.doformat(p.spindle_stop_code)
             end_gcode += self.doformat(p.end_code, x=0, y=0)
-            self.tools[one_tool]['gcode'] += end_gcode
+            try:
+                self.tools[one_tool]['gcode'] += end_gcode
+            except KeyError:
+                # just a hack because I am lazy and I don't want to fix the Tcl command drillcncjob which needs this
+                self.tools[str(one_tool)]['gcode'] += end_gcode
 
         if used_excellon_optimization_type == 'M':
             self.app.log.debug("The total travel distance with OR-TOOLS Metaheuristics is: %s" % str(measured_distance))

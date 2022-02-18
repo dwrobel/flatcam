@@ -2051,8 +2051,8 @@ class ToolDrilling(AppTool, Excellon):
         self.app.inform.emit('%s...' % _("Starting G-Code"))
 
         # Object initialization function for app.app_obj.new_object()
-        def job_init(job_obj, app_obj):
-            assert job_obj.kind == 'cncjob', "Initializer expected a CNCJobObject, got %s" % type(job_obj)
+        def job_init(cnc_job_obj, app_obj):
+            assert cnc_job_obj.kind == 'cncjob', "Initializer expected a CNCJobObject, got %s" % type(cnc_job_obj)
             app_obj.inform.emit(_("Generating CNCJob..."))
 
             # #########################################################################################################
@@ -2060,7 +2060,7 @@ class ToolDrilling(AppTool, Excellon):
             # fill the data into the self.tools dictionary attribute of the CNCJob object
             # #########################################################################################################
             # #########################################################################################################
-            job_obj.tools = {}
+            cnc_job_obj.tools = {}
 
             if has_toolchange:
                 for sel_id in sorted_tools:
@@ -2069,7 +2069,7 @@ class ToolDrilling(AppTool, Excellon):
                         selected_tooldia = sel_id[1]
 
                         if selected_id == t_id:
-                            job_obj.tools[selected_id] = deepcopy(self.excellon_tools[selected_id])
+                            cnc_job_obj.tools[selected_id] = deepcopy(self.excellon_tools[selected_id])
                             sol_geo = []
 
                             # solid geometry addition; we look into points because we may have slots converted to drills
@@ -2080,7 +2080,7 @@ class ToolDrilling(AppTool, Excellon):
                                 drill_no = len(points[selected_id])
                                 for drill in points[selected_id]:
                                     sol_geo.append(
-                                        drill.buffer((selected_tooldia / 2.0), resolution=job_obj.geo_steps_per_circle)
+                                        drill.buffer((selected_tooldia / 2.0), resolution=cnc_job_obj.geo_steps_per_circle)
                                     )
 
                             slot_no = 0
@@ -2093,7 +2093,7 @@ class ToolDrilling(AppTool, Excellon):
                                     line_geo = LineString([start, stop])
                                     buff_distance = selected_tooldia / 2.0
                                     sol_geo.append(
-                                        line_geo.buffer(buff_distance, resolution=job_obj.geo_steps_per_circle)
+                                        line_geo.buffer(buff_distance, resolution=cnc_job_obj.geo_steps_per_circle)
                                     )
 
                             # adjust Offset for current tool
@@ -2102,16 +2102,16 @@ class ToolDrilling(AppTool, Excellon):
                             except KeyError:
                                 z_off = 0
 
-                            job_obj.tools[selected_id]['nr_drills'] = drill_no
-                            job_obj.tools[selected_id]['nr_slots'] = slot_no
-                            job_obj.tools[selected_id]['offset'] = z_off
-                            job_obj.tools[selected_id]['gcode'] = ''
-                            job_obj.tools[selected_id]['gcode_parsed'] = []
-                            job_obj.tools[selected_id]['solid_geometry'] = deepcopy(sol_geo)
+                            cnc_job_obj.tools[selected_id]['nr_drills'] = drill_no
+                            cnc_job_obj.tools[selected_id]['nr_slots'] = slot_no
+                            cnc_job_obj.tools[selected_id]['offset'] = z_off
+                            cnc_job_obj.tools[selected_id]['gcode'] = ''
+                            cnc_job_obj.tools[selected_id]['gcode_parsed'] = []
+                            cnc_job_obj.tools[selected_id]['solid_geometry'] = deepcopy(sol_geo)
             else:
                 # use the first tool in the selection as the tool that we are going to use
                 used_tool = sel_tools[0]
-                job_obj.tools[used_tool] = deepcopy(self.excellon_tools[used_tool])
+                cnc_job_obj.tools[used_tool] = deepcopy(self.excellon_tools[used_tool])
 
                 sol_geo = []
                 drill_no = 0
@@ -2131,7 +2131,7 @@ class ToolDrilling(AppTool, Excellon):
                                 drill_no += len(points[selected_id])
                                 for drill in points[selected_id]:
                                     sol_geo.append(
-                                        drill.buffer((selected_tooldia / 2.0), resolution=job_obj.geo_steps_per_circle)
+                                        drill.buffer((selected_tooldia / 2.0), resolution=cnc_job_obj.geo_steps_per_circle)
                                     )
 
                             convert_slots = self.excellon_tools[selected_id]['data']['tools_drill_drill_slots']
@@ -2143,7 +2143,7 @@ class ToolDrilling(AppTool, Excellon):
                                     line_geo = LineString([start, stop])
                                     buff_distance = selected_tooldia / 2.0
                                     sol_geo.append(
-                                        line_geo.buffer(buff_distance, resolution=job_obj.geo_steps_per_circle)
+                                        line_geo.buffer(buff_distance, resolution=cnc_job_obj.geo_steps_per_circle)
                                     )
 
                 # adjust Offset for current tool
@@ -2152,12 +2152,12 @@ class ToolDrilling(AppTool, Excellon):
                 except KeyError:
                     z_off = 0
 
-                job_obj.tools[used_tool]['nr_drills'] = drill_no
-                job_obj.tools[used_tool]['nr_slots'] = slot_no
-                job_obj.tools[used_tool]['offset'] = z_off
-                job_obj.tools[used_tool]['gcode'] = ''
-                job_obj.tools[used_tool]['gcode_parsed'] = []
-                job_obj.tools[used_tool]['solid_geometry'] = deepcopy(sol_geo)
+                cnc_job_obj.tools[used_tool]['nr_drills'] = drill_no
+                cnc_job_obj.tools[used_tool]['nr_slots'] = slot_no
+                cnc_job_obj.tools[used_tool]['offset'] = z_off
+                cnc_job_obj.tools[used_tool]['gcode'] = ''
+                cnc_job_obj.tools[used_tool]['gcode_parsed'] = []
+                cnc_job_obj.tools[used_tool]['solid_geometry'] = deepcopy(sol_geo)
 
             # #########################################################################################################
             # #########################################################################################################
@@ -2165,48 +2165,48 @@ class ToolDrilling(AppTool, Excellon):
             # #########################################################################################################
             # #########################################################################################################
             # Preprocessor
-            job_obj.pp_excellon_name = self.ui.pp_excellon_name_cb.get_value()
-            job_obj.pp_excellon = self.app.preprocessors[job_obj.pp_excellon_name]
+            cnc_job_obj.pp_excellon_name = self.ui.pp_excellon_name_cb.get_value()
+            cnc_job_obj.pp_excellon = self.app.preprocessors[cnc_job_obj.pp_excellon_name]
 
-            job_obj.obj_options['type'] = 'Excellon'
-            job_obj.obj_options['ppname_e'] = obj.pp_excellon_name
+            cnc_job_obj.obj_options['type'] = 'Excellon'
+            cnc_job_obj.obj_options['ppname_e'] = obj.pp_excellon_name
 
-            job_obj.obj_options['xmin'] = xmin
-            job_obj.obj_options['ymin'] = ymin
-            job_obj.obj_options['xmax'] = xmax
-            job_obj.obj_options['ymax'] = ymax
+            cnc_job_obj.obj_options['xmin'] = xmin
+            cnc_job_obj.obj_options['ymin'] = ymin
+            cnc_job_obj.obj_options['xmax'] = xmax
+            cnc_job_obj.obj_options['ymax'] = ymax
 
-            job_obj.use_ui = True
+            cnc_job_obj.use_ui = True
 
-            job_obj.coords_decimals = int(self.app.defaults["cncjob_coords_decimals"])
-            job_obj.fr_decimals = int(self.app.defaults["cncjob_fr_decimals"])
-            job_obj.multitool = True
+            cnc_job_obj.coords_decimals = int(self.app.defaults["cncjob_coords_decimals"])
+            cnc_job_obj.fr_decimals = int(self.app.defaults["cncjob_fr_decimals"])
+            cnc_job_obj.multitool = True
 
             # it does not matter for the Excellon codes because we are not going to autolevel GCode out of Excellon
             # but it is here for uniformity between the Geometry and Excellon objects
-            job_obj.segx = self.app.defaults["geometry_segx"]
-            job_obj.segy = self.app.defaults["geometry_segy"]
+            cnc_job_obj.segx = self.app.defaults["geometry_segx"]
+            cnc_job_obj.segy = self.app.defaults["geometry_segy"]
 
             # first drill point
             # I can read the toolchange x,y point from any tool since it is the same for all, so I read it
             # from the first tool that is available
 
             first_tool_available = sel_tools[0]
-            job_obj.xy_toolchange = job_obj.tools[first_tool_available]['data']["tools_drill_toolchangexy"]
+            cnc_job_obj.xy_toolchange = cnc_job_obj.tools[first_tool_available]['data']["tools_drill_toolchangexy"]
 
             x_tc, y_tc = [0, 0]
             try:
-                if job_obj.xy_toolchange != '':
-                    tcxy_temp = re.sub('[()\[\]]', '', str(job_obj.xy_toolchange))
+                if cnc_job_obj.xy_toolchange != '':
+                    tcxy_temp = re.sub('[()\[\]]', '', str(cnc_job_obj.xy_toolchange))
                     if tcxy_temp:
                         x_tc, y_tc = [float(eval(a)) for a in tcxy_temp.split(",")]
             except Exception:
                 x_tc, y_tc = [0, 0]
                 self.app.inform.emit('[ERROR]%s' % _("The Toolchange X,Y format has to be (x, y)."))
 
-            job_obj.oldx = x_tc
-            job_obj.oldy = y_tc
-            first_drill_point = (job_obj.oldx, job_obj.oldy)
+            cnc_job_obj.oldx = x_tc
+            cnc_job_obj.oldy = y_tc
+            first_drill_point = (cnc_job_obj.oldx, cnc_job_obj.oldy)
 
             # #########################################################################################################
             # ####################### NO TOOLCHANGE ###################################################################
@@ -2222,34 +2222,36 @@ class ToolDrilling(AppTool, Excellon):
                 used_tooldia = self.excellon_tools[used_tool]['tooldia']
 
                 # those are used by the preprocessors to display data on the toolchange line
-                job_obj.tool = used_tool
-                job_obj.postdata['toolC'] = used_tooldia
+                cnc_job_obj.tool = used_tool
+                cnc_job_obj.used_tools = [used_tool]
+                cnc_job_obj.postdata['toolC'] = used_tooldia
 
                 # generate GCode
-                tool_gcode, __, start_gcode = job_obj.excellon_tool_gcode_gen(used_tool, tool_points,
-                                                                              job_obj.tools,
-                                                                              first_pt=first_drill_point,
-                                                                              is_first=True,
-                                                                              is_last=True,
-                                                                              opt_type=used_exc_optim_type,
-                                                                              toolchange=False)
+                tool_gcode, __, start_gcode = cnc_job_obj.excellon_tool_gcode_gen(used_tool, tool_points,
+                                                                                  cnc_job_obj.tools,
+                                                                                  first_pt=first_drill_point,
+                                                                                  is_first=True,
+                                                                                  is_last=True,
+                                                                                  opt_type=used_exc_optim_type,
+                                                                                  toolchange=False)
 
                 # parse the Gcode
-                tool_gcode_parsed = job_obj.excellon_tool_gcode_parse(used_tooldia, gcode=tool_gcode,
-                                                                      start_pt=first_drill_point)
+                tool_gcode_parsed = cnc_job_obj.excellon_tool_gcode_parse(used_tooldia, gcode=tool_gcode,
+                                                                          start_pt=first_drill_point)
 
                 # store the results in Excellon CNC tools storage
-                job_obj.tools[used_tool]['gcode'] = tool_gcode
-                job_obj.tools[used_tool]['gcode_parsed'] = tool_gcode_parsed
+                cnc_job_obj.tools[used_tool]['gcode'] = tool_gcode
+                cnc_job_obj.tools[used_tool]['gcode_parsed'] = tool_gcode_parsed
 
                 if start_gcode != '':
-                    job_obj.gc_start = start_gcode
+                    cnc_job_obj.gc_start = start_gcode
 
                 self.total_gcode = tool_gcode
                 self.total_gcode_parsed = tool_gcode_parsed
 
             # ####################### TOOLCHANGE ACTIVE ######################################################
             else:
+                cnc_job_obj.used_tools = deepcopy(sel_tools)
                 for tool_id in sel_tools:
                     tool_points = []
                     if tool_id in points:
@@ -2257,16 +2259,16 @@ class ToolDrilling(AppTool, Excellon):
                     used_tooldia = self.excellon_tools[tool_id]['tooldia']
 
                     # those are used by the preprocessors to display data on the toolchange line
-                    job_obj.tool = tool_id
-                    job_obj.postdata['toolC'] = used_tooldia
+                    cnc_job_obj.tool = tool_id
+                    cnc_job_obj.postdata['toolC'] = used_tooldia
 
                     # if slots are converted to drill for this tool, update the number of drills and make slots nr zero
                     convert_slots = self.excellon_tools[tool_id]['data']['tools_drill_drill_slots']
                     if convert_slots is True:
                         nr_drills = len(tool_points)
                         nr_slots = 0
-                        job_obj.tools[used_tooldia]['nr_drills'] = nr_drills
-                        job_obj.tools[used_tooldia]['nr_slots'] = nr_slots
+                        cnc_job_obj.tools[used_tooldia]['nr_drills'] = nr_drills
+                        cnc_job_obj.tools[used_tooldia]['nr_slots'] = nr_slots
 
                     # calculate if the current tool is the first one or if it is the last one
                     # for the first tool we add some extra GCode (start Gcode, header etc)
@@ -2279,75 +2281,75 @@ class ToolDrilling(AppTool, Excellon):
                         continue
 
                     # Generate Gcode for the current tool
-                    tool_gcode, last_pt, start_gcode = job_obj.excellon_tool_gcode_gen(tool_id, tool_points,
-                                                                                       self.excellon_tools,
-                                                                                       first_pt=first_drill_point,
-                                                                                       is_first=is_first_tool,
-                                                                                       is_last=is_last_tool,
-                                                                                       opt_type=used_exc_optim_type,
-                                                                                       toolchange=True)
+                    tool_gcode, last_pt, start_gcode = cnc_job_obj.excellon_tool_gcode_gen(tool_id, tool_points,
+                                                                                           self.excellon_tools,
+                                                                                           first_pt=first_drill_point,
+                                                                                           is_first=is_first_tool,
+                                                                                           is_last=is_last_tool,
+                                                                                           opt_type=used_exc_optim_type,
+                                                                                           toolchange=True)
 
                     # parse Gcode for the current tool
-                    tool_gcode_parsed = job_obj.excellon_tool_gcode_parse(used_tooldia, gcode=tool_gcode,
-                                                                          start_pt=first_drill_point)
+                    tool_gcode_parsed = cnc_job_obj.excellon_tool_gcode_parse(used_tooldia, gcode=tool_gcode,
+                                                                              start_pt=first_drill_point)
                     first_drill_point = last_pt
 
                     # store the results of GCode generation and parsing
-                    job_obj.tools[tool_id]['gcode'] = tool_gcode
-                    job_obj.tools[tool_id]['gcode_parsed'] = tool_gcode_parsed
+                    cnc_job_obj.tools[tool_id]['gcode'] = tool_gcode
+                    cnc_job_obj.tools[tool_id]['gcode_parsed'] = tool_gcode_parsed
 
                     if start_gcode != '':
-                        job_obj.gc_start = start_gcode
+                        cnc_job_obj.gc_start = start_gcode
 
                     self.total_gcode += tool_gcode
                     self.total_gcode_parsed += tool_gcode_parsed
 
-            job_obj.gcode = self.total_gcode
-            job_obj.source_file = self.total_gcode
-            job_obj.gcode_parsed = self.total_gcode_parsed
-            if job_obj.gcode == 'fail':
+            cnc_job_obj.gcode = self.total_gcode
+            cnc_job_obj.source_file = self.total_gcode
+            cnc_job_obj.gcode_parsed = self.total_gcode_parsed
+            if cnc_job_obj.gcode == 'fail':
                 return 'fail'
 
             # create Geometry for plotting
             # FIXME is it necessary? didn't we do it previously when filling data in self.tools dictionary?
-            job_obj.create_geometry()
+            cnc_job_obj.create_geometry()
 
             if used_exc_optim_type == 'M':
                 app_obj.log.debug("The total travel distance with OR-TOOLS Metaheuristics is: %s" %
-                                  str(job_obj.measured_distance))
+                                  str(cnc_job_obj.measured_distance))
             elif used_exc_optim_type == 'B':
                 app_obj.log.debug("The total travel distance with OR-TOOLS Basic Algorithm is: %s" %
-                                  str(job_obj.measured_distance))
+                                  str(cnc_job_obj.measured_distance))
             elif used_exc_optim_type == 'T':
                 app_obj.log.debug(
                     "The total travel distance with Travelling Salesman Algorithm is: %s" %
-                    str(job_obj.measured_distance))
+                    str(cnc_job_obj.measured_distance))
             else:
                 app_obj.log.debug("The total travel distance with with no optimization is: %s" %
-                                  str(job_obj.measured_distance))
+                                  str(cnc_job_obj.measured_distance))
 
             # #########################################################################################################
             # ############################# Calculate DISTANCE and ESTIMATED TIME #####################################
             # #########################################################################################################
-            if job_obj.xy_end is None:
-                job_obj.xy_end = [job_obj.oldx, job_obj.oldy]
+            if cnc_job_obj.xy_end is None:
+                cnc_job_obj.xy_end = [cnc_job_obj.oldx, cnc_job_obj.oldy]
 
-            job_obj.measured_distance += abs(distance_euclidian(
-                job_obj.oldx, job_obj.oldy, job_obj.xy_end[0], job_obj.xy_end[1])
+            cnc_job_obj.measured_distance += abs(distance_euclidian(
+                cnc_job_obj.oldx, cnc_job_obj.oldy, cnc_job_obj.xy_end[0], cnc_job_obj.xy_end[1])
             )
             app_obj.log.debug("The total travel distance including travel to end position is: %s" %
-                              str(job_obj.measured_distance) + '\n')
-            job_obj.travel_distance = job_obj.measured_distance
+                              str(cnc_job_obj.measured_distance) + '\n')
+            cnc_job_obj.travel_distance = cnc_job_obj.measured_distance
 
             # I use the value of self.feedrate_rapid for the feadrate in case of the measure_lift_distance and for
             # traveled_time because it is not always possible to determine the feedrate that the CNC machine uses
             # for G0 move (the fastest speed available to the CNC router). Although self.feedrate_rapids is used only
             # with Marlin preprocessor and derivatives.
-            job_obj.routing_time = \
-                (job_obj.measured_down_distance + job_obj.measured_up_to_zero_distance) / job_obj.z_feedrate
-            lift_time = job_obj.measured_lift_distance / job_obj.feedrate_rapid
-            traveled_time = job_obj.measured_distance / job_obj.feedrate_rapid
-            job_obj.routing_time += lift_time + traveled_time
+            cnc_job_obj.routing_time = \
+                (cnc_job_obj.measured_down_distance + cnc_job_obj.measured_up_to_zero_distance) / cnc_job_obj.z_feedrate
+            lift_time = cnc_job_obj.measured_lift_distance / cnc_job_obj.feedrate_rapid
+            traveled_time = cnc_job_obj.measured_distance / cnc_job_obj.feedrate_rapid
+            cnc_job_obj.routing_time += lift_time + traveled_time
 
         # To be run in separate thread
         def job_thread(a_obj):
