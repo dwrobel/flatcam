@@ -75,15 +75,15 @@ class TclCommandSetSys(TclCommand):
             "MM": "MM"
         }
 
-        if param in self.app.defaults:
+        if param in self.app.options:
 
             try:
                 value = tcl2py[value]
             except KeyError:
                 pass
 
-            self.app.defaults[param] = value
-            self.app.defaults.propagate_defaults()
+            self.app.options[param] = value
+            self.app.options.propagate_defaults()
 
         else:
             self.raise_tcl_error("No such system parameter \"{}\".".format(param))

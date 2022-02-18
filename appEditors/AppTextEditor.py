@@ -253,7 +253,7 @@ class AppTextEditor(QtWidgets.QWidget):
         try:
             filename = str(FCFileSaveDialog.get_saved_filename(
                 caption=_("Export Code ..."),
-                directory=self.app.defaults["global_last_folder"] + '/' + str(obj_name),
+                directory=self.app.options["global_last_folder"] + '/' + str(obj_name),
                 ext_filter=_filter_
             )[0])
         except TypeError:
@@ -269,8 +269,8 @@ class AppTextEditor(QtWidgets.QWidget):
                 my_gcode = self.code_editor.toPlainText()
                 if filename.rpartition('.')[2].lower() == 'pdf':
                     page_size = (
-                        self.app.plotcanvas.pagesize_dict[self.app.defaults['global_workspaceT']][0] * mm,
-                        self.app.plotcanvas.pagesize_dict[self.app.defaults['global_workspaceT']][1] * mm
+                        self.app.plotcanvas.pagesize_dict[self.app.options['global_workspaceT']][0] * mm,
+                        self.app.plotcanvas.pagesize_dict[self.app.options['global_workspaceT']][1] * mm
                     )
 
                     # add new line after each line
@@ -282,15 +282,15 @@ class AppTextEditor(QtWidgets.QWidget):
                     story = []
 
                     if self.app.app_units.lower() == 'mm':
-                        bmargin = self.app.defaults['global_tpdf_bmargin'] * mm
-                        tmargin = self.app.defaults['global_tpdf_tmargin'] * mm
-                        rmargin = self.app.defaults['global_tpdf_rmargin'] * mm
-                        lmargin = self.app.defaults['global_tpdf_lmargin'] * mm
+                        bmargin = self.app.options['global_tpdf_bmargin'] * mm
+                        tmargin = self.app.options['global_tpdf_tmargin'] * mm
+                        rmargin = self.app.options['global_tpdf_rmargin'] * mm
+                        lmargin = self.app.options['global_tpdf_lmargin'] * mm
                     else:
-                        bmargin = self.app.defaults['global_tpdf_bmargin'] * inch
-                        tmargin = self.app.defaults['global_tpdf_tmargin'] * inch
-                        rmargin = self.app.defaults['global_tpdf_rmargin'] * inch
-                        lmargin = self.app.defaults['global_tpdf_lmargin'] * inch
+                        bmargin = self.app.options['global_tpdf_bmargin'] * inch
+                        tmargin = self.app.options['global_tpdf_tmargin'] * inch
+                        rmargin = self.app.options['global_tpdf_rmargin'] * inch
+                        lmargin = self.app.options['global_tpdf_lmargin'] * inch
 
                     doc = SimpleDocTemplate(
                         filename,
@@ -322,7 +322,7 @@ class AppTextEditor(QtWidgets.QWidget):
                 return
 
         # Just for adding it to the recent files list.
-        if self.app.defaults["global_open_style"] is False:
+        if self.app.options["global_open_style"] is False:
             self.app.file_opened.emit("cncjob", filename)
         self.app.file_saved.emit("cncjob", filename)
         self.app.inform.emit('%s: %s' % (_("Saved to"), str(filename)))

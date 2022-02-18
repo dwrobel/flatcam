@@ -75,7 +75,7 @@ class TclCommandBbox(TclCommand):
                 _("Expected GerberObject or GeometryObject, got"), name, type(obj)))
 
         if 'margin' not in args:
-            args['margin'] = float(self.app.defaults["gerber_bboxmargin"])
+            args['margin'] = float(self.app.options["gerber_bboxmargin"])
         margin = args['margin']
 
         if 'rounded' in args:
@@ -85,7 +85,7 @@ class TclCommandBbox(TclCommand):
                 par = args['rounded']
             rounded = bool(eval(par))
         else:
-            rounded = bool(eval(self.app.defaults["gerber_bboxrounded"]))
+            rounded = bool(eval(self.app.options["gerber_bboxrounded"]))
 
         args.pop('name', None)
 

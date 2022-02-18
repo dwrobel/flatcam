@@ -89,6 +89,6 @@ class TclCommandSetPath(TclCommand):
 
         cd_command = 'cd %s' % path
         self.app.shell.exec_command(cd_command, no_echo=False)
-        self.app.defaults["global_tcl_path"] = str(path)
+        self.app.options["global_tcl_path"] = str(path)
         msg = '[success] %s: %s' % ("Relative path set to", str(path))
         self.app.inform_shell.emit(msg)

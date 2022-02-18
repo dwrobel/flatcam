@@ -151,8 +151,8 @@ class PlotCanvas3d(QtCore.QObject, scene.SceneCanvas):
         self.container.addWidget(self.native)
 
         self.line_parent = None
-        if self.fcapp.defaults["global_cursor_color_enabled"]:
-            c_color = Color(self.fcapp.defaults["global_cursor_color"]).rgba
+        if self.fcapp.options["global_cursor_color_enabled"]:
+            c_color = Color(self.fcapp.options["global_cursor_color"]).rgba
         else:
             c_color = self.line_color
 
@@ -253,8 +253,8 @@ class PlotCanvas3d(QtCore.QObject, scene.SceneCanvas):
         # key modifiers
         modifiers = event.modifiers
 
-        pan_delta_x = self.fcapp.defaults["global_gridx"]
-        pan_delta_y = self.fcapp.defaults["global_gridy"]
+        pan_delta_x = self.fcapp.options["global_gridx"]
+        pan_delta_y = self.fcapp.options["global_gridy"]
         curr_pos = event.pos
 
         # Controlled pan by mouse wheel
@@ -284,8 +284,8 @@ class PlotCanvas3d(QtCore.QObject, scene.SceneCanvas):
         #     # Update cursor
         #     self.fcapp.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
         #                                    symbol='++', edge_color=self.fcapp.cursor_color_3D,
-        #                                    edge_width=self.fcapp.defaults["global_cursor_width"],
-        #                                    size=self.fcapp.defaults["global_cursor_size"])
+        #                                    edge_width=self.fcapp.options["global_cursor_width"],
+        #                                    size=self.fcapp.options["global_cursor_size"])
 
     def new_text_group(self, collection=None):
         if collection:

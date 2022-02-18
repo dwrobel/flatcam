@@ -207,8 +207,8 @@ class ToolSub(AppTool):
         self.connect_signals_at_init()
 
         self.ui.tools_frame.show()
-        self.ui.close_paths_cb.setChecked(self.app.defaults["tools_sub_close_paths"])
-        self.ui.delete_sources_cb.setChecked(self.app.defaults["tools_sub_delete_sources"])
+        self.ui.close_paths_cb.setChecked(self.app.options["tools_sub_close_paths"])
+        self.ui.delete_sources_cb.setChecked(self.app.options["tools_sub_delete_sources"])
 
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
@@ -217,7 +217,7 @@ class ToolSub(AppTool):
             self.ui.target_gerber_combo.set_value(obj_name)
 
         # Show/Hide Advanced Options
-        app_mode = self.app.defaults["global_app_level"]
+        app_mode = self.app.options["global_app_level"]
         self.change_level(app_mode)
 
     def change_level(self, level):

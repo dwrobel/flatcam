@@ -40,7 +40,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
     def __init__(self, name):
         self.decimals = self.app.decimals
 
-        self.circle_steps = int(self.app.defaults["excellon_circle_steps"])
+        self.circle_steps = int(self.app.options["excellon_circle_steps"])
 
         Excellon.__init__(self, excellon_circle_steps=self.circle_steps)
         FlatCAMObj.__init__(self, name)
@@ -96,8 +96,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.multigeo = False
         self.units_found = self.app.app_units
 
-        self.fill_color = self.app.defaults['excellon_plot_fill']
-        self.outline_color = self.app.defaults['excellon_plot_line']
+        self.fill_color = self.app.options['excellon_plot_fill']
+        self.outline_color = self.app.options['excellon_plot_line']
         self.alpha_level = 'bf'
 
         # the key is the tool id and the value is a list of shapes keys (indexes)
@@ -189,7 +189,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.init_context_menu()
 
         # Show/Hide Advanced Options
-        app_mode = self.app.defaults["global_app_level"]
+        app_mode = self.app.options["global_app_level"]
         self.change_level(app_mode)
 
     def set_offset_values(self):
@@ -244,8 +244,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
             self.ui.tools_table.setColumnHidden(4, False)
             self.ui.tools_table.setColumnHidden(5, False)
             self.ui.table_visibility_cb.show()
-            self.ui.table_visibility_cb.set_value(self.app.defaults["excellon_tools_table_display"])
-            self.on_table_visibility_toggle(state=self.app.defaults["excellon_tools_table_display"])
+            self.ui.table_visibility_cb.set_value(self.app.options["excellon_tools_table_display"])
+            self.on_table_visibility_toggle(state=self.app.options["excellon_tools_table_display"])
             self.ui.autoload_db_cb.show()
 
             # Context Menu section
@@ -356,8 +356,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
                 h_color = QtGui.QColor(red, green, blue, alpha)
                 self.ui.tools_table.item(self.tool_row, 4).setBackground(h_color)
             else:
-                h1 = self.app.defaults["excellon_plot_fill"][1:7]
-                h2 = self.app.defaults["excellon_plot_fill"][7:9]
+                h1 = self.app.options["excellon_plot_fill"][1:7]
+                h2 = self.app.options["excellon_plot_fill"][7:9]
                 h_color = QtGui.QColor('#' + h2 + h1)
                 self.ui.tools_table.item(self.tool_row, 4).setBackground(h_color)
 
@@ -1184,10 +1184,10 @@ class ExcellonObject(FlatCAMObj, Excellon):
         # self.obj_options['feedrate_rapid'] = float(self.obj_options['feedrate_rapid']) * factor
         # self.obj_options['toolchangez'] = float(self.obj_options['toolchangez']) * factor
         #
-        # if self.app.defaults["excellon_toolchangexy"] == '':
+        # if self.app.options["excellon_toolchangexy"] == '':
         #     self.obj_options['toolchangexy'] = "0.0, 0.0"
         # else:
-        #     coords_xy = [float(eval(coord)) for coord in self.app.defaults["excellon_toolchangexy"].split(",")]
+        #     coords_xy = [float(eval(coord)) for coord in self.app.options["excellon_toolchangexy"].split(",")]
         #     if len(coords_xy) < 2:
         #         self.app.inform.emit('[ERROR] %s' % _("The Toolchange X,Y field in Edit -> Preferences has to be "
         #                                               "in the format (x, y) \n"
@@ -1216,7 +1216,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             self.build_ui()
 
     def on_autoload_db_toggled(self, state):
-        self.app.defaults["excellon_autoload_db"] = True if state else False
+        self.app.options["excellon_autoload_db"] = True if state else False
 
     def on_plot_cb_click(self):
         if self.muted_ui:

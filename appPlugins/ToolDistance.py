@@ -153,12 +153,12 @@ class Distance(AppTool):
 
         self.app.command_active = "Distance"
 
-        self.ui.snap_center_cb.set_value(self.app.defaults['tools_dist_snap_center'])
+        self.ui.snap_center_cb.set_value(self.app.options['tools_dist_snap_center'])
 
         # snap center works only for Gerber and Execellon Editor's
         if self.original_call_source == 'exc_editor' or self.original_call_source == 'grb_editor':
             self.ui.snap_center_cb.show()
-            snap_center = self.app.defaults['tools_dist_snap_center']
+            snap_center = self.app.options['tools_dist_snap_center']
             self.on_snap_toggled(snap_center)
 
             self.ui.snap_center_cb.toggled.connect(self.on_snap_toggled)
@@ -190,7 +190,7 @@ class Distance(AppTool):
         self.ui.total_distance_entry.set_value('%.*f' % (self.decimals, 0.0))
 
     def on_snap_toggled(self, state):
-        self.app.defaults['tools_dist_snap_center'] = state
+        self.app.options['tools_dist_snap_center'] = state
         if state:
             # disengage the grid snapping since it will be hard to find the drills or pads on grid
             if self.app.ui.grid_snap_btn.isChecked():
@@ -483,8 +483,8 @@ class Distance(AppTool):
         self.app.app_cursor.enabled = True
         self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
                                      symbol='++', edge_color='#000000',
-                                     edge_width=self.app.defaults["global_cursor_width"],
-                                     size=self.app.defaults["global_cursor_size"])
+                                     edge_width=self.app.options["global_cursor_width"],
+                                     size=self.app.options["global_cursor_size"])
 
     def on_multipoint_measurement_changed(self, val):
         if val:
@@ -526,8 +526,8 @@ class Distance(AppTool):
                 # Update cursor
                 self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
                                              symbol='++', edge_color=self.app.cursor_color_3D,
-                                             edge_width=self.app.defaults["global_cursor_width"],
-                                             size=self.app.defaults["global_cursor_size"])
+                                             edge_width=self.app.options["global_cursor_width"],
+                                             size=self.app.options["global_cursor_size"])
             else:
                 pos = (pos_canvas[0], pos_canvas[1])
 

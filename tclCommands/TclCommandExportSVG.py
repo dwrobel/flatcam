@@ -56,7 +56,7 @@ class TclCommandExportSVG(TclCommand):
         source_obj_name = args['name']
 
         if 'filename' not in args:
-            filename = self.app.defaults["global_last_save_folder"] + '/' + args['name']
+            filename = self.app.options["global_last_save_folder"] + '/' + args['name']
         else:
             filename = args['filename']
 

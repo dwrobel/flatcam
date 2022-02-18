@@ -184,7 +184,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         self.line_color_entry.editingFinished.connect(self.on_line_color_entry)
 
     def on_line_color_entry(self):
-        self.app.defaults['geometry_plot_line'] = self.line_color_entry.get_value()[:7] + 'FF'
+        self.app.options['geometry_plot_line'] = self.line_color_entry.get_value()[:7] + 'FF'
 
     def optimization_selection(self, val):
         if platform.architecture()[0] != '64bit':

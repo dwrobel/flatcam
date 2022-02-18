@@ -36,7 +36,7 @@ class ToolPunchGerber(AppTool, Gerber):
 
     def __init__(self, app):
         AppTool.__init__(self, app)
-        Geometry.__init__(self, geo_steps_per_circle=self.app.defaults["geometry_circle_steps"])
+        Geometry.__init__(self, geo_steps_per_circle=self.app.options["geometry_circle_steps"])
 
         self.app = app
         self.decimals = self.app.decimals
@@ -216,24 +216,24 @@ class ToolPunchGerber(AppTool, Gerber):
 
         self.ui_disconnect()
         self.ui_connect()
-        self.ui.method_punch.set_value(self.app.defaults["tools_punch_hole_type"])
+        self.ui.method_punch.set_value(self.app.options["tools_punch_hole_type"])
         self.ui.select_all_cb.set_value(False)
 
-        self.ui.dia_entry.set_value(float(self.app.defaults["tools_punch_hole_fixed_dia"]))
+        self.ui.dia_entry.set_value(float(self.app.options["tools_punch_hole_fixed_dia"]))
 
-        self.ui.circular_ring_entry.set_value(float(self.app.defaults["tools_punch_circular_ring"]))
-        self.ui.oblong_ring_entry.set_value(float(self.app.defaults["tools_punch_oblong_ring"]))
-        self.ui.square_ring_entry.set_value(float(self.app.defaults["tools_punch_square_ring"]))
-        self.ui.rectangular_ring_entry.set_value(float(self.app.defaults["tools_punch_rectangular_ring"]))
-        self.ui.other_ring_entry.set_value(float(self.app.defaults["tools_punch_others_ring"]))
+        self.ui.circular_ring_entry.set_value(float(self.app.options["tools_punch_circular_ring"]))
+        self.ui.oblong_ring_entry.set_value(float(self.app.options["tools_punch_oblong_ring"]))
+        self.ui.square_ring_entry.set_value(float(self.app.options["tools_punch_square_ring"]))
+        self.ui.rectangular_ring_entry.set_value(float(self.app.options["tools_punch_rectangular_ring"]))
+        self.ui.other_ring_entry.set_value(float(self.app.options["tools_punch_others_ring"]))
 
-        self.ui.circular_cb.set_value(self.app.defaults["tools_punch_circular"])
-        self.ui.oblong_cb.set_value(self.app.defaults["tools_punch_oblong"])
-        self.ui.square_cb.set_value(self.app.defaults["tools_punch_square"])
-        self.ui.rectangular_cb.set_value(self.app.defaults["tools_punch_rectangular"])
-        self.ui.other_cb.set_value(self.app.defaults["tools_punch_others"])
+        self.ui.circular_cb.set_value(self.app.options["tools_punch_circular"])
+        self.ui.oblong_cb.set_value(self.app.options["tools_punch_oblong"])
+        self.ui.square_cb.set_value(self.app.options["tools_punch_square"])
+        self.ui.rectangular_cb.set_value(self.app.options["tools_punch_rectangular"])
+        self.ui.other_cb.set_value(self.app.options["tools_punch_others"])
 
-        self.ui.factor_entry.set_value(float(self.app.defaults["tools_punch_hole_prop_factor"]))
+        self.ui.factor_entry.set_value(float(self.app.options["tools_punch_hole_prop_factor"]))
 
         self.ui.punch_type_radio.set_value("a")
         self.old_selection_status = None
@@ -248,7 +248,7 @@ class ToolPunchGerber(AppTool, Gerber):
             self.ui.gerber_object_combo.set_value(obj_name)
 
         # Show/Hide Advanced Options
-        app_mode = self.app.defaults["global_app_level"]
+        app_mode = self.app.options["global_app_level"]
         self.change_level(app_mode)
 
     def build_tool_ui(self):
@@ -566,8 +566,8 @@ class ToolPunchGerber(AppTool, Gerber):
             self.app.ui.notebook.setDisabled(True)
 
             # disable the canvas mouse dragging seelction shape
-            self.old_selection_status = deepcopy(self.app.defaults['global_selection_shape'])
-            self.app.defaults['global_selection_shape'] = False
+            self.old_selection_status = deepcopy(self.app.options['global_selection_shape'])
+            self.app.options['global_selection_shape'] = False
 
     def on_excellon_method(self, grb_obj, outname):
         # get the Excellon file whose geometry will create the punch holes
@@ -1703,8 +1703,8 @@ class ToolPunchGerber(AppTool, Gerber):
                     if clicked_poly not in self.poly_dict.values():
                         shape_id = self.app.tool_shapes.add(
                             tolerance=self.grb_obj.drawing_tolerance, layer=0, shape=clicked_poly,
-                            color=self.app.defaults['global_sel_draw_color'] + 'FF',
-                            face_color=self.app.defaults['global_sel_draw_color'] + 'FF', visible=True)
+                            color=self.app.options['global_sel_draw_color'] + 'FF',
+                            face_color=self.app.options['global_sel_draw_color'] + 'FF', visible=True)
                         self.poly_dict[shape_id] = clicked_poly
                         self.app.inform.emit(
                             '%s: %d. %s' % (_("Added pad"), int(len(self.poly_dict)),
@@ -1749,7 +1749,7 @@ class ToolPunchGerber(AppTool, Gerber):
             self.poly_sel_disconnect_flag = False
 
             # restore the selection shape
-            self.app.defaults['global_selection_shape'] = self.old_selection_status
+            self.app.options['global_selection_shape'] = self.old_selection_status
 
             self.app.tool_shapes.clear(update=True)
 
@@ -1846,7 +1846,7 @@ class ToolPunchGerber(AppTool, Gerber):
                                                                       self.app.on_mouse_click_over_plot)
                 # restore the selection shape
                 if self.old_selection_status is not None:
-                    self.app.defaults['global_selection_shape'] = self.old_selection_status
+                    self.app.options['global_selection_shape'] = self.old_selection_status
 
             self.app.ui.notebook.setDisabled(False)
             self.poly_dict.clear()
@@ -1924,8 +1924,8 @@ class ToolPunchGerber(AppTool, Gerber):
 
                                 shape_id = self.app.tool_shapes.add(
                                     tolerance=self.grb_obj.drawing_tolerance, layer=0, shape=sol_geo,
-                                    color=self.app.defaults['global_sel_draw_color'] + 'FF',
-                                    face_color=self.app.defaults['global_sel_draw_color'] + 'FF', visible=True)
+                                    color=self.app.options['global_sel_draw_color'] + 'FF',
+                                    face_color=self.app.options['global_sel_draw_color'] + 'FF', visible=True)
                                 self.poly_dict[shape_id] = sol_geo
         self.app.tool_shapes.redraw()
         self.app.inform.emit(_("All selectable pads are selected."))

@@ -128,23 +128,23 @@ class ToolCalculator(AppTool):
         self.ui.fl_oz_entry.set_value('%.*f' % (self.decimals, 0))
 
         # Electroplating Calculator
-        length = self.app.defaults["tools_calc_electro_length"]
-        width = self.app.defaults["tools_calc_electro_width"]
-        density = self.app.defaults["tools_calc_electro_cdensity"]
-        growth = self.app.defaults["tools_calc_electro_growth"]
+        length = self.app.options["tools_calc_electro_length"]
+        width = self.app.options["tools_calc_electro_width"]
+        density = self.app.options["tools_calc_electro_cdensity"]
+        growth = self.app.options["tools_calc_electro_growth"]
 
         self.ui.pcblength_entry.set_value(length)
         self.ui.pcbwidth_entry.set_value(width)
-        self.ui.area_entry.set_value(self.app.defaults["tools_calc_electro_area"])
+        self.ui.area_entry.set_value(self.app.options["tools_calc_electro_area"])
         self.ui.cdensity_entry.set_value(density)
         self.ui.growth_entry.set_value(growth)
         self.ui.cvalue_entry.set_value(0.00)
         self.ui.time_entry.set_value(0.0)
 
         # V-Shape tool Calculator
-        tip_dia = self.app.defaults["tools_calc_vshape_tip_dia"]
-        tip_angle = self.app.defaults["tools_calc_vshape_tip_angle"]
-        cut_z = self.app.defaults["tools_calc_vshape_cut_z"]
+        tip_dia = self.app.options["tools_calc_vshape_tip_dia"]
+        tip_angle = self.app.options["tools_calc_vshape_tip_angle"]
+        cut_z = self.app.options["tools_calc_vshape_cut_z"]
 
         self.ui.tipDia_entry.set_value(tip_dia)
         self.ui.tipAngle_entry.set_value(tip_angle)

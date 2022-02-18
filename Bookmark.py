@@ -175,9 +175,9 @@ class BookmarkManager(QtWidgets.QWidget):
 
         self.mark_table_rows_for_actions()
 
-        self.app.defaults["global_bookmarks"].clear()
+        self.app.options["global_bookmarks"].clear()
         for key, val in self.bm_dict.items():
-            self.app.defaults["global_bookmarks"][key] = deepcopy(val)
+            self.app.options["global_bookmarks"][key] = deepcopy(val)
 
     def on_add_entry(self, **kwargs):
         """
@@ -218,7 +218,7 @@ class BookmarkManager(QtWidgets.QWidget):
         self.bm_dict[str(new_entry)] = [title, link]
 
         # add the link to the menu but only if it is within the set limit
-        bm_limit = int(self.app.defaults["global_bookmarks_limit"])
+        bm_limit = int(self.app.options["global_bookmarks_limit"])
         if len(self.bm_dict) < bm_limit:
             act = QtGui.QAction(parent=self.app.ui.menuhelp_bookmarks)
             act.setText(title)
@@ -360,7 +360,7 @@ class BookmarkManager(QtWidgets.QWidget):
     def mark_table_rows_for_actions(self):
         for row in range(self.table_widget.rowCount()):
             item_to_paint = self.table_widget.item(row, 0)
-            if row < self.app.defaults["global_bookmarks_limit"]:
+            if row < self.app.options["global_bookmarks_limit"]:
                 item_to_paint.setBackground(QtGui.QColor('gray'))
                 # item_to_paint.setForeground(QtGui.QColor('black'))
             else:

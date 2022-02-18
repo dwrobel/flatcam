@@ -104,8 +104,8 @@ class AppGCodeEditor(QtCore.QObject):
         # #############################################################################################################
         # #############################################################################################################
 
-        self.ui.append_text.set_value(self.app.defaults["cncjob_append"])
-        self.ui.prepend_text.set_value(self.app.defaults["cncjob_prepend"])
+        self.ui.append_text.set_value(self.app.options["cncjob_append"])
+        self.ui.prepend_text.set_value(self.app.options["cncjob_prepend"])
 
         # Remove anything else in the GUI Properties Tab
         self.app.ui.properties_scroll_area.takeWidget()
@@ -121,7 +121,7 @@ class AppGCodeEditor(QtCore.QObject):
         self.activate()
 
         # Show/Hide Advanced Options
-        app_mode = self.app.defaults["global_app_level"]
+        app_mode = self.app.options["global_app_level"]
         self.change_level(app_mode)
 
     def build_ui(self):

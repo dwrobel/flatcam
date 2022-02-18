@@ -124,25 +124,25 @@ class ToolTransform(AppTool):
         self.connect_signals_at_init()
 
         # ## Initialize form
-        self.ui.ref_combo.set_value(self.app.defaults["tools_transform_reference"])
-        self.ui.type_obj_combo.set_value(self.app.defaults["tools_transform_ref_object"])
-        self.ui.point_entry.set_value(self.app.defaults["tools_transform_ref_point"])
-        self.ui.rotate_entry.set_value(self.app.defaults["tools_transform_rotate"])
+        self.ui.ref_combo.set_value(self.app.options["tools_transform_reference"])
+        self.ui.type_obj_combo.set_value(self.app.options["tools_transform_ref_object"])
+        self.ui.point_entry.set_value(self.app.options["tools_transform_ref_point"])
+        self.ui.rotate_entry.set_value(self.app.options["tools_transform_rotate"])
 
-        self.ui.skewx_entry.set_value(self.app.defaults["tools_transform_skew_x"])
-        self.ui.skewy_entry.set_value(self.app.defaults["tools_transform_skew_y"])
-        self.ui.skew_link_cb.set_value(self.app.defaults["tools_transform_skew_link"])
+        self.ui.skewx_entry.set_value(self.app.options["tools_transform_skew_x"])
+        self.ui.skewy_entry.set_value(self.app.options["tools_transform_skew_y"])
+        self.ui.skew_link_cb.set_value(self.app.options["tools_transform_skew_link"])
 
-        self.ui.scalex_entry.set_value(self.app.defaults["tools_transform_scale_x"])
-        self.ui.scaley_entry.set_value(self.app.defaults["tools_transform_scale_y"])
-        self.ui.scale_link_cb.set_value(self.app.defaults["tools_transform_scale_link"])
+        self.ui.scalex_entry.set_value(self.app.options["tools_transform_scale_x"])
+        self.ui.scaley_entry.set_value(self.app.options["tools_transform_scale_y"])
+        self.ui.scale_link_cb.set_value(self.app.options["tools_transform_scale_link"])
 
-        self.ui.offx_entry.set_value(self.app.defaults["tools_transform_offset_x"])
-        self.ui.offy_entry.set_value(self.app.defaults["tools_transform_offset_y"])
+        self.ui.offx_entry.set_value(self.app.options["tools_transform_offset_x"])
+        self.ui.offy_entry.set_value(self.app.options["tools_transform_offset_y"])
 
-        self.ui.buffer_entry.set_value(self.app.defaults["tools_transform_buffer_dis"])
-        self.ui.buffer_factor_entry.set_value(self.app.defaults["tools_transform_buffer_factor"])
-        self.ui.buffer_rounded_cb.set_value(self.app.defaults["tools_transform_buffer_corner"])
+        self.ui.buffer_entry.set_value(self.app.options["tools_transform_buffer_dis"])
+        self.ui.buffer_factor_entry.set_value(self.app.options["tools_transform_buffer_factor"])
+        self.ui.buffer_rounded_cb.set_value(self.app.options["tools_transform_buffer_corner"])
 
         # initial state is hidden
         self.ui.point_label.hide()

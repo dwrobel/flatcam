@@ -135,25 +135,25 @@ class TclCommandCncjob(TclCommandSignaled):
             else:
                 return
 
-        args["dia"] = args["dia"] if "dia" in args and args["dia"] else self.app.defaults["tools_mill_tooldia"]
+        args["dia"] = args["dia"] if "dia" in args and args["dia"] else self.app.options["tools_mill_tooldia"]
 
-        args["z_cut"] = args["z_cut"] if "z_cut" in args and args["z_cut"] else self.app.defaults["tools_mill_cutz"]
+        args["z_cut"] = args["z_cut"] if "z_cut" in args and args["z_cut"] else self.app.options["tools_mill_cutz"]
         args["z_move"] = args["z_move"] if "z_move" in args and args["z_move"] else \
-            self.app.defaults["tools_mill_travelz"]
+            self.app.options["tools_mill_travelz"]
 
         args["pp"] = args["pp"] if "pp" in args and isinstance(args["pp"], str) else \
-            self.app.defaults["tools_mill_ppname_g"]
+            self.app.options["tools_mill_ppname_g"]
 
         args["feedrate"] = args["feedrate"] if "feedrate" in args and args["feedrate"] else \
-            self.app.defaults["tools_mill_feedrate"]
+            self.app.options["tools_mill_feedrate"]
 
         if 'laser' in args["pp"] and "feedrate_z" not in args:
             args["feedrate_z"] = args["feedrate"]
         else:
             args["feedrate_z"] = args["feedrate_z"] if "feedrate_z" in args and args["feedrate_z"] else \
-                self.app.defaults["tools_mill_feedrate_z"]
+                self.app.options["tools_mill_feedrate_z"]
         args["feedrate_rapid"] = args["feedrate_rapid"] if "feedrate_rapid" in args and args["feedrate_rapid"] else \
-            self.app.defaults["tools_mill_feedrate_rapid"]
+            self.app.options["tools_mill_feedrate_rapid"]
 
         if "extracut_length" in args:
             args["extracut"] = True
@@ -162,28 +162,28 @@ class TclCommandCncjob(TclCommandSignaled):
             else:
                 args["extracut_length"] = float(args["extracut_length"])
         else:
-            args["extracut"] = self.app.defaults["tools_mill_extracut"]
-            args["extracut_length"] = self.app.defaults["tools_mill_extracut_length"]
+            args["extracut"] = self.app.options["tools_mill_extracut"]
+            args["extracut_length"] = self.app.options["tools_mill_extracut_length"]
 
         if "dpp" in args:
             args["multidepth"] = True
             if args["dpp"] is None:
-                args["dpp"] = self.app.defaults["tools_mill_depthperpass"]
+                args["dpp"] = self.app.options["tools_mill_depthperpass"]
             else:
                 args["dpp"] = float(args["dpp"])
         else:
-            args["multidepth"] = self.app.defaults["tools_mill_multidepth"]
-            args["dpp"] = self.app.defaults["tools_mill_depthperpass"]
+            args["multidepth"] = self.app.options["tools_mill_multidepth"]
+            args["dpp"] = self.app.options["tools_mill_depthperpass"]
 
         args["startz"] = args["startz"] if "startz" in args and args["startz"] else \
-            self.app.defaults["tools_mill_startz"]
-        args["endz"] = args["endz"] if "endz" in args and args["endz"] else self.app.defaults["tools_mill_endz"]
+            self.app.options["tools_mill_startz"]
+        args["endz"] = args["endz"] if "endz" in args and args["endz"] else self.app.options["tools_mill_endz"]
 
         if "endxy" in args and args["endxy"]:
             args["endxy"] = args["endxy"]
         else:
-            if self.app.defaults["tools_mill_endxy"]:
-                args["endxy"] = str(self.app.defaults["tools_mill_endxy"])
+            if self.app.options["tools_mill_endxy"]:
+                args["endxy"] = str(self.app.options["tools_mill_endxy"])
             else:
                 args["endxy"] = '0, 0'
         if len(eval(args["endxy"])) != 2:
@@ -207,24 +207,24 @@ class TclCommandCncjob(TclCommandSignaled):
             else:
                 args["dwelltime"] = float(args['dwelltime'])
         else:
-            args["dwell"] = self.app.defaults["tools_mill_dwell"]
-            args["dwelltime"] = self.app.defaults["tools_mill_dwelltime"]
+            args["dwell"] = self.app.options["tools_mill_dwell"]
+            args["dwelltime"] = self.app.options["tools_mill_dwelltime"]
 
         if "toolchangez" in args:
             args["toolchange"] = True
             if args["toolchangez"] is not None:
                 args["toolchangez"] = args["toolchangez"]
             else:
-                args["toolchangez"] = self.app.defaults["tools_mill_toolchangez"]
+                args["toolchangez"] = self.app.options["tools_mill_toolchangez"]
         else:
-            args["toolchange"] = self.app.defaults["tools_mill_toolchange"]
-            args["toolchangez"] = self.app.defaults["tools_mill_toolchangez"]
+            args["toolchange"] = self.app.options["tools_mill_toolchange"]
+            args["toolchangez"] = self.app.options["tools_mill_toolchangez"]
 
         if "toolchangexy" in args and args["toolchangexy"]:
             args["toolchangexy"] = args["toolchangexy"]
         else:
-            if self.app.defaults["tools_mill_toolchangexy"]:
-                args["toolchangexy"] = str(self.app.defaults["tools_mill_toolchangexy"])
+            if self.app.options["tools_mill_toolchangexy"]:
+                args["toolchangexy"] = str(self.app.options["tools_mill_toolchangexy"])
             else:
                 args["toolchangexy"] = '0, 0'
         if len(eval(args["toolchangexy"])) != 2:
@@ -256,8 +256,8 @@ class TclCommandCncjob(TclCommandSignaled):
 
             for tool_uid in list(local_tools_dict.keys()):
                 if 'data' in local_tools_dict[tool_uid]:
-                    local_tools_dict[tool_uid]['data']['segx'] = self.app.defaults['geometry_segx']
-                    local_tools_dict[tool_uid]['data']['segy'] = self.app.defaults['geometry_segx']
+                    local_tools_dict[tool_uid]['data']['segx'] = self.app.options['geometry_segx']
+                    local_tools_dict[tool_uid]['data']['segy'] = self.app.options['geometry_segx']
                     local_tools_dict[tool_uid]['data']['tools_mill_tooldia'] = args["dia"]
                     local_tools_dict[tool_uid]['data']['tools_mill_cutz'] = args["z_cut"]
                     local_tools_dict[tool_uid]['data']['tools_mill_travelz'] = args["z_move"]

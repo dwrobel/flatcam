@@ -64,7 +64,7 @@ class ToolPDF(AppTool):
         self.parsing_promises = []
 
         self.parser = PdfParser(units=self.app.app_units,
-                                resolution=self.app.defaults["gerber_circle_steps"],
+                                resolution=self.app.options["gerber_circle_steps"],
                                 abort=self.app.abort_flag)
 
     def run(self, toggle=True):

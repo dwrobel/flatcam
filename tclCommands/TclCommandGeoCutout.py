@@ -146,22 +146,22 @@ class TclCommandGeoCutout(TclCommandSignaled):
         if 'margin' in args:
             margin = float(args['margin'])
         else:
-            margin = float(self.app.defaults["tools_cutout_margin"])
+            margin = float(self.app.options["tools_cutout_margin"])
 
         if 'dia' in args:
             dia = float(args['dia'])
         else:
-            dia = float(self.app.defaults["tools_cutout_tooldia"])
+            dia = float(self.app.options["tools_cutout_tooldia"])
 
         if 'gaps' in args:
             gaps = args['gaps']
         else:
-            gaps = str(self.app.defaults["tools_cutout_gaps_ff"])
+            gaps = str(self.app.options["tools_cutout_gaps_ff"])
 
         if 'gapsize' in args:
             gapsize = float(args['gapsize'])
         else:
-            gapsize = float(self.app.defaults["tools_cutout_gapsize"])
+            gapsize = float(self.app.options["tools_cutout_gapsize"])
 
         if 'outname' in args:
             outname = args['outname']

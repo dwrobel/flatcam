@@ -63,4 +63,4 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         self.annotation_fontcolor_entry.editingFinished.connect(self.on_annotation_fontcolor_entry)
 
     def on_annotation_fontcolor_entry(self):
-        self.app.defaults['cncjob_annotation_fontcolor'] = self.annotation_fontcolor_entry.get_value()
+        self.app.options['cncjob_annotation_fontcolor'] = self.annotation_fontcolor_entry.get_value()

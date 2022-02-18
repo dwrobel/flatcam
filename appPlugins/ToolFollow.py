@@ -42,7 +42,7 @@ class ToolFollow(AppTool, Gerber):
         self.decimals = self.app.decimals
 
         AppTool.__init__(self, app)
-        Gerber.__init__(self, steps_per_circle=self.app.defaults["gerber_circle_steps"])
+        Gerber.__init__(self, steps_per_circle=self.app.options["gerber_circle_steps"])
 
         # #############################################################################
         # ######################### Tool GUI ##########################################
@@ -157,7 +157,7 @@ class ToolFollow(AppTool, Gerber):
             self.ui.object_combo.set_value(obj_name)
 
         # Show/Hide Advanced Options
-        app_mode = self.app.defaults["global_app_level"]
+        app_mode = self.app.options["global_app_level"]
         self.change_level(app_mode)
 
     def change_level(self, level):
@@ -560,8 +560,8 @@ class ToolFollow(AppTool, Gerber):
 
             self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
                                          symbol='++', edge_color=self.app.cursor_color_3D,
-                                         edge_width=self.app.defaults["global_cursor_width"],
-                                         size=self.app.defaults["global_cursor_size"])
+                                         edge_width=self.app.options["global_cursor_width"],
+                                         size=self.app.options["global_cursor_size"])
 
         if self.cursor_pos is None:
             self.cursor_pos = (0, 0)

@@ -84,7 +84,7 @@ class TclCommandIsolate(TclCommandSignaled):
                 par = args['combine']
             args['combine'] = bool(eval(str(par)))
         else:
-            args['combine'] = bool(eval(str(self.app.defaults["tools_iso_combine_passes"])))
+            args['combine'] = bool(eval(str(self.app.options["tools_iso_combine_passes"])))
 
         obj = self.app.collection.get_by_name(name)
         if obj is None:

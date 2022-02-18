@@ -41,7 +41,7 @@ class HPGL2:
         self.app = app
 
         # How to approximate a circle with lines.
-        self.steps_per_circle = int(self.app.defaults["geometry_circle_steps"])
+        self.steps_per_circle = int(self.app.options["geometry_circle_steps"])
         self.decimals = self.app.decimals
 
         # store the file units here
@@ -53,67 +53,67 @@ class HPGL2:
         self.default_data = {}
         self.default_data.update({
             "name":                     '_ncc',
-            "plot":                     self.app.defaults["geometry_plot"],
-            "cutz":                     self.app.defaults["geometry_cutz"],
-            "vtipdia":                  self.app.defaults["tools_mill_vtipdia"],
-            "vtipangle":                self.app.defaults["tools_mill_vtipangle"],
-            "travelz":                  self.app.defaults["geometry_travelz"],
-            "feedrate":                 self.app.defaults["geometry_feedrate"],
-            "feedrate_z":               self.app.defaults["geometry_feedrate_z"],
-            "feedrate_rapid":           self.app.defaults["geometry_feedrate_rapid"],
-            "dwell":                    self.app.defaults["geometry_dwell"],
-            "dwelltime":                self.app.defaults["geometry_dwelltime"],
-            "multidepth":               self.app.defaults["geometry_multidepth"],
-            "ppname_g":                 self.app.defaults["geometry_ppname_g"],
-            "depthperpass":             self.app.defaults["geometry_depthperpass"],
-            "extracut":                 self.app.defaults["geometry_extracut"],
-            "extracut_length":          self.app.defaults["geometry_extracut_length"],
-            "toolchange":               self.app.defaults["geometry_toolchange"],
-            "toolchangez":              self.app.defaults["geometry_toolchangez"],
-            "endz":                     self.app.defaults["geometry_endz"],
-            "endxy":                    self.app.defaults["geometry_endxy"],
-            "area_exclusion":           self.app.defaults["geometry_area_exclusion"],
-            "area_shape":               self.app.defaults["geometry_area_shape"],
-            "area_strategy":            self.app.defaults["geometry_area_strategy"],
-            "area_overz":               self.app.defaults["geometry_area_overz"],
+            "plot":                     self.app.options["geometry_plot"],
+            "cutz":                     self.app.options["geometry_cutz"],
+            "vtipdia":                  self.app.options["tools_mill_vtipdia"],
+            "vtipangle":                self.app.options["tools_mill_vtipangle"],
+            "travelz":                  self.app.options["geometry_travelz"],
+            "feedrate":                 self.app.options["geometry_feedrate"],
+            "feedrate_z":               self.app.options["geometry_feedrate_z"],
+            "feedrate_rapid":           self.app.options["geometry_feedrate_rapid"],
+            "dwell":                    self.app.options["geometry_dwell"],
+            "dwelltime":                self.app.options["geometry_dwelltime"],
+            "multidepth":               self.app.options["geometry_multidepth"],
+            "ppname_g":                 self.app.options["geometry_ppname_g"],
+            "depthperpass":             self.app.options["geometry_depthperpass"],
+            "extracut":                 self.app.options["geometry_extracut"],
+            "extracut_length":          self.app.options["geometry_extracut_length"],
+            "toolchange":               self.app.options["geometry_toolchange"],
+            "toolchangez":              self.app.options["geometry_toolchangez"],
+            "endz":                     self.app.options["geometry_endz"],
+            "endxy":                    self.app.options["geometry_endxy"],
+            "area_exclusion":           self.app.options["geometry_area_exclusion"],
+            "area_shape":               self.app.options["geometry_area_shape"],
+            "area_strategy":            self.app.options["geometry_area_strategy"],
+            "area_overz":               self.app.options["geometry_area_overz"],
 
-            "spindlespeed":             self.app.defaults["geometry_spindlespeed"],
-            "toolchangexy":             self.app.defaults["geometry_toolchangexy"],
-            "startz":                   self.app.defaults["geometry_startz"],
+            "spindlespeed":             self.app.options["geometry_spindlespeed"],
+            "toolchangexy":             self.app.options["geometry_toolchangexy"],
+            "startz":                   self.app.options["geometry_startz"],
 
-            "tooldia":                  self.app.defaults["tools_paint_tooldia"],
-            "tools_paint_offset":       self.app.defaults["tools_paint_offset"],
-            "tools_paint_method":       self.app.defaults["tools_paint_method"],
-            "tools_paint_selectmethod": self.app.defaults["tools_paint_selectmethod"],
-            "tools_paint_connect":      self.app.defaults["tools_paint_connect"],
-            "tools_paint_contour":      self.app.defaults["tools_paint_contour"],
-            "tools_paint_overlap":      self.app.defaults["tools_paint_overlap"],
-            "tools_paint_rest":         self.app.defaults["tools_paint_rest"],
+            "tooldia":                  self.app.options["tools_paint_tooldia"],
+            "tools_paint_offset":       self.app.options["tools_paint_offset"],
+            "tools_paint_method":       self.app.options["tools_paint_method"],
+            "tools_paint_selectmethod": self.app.options["tools_paint_selectmethod"],
+            "tools_paint_connect":      self.app.options["tools_paint_connect"],
+            "tools_paint_contour":      self.app.options["tools_paint_contour"],
+            "tools_paint_overlap":      self.app.options["tools_paint_overlap"],
+            "tools_paint_rest":         self.app.options["tools_paint_rest"],
 
-            "tools_ncc_operation":      self.app.defaults["tools_ncc_operation"],
-            "tools_ncc_margin":         self.app.defaults["tools_ncc_margin"],
-            "tools_ncc_method":         self.app.defaults["tools_ncc_method"],
-            "tools_ncc_connect":        self.app.defaults["tools_ncc_connect"],
-            "tools_ncc_contour":        self.app.defaults["tools_ncc_contour"],
-            "tools_ncc_overlap":        self.app.defaults["tools_ncc_overlap"],
-            "tools_ncc_rest":           self.app.defaults["tools_ncc_rest"],
-            "tools_ncc_ref":            self.app.defaults["tools_ncc_ref"],
-            "tools_ncc_offset_choice":  self.app.defaults["tools_ncc_offset_choice"],
-            "tools_ncc_offset_value":   self.app.defaults["tools_ncc_offset_value"],
-            "tools_ncc_milling_type":   self.app.defaults["tools_ncc_milling_type"],
+            "tools_ncc_operation":      self.app.options["tools_ncc_operation"],
+            "tools_ncc_margin":         self.app.options["tools_ncc_margin"],
+            "tools_ncc_method":         self.app.options["tools_ncc_method"],
+            "tools_ncc_connect":        self.app.options["tools_ncc_connect"],
+            "tools_ncc_contour":        self.app.options["tools_ncc_contour"],
+            "tools_ncc_overlap":        self.app.options["tools_ncc_overlap"],
+            "tools_ncc_rest":           self.app.options["tools_ncc_rest"],
+            "tools_ncc_ref":            self.app.options["tools_ncc_ref"],
+            "tools_ncc_offset_choice":  self.app.options["tools_ncc_offset_choice"],
+            "tools_ncc_offset_value":   self.app.options["tools_ncc_offset_value"],
+            "tools_ncc_milling_type":   self.app.options["tools_ncc_milling_type"],
 
-            "tools_iso_passes":         self.app.defaults["tools_iso_passes"],
-            "tools_iso_overlap":        self.app.defaults["tools_iso_overlap"],
-            "tools_iso_milling_type":   self.app.defaults["tools_iso_milling_type"],
-            "tools_iso_isotype":        self.app.defaults["tools_iso_isotype"],
+            "tools_iso_passes":         self.app.options["tools_iso_passes"],
+            "tools_iso_overlap":        self.app.options["tools_iso_overlap"],
+            "tools_iso_milling_type":   self.app.options["tools_iso_milling_type"],
+            "tools_iso_isotype":        self.app.options["tools_iso_isotype"],
 
-            "tools_iso_rest":           self.app.defaults["tools_iso_rest"],
-            "tools_iso_combine_passes": self.app.defaults["tools_iso_combine_passes"],
-            "tools_iso_isoexcept":      self.app.defaults["tools_iso_isoexcept"],
-            "tools_iso_selection":      self.app.defaults["tools_iso_selection"],
-            "tools_iso_poly_ints":      self.app.defaults["tools_iso_poly_ints"],
-            "tools_iso_force":          self.app.defaults["tools_iso_force"],
-            "tools_iso_area_shape":     self.app.defaults["tools_iso_area_shape"]
+            "tools_iso_rest":           self.app.options["tools_iso_rest"],
+            "tools_iso_combine_passes": self.app.options["tools_iso_combine_passes"],
+            "tools_iso_isoexcept":      self.app.options["tools_iso_isoexcept"],
+            "tools_iso_selection":      self.app.options["tools_iso_selection"],
+            "tools_iso_poly_ints":      self.app.options["tools_iso_poly_ints"],
+            "tools_iso_force":          self.app.options["tools_iso_force"],
+            "tools_iso_area_shape":     self.app.options["tools_iso_area_shape"]
         })
 
         # will store the geometry here for compatibility reason
@@ -237,7 +237,7 @@ class HPGL2:
                                 'tooldia': float('%.*f' %
                                                  (
                                                      self.decimals,
-                                                     float(self.app.defaults['tools_mill_tooldia'])
+                                                     float(self.app.options['tools_mill_tooldia'])
                                                  )
                                                  ),
                                 'offset': 'Path',

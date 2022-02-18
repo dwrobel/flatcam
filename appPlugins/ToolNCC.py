@@ -48,7 +48,7 @@ class NonCopperClear(AppTool, Gerber):
         self.decimals = self.app.decimals
 
         AppTool.__init__(self, app)
-        Gerber.__init__(self, steps_per_circle=self.app.defaults["gerber_circle_steps"])
+        Gerber.__init__(self, steps_per_circle=self.app.options["gerber_circle_steps"])
 
         # #############################################################################
         # ######################### Tool GUI ##########################################
@@ -112,7 +112,7 @@ class NonCopperClear(AppTool, Gerber):
         self.select_method = None
         self.tool_type_item_options = []
 
-        self.circle_steps = int(self.app.defaults["gerber_circle_steps"])
+        self.circle_steps = int(self.app.options["gerber_circle_steps"])
 
         self.tooldia = None
 
@@ -272,7 +272,7 @@ class NonCopperClear(AppTool, Gerber):
 
     def set_tool_ui(self):
         self.units = self.app.app_units.upper()
-        self.old_tool_dia = self.app.defaults["tools_ncc_newdia"]
+        self.old_tool_dia = self.app.options["tools_ncc_newdia"]
 
         self.clear_ui(self.layout)
         self.ui = NccUI(layout=self.layout, app=self.app)
@@ -325,35 +325,35 @@ class NonCopperClear(AppTool, Gerber):
             self.on_type_obj_index_changed(val=kind)
             self.on_reference_combo_changed()
 
-        self.ui.op_radio.set_value(self.app.defaults["tools_ncc_operation"])
-        self.ui.ncc_order_combo.set_value(self.app.defaults["tools_ncc_order"])
-        self.ui.ncc_overlap_entry.set_value(self.app.defaults["tools_ncc_overlap"])
-        self.ui.ncc_margin_entry.set_value(self.app.defaults["tools_ncc_margin"])
-        self.ui.ncc_method_combo.set_value(self.app.defaults["tools_ncc_method"])
-        self.ui.ncc_connect_cb.set_value(self.app.defaults["tools_ncc_connect"])
-        self.ui.ncc_contour_cb.set_value(self.app.defaults["tools_ncc_contour"])
-        self.ui.ncc_choice_offset_cb.set_value(self.app.defaults["tools_ncc_offset_choice"])
-        self.ui.ncc_offset_spinner.set_value(self.app.defaults["tools_ncc_offset_value"])
+        self.ui.op_radio.set_value(self.app.options["tools_ncc_operation"])
+        self.ui.ncc_order_combo.set_value(self.app.options["tools_ncc_order"])
+        self.ui.ncc_overlap_entry.set_value(self.app.options["tools_ncc_overlap"])
+        self.ui.ncc_margin_entry.set_value(self.app.options["tools_ncc_margin"])
+        self.ui.ncc_method_combo.set_value(self.app.options["tools_ncc_method"])
+        self.ui.ncc_connect_cb.set_value(self.app.options["tools_ncc_connect"])
+        self.ui.ncc_contour_cb.set_value(self.app.options["tools_ncc_contour"])
+        self.ui.ncc_choice_offset_cb.set_value(self.app.options["tools_ncc_offset_choice"])
+        self.ui.ncc_offset_spinner.set_value(self.app.options["tools_ncc_offset_value"])
 
-        self.ui.ncc_rest_cb.set_value(self.app.defaults["tools_ncc_rest"])
-        self.ui.on_rest_machining_check(state=self.app.defaults["tools_ncc_rest"])
+        self.ui.ncc_rest_cb.set_value(self.app.options["tools_ncc_rest"])
+        self.ui.on_rest_machining_check(state=self.app.options["tools_ncc_rest"])
 
-        self.ui.rest_ncc_margin_entry.set_value(self.app.defaults["tools_ncc_margin"])
-        self.ui.rest_ncc_connect_cb.set_value(self.app.defaults["tools_ncc_connect"])
-        self.ui.rest_ncc_contour_cb.set_value(self.app.defaults["tools_ncc_contour"])
-        self.ui.rest_ncc_choice_offset_cb.set_value(self.app.defaults["tools_ncc_offset_choice"])
-        self.ui.rest_ncc_offset_spinner.set_value(self.app.defaults["tools_ncc_offset_value"])
+        self.ui.rest_ncc_margin_entry.set_value(self.app.options["tools_ncc_margin"])
+        self.ui.rest_ncc_connect_cb.set_value(self.app.options["tools_ncc_connect"])
+        self.ui.rest_ncc_contour_cb.set_value(self.app.options["tools_ncc_contour"])
+        self.ui.rest_ncc_choice_offset_cb.set_value(self.app.options["tools_ncc_offset_choice"])
+        self.ui.rest_ncc_offset_spinner.set_value(self.app.options["tools_ncc_offset_value"])
 
-        self.ui.select_combo.set_value(self.app.defaults["tools_ncc_ref"])
-        self.ui.area_shape_radio.set_value(self.app.defaults["tools_ncc_area_shape"])
-        self.ui.valid_cb.set_value(self.app.defaults["tools_ncc_check_valid"])
+        self.ui.select_combo.set_value(self.app.options["tools_ncc_ref"])
+        self.ui.area_shape_radio.set_value(self.app.options["tools_ncc_area_shape"])
+        self.ui.valid_cb.set_value(self.app.options["tools_ncc_check_valid"])
 
-        self.ui.milling_type_radio.set_value(self.app.defaults["tools_ncc_milling_type"])
+        self.ui.milling_type_radio.set_value(self.app.options["tools_ncc_milling_type"])
 
-        self.ui.new_tooldia_entry.set_value(self.app.defaults["tools_ncc_newdia"])
+        self.ui.new_tooldia_entry.set_value(self.app.options["tools_ncc_newdia"])
 
         # Show/Hide Advanced Options
-        app_mode = self.app.defaults["global_app_level"]
+        app_mode = self.app.options["global_app_level"]
         self.change_level(app_mode)
 
         # init the working variables
@@ -368,12 +368,12 @@ class NonCopperClear(AppTool, Gerber):
                 self.default_data[option] = self.app.options[option]
 
         try:
-            dias = [float(self.app.defaults["tools_ncc_tools"])]
+            dias = [float(self.app.options["tools_ncc_tools"])]
         except (ValueError, TypeError):
             try:
-                dias = [float(eval(dia)) for dia in self.app.defaults["tools_ncc_tools"].split(",") if dia != '']
+                dias = [float(eval(dia)) for dia in self.app.options["tools_ncc_tools"].split(",") if dia != '']
             except AttributeError:
-                dias = self.app.defaults["tools_ncc_tools"]
+                dias = self.app.options["tools_ncc_tools"]
         except Exception:
             dias = []
 
@@ -395,7 +395,7 @@ class NonCopperClear(AppTool, Gerber):
         self.cursor_pos = None
         self.mouse_is_dragging = False
 
-        prog_plot = True if self.app.defaults["tools_ncc_plotting"] == 'progressive' else False
+        prog_plot = True if self.app.options["tools_ncc_plotting"] == 'progressive' else False
         if prog_plot:
             self.temp_shapes.clear(update=True)
 
@@ -470,7 +470,7 @@ class NonCopperClear(AppTool, Gerber):
 
             # Tool parameters section
             if self.ncc_tools:
-                app_defaults = self.app.defaults
+                app_defaults = self.app.options
                 for tool in self.ncc_tools:
                     tool_data = self.ncc_tools[tool]['data']
 
@@ -712,7 +712,7 @@ class NonCopperClear(AppTool, Gerber):
         #                     if form_key == data_key:
         #                         temp_data[data_key] = form_value.get_value()
         #                 # make sure we make a copy of the keys not in the form (we may use 'data' keys that are
-        #                 # updated from self.app.defaults
+        #                 # updated from self.app.options
         #                 if data_key not in self.form_fields:
         #                     temp_data[data_key] = value[data_key]
         #             temp_dia[key] = deepcopy(temp_data)
@@ -1514,15 +1514,15 @@ class NonCopperClear(AppTool, Gerber):
         self.cursor_pos = None
         self.mouse_is_dragging = False
 
-        prog_plot = True if self.app.defaults["tools_ncc_plotting"] == 'progressive' else False
+        prog_plot = True if self.app.options["tools_ncc_plotting"] == 'progressive' else False
         if prog_plot:
             self.temp_shapes.clear(update=True)
 
         self.sel_rect = []
 
         obj_type = self.ui.type_obj_radio.get_value
-        self.circle_steps = int(self.app.defaults["gerber_circle_steps"]) if obj_type == 'gerber' else \
-            int(self.app.defaults["geometry_circle_steps"])
+        self.circle_steps = int(self.app.options["gerber_circle_steps"]) if obj_type == 'gerber' else \
+            int(self.app.options["geometry_circle_steps"])
         self.obj_name = self.ui.object_combo.currentText()
 
         # Get source object.
@@ -1768,8 +1768,8 @@ class NonCopperClear(AppTool, Gerber):
 
             self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
                                          symbol='++', edge_color=self.app.cursor_color_3D,
-                                         edge_width=self.app.defaults["global_cursor_width"],
-                                         size=self.app.defaults["global_cursor_size"])
+                                         edge_width=self.app.options["global_cursor_width"],
+                                         size=self.app.options["global_cursor_size"])
 
         if self.cursor_pos is None:
             self.cursor_pos = (0, 0)
@@ -2034,7 +2034,7 @@ class NonCopperClear(AppTool, Gerber):
         if ncc_obj.kind == 'gerber' and not isotooldia:
             # unfortunately for this function to work time efficient,
             # if the Gerber was loaded without buffering then it require the buffering now.
-            if self.app.defaults['gerber_buffering'] == 'no':
+            if self.app.options['gerber_buffering'] == 'no':
                 sol_geo = ncc_obj.solid_geometry.buffer(0)
             else:
                 sol_geo = ncc_obj.solid_geometry
@@ -2058,7 +2058,7 @@ class NonCopperClear(AppTool, Gerber):
             # unfortunately for this function to work time efficient,
             # if the Gerber was loaded without buffering then it require the buffering now.
             # TODO 'buffering status' should be a property of the object not the project property
-            if self.app.defaults['gerber_buffering'] == 'no':
+            if self.app.options['gerber_buffering'] == 'no':
                 self.solid_geometry = ncc_obj.solid_geometry.buffer(0)
             else:
                 self.solid_geometry = ncc_obj.solid_geometry
@@ -2302,7 +2302,7 @@ class NonCopperClear(AppTool, Gerber):
         rest_machining_choice = self.ui.ncc_rest_cb.get_value()
 
         # determine if to use the progressive plotting
-        prog_plot = True if self.app.defaults["tools_ncc_plotting"] == 'progressive' else False
+        prog_plot = True if self.app.options["tools_ncc_plotting"] == 'progressive' else False
 
         tools_storage = tools_storage if tools_storage is not None else self.ncc_tools
         sorted_clear_tools = ncctooldia
@@ -2496,7 +2496,7 @@ class NonCopperClear(AppTool, Gerber):
                             self.app.log.debug("There are no geometries in the cleared polygon.")
 
             # clean the progressive plotted shapes if it was used
-            if self.app.defaults["tools_ncc_plotting"] == 'progressive':
+            if self.app.options["tools_ncc_plotting"] == 'progressive':
                 self.temp_shapes.clear(update=True)
 
             # delete tools with empty geometry
@@ -2614,8 +2614,8 @@ class NonCopperClear(AppTool, Gerber):
 
             # for testing purposes ----------------------------------
             # for po in area.geoms:
-            #     self.app.tool_shapes.add(po, color=self.app.defaults['global_sel_line'],
-            #                              face_color=self.app.defaults['global_sel_line'],
+            #     self.app.tool_shapes.add(po, color=self.app.options['global_sel_line'],
+            #                              face_color=self.app.options['global_sel_line'],
             #                              update=True, layer=0, tolerance=None)
             # -------------------------------------------------------
 
@@ -2682,10 +2682,10 @@ class NonCopperClear(AppTool, Gerber):
 
                             # if self.app.dec_format(float(tool), self.decimals) == 0.15:
                             #     # for testing purposes ----------------------------------
-                            #     self.app.tool_shapes.add(p, color=self.app.defaults['global_sel_line'],
+                            #     self.app.tool_shapes.add(p, color=self.app.options['global_sel_line'],
                             #                              face_color=random_color(),
                             #                              update=True, layer=0, tolerance=None)
-                            #     self.app.tool_shapes.add(check_buff, color=self.app.defaults['global_sel_line'],
+                            #     self.app.tool_shapes.add(check_buff, color=self.app.options['global_sel_line'],
                             #                              face_color='#FFFFFFFF',
                             #                              update=True, layer=0, tolerance=None)
                             #     # -------------------------------------------------------
@@ -2783,7 +2783,7 @@ class NonCopperClear(AppTool, Gerber):
             geo_obj.obj_options["tools_mill_tooldia"] = '0.0'
 
             # clean the progressive plotted shapes if it was used
-            if self.app.defaults["tools_ncc_plotting"] == 'progressive':
+            if self.app.options["tools_ncc_plotting"] == 'progressive':
                 self.temp_shapes.clear(update=True)
 
             # check to see if geo_obj.tools is empty
@@ -3041,9 +3041,9 @@ class NonCopperClear(AppTool, Gerber):
             offset_a = sum(sorted_tools)
             current_uid = int(1)
             # try:
-            #     tool = eval(self.app.defaults["tools_ncc_tools"])[0]
+            #     tool = eval(self.app.options["tools_ncc_tools"])[0]
             # except TypeError:
-            #     tool = eval(self.app.defaults["tools_ncc_tools"])
+            #     tool = eval(self.app.options["tools_ncc_tools"])
 
             # ###################################################################################################
             # Calculate the empty area by subtracting the solid_geometry from the object bounding box geometry ##
@@ -3054,7 +3054,7 @@ class NonCopperClear(AppTool, Gerber):
             if ncc_obj.kind == 'gerber' and not isotooldia:
                 # unfortunately for this function to work time efficient,
                 # if the Gerber was loaded without buffering then it require the buffering now.
-                if self.app.defaults['gerber_buffering'] == 'no':
+                if self.app.options['gerber_buffering'] == 'no':
                     sol_geo = ncc_obj.solid_geometry.buffer(0)
                 else:
                     sol_geo = ncc_obj.solid_geometry
@@ -3079,13 +3079,13 @@ class NonCopperClear(AppTool, Gerber):
 
                 # unfortunately for this function to work time efficient,
                 # if the Gerber was loaded without buffering then it require the buffering now.
-                if self.app.defaults['gerber_buffering'] == 'no':
+                if self.app.options['gerber_buffering'] == 'no':
                     self.solid_geometry = ncc_obj.solid_geometry.buffer(0)
                 else:
                     self.solid_geometry = ncc_obj.solid_geometry
 
                 # if milling type is climb then the move is counter-clockwise around features
-                milling_type = self.app.defaults["tools_ncc_milling_type"]
+                milling_type = self.app.options["tools_ncc_milling_type"]
 
                 for tool_iso in isotooldia:
                     new_geometry = []
@@ -3435,9 +3435,9 @@ class NonCopperClear(AppTool, Gerber):
             rest_geo = []
             current_uid = 1
             try:
-                tool = eval(str(self.app.defaults["tools_ncc_tools"]))[0]
+                tool = eval(str(self.app.options["tools_ncc_tools"]))[0]
             except TypeError:
-                tool = eval(self.app.defaults["tools_ncc_tools"])
+                tool = eval(self.app.options["tools_ncc_tools"])
 
             # repurposed flag for final object, geo_obj. True if it has any solid_geometry, False if not.
             app_obj.poly_not_cleared = True
@@ -3466,7 +3466,7 @@ class NonCopperClear(AppTool, Gerber):
                 self.solid_geometry = ncc_obj.solid_geometry
 
                 # if milling type is climb then the move is counter-clockwise around features
-                milling_type = self.app.defaults["tools_ncc_milling_type"]
+                milling_type = self.app.options["tools_ncc_milling_type"]
 
                 for tool_iso in isotooldia:
                     new_geometry = []

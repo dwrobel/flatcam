@@ -163,14 +163,14 @@ class ToolCalibration(AppTool):
 
         self.reset_calibration_points()
 
-        self.ui.cal_source_radio.set_value(self.app.defaults['tools_cal_calsource'])
-        self.ui.travelz_entry.set_value(self.app.defaults['tools_cal_travelz'])
-        self.ui.verz_entry.set_value(self.app.defaults['tools_cal_verz'])
-        self.ui.zeroz_cb.set_value(self.app.defaults['tools_cal_zeroz'])
-        self.ui.toolchangez_entry.set_value(self.app.defaults['tools_cal_toolchangez'])
-        self.ui.toolchange_xy_entry.set_value(self.app.defaults['tools_cal_toolchange_xy'])
+        self.ui.cal_source_radio.set_value(self.app.options['tools_cal_calsource'])
+        self.ui.travelz_entry.set_value(self.app.options['tools_cal_travelz'])
+        self.ui.verz_entry.set_value(self.app.options['tools_cal_verz'])
+        self.ui.zeroz_cb.set_value(self.app.options['tools_cal_zeroz'])
+        self.ui.toolchangez_entry.set_value(self.app.options['tools_cal_toolchangez'])
+        self.ui.toolchange_xy_entry.set_value(self.app.options['tools_cal_toolchange_xy'])
 
-        self.ui.second_point_radio.set_value(self.app.defaults['tools_cal_sec_point'])
+        self.ui.second_point_radio.set_value(self.app.options['tools_cal_sec_point'])
 
         self.ui.scalex_entry.set_value(1.0)
         self.ui.scaley_entry.set_value(1.0)

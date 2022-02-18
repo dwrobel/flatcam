@@ -5176,26 +5176,24 @@ class FlatCAMActivityView(QtWidgets.QWidget):
     This class create and control the activity icon displayed in the App status bar
     """
 
-    def __init__(self, app, parent=None):
+    def __init__(self, icon_location, icon_kind, replot_callback, parent=None):
         super().__init__(parent=parent)
 
-        self.app = app
-
-        if self.app.defaults["global_activity_icon"] == "Ball green":
-            icon = self.app.resource_location + '/active_2_static.png'
-            movie = self.app.resource_location + "/active_2.gif"
-        elif self.app.defaults["global_activity_icon"] == "Ball black":
-            icon = self.app.resource_location + '/active_static.png'
-            movie = self.app.resource_location + "/active.gif"
-        elif self.app.defaults["global_activity_icon"] == "Arrow green":
-            icon = self.app.resource_location + '/active_3_static.png'
-            movie = self.app.resource_location + "/active_3.gif"
-        elif self.app.defaults["global_activity_icon"] == "Eclipse green":
-            icon = self.app.resource_location + '/active_4_static.png'
-            movie = self.app.resource_location + "/active_4.gif"
+        if icon_kind == "Ball green":
+            icon = icon_location + '/active_2_static.png'
+            movie = icon_location + "/active_2.gif"
+        elif icon_kind == "Ball black":
+            icon = icon_location + '/active_static.png'
+            movie = icon_location + "/active.gif"
+        elif icon_kind == "Arrow green":
+            icon = icon_location + '/active_3_static.png'
+            movie = icon_location + "/active_3.gif"
+        elif icon_kind == "Eclipse green":
+            icon = icon_location + '/active_4_static.png'
+            movie = icon_location + "/active_4.gif"
         else:
-            icon = self.app.resource_location + '/active_static.png'
-            movie = self.app.resource_location + "/active.gif"
+            icon = icon_location + '/active_static.png'
+            movie = icon_location + "/active.gif"
 
         # ###############################################################3
         # self.setMinimumWidth(200)
@@ -5223,7 +5221,7 @@ class FlatCAMActivityView(QtWidgets.QWidget):
 
         layout.addWidget(self.text)
 
-        self.icon.clicked.connect(self.app.on_toolbar_replot)
+        self.icon.clicked.connect(replot_callback)
 
     def set_idle(self):
         self.movie.stop()
@@ -5295,7 +5293,6 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
                     self.icon.setPixmap(self.blue_pamap)
                 else:
                     self.icon.setPixmap(self.gray_pmap)
-
             except Exception as e:
                 self.app.log.error("FlatCAMInfoBar.set_status() set Icon --> %s" % str(e))
 
@@ -5371,10 +5368,10 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
 
             self.menu_open.addSeparator()
 
-            menu_openproject.triggered.connect(self.app.f_handlers.on_file_openproject)
-            menu_opengerber.triggered.connect(self.app.f_handlers.on_fileopengerber)
-            menu_openexcellon.triggered.connect(self.app.f_handlers.on_fileopenexcellon)
-            menu_opengcode.triggered.connect(self.app.f_handlers.on_fileopengcode)
+            menu_openproject.triggered.connect(lambda: self.app.f_handlers.on_file_openproject())
+            menu_opengerber.triggered.connect(lambda: self.app.f_handlers.on_fileopengerber())
+            menu_openexcellon.triggered.connect(lambda: self.app.f_handlers.on_fileopenexcellon())
+            menu_opengcode.triggered.connect(lambda: self.app.f_handlers.on_fileopengcode())
 
         exitAction = menu.addAction(_("Exit"))
         exitAction.setIcon(QtGui.QIcon(self.app.resource_location + '/power16.png'))

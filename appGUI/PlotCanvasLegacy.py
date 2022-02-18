@@ -82,7 +82,7 @@ class CanvasCache(QtCore.QObject):
         self.axes.set_xticks([])
         self.axes.set_yticks([])
 
-        if self.app.defaults['global_theme'] == 'white':
+        if self.app.options['global_theme'] == 'white':
             self.axes.set_facecolor('#FFFFFF')
         else:
             self.axes.set_facecolor('#000000')
@@ -154,7 +154,7 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         self.app = app
 
-        if self.app.defaults['global_theme'] == 'white':
+        if self.app.options['global_theme'] == 'white':
             theme_color = '#FFFFFF'
             tick_color = '#000000'
             self.rect_hud_color = '#0000FF10'
@@ -241,7 +241,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         self.axes.set_aspect(1)
         self.axes.grid(True, color='gray')
 
-        axis_default_color = self.app.defaults['global_axis_color']
+        axis_default_color = self.app.options['global_axis_color']
         self.axis_transparency = 0.8
 
         axis_color = self.color_hex2tuple(axis_default_color)
@@ -322,7 +322,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         self.hud_enabled = False
         self.text_hud = self.Thud(plotcanvas=self)
 
-        if self.app.defaults['global_hud'] is True:
+        if self.app.options['global_hud'] is True:
             self.on_toggle_hud(state=True, silent=None)
 
         # enable Grid lines
@@ -330,8 +330,8 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         # draw a rectangle made out of 4 lines on the canvas to serve as a hint for the work area
         # all CNC have a limited workspace
-        if self.app.defaults['global_workspace'] is True:
-            self.draw_workspace(workspace_size=self.app.defaults["global_workspaceT"])
+        if self.app.options['global_workspace'] is True:
+            self.draw_workspace(workspace_size=self.app.options["global_workspaceT"])
 
         # Axis Display
         self.axis_enabled = True
@@ -365,7 +365,7 @@ class PlotCanvasLegacy(QtCore.QObject):
     def apply_axis_color(self):
         self.app.self.app.log.debug('PlotCanvasLegacy.apply_axis_color() -> axis color applied')
 
-        axis_default_color = self.app.defaults['global_axis_color']
+        axis_default_color = self.app.options['global_axis_color']
 
         axis_color = self.color_hex2tuple(axis_default_color)
         axis_color = axis_color[0], axis_color[1], axis_color[2]
@@ -380,7 +380,7 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         if state:
             self.axis_enabled = True
-            self.app.defaults['global_axis'] = True
+            self.app.options['global_axis'] = True
             if self.h_line not in self.axes.lines and self.v_line not in self.axes.lines:
                 self.h_line = self.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
                 self.v_line = self.axes.axvline(color=(0.70, 0.3, 0.3), linewidth=2)
@@ -395,7 +395,7 @@ class PlotCanvasLegacy(QtCore.QObject):
                     self.app.inform[str, bool].emit(_("Axis enabled."), False)
         else:
             self.axis_enabled = False
-            self.app.defaults['global_axis'] = False
+            self.app.options['global_axis'] = False
             if self.h_line in self.axes.lines and self.v_line in self.axes.lines:
                 self.axes.lines.remove(self.h_line)
                 self.axes.lines.remove(self.v_line)
@@ -412,7 +412,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         if state:
             self.hud_enabled = True
             self.text_hud.add_artist()
-            self.app.defaults['global_hud'] = True
+            self.app.options['global_hud'] = True
 
             self.app.ui.hud_label.setStyleSheet("""
                                                 QLabel
@@ -426,7 +426,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         else:
             self.hud_enabled = False
             self.text_hud.remove_artist()
-            self.app.defaults['global_hud'] = False
+            self.app.options['global_hud'] = False
             self.app.ui.hud_label.setStyleSheet("")
             if silent is None:
                 self.app.inform[str, bool].emit(_("HUD disabled."), False)
@@ -523,7 +523,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         state = not self.grid_lines_enabled
 
         if state:
-            self.app.defaults['global_grid_lines'] = True
+            self.app.options['global_grid_lines'] = True
             self.grid_lines_enabled = True
             self.axes.grid(True)
             try:
@@ -533,7 +533,7 @@ class PlotCanvasLegacy(QtCore.QObject):
             if silent is None:
                 self.app.inform[str, bool].emit(_("Grid enabled."), False)
         else:
-            self.app.defaults['global_grid_lines'] = False
+            self.app.options['global_grid_lines'] = False
             self.grid_lines_enabled = False
             self.axes.grid(False)
             try:
@@ -558,7 +558,7 @@ class PlotCanvasLegacy(QtCore.QObject):
             self.app.log.error("PlotCanvasLegacy.draw_workspace() --> %s" % str(e))
             return
 
-        if self.app.defaults['global_workspace_orientation'] == 'l':
+        if self.app.options['global_workspace_orientation'] == 'l':
             dims = (dims[1], dims[0])
 
         xdata = [0, dims[0], dims[0], 0, 0]
@@ -631,18 +631,18 @@ class PlotCanvasLegacy(QtCore.QObject):
         # else:
         #     c = MplCursor(axes=axes, color='black', linewidth=1)
 
-        if self.app.defaults["global_cursor_color_enabled"]:
-            color = self.app.defaults["global_cursor_color"]
+        if self.app.options["global_cursor_color_enabled"]:
+            color = self.app.options["global_cursor_color"]
         else:
-            if self.app.defaults['global_theme'] == 'white':
+            if self.app.options['global_theme'] == 'white':
                 color = '#000000'
             else:
                 color = '#FFFFFF'
 
         if big is True:
             self.big_cursor = True
-            self.ch_line = self.axes.axhline(color=color, linewidth=self.app.defaults["global_cursor_width"])
-            self.cv_line = self.axes.axvline(color=color, linewidth=self.app.defaults["global_cursor_width"])
+            self.ch_line = self.axes.axhline(color=color, linewidth=self.app.options["global_cursor_width"])
+            self.cv_line = self.axes.axvline(color=color, linewidth=self.app.options["global_cursor_width"])
             self.big_cursor_isdisabled = False
         else:
             self.big_cursor = False
@@ -667,7 +667,7 @@ class PlotCanvasLegacy(QtCore.QObject):
             if color:
                 color = color
             else:
-                if self.app.defaults['global_theme'] == 'white':
+                if self.app.options['global_theme'] == 'white':
                     color = '#000000'
                 else:
                     color = '#FFFFFF'
@@ -679,9 +679,9 @@ class PlotCanvasLegacy(QtCore.QObject):
                     # Pointer (snapped)
                     # The size of the cursor is multiplied by 1.65 because that value made the cursor similar with the
                     # one in the OpenGL(3D) graphic engine
-                    pointer_size = int(float(self.app.defaults["global_cursor_size"]) * 1.65)
+                    pointer_size = int(float(self.app.options["global_cursor_size"]) * 1.65)
                     elements = self.axes.plot(x, y, '+', color=color, ms=pointer_size,
-                                              mew=self.app.defaults["global_cursor_width"], animated=True)
+                                              mew=self.app.options["global_cursor_width"], animated=True)
                     for el in elements:
                         self.axes.draw_artist(el)
                 except Exception as e:
@@ -691,8 +691,8 @@ class PlotCanvasLegacy(QtCore.QObject):
                     self.app.log.error("PlotCanvasLegacy.draw_cursor() big_cursor is False --> %s" % str(e))
             else:
                 try:
-                    self.ch_line.set_markeredgewidth(self.app.defaults["global_cursor_width"])
-                    self.cv_line.set_markeredgewidth(self.app.defaults["global_cursor_width"])
+                    self.ch_line.set_markeredgewidth(self.app.options["global_cursor_width"])
+                    self.cv_line.set_markeredgewidth(self.app.options["global_cursor_width"])
                 except Exception:
                     pass
 
@@ -712,18 +712,18 @@ class PlotCanvasLegacy(QtCore.QObject):
     def clear_cursor(self, state):
         if state is True:
             if self.big_cursor is True and self.big_cursor_isdisabled is True:
-                if self.app.defaults["global_cursor_color_enabled"]:
-                    color = self.app.defaults["global_cursor_color"]
+                if self.app.options["global_cursor_color_enabled"]:
+                    color = self.app.options["global_cursor_color"]
                 else:
-                    if self.app.defaults['global_theme'] == 'white':
+                    if self.app.options['global_theme'] == 'white':
                         color = '#000000'
                     else:
                         color = '#FFFFFF'
 
-                self.ch_line = self.axes.axhline(color=color, linewidth=self.app.defaults["global_cursor_width"])
-                self.cv_line = self.axes.axvline(color=color, linewidth=self.app.defaults["global_cursor_width"])
+                self.ch_line = self.axes.axhline(color=color, linewidth=self.app.options["global_cursor_width"])
+                self.cv_line = self.axes.axvline(color=color, linewidth=self.app.options["global_cursor_width"])
                 self.big_cursor_isdisabled = False
-            if self.app.defaults["global_cursor_color_enabled"] is True:
+            if self.app.options["global_cursor_color_enabled"] is True:
                 self.draw_cursor(x_pos=self.mouse[0], y_pos=self.mouse[1], color=self.app.cursor_color_3D)
             else:
                 self.draw_cursor(x_pos=self.mouse[0], y_pos=self.mouse[1])
@@ -1035,7 +1035,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         self.mouse_press_pos = (event.x, event.y)
 
         # Check for middle mouse button press
-        if self.app.defaults["global_pan_button"] == '2':
+        if self.app.options["global_pan_button"] == '2':
             pan_button = 3  # right button for Matplotlib
         else:
             pan_button = 2  # middle button for Matplotlib
@@ -1066,7 +1066,7 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         # Check for middle mouse button release to complete pan procedure
         # Check for middle mouse button press
-        if self.app.defaults["global_pan_button"] == '2':
+        if self.app.options["global_pan_button"] == '2':
             pan_button = 3  # right button for Matplotlib
         else:
             pan_button = 2  # middle button for Matplotlib
@@ -1079,7 +1079,7 @@ class PlotCanvasLegacy(QtCore.QObject):
             self.panning = False
 
             # And update the cursor
-            if self.app.defaults["global_cursor_color_enabled"] is True:
+            if self.app.options["global_cursor_color_enabled"] is True:
                 self.draw_cursor(x_pos=self.mouse[0], y_pos=self.mouse[1], color=self.app.cursor_color_3D)
             else:
                 self.draw_cursor(x_pos=self.mouse[0], y_pos=self.mouse[1])
@@ -1116,7 +1116,7 @@ class PlotCanvasLegacy(QtCore.QObject):
             # #### Temporary place-holder for cached update #####
             # self.update_screen_request.emit([0, 0, 0, 0, 0])
 
-        if self.app.defaults["global_cursor_color_enabled"] is True:
+        if self.app.options["global_cursor_color_enabled"] is True:
             self.draw_cursor(x_pos=x, y_pos=y, color=self.app.cursor_color_3D)
         else:
             self.draw_cursor(x_pos=x, y_pos=y)
@@ -1181,10 +1181,10 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         # ### Grid snap
         if self.app.grid_status():
-            if self.app.defaults["global_gridx"] != 0:
+            if self.app.options["global_gridx"] != 0:
                 try:
-                    snap_x_ = round(x / float(self.app.defaults["global_gridx"])) * \
-                              float(self.app.defaults["global_gridx"])
+                    snap_x_ = round(x / float(self.app.options["global_gridx"])) * \
+                              float(self.app.options["global_gridx"])
                 except TypeError:
                     snap_x_ = x
             else:
@@ -1193,19 +1193,19 @@ class PlotCanvasLegacy(QtCore.QObject):
             # If the Grid_gap_linked on Grid Toolbar is checked then the snap distance on GridY entry will be ignored
             # and it will use the snap distance from GridX entry
             if self.app.ui.grid_gap_link_cb.isChecked():
-                if self.app.defaults["global_gridx"] != 0:
+                if self.app.options["global_gridx"] != 0:
                     try:
-                        snap_y_ = round(y / float(self.app.defaults["global_gridx"])) * \
-                                  float(self.app.defaults["global_gridx"])
+                        snap_y_ = round(y / float(self.app.options["global_gridx"])) * \
+                                  float(self.app.options["global_gridx"])
                     except TypeError:
                         snap_y_ = y
                 else:
                     snap_y_ = y
             else:
-                if self.app.defaults["global_gridy"] != 0:
+                if self.app.options["global_gridy"] != 0:
                     try:
-                        snap_y_ = round(y / float(self.app.defaults["global_gridy"])) * \
-                                  float(self.app.defaults["global_gridy"])
+                        snap_y_ = round(y / float(self.app.options["global_gridy"])) * \
+                                  float(self.app.options["global_gridy"])
                     except TypeError:
                         snap_y_ = y
                 else:

@@ -74,7 +74,7 @@ class ScriptObject(FlatCAMObj):
         self.to_form()
 
         # Show/Hide Advanced Options
-        app_mode = self.app.defaults["global_app_level"]
+        app_mode = self.app.options["global_app_level"]
         self.change_level(app_mode)
 
         self.script_editor_tab = AppTextEditor(app=self.app, plain_text=True, parent=self.app.ui)
@@ -98,8 +98,8 @@ class ScriptObject(FlatCAMObj):
         # self.script_editor_tab.code_editor.clear()
         # self.script_editor_tab.code_editor.setReadOnly(False)
 
-        self.ui.autocomplete_cb.set_value(self.app.defaults['script_autocompleter'])
-        self.on_autocomplete_changed(state=self.app.defaults['script_autocompleter'])
+        self.ui.autocomplete_cb.set_value(self.app.options['script_autocompleter'])
+        self.on_autocomplete_changed(state=self.app.options['script_autocompleter'])
 
         self.script_editor_tab.buttonRun.show()
 

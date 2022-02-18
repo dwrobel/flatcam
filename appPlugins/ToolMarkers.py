@@ -63,7 +63,7 @@ class ToolMarkers(AppTool):
         # Tool properties
         self.fid_dia = None
 
-        self.grb_steps_per_circle = self.app.defaults["gerber_circle_steps"]
+        self.grb_steps_per_circle = self.app.options["gerber_circle_steps"]
 
         self.handlers_connected = False
 
@@ -180,18 +180,18 @@ class ToolMarkers(AppTool):
         self.pluginName = self.ui.pluginName
         self.connect_signals_at_init()
 
-        self.ui.thick_entry.set_value(self.app.defaults["tools_markers_thickness"])
-        self.ui.l_entry.set_value(float(self.app.defaults["tools_markers_length"]))
+        self.ui.thick_entry.set_value(self.app.options["tools_markers_thickness"])
+        self.ui.l_entry.set_value(float(self.app.options["tools_markers_length"]))
 
-        self.ui.ref_radio.set_value(self.app.defaults["tools_markers_reference"])
-        self.ui.offset_x_entry.set_value(float(self.app.defaults["tools_markers_offset_x"]))
-        self.ui.offset_y_entry.set_value(float(self.app.defaults["tools_markers_offset_y"]))
+        self.ui.ref_radio.set_value(self.app.options["tools_markers_reference"])
+        self.ui.offset_x_entry.set_value(float(self.app.options["tools_markers_offset_x"]))
+        self.ui.offset_y_entry.set_value(float(self.app.options["tools_markers_offset_y"]))
         self.ui.offset_link_button.setChecked(True)
         self.ui.on_link_checked(True)
 
         self.ui.toggle_all_cb.set_value(False)
-        self.ui.type_radio.set_value(self.app.defaults["tools_markers_type"])
-        self.ui.drill_dia_entry.set_value(self.app.defaults["tools_markers_drill_dia"])
+        self.ui.type_radio.set_value(self.app.options["tools_markers_type"])
+        self.ui.drill_dia_entry.set_value(self.app.options["tools_markers_drill_dia"])
         self.ui.mode_radio.set_value("a")
 
         self.ui.insert_type_radio.set_value(val="grb")
@@ -209,7 +209,7 @@ class ToolMarkers(AppTool):
             self.ui.object_combo.setCurrentIndex(0)
 
         # Show/Hide Advanced Options
-        app_mode = self.app.defaults["global_app_level"]
+        app_mode = self.app.options["global_app_level"]
         self.change_level(app_mode)
 
     def change_level(self, level):

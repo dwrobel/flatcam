@@ -138,12 +138,12 @@ class AppTool(QtWidgets.QWidget):
         if 'color' in kwargs:
             color = kwargs['color']
         else:
-            color = self.app.defaults['global_sel_line']
+            color = self.app.options['global_sel_line']
 
         if 'face_color' in kwargs:
             face_color = kwargs['face_color']
         else:
-            face_color = self.app.defaults['global_sel_fill']
+            face_color = self.app.options['global_sel_fill']
 
         if 'face_alpha' in kwargs:
             face_alpha = kwargs['face_alpha']
@@ -184,12 +184,12 @@ class AppTool(QtWidgets.QWidget):
         if 'color' in kwargs:
             color = kwargs['color']
         else:
-            color = self.app.defaults['global_sel_line']
+            color = self.app.options['global_sel_line']
 
         if 'face_color' in kwargs:
             face_color = kwargs['face_color']
         else:
-            face_color = self.app.defaults['global_sel_fill']
+            face_color = self.app.options['global_sel_fill']
 
         if 'face_alpha' in kwargs:
             face_alpha = kwargs['face_alpha']
@@ -242,12 +242,12 @@ class AppTool(QtWidgets.QWidget):
         if 'color' in kwargs:
             color = kwargs['color']
         else:
-            color = self.app.defaults['global_sel_line']
+            color = self.app.options['global_sel_line']
 
         if 'face_color' in kwargs:
             face_color = kwargs['face_color']
         else:
-            face_color = self.app.defaults['global_sel_fill']
+            face_color = self.app.options['global_sel_fill']
 
         if 'face_alpha' in kwargs:
             face_alpha = kwargs['face_alpha']

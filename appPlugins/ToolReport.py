@@ -171,7 +171,7 @@ class ObjectReport(AppTool):
         font = QtGui.QFont()
         font.setBold(True)
 
-        p_color = QtGui.QColor("#000000") if self.app.defaults['global_gray_icons'] is False \
+        p_color = QtGui.QColor("#000000") if self.app.options['global_gray_icons'] is False \
             else QtGui.QColor("#FFFFFF")
 
         # main Items categories

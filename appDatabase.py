@@ -1372,7 +1372,7 @@ class ToolsDB2(QtWidgets.QWidget):
         {
             tool_id: {
                 'name': 'new_tool'
-                'tooldia': self.app.defaults["tools_mill_tooldia"]
+                'tooldia': self.app.options["tools_mill_tooldia"]
                 'data': dict()
             }
         }
@@ -1908,101 +1908,101 @@ class ToolsDB2(QtWidgets.QWidget):
             "tol_max": 0.0,
 
             # Milling
-            "tools_mill_tool_shape":            self.app.defaults["tools_mill_tool_shape"],
-            "tools_mill_job_type":         self.app.defaults["tools_mill_job_type"],
-            "tools_mill_offset_type":      self.app.defaults["tools_mill_offset_type"],
-            "tools_mill_offset_value":     float(self.app.defaults["tools_mill_offset_value"]),
+            "tools_mill_tool_shape":            self.app.options["tools_mill_tool_shape"],
+            "tools_mill_job_type":         self.app.options["tools_mill_job_type"],
+            "tools_mill_offset_type":      self.app.options["tools_mill_offset_type"],
+            "tools_mill_offset_value":     float(self.app.options["tools_mill_offset_value"]),
 
-            "tools_mill_cutz":             float(self.app.defaults["tools_mill_cutz"]),
-            "tools_mill_multidepth":       self.app.defaults["tools_mill_multidepth"],
-            "tools_mill_depthperpass":     float(self.app.defaults["tools_mill_depthperpass"]),
-            "tools_mill_vtipdia":          float(self.app.defaults["tools_mill_vtipdia"]),
-            "tools_mill_vtipangle":        float(self.app.defaults["tools_mill_vtipangle"]),
-            "tools_mill_travelz":          float(self.app.defaults["tools_mill_travelz"]),
-            "tools_mill_feedrate":         float(self.app.defaults["tools_mill_feedrate"]),
-            "tools_mill_feedrate_z":       float(self.app.defaults["tools_mill_feedrate_z"]),
-            "tools_mill_feedrate_rapid":   float(self.app.defaults["tools_mill_feedrate_rapid"]),
-            "tools_mill_spindlespeed":     self.app.defaults["tools_mill_spindlespeed"],
-            "tools_mill_dwell":            self.app.defaults["tools_mill_dwell"],
-            "tools_mill_dwelltime":        float(self.app.defaults["tools_mill_dwelltime"]),
-            "tools_mill_ppname_g":         self.app.defaults["tools_mill_ppname_g"],
-            "tools_mill_extracut":         self.app.defaults["tools_mill_extracut"],
-            "tools_mill_extracut_length":  float(self.app.defaults["tools_mill_extracut_length"]),
-            "tools_mill_toolchange":       self.app.defaults["tools_mill_toolchange"],
-            "tools_mill_toolchangexy":     self.app.defaults["tools_mill_toolchangexy"],
-            "tools_mill_toolchangez":      float(self.app.defaults["tools_mill_toolchangez"]),
-            "tools_mill_startz":           self.app.defaults["tools_mill_startz"],
-            "tools_mill_endz":             float(self.app.defaults["tools_mill_endz"]),
-            "tools_mill_endxy":            self.app.defaults["tools_mill_endxy"],
-            "tools_mill_search_time":      int(self.app.defaults["tools_mill_search_time"]),
-            "tools_mill_z_pdepth":         float(self.app.defaults["tools_mill_z_pdepth"]),
-            "tools_mill_f_plunge":         float(self.app.defaults["tools_mill_f_plunge"]),
+            "tools_mill_cutz":             float(self.app.options["tools_mill_cutz"]),
+            "tools_mill_multidepth":       self.app.options["tools_mill_multidepth"],
+            "tools_mill_depthperpass":     float(self.app.options["tools_mill_depthperpass"]),
+            "tools_mill_vtipdia":          float(self.app.options["tools_mill_vtipdia"]),
+            "tools_mill_vtipangle":        float(self.app.options["tools_mill_vtipangle"]),
+            "tools_mill_travelz":          float(self.app.options["tools_mill_travelz"]),
+            "tools_mill_feedrate":         float(self.app.options["tools_mill_feedrate"]),
+            "tools_mill_feedrate_z":       float(self.app.options["tools_mill_feedrate_z"]),
+            "tools_mill_feedrate_rapid":   float(self.app.options["tools_mill_feedrate_rapid"]),
+            "tools_mill_spindlespeed":     self.app.options["tools_mill_spindlespeed"],
+            "tools_mill_dwell":            self.app.options["tools_mill_dwell"],
+            "tools_mill_dwelltime":        float(self.app.options["tools_mill_dwelltime"]),
+            "tools_mill_ppname_g":         self.app.options["tools_mill_ppname_g"],
+            "tools_mill_extracut":         self.app.options["tools_mill_extracut"],
+            "tools_mill_extracut_length":  float(self.app.options["tools_mill_extracut_length"]),
+            "tools_mill_toolchange":       self.app.options["tools_mill_toolchange"],
+            "tools_mill_toolchangexy":     self.app.options["tools_mill_toolchangexy"],
+            "tools_mill_toolchangez":      float(self.app.options["tools_mill_toolchangez"]),
+            "tools_mill_startz":           self.app.options["tools_mill_startz"],
+            "tools_mill_endz":             float(self.app.options["tools_mill_endz"]),
+            "tools_mill_endxy":            self.app.options["tools_mill_endxy"],
+            "tools_mill_search_time":      int(self.app.options["tools_mill_search_time"]),
+            "tools_mill_z_pdepth":         float(self.app.options["tools_mill_z_pdepth"]),
+            "tools_mill_f_plunge":         float(self.app.options["tools_mill_f_plunge"]),
 
-            "tools_mill_spindledir":               self.app.defaults["tools_mill_spindledir"],
-            "tools_mill_optimization_type":        self.app.defaults["tools_mill_optimization_type"],
-            "tools_mill_feedrate_probe":           self.app.defaults["tools_mill_feedrate_probe"],
+            "tools_mill_spindledir":               self.app.options["tools_mill_spindledir"],
+            "tools_mill_optimization_type":        self.app.options["tools_mill_optimization_type"],
+            "tools_mill_feedrate_probe":           self.app.options["tools_mill_feedrate_probe"],
 
-            "segx":             self.app.defaults["geometry_segx"],
-            "segy":             self.app.defaults["geometry_segy"],
-            "tools_mill_area_exclusion":   self.app.defaults["tools_mill_area_exclusion"],
-            "tools_mill_area_shape":       self.app.defaults["tools_mill_area_shape"],
-            "tools_mill_area_strategy":    self.app.defaults["tools_mill_area_strategy"],
-            "tools_mill_area_overz":       self.app.defaults["tools_mill_area_overz"],
-            "tools_mill_polish":           self.app.defaults["tools_mill_polish"],
-            "tools_mill_polish_margin":    self.app.defaults["tools_mill_polish_margin"],
-            "tools_mill_polish_overlap":   self.app.defaults["tools_mill_polish_overlap"],
-            "tools_mill_polish_method":    self.app.defaults["tools_mill_polish_method"],
+            "segx":             self.app.options["geometry_segx"],
+            "segy":             self.app.options["geometry_segy"],
+            "tools_mill_area_exclusion":   self.app.options["tools_mill_area_exclusion"],
+            "tools_mill_area_shape":       self.app.options["tools_mill_area_shape"],
+            "tools_mill_area_strategy":    self.app.options["tools_mill_area_strategy"],
+            "tools_mill_area_overz":       self.app.options["tools_mill_area_overz"],
+            "tools_mill_polish":           self.app.options["tools_mill_polish"],
+            "tools_mill_polish_margin":    self.app.options["tools_mill_polish_margin"],
+            "tools_mill_polish_overlap":   self.app.options["tools_mill_polish_overlap"],
+            "tools_mill_polish_method":    self.app.options["tools_mill_polish_method"],
 
             # NCC
-            "tools_ncc_operation":       self.app.defaults["tools_ncc_operation"],
-            "tools_ncc_milling_type":    self.app.defaults["tools_ncc_milling_type"],
-            "tools_ncc_overlap":         float(self.app.defaults["tools_ncc_overlap"]),
-            "tools_ncc_margin":          float(self.app.defaults["tools_ncc_margin"]),
-            "tools_ncc_method":          self.app.defaults["tools_ncc_method"],
-            "tools_ncc_connect":         self.app.defaults["tools_ncc_connect"],
-            "tools_ncc_contour":         self.app.defaults["tools_ncc_contour"],
-            "tools_ncc_offset_choice":  self.app.defaults["tools_ncc_offset_choice"],
-            "tools_ncc_offset_value":   float(self.app.defaults["tools_ncc_offset_value"]),
+            "tools_ncc_operation":       self.app.options["tools_ncc_operation"],
+            "tools_ncc_milling_type":    self.app.options["tools_ncc_milling_type"],
+            "tools_ncc_overlap":         float(self.app.options["tools_ncc_overlap"]),
+            "tools_ncc_margin":          float(self.app.options["tools_ncc_margin"]),
+            "tools_ncc_method":          self.app.options["tools_ncc_method"],
+            "tools_ncc_connect":         self.app.options["tools_ncc_connect"],
+            "tools_ncc_contour":         self.app.options["tools_ncc_contour"],
+            "tools_ncc_offset_choice":  self.app.options["tools_ncc_offset_choice"],
+            "tools_ncc_offset_value":   float(self.app.options["tools_ncc_offset_value"]),
 
             # Paint
-            "tools_paint_overlap":       float(self.app.defaults["tools_paint_overlap"]),
-            "tools_paint_offset":        float(self.app.defaults["tools_paint_offset"]),
-            "tools_paint_method":        self.app.defaults["tools_paint_method"],
-            "tools_paint_connect":        self.app.defaults["tools_paint_connect"],
-            "tools_paint_contour":       self.app.defaults["tools_paint_contour"],
+            "tools_paint_overlap":       float(self.app.options["tools_paint_overlap"]),
+            "tools_paint_offset":        float(self.app.options["tools_paint_offset"]),
+            "tools_paint_method":        self.app.options["tools_paint_method"],
+            "tools_paint_connect":        self.app.options["tools_paint_connect"],
+            "tools_paint_contour":       self.app.options["tools_paint_contour"],
 
             # Isolation
-            "tools_iso_passes":         int(self.app.defaults["tools_iso_passes"]),
-            "tools_iso_overlap":        float(self.app.defaults["tools_iso_overlap"]),
-            "tools_iso_milling_type":   self.app.defaults["tools_iso_milling_type"],
-            "tools_iso_isotype":        self.app.defaults["tools_iso_isotype"],
+            "tools_iso_passes":         int(self.app.options["tools_iso_passes"]),
+            "tools_iso_overlap":        float(self.app.options["tools_iso_overlap"]),
+            "tools_iso_milling_type":   self.app.options["tools_iso_milling_type"],
+            "tools_iso_isotype":        self.app.options["tools_iso_isotype"],
 
             # Drilling
-            "tools_drill_cutz":             float(self.app.defaults["tools_drill_cutz"]),
-            "tools_drill_multidepth":       self.app.defaults["tools_drill_multidepth"],
-            "tools_drill_depthperpass":     float(self.app.defaults["tools_drill_depthperpass"]),
-            "tools_drill_travelz":          float(self.app.defaults["tools_drill_travelz"]),
+            "tools_drill_cutz":             float(self.app.options["tools_drill_cutz"]),
+            "tools_drill_multidepth":       self.app.options["tools_drill_multidepth"],
+            "tools_drill_depthperpass":     float(self.app.options["tools_drill_depthperpass"]),
+            "tools_drill_travelz":          float(self.app.options["tools_drill_travelz"]),
 
-            "tools_drill_feedrate_z":       float(self.app.defaults["tools_drill_feedrate_z"]),
-            "tools_drill_feedrate_rapid":   float(self.app.defaults["tools_drill_feedrate_rapid"]),
-            "tools_drill_spindlespeed":     float(self.app.defaults["tools_drill_spindlespeed"]),
-            "tools_drill_dwell":            self.app.defaults["tools_drill_dwell"],
+            "tools_drill_feedrate_z":       float(self.app.options["tools_drill_feedrate_z"]),
+            "tools_drill_feedrate_rapid":   float(self.app.options["tools_drill_feedrate_rapid"]),
+            "tools_drill_spindlespeed":     float(self.app.options["tools_drill_spindlespeed"]),
+            "tools_drill_dwell":            self.app.options["tools_drill_dwell"],
 
-            "tools_drill_offset":           float(self.app.defaults["tools_drill_offset"]),
-            "tools_drill_drill_slots":      self.app.defaults["tools_drill_drill_slots"],
-            "tools_drill_drill_overlap":    float(self.app.defaults["tools_drill_drill_overlap"]),
-            "tools_drill_last_drill":       self.app.defaults["tools_drill_last_drill"],
+            "tools_drill_offset":           float(self.app.options["tools_drill_offset"]),
+            "tools_drill_drill_slots":      self.app.options["tools_drill_drill_slots"],
+            "tools_drill_drill_overlap":    float(self.app.options["tools_drill_drill_overlap"]),
+            "tools_drill_last_drill":       self.app.options["tools_drill_last_drill"],
 
             # Cutout
-            "tools_cutout_margin":          float(self.app.defaults["tools_cutout_margin"]),
-            "tools_cutout_gapsize":         float(self.app.defaults["tools_cutout_gapsize"]),
-            "tools_cutout_gaps_ff":         self.app.defaults["tools_cutout_gaps_ff"],
-            "tools_cutout_convexshape":     self.app.defaults["tools_cutout_convexshape"],
+            "tools_cutout_margin":          float(self.app.options["tools_cutout_margin"]),
+            "tools_cutout_gapsize":         float(self.app.options["tools_cutout_gapsize"]),
+            "tools_cutout_gaps_ff":         self.app.options["tools_cutout_gaps_ff"],
+            "tools_cutout_convexshape":     self.app.options["tools_cutout_convexshape"],
 
-            "tools_cutout_gap_type":        self.app.defaults["tools_cutout_gap_type"],
-            "tools_cutout_gap_depth":       float(self.app.defaults["tools_cutout_gap_depth"]),
-            "tools_cutout_mb_dia":          float(self.app.defaults["tools_cutout_mb_dia"]),
-            "tools_cutout_mb_spacing":      float(self.app.defaults["tools_cutout_mb_spacing"])
+            "tools_cutout_gap_type":        self.app.options["tools_cutout_gap_type"],
+            "tools_cutout_gap_depth":       float(self.app.options["tools_cutout_gap_depth"]),
+            "tools_cutout_mb_dia":          float(self.app.options["tools_cutout_mb_dia"]),
+            "tools_cutout_mb_spacing":      float(self.app.options["tools_cutout_mb_spacing"])
         })
 
         temp = []
@@ -2016,11 +2016,11 @@ class ToolsDB2(QtWidgets.QWidget):
             new_name = "new_tool_1"
 
         dict_elem = {'name': new_name}
-        if type(self.app.defaults["tools_mill_tooldia"]) == float:
-            dict_elem['tooldia'] = self.app.defaults["tools_mill_tooldia"]
+        if type(self.app.options["tools_mill_tooldia"]) == float:
+            dict_elem['tooldia'] = self.app.options["tools_mill_tooldia"]
         else:
             try:
-                tools_string = self.app.defaults["tools_mill_tooldia"].split(",")
+                tools_string = self.app.options["tools_mill_tooldia"].split(",")
                 tools_diameters = [eval(a) for a in tools_string if a != '']
                 dict_elem['tooldia'] = tools_diameters[0] if tools_diameters else 0.0
             except Exception as e:
@@ -2719,7 +2719,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #         {
 #             tool_id: {
 #                 'name': 'new_tool'
-#                 'tooldia': self.app.defaults["tools_mill_tooldia"]
+#                 'tooldia': self.app.options["tools_mill_tooldia"]
 #                 'offset': 'Path'
 #                 'offset_value': 0.0
 #                 'type':  'Rough',
@@ -3224,35 +3224,35 @@ class ToolsDB2(QtWidgets.QWidget):
 #
 #         default_data = {}
 #         default_data.update({
-#             "cutz": float(self.app.defaults["geometry_cutz"]),
-#             "multidepth": self.app.defaults["geometry_multidepth"],
-#             "depthperpass": float(self.app.defaults["geometry_depthperpass"]),
-#             "vtipdia": float(self.app.defaults["geometry_vtipdia"]),
-#             "vtipangle": float(self.app.defaults["geometry_vtipangle"]),
-#             "travelz": float(self.app.defaults["geometry_travelz"]),
-#             "feedrate": float(self.app.defaults["geometry_feedrate"]),
-#             "feedrate_z": float(self.app.defaults["geometry_feedrate_z"]),
-#             "feedrate_rapid": float(self.app.defaults["geometry_feedrate_rapid"]),
-#             "spindlespeed": self.app.defaults["geometry_spindlespeed"],
-#             "dwell": self.app.defaults["geometry_dwell"],
-#             "dwelltime": float(self.app.defaults["geometry_dwelltime"]),
-#             "ppname_g": self.app.defaults["geometry_ppname_g"],
-#             "extracut": self.app.defaults["geometry_extracut"],
-#             "extracut_length": float(self.app.defaults["geometry_extracut_length"]),
-#             "toolchange": self.app.defaults["geometry_toolchange"],
-#             "toolchangexy": self.app.defaults["geometry_toolchangexy"],
-#             "toolchangez": float(self.app.defaults["geometry_toolchangez"]),
-#             "startz": self.app.defaults["geometry_startz"],
-#             "endz": float(self.app.defaults["geometry_endz"])
+#             "cutz": float(self.app.options["geometry_cutz"]),
+#             "multidepth": self.app.options["geometry_multidepth"],
+#             "depthperpass": float(self.app.options["geometry_depthperpass"]),
+#             "vtipdia": float(self.app.options["geometry_vtipdia"]),
+#             "vtipangle": float(self.app.options["geometry_vtipangle"]),
+#             "travelz": float(self.app.options["geometry_travelz"]),
+#             "feedrate": float(self.app.options["geometry_feedrate"]),
+#             "feedrate_z": float(self.app.options["geometry_feedrate_z"]),
+#             "feedrate_rapid": float(self.app.options["geometry_feedrate_rapid"]),
+#             "spindlespeed": self.app.options["geometry_spindlespeed"],
+#             "dwell": self.app.options["geometry_dwell"],
+#             "dwelltime": float(self.app.options["geometry_dwelltime"]),
+#             "ppname_g": self.app.options["geometry_ppname_g"],
+#             "extracut": self.app.options["geometry_extracut"],
+#             "extracut_length": float(self.app.options["geometry_extracut_length"]),
+#             "toolchange": self.app.options["geometry_toolchange"],
+#             "toolchangexy": self.app.options["geometry_toolchangexy"],
+#             "toolchangez": float(self.app.options["geometry_toolchangez"]),
+#             "startz": self.app.options["geometry_startz"],
+#             "endz": float(self.app.options["geometry_endz"])
 #         })
 #
 #         dict_elem = {}
 #         dict_elem['name'] = 'new_tool'
-#         if type(self.app.defaults["tools_mill_tooldia"]) == float:
-#             dict_elem['tooldia'] = self.app.defaults["tools_mill_tooldia"]
+#         if type(self.app.options["tools_mill_tooldia"]) == float:
+#             dict_elem['tooldia'] = self.app.options["tools_mill_tooldia"]
 #         else:
 #             try:
-#                 tools_string = self.app.defaults["tools_mill_tooldia"].split(",")
+#                 tools_string = self.app.options["tools_mill_tooldia"].split(",")
 #                 tools_diameters = [eval(a) for a in tools_string if a != '']
 #                 dict_elem['tooldia'] = tools_diameters[0] if tools_diameters else 0.0
 #             except Exception as e:

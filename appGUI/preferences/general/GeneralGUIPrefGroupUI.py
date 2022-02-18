@@ -332,11 +332,11 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
 
     # Setting selection colors (left - right) handlers
     def on_sf_color_entry(self):
-        self.app.defaults['global_sel_fill'] = self.app.defaults['global_sel_fill'][7:9]
+        self.app.options['global_sel_fill'] = self.app.options['global_sel_fill'][7:9]
 
     def on_sl_color_entry(self):
-        self.app.defaults['global_sel_line'] = self.sl_color_entry.get_value()[:7] + \
-            self.app.defaults['global_sel_line'][7:9]
+        self.app.options['global_sel_line'] = self.sl_color_entry.get_value()[:7] + \
+            self.app.options['global_sel_line'][7:9]
 
     def on_left_right_alpha_changed(self, spinner_value):
         """
@@ -349,19 +349,19 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         :rtype:
         """
 
-        self.app.defaults['global_sel_fill'] = self.app.defaults['global_sel_fill'][:7] + \
+        self.app.options['global_sel_fill'] = self.app.options['global_sel_fill'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
-        self.app.defaults['global_sel_line'] = self.app.defaults['global_sel_line'][:7] + \
+        self.app.options['global_sel_line'] = self.app.options['global_sel_line'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
 
     # Setting selection colors (right - left) handlers
     def on_alt_sf_color_entry(self):
-        self.app.defaults['global_alt_sel_fill'] = self.alt_sf_color_entry.get_value()[:7] + \
-                                                   self.app.defaults['global_alt_sel_fill'][7:9]
+        self.app.options['global_alt_sel_fill'] = self.alt_sf_color_entry.get_value()[:7] + \
+                                                   self.app.options['global_alt_sel_fill'][7:9]
 
     def on_alt_sl_color_entry(self):
-        self.app.defaults['global_alt_sel_line'] = self.alt_sl_color_entry.get_value()[:7] + \
-                                                   self.app.defaults['global_alt_sel_line'][7:9]
+        self.app.options['global_alt_sel_line'] = self.alt_sl_color_entry.get_value()[:7] + \
+                                                   self.app.options['global_alt_sel_line'][7:9]
 
     def on_right_left_alpha_changed(self, spinner_value):
         """
@@ -374,20 +374,20 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         :rtype:
         """
 
-        self.app.defaults['global_alt_sel_fill'] = self.app.defaults['global_alt_sel_fill'][:7] + \
+        self.app.options['global_alt_sel_fill'] = self.app.options['global_alt_sel_fill'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
-        self.app.defaults['global_alt_sel_line'] = self.app.defaults['global_alt_sel_line'][:7] + \
+        self.app.options['global_alt_sel_line'] = self.app.options['global_alt_sel_line'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
 
     # Setting Editor colors
     def on_draw_color_entry(self):
-        self.app.defaults['global_draw_color'] = self.draw_color_entry.get_value()
+        self.app.options['global_draw_color'] = self.draw_color_entry.get_value()
 
     def on_sel_draw_color_entry(self):
-        self.app.defaults['global_sel_draw_color'] = self.sel_draw_color_entry.get_value()
+        self.app.options['global_sel_draw_color'] = self.sel_draw_color_entry.get_value()
 
     def on_proj_color_entry(self):
-        self.app.defaults['global_proj_item_color'] = self.proj_color_entry.get_value()
+        self.app.options['global_proj_item_color'] = self.proj_color_entry.get_value()
 
     def on_proj_color_dis_entry(self):
-        self.app.defaults['global_proj_item_dis_color'] = self.proj_color_dis_entry.get_value()
+        self.app.options['global_proj_item_dis_color'] = self.proj_color_dis_entry.get_value()

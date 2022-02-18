@@ -322,7 +322,7 @@ class FCShell(TermWidget):
 
         self.setWindowIcon(app_icon)
         self.setWindowTitle(_("FlatCAM Evo Shell"))
-        self.resize(*self.app.defaults["global_shell_shape"])
+        self.resize(*self.app.options["global_shell_shape"])
         self._append_to_browser('in', "FlatCAM Evo %s - " % version)
         self.append_output('%s\n\n' % _("Type >help< to get started"))
 
@@ -530,7 +530,7 @@ class FCShell(TermWidget):
             if not isinstance(error, self.TclErrorException):
                 show_trace = 1
             else:
-                show_trace = int(self.app.defaults['global_verbose_error_level'])
+                show_trace = int(self.app.options['global_verbose_error_level'])
 
             if show_trace > 0:
                 trc = traceback.format_list(traceback.extract_tb(exc_traceback))

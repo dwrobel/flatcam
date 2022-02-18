@@ -300,28 +300,28 @@ class AppObject(QtCore.QObject):
         if obj.kind in ['excellon', 'gerber']:
             try:
                 if obj.kind == 'excellon':
-                    if self.app.defaults["excellon_color"]:
-                        obj.fill_color = self.app.defaults["excellon_color"][0]
-                        obj.outline_color = self.app.defaults["excellon_color"][1]
+                    if self.app.options["excellon_color"]:
+                        obj.fill_color = self.app.options["excellon_color"][0]
+                        obj.outline_color = self.app.options["excellon_color"][1]
                     else:
-                        obj.fill_color = self.app.defaults["excellon_plot_fill"]
-                        obj.outline_color = self.app.defaults["excellon_plot_line"]
+                        obj.fill_color = self.app.options["excellon_plot_fill"]
+                        obj.outline_color = self.app.options["excellon_plot_line"]
 
                 if obj.kind == 'gerber':
-                    if self.app.defaults["gerber_store_color_list"] is True:
+                    if self.app.options["gerber_store_color_list"] is True:
                         group = self.app.collection.group_items["gerber"]
                         index = group.child_count() - 1
 
                         # when loading a Gerber object always create a color tuple (line color, fill_color, layer_name)
-                        # and add it to the self.app.defaults["gerber_color_list"] from where it will be picked and used
+                        # and add it to the self.app.options["gerber_color_list"] from where it will be picked and used
                         try:
-                            colors = self.app.defaults["gerber_color_list"][index]
+                            colors = self.app.options["gerber_color_list"][index]
                         except IndexError:
-                            obj.outline_color = self.app.defaults["gerber_plot_line"]
-                            obj.fill_color = self.app.defaults["gerber_plot_fill"]
+                            obj.outline_color = self.app.options["gerber_plot_line"]
+                            obj.fill_color = self.app.options["gerber_plot_fill"]
                             obj.alpha_level = str(hex(int(obj.fill_color[7:9], 16))[2:])
                             colors = (obj.outline_color, obj.fill_color, '%s_%d' % (_("Layer"), int(index)))
-                            self.app.defaults["gerber_color_list"].append(colors)
+                            self.app.options["gerber_color_list"].append(colors)
 
                         new_line_color = colors[0]
                         new_fill = colors[1]
@@ -330,9 +330,9 @@ class AppObject(QtCore.QObject):
                         obj.fill_color = new_fill
                         obj.alpha_level = new_alpha
                     else:
-                        obj.outline_color = self.app.defaults["gerber_plot_line"]
-                        obj.fill_color = self.app.defaults["gerber_plot_fill"]
-                        obj.alpha_level = str(hex(int(self.app.defaults['gerber_plot_fill'][7:9], 16))[2:])
+                        obj.outline_color = self.app.options["gerber_plot_line"]
+                        obj.fill_color = self.app.options["gerber_plot_fill"]
+                        obj.alpha_level = str(hex(int(self.app.options['gerber_plot_fill'][7:9], 16))[2:])
             except Exception as e:
                 self.app.log.error("AppObject.new_object() -> setting colors error. %s" % str(e))
 
@@ -352,7 +352,7 @@ class AppObject(QtCore.QObject):
         def plotting_task(t_obj):
             with self.app.proc_container.new('%s ...' % _("Plotting")):
                 if t_obj.kind == 'cncjob':
-                    t_obj.plot(kind=self.app.defaults["cncjob_plot_kind"])
+                    t_obj.plot(kind=self.app.options["cncjob_plot_kind"])
                 elif t_obj.kind == 'gerber':
                     t_obj.plot(color=t_obj.outline_color, face_color=t_obj.fill_color)
                 else:
@@ -363,8 +363,8 @@ class AppObject(QtCore.QObject):
                 self.app.log.debug(msg)
                 self.object_plotted.emit(t_obj)
 
-                if t_obj.kind == 'gerber' and self.app.defaults["gerber_buffering"] != 'full' and \
-                        self.app.defaults["gerber_delayed_buffering"]:
+                if t_obj.kind == 'gerber' and self.app.options["gerber_buffering"] != 'full' and \
+                        self.app.options["gerber_delayed_buffering"]:
                     t_obj.do_buffer_signal.emit()
 
         # Send to worker

@@ -46,7 +46,7 @@ class ToolPaint(AppTool, Gerber):
         self.decimals = self.app.decimals
 
         AppTool.__init__(self, app)
-        Geometry.__init__(self, geo_steps_per_circle=self.app.defaults["geometry_circle_steps"])
+        Geometry.__init__(self, geo_steps_per_circle=self.app.options["geometry_circle_steps"])
         
         # #############################################################################
         # ######################### Tool GUI ##########################################
@@ -64,7 +64,7 @@ class ToolPaint(AppTool, Gerber):
         self.bound_obj_name = ""
         self.bound_obj = None
 
-        self.circle_steps = int(self.app.defaults["geometry_circle_steps"])
+        self.circle_steps = int(self.app.options["geometry_circle_steps"])
 
         self.tooldia_list = []
         self.tooldia = None
@@ -301,58 +301,58 @@ class ToolPaint(AppTool, Gerber):
         # self.default_data.clear()
         # self.default_data.update({
         #     "name":                 '_paint',
-        #     "plot":                 self.app.defaults["geometry_plot"],
-        #     "cutz":                 float(self.app.defaults["tools_paint_cutz"]),
-        #     "vtipdia":              float(self.app.defaults["tools_paint_tipdia"]),
-        #     "vtipangle":            float(self.app.defaults["tools_paint_tipangle"]),
-        #     "travelz":              float(self.app.defaults["geometry_travelz"]),
-        #     "feedrate":             float(self.app.defaults["geometry_feedrate"]),
-        #     "feedrate_z":           float(self.app.defaults["geometry_feedrate_z"]),
-        #     "feedrate_rapid":       float(self.app.defaults["geometry_feedrate_rapid"]),
-        #     "dwell":                self.app.defaults["geometry_dwell"],
-        #     "dwelltime":            float(self.app.defaults["geometry_dwelltime"]),
-        #     "multidepth":           self.app.defaults["geometry_multidepth"],
-        #     "ppname_g":             self.app.defaults["geometry_ppname_g"],
-        #     "depthperpass":         float(self.app.defaults["geometry_depthperpass"]),
-        #     "extracut":             self.app.defaults["geometry_extracut"],
-        #     "extracut_length":      self.app.defaults["geometry_extracut_length"],
-        #     "toolchange":           self.app.defaults["geometry_toolchange"],
-        #     "toolchangez":          float(self.app.defaults["geometry_toolchangez"]),
-        #     "endz":                 float(self.app.defaults["geometry_endz"]),
-        #     "endxy":                self.app.defaults["geometry_endxy"],
+        #     "plot":                 self.app.options["geometry_plot"],
+        #     "cutz":                 float(self.app.options["tools_paint_cutz"]),
+        #     "vtipdia":              float(self.app.options["tools_paint_tipdia"]),
+        #     "vtipangle":            float(self.app.options["tools_paint_tipangle"]),
+        #     "travelz":              float(self.app.options["geometry_travelz"]),
+        #     "feedrate":             float(self.app.options["geometry_feedrate"]),
+        #     "feedrate_z":           float(self.app.options["geometry_feedrate_z"]),
+        #     "feedrate_rapid":       float(self.app.options["geometry_feedrate_rapid"]),
+        #     "dwell":                self.app.options["geometry_dwell"],
+        #     "dwelltime":            float(self.app.options["geometry_dwelltime"]),
+        #     "multidepth":           self.app.options["geometry_multidepth"],
+        #     "ppname_g":             self.app.options["geometry_ppname_g"],
+        #     "depthperpass":         float(self.app.options["geometry_depthperpass"]),
+        #     "extracut":             self.app.options["geometry_extracut"],
+        #     "extracut_length":      self.app.options["geometry_extracut_length"],
+        #     "toolchange":           self.app.options["geometry_toolchange"],
+        #     "toolchangez":          float(self.app.options["geometry_toolchangez"]),
+        #     "endz":                 float(self.app.options["geometry_endz"]),
+        #     "endxy":                self.app.options["geometry_endxy"],
         #
-        #     "spindlespeed":         self.app.defaults["geometry_spindlespeed"],
-        #     "toolchangexy":         self.app.defaults["geometry_toolchangexy"],
-        #     "startz":               self.app.defaults["geometry_startz"],
+        #     "spindlespeed":         self.app.options["geometry_spindlespeed"],
+        #     "toolchangexy":         self.app.options["geometry_toolchangexy"],
+        #     "startz":               self.app.options["geometry_startz"],
         #
-        #     "area_exclusion":       self.app.defaults["geometry_area_exclusion"],
-        #     "area_shape":           self.app.defaults["geometry_area_shape"],
-        #     "area_strategy":        self.app.defaults["geometry_area_strategy"],
-        #     "area_overz":           float(self.app.defaults["geometry_area_overz"]),
-        #     "optimization_type":    self.app.defaults["geometry_optimization_type"],
+        #     "area_exclusion":       self.app.options["geometry_area_exclusion"],
+        #     "area_shape":           self.app.options["geometry_area_shape"],
+        #     "area_strategy":        self.app.options["geometry_area_strategy"],
+        #     "area_overz":           float(self.app.options["geometry_area_overz"]),
+        #     "optimization_type":    self.app.options["geometry_optimization_type"],
         #
-        #     "tooldia":              self.app.defaults["tools_paint_tooldia"],
-        #     "tools_paint_offset":   self.app.defaults["tools_paint_offset"],
-        #     "tools_paint_method":    self.app.defaults["tools_paint_method"],
-        #     "tools_paint_selectmethod":   self.app.defaults["tools_paint_selectmethod"],
-        #     "tools_paint_connect":    self.app.defaults["tools_paint_connect"],
-        #     "tools_paint_contour":   self.app.defaults["tools_paint_contour"],
-        #     "tools_paint_overlap":   self.app.defaults["tools_paint_overlap"],
-        #     "tools_paint_rest":      self.app.defaults["tools_paint_rest"],
+        #     "tooldia":              self.app.options["tools_paint_tooldia"],
+        #     "tools_paint_offset":   self.app.options["tools_paint_offset"],
+        #     "tools_paint_method":    self.app.options["tools_paint_method"],
+        #     "tools_paint_selectmethod":   self.app.options["tools_paint_selectmethod"],
+        #     "tools_paint_connect":    self.app.options["tools_paint_connect"],
+        #     "tools_paint_contour":   self.app.options["tools_paint_contour"],
+        #     "tools_paint_overlap":   self.app.options["tools_paint_overlap"],
+        #     "tools_paint_rest":      self.app.options["tools_paint_rest"],
         # })
 
         # ## Init the GUI interface
-        self.ui.paint_order_combo.set_value(self.app.defaults["tools_paint_order"])
-        self.ui.offset_entry.set_value(self.app.defaults["tools_paint_offset"])
-        self.ui.paintmethod_combo.set_value(self.app.defaults["tools_paint_method"])
-        self.ui.selectmethod_combo.set_value(self.app.defaults["tools_paint_selectmethod"])
-        self.ui.area_shape_radio.set_value(self.app.defaults["tools_paint_area_shape"])
-        self.ui.pathconnect_cb.set_value(self.app.defaults["tools_paint_connect"])
-        self.ui.paintcontour_cb.set_value(self.app.defaults["tools_paint_contour"])
-        self.ui.paintoverlap_entry.set_value(self.app.defaults["tools_paint_overlap"])
+        self.ui.paint_order_combo.set_value(self.app.options["tools_paint_order"])
+        self.ui.offset_entry.set_value(self.app.options["tools_paint_offset"])
+        self.ui.paintmethod_combo.set_value(self.app.options["tools_paint_method"])
+        self.ui.selectmethod_combo.set_value(self.app.options["tools_paint_selectmethod"])
+        self.ui.area_shape_radio.set_value(self.app.options["tools_paint_area_shape"])
+        self.ui.pathconnect_cb.set_value(self.app.options["tools_paint_connect"])
+        self.ui.paintcontour_cb.set_value(self.app.options["tools_paint_contour"])
+        self.ui.paintoverlap_entry.set_value(self.app.options["tools_paint_overlap"])
 
-        self.ui.new_tooldia_entry.set_value(self.app.defaults["tools_paint_newdia"])
-        self.ui.rest_cb.set_value(self.app.defaults["tools_paint_rest"])
+        self.ui.new_tooldia_entry.set_value(self.app.options["tools_paint_newdia"])
+        self.ui.rest_cb.set_value(self.app.options["tools_paint_rest"])
 
         # # make the default object type, "Geometry"
         # self.type_obj_radio.set_value("geometry")
@@ -384,12 +384,12 @@ class ToolPaint(AppTool, Gerber):
             self.on_reference_combo_changed()
 
         try:
-            diameters = [float(self.app.defaults["tools_paint_tooldia"])]
+            diameters = [float(self.app.options["tools_paint_tooldia"])]
         except (ValueError, TypeError):
-            if isinstance(self.app.defaults["tools_paint_tooldia"], str):
-                diameters = [eval(x) for x in self.app.defaults["tools_paint_tooldia"].split(",") if x != '']
+            if isinstance(self.app.options["tools_paint_tooldia"], str):
+                diameters = [eval(x) for x in self.app.options["tools_paint_tooldia"].split(",") if x != '']
             else:
-                diameters = self.app.defaults["tools_paint_tooldia"]
+                diameters = self.app.options["tools_paint_tooldia"]
 
         if not diameters:
             self.app.log.error(
@@ -404,7 +404,7 @@ class ToolPaint(AppTool, Gerber):
         for dia in diameters:
             self.on_tool_add(custom_dia=dia)
 
-        self.ui.on_rest_machining_check(state=self.app.defaults["tools_paint_rest"])
+        self.ui.on_rest_machining_check(state=self.app.options["tools_paint_rest"])
 
         # if the Paint Method is "Polygon Selection" disable the tool table context menu
         if self.default_data["tools_paint_selectmethod"] == 1:
@@ -421,7 +421,7 @@ class ToolPaint(AppTool, Gerber):
                 self.ui.paintmethod_combo.set_value(idx + 1)
 
         # Show/Hide Advanced Options
-        app_mode = self.app.defaults["global_app_level"]
+        app_mode = self.app.options["global_app_level"]
         self.change_level(app_mode)
 
         self.ui.tools_table.drag_drop_sig.connect(self.rebuild_ui)
@@ -480,7 +480,7 @@ class ToolPaint(AppTool, Gerber):
 
             # Tool parameters section
             if self.paint_tools:
-                app_defaults = self.app.defaults
+                app_defaults = self.app.options
                 for tool in self.paint_tools:
                     tool_data = self.paint_tools[tool]['data']
 
@@ -1135,15 +1135,15 @@ class ToolPaint(AppTool, Gerber):
         self.cursor_pos = None
         self.mouse_is_dragging = False
 
-        prog_plot = True if self.app.defaults["tools_paint_plotting"] == 'progressive' else False
+        prog_plot = True if self.app.options["tools_paint_plotting"] == 'progressive' else False
         if prog_plot:
             self.temp_shapes.clear(update=True)
 
         self.sel_rect = []
 
         obj_type = self.ui.type_obj_radio.get_value()
-        self.circle_steps = int(self.app.defaults["gerber_circle_steps"]) if obj_type == 'gerber' else \
-            int(self.app.defaults["geometry_circle_steps"])
+        self.circle_steps = int(self.app.options["gerber_circle_steps"]) if obj_type == 'gerber' else \
+            int(self.app.options["geometry_circle_steps"])
         self.obj_name = self.ui.obj_combo.currentText()
 
         # Get source object.
@@ -1275,8 +1275,8 @@ class ToolPaint(AppTool, Gerber):
                     shape_id = self.app.tool_shapes.add(tolerance=self.paint_obj.drawing_tolerance,
                                                         layer=0,
                                                         shape=clicked_poly,
-                                                        color=self.app.defaults['global_sel_draw_color'] + 'AF',
-                                                        face_color=self.app.defaults['global_sel_draw_color'] + 'AF',
+                                                        color=self.app.options['global_sel_draw_color'] + 'AF',
+                                                        face_color=self.app.options['global_sel_draw_color'] + 'AF',
                                                         visible=True)
                     self.poly_dict[shape_id] = clicked_poly
                     self.app.inform.emit(
@@ -1490,8 +1490,8 @@ class ToolPaint(AppTool, Gerber):
 
             self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
                                          symbol='++', edge_color=self.app.cursor_color_3D,
-                                         edge_width=self.app.defaults["global_cursor_width"],
-                                         size=self.app.defaults["global_cursor_size"])
+                                         edge_width=self.app.options["global_cursor_width"],
+                                         size=self.app.options["global_cursor_size"])
 
         if self.cursor_pos is None:
             self.cursor_pos = (0, 0)
@@ -1718,7 +1718,7 @@ class ToolPaint(AppTool, Gerber):
                             if ap_type == 'C':
                                 f_o = self.clear_polygon2(elem['solid'],
                                                           tooldia=tooldiameter,
-                                                          steps_per_circle=self.app.defaults[
+                                                          steps_per_circle=self.app.options[
                                                               "geometry_circle_steps"],
                                                           overlap=over,
                                                           contour=True,
@@ -1729,7 +1729,7 @@ class ToolPaint(AppTool, Gerber):
                             elif ap_type == 'O':
                                 f_o = self.clear_polygon2(elem['solid'],
                                                           tooldia=tooldiameter,
-                                                          steps_per_circle=self.app.defaults[
+                                                          steps_per_circle=self.app.options[
                                                               "geometry_circle_steps"],
                                                           overlap=over,
                                                           contour=True,
@@ -1740,7 +1740,7 @@ class ToolPaint(AppTool, Gerber):
                             elif ap_type == 'R':
                                 f_o = self.clear_polygon3(elem['solid'],
                                                           tooldia=tooldiameter,
-                                                          steps_per_circle=self.app.defaults[
+                                                          steps_per_circle=self.app.options[
                                                               "geometry_circle_steps"],
                                                           overlap=over,
                                                           contour=True,
@@ -1773,7 +1773,7 @@ class ToolPaint(AppTool, Gerber):
                         if line and isinstance(line, (LineString, MultiLineString)):
                             t_o = self.fill_with_lines(line, aperture_size,
                                                        tooldia=tooldiameter,
-                                                       steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                       steps_per_circle=self.app.options["geometry_circle_steps"],
                                                        overlap=over,
                                                        contour=cont,
                                                        connect=conn,
@@ -1861,7 +1861,7 @@ class ToolPaint(AppTool, Gerber):
 
         paint_method = method if method is not None else self.ui.paintmethod_combo.get_value()
         # determine if to use the progressive plotting
-        prog_plot = True if self.app.defaults["tools_paint_plotting"] == 'progressive' else False
+        prog_plot = True if self.app.options["tools_paint_plotting"] == 'progressive' else False
 
         name = outname if outname is not None else self.obj_name + "_paint"
         order = order if order is not None else self.ui.paint_order_combo.get_value()
@@ -2013,7 +2013,7 @@ class ToolPaint(AppTool, Gerber):
                 tools_storage[current_uid]['data']['name'] = name
 
             # clean the progressive plotted shapes if it was used
-            if self.app.defaults["tools_paint_plotting"] == 'progressive':
+            if self.app.options["tools_paint_plotting"] == 'progressive':
                 self.temp_shapes.clear(update=True)
 
             # delete tools with empty geometry
@@ -2258,7 +2258,7 @@ class ToolPaint(AppTool, Gerber):
             geo_obj.obj_options["tools_mill_tooldia"] = '0.0'
 
             # clean the progressive plotted shapes if it was used
-            if self.app.defaults["tools_paint_plotting"] == 'progressive':
+            if self.app.options["tools_paint_plotting"] == 'progressive':
                 self.temp_shapes.clear(update=True)
 
             # delete tools with empty geometry
@@ -2370,7 +2370,7 @@ class ToolPaint(AppTool, Gerber):
 
         if obj.kind == 'gerber':
             # I don't do anything here, like buffering when the Gerber is loaded without buffering????!!!!
-            if self.app.defaults["gerber_buffering"] == 'no':
+            if self.app.options["gerber_buffering"] == 'no':
                 msg = '%s %s %s' % (_("Paint Plugin."),
                                     _("Normal painting polygon task started."),
                                     _("Buffering geometry..."))
@@ -2378,7 +2378,7 @@ class ToolPaint(AppTool, Gerber):
             else:
                 self.app.inform.emit('%s %s' % (_("Paint Plugin."), _("Normal painting polygon task started.")))
 
-            if self.app.defaults["tools_paint_plotting"] == 'progressive':
+            if self.app.options["tools_paint_plotting"] == 'progressive':
                 if isinstance(obj.solid_geometry, list):
                     obj.solid_geometry = MultiPolygon(obj.solid_geometry).buffer(0)
                 else:
@@ -2472,13 +2472,13 @@ class ToolPaint(AppTool, Gerber):
 
         if obj.kind == 'gerber':
             # I don't do anything here, like buffering when the Gerber is loaded without buffering????!!!!
-            if self.app.defaults["gerber_buffering"] == 'no':
+            if self.app.options["gerber_buffering"] == 'no':
                 msg = '%s %s %s' % (_("Paint Plugin."), _("Paint all polygons task started."), _("Buffering geometry..."))
                 self.app.inform.emit(msg)
             else:
                 self.app.inform.emit('%s %s' % (_("Paint Plugin."), _("Paint all polygons task started.")))
 
-            if self.app.defaults["tools_paint_plotting"] == 'progressive':
+            if self.app.options["tools_paint_plotting"] == 'progressive':
                 if isinstance(obj.solid_geometry, list):
                     obj.solid_geometry = MultiPolygon(obj.solid_geometry).buffer(0)
                 else:
@@ -2554,7 +2554,7 @@ class ToolPaint(AppTool, Gerber):
 
         if obj.kind == 'gerber':
             # I don't do anything here, like buffering when the Gerber is loaded without buffering????!!!!
-            if self.app.defaults["gerber_buffering"] == 'no':
+            if self.app.options["gerber_buffering"] == 'no':
                 msg = '%s %s %s' % (_("Paint Plugin."),
                                     _("Painting area task started."),
                                     _("Buffering geometry..."))
@@ -2563,7 +2563,7 @@ class ToolPaint(AppTool, Gerber):
                 self.app.inform.emit('%s %s' % (_("Paint Plugin."), _("Painting area task started.")))
 
             if obj.kind == 'gerber':
-                if self.app.defaults["tools_paint_plotting"] == 'progressive':
+                if self.app.options["tools_paint_plotting"] == 'progressive':
                     target_geo = target_geo.buffer(0)
         else:
             self.app.inform.emit('%s %s' % (_("Paint Plugin."), _("Painting area task started.")))

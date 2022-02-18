@@ -236,7 +236,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             drillz = args["drillz"] if "drillz" in args and args["drillz"] is not None else \
                 obj.obj_options["tools_drill_cutz"]
 
-            toolchange = self.app.defaults["tools_drill_toolchange"]
+            toolchange = self.app.options["tools_drill_toolchange"]
             if "toolchangez" in args:
                 toolchange = True
                 if args["toolchangez"] is not None:
@@ -244,14 +244,14 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 else:
                     toolchangez = obj.obj_options["tools_drill_toolchangez"]
             else:
-                toolchangez = float(self.app.defaults["tools_drill_toolchangez"])
+                toolchangez = float(self.app.options["tools_drill_toolchangez"])
 
             if "toolchangexy" in args and args["toolchangexy"]:
                 toolchange = True
                 xy_toolchange = args["toolchangexy"]
             else:
-                if self.app.defaults["tools_drill_toolchangexy"]:
-                    xy_toolchange = str(self.app.defaults["tools_drill_toolchangexy"])
+                if self.app.options["tools_drill_toolchangexy"]:
+                    xy_toolchange = str(self.app.options["tools_drill_toolchangexy"])
                 else:
                     xy_toolchange = '0, 0'
             if len(eval(xy_toolchange)) != 2:
@@ -262,13 +262,13 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 return "fail"
 
             endz = args["endz"] if "endz" in args and args["endz"] is not None else \
-                self.app.defaults["tools_drill_endz"]
+                self.app.options["tools_drill_endz"]
 
             if "endxy" in args and args["endxy"]:
                 xy_end = args["endxy"]
             else:
-                if self.app.defaults["tools_drill_endxy"]:
-                    xy_end = str(self.app.defaults["tools_drill_endxy"])
+                if self.app.options["tools_drill_endxy"]:
+                    xy_end = str(self.app.options["tools_drill_endxy"])
                 else:
                     xy_end = '0, 0'
 
@@ -291,7 +291,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             cnc_job_obj.used_tools = use_tools
 
             # preprocessor
-            pp_excellon_name = args["pp"] if "pp" in args and args["pp"] else self.app.defaults["tools_drill_ppname_e"]
+            pp_excellon_name = args["pp"] if "pp" in args and args["pp"] else self.app.options["tools_drill_ppname_e"]
             cnc_job_obj.pp_excellon_name = pp_excellon_name
             cnc_job_obj.obj_options['ppname_e'] = pp_excellon_name
 
@@ -303,19 +303,19 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 else:
                     cnc_job_obj.z_depthpercut = abs(float(obj.obj_options["dpp"]))
             else:
-                cnc_job_obj.multidepth = self.app.defaults["tools_drill_multidepth"]
-                cnc_job_obj.z_depthpercut = self.app.defaults["tools_drill_depthperpass"]
+                cnc_job_obj.multidepth = self.app.options["tools_drill_multidepth"]
+                cnc_job_obj.z_depthpercut = self.app.options["tools_drill_depthperpass"]
             # travel Z
             cnc_job_obj.z_move = float(args["travelz"]) if "travelz" in args and args["travelz"] else \
-                self.app.defaults["tools_drill_travelz"]
+                self.app.options["tools_drill_travelz"]
             # Feedrate
             cnc_job_obj.feedrate = float(args["feedrate_z"]) if "feedrate_z" in args and args["feedrate_z"] else \
-                self.app.defaults["tools_drill_feedrate_z"]
+                self.app.options["tools_drill_feedrate_z"]
             cnc_job_obj.z_feedrate = float(args["feedrate_z"]) if "feedrate_z" in args and args["feedrate_z"] else \
-                self.app.defaults["tools_drill_feedrate_z"]
+                self.app.options["tools_drill_feedrate_z"]
             cnc_job_obj.feedrate_rapid = float(args["feedrate_rapid"]) \
                 if "feedrate_rapid" in args and args["feedrate_rapid"] else \
-                self.app.defaults["tools_drill_feedrate_rapid"]
+                self.app.options["tools_drill_feedrate_rapid"]
 
             # SpindleSpped / Laser Power
             if 'laser' not in pp_excellon_name:
@@ -327,20 +327,20 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             cnc_job_obj.laser_min_power = float(args["las_min_pwr"]) if "las_min_pwr" in args else 0.0
 
             # spindle direction
-            cnc_job_obj.spindledir = self.app.defaults["tools_drill_spindledir"]
+            cnc_job_obj.spindledir = self.app.options["tools_drill_spindledir"]
             # dwell and dwelltime
             if 'dwelltime' in args:
                 cnc_job_obj.dwell = True
                 if args['dwelltime'] is not None:
                     cnc_job_obj.dwelltime = float(args['dwelltime'])
                 else:
-                    cnc_job_obj.dwelltime = float(self.app.defaults["tools_drill_dwelltime"])
+                    cnc_job_obj.dwelltime = float(self.app.options["tools_drill_dwelltime"])
             else:
-                cnc_job_obj.dwell = self.app.defaults["tools_drill_dwell"]
-                cnc_job_obj.dwelltime = self.app.defaults["tools_drill_dwelltime"]
+                cnc_job_obj.dwell = self.app.options["tools_drill_dwell"]
+                cnc_job_obj.dwelltime = self.app.options["tools_drill_dwelltime"]
 
-            cnc_job_obj.coords_decimals = int(self.app.defaults["cncjob_coords_decimals"])
-            cnc_job_obj.fr_decimals = int(self.app.defaults["cncjob_fr_decimals"])
+            cnc_job_obj.coords_decimals = int(self.app.options["cncjob_coords_decimals"])
+            cnc_job_obj.fr_decimals = int(self.app.options["cncjob_fr_decimals"])
 
             cnc_job_obj.obj_options['xmin'] = xmin
             cnc_job_obj.obj_options['ymin'] = ymin
@@ -359,10 +359,10 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             if "startz" in args and args["startz"] is not None:
                 cnc_job_obj.startz = float(args["startz"])
             else:
-                if self.app.defaults["tools_drill_startz"]:
-                    cnc_job_obj.startz = self.app.defaults["tools_drill_startz"]
+                if self.app.options["tools_drill_startz"]:
+                    cnc_job_obj.startz = self.app.options["tools_drill_startz"]
                 else:
-                    cnc_job_obj.startz = self.app.defaults["tools_drill_travelz"]
+                    cnc_job_obj.startz = self.app.options["tools_drill_travelz"]
             # end Z
             cnc_job_obj.z_end = float(endz)
             # end X-Y location

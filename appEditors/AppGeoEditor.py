@@ -645,33 +645,33 @@ class PaintOptionsTool(AppTool):
 
     def set_tool_ui(self):
         # Init appGUI
-        if self.app.defaults["tools_paint_tooldia"]:
-            self.painttooldia_entry.set_value(self.app.defaults["tools_paint_tooldia"])
+        if self.app.options["tools_paint_tooldia"]:
+            self.painttooldia_entry.set_value(self.app.options["tools_paint_tooldia"])
         else:
             self.painttooldia_entry.set_value(0.0)
 
-        if self.app.defaults["tools_paint_overlap"]:
-            self.paintoverlap_entry.set_value(self.app.defaults["tools_paint_overlap"])
+        if self.app.options["tools_paint_overlap"]:
+            self.paintoverlap_entry.set_value(self.app.options["tools_paint_overlap"])
         else:
             self.paintoverlap_entry.set_value(0.0)
 
-        if self.app.defaults["tools_paint_offset"]:
-            self.paintmargin_entry.set_value(self.app.defaults["tools_paint_offset"])
+        if self.app.options["tools_paint_offset"]:
+            self.paintmargin_entry.set_value(self.app.options["tools_paint_offset"])
         else:
             self.paintmargin_entry.set_value(0.0)
 
-        if self.app.defaults["tools_paint_method"]:
-            self.paintmethod_combo.set_value(self.app.defaults["tools_paint_method"])
+        if self.app.options["tools_paint_method"]:
+            self.paintmethod_combo.set_value(self.app.options["tools_paint_method"])
         else:
             self.paintmethod_combo.set_value(_("Seed"))
 
-        if self.app.defaults["tools_paint_connect"]:
-            self.pathconnect_cb.set_value(self.app.defaults["tools_paint_connect"])
+        if self.app.options["tools_paint_connect"]:
+            self.pathconnect_cb.set_value(self.app.options["tools_paint_connect"])
         else:
             self.pathconnect_cb.set_value(False)
 
-        if self.app.defaults["tools_paint_contour"]:
-            self.paintcontour_cb.set_value(self.app.defaults["tools_paint_contour"])
+        if self.app.options["tools_paint_contour"]:
+            self.paintcontour_cb.set_value(self.app.options["tools_paint_contour"])
         else:
             self.paintcontour_cb.set_value(False)
 
@@ -1162,27 +1162,27 @@ class TransformEditorTool(AppTool):
 
     def set_tool_ui(self):
         # Initialize form
-        ref_val = self.app.defaults["tools_transform_reference"]
+        ref_val = self.app.options["tools_transform_reference"]
         if ref_val == _("Object"):
             ref_val = _("Selection")
         self.ref_combo.set_value(ref_val)
-        self.point_entry.set_value(self.app.defaults["tools_transform_ref_point"])
-        self.rotate_entry.set_value(self.app.defaults["tools_transform_rotate"])
+        self.point_entry.set_value(self.app.options["tools_transform_ref_point"])
+        self.rotate_entry.set_value(self.app.options["tools_transform_rotate"])
 
-        self.skewx_entry.set_value(self.app.defaults["tools_transform_skew_x"])
-        self.skewy_entry.set_value(self.app.defaults["tools_transform_skew_y"])
-        self.skew_link_cb.set_value(self.app.defaults["tools_transform_skew_link"])
+        self.skewx_entry.set_value(self.app.options["tools_transform_skew_x"])
+        self.skewy_entry.set_value(self.app.options["tools_transform_skew_y"])
+        self.skew_link_cb.set_value(self.app.options["tools_transform_skew_link"])
 
-        self.scalex_entry.set_value(self.app.defaults["tools_transform_scale_x"])
-        self.scaley_entry.set_value(self.app.defaults["tools_transform_scale_y"])
-        self.scale_link_cb.set_value(self.app.defaults["tools_transform_scale_link"])
+        self.scalex_entry.set_value(self.app.options["tools_transform_scale_x"])
+        self.scaley_entry.set_value(self.app.options["tools_transform_scale_y"])
+        self.scale_link_cb.set_value(self.app.options["tools_transform_scale_link"])
 
-        self.offx_entry.set_value(self.app.defaults["tools_transform_offset_x"])
-        self.offy_entry.set_value(self.app.defaults["tools_transform_offset_y"])
+        self.offx_entry.set_value(self.app.options["tools_transform_offset_x"])
+        self.offy_entry.set_value(self.app.options["tools_transform_offset_y"])
 
-        self.buffer_entry.set_value(self.app.defaults["tools_transform_buffer_dis"])
-        self.buffer_factor_entry.set_value(self.app.defaults["tools_transform_buffer_factor"])
-        self.buffer_rounded_cb.set_value(self.app.defaults["tools_transform_buffer_corner"])
+        self.buffer_entry.set_value(self.app.options["tools_transform_buffer_dis"])
+        self.buffer_factor_entry.set_value(self.app.options["tools_transform_buffer_factor"])
+        self.buffer_rounded_cb.set_value(self.app.options["tools_transform_buffer_corner"])
 
         # initial state is hidden
         self.point_label.hide()
@@ -1568,7 +1568,7 @@ class TransformEditorTool(AppTool):
         val_box = FCInputDoubleSpinner(title=_("Rotate ..."),
                                        text='%s:' % _('Enter an Angle Value (degrees)'),
                                        min=-359.9999, max=360.0000, decimals=self.decimals,
-                                       init_val=float(self.app.defaults['tools_transform_rotate']),
+                                       init_val=float(self.app.options['tools_transform_rotate']),
                                        parent=self.app.ui)
         val_box.set_icon(QtGui.QIcon(self.app.resource_location + '/rotate.png'))
 
@@ -1586,7 +1586,7 @@ class TransformEditorTool(AppTool):
         val_box = FCInputDoubleSpinner(title=_("Offset on X axis ..."),
                                        text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
                                        min=-10000.0000, max=10000.0000, decimals=self.decimals,
-                                       init_val=float(self.app.defaults['tools_transform_offset_x']),
+                                       init_val=float(self.app.options['tools_transform_offset_x']),
                                        parent=self.app.ui)
         val_box.set_icon(QtGui.QIcon(self.app.resource_location + '/offsetx32.png'))
 
@@ -1604,7 +1604,7 @@ class TransformEditorTool(AppTool):
         val_box = FCInputDoubleSpinner(title=_("Offset on Y axis ..."),
                                        text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
                                        min=-10000.0000, max=10000.0000, decimals=self.decimals,
-                                       init_val=float(self.app.defaults['tools_transform_offset_y']),
+                                       init_val=float(self.app.options['tools_transform_offset_y']),
                                        parent=self.app.ui)
         val_box.set_icon(QtGui.QIcon(self.app.resource_location + '/offsety32.png'))
 
@@ -1620,7 +1620,7 @@ class TransformEditorTool(AppTool):
         val_box = FCInputDoubleSpinner(title=_("Skew on X axis ..."),
                                        text='%s:' % _('Enter an Angle Value (degrees)'),
                                        min=-359.9999, max=360.0000, decimals=self.decimals,
-                                       init_val=float(self.app.defaults['tools_transform_skew_x']),
+                                       init_val=float(self.app.options['tools_transform_skew_x']),
                                        parent=self.app.ui)
         val_box.set_icon(QtGui.QIcon(self.app.resource_location + '/skewX.png'))
 
@@ -1636,7 +1636,7 @@ class TransformEditorTool(AppTool):
         val_box = FCInputDoubleSpinner(title=_("Skew on Y axis ..."),
                                        text='%s:' % _('Enter an Angle Value (degrees)'),
                                        min=-359.9999, max=360.0000, decimals=self.decimals,
-                                       init_val=float(self.app.defaults['tools_transform_skew_y']),
+                                       init_val=float(self.app.options['tools_transform_skew_y']),
                                        parent=self.app.ui)
         val_box.set_icon(QtGui.QIcon(self.app.resource_location + '/skewY.png'))
 
@@ -2082,7 +2082,7 @@ class FCCircle(FCShapeTool):
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
         self.draw_app.app.inform.emit(_("Click on Center point ..."))
-        self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
+        self.steps_per_circ = self.draw_app.app.options["geometry_circle_steps"]
 
     def click(self, point):
         try:
@@ -2168,7 +2168,7 @@ class FCArc(FCShapeTool):
 
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
-        self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
+        self.steps_per_circ = self.draw_app.app.options["geometry_circle_steps"]
 
     def click(self, point):
         try:
@@ -2685,7 +2685,7 @@ class FCSelect(DrawTool):
                 else:
                     mod_key = None
 
-                if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+                if mod_key == self.draw_app.app.options["global_mselect_key"]:
                     # if modifier key is pressed then we add to the selected list the current shape but if it's already
                     # in the selected list, we removed it. Therefore first click selects, second deselects.
                     if obj_to_add in self.draw_app.selected:
@@ -2811,7 +2811,7 @@ class FCMove(FCShapeTool):
 
         self.origin = None
         self.destination = None
-        self.sel_limit = self.draw_app.app.defaults["geometry_editor_sel_limit"]
+        self.sel_limit = self.draw_app.app.options["geometry_editor_sel_limit"]
         self.selection_shape = self.selection_bbox()
 
         if len(self.draw_app.get_selected()) == 0:
@@ -2949,7 +2949,7 @@ class FCMove(FCShapeTool):
                     return
 
                 key_modifier = QtWidgets.QApplication.keyboardModifiers()
-                if self.draw_app.app.defaults["global_mselect_key"] == 'Control':
+                if self.draw_app.app.options["global_mselect_key"] == 'Control':
                     # if CONTROL key is pressed then we add to the selected list the current shape but if it's
                     # already in the selected list, we removed it. Therefore first click selects, second deselects.
                     if key_modifier == Qt.KeyboardModifier.ControlModifier:
@@ -3850,7 +3850,7 @@ class AppGeoEditor(QtCore.QObject):
                 text_value = text_value.replace(',', '.')
             self.editor_options[opt] = float(text_value)
         except Exception as e:
-            entry.set_value(self.app.defaults[opt])
+            entry.set_value(self.app.options[opt])
             self.app.log.error("AppGeoEditor.__init__().entry2option() --> %s" % str(e))
             return
 
@@ -3880,7 +3880,7 @@ class AppGeoEditor(QtCore.QObject):
     def on_gridx_val_changed(self):
         self.grid_changed("global_gridx", self.app.ui.grid_gap_x_entry)
         # try:
-        #     self.app.defaults["global_gridx"] =  float(self.app.ui.grid_gap_x_entry.get_value())
+        #     self.app.options["global_gridx"] =  float(self.app.ui.grid_gap_x_entry.get_value())
         # except ValueError:
         #     return
 
@@ -3910,7 +3910,7 @@ class AppGeoEditor(QtCore.QObject):
         self.geo_zoom.set_value(False)
 
         # Show/Hide Advanced Options
-        app_mode = self.app.defaults["global_app_level"]
+        app_mode = self.app.options["global_app_level"]
         self.change_level(app_mode)
 
     def build_ui(self):
@@ -4657,11 +4657,11 @@ class AppGeoEditor(QtCore.QObject):
 
         # make sure that the cursor shape is enabled/disabled, too
         if self.editor_options['grid_snap'] is True:
-            self.app.defaults['global_grid_snap'] = True
+            self.app.options['global_grid_snap'] = True
             self.app.inform[str, bool].emit(_("Grid Snap enabled."), False)
             self.app.app_cursor.enabled = True
         else:
-            self.app.defaults['global_grid_snap'] = False
+            self.app.options['global_grid_snap'] = False
             self.app.app_cursor.enabled = False
             self.app.inform[str, bool].emit(_("Grid Snap disabled."), False)
 
@@ -4693,7 +4693,7 @@ class AppGeoEditor(QtCore.QObject):
             # If the SHIFT key is pressed when LMB is clicked then the coordinates are copied to clipboard
             if modifiers == QtCore.Qt.KeyboardModifier.ShiftModifier:
                 self.app.clipboard.setText(
-                    self.app.defaults["global_point_clipboard_format"] %
+                    self.app.options["global_point_clipboard_format"] %
                     (self.decimals, self.pos[0], self.decimals, self.pos[1])
                 )
                 return
@@ -4767,8 +4767,8 @@ class AppGeoEditor(QtCore.QObject):
 
             # Update cursor
             self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color=self.app.cursor_color_3D,
-                                         edge_width=self.app.defaults["global_cursor_width"],
-                                         size=self.app.defaults["global_cursor_size"])
+                                         edge_width=self.app.options["global_cursor_width"],
+                                         size=self.app.options["global_cursor_size"])
 
         self.snap_x = x
         self.snap_y = y
@@ -4805,8 +4805,8 @@ class AppGeoEditor(QtCore.QObject):
             self.app.delete_selection_shape()
             if dx < 0:
                 self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x, y),
-                                                     color=self.app.defaults["global_alt_sel_line"],
-                                                     face_color=self.app.defaults['global_alt_sel_fill'])
+                                                     color=self.app.options["global_alt_sel_line"],
+                                                     face_color=self.app.options['global_alt_sel_fill'])
                 self.app.selection_type = False
             else:
                 self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x, y))
@@ -4913,7 +4913,7 @@ class AppGeoEditor(QtCore.QObject):
                                                                            poly_selection.intersects(obj.geo)):
                 sel_objects_list.append(obj)
 
-        if mod_key == self.app.defaults["global_mselect_key"]:
+        if mod_key == self.app.options["global_mselect_key"]:
             for obj in sel_objects_list:
                 if obj in self.selected:
                     self.selected.remove(obj)
@@ -4975,7 +4975,7 @@ class AppGeoEditor(QtCore.QObject):
                     for poly in el:
                         self.tool_shape.add(
                             shape=poly,
-                            color=(self.app.defaults["global_draw_color"]),
+                            color=(self.app.options["global_draw_color"]),
                             update=False,
                             layer=0,
                             tolerance=None
@@ -4984,7 +4984,7 @@ class AppGeoEditor(QtCore.QObject):
                     for linestring in el:
                         self.tool_shape.add(
                             shape=linestring,
-                            color=(self.app.defaults["global_draw_color"]),
+                            color=(self.app.options["global_draw_color"]),
                             update=False,
                             layer=0,
                             tolerance=None
@@ -4992,14 +4992,14 @@ class AppGeoEditor(QtCore.QObject):
                 else:
                     self.tool_shape.add(
                         shape=el,
-                        color=(self.app.defaults["global_draw_color"]),
+                        color=(self.app.options["global_draw_color"]),
                         update=False,
                         layer=0,
                         tolerance=None
                     )
         except TypeError:
             self.tool_shape.add(
-                shape=geo.geo, color=(self.app.defaults["global_draw_color"]),
+                shape=geo.geo, color=(self.app.options["global_draw_color"]),
                 update=False, layer=0, tolerance=None)
 
         self.tool_shape.redraw()
@@ -5118,8 +5118,8 @@ class AppGeoEditor(QtCore.QObject):
 
         self.shapes.clear(update=True)
 
-        draw_color = self.app.defaults['global_draw_color'][:-2] + "FF"
-        sel_color = self.app.defaults['global_sel_draw_color'][:-2] + 'FF'
+        draw_color = self.app.options['global_draw_color'][:-2] + "FF"
+        sel_color = self.app.options['global_sel_draw_color'][:-2] + 'FF'
 
         for shape in self.storage.get_objects():
             if shape.geo and not shape.geo.is_empty and shape.geo.is_valid:
@@ -5143,7 +5143,7 @@ class AppGeoEditor(QtCore.QObject):
         except TypeError:
             geom = [self.active_tool.geometry.geo]
 
-        if self.app.defaults['geometry_editor_milling_type'] == 'cl':
+        if self.app.options['geometry_editor_milling_type'] == 'cl':
             # reverse the geometry coordinates direction to allow creation of Gcode for  climb milling
             try:
                 pl = []
@@ -5325,13 +5325,13 @@ class AppGeoEditor(QtCore.QObject):
 
         self.select_tool("select")
 
-        if self.app.defaults['tools_mill_spindledir'] == 'CW':
-            if self.app.defaults['geometry_editor_milling_type'] == 'cl':
+        if self.app.options['tools_mill_spindledir'] == 'CW':
+            if self.app.options['geometry_editor_milling_type'] == 'cl':
                 milling_type = 1  # CCW motion = climb milling (spindle is rotating CW)
             else:
                 milling_type = -1  # CW motion = conventional milling (spindle is rotating CW)
         else:
-            if self.app.defaults['geometry_editor_milling_type'] == 'cl':
+            if self.app.options['geometry_editor_milling_type'] == 'cl':
                 milling_type = -1  # CCW motion = climb milling (spindle is rotating CCW)
             else:
                 milling_type = 1  # CW motion = conventional milling (spindle is rotating CCW)
@@ -5724,7 +5724,7 @@ class AppGeoEditor(QtCore.QObject):
                         if t.geo.geom_type == 'Polygon':
                             results.append(t.geo.exterior.buffer(
                                 buf_distance - 1e-10,
-                                resolution=int(int(editor_self.app.defaults["geometry_circle_steps"]) / 4),
+                                resolution=int(int(editor_self.app.options["geometry_circle_steps"]) / 4),
                                 join_style=join_style)
                             )
                         elif t.geo.geom_type == 'MultiLineString':
@@ -5733,12 +5733,12 @@ class AppGeoEditor(QtCore.QObject):
                                     b_geo = Polygon(line)
                                 results.append(b_geo.buffer(
                                     buf_distance - 1e-10,
-                                    resolution=int(int(editor_self.app.defaults["geometry_circle_steps"]) / 4),
+                                    resolution=int(int(editor_self.app.options["geometry_circle_steps"]) / 4),
                                     join_style=join_style).exterior
                                                )
                                 results.append(b_geo.buffer(
                                     -buf_distance + 1e-10,
-                                    resolution=int(int(editor_self.app.defaults["geometry_circle_steps"]) / 4),
+                                    resolution=int(int(editor_self.app.options["geometry_circle_steps"]) / 4),
                                     join_style=join_style).exterior
                                                )
                         elif t.geo.geom_type in ['LineString', 'LinearRing']:
@@ -5746,12 +5746,12 @@ class AppGeoEditor(QtCore.QObject):
                                 b_geo = Polygon(t.geo)
                             results.append(b_geo.buffer(
                                 buf_distance - 1e-10,
-                                resolution=int(int(editor_self.app.defaults["geometry_circle_steps"]) / 4),
+                                resolution=int(int(editor_self.app.options["geometry_circle_steps"]) / 4),
                                 join_style=join_style).exterior
                                            )
                             results.append(b_geo.buffer(
                                 -buf_distance + 1e-10,
-                                resolution=int(int(editor_self.app.defaults["geometry_circle_steps"]) / 4),
+                                resolution=int(int(editor_self.app.options["geometry_circle_steps"]) / 4),
                                 join_style=join_style).exterior
                                            )
 
@@ -5800,7 +5800,7 @@ class AppGeoEditor(QtCore.QObject):
                         if t.geo.geom_type == 'Polygon':
                             results.append(t.geo.exterior.buffer(
                                 -buf_distance + 1e-10,
-                                resolution=int(int(editor_self.app.defaults["geometry_circle_steps"]) / 4),
+                                resolution=int(int(editor_self.app.options["geometry_circle_steps"]) / 4),
                                 join_style=join_style).exterior
                                            )
                         elif t.geo.geom_type == 'MultiLineString':
@@ -5809,7 +5809,7 @@ class AppGeoEditor(QtCore.QObject):
                                     b_geo = Polygon(line)
                                 results.append(b_geo.buffer(
                                     -buf_distance + 1e-10,
-                                    resolution=int(int(editor_self.app.defaults["geometry_circle_steps"]) / 4),
+                                    resolution=int(int(editor_self.app.options["geometry_circle_steps"]) / 4),
                                     join_style=join_style).exterior
                                                )
                         elif t.geo.geom_type in ['LineString', 'LinearRing']:
@@ -5817,7 +5817,7 @@ class AppGeoEditor(QtCore.QObject):
                                 b_geo = Polygon(t.geo)
                             results.append(b_geo.buffer(
                                 -buf_distance + 1e-10,
-                                resolution=int(int(editor_self.app.defaults["geometry_circle_steps"]) / 4),
+                                resolution=int(int(editor_self.app.options["geometry_circle_steps"]) / 4),
                                 join_style=join_style).exterior
                                            )
 
@@ -5868,7 +5868,7 @@ class AppGeoEditor(QtCore.QObject):
                         if t.geo.geom_type == 'Polygon':
                             results.append(t.geo.exterior.buffer(
                                 buf_distance - 1e-10,
-                                resolution=int(int(editor_self.app.defaults["geometry_circle_steps"]) / 4),
+                                resolution=int(int(editor_self.app.options["geometry_circle_steps"]) / 4),
                                 join_style=join_style).exterior
                                            )
                         elif t.geo.geom_type == 'MultiLineString':
@@ -5877,7 +5877,7 @@ class AppGeoEditor(QtCore.QObject):
                                     b_geo = Polygon(line)
                                 results.append(b_geo.buffer(
                                     buf_distance - 1e-10,
-                                    resolution=int(int(editor_self.app.defaults["geometry_circle_steps"]) / 4),
+                                    resolution=int(int(editor_self.app.options["geometry_circle_steps"]) / 4),
                                     join_style=join_style).exterior
                                                )
                         elif t.geo.geom_type in ['LineString', 'LinearRing']:
@@ -5885,7 +5885,7 @@ class AppGeoEditor(QtCore.QObject):
                                 b_geo = Polygon(t.geo)
                             results.append(b_geo.buffer(
                                 buf_distance - 1e-10,
-                                resolution=int(int(editor_self.app.defaults["geometry_circle_steps"]) / 4),
+                                resolution=int(int(editor_self.app.options["geometry_circle_steps"]) / 4),
                                 join_style=join_style).exterior
                                            )
 
@@ -5967,17 +5967,17 @@ class AppGeoEditor(QtCore.QObject):
                             if method == _("Seed"):
                                 cp = Geometry.clear_polygon2(
                                     editor_self, polygon_to_clear=poly_buf, tooldia=tooldia,
-                                    steps_per_circle=editor_self.app.defaults["geometry_circle_steps"],
+                                    steps_per_circle=editor_self.app.options["geometry_circle_steps"],
                                     overlap=overlap, contour=contour, connect=connect)
                             elif method == _("Lines"):
                                 cp = Geometry.clear_polygon3(
                                     editor_self, polygon=poly_buf, tooldia=tooldia,
-                                    steps_per_circle=editor_self.app.defaults["geometry_circle_steps"],
+                                    steps_per_circle=editor_self.app.options["geometry_circle_steps"],
                                     overlap=overlap, contour=contour, connect=connect)
                             else:
                                 cp = Geometry.clear_polygon(
                                     editor_self, polygon=poly_buf, tooldia=tooldia,
-                                    steps_per_circle=editor_self.app.defaults["geometry_circle_steps"],
+                                    steps_per_circle=editor_self.app.options["geometry_circle_steps"],
                                     overlap=overlap, contour=contour, connect=connect)
 
                             if cp is not None:

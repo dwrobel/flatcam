@@ -286,7 +286,7 @@ class GeneralAppSettingsGroupUI(OptionsGroupUI2):
 
     def on_mouse_cursor_color_enable(self, val):
         if val:
-            self.app.cursor_color_3D = self.app.defaults["global_cursor_color"]
+            self.app.cursor_color_3D = self.app.options["global_cursor_color"]
         else:
             theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
             if theme_settings.contains("theme"):
@@ -300,5 +300,5 @@ class GeneralAppSettingsGroupUI(OptionsGroupUI2):
                 self.app.cursor_color_3D = 'gray'
 
     def on_mouse_cursor_entry(self):
-        self.app.defaults['global_cursor_color'] = self.mouse_cursor_color_field.get_value()
-        self.app.cursor_color_3D = self.app.defaults["global_cursor_color"]
+        self.app.options['global_cursor_color'] = self.mouse_cursor_color_field.get_value()
+        self.app.cursor_color_3D = self.app.options["global_cursor_color"]

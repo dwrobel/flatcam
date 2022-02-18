@@ -16,7 +16,7 @@ if '_' not in builtins.__dict__:
 
 class PreferencesUIManager:
 
-    def __init__(self, defaults: FlatCAMDefaults, data_path: str, ui, inform):
+    def __init__(self, defaults: FlatCAMDefaults, data_path: str, ui, inform, options):
         """
         Class that control the Preferences Tab
 
@@ -24,6 +24,7 @@ class PreferencesUIManager:
         :param data_path:   a path to the file where all the preferences are stored for persistence
         :param ui:          reference to the MainGUI class which constructs the UI
         :param inform:      a pyqtSignal used to display information's in the StatusBar of the GUI
+        :param options:     a dict holding the current defaults loaded in the application
         """
 
         self.defaults = defaults
@@ -1093,15 +1094,20 @@ class PreferencesUIManager:
                 else:
                     self.ui.general_pref_form.general_app_group.ge_radio.set_value(ge)
 
-        if save_to_file or should_restart is True:
-            # Re-fresh project options
-            self.ui.app.on_options_app2project()
+        # #############################################################################################################
+        # ############################  Here is done the actual preferences updates  ##################################
+        # #############################################################################################################
+        # update the `defaults` dict from the Preferences UI form
+        self.defaults_read_form()
+        # Apply the `defaults` dict to project options
+        self.ui.app.options.update(self.defaults)
+        # #############################################################################################################
 
+        if save_to_file or should_restart is True:
             self.save_defaults(silent=False)
             # load the defaults so they are updated into the app
-            self.defaults.load(filename=os.path.join(self.data_path,
-                                                     'current_defaults_%s.FlatConfig' % self.defaults.version),
-                               inform=self.inform)
+            saved_filename_path = os.path.join(self.data_path, 'current_defaults_%s.FlatConfig' % self.defaults.version)
+            self.defaults.load(filename=saved_filename_path, inform=self.inform)
 
         settgs = QSettings("Open Source", "FlatCAM")
 

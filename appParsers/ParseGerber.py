@@ -82,7 +82,7 @@ class Gerber(Geometry):
 
         # How to approximate a circle with lines.
         if steps_per_circle is None:
-            self.steps_per_circle = int(self.app.defaults["gerber_circle_steps"])
+            self.steps_per_circle = int(self.app.options["gerber_circle_steps"])
         else:
             self.steps_per_circle = steps_per_circle
         self.decimals = self.app.decimals
@@ -97,7 +97,7 @@ class Gerber(Geometry):
         self.frac_digits = 4
         """Number of fraction digits in Gerber numbers. Used during parsing."""
 
-        self.gerber_zeros = self.app.defaults['gerber_def_zeros']
+        self.gerber_zeros = self.app.options['gerber_def_zeros']
         """Zeros in Gerber numbers. If 'L' then remove leading zeros, if 'T' remove trailing zeros. Used during parsing.
         """
 
@@ -121,7 +121,7 @@ class Gerber(Geometry):
         '''
 
         # store the file units here:
-        self.units = self.app.defaults['gerber_def_units']
+        self.units = self.app.options['gerber_def_units']
 
         # aperture storage
         self.tools = {}
@@ -231,7 +231,7 @@ class Gerber(Geometry):
         # in a Gerber file (normal or obsolete ones)
         self.conversion_done = False
 
-        self.use_buffer_for_union = self.app.defaults["gerber_use_buffer_for_union"]
+        self.use_buffer_for_union = self.app.options["gerber_use_buffer_for_union"]
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -441,7 +441,7 @@ class Gerber(Geometry):
         line_num = 0
         gline = ""
 
-        s_tol = float(self.app.defaults["gerber_simp_tolerance"])
+        s_tol = float(self.app.options["gerber_simp_tolerance"])
 
         self.app.inform.emit('%s %d %s.' % (_("Gerber processing. Parsing"), len(glines), _("Lines").lower()))
         try:
@@ -510,7 +510,7 @@ class Gerber(Geometry):
                             geo_dict['follow'] = geo_f
 
                         geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle))
-                        if self.app.defaults['gerber_simplification']:
+                        if self.app.options['gerber_simplification']:
                             geo_s = geo_s.simplify(s_tol)
                         if not geo_s.is_empty and geo_s.is_valid:
                             poly_buffer.append(geo_s)
@@ -579,7 +579,7 @@ class Gerber(Geometry):
                     self.app.log.debug("Gerber units found = %s" % self.units)
                     # Changed for issue #80
                     # self.convert_units(match.group(1))
-                    s_tol = float(self.app.defaults["gerber_simp_tolerance"]) / 25.4 if self.units == 'IN' else s_tol
+                    s_tol = float(self.app.options["gerber_simp_tolerance"]) / 25.4 if self.units == 'IN' else s_tol
 
                     self.conversion_done = True
                     continue
@@ -601,7 +601,7 @@ class Gerber(Geometry):
                     self.app.log.debug("Gerber format found. Coordinates type = %s (Absolute or Relative)" % absolute)
 
                     self.units = match.group(5)
-                    s_tol = float(self.app.defaults["gerber_simp_tolerance"]) / 25.4 if self.units == 'IN' else s_tol
+                    s_tol = float(self.app.options["gerber_simp_tolerance"]) / 25.4 if self.units == 'IN' else s_tol
 
                     self.app.log.debug("Gerber units found = %s" % self.units)
                     # Changed for issue #80
@@ -634,7 +634,7 @@ class Gerber(Geometry):
 
                         self.units = match.group(1)
                         s_tol = float(
-                            self.app.defaults["gerber_simp_tolerance"]) / 25.4 if self.units == 'IN' else s_tol
+                            self.app.options["gerber_simp_tolerance"]) / 25.4 if self.units == 'IN' else s_tol
 
                         self.app.log.debug("Gerber units found = %s" % self.units)
                         # Changed for issue #80
@@ -649,7 +649,7 @@ class Gerber(Geometry):
                 if match:
                     obs_gerber_units = {'0': 'IN', '1': 'MM'}[match.group(1)]
                     self.units = obs_gerber_units
-                    s_tol = float(self.app.defaults["gerber_simp_tolerance"]) / 25.4 if self.units == 'IN' else s_tol
+                    s_tol = float(self.app.options["gerber_simp_tolerance"]) / 25.4 if self.units == 'IN' else s_tol
 
                     self.app.log.warning("Gerber obsolete units found = %s" % obs_gerber_units)
                     # Changed for issue #80
@@ -731,7 +731,7 @@ class Gerber(Geometry):
                             geo_dict['follow'] = Point([current_x, current_y])
 
                             if not flash.is_empty:
-                                if self.app.defaults['gerber_simplification']:
+                                if self.app.options['gerber_simplification']:
                                     flash = flash.simplify(s_tol)
                                 poly_buffer.append(flash)
 
@@ -791,7 +791,7 @@ class Gerber(Geometry):
                             # --- Buffered ----
                             width = self.tools[last_path_aperture]["size"]
                             geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle))
-                            if self.app.defaults['gerber_simplification']:
+                            if self.app.options['gerber_simplification']:
                                 geo_s = geo_s.simplify(s_tol)
                             if not geo_s.is_empty:
                                 poly_buffer.append(geo_s)
@@ -848,7 +848,7 @@ class Gerber(Geometry):
                                 for pol in geo_s:
                                     if not pol.is_empty:
                                         # is it possible that simplification creates an Empty Geometry ?????
-                                        if self.app.defaults['gerber_simplification']:
+                                        if self.app.options['gerber_simplification']:
                                             pol = pol.simplify(s_tol)
 
                                         poly_buffer.append(pol)
@@ -862,7 +862,7 @@ class Gerber(Geometry):
                             except TypeError:
                                 if not geo_s.is_empty:
                                     # is it possible that simplification creates an Empty Geometry ?????
-                                    if self.app.defaults['gerber_simplification']:
+                                    if self.app.options['gerber_simplification']:
                                         geo_s = geo_s.simplify(s_tol)
 
                                     poly_buffer.append(geo_s)
@@ -911,7 +911,7 @@ class Gerber(Geometry):
                                     geo_dict['follow'] = geo_f
                             if geo_s:
                                 if not geo_s.is_empty:
-                                    if self.app.defaults['gerber_simplification']:
+                                    if self.app.options['gerber_simplification']:
                                         geo_s = geo_s.simplify(s_tol)
 
                                     if not geo_s.is_valid:
@@ -967,7 +967,7 @@ class Gerber(Geometry):
                                 try:
                                     for pol in region_s:
                                         # is it possible that simplification creates an Empty Geometry ?????
-                                        if self.app.defaults['gerber_simplification']:
+                                        if self.app.options['gerber_simplification']:
                                             pol = pol.simplify(s_tol)
 
                                         pol_f = pol.exterior
@@ -986,7 +986,7 @@ class Gerber(Geometry):
                                             self.tools[0]['geometry'].append(geo_dict)
                                 except TypeError:
                                     # is it possible that simplification creates an Empty Geometry ?????
-                                    if self.app.defaults['gerber_simplification']:
+                                    if self.app.options['gerber_simplification']:
                                         region_s = region_s.simplify(s_tol)
 
                                     region_f = region_s.exterior
@@ -1005,7 +1005,7 @@ class Gerber(Geometry):
                                         self.tools[0]['geometry'].append(geo_dict)
                         else:
                             # is it possible that simplification creates an Empty Geometry ?????
-                            if self.app.defaults['gerber_simplification']:
+                            if self.app.options['gerber_simplification']:
                                 region_s = region_s.simplify(s_tol)
 
                             region_f = region_s.exterior
@@ -1104,7 +1104,7 @@ class Gerber(Geometry):
                                         self.steps_per_circle
                                     )
                                     if not flash.is_empty:
-                                        if self.app.defaults['gerber_simplification']:
+                                        if self.app.options['gerber_simplification']:
                                             flash = flash.simplify(s_tol)
 
                                         poly_buffer.append(flash)
@@ -1140,7 +1140,7 @@ class Gerber(Geometry):
                                         geo_dict['follow'] = geo_f
 
                                         geo_s = shply_box(minx, miny, maxx, maxy)
-                                        if self.app.defaults['gerber_simplification']:
+                                        if self.app.options['gerber_simplification']:
                                             geo_s = geo_s.simplify(s_tol)
 
                                         poly_buffer.append(geo_s)
@@ -1237,7 +1237,7 @@ class Gerber(Geometry):
                             try:
                                 if self.tools[last_path_aperture]["type"] != 'R':
                                     if not geo_s.is_empty:
-                                        if self.app.defaults['gerber_simplification']:
+                                        if self.app.options['gerber_simplification']:
                                             geo_s = geo_s.simplify(s_tol)
 
                                         poly_buffer.append(geo_s)
@@ -1248,7 +1248,7 @@ class Gerber(Geometry):
                                             geo_dict['solid'] = geo_s
                             except Exception as e:
                                 self.app.log.error("camlib.Gerber.parse_lines() --> %s" % str(e))
-                                if self.app.defaults['gerber_simplification']:
+                                if self.app.options['gerber_simplification']:
                                     geo_s = geo_s.simplify(s_tol)
 
                                 poly_buffer.append(geo_s)
@@ -1305,7 +1305,7 @@ class Gerber(Geometry):
                             if not geo_s.is_empty:
                                 try:
                                     if self.tools[last_path_aperture]["type"] != 'R':
-                                        if self.app.defaults['gerber_simplification']:
+                                        if self.app.options['gerber_simplification']:
                                             geo_s = geo_s.simplify(s_tol)
 
                                         poly_buffer.append(geo_s)
@@ -1315,7 +1315,7 @@ class Gerber(Geometry):
                                         else:
                                             geo_dict['solid'] = geo_s
                                 except Exception:
-                                    if self.app.defaults['gerber_simplification']:
+                                    if self.app.options['gerber_simplification']:
                                         geo_s = geo_s.simplify(s_tol)
 
                                     poly_buffer.append(geo_s)
@@ -1350,7 +1350,7 @@ class Gerber(Geometry):
                         )
 
                         if not flash.is_empty:
-                            if self.app.defaults['gerber_simplification']:
+                            if self.app.options['gerber_simplification']:
                                 flash = flash.simplify(s_tol)
 
                             poly_buffer.append(flash)
@@ -1463,7 +1463,7 @@ class Gerber(Geometry):
                             # this treats the case when we are storing geometry as solids
                             buffered = LineString(path).buffer(width / 1.999, int(self.steps_per_circle))
                             if not buffered.is_empty:
-                                if self.app.defaults['gerber_simplification']:
+                                if self.app.options['gerber_simplification']:
                                     buffered = buffered.simplify(s_tol)
 
                                 poly_buffer.append(buffered)
@@ -1616,7 +1616,7 @@ class Gerber(Geometry):
                     width = self.tools[last_path_aperture]["size"]
                     geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle))
                     if not geo_s.is_empty:
-                        if self.app.defaults['gerber_simplification']:
+                        if self.app.options['gerber_simplification']:
                             geo_s = geo_s.simplify(s_tol)
 
                         poly_buffer.append(geo_s)
@@ -1667,7 +1667,7 @@ class Gerber(Geometry):
                 self.app.log.debug("Union by buffer...")
 
                 new_poly = MultiPolygon(poly_buffer)
-                if self.app.defaults["gerber_buffering"] == 'full':
+                if self.app.options["gerber_buffering"] == 'full':
                     new_poly = new_poly.buffer(0.00000001)
                     new_poly = new_poly.buffer(-0.00000001)
                     self.app.log.warning("Union(buffer) done.")
@@ -1703,7 +1703,7 @@ class Gerber(Geometry):
                 # FIX for issue #347 - Sprint Layout generate Gerber files when the copper pour is enabled
                 # it use a filled bounding box polygon to which add clear polygons (negative) to isolate the copper
                 # features
-                if self.app.defaults['gerber_extra_buffering']:
+                if self.app.options['gerber_extra_buffering']:
                     candidate_geo = []
                     if isinstance(self.solid_geometry, MultiPolygon):
                         geo_to_buff = self.solid_geometry.geoms
@@ -1722,7 +1722,7 @@ class Gerber(Geometry):
             # flatten the solid geometry
             self.solid_geometry = flatten_shapely_geometry(self.solid_geometry)
 
-            if self.app.defaults['gerber_clean_apertures']:
+            if self.app.options['gerber_clean_apertures']:
                 # clean the Gerber file of apertures with no geometry
                 for apid, apvalue in list(self.tools.items()):
                     if 'geometry' not in apvalue:
@@ -1952,7 +1952,7 @@ class Gerber(Geometry):
         h = svgparselength(svg_root.get('height'))[0]  # TODO: No units support yet
 
         units = self.app.app_units if units is None else units
-        res = self.app.defaults['gerber_circle_steps']
+        res = self.app.options['gerber_circle_steps']
         factor = svgparse_viewbox(svg_root)
         geos = getsvggeo(svg_root, 'gerber', units=units, res=res, factor=factor, app=self.app)
 

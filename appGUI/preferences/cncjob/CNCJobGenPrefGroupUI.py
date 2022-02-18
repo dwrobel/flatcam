@@ -238,28 +238,28 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
     # Setting travel colors handlers
     # ------------------------------------------------------
     def on_tfill_color_entry(self):
-        self.app.defaults['cncjob_travel_fill'] = self.tfill_color_entry.get_value()[:7] + \
-                                                  self.app.defaults['cncjob_travel_fill'][7:9]
+        self.app.options['cncjob_travel_fill'] = self.tfill_color_entry.get_value()[:7] + \
+                                                  self.app.options['cncjob_travel_fill'][7:9]
 
     def on_tline_color_entry(self):
-        self.app.defaults['cncjob_travel_line'] = self.tline_color_entry.get_value()[:7] + \
-                                                  self.app.defaults['cncjob_travel_line'][7:9]
+        self.app.options['cncjob_travel_line'] = self.tline_color_entry.get_value()[:7] + \
+                                                  self.app.options['cncjob_travel_line'][7:9]
 
     def on_cncjob_alpha_changed(self, spinner_value):
-        self.app.defaults['cncjob_travel_fill'] = \
-            self.app.defaults['cncjob_travel_fill'][:7] + \
+        self.app.options['cncjob_travel_fill'] = \
+            self.app.options['cncjob_travel_fill'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
-        self.app.defaults['cncjob_travel_line'] = \
-            self.app.defaults['cncjob_travel_line'][:7] + \
+        self.app.options['cncjob_travel_line'] = \
+            self.app.options['cncjob_travel_line'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
 
     # ------------------------------------------------------
     # Setting plot colors handlers
     # ------------------------------------------------------
     def on_fill_color_entry(self):
-        self.app.defaults['cncjob_plot_fill'] = self.fill_color_entry.get_value()[:7] + \
-                                                  self.app.defaults['cncjob_plot_fill'][7:9]
+        self.app.options['cncjob_plot_fill'] = self.fill_color_entry.get_value()[:7] + \
+                                                  self.app.options['cncjob_plot_fill'][7:9]
 
     def on_line_color_entry(self):
-        self.app.defaults['cncjob_plot_line'] = self.line_color_entry.get_value()[:7] + \
-                                                  self.app.defaults['cncjob_plot_line'][7:9]
+        self.app.options['cncjob_plot_line'] = self.line_color_entry.get_value()[:7] + \
+                                                  self.app.options['cncjob_plot_line'][7:9]

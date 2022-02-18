@@ -103,22 +103,22 @@ class TclCommandPaint(TclCommand):
         if 'tooldia' in args:
             tooldia = str(args['tooldia'])
         else:
-            tooldia = str(self.app.defaults["tools_paint_tooldia"])
+            tooldia = str(self.app.options["tools_paint_tooldia"])
 
         if 'overlap' in args:
             overlap = float(args['overlap'])
         else:
-            overlap = float(self.app.defaults["tools_paint_overlap"])
+            overlap = float(self.app.options["tools_paint_overlap"])
 
         if 'order' in args:
             order = args['order']
         else:
-            order = str(self.app.defaults["tools_paint_order"])
+            order = str(self.app.options["tools_paint_order"])
 
         if 'offset' in args:
             offset = float(args['offset'])
         else:
-            offset = float(self.app.defaults["tools_paint_offset"])
+            offset = float(self.app.options["tools_paint_offset"])
 
         if 'method' in args:
             method = args['method']
@@ -138,7 +138,7 @@ class TclCommandPaint(TclCommand):
                 self.app.log.error(msg)
                 return "fail"
         else:
-            method = str(self.app.defaults["tools_paint_method"])
+            method = str(self.app.options["tools_paint_method"])
 
         if 'connect' in args:
             try:
@@ -147,7 +147,7 @@ class TclCommandPaint(TclCommand):
                 par = args['connect']
             connect = bool(eval(par))
         else:
-            connect = bool(eval(str(self.app.defaults["tools_paint_connect"])))
+            connect = bool(eval(str(self.app.options["tools_paint_connect"])))
 
         if 'contour' in args:
             try:
@@ -156,7 +156,7 @@ class TclCommandPaint(TclCommand):
                 par = args['contour']
             contour = bool(eval(par))
         else:
-            contour = bool(eval(str(self.app.defaults["tools_paint_contour"])))
+            contour = bool(eval(str(self.app.options["tools_paint_contour"])))
 
         if 'outname' in args:
             outname = args['outname']
@@ -181,17 +181,17 @@ class TclCommandPaint(TclCommand):
             "name":                 outname,
             "plot":                 False,
             "tooldia":              tooldia,
-            "tools_mill_cutz":                 self.app.defaults["tools_mill_cutz"],
-            "tools_paint_tipdia":              float(self.app.defaults["tools_paint_tipdia"]),
-            "tools_paint_tipangle":            float(self.app.defaults["tools_paint_tipangle"]),
+            "tools_mill_cutz":                 self.app.options["tools_mill_cutz"],
+            "tools_paint_tipdia":              float(self.app.options["tools_paint_tipdia"]),
+            "tools_paint_tipangle":            float(self.app.options["tools_paint_tipangle"]),
             "tools_paint_offset":       offset,
             "tools_paint_method":       method,
             "tools_paint_selectmethod": select,
             "tools_paint_connect":      connect,
             "tools_paint_contour":      contour,
             "tools_paint_overlap":      overlap,
-            "segx": self.app.defaults["geometry_segx"],
-            "segy": self.app.defaults["geometry_segy"]
+            "segx": self.app.options["geometry_segx"],
+            "segy": self.app.options["geometry_segy"]
         })
 
         # create a `tools` dict

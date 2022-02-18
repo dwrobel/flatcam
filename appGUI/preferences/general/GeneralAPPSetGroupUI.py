@@ -490,7 +490,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
 
     def on_mouse_cursor_color_enable(self, val):
         if val:
-            self.app.cursor_color_3D = self.app.defaults["global_cursor_color"]
+            self.app.cursor_color_3D = self.app.options["global_cursor_color"]
         else:
             theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
             if theme_settings.contains("theme"):
@@ -504,9 +504,9 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
                 self.app.cursor_color_3D = 'gray'
 
     def on_mouse_cursor_entry(self):
-        self.app.defaults['global_cursor_color'] = self.mouse_cursor_entry.get_value()
-        self.app.cursor_color_3D = self.app.defaults["global_cursor_color"]
+        self.app.options['global_cursor_color'] = self.mouse_cursor_entry.get_value()
+        self.app.cursor_color_3D = self.app.options["global_cursor_color"]
 
     def on_axis_color_entry(self):
-        self.app.defaults['global_axis_color'] = self.axis_color_entry.get_value()
+        self.app.options['global_axis_color'] = self.axis_color_entry.get_value()
         self.app.plotcanvas.apply_axis_color()

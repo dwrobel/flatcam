@@ -1867,18 +1867,18 @@ class MainGUI(QtWidgets.QMainWindow):
         self.infobar.addWidget(self.fcinfo, stretch=1)
 
         self.infobar.addWidget(self.delta_coords_toolbar)
-        self.delta_coords_toolbar.setVisible(self.app.defaults["global_delta_coordsbar_show"])
+        self.delta_coords_toolbar.setVisible(self.app.options["global_delta_coordsbar_show"])
 
         self.infobar.addWidget(self.coords_toolbar)
-        self.coords_toolbar.setVisible(self.app.defaults["global_coordsbar_show"])
+        self.coords_toolbar.setVisible(self.app.options["global_coordsbar_show"])
 
         self.grid_toolbar.setMaximumHeight(24)
         self.infobar.addWidget(self.grid_toolbar)
-        self.grid_toolbar.setVisible(self.app.defaults["global_gridbar_show"])
+        self.grid_toolbar.setVisible(self.app.options["global_gridbar_show"])
 
         self.status_toolbar.setMaximumHeight(24)
         self.infobar.addWidget(self.status_toolbar)
-        self.status_toolbar.setVisible(self.app.defaults["global_statusbar_show"])
+        self.status_toolbar.setVisible(self.app.options["global_statusbar_show"])
 
         self.units_label = FCLabel("[mm]")
         self.units_label.setToolTip(_("Application units"))
@@ -1886,7 +1886,9 @@ class MainGUI(QtWidgets.QMainWindow):
         self.infobar.addWidget(self.units_label)
 
         # this used to be done in the APP.__init__()
-        self.activity_view = FlatCAMActivityView(app=self.app)
+        self.activity_view = FlatCAMActivityView(icon_location=self.app.resource_location,
+                                                 icon_kind=self.app.options["global_activity_icon"],
+                                                 replot_callback=self.app.on_toolbar_replot)
         self.infobar.addWidget(self.activity_view)
 
         # disabled
@@ -1935,16 +1937,16 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################################################################
         # ######################## BUILD PREFERENCES #############################
         # ########################################################################
-        self.general_pref_form = GeneralPreferencesUI(decimals=self.decimals, defaults=self.app.defaults)
-        self.gerber_pref_form = GerberPreferencesUI(decimals=self.decimals, defaults=self.app.defaults)
-        self.excellon_pref_form = ExcellonPreferencesUI(decimals=self.decimals, defaults=self.app.defaults)
-        self.geo_pref_form = GeometryPreferencesUI(decimals=self.decimals, defaults=self.app.defaults)
-        self.cncjob_pref_form = CNCJobPreferencesUI(decimals=self.decimals, defaults=self.app.defaults)
-        self.plugin_pref_form = PluginsPreferencesUI(decimals=self.decimals, defaults=self.app.defaults)
-        self.plugin2_pref_form = Plugins2PreferencesUI(decimals=self.decimals, defaults=self.app.defaults)
-        self.plugin_eng_pref_form = PluginsEngravingPreferencesUI(decimals=self.decimals, defaults=self.app.defaults)
+        self.general_pref_form = GeneralPreferencesUI(decimals=self.decimals, defaults=self.app.options)
+        self.gerber_pref_form = GerberPreferencesUI(decimals=self.decimals, defaults=self.app.options)
+        self.excellon_pref_form = ExcellonPreferencesUI(decimals=self.decimals, defaults=self.app.options)
+        self.geo_pref_form = GeometryPreferencesUI(decimals=self.decimals, defaults=self.app.options)
+        self.cncjob_pref_form = CNCJobPreferencesUI(decimals=self.decimals, defaults=self.app.options)
+        self.plugin_pref_form = PluginsPreferencesUI(decimals=self.decimals, defaults=self.app.options)
+        self.plugin2_pref_form = Plugins2PreferencesUI(decimals=self.decimals, defaults=self.app.options)
+        self.plugin_eng_pref_form = PluginsEngravingPreferencesUI(decimals=self.decimals, defaults=self.app.options)
 
-        self.util_pref_form = UtilPreferencesUI(decimals=self.decimals, defaults=self.app.defaults)
+        self.util_pref_form = UtilPreferencesUI(decimals=self.decimals, defaults=self.app.options)
 
         QtCore.QCoreApplication.instance().installEventFilter(self)
 
@@ -2042,7 +2044,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.plot_tab_area.tabBar.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.ActionsContextMenu)
         self.on_tab_setup_context_menu()
         # activate initial state
-        self.on_detachable_tab_rmb_click(self.app.defaults["global_tabs_detachable"])
+        self.on_detachable_tab_rmb_click(self.app.options["global_tabs_detachable"])
 
         # status bar activation/deactivation
         self.infobar.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.ActionsContextMenu)
@@ -2162,20 +2164,20 @@ class MainGUI(QtWidgets.QMainWindow):
 
         :return: None
         """
-        self.app.defaults["global_def_win_x"] = x
-        self.app.defaults["global_def_win_y"] = y
-        self.app.defaults["global_def_win_w"] = width
-        self.app.defaults["global_def_win_h"] = height
-        self.app.defaults["global_def_notebook_width"] = notebook_width
+        self.app.options["global_def_win_x"] = x
+        self.app.options["global_def_win_y"] = y
+        self.app.options["global_def_win_w"] = width
+        self.app.options["global_def_win_h"] = height
+        self.app.options["global_def_notebook_width"] = notebook_width
         self.app.preferencesUiManager.save_defaults()
 
     def restore_main_win_geom(self):
         try:
-            self.setGeometry(self.app.defaults["global_def_win_x"],
-                             self.app.defaults["global_def_win_y"],
-                             self.app.defaults["global_def_win_w"],
-                             self.app.defaults["global_def_win_h"])
-            self.splitter.setSizes([self.app.defaults["global_def_notebook_width"], 0])
+            self.setGeometry(self.app.options["global_def_win_x"],
+                             self.app.options["global_def_win_y"],
+                             self.app.options["global_def_win_w"],
+                             self.app.options["global_def_win_h"])
+            self.splitter.setSizes([self.app.options["global_def_notebook_width"], 0])
         except KeyError as e:
             self.app.log.debug("appGUI.MainGUI.restore_main_win_geom() --> %s" % str(e))
 
@@ -2186,7 +2188,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         :return: None
         """
-        tb = self.app.defaults["global_toolbar_view"]
+        tb = self.app.options["global_toolbar_view"]
 
         if tb & 1:
             self.toolbarfile.setVisible(True)
@@ -2236,7 +2238,7 @@ class MainGUI(QtWidgets.QMainWindow):
             self.toolbarshell.setVisible(False)
 
     def on_tab_setup_context_menu(self):
-        initial_checked = self.app.defaults["global_tabs_detachable"]
+        initial_checked = self.app.options["global_tabs_detachable"]
         action_name = str(_("Detachable Tabs"))
         action = QtGui.QAction(self)
         action.setCheckable(True)
@@ -2254,17 +2256,17 @@ class MainGUI(QtWidgets.QMainWindow):
 
     def on_detachable_tab_rmb_click(self, checked):
         self.notebook.set_detachable(val=checked)
-        self.app.defaults["global_tabs_detachable"] = checked
+        self.app.options["global_tabs_detachable"] = checked
 
         self.plot_tab_area.set_detachable(val=checked)
-        self.app.defaults["global_tabs_detachable"] = checked
+        self.app.options["global_tabs_detachable"] = checked
 
     def build_infobar_context_menu(self):
         delta_coords_action_name = str(_("Delta Coordinates Toolbar"))
         delta_coords_action = QtGui.QAction(self)
         delta_coords_action.setCheckable(True)
         delta_coords_action.setText(delta_coords_action_name)
-        delta_coords_action.setChecked(self.app.defaults["global_delta_coordsbar_show"])
+        delta_coords_action.setChecked(self.app.options["global_delta_coordsbar_show"])
         self.infobar.addAction(delta_coords_action)
         delta_coords_action.triggered.connect(self.toggle_delta_coords)
 
@@ -2272,7 +2274,7 @@ class MainGUI(QtWidgets.QMainWindow):
         coords_action = QtGui.QAction(self)
         coords_action.setCheckable(True)
         coords_action.setText(coords_action_name)
-        coords_action.setChecked(self.app.defaults["global_coordsbar_show"])
+        coords_action.setChecked(self.app.options["global_coordsbar_show"])
         self.infobar.addAction(coords_action)
         coords_action.triggered.connect(self.toggle_coords)
 
@@ -2280,7 +2282,7 @@ class MainGUI(QtWidgets.QMainWindow):
         grid_action = QtGui.QAction(self)
         grid_action.setCheckable(True)
         grid_action.setText(grid_action_name)
-        grid_action.setChecked(self.app.defaults["global_gridbar_show"])
+        grid_action.setChecked(self.app.options["global_gridbar_show"])
         self.infobar.addAction(grid_action)
         grid_action.triggered.connect(self.toggle_gridbar)
 
@@ -2288,24 +2290,24 @@ class MainGUI(QtWidgets.QMainWindow):
         status_action = QtGui.QAction(self)
         status_action.setCheckable(True)
         status_action.setText(status_action_name)
-        status_action.setChecked(self.app.defaults["global_statusbar_show"])
+        status_action.setChecked(self.app.options["global_statusbar_show"])
         self.infobar.addAction(status_action)
         status_action.triggered.connect(self.toggle_statusbar)
 
     def toggle_coords(self, checked):
-        self.app.defaults["global_coordsbar_show"] = checked
+        self.app.options["global_coordsbar_show"] = checked
         self.coords_toolbar.setVisible(checked)
 
     def toggle_delta_coords(self, checked):
-        self.app.defaults["global_delta_coordsbar_show"] = checked
+        self.app.options["global_delta_coordsbar_show"] = checked
         self.delta_coords_toolbar.setVisible(checked)
 
     def toggle_gridbar(self, checked):
-        self.app.defaults["global_gridbar_show"] = checked
+        self.app.options["global_gridbar_show"] = checked
         self.grid_toolbar.setVisible(checked)
 
     def toggle_statusbar(self, checked):
-        self.app.defaults["global_statusbar_show"] = checked
+        self.app.options["global_statusbar_show"] = checked
         self.status_toolbar.setVisible(checked)
 
     def on_preferences_open_folder(self):
@@ -2768,10 +2770,10 @@ class MainGUI(QtWidgets.QMainWindow):
             for tb in self.findChildren(QtWidgets.QToolBar):
                 tb.setVisible(False)
 
-            self.coords_toolbar.setVisible(self.app.defaults["global_coordsbar_show"])
-            self.delta_coords_toolbar.setVisible(self.app.defaults["global_delta_coordsbar_show"])
-            self.grid_toolbar.setVisible(self.app.defaults["global_gridbar_show"])
-            self.status_toolbar.setVisible(self.app.defaults["global_statusbar_show"])
+            self.coords_toolbar.setVisible(self.app.options["global_coordsbar_show"])
+            self.delta_coords_toolbar.setVisible(self.app.options["global_delta_coordsbar_show"])
+            self.grid_toolbar.setVisible(self.app.options["global_gridbar_show"])
+            self.status_toolbar.setVisible(self.app.options["global_statusbar_show"])
 
             self.splitter.setSizes([0, 1])
             self.toggle_fscreen = True
@@ -2944,7 +2946,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Open Excellon file
                 if key == QtCore.Qt.Key.Key_E:
-                    self.app.f_handlers.on_fileopenexcellon(signal=None)
+                    self.app.f_handlers.on_fileopenexcellon()
 
                 # Open Gerber file
                 if key == QtCore.Qt.Key.Key_G:
@@ -2952,7 +2954,7 @@ class MainGUI(QtWidgets.QMainWindow):
                     if 'editor' in widget_name.lower():
                         self.app.goto_text_line()
                     else:
-                        self.app.f_handlers.on_fileopengerber(signal=None)
+                        self.app.f_handlers.on_fileopengerber()
 
                 # Distance Tool
                 if key == QtCore.Qt.Key.Key_M:
@@ -2964,7 +2966,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Open Project
                 if key == QtCore.Qt.Key.Key_O:
-                    self.app.f_handlers.on_file_openproject(signal=None)
+                    self.app.f_handlers.on_file_openproject()
 
                 # Open Project
                 if key == QtCore.Qt.Key.Key_P:
@@ -3033,7 +3035,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Rotate Object by 90 degree CCW
                 if key == QtCore.Qt.Key.Key_R:
-                    self.app.on_rotate(silent=True, preset=-float(self.app.defaults['tools_transform_rotate']))
+                    self.app.on_rotate(silent=True, preset=-float(self.app.options['tools_transform_rotate']))
                     return
 
                 # Run a Script
@@ -3348,7 +3350,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Rotate Object by 90 degree CW
                 if key == QtCore.Qt.Key.Key_R:
-                    self.app.on_rotate(silent=True, preset=self.app.defaults['tools_transform_rotate'])
+                    self.app.on_rotate(silent=True, preset=self.app.options['tools_transform_rotate'])
 
                 # Shell toggle
                 if key == QtCore.Qt.Key.Key_S:
@@ -3379,11 +3381,11 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Zoom In
                 if key == QtCore.Qt.Key.Key_Equal:
-                    self.app.plotcanvas.zoom(1 / self.app.defaults['global_zoom_ratio'], self.app.mouse)
+                    self.app.plotcanvas.zoom(1 / self.app.options['global_zoom_ratio'], self.app.mouse)
 
                 # Zoom Out
                 if key == QtCore.Qt.Key.Key_Minus:
-                    self.app.plotcanvas.zoom(self.app.defaults['global_zoom_ratio'], self.app.mouse)
+                    self.app.plotcanvas.zoom(self.app.options['global_zoom_ratio'], self.app.mouse)
 
                 # toggle display of Notebook area
                 if key == QtCore.Qt.Key.Key_QuoteLeft:
@@ -3511,12 +3513,12 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Zoom Out
                 if key == QtCore.Qt.Key.Key_Minus or key == '-':
-                    self.app.plotcanvas.zoom(1 / self.app.defaults['global_zoom_ratio'],
+                    self.app.plotcanvas.zoom(1 / self.app.options['global_zoom_ratio'],
                                              [self.app.geo_editor.snap_x, self.app.geo_editor.snap_y])
 
                 # Zoom In
                 if key == QtCore.Qt.Key.Key_Equal or key == '=':
-                    self.app.plotcanvas.zoom(self.app.defaults['global_zoom_ratio'],
+                    self.app.plotcanvas.zoom(self.app.options['global_zoom_ratio'],
                                              [self.app.geo_editor.snap_x, self.app.geo_editor.snap_y])
 
                 # Switch to Project Tab
@@ -3748,13 +3750,13 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 if key == QtCore.Qt.Key.Key_Minus or key == '-':
                     self.app.grb_editor.launched_from_shortcuts = True
-                    self.app.plotcanvas.zoom(1 / self.app.defaults['global_zoom_ratio'],
+                    self.app.plotcanvas.zoom(1 / self.app.options['global_zoom_ratio'],
                                              [self.app.grb_editor.snap_x, self.app.grb_editor.snap_y])
                     return
 
                 if key == QtCore.Qt.Key.Key_Equal or key == '=':
                     self.app.grb_editor.launched_from_shortcuts = True
-                    self.app.plotcanvas.zoom(self.app.defaults['global_zoom_ratio'],
+                    self.app.plotcanvas.zoom(self.app.options['global_zoom_ratio'],
                                              [self.app.grb_editor.snap_x, self.app.grb_editor.snap_y])
                     return
 
@@ -3976,13 +3978,13 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 if key == QtCore.Qt.Key.Key_Minus or key == '-':
                     self.app.exc_editor.launched_from_shortcuts = True
-                    self.app.plotcanvas.zoom(1 / self.app.defaults['global_zoom_ratio'],
+                    self.app.plotcanvas.zoom(1 / self.app.options['global_zoom_ratio'],
                                              [self.app.exc_editor.snap_x, self.app.exc_editor.snap_y])
                     return
 
                 if key == QtCore.Qt.Key.Key_Equal or key == '=':
                     self.app.exc_editor.launched_from_shortcuts = True
-                    self.app.plotcanvas.zoom(self.app.defaults['global_zoom_ratio'],
+                    self.app.plotcanvas.zoom(self.app.options['global_zoom_ratio'],
                                              [self.app.exc_editor.snap_x, self.app.exc_editor.snap_y])
                     return
 
@@ -4348,7 +4350,7 @@ class MainGUI(QtWidgets.QMainWindow):
         :param event: QT event to filter
         :return:
         """
-        if self.app.defaults["global_toggle_tooltips"] is False:
+        if self.app.options["global_toggle_tooltips"] is False:
             if event.type() == QtCore.QEvent.Type.ToolTip:
                 return True
             else:

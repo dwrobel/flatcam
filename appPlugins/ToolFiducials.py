@@ -76,7 +76,7 @@ class ToolFiducials(AppTool):
         self.margin_val = None
         self.sec_position = None
 
-        self.grb_steps_per_circle = self.app.defaults["gerber_circle_steps"]
+        self.grb_steps_per_circle = self.app.options["gerber_circle_steps"]
 
         self.click_points = []
 
@@ -162,14 +162,14 @@ class ToolFiducials(AppTool):
         self.pluginName = self.ui.pluginName
         self.connect_signals_at_init()
 
-        self.ui.fid_size_entry.set_value(self.app.defaults["tools_fiducials_dia"])
-        self.ui.margin_entry.set_value(float(self.app.defaults["tools_fiducials_margin"]))
-        self.ui.mode_radio.set_value(self.app.defaults["tools_fiducials_mode"])
-        self.ui.pos_radio.set_value(self.app.defaults["tools_fiducials_second_pos"])
-        self.ui.fid_type_combo.set_value(self.app.defaults["tools_fiducials_type"])
+        self.ui.fid_size_entry.set_value(self.app.options["tools_fiducials_dia"])
+        self.ui.margin_entry.set_value(float(self.app.options["tools_fiducials_margin"]))
+        self.ui.mode_radio.set_value(self.app.options["tools_fiducials_mode"])
+        self.ui.pos_radio.set_value(self.app.options["tools_fiducials_second_pos"])
+        self.ui.fid_type_combo.set_value(self.app.options["tools_fiducials_type"])
         # needed so the visibility of some objects will be updated
         self.on_fiducial_type(val=self.ui.fid_type_combo.get_value())
-        self.ui.line_thickness_entry.set_value(float(self.app.defaults["tools_fiducials_line_thickness"]))
+        self.ui.line_thickness_entry.set_value(float(self.app.options["tools_fiducials_line_thickness"]))
 
         self.click_points = []
         self.ui.bottom_left_coords_entry.set_value('')
@@ -180,7 +180,7 @@ class ToolFiducials(AppTool):
         self.sm_obj_set = set()
 
         # Show/Hide Advanced Options
-        app_mode = self.app.defaults["global_app_level"]
+        app_mode = self.app.options["global_app_level"]
         self.change_level(app_mode)
 
         # SELECT THE CURRENT OBJECT

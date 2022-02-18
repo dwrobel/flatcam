@@ -46,7 +46,7 @@ class ToolDrilling(AppTool, Excellon):
         self.dec_format = self.app.dec_format
 
         AppTool.__init__(self, app)
-        Excellon.__init__(self, excellon_circle_steps=self.app.defaults["excellon_circle_steps"])
+        Excellon.__init__(self, excellon_circle_steps=self.app.options["excellon_circle_steps"])
 
         # #############################################################################
         # ######################### Tool GUI ##########################################
@@ -109,7 +109,7 @@ class ToolDrilling(AppTool, Excellon):
         # store here solid_geometry when there are tool with isolation job
         self.solid_geometry = []
 
-        self.circle_steps = int(self.app.defaults["geometry_circle_steps"])
+        self.circle_steps = int(self.app.options["geometry_circle_steps"])
 
         self.tooldia = None
 
@@ -450,7 +450,7 @@ class ToolDrilling(AppTool, Excellon):
             self.ui.pp_excellon_name_cb.setItemData(it, self.ui.pp_excellon_name_cb.itemText(it),
                                                     QtCore.Qt.ItemDataRole.ToolTipRole)
 
-        self.ui.order_combo.set_value(self.app.defaults["tools_drill_tool_order"])
+        self.ui.order_combo.set_value(self.app.options["tools_drill_tool_order"])
 
         if loaded_obj:
             outname = loaded_obj.obj_options['name']
@@ -524,7 +524,7 @@ class ToolDrilling(AppTool, Excellon):
         self.ui.last_drill_cb.hide()
 
         # Show/Hide Advanced Options
-        app_mode = self.app.defaults["global_app_level"]
+        app_mode = self.app.options["global_app_level"]
         self.change_level(app_mode)
 
         self.ui.tools_frame.show()
@@ -953,7 +953,7 @@ class ToolDrilling(AppTool, Excellon):
             self.app.collection.set_active(self.obj_name)
             self.ui.exc_param_frame.setDisabled(False)
 
-            if self.app.defaults["excellon_autoload_db"]:
+            if self.app.options["excellon_autoload_db"]:
                 self.excellon_tools = self.excellon_obj.tools
                 self.on_tool_db_load()
             else:
@@ -1731,11 +1731,11 @@ class ToolDrilling(AppTool, Excellon):
         self.delete_sel_shape()
 
         if self.app.use_3d_engine:
-            face = self.app.defaults['global_sel_fill'][:-2] + str(hex(int(0.2 * 255)))[2:]
-            outline = self.app.defaults['global_sel_line'][:-2] + str(hex(int(0.8 * 255)))[2:]
+            face = self.app.options['global_sel_fill'][:-2] + str(hex(int(0.2 * 255)))[2:]
+            outline = self.app.options['global_sel_line'][:-2] + str(hex(int(0.8 * 255)))[2:]
         else:
-            face = self.app.defaults['global_sel_fill'][:-2] + str(hex(int(0.4 * 255)))[2:]
-            outline = self.app.defaults['global_sel_line'][:-2] + str(hex(int(1.0 * 255)))[2:]
+            face = self.app.options['global_sel_fill'][:-2] + str(hex(int(0.4 * 255)))[2:]
+            outline = self.app.options['global_sel_line'][:-2] + str(hex(int(1.0 * 255)))[2:]
 
         for row in sel_rows:
             sel_rect = self.app.exc_areas.exclusion_areas_storage[row]['shape']
@@ -2038,7 +2038,7 @@ class ToolDrilling(AppTool, Excellon):
         # #############################################################################################################
         # General Parameters
         # #############################################################################################################
-        used_exc_optim_type = self.app.defaults["excellon_optimization_type"]
+        used_exc_optim_type = self.app.options["excellon_optimization_type"]
         current_platform = platform.architecture()[0]
         if current_platform != '64bit':
             used_exc_optim_type = 'T'
@@ -2178,14 +2178,14 @@ class ToolDrilling(AppTool, Excellon):
 
             cnc_job_obj.use_ui = True
 
-            cnc_job_obj.coords_decimals = int(self.app.defaults["cncjob_coords_decimals"])
-            cnc_job_obj.fr_decimals = int(self.app.defaults["cncjob_fr_decimals"])
+            cnc_job_obj.coords_decimals = int(self.app.options["cncjob_coords_decimals"])
+            cnc_job_obj.fr_decimals = int(self.app.options["cncjob_fr_decimals"])
             cnc_job_obj.multitool = True
 
             # it does not matter for the Excellon codes because we are not going to autolevel GCode out of Excellon
             # but it is here for uniformity between the Geometry and Excellon objects
-            cnc_job_obj.segx = self.app.defaults["geometry_segx"]
-            cnc_job_obj.segy = self.app.defaults["geometry_segy"]
+            cnc_job_obj.segx = self.app.options["geometry_segx"]
+            cnc_job_obj.segy = self.app.options["geometry_segy"]
 
             # first drill point
             # I can read the toolchange x,y point from any tool since it is the same for all, so I read it

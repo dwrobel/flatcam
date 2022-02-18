@@ -113,8 +113,8 @@ class ToolInvertGerber(AppTool):
         self.pluginName = self.ui.pluginName
         self.connect_signals_at_init()
 
-        self.ui.margin_entry.set_value(float(self.app.defaults["tools_invert_margin"]))
-        self.ui.join_radio.set_value(self.app.defaults["tools_invert_join_style"])
+        self.ui.margin_entry.set_value(float(self.app.options["tools_invert_margin"]))
+        self.ui.join_radio.set_value(self.app.options["tools_invert_join_style"])
 
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
@@ -131,7 +131,7 @@ class ToolInvertGerber(AppTool):
         if join_style is None:
             join_style = 'r'
 
-        grb_circle_steps = int(self.app.defaults["gerber_circle_steps"])
+        grb_circle_steps = int(self.app.options["gerber_circle_steps"])
         obj_name = self.ui.gerber_combo.currentText()
 
         outname = obj_name + "_inverted"

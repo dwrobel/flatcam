@@ -186,7 +186,7 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         self.back_color_entry.editingFinished.connect(self.on_qrcode_back_color_entry)
 
     def on_qrcode_fill_color_entry(self):
-        self.app.defaults['tools_qrcode_fill_color'] = self.fill_color_entry.get_value()
+        self.app.options['tools_qrcode_fill_color'] = self.fill_color_entry.get_value()
 
     def on_qrcode_back_color_entry(self):
-        self.app.defaults['tools_qrcode_back_color'] = self.back_color_entry.get_value()
+        self.app.options['tools_qrcode_back_color'] = self.back_color_entry.get_value()

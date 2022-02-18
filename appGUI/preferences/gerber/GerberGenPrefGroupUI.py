@@ -292,8 +292,8 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         :return:
         :rtype:
         """
-        self.app.defaults['gerber_plot_fill'] = self.fill_color_entry.get_value()[:7] + \
-                                                self.app.defaults['gerber_plot_fill'][7:9]
+        self.app.options['gerber_plot_fill'] = self.fill_color_entry.get_value()[:7] + \
+                                                self.app.options['gerber_plot_fill'][7:9]
 
     def on_gerber_alpha_changed(self, spinner_value):
         """
@@ -303,11 +303,11 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         :return:
         :rtype:
         """
-        self.app.defaults['gerber_plot_fill'] = \
-            self.app.defaults['gerber_plot_fill'][:7] + \
+        self.app.options['gerber_plot_fill'] = \
+            self.app.options['gerber_plot_fill'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
-        self.app.defaults['gerber_plot_line'] = \
-            self.app.defaults['gerber_plot_line'][:7] + \
+        self.app.options['gerber_plot_line'] = \
+            self.app.options['gerber_plot_line'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
 
     def on_line_color_changed(self):
@@ -316,8 +316,8 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         :return:
         :rtype:
         """
-        self.app.defaults['gerber_plot_line'] = (self.line_color_entry.get_value()[:7] +
-                                                 self.app.defaults['gerber_plot_line'][7:9])
+        self.app.options['gerber_plot_line'] = (self.line_color_entry.get_value()[:7] +
+                                                 self.app.options['gerber_plot_line'][7:9])
 
     def on_colors_clear_clicked(self):
         """
@@ -325,7 +325,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         :return:
         :rtype:
         """
-        self.app.defaults["gerber_color_list"].clear()
+        self.app.options["gerber_color_list"].clear()
         self.app.inform.emit('[WARNING_NOTCL] %s' % _("Stored colors for Gerber objects are deleted."))
 
     def on_layers_manager(self):
@@ -348,7 +348,7 @@ class ColorsManager(QtWidgets.QDialog):
 
         self.ok = False
         self.color_list = []
-        self.original_color_list = deepcopy(self.app.defaults["gerber_color_list"])
+        self.original_color_list = deepcopy(self.app.options["gerber_color_list"])
 
         self.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
         self.setWindowTitle('%s' % _('Color manager'))
@@ -502,8 +502,8 @@ class ColorsManager(QtWidgets.QDialog):
             layer_nr = list_len
         self.original_color_list.append(
             (
-                self.app.defaults['gerber_plot_line'],
-                self.app.defaults['gerber_plot_fill'],
+                self.app.options['gerber_plot_line'],
+                self.app.options['gerber_plot_fill'],
                 '%s_%d' % (_("Layer"), layer_nr)
             )
         )

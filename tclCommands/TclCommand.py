@@ -409,7 +409,7 @@ class TclCommandSignaled(TclCommand):
                 passed_timeout = args['timeout']
                 args.pop('timeout', None)
             else:
-                passed_timeout = self.app.defaults['global_background_timeout']
+                passed_timeout = self.app.options['global_background_timeout']
 
             # set detail for processing, it will be there until next open or close
             self.app.shell.open_processing(self.get_current_command())

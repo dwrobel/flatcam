@@ -375,4 +375,4 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.film_color_entry.editingFinished.connect(self.on_film_color_entry)
 
     def on_film_color_entry(self):
-        self.app.defaults['tools_film_color'] = self.film_color_entry.get_value()
+        self.app.options['tools_film_color'] = self.film_color_entry.get_value()

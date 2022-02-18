@@ -74,7 +74,7 @@ class TclCommandNregions(TclCommand):
             self.raise_tcl_error('%s %s: %s.' % (_("Expected GerberObject or GeometryObject, got"), name, type(obj)))
 
         if 'margin' not in args:
-            args['margin'] = float(self.app.defaults["gerber_noncoppermargin"])
+            args['margin'] = float(self.app.options["gerber_noncoppermargin"])
         margin = float(args['margin'])
 
         if 'rounded' in args:
@@ -84,7 +84,7 @@ class TclCommandNregions(TclCommand):
                 par = args['rounded']
             rounded = bool(eval(par))
         else:
-            rounded = bool(eval(self.app.defaults["gerber_noncopperrounded"]))
+            rounded = bool(eval(self.app.options["gerber_noncopperrounded"]))
 
         args.pop('name', None)
 

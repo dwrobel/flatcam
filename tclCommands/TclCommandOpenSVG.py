@@ -87,7 +87,7 @@ class TclCommandOpenSVG(TclCommandSignaled):
             # Object creation
             ret_val = self.app.app_obj.new_object(obj_type, outname, obj_init, plot=False)
             if ret_val == 'fail':
-                filename = self.app.defaults['global_tcl_path'] + '/' + outname
+                filename = self.app.options['global_tcl_path'] + '/' + outname
                 ret_val = self.app.app_obj.new_object(obj_type, outname, obj_init, plot=False)
                 self.app.shell.append_output(
                     "No path provided or path is wrong. Using the default Path... \n")

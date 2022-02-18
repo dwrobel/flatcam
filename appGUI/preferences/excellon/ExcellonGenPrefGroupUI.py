@@ -366,7 +366,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.update_excellon_cb.stateChanged.connect(self.on_update_exc_export)
 
         # call it once to make sure it is updated at startup
-        self.on_update_exc_export(state=self.app.defaults["excellon_update"])
+        self.on_update_exc_export(state=self.app.options["excellon_update"])
 
         self.excellon_optimization_radio.activated_custom.connect(self.optimization_selection)
 
@@ -388,19 +388,19 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
     # Setting plot colors handlers
     def on_fill_color_entry(self):
-        self.app.defaults['excellon_plot_fill'] = self.fill_color_entry.get_value()[:7] + \
-            self.app.defaults['excellon_plot_fill'][7:9]
+        self.app.options['excellon_plot_fill'] = self.fill_color_entry.get_value()[:7] + \
+            self.app.options['excellon_plot_fill'][7:9]
 
     def on_line_color_entry(self):
-        self.app.defaults['excellon_plot_line'] = self.line_color_entry.get_value()[:7] + \
-                                                self.app.defaults['excellon_plot_line'][7:9]
+        self.app.options['excellon_plot_line'] = self.line_color_entry.get_value()[:7] + \
+                                                self.app.options['excellon_plot_line'][7:9]
 
     def on_excellon_alpha_changed(self, spinner_value):
-        self.app.defaults['excellon_plot_fill'] = \
-            self.app.defaults['excellon_plot_fill'][:7] + \
+        self.app.options['excellon_plot_fill'] = \
+            self.app.options['excellon_plot_fill'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
-        self.app.defaults['excellon_plot_line'] = \
-            self.app.defaults['excellon_plot_line'][:7] + \
+        self.app.options['excellon_plot_line'] = \
+            self.app.options['excellon_plot_line'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
 
     def on_excellon_defaults_button(self):

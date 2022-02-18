@@ -81,10 +81,10 @@ class CutOut(AppTool):
         self.default_data = {}
 
         # store the current cursor type to be restored after manual geo
-        self.old_cursor_type = self.app.defaults["global_cursor_type"]
+        self.old_cursor_type = self.app.options["global_cursor_type"]
 
         # store the current selection shape status to be restored after manual geo
-        self.old_selection_state = self.app.defaults['global_selection_shape']
+        self.old_selection_state = self.app.options['global_selection_shape']
 
         # store original geometry for manual cutout
         self.manual_solid_geo = None
@@ -264,12 +264,12 @@ class CutOut(AppTool):
             if option.find('tools_') == 0:
                 self.default_data[option] = self.app.options[option]
 
-        self.ui.gaptype_combo.set_value(self.app.defaults["tools_cutout_gap_type"])
+        self.ui.gaptype_combo.set_value(self.app.options["tools_cutout_gap_type"])
         self.ui.on_gap_type_radio(self.ui.gaptype_combo.get_value())
 
         # add a default tool
-        self.ui.dia.set_value(float(self.app.defaults["tools_cutout_tooldia"]))
-        tool_dia = float(self.app.defaults["tools_cutout_tooldia"])
+        self.ui.dia.set_value(float(self.app.options["tools_cutout_tooldia"]))
+        tool_dia = float(self.app.options["tools_cutout_tooldia"])
         self.on_tool_add(custom_dia=tool_dia)
 
         # set as default the automatic adding of gaps
@@ -280,12 +280,12 @@ class CutOut(AppTool):
         self.on_cutout_shape_changed(self.ui.cutout_shape_cb.get_value())
 
         # set the Cut By Drilling parameters
-        self.ui.drill_dia_entry.set_value(float(self.app.defaults["tools_cutout_drill_dia"]))
-        self.ui.drill_pitch_entry.set_value(float(self.app.defaults["tools_cutout_drill_pitch"]))
-        self.ui.drill_margin_entry.set_value(float(self.app.defaults["tools_cutout_drill_margin"]))
+        self.ui.drill_dia_entry.set_value(float(self.app.options["tools_cutout_drill_dia"]))
+        self.ui.drill_pitch_entry.set_value(float(self.app.options["tools_cutout_drill_pitch"]))
+        self.ui.drill_margin_entry.set_value(float(self.app.options["tools_cutout_drill_margin"]))
 
         # Show/Hide Advanced Options
-        app_mode = self.app.defaults["global_app_level"]
+        app_mode = self.app.options["global_app_level"]
         self.change_level(app_mode)
 
     def change_level(self, level):
@@ -358,7 +358,7 @@ class CutOut(AppTool):
 
             # Tool parameters section
             if self.cut_tool_dict:
-                app_defaults = self.app.defaults
+                app_defaults = self.app.options
                 tool_data = self.cut_tool_dict['data']
 
                 tool_data['tools_cutout_convexshape'] = app_defaults['tools_cutout_convexshape']
@@ -540,7 +540,7 @@ class CutOut(AppTool):
 
     def on_tool_default_add(self, dia=None, muted=None):
 
-        dia = dia if dia else str(self.app.defaults["tools_cutout_tooldia"])
+        dia = dia if dia else str(self.app.options["tools_cutout_tooldia"])
 
         # init the working variables
         self.default_data.clear()
@@ -1583,10 +1583,10 @@ class CutOut(AppTool):
         self.mouse_events_connected = True
 
         if self.ui.big_cursor_cb.get_value():
-            self.old_cursor_type = self.app.defaults["global_cursor_type"]
+            self.old_cursor_type = self.app.options["global_cursor_type"]
             self.app.on_cursor_type(val="big")
 
-        self.app.defaults['global_selection_shape'] = False
+        self.app.options['global_selection_shape'] = False
         # disable the notebook until finished
         self.app.ui.notebook.setDisabled(True)
 
@@ -1833,7 +1833,7 @@ class CutOut(AppTool):
                 # restore cursor
                 self.app.on_cursor_type(val=self.old_cursor_type)
             # restore selection
-            self.app.defaults['global_selection_shape'] = self.old_selection_state
+            self.app.options['global_selection_shape'] = self.old_selection_state
 
             # rebuild the manual Geometry object
             self.man_cutout_obj.build_ui()
@@ -1991,7 +1991,7 @@ class CutOut(AppTool):
     def draw_utility_geometry(self, geo):
         self.app.geo_editor.tool_shape.add(
             shape=geo,
-            color=(self.app.defaults["global_draw_color"]),
+            color=(self.app.options["global_draw_color"]),
             update=False,
             layer=0,
             tolerance=None)
@@ -2052,7 +2052,7 @@ class CutOut(AppTool):
                     # restore cursor
                     self.app.on_cursor_type(val=self.old_cursor_type)
                 # restore selection
-                self.app.defaults['global_selection_shape'] = self.old_selection_state
+                self.app.options['global_selection_shape'] = self.old_selection_state
 
             # Remove any previous utility shape
             self.app.geo_editor.tool_shape.clear(update=True)

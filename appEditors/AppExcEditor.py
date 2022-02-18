@@ -71,7 +71,7 @@ class SelectEditorExc(FCShapeTool):
         else:
             mod_key = None
 
-        if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+        if mod_key == self.draw_app.app.options["global_mselect_key"]:
             pass
         else:
             self.draw_app.selected = []
@@ -122,7 +122,7 @@ class SelectEditorExc(FCShapeTool):
             else:
                 mod_key = None
 
-            if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+            if mod_key == self.draw_app.app.options["global_mselect_key"]:
                 if closest_shape in self.draw_app.selected:
                     self.draw_app.selected.remove(closest_shape)
                 else:
@@ -137,7 +137,7 @@ class SelectEditorExc(FCShapeTool):
             except (TypeError, AttributeError):
                 pass
 
-            # if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+            # if mod_key == self.draw_app.app.options["global_mselect_key"]:
             #     self.draw_app.ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
             self.sel_tools.clear()
 
@@ -182,7 +182,7 @@ class SelectEditorExc(FCShapeTool):
         #         AppExcEditor.draw_shape_idx = (AppExcEditor.draw_shape_idx + 1) % len(over_shape_list)
         #         obj_to_add = over_shape_list[int(AppExcEditor.draw_shape_idx)]
         #
-        #         if self.draw_app.app.defaults["global_mselect_key"] == 'Shift':
+        #         if self.draw_app.app.options["global_mselect_key"] == 'Shift':
         #             if self.draw_app.modifiers == Qt.KeyboardModifier.ShiftModifier:
         #                 if obj_to_add in self.draw_app.selected:
         #                     self.draw_app.selected.remove(obj_to_add)
@@ -673,7 +673,7 @@ class SlotAdd(FCShapeTool):
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_slot.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
-        self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
+        self.steps_per_circ = self.draw_app.app.options["geometry_circle_steps"]
 
         self.half_height = 0.0
         self.half_width = 0.0
@@ -711,7 +711,7 @@ class SlotAdd(FCShapeTool):
         # updating values here allows us to change the aperture on the fly, after the Tool has been started
         self.selected_dia = self.draw_app.tool2tooldia[self.draw_app.last_tool_selected]
         self.radius = float(self.selected_dia / 2.0)
-        self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
+        self.steps_per_circ = self.draw_app.app.options["geometry_circle_steps"]
 
         try:
             slot_length = float(self.draw_app.ui.slot_length_entry.get_value())
@@ -887,7 +887,7 @@ class SlotArray(FCShapeTool):
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_array.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
-        self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
+        self.steps_per_circ = self.draw_app.app.options["geometry_circle_steps"]
 
         self.half_width = 0.0
         self.half_height = 0.0
@@ -1073,7 +1073,7 @@ class SlotArray(FCShapeTool):
         # updating values here allows us to change the aperture on the fly, after the Tool has been started
         self.selected_dia = self.draw_app.tool2tooldia[self.draw_app.last_tool_selected]
         self.radius = float(self.selected_dia / 2.0)
-        self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
+        self.steps_per_circ = self.draw_app.app.options["geometry_circle_steps"]
 
         try:
             slot_length = float(self.draw_app.ui.slot_length_entry.get_value())
@@ -1534,7 +1534,7 @@ class MoveEditorExc(FCShapeTool):
         # self.shape_buffer = self.draw_app.shape_buffer
         self.origin = None
         self.destination = None
-        self.sel_limit = self.draw_app.app.defaults["excellon_editor_sel_limit"]
+        self.sel_limit = self.draw_app.app.options["excellon_editor_sel_limit"]
         self.selection_shape = self.selection_bbox()
         self.selected_dia_list = []
 
@@ -1794,9 +1794,9 @@ class AppExcEditor(QtCore.QObject):
         self.toolbar_old_state = False
 
         if self.units == 'MM':
-            self.tolerance = float(self.app.defaults["global_tolerance"])
+            self.tolerance = float(self.app.options["global_tolerance"])
         else:
-            self.tolerance = float(self.app.defaults["global_tolerance"]) / 20
+            self.tolerance = float(self.app.options["global_tolerance"]) / 20
 
         # VisPy Visuals
         if self.app.use_3d_engine:
@@ -1994,24 +1994,24 @@ class AppExcEditor(QtCore.QObject):
                 self.tool2tooldia[int(k)] = tool_dia
 
         # Init appGUI
-        self.ui.addtool_entry.set_value(float(self.app.defaults['excellon_editor_newdia']))
-        self.ui.drill_array_size_entry.set_value(int(self.app.defaults['excellon_editor_array_size']))
-        self.ui.drill_axis_radio.set_value(self.app.defaults['excellon_editor_lin_dir'])
-        self.ui.drill_pitch_entry.set_value(float(self.app.defaults['excellon_editor_lin_pitch']))
-        self.ui.linear_angle_spinner.set_value(float(self.app.defaults['excellon_editor_lin_angle']))
-        self.ui.drill_array_dir_radio.set_value(self.app.defaults['excellon_editor_circ_dir'])
-        self.ui.drill_angle_entry.set_value(float(self.app.defaults['excellon_editor_circ_angle']))
+        self.ui.addtool_entry.set_value(float(self.app.options['excellon_editor_newdia']))
+        self.ui.drill_array_size_entry.set_value(int(self.app.options['excellon_editor_array_size']))
+        self.ui.drill_axis_radio.set_value(self.app.options['excellon_editor_lin_dir'])
+        self.ui.drill_pitch_entry.set_value(float(self.app.options['excellon_editor_lin_pitch']))
+        self.ui.linear_angle_spinner.set_value(float(self.app.options['excellon_editor_lin_angle']))
+        self.ui.drill_array_dir_radio.set_value(self.app.options['excellon_editor_circ_dir'])
+        self.ui.drill_angle_entry.set_value(float(self.app.options['excellon_editor_circ_angle']))
 
-        self.ui.slot_length_entry.set_value(float(self.app.defaults['excellon_editor_slot_length']))
-        self.ui.slot_axis_radio.set_value(self.app.defaults['excellon_editor_slot_direction'])
-        self.ui.slot_angle_spinner.set_value(float(self.app.defaults['excellon_editor_slot_angle']))
+        self.ui.slot_length_entry.set_value(float(self.app.options['excellon_editor_slot_length']))
+        self.ui.slot_axis_radio.set_value(self.app.options['excellon_editor_slot_direction'])
+        self.ui.slot_angle_spinner.set_value(float(self.app.options['excellon_editor_slot_angle']))
 
-        self.ui.slot_array_size_entry.set_value(int(self.app.defaults['excellon_editor_slot_array_size']))
-        self.ui.slot_array_axis_radio.set_value(self.app.defaults['excellon_editor_slot_lin_dir'])
-        self.ui.slot_array_pitch_entry.set_value(float(self.app.defaults['excellon_editor_slot_lin_pitch']))
-        self.ui.slot_array_linear_angle_spinner.set_value(float(self.app.defaults['excellon_editor_slot_lin_angle']))
-        self.ui.slot_array_direction_radio.set_value(self.app.defaults['excellon_editor_slot_circ_dir'])
-        self.ui.slot_array_angle_entry.set_value(float(self.app.defaults['excellon_editor_slot_circ_angle']))
+        self.ui.slot_array_size_entry.set_value(int(self.app.options['excellon_editor_slot_array_size']))
+        self.ui.slot_array_axis_radio.set_value(self.app.options['excellon_editor_slot_lin_dir'])
+        self.ui.slot_array_pitch_entry.set_value(float(self.app.options['excellon_editor_slot_lin_pitch']))
+        self.ui.slot_array_linear_angle_spinner.set_value(float(self.app.options['excellon_editor_slot_lin_angle']))
+        self.ui.slot_array_direction_radio.set_value(self.app.options['excellon_editor_slot_circ_dir'])
+        self.ui.slot_array_angle_entry.set_value(float(self.app.options['excellon_editor_slot_circ_angle']))
 
         # make sure that th visibility of the various UI frame are updated
         # according to the set Preferences already loaded
@@ -2025,7 +2025,7 @@ class AppExcEditor(QtCore.QObject):
         self.on_slot_array_linear_angle_radio()
 
         # Show/Hide Advanced Options
-        app_mode = self.app.defaults["global_app_level"]
+        app_mode = self.app.options["global_app_level"]
         self.change_level(app_mode)
 
     def build_ui(self, first_run=None):
@@ -2764,52 +2764,52 @@ class AppExcEditor(QtCore.QObject):
 
         self.data_defaults = {
             "name":                         outname + '_drill',
-            "plot":                         self.app.defaults["excellon_plot"],
-            "solid":                        self.app.defaults["excellon_solid"],
-            "multicolored":                 self.app.defaults["excellon_multicolored"],
-            "merge_fuse_tools":             self.app.defaults["excellon_merge_fuse_tools"],
-            "format_upper_in":              self.app.defaults["excellon_format_upper_in"],
-            "format_lower_in":              self.app.defaults["excellon_format_lower_in"],
-            "format_upper_mm":              self.app.defaults["excellon_format_upper_mm"],
-            "lower_mm":                     self.app.defaults["excellon_format_lower_mm"],
-            "zeros":                        self.app.defaults["excellon_zeros"],
+            "plot":                         self.app.options["excellon_plot"],
+            "solid":                        self.app.options["excellon_solid"],
+            "multicolored":                 self.app.options["excellon_multicolored"],
+            "merge_fuse_tools":             self.app.options["excellon_merge_fuse_tools"],
+            "format_upper_in":              self.app.options["excellon_format_upper_in"],
+            "format_lower_in":              self.app.options["excellon_format_lower_in"],
+            "format_upper_mm":              self.app.options["excellon_format_upper_mm"],
+            "lower_mm":                     self.app.options["excellon_format_lower_mm"],
+            "zeros":                        self.app.options["excellon_zeros"],
 
-            "tools_drill_tool_order":       self.app.defaults["tools_drill_tool_order"],
-            "tools_drill_cutz":             self.app.defaults["tools_drill_cutz"],
-            "tools_drill_multidepth":       self.app.defaults["tools_drill_multidepth"],
-            "tools_drill_depthperpass":     self.app.defaults["tools_drill_depthperpass"],
-            "tools_drill_travelz":          self.app.defaults["tools_drill_travelz"],
+            "tools_drill_tool_order":       self.app.options["tools_drill_tool_order"],
+            "tools_drill_cutz":             self.app.options["tools_drill_cutz"],
+            "tools_drill_multidepth":       self.app.options["tools_drill_multidepth"],
+            "tools_drill_depthperpass":     self.app.options["tools_drill_depthperpass"],
+            "tools_drill_travelz":          self.app.options["tools_drill_travelz"],
 
-            "tools_drill_feedrate_z":       self.app.defaults["tools_drill_feedrate_z"],
-            "tools_drill_feedrate_rapid":   self.app.defaults["tools_drill_feedrate_rapid"],
+            "tools_drill_feedrate_z":       self.app.options["tools_drill_feedrate_z"],
+            "tools_drill_feedrate_rapid":   self.app.options["tools_drill_feedrate_rapid"],
 
-            "tools_drill_toolchange":       self.app.defaults["tools_drill_toolchange"],
-            "tools_drill_toolchangez":      self.app.defaults["tools_drill_toolchangez"],
-            "tools_drill_toolchangexy":     self.app.defaults["tools_drill_toolchangexy"],
+            "tools_drill_toolchange":       self.app.options["tools_drill_toolchange"],
+            "tools_drill_toolchangez":      self.app.options["tools_drill_toolchangez"],
+            "tools_drill_toolchangexy":     self.app.options["tools_drill_toolchangexy"],
 
             # Drill Slots
-            "tools_drill_drill_slots":      self.app.defaults["tools_drill_drill_slots"],
-            "tools_drill_drill_overlap":    self.app.defaults["tools_drill_drill_overlap"],
-            "tools_drill_last_drill":       self.app.defaults["tools_drill_last_drill"],
+            "tools_drill_drill_slots":      self.app.options["tools_drill_drill_slots"],
+            "tools_drill_drill_overlap":    self.app.options["tools_drill_drill_overlap"],
+            "tools_drill_last_drill":       self.app.options["tools_drill_last_drill"],
 
-            "tools_drill_endz":             self.app.defaults["tools_drill_endz"],
-            "tools_drill_endxy":            self.app.defaults["tools_drill_endxy"],
-            "tools_drill_startz":           self.app.defaults["tools_drill_startz"],
-            "tools_drill_offset":           self.app.defaults["tools_drill_offset"],
-            "tools_drill_spindlespeed":     self.app.defaults["tools_drill_spindlespeed"],
-            "tools_drill_dwell":            self.app.defaults["tools_drill_dwell"],
-            "tools_drill_dwelltime":        self.app.defaults["tools_drill_dwelltime"],
-            "tools_drill_ppname_e":         self.app.defaults["tools_drill_ppname_e"],
-            "tools_drill_z_pdepth":         self.app.defaults["tools_drill_z_pdepth"],
-            "tools_drill_feedrate_probe":   self.app.defaults["tools_drill_feedrate_probe"],
-            "tools_drill_spindledir":       self.app.defaults["tools_drill_spindledir"],
-            "tools_drill_f_plunge":         self.app.defaults["tools_drill_f_plunge"],
-            "tools_drill_f_retract":        self.app.defaults["tools_drill_f_retract"],
+            "tools_drill_endz":             self.app.options["tools_drill_endz"],
+            "tools_drill_endxy":            self.app.options["tools_drill_endxy"],
+            "tools_drill_startz":           self.app.options["tools_drill_startz"],
+            "tools_drill_offset":           self.app.options["tools_drill_offset"],
+            "tools_drill_spindlespeed":     self.app.options["tools_drill_spindlespeed"],
+            "tools_drill_dwell":            self.app.options["tools_drill_dwell"],
+            "tools_drill_dwelltime":        self.app.options["tools_drill_dwelltime"],
+            "tools_drill_ppname_e":         self.app.options["tools_drill_ppname_e"],
+            "tools_drill_z_pdepth":         self.app.options["tools_drill_z_pdepth"],
+            "tools_drill_feedrate_probe":   self.app.options["tools_drill_feedrate_probe"],
+            "tools_drill_spindledir":       self.app.options["tools_drill_spindledir"],
+            "tools_drill_f_plunge":         self.app.options["tools_drill_f_plunge"],
+            "tools_drill_f_retract":        self.app.options["tools_drill_f_retract"],
 
-            "tools_drill_area_exclusion":   self.app.defaults["tools_drill_area_exclusion"],
-            "tools_drill_area_shape":       self.app.defaults["tools_drill_area_shape"],
-            "tools_drill_area_strategy":    self.app.defaults["tools_drill_area_strategy"],
-            "tools_drill_area_overz":       self.app.defaults["tools_drill_area_overz"],
+            "tools_drill_area_exclusion":   self.app.options["tools_drill_area_exclusion"],
+            "tools_drill_area_shape":       self.app.options["tools_drill_area_shape"],
+            "tools_drill_area_strategy":    self.app.options["tools_drill_area_strategy"],
+            "tools_drill_area_overz":       self.app.options["tools_drill_area_overz"],
         }
 
         # fill in self.default_data values from self.obj_options
@@ -2899,7 +2899,7 @@ class AppExcEditor(QtCore.QObject):
 
         # add a first tool in the Tool Table but only if the Excellon Object is empty
         if not self.tool2tooldia:
-            self.on_tool_add(self.dec_format(float(self.app.defaults['excellon_editor_newdia'])))
+            self.on_tool_add(self.dec_format(float(self.app.options['excellon_editor_newdia'])))
 
     def update_fcexcellon(self, exc_obj):
         """
@@ -3201,7 +3201,7 @@ class AppExcEditor(QtCore.QObject):
 
     def on_row_selected(self, row, col):
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
-        if self.app.defaults["global_mselect_key"] == 'Control':
+        if self.app.options["global_mselect_key"] == 'Control':
             modifier_to_use = Qt.KeyboardModifier.ControlModifier
         else:
             modifier_to_use = Qt.KeyboardModifier.ShiftModifier
@@ -3277,7 +3277,7 @@ class AppExcEditor(QtCore.QObject):
                     # MS: always return to the Select Tool if modifier key is not pressed
                     # else return to the current tool
                     key_modifier = QtWidgets.QApplication.keyboardModifiers()
-                    if self.app.defaults["global_mselect_key"] == 'Control':
+                    if self.app.options["global_mselect_key"] == 'Control':
                         modifier_to_use = Qt.KeyboardModifier.ControlModifier
                     else:
                         modifier_to_use = Qt.KeyboardModifier.ShiftModifier
@@ -3433,8 +3433,8 @@ class AppExcEditor(QtCore.QObject):
 
             # Update cursor
             self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color=self.app.cursor_color_3D,
-                                         edge_width=self.app.defaults["global_cursor_width"],
-                                         size=self.app.defaults["global_cursor_size"])
+                                         edge_width=self.app.options["global_cursor_width"],
+                                         size=self.app.options["global_cursor_size"])
 
         self.snap_x = x
         self.snap_y = y
@@ -3473,8 +3473,8 @@ class AppExcEditor(QtCore.QObject):
                 self.app.delete_selection_shape()
                 if dx < 0:
                     self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x, y),
-                                                         color=self.app.defaults["global_alt_sel_line"],
-                                                         face_color=self.app.defaults['global_alt_sel_fill'])
+                                                         color=self.app.options["global_alt_sel_line"],
+                                                         face_color=self.app.options['global_alt_sel_fill'])
                     self.app.selection_type = False
                 else:
                     self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x, y))
@@ -3484,8 +3484,8 @@ class AppExcEditor(QtCore.QObject):
 
         # Update cursor
         self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color=self.app.cursor_color_3D,
-                                     edge_width=self.app.defaults["global_cursor_width"],
-                                     size=self.app.defaults["global_cursor_size"])
+                                     edge_width=self.app.options["global_cursor_width"],
+                                     size=self.app.options["global_cursor_size"])
 
     def add_exc_shape(self, shape, storage):
         """
@@ -3594,7 +3594,7 @@ class AppExcEditor(QtCore.QObject):
         elif self.modifiers == QtCore.Qt.KeyboardModifier.ControlModifier:
             modifiers = 'Control'
 
-        if modifiers == self.app.defaults["global_mselect_key"]:
+        if modifiers == self.app.options["global_mselect_key"]:
             for storage in self.storage_dict:
                 for obj in self.storage_dict[storage].get_objects():
                     if (sel_type is True and poly_selection.contains(obj.geo)) or \
@@ -3673,7 +3673,7 @@ class AppExcEditor(QtCore.QObject):
                     for sub_geo in el.geoms:
                         self.tool_shape.add(
                             shape=sub_geo,
-                            color=(self.app.defaults["global_draw_color"]),
+                            color=(self.app.options["global_draw_color"]),
                             update=False,
                             layer=0,
                             tolerance=None
@@ -3681,14 +3681,14 @@ class AppExcEditor(QtCore.QObject):
                 else:
                     self.tool_shape.add(
                         shape=el,
-                        color=(self.app.defaults["global_draw_color"]),
+                        color=(self.app.options["global_draw_color"]),
                         update=False,
                         layer=0,
                         tolerance=None)
         except TypeError:
             self.tool_shape.add(
                 shape=util_geo,
-                color=(self.app.defaults["global_draw_color"]),
+                color=(self.app.options["global_draw_color"]),
                 update=False,
                 layer=0,
                 tolerance=None)
@@ -3714,10 +3714,10 @@ class AppExcEditor(QtCore.QObject):
                     continue
 
                 if shape_plus in self.selected:
-                    self.plot_shape(geometry=shape_plus.geo, color=self.app.defaults['global_sel_draw_color'] + 'FF',
+                    self.plot_shape(geometry=shape_plus.geo, color=self.app.options['global_sel_draw_color'] + 'FF',
                                     linewidth=2)
                     continue
-                self.plot_shape(geometry=shape_plus.geo, color=self.app.defaults['global_draw_color'][:-2] + 'FF')
+                self.plot_shape(geometry=shape_plus.geo, color=self.app.options['global_draw_color'][:-2] + 'FF')
 
         for shape_form in self.utility:
             self.plot_shape(geometry=shape_form.geo, linewidth=1)

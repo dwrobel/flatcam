@@ -68,7 +68,7 @@ class ToolLevelling(AppTool, CNCjob):
         self.decimals = self.app.decimals
 
         AppTool.__init__(self, app)
-        CNCjob.__init__(self, steps_per_circle=self.app.defaults["cncjob_steps_per_circle"])
+        CNCjob.__init__(self, steps_per_circle=self.app.options["cncjob_steps_per_circle"])
 
         # #############################################################################
         # ######################### Tool GUI ##########################################
@@ -126,7 +126,7 @@ class ToolLevelling(AppTool, CNCjob):
         self.gcode_viewer_tab = None
 
         # store the current selection shape status to be restored after manual adding test points
-        self.old_selection_state = self.app.defaults['global_selection_shape']
+        self.old_selection_state = self.app.options['global_selection_shape']
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='', **kwargs)
@@ -322,7 +322,7 @@ class ToolLevelling(AppTool, CNCjob):
             self.ui.al_frame.setDisabled(True)
 
         # Show/Hide Advanced Options
-        app_mode = self.app.defaults["global_app_level"]
+        app_mode = self.app.options["global_app_level"]
         self.change_level(app_mode)
 
         try:
@@ -600,7 +600,7 @@ class ToolLevelling(AppTool, CNCjob):
             fprobe_pt_buff = f_probe_pt.buffer(radius)
 
             self.app.inform.emit(_("Click on canvas to add a Probe Point..."))
-            self.app.defaults['global_selection_shape'] = False
+            self.app.options['global_selection_shape'] = False
 
             if self.app.use_3d_engine:
                 self.app.plotcanvas.graph_event_disconnect('key_press', self.app.ui.keyPressEvent)
@@ -887,7 +887,7 @@ class ToolLevelling(AppTool, CNCjob):
             self.mouse_events_connected = False
 
             # restore selection
-            self.app.defaults['global_selection_shape'] = self.old_selection_state
+            self.app.options['global_selection_shape'] = self.old_selection_state
 
             self.app.inform.emit(_("Finished adding Probe Points..."))
 
@@ -961,7 +961,7 @@ class ToolLevelling(AppTool, CNCjob):
                 self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
                                                                       self.app.on_mouse_click_release_over_plot)
                 # restore selection
-                self.app.defaults['global_selection_shape'] = self.old_selection_state
+                self.app.options['global_selection_shape'] = self.old_selection_state
 
         # Grid toggle
         if key == QtCore.Qt.Key.Key_G or key == 'G':
@@ -1021,7 +1021,7 @@ class ToolLevelling(AppTool, CNCjob):
             self.ui.al_columns_label.setDisabled(False)
             self.ui.al_method_lbl.setDisabled(False)
             self.ui.al_method_radio.setDisabled(False)
-            self.ui.al_method_radio.set_value(self.app.defaults['tools_al_method'])
+            self.ui.al_method_radio.set_value(self.app.options['tools_al_method'])
 
     def on_method_radio(self, val):
         if val == 'b':
@@ -1278,7 +1278,7 @@ class ToolLevelling(AppTool, CNCjob):
 
         step = self.ui.jog_step_entry.get_value(),
         feedrate = self.ui.jog_fr_entry.get_value()
-        travelz = float(self.app.defaults["tools_al_grbl_travelz"])
+        travelz = float(self.app.options["tools_al_grbl_travelz"])
 
         if direction == 'xplus':
             cmd = "$J=G91 %s X%s F%s" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step), str(feedrate))
@@ -1477,7 +1477,7 @@ class ToolLevelling(AppTool, CNCjob):
     def on_save_probing_gcode(self):
         lines = StringIO(self.probing_gcode_text)
 
-        _filter_ = self.app.defaults['cncjob_save_filters']
+        _filter_ = self.app.options['cncjob_save_filters']
         name = "probing_gcode"
         try:
             dir_file_to_save = self.app.get_last_save_folder() + '/' + str(name)
@@ -1496,7 +1496,7 @@ class ToolLevelling(AppTool, CNCjob):
             return
         else:
             try:
-                force_windows_line_endings = self.app.defaults['cncjob_line_ending']
+                force_windows_line_endings = self.app.options['cncjob_line_ending']
                 if force_windows_line_endings and sys.platform != 'win32':
                     with open(filename, 'w', newline='\r\n') as f:
                         for line in lines:
@@ -1688,7 +1688,7 @@ class ToolLevelling(AppTool, CNCjob):
                 return
             else:
                 try:
-                    force_windows_line_endings = self.app.defaults['cncjob_line_ending']
+                    force_windows_line_endings = self.app.options['cncjob_line_ending']
                     if force_windows_line_endings and sys.platform != 'win32':
                         with open(filename, 'w', newline='\r\n') as f:
                             for line in self.grbl_probe_result:

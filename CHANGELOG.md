@@ -14,6 +14,11 @@ CHANGELOG for FlatCAM beta
 - fixed CNCJob UI showing all tools in the Tools Table even when only some tools were selected for processing
 - fixed the `drillcncjob` Tcl Command to work in the case of drilling a selection of tools instead of all, with toolchange inactive
 - in Excellon Object UI, Advanced Mode, added a Tools Table context menu allowing to copy the tool diameters in the selected rows to clipboard
+- the application now uses only the default values from the app.options dict, the app.defaults dict holds the definitive default values
+- fixed some outstanding issues from the PyQt6 port
+- PEP8 fixes
+- minor fixes
+- updated the saving of Preferences to update the self.options too: the `Apply` action will update the self.options but the `Save` action will save the updated preferences to the file on disk
 
 16.02.2022
 
