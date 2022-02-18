@@ -7586,7 +7586,7 @@ class App(QtCore.QObject):
                 self.defaults["global_point_clipboard_format"] %
                 (self.decimals,position[0], self.decimals, position[1])
             )
-            self.inform.emit('[success] %s' % _("Coordinates copied to clipboard."))
+            self.inform.emit('[success] %s' % _("Copied to clipboard."))
         elif modifiers == QtCore.Qt.KeyboardModifier.ControlModifier | QtCore.Qt.KeyboardModifier.ShiftModifier:
             try:
                 old_clipb = eval(self.clipboard.text())
@@ -7608,7 +7608,7 @@ class App(QtCore.QObject):
                 else:
                     old_clipb = [old_clipb, clip_pos_val]
                 self.clipboard.setText(str(old_clipb))
-            self.inform.emit('[success] %s' % _("Coordinates copied to clipboard."))
+            self.inform.emit('[success] %s' % _("Copied to clipboard."))
 
     def on_mouse_context_menu(self):
         """

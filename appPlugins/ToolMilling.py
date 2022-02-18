@@ -3806,7 +3806,7 @@ class ToolMilling(AppTool, Excellon):
             sel_rows.add(idx.row())
 
         if len(sel_rows) != 1:
-            self.app.inform.emit("[WARNING_NOTCL] %s" % _("Multiple areas selected. Only one area is allowed."))
+            self.app.inform.emit("[WARNING_NOTCL] %s" % _("Only one selected row is allowed."))
             return
 
         row_idx = list(sel_rows)[0]
@@ -3814,7 +3814,7 @@ class ToolMilling(AppTool, Excellon):
         poly_coords = list(poly.exterior.coords)
 
         self.app.clipboard.setText(str(poly_coords))
-        self.app.inform.emit('[success] %s' % _("Coordinates copied to clipboard."))
+        self.app.inform.emit('[success] %s' % _("Copied to clipboard."))
 
     def draw_sel_shape(self):
         sel_model = self.ui.exclusion_table.selectionModel()

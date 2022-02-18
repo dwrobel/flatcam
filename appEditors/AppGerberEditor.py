@@ -5191,7 +5191,7 @@ class AppGerberEditor(QtCore.QObject):
                         self.app.defaults["global_point_clipboard_format"] %
                         (self.decimals, self.pos[0], self.decimals, self.pos[1])
                     )
-                    self.app.inform.emit('[success] %s' % _("Coordinates copied to clipboard."))
+                    self.app.inform.emit('[success] %s' % _("Copied to clipboard."))
                     return
 
                 # Dispatch event to active_tool

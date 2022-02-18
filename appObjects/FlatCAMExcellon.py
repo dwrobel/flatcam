@@ -148,10 +148,6 @@ class ExcellonObject(FlatCAMObj, Excellon):
         assert isinstance(self.ui, ExcellonObjectUI), \
             "Expected a ExcellonObjectUI, got %s" % type(self.ui)
 
-        # Show/Hide Advanced Options
-        app_mode = self.app.defaults["global_app_level"]
-        self.change_level(app_mode)
-
         # #############################################################################
         # ############################ SIGNALS ########################################
         # #############################################################################
@@ -188,6 +184,13 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.units_found = self.app.app_units
 
         self.set_offset_values()
+
+        self.clear_contex_menu()
+        self.init_context_menu()
+
+        # Show/Hide Advanced Options
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
 
     def set_offset_values(self):
         xmin, ymin, xmax, ymax = self.bounds()
@@ -226,6 +229,9 @@ class ExcellonObject(FlatCAMObj, Excellon):
             self.ui.table_visibility_cb.set_value(True)
             self.ui.table_visibility_cb.hide()
             self.ui.autoload_db_cb.hide()
+
+            # Context Menu section
+            self.ui.tools_table.removeContextMenu()
         else:
             self.ui.level.setText('%s' % _('Advanced'))
             self.ui.level.setStyleSheet("""
@@ -241,6 +247,9 @@ class ExcellonObject(FlatCAMObj, Excellon):
             self.ui.table_visibility_cb.set_value(self.app.defaults["excellon_tools_table_display"])
             self.on_table_visibility_toggle(state=self.app.defaults["excellon_tools_table_display"])
             self.ui.autoload_db_cb.show()
+
+            # Context Menu section
+            self.ui.tools_table.setupContextMenu()
 
     def build_ui(self):
         """
@@ -494,6 +503,53 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.on_row_selection_change()
 
         self.ui_connect()
+
+    def clear_contex_menu(self):
+        self.ui.tools_table.removeContextMenu()
+
+    def init_context_menu(self):
+        # #############################################################################
+        # ###################### Setup CONTEXT MENU ###################################
+        # #############################################################################
+        self.ui.tools_table.setupContextMenu()
+        self.ui.tools_table.addContextMenu(
+            _("Copy"),
+            lambda: self.on_table_copy_dia(),
+            icon=QtGui.QIcon(self.app.resource_location + "/copy32.png")
+        )
+
+    def on_table_copy_dia(self):
+        sel_model = self.ui.tools_table.selectionModel()
+        sel_indexes = sel_model.selectedIndexes()
+
+        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        # so the duplicate rows will not be added
+        sel_rows = set()
+        for idx in sel_indexes:
+            sel_rows.add(idx.row())
+
+        sel_rows_list = list(sel_rows)
+        if len(sel_rows_list) == 1:
+            copied_dia_text = self.ui.tools_table.item(sel_rows_list[0], 1).text()
+            try:
+                # only rows that have float values are allowed
+                copied_dia = float(copied_dia_text)
+            except ValueError:
+                return
+        else:
+            copied_dia = self.ui.tools_table.item(sel_rows_list[0], 1).text()
+            for row_idx in sel_rows_list[1:]:
+                copied_dia_text = self.ui.tools_table.item(row_idx, 1).text()
+                try:
+                    # this is done to avoid selected rows that do not have real numbers in the tool diameter column
+                    copied_test_dia = float(copied_dia_text)
+                    copied_dia += ','
+                    copied_dia += str(copied_test_dia)
+                except ValueError:
+                    continue
+
+        self.app.clipboard.setText(str(copied_dia))
+        self.app.inform.emit('[success] %s' % _("Copied to clipboard."))
 
     def ui_connect(self):
         """

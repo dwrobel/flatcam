@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - made sure that the CNCJob UI building no longer have issues with table items added from an already existing table
 - fixed CNCJob UI showing all tools in the Tools Table even when only some tools were selected for processing
 - fixed the `drillcncjob` Tcl Command to work in the case of drilling a selection of tools instead of all, with toolchange inactive
+- in Excellon Object UI, Advanced Mode, added a Tools Table context menu allowing to copy the tool diameters in the selected rows to clipboard
 
 16.02.2022
 
