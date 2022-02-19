@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+19.02.2022
+
+- updated the language strings files to the latest changes
+
 18.02.2022
 
 - completed the refactoring of object `options` property to `obj_options` in preprocessors too
