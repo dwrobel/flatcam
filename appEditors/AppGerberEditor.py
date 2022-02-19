@@ -5553,7 +5553,7 @@ class AppGerberEditor(QtCore.QObject):
 
                             if elem in self.selected:
                                 self.plot_shape(geometry=geometric_data,
-                                                color=self.app.options['global_sel_draw_color'] + 'FF',
+                                                color=self.app.options['global_sel_draw_color'][:-2] + 'FF',
                                                 linewidth=2)
                             else:
                                 self.plot_shape(geometry=geometric_data,
