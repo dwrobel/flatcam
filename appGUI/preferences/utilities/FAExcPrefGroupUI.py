@@ -14,13 +14,13 @@ if '_' not in builtins.__dict__:
 
 
 class FAExcPrefGroupUI(OptionsGroupUI):
-    def __init__(self, defaults, decimals=4, parent=None):
+    def __init__(self, app, parent=None):
         # OptionsGroupUI.__init__(self, "Excellon File associations Preferences", parent=None)
         super().__init__(self, parent=parent)
 
         self.setTitle(str(_("Excellon File associations")))
-        self.decimals = decimals
-        self.defaults = defaults
+        self.decimals = app.decimals
+        self.options = app.options
 
         self.layout.setContentsMargins(2, 2, 2, 2)
 

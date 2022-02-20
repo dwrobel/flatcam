@@ -1,6 +1,7 @@
 from PyQt6 import QtWidgets, QtGui
 from PyQt6.QtCore import QSettings
 
+import appGUI.preferences.OptionsGroupUI
 from appGUI.GUIElements import FCButton, FCTextArea, FCEntry, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
@@ -14,13 +15,13 @@ if '_' not in builtins.__dict__:
 
 
 class FAGcoPrefGroupUI(OptionsGroupUI):
-    def __init__(self, defaults, decimals=4, parent=None):
+    def __init__(self, app, parent=None):
         # OptionsGroupUI.__init__(self, "Gcode File associations Preferences", parent=None)
         super(FAGcoPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("GCode File associations")))
-        self.decimals = decimals
-        self.defaults = defaults
+        self.decimals = app.decimals
+        self.options = app.options
 
         self.restore_btn = FCButton(_("Restore"))
         self.restore_btn.setToolTip(_("Restore the extension list to the default state."))

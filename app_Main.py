@@ -1358,7 +1358,7 @@ class App(QtCore.QObject):
         # ##################################### FIRST RUN SECTION ###################################################
         # ################################ It's done only once after install   #####################################
         # ###########################################################################################################
-        if self.options["first_run"] is True:
+        if self.defaults["first_run"] is True:
             # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'minimal'
             self.log.debug("-> First Run: Setting up the first Layout")
             initial_lay = 'minimal'
@@ -1369,7 +1369,7 @@ class App(QtCore.QObject):
             self.ui.general_pref_form.general_gui_group.layout_combo.setCurrentIndex(idx)
 
             # after the first run, this object should be False
-            self.options["first_run"] = False
+            self.defaults["first_run"] = False
             self.log.debug("-> First Run: Updating the Defaults file with Factory Defaults")
             self.preferencesUiManager.save_defaults(silent=True)
 

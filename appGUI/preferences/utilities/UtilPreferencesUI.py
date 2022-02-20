@@ -9,23 +9,21 @@ from appGUI.preferences.utilities.FAExcPrefGroupUI import FAExcPrefGroupUI
 
 class UtilPreferencesUI(QtWidgets.QWidget):
 
-    def __init__(self, defaults, decimals, parent=None):
+    def __init__(self, app, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
         self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
-        self.decimals = decimals
-        self.defaults = defaults
 
-        self.fa_excellon_group = FAExcPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.fa_excellon_group = FAExcPrefGroupUI(app=app)
         self.fa_excellon_group.setMinimumWidth(260)
 
-        self.fa_gcode_group = FAGcoPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.fa_gcode_group = FAGcoPrefGroupUI(app=app)
         self.fa_gcode_group.setMinimumWidth(260)
 
-        self.fa_gerber_group = FAGrbPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.fa_gerber_group = FAGrbPrefGroupUI(app=app)
         self.fa_gerber_group.setMinimumWidth(260)
 
-        self.kw_group = AutoCompletePrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.kw_group = AutoCompletePrefGroupUI(app=app)
         self.kw_group.setMinimumWidth(260)
 
         # this does not make sense in Linux and MacOs so w edo not display it for those OS's

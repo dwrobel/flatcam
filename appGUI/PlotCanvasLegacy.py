@@ -248,8 +248,8 @@ class PlotCanvasLegacy(QtCore.QObject):
         axis_color = axis_color[0], axis_color[1], axis_color[2]
 
         # self.h_line = self.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
-        self.h_line = self.axes.axhline(color=axis_color, linewidth=2)
-        self.v_line = self.axes.axvline(color=axis_color, linewidth=2)
+        self.h_line = None
+        self.v_line = None
 
         self.axes.tick_params(axis='x', color=tick_color, labelcolor=tick_color)
         self.axes.tick_params(axis='y', color=tick_color, labelcolor=tick_color)
@@ -334,17 +334,18 @@ class PlotCanvasLegacy(QtCore.QObject):
             self.draw_workspace(workspace_size=self.app.options["global_workspaceT"])
 
         # Axis Display
-        self.axis_enabled = True
+        self.axis_enabled = False
 
         # enable Axis
-        self.on_toggle_axis(state=True, silent=True)
-        self.app.ui.axis_status_label.setStyleSheet("""
-                                                    QLabel
-                                                    {
-                                                        color: black;
-                                                        background-color: orange;
-                                                    }
-                                                    """)
+        if self.app.options['global_axis'] is True:
+            self.on_toggle_axis(state=True, silent=True)
+            self.app.ui.axis_status_label.setStyleSheet("""
+                                                        QLabel
+                                                        {
+                                                            color: black;
+                                                            background-color: orange;
+                                                        }
+                                                        """)
 
         # Attach to parent
         self.native = self.canvas  # for API compatibility with 3D plotcanvas
@@ -380,7 +381,7 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         if state:
             self.axis_enabled = True
-            self.app.options['global_axis'] = True
+            self.app.defaults['global_axis'] = True
             if self.h_line not in self.axes.lines and self.v_line not in self.axes.lines:
                 self.h_line = self.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
                 self.v_line = self.axes.axvline(color=(0.70, 0.3, 0.3), linewidth=2)
@@ -395,7 +396,7 @@ class PlotCanvasLegacy(QtCore.QObject):
                     self.app.inform[str, bool].emit(_("Axis enabled."), False)
         else:
             self.axis_enabled = False
-            self.app.options['global_axis'] = False
+            self.app.defaults['global_axis'] = False
             if self.h_line in self.axes.lines and self.v_line in self.axes.lines:
                 self.axes.lines.remove(self.h_line)
                 self.axes.lines.remove(self.v_line)
@@ -412,7 +413,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         if state:
             self.hud_enabled = True
             self.text_hud.add_artist()
-            self.app.options['global_hud'] = True
+            self.app.defaults['global_hud'] = True
 
             self.app.ui.hud_label.setStyleSheet("""
                                                 QLabel
@@ -426,7 +427,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         else:
             self.hud_enabled = False
             self.text_hud.remove_artist()
-            self.app.options['global_hud'] = False
+            self.app.defaults['global_hud'] = False
             self.app.ui.hud_label.setStyleSheet("")
             if silent is None:
                 self.app.inform[str, bool].emit(_("HUD disabled."), False)

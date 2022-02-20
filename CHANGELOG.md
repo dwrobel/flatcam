@@ -16,6 +16,11 @@ CHANGELOG for FlatCAM beta
 - refactored code in Preferences section
 - added the wheels for a working pair of GDAL-Rasterio modules (python 3.10)
 - fixed an issue when trying to print an exception message
+- fixed an issue due of recent changes that made the application think that is run always for the first time; fixed not applying the selected language translation
+- some more code is refactored in the Preferences
+- the axis will now be drawn on the canvas as they were left in the previous run (just like the HUD and the Workspace)
+- for processors with less than 4 cores now the default number of workers is 1 (changed from 2)
+- some graphical settings go now directly to the defaults dictionary and will not pass through the `options` app dictionary
 
 19.02.2022
 

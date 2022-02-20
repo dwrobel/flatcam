@@ -139,9 +139,9 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         #                            parent=self.view.scene)
 
         self.v_line = InfiniteLine(pos=0, color=axis_color, vertical=True, line_width=1.5,
-                                   parent=self.view.scene)
+                                   parent=None)
         self.h_line = InfiniteLine(pos=0, color=axis_color, vertical=False, line_width=1.5,
-                                   parent=self.view.scene)
+                                   parent=None)
 
         self.line_parent = None
         if self.fcapp.options["global_cursor_color_enabled"]:
@@ -179,10 +179,11 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             self.on_toggle_hud(state=True, silent=True)
 
         # Axis Display
-        self.axis_enabled = True
+        self.axis_enabled = False
 
         # enable Axis
-        self.on_toggle_axis(state=True, silent=True)
+        if self.fcapp.options['global_axis'] is True:
+            self.on_toggle_axis(state=True, silent=True)
 
         # enable Grid lines
         self.grid_lines_enabled = True
@@ -229,7 +230,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         if state:
             self.axis_enabled = True
-            self.fcapp.options['global_axis'] = True
+            self.fcapp.defaults['global_axis'] = True
             self.v_line.parent = self.view.scene
             self.h_line.parent = self.view.scene
             self.fcapp.ui.axis_status_label.setStyleSheet("""
@@ -243,7 +244,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
                 self.fcapp.inform[str, bool].emit(_("Axis enabled."), False)
         else:
             self.axis_enabled = False
-            self.fcapp.options['global_axis'] = False
+            self.fcapp.defaults['global_axis'] = False
             self.v_line.parent = None
             self.h_line.parent = None
             self.fcapp.ui.axis_status_label.setStyleSheet("")
@@ -277,7 +278,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             self.hud_enabled = True
             self.rect_hud.parent = self.view
             self.text_hud.parent = self.view
-            self.fcapp.options['global_hud'] = True
+            self.fcapp.defaults['global_hud'] = True
             self.fcapp.ui.hud_label.setStyleSheet("""
                                                   QLabel
                                                   {
@@ -292,7 +293,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             self.hud_enabled = False
             self.rect_hud.parent = None
             self.text_hud.parent = None
-            self.fcapp.options['global_hud'] = False
+            self.fcapp.defaults['global_hud'] = False
             self.fcapp.ui.hud_label.setStyleSheet("")
             if silent is None:
                 self.fcapp.inform[str, bool].emit(_("HUD disabled."), False)
@@ -386,14 +387,14 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             color = '#dededeff'
 
         if state:
-            self.fcapp.options['global_grid_lines'] = True
+            self.fcapp.defaults['global_grid_lines'] = True
             self.grid_lines_enabled = True
             # self.grid.parent = self.view.scene
             self.grid._grid_color_fn['color'] = Color(color).rgba
             if silent is None:
                 self.fcapp.inform[str, bool].emit(_("Grid enabled."), False)
         else:
-            self.fcapp.options['global_grid_lines'] = False
+            self.fcapp.defaults['global_grid_lines'] = False
             self.grid_lines_enabled = False
             # self.grid.parent = None
             self.grid._grid_color_fn['color'] = Color('#FFFFFFFF').rgba
