@@ -17,22 +17,20 @@ if '_' not in builtins.__dict__:
 
 class GerberPreferencesUI(QtWidgets.QWidget):
 
-    def __init__(self, decimals, defaults, parent=None):
+    def __init__(self, app, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
         self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
-        self.decimals = decimals
-        self.defaults = defaults
 
-        self.gerber_gen_group = GerberGenPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.gerber_gen_group = GerberGenPrefGroupUI(app=app)
         self.gerber_gen_group.setMinimumWidth(200)
-        self.gerber_opt_group = GerberOptPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.gerber_opt_group = GerberOptPrefGroupUI(app=app)
         self.gerber_opt_group.setMinimumWidth(250)
-        self.gerber_exp_group = GerberExpPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.gerber_exp_group = GerberExpPrefGroupUI(app=app)
         self.gerber_exp_group.setMinimumWidth(230)
-        self.gerber_adv_opt_group = GerberAdvOptPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.gerber_adv_opt_group = GerberAdvOptPrefGroupUI(app=app)
         self.gerber_adv_opt_group.setMinimumWidth(200)
-        self.gerber_editor_group = GerberEditorPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.gerber_editor_group = GerberEditorPrefGroupUI(app=app)
         self.gerber_editor_group.setMinimumWidth(200)
 
         self.vlay = QtWidgets.QVBoxLayout()

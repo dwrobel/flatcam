@@ -14,13 +14,13 @@ if '_' not in builtins.__dict__:
 
 
 class ToolsPaintPrefGroupUI(OptionsGroupUI):
-    def __init__(self, defaults, decimals=4, parent=None):
+    def __init__(self, app, parent=None):
         # OptionsGroupUI.__init__(self, "Paint Area Plugin", parent=parent)
         super(ToolsPaintPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Paint Plugin")))
-        self.decimals = decimals
-        self.defaults = defaults
+        self.decimals = app.decimals
+        self.options = app.options
 
         # ------------------------------
         # ## Paint area

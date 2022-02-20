@@ -18,12 +18,12 @@ if '_' not in builtins.__dict__:
 # https://www.w3schools.com/colors/colors_names.asp
 # Colors names
 class GeneralAppPrefGroupUI(OptionsGroupUI):
-    def __init__(self, defaults, decimals=4, parent=None):
+    def __init__(self, app, parent=None):
         super(GeneralAppPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(_("App Preferences"))
-        self.decimals = decimals
-        self.defaults = defaults
+        self.decimals = app.decimals
+        self.options = app.options
 
         # #############################################################################################################
         # Grid0 Frame
@@ -200,7 +200,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid3_frame.setLayout(grid3)
 
         self.language_combo = FCComboBox()
-        self.language_combo.addItems(self.defaults["global_languages"])
+        self.language_combo.addItems(self.app.options["global_languages"])
         grid3.addWidget(self.language_combo, 0, 0, 1, 2)
 
         self.language_apply_btn = FCButton(_("Apply Language"))

@@ -16,13 +16,13 @@ if '_' not in builtins.__dict__:
 
 
 class GerberGenPrefGroupUI(OptionsGroupUI):
-    def __init__(self, defaults, decimals=4, parent=None):
+    def __init__(self, app, parent=None):
         # OptionsGroupUI.__init__(self, "Gerber General Preferences", parent=parent)
         super(GerberGenPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("General")))
-        self.decimals = decimals
-        self.defaults = defaults
+        self.decimals = app.decimals
+        self.options = app.options
 
         # ## Plot options
         self.plot_options_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Plot Options"))
@@ -333,7 +333,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
 
         if color_box.ok is True:
             color_box.update_color_list()
-            self.defaults["gerber_color_list"] = color_box.color_list
+            self.options["gerber_color_list"] = color_box.color_list
 
 
 class ColorsManager(QtWidgets.QDialog):

@@ -16,13 +16,13 @@ if '_' not in builtins.__dict__:
 
 class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
-    def __init__(self, defaults, decimals=4, parent=None):
+    def __init__(self, app, parent=None):
         # OptionsGroupUI.__init__(self, "Excellon Options", parent=parent)
         super(ExcellonGenPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("General")))
-        self.decimals = decimals
-        self.defaults = defaults
+        self.decimals = app.decimals
+        self.options = app.options
 
         # #############################################################################################################
         # Plot Frame
@@ -359,7 +359,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
         self.excellon_alpha_entry.valueChanged.connect(self.on_excellon_alpha_changed)  # alpha
 
-        # Load the defaults values into the Excellon Format and Excellon Zeros fields
+        # Load the options values into the Excellon Format and Excellon Zeros fields
         self.excellon_defaults_button.clicked.connect(self.on_excellon_defaults_button)
         # Make sure that when the Excellon loading parameters are changed, the change is reflected in the
         # Export Excellon parameters.

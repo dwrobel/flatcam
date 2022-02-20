@@ -15,12 +15,12 @@ if '_' not in builtins.__dict__:
 
 
 class GeneralGUIPrefGroupUI(OptionsGroupUI):
-    def __init__(self, defaults, decimals=4, parent=None):
+    def __init__(self, app, parent=None):
         super(GeneralGUIPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("GUI Preferences")))
-        self.decimals = decimals
-        self.defaults = defaults
+        self.decimals = app.decimals
+        self.options = app.options
 
         self.param_lbl = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
         self.layout.addWidget(self.param_lbl)

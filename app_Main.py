@@ -1040,7 +1040,7 @@ class App(QtCore.QObject):
             else:
                 self.cursor_color_3D = 'gray'
 
-        # update the defaults dict with the setting in QSetting
+        # update the options dict with the setting in QSetting
         self.options['global_theme'] = theme
 
         # ########################
@@ -1420,7 +1420,7 @@ class App(QtCore.QObject):
         self.file_opened.connect(lambda kind, filename: self.register_folder(filename))
         self.file_saved.connect(lambda kind, filename: self.register_save_folder(filename))
 
-        # when the defaults dictionary values change
+        # when the options dictionary values change
         self.options.set_change_callback(callback=self.on_options_value_changed)
 
         # ###########################################################################################################
@@ -3909,7 +3909,7 @@ class App(QtCore.QObject):
             # the JSON is first making the keys as strings (therefore I have to use strings too
             # or do the conversion :(
             # )
-            # and it is ordering them (actually I want that to make the defaults easy to search within) but making
+            # and it is ordering them (actually I want that to make the options easy to search within) but making
             # the '10' entry just after '1' therefore ordering as strings
 
             sorted_bookmarks = sorted(list(self.options["global_bookmarks"].items())[:bm_limit],
@@ -9252,7 +9252,7 @@ class App(QtCore.QObject):
     def on_defaults2options(self):
         """
         Callback for Options->Transfer Options->App=>Project. Copy options
-        from application defaults to project defaults.
+        from application defaults to project options.
 
         :return:    None
         """
@@ -10256,7 +10256,7 @@ class MenuFileHandlers(QtCore.QObject):
         self.app.project_filename = None
 
         default_file = self.app.options_path()
-        # Load the application defaults
+        # Load the application options
         self.options.load(filename=default_file, inform=self.inform)
 
         # Re-fresh project options
@@ -10873,7 +10873,7 @@ class MenuFileHandlers(QtCore.QObject):
             self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
 
-        # Load in the defaults from the chosen file
+        # Load in the options from the chosen file
         self.options.load(filename=filename, inform=self.inform)
 
         self.app.preferencesUiManager.on_preferences_edited()
@@ -10881,7 +10881,7 @@ class MenuFileHandlers(QtCore.QObject):
 
     def on_export_preferences(self):
         """
-        Save the defaults dictionary to a file.
+        Save the options dictionary to a file.
 
         :return: None
         """

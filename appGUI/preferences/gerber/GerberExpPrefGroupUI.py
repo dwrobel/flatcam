@@ -14,12 +14,12 @@ if '_' not in builtins.__dict__:
 
 class GerberExpPrefGroupUI(OptionsGroupUI):
 
-    def __init__(self, defaults, decimals=4, parent=None):
+    def __init__(self, app, parent=None):
         super(GerberExpPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Export")))
-        self.decimals = decimals
-        self.defaults = defaults
+        self.decimals = app.decimals
+        self.options = app.options
 
         # #############################################################################################################
         # Export Frame

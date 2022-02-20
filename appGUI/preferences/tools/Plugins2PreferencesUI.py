@@ -20,38 +20,36 @@ if '_' not in builtins.__dict__:
 
 class Plugins2PreferencesUI(QtWidgets.QWidget):
 
-    def __init__(self, defaults, decimals, parent=None):
+    def __init__(self,app, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
         self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
-        self.decimals = decimals
-        self.defaults = defaults
 
-        self.tools2_checkrules_group = Tools2RulesCheckPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.tools2_checkrules_group = Tools2RulesCheckPrefGroupUI(app=app)
         self.tools2_checkrules_group.setMinimumWidth(150)
 
-        self.tools2_optimal_group = Tools2OptimalPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.tools2_optimal_group = Tools2OptimalPrefGroupUI(app=app)
         self.tools2_optimal_group.setMinimumWidth(220)
 
-        self.tools2_qrcode_group = Tools2QRCodePrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.tools2_qrcode_group = Tools2QRCodePrefGroupUI(app=app)
         self.tools2_qrcode_group.setMinimumWidth(220)
 
-        self.tools2_cfill_group = Tools2CThievingPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.tools2_cfill_group = Tools2CThievingPrefGroupUI(app=app)
         self.tools2_cfill_group.setMinimumWidth(220)
 
-        self.tools2_fiducials_group = Tools2FiducialsPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.tools2_fiducials_group = Tools2FiducialsPrefGroupUI(app=app)
         self.tools2_fiducials_group.setMinimumWidth(220)
 
-        self.tools2_cal_group = Tools2CalPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.tools2_cal_group = Tools2CalPrefGroupUI(app=app)
         self.tools2_cal_group.setMinimumWidth(220)
 
-        self.tools2_edrills_group = Tools2EDrillsPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.tools2_edrills_group = Tools2EDrillsPrefGroupUI(app=app)
         self.tools2_edrills_group.setMinimumWidth(220)
 
-        self.tools2_punch_group = Tools2PunchGerberPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.tools2_punch_group = Tools2PunchGerberPrefGroupUI(app=app)
         self.tools2_punch_group.setMinimumWidth(220)
 
-        self.tools2_invert_group = Tools2InvertPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.tools2_invert_group = Tools2InvertPrefGroupUI(app=app)
         self.tools2_invert_group.setMinimumWidth(220)
 
         self.vlay = QtWidgets.QVBoxLayout()

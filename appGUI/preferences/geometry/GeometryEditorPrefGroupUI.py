@@ -13,13 +13,13 @@ if '_' not in builtins.__dict__:
 
 
 class GeometryEditorPrefGroupUI(OptionsGroupUI):
-    def __init__(self, defaults, decimals=4, parent=None):
+    def __init__(self, app, parent=None):
         # OptionsGroupUI.__init__(self, "Gerber Adv. Options Preferences", parent=parent)
         super(GeometryEditorPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Editor")))
-        self.decimals = decimals
-        self.defaults = defaults
+        self.decimals = app.decimals
+        self.options = app.options
 
         # #############################################################################################################
         # PARAMETERS Frame

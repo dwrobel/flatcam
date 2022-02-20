@@ -14,13 +14,13 @@ if '_' not in builtins.__dict__:
 
 
 class Tools2CalPrefGroupUI(OptionsGroupUI):
-    def __init__(self, defaults, decimals=4, parent=None):
+    def __init__(self, app, parent=None):
 
         super(Tools2CalPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Calibration Plugin")))
-        self.decimals = decimals
-        self.defaults = defaults
+        self.decimals = app.decimals
+        self.options = app.options
 
         # #############################################################################################################
         # Parameters Frame

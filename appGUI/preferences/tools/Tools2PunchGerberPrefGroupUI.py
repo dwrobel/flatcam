@@ -13,13 +13,13 @@ if '_' not in builtins.__dict__:
 
 
 class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
-    def __init__(self, defaults, decimals=4, parent=None):
+    def __init__(self, app, parent=None):
 
         super(Tools2PunchGerberPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Punch Gerber Options")))
-        self.decimals = decimals
-        self.defaults = defaults
+        self.decimals = app.decimals
+        self.options = app.options
 
         # #############################################################################################################
         # Processed Pads Frame

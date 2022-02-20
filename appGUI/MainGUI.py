@@ -1937,14 +1937,14 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################################################################
         # ######################## BUILD PREFERENCES #############################
         # ########################################################################
-        self.general_pref_form = GeneralPreferencesUI(decimals=self.decimals, defaults=self.app.options)
-        self.gerber_pref_form = GerberPreferencesUI(decimals=self.decimals, defaults=self.app.options)
-        self.excellon_pref_form = ExcellonPreferencesUI(decimals=self.decimals, defaults=self.app.options)
-        self.geo_pref_form = GeometryPreferencesUI(decimals=self.decimals, defaults=self.app.options)
-        self.cncjob_pref_form = CNCJobPreferencesUI(decimals=self.decimals, defaults=self.app.options)
-        self.plugin_pref_form = PluginsPreferencesUI(decimals=self.decimals, defaults=self.app.options)
-        self.plugin2_pref_form = Plugins2PreferencesUI(decimals=self.decimals, defaults=self.app.options)
-        self.plugin_eng_pref_form = PluginsEngravingPreferencesUI(decimals=self.decimals, defaults=self.app.options)
+        self.general_pref_form = GeneralPreferencesUI(app=self.app)
+        self.gerber_pref_form = GerberPreferencesUI(app=self.app)
+        self.excellon_pref_form = ExcellonPreferencesUI(app=self.app)
+        self.geo_pref_form = GeometryPreferencesUI(app=self.app)
+        self.cncjob_pref_form = CNCJobPreferencesUI(app=self.app)
+        self.plugin_pref_form = PluginsPreferencesUI(app=self.app)
+        self.plugin2_pref_form = Plugins2PreferencesUI(app=self.app)
+        self.plugin_eng_pref_form = PluginsEngravingPreferencesUI(app=self.app)
 
         self.util_pref_form = UtilPreferencesUI(decimals=self.decimals, defaults=self.app.options)
 
@@ -1977,7 +1977,7 @@ class MainGUI(QtWidgets.QMainWindow):
             flat_settings.setValue('layout', "standard")
             # This will write the setting to the platform specific storage.
             del flat_settings
-            self.app.log.debug("MainGUI.__init__() --> UI layout restored from defaults. QSettings set to 'standard'")
+            self.app.log.debug("MainGUI.__init__() --> UI layout restored from options. QSettings set to 'standard'")
 
         # construct the Toolbar Lock menu entry to the context menu of the QMainWindow
         self.lock_action = QtGui.QAction()
@@ -2153,7 +2153,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
     def save_geometry(self, x, y, width, height, notebook_width):
         """
-        Will save the application geometry and positions in the defaults dicitionary to be restored at the next
+        Will save the application geometry and positions in the options dicitionary to be restored at the next
         launch of the application.
 
         :param x:               X position of the main window
@@ -2184,7 +2184,7 @@ class MainGUI(QtWidgets.QMainWindow):
     def restore_toolbar_view(self):
         """
         Some toolbars may be hidden by user and here we restore the state of the toolbars visibility that
-        was saved in the defaults dictionary.
+        was saved in the options dictionary.
 
         :return: None
         """

@@ -24,41 +24,39 @@ if '_' not in builtins.__dict__:
 
 class PluginsPreferencesUI(QtWidgets.QWidget):
 
-    def __init__(self, defaults, decimals, parent=None):
+    def __init__(self, app, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
         self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
-        self.decimals = decimals
-        self.defaults = defaults
 
-        self.tools_drill_group = ToolsDrillPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.tools_drill_group = ToolsDrillPrefGroupUI(app=app)
         self.tools_drill_group.setMinimumWidth(180)
 
-        self.tools_mill_group = ToolsMillPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.tools_mill_group = ToolsMillPrefGroupUI(app=app)
         self.tools_mill_group.setMinimumWidth(180)
 
-        self.tools_cutout_group = ToolsCutoutPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.tools_cutout_group = ToolsCutoutPrefGroupUI(app=app)
         self.tools_cutout_group.setMinimumWidth(220)
 
-        self.tools_film_group = ToolsFilmPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.tools_film_group = ToolsFilmPrefGroupUI(app=app)
         self.tools_film_group.setMinimumWidth(220)
 
-        self.tools_panelize_group = ToolsPanelizePrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.tools_panelize_group = ToolsPanelizePrefGroupUI(app=app)
         self.tools_panelize_group.setMinimumWidth(220)
 
-        self.tools_calculators_group = ToolsCalculatorsPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.tools_calculators_group = ToolsCalculatorsPrefGroupUI(app=app)
         self.tools_calculators_group.setMinimumWidth(220)
 
-        self.tools_transform_group = ToolsTransformPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.tools_transform_group = ToolsTransformPrefGroupUI(app=app)
         self.tools_transform_group.setMinimumWidth(200)
 
-        self.tools_solderpaste_group = ToolsSolderpastePrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.tools_solderpaste_group = ToolsSolderpastePrefGroupUI(app=app)
         self.tools_solderpaste_group.setMinimumWidth(200)
 
-        self.tools_markers_group = ToolsMarkersPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.tools_markers_group = ToolsMarkersPrefGroupUI(app=app)
         self.tools_markers_group.setMinimumWidth(200)
 
-        self.tools_sub_group = ToolsSubPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
+        self.tools_sub_group = ToolsSubPrefGroupUI(app=app)
         self.tools_sub_group.setMinimumWidth(200)
 
         self.vlay = QtWidgets.QVBoxLayout()

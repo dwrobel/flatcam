@@ -12,6 +12,8 @@ CHANGELOG for FlatCAM beta
 - fixed a minor error in the Gerber Editor which created a graphic glitch on shape selection
 - making the above fix accept few possibilities
 - updated the Turkish translation (by (Mehmet Kaya)
+- fixed an issue where the selected application translation language is not remembered as was selected and defaulting to English language
+- refactored code in Preferences section
 
 19.02.2022
 

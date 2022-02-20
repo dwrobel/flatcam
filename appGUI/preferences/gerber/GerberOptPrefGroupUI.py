@@ -13,12 +13,12 @@ if '_' not in builtins.__dict__:
 
 
 class GerberOptPrefGroupUI(OptionsGroupUI):
-    def __init__(self, defaults, decimals=4, parent=None):
+    def __init__(self, app, parent=None):
         # OptionsGroupUI.__init__(self, "Gerber Options Preferences", parent=parent)
         super(GerberOptPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.decimals = decimals
-        self.defaults = defaults
+        self.decimals = app.decimals
+        self.options = app.options
 
         self.setTitle(str(_("Options")))
 

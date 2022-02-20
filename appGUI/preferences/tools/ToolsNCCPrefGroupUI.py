@@ -14,13 +14,13 @@ if '_' not in builtins.__dict__:
 
 
 class ToolsNCCPrefGroupUI(OptionsGroupUI):
-    def __init__(self, defaults, decimals=4, parent=None):
+    def __init__(self, app, parent=None):
         # OptionsGroupUI.__init__(self, "NCC Plugin", parent=parent)
         super(ToolsNCCPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("NCC Plugin")))
-        self.decimals = decimals
-        self.defaults = defaults
+        self.decimals = app.decimals
+        self.options = app.options
 
         # ## Clear non-copper regions
         self.clearcopper_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))

@@ -15,12 +15,12 @@ if '_' not in builtins.__dict__:
 
 
 class ToolsMillPrefGroupUI(OptionsGroupUI):
-    def __init__(self, defaults, decimals=4, parent=None):
+    def __init__(self, app, parent=None):
         super(ToolsMillPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Milling Plugin")))
-        self.decimals = decimals
-        self.defaults = defaults
+        self.decimals = app.decimals
+        self.options = app.options
 
         # #############################################################################################################
         # PARAMETERS Frame
@@ -272,7 +272,7 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.pp_geometry_name_cb.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.pp_geometry_name_cb.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
                                                QtWidgets.QSizePolicy.Policy.Preferred)
-        self.pp_geometry_name_cb.addItems(self.defaults["tools_mill_preprocessor_list"])
+        self.pp_geometry_name_cb.addItems(self.options["tools_mill_preprocessor_list"])
 
         for it in range(self.pp_geometry_name_cb.count()):
             self.pp_geometry_name_cb.setItemData(it, self.pp_geometry_name_cb.itemText(it),

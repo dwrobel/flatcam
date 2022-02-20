@@ -13,13 +13,13 @@ if '_' not in builtins.__dict__:
 
 
 class ToolsLevelPrefGroupUI(OptionsGroupUI):
-    def __init__(self, defaults, decimals=4, parent=None):
+    def __init__(self, app, parent=None):
         # OptionsGroupUI.__init__(self, "Cutout Plugin", parent=parent)
         super(ToolsLevelPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Levelling Plugin")))
-        self.decimals = decimals
-        self.defaults = defaults
+        self.decimals = app.decimals
+        self.options = app.options
 
         # ## Board cuttout
         self.levelling_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
