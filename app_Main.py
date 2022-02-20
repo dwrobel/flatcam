@@ -9415,8 +9415,9 @@ class ArgsThread(QtCore.QObject):
                     while True:
                         conn = self.listener.accept()
                         self.serve(conn)
-        except Exception as gen_err:
-            print(str(gen_err))
+        except Exception:
+            pass
+            # print(str(gen_err))
 
     def serve(self, conn):
         while self.thread_exit is False:

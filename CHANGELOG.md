@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - fixed an issue where the selected application translation language is not remembered as was selected and defaulting to English language
 - refactored code in Preferences section
 - added the wheels for a working pair of GDAL-Rasterio modules (python 3.10)
+- fixed an issue when trying to print an exception message
 
 19.02.2022
 
