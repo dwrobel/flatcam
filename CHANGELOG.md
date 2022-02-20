@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 20.02.2022
 
 - fixed a minor error in the Gerber Editor which created a graphic glitch on shape selection
+- making the above fix accept few possibilities
 
 19.02.2022
 

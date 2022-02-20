@@ -61,22 +61,22 @@ from appDatabase import ToolsDB2
 from vispy.gloo.util import _screenshot
 from vispy.io import write_png
 
-# FlatCAM defaults (preferences)
+# App defaults (preferences)
 from defaults import FlatCAMDefaults
 
-# FlatCAM Objects
+# App Objects
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 from appGUI.preferences.PreferencesUIManager import PreferencesUIManager
 from appObjects.ObjectCollection import *
 from appObjects.FlatCAMObj import FlatCAMObj
 from appObjects.AppObject import AppObject
 
-# FlatCAM Parsing files
+# App Parsing files
 from appParsers.ParseExcellon import Excellon
 from appParsers.ParseGerber import Gerber
 from camlib import to_dict, dict2obj, ET, ParseError, Geometry, CNCjob
 
-# FlatCAM appGUI
+# App appGUI
 from appGUI.PlotCanvas import *
 from appGUI.PlotCanvasLegacy import *
 from appGUI.PlotCanvas3d import *
@@ -84,10 +84,10 @@ from appGUI.MainGUI import *
 from appGUI.GUIElements import FCFileSaveDialog, message_dialog, FlatCAMSystemTray, FCInputDialogSlider, \
     FCGridLayout, FCLabel
 
-# FlatCAM Pre-processors
+# App Pre-processors
 from appPreProcessor import load_preprocessors
 
-# FlatCAM appEditors
+# App appEditors
 from appEditors.AppGeoEditor import AppGeoEditor
 from appEditors.AppExcEditor import AppExcEditor
 from appEditors.AppGerberEditor import AppGerberEditor
@@ -95,14 +95,14 @@ from appEditors.AppTextEditor import AppTextEditor
 from appEditors.appGCodeEditor import AppGCodeEditor
 from appParsers.ParseHPGL2 import HPGL2
 
-# FlatCAM Workers
+# App Workers
 from appProcess import *
 from appWorkerStack import WorkerStack
 
-# FlatCAM Tools
+# App Plugins
 from appPlugins import *
 
-# FlatCAM Translation
+# App Translation
 import gettext
 import appTranslation as fcTranslate
 import builtins

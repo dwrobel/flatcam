@@ -5542,6 +5542,15 @@ class AppGerberEditor(QtCore.QObject):
         with self.app.proc_container.new('%s ...' % _("Plotting")):
             self.shapes.clear(update=True)
 
+            if len(self.app.options['global_sel_draw_color']) == 7:
+                sel_draw_color = self.app.options['global_sel_draw_color'] + 'FF'
+            else:
+                sel_draw_color = self.app.options['global_sel_draw_color'][:-2] + 'FF'
+            if len(self.app.options['global_draw_color']) == 7:
+                draw_color = self.app.options['global_draw_color'] + 'FF'
+            else:
+                draw_color = self.app.options['global_draw_color'][:-2] + 'FF'
+
             for storage in self.storage_dict:
                 # fix for apertures with no geometry inside
                 if 'geometry' in self.storage_dict[storage]:
@@ -5552,12 +5561,9 @@ class AppGerberEditor(QtCore.QObject):
                                 continue
 
                             if elem in self.selected:
-                                self.plot_shape(geometry=geometric_data,
-                                                color=self.app.options['global_sel_draw_color'][:-2] + 'FF',
-                                                linewidth=2)
+                                self.plot_shape(geometry=geometric_data, color=sel_draw_color, linewidth=2)
                             else:
-                                self.plot_shape(geometry=geometric_data,
-                                                color=self.app.options['global_draw_color'][:-2] + 'FF')
+                                self.plot_shape(geometry=geometric_data, color=draw_color)
 
             if self.utility:
                 for elem in self.utility:

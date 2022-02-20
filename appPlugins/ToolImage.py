@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 from PyQt6 import QtGui, QtWidgets
-import os, sys
+import os
 
 from shapely.geometry import shape
 from shapely.ops import unary_union
@@ -13,7 +13,6 @@ from shapely.affinity import scale, translate
 
 import numpy as np
 
-import rasterio
 from rasterio import open as rasterio_open
 from rasterio.features import shapes
 
