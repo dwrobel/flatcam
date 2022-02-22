@@ -2484,7 +2484,7 @@ class EraserEditorGrb(ShapeToolEditorGrb):
             eraser_sel_shapes.append(temp_shape)
         eraser_sel_shapes = unary_union(eraser_sel_shapes)
 
-        for storage in self.draw_app.storage_dict:
+        for storage in list(self.draw_app.storage_dict.keys()):
             to_delete = []
             try:
                 for idx, geo_el in enumerate(self.draw_app.storage_dict[storage]['geometry']):
@@ -2500,10 +2500,14 @@ class EraserEditorGrb(ShapeToolEditorGrb):
             except KeyError:
                 pass
 
-            # delete empty geometries
-            for td in to_delete[::-1]:
-                self.draw_app.storage_dict[storage]['geometry'].pop(td)
+            if len(to_delete) == len(self.draw_app.storage_dict[storage]['geometry']):
+                self.draw_app.storage_dict.pop(storage, None)
+            else:
+                # delete empty geometries
+                for td in to_delete[::-1]:
+                    self.draw_app.storage_dict[storage]['geometry'].pop(td)
 
+        self.draw_app.build_ui()
         self.draw_app.delete_utility_geometry()
         self.draw_app.plot_all()
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
@@ -3440,7 +3444,6 @@ class AppGerberEditor(QtCore.QObject):
 
         self.ui.addaperture_btn.clicked.connect(lambda: self.on_aperture_add())
         self.ui.apsize_entry.returnPressed.connect(lambda: self.on_aperture_add())
-        self.ui.apdim_entry.returnPressed.connect(lambda: self.on_aperture_add())
 
         self.ui.delaperture_btn.clicked.connect(lambda: self.on_aperture_delete())
         self.ui.apertures_table.cellPressed.connect(self.on_row_selected)
@@ -3571,7 +3574,6 @@ class AppGerberEditor(QtCore.QObject):
         self.change_level(app_mode)
 
     def build_ui(self, first_run=None):
-
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.ui.apertures_table.itemChanged.disconnect()
@@ -3750,8 +3752,23 @@ class AppGerberEditor(QtCore.QObject):
                                      _("Aperture code value is missing or wrong format. Add it and retry."))
                 return
 
+        try:
+            size_val = float(self.ui.apsize_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                size_val = float(self.ui.apsize_entry.get_value().replace(',', '.'))
+                self.ui.apsize_entry.set_value(size_val)
+            except ValueError:
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Aperture size value is missing or wrong format. Add it and retry."))
+                return
+
+        if size_val == 0.0:
+            ap_code = 0
+
         if ap_code == 0:
-            if ap_code not in self.tid2apcode:
+            if ap_code not in self.tid2apcode.values():
                 self.storage_dict[ap_code] = {
                     'type': 'REG',
                     'size': 0.0,
@@ -3760,8 +3777,11 @@ class AppGerberEditor(QtCore.QObject):
                 self.ui.apsize_entry.set_value(0.0)
 
                 # self.oldapcode_newapcode dict keeps the evidence on current aperture codes as keys and
-                # gets updated on values each time a aperture code is edited or added
+                # gets updated on values each time an aperture code is edited or added
                 self.oldapcode_newapcode[ap_code] = ap_code
+            else:
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Aperture already in the aperture table."))
+                return
         else:
             if ap_code not in self.oldapcode_newapcode:
                 type_val = self.ui.aptype_cb.currentText()
@@ -3791,37 +3811,15 @@ class AppGerberEditor(QtCore.QObject):
                                                "Add it in format (width, height) and retry."))
                         return
                 else:
-                    try:
-                        size_val = float(self.ui.apsize_entry.get_value())
-                    except ValueError:
-                        # try to convert comma to decimal point. if it's still not working error message and return
-                        try:
-                            size_val = float(self.ui.apsize_entry.get_value().replace(',', '.'))
-                            self.ui.apsize_entry.set_value(size_val)
-                        except ValueError:
-                            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                                 _("Aperture size value is missing or wrong format. Add it and retry."))
-                            return
+                    self.storage_dict[ap_code] = {
+                        'type':         type_val,
+                        'size':         size_val,
+                        'geometry':     []
+                    }
 
-                    if size_val == 0.0:
-                        if 0 not in self.tid2apcode:
-                            self.storage_dict[0] = {
-                                'type': 'REG',
-                                'size': 0.0,
-                                'geometry': []
-                            }
-                        self.oldapcode_newapcode[0] = 0
-
-                    else:
-                        self.storage_dict[ap_code] = {
-                            'type': type_val,
-                            'size': size_val,
-                            'geometry': []
-                        }
-
-                        # self.oldapcode_newapcode dict keeps the evidence on current aperture codes as keys and gets
-                        # updated on values  each time a aperture code is edited or added
-                        self.oldapcode_newapcode[ap_code] = ap_code
+                    # self.oldapcode_newapcode dict keeps the evidence on current aperture codes as keys and gets
+                    # updated on values  each time a aperture code is edited or added
+                    self.oldapcode_newapcode[ap_code] = ap_code
             else:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Aperture already in the aperture table."))
                 return
@@ -3836,12 +3834,15 @@ class AppGerberEditor(QtCore.QObject):
 
         self.last_aperture_selected = ap_code
 
-        # make a quick sort through the tid2apcode dict so we find which row to select
-        row_to_be_selected = None
-        for key in sorted(self.tid2apcode):
-            if self.tid2apcode[key] == int(ap_code):
-                row_to_be_selected = int(key) - 1
-                break
+        if ap_code != 0:
+            # make a quick sort through the tid2apcode dict so we find which row to select
+            row_to_be_selected = None
+            for key in sorted(self.tid2apcode):
+                if self.tid2apcode[key] == int(ap_code):
+                    row_to_be_selected = int(key) - 1
+                    break
+        else:
+            row_to_be_selected = 0
         self.ui.apertures_table.selectRow(row_to_be_selected)
 
     def on_aperture_delete(self, ap_code: str = None):

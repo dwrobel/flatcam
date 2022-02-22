@@ -618,6 +618,7 @@ class App(QtCore.QObject):
         # self.preferencesUiManager.show_preferences_gui()
 
         self.app_units = self.options["units"]
+        self.default_units = self.defaults["units"]
 
         if self.app_units == 'MM':
             self.decimals = int(self.options['decimals_metric'])

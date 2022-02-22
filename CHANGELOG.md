@@ -13,6 +13,9 @@ CHANGELOG for FlatCAM beta
 - in Gerber Editor: when the Eraser tool is used, after it is applied if some geometries elements are empty, they are now removed
 - some fixes in remembering the last save location and last open location
 - changes in the App options are now saved to the App defaults on app exit
+- in Gerber Editor fixed adding a new aperture with code 0
+- in Gerber Editor when the aperture size is 0.0 then automatically add a new aperture with code 0
+- in Gerber Editor -> Eraser tool: when deleting all geometry in an aperture then the aperture is deleted too
 
 20.02.2022
 
