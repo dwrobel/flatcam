@@ -2485,16 +2485,24 @@ class EraserEditorGrb(ShapeToolEditorGrb):
         eraser_sel_shapes = unary_union(eraser_sel_shapes)
 
         for storage in self.draw_app.storage_dict:
+            to_delete = []
             try:
-                for geo_el in self.draw_app.storage_dict[storage]['geometry']:
+                for idx, geo_el in enumerate(self.draw_app.storage_dict[storage]['geometry']):
                     if 'solid' in geo_el.geo:
                         geometric_data = geo_el.geo['solid']
                         if eraser_sel_shapes.within(geometric_data) or eraser_sel_shapes.intersects(geometric_data):
                             geos = geometric_data.difference(eraser_sel_shapes)
+                            if geos is None or geos.is_empty:
+                                to_delete.append(idx)
+                                continue
                             geos = geos.buffer(0)
                             geo_el.geo['solid'] = deepcopy(geos)
             except KeyError:
                 pass
+
+            # delete empty geometries
+            for td in to_delete[::-1]:
+                self.draw_app.storage_dict[storage]['geometry'].pop(td)
 
         self.draw_app.delete_utility_geometry()
         self.draw_app.plot_all()
@@ -3430,11 +3438,11 @@ class AppGerberEditor(QtCore.QObject):
 
         self.ui.aptype_cb.currentIndexChanged.connect(self.on_aptype_changed)
 
-        self.ui.addaperture_btn.clicked.connect(self.on_aperture_add)
-        self.ui.apsize_entry.returnPressed.connect(self.on_aperture_add)
-        self.ui.apdim_entry.returnPressed.connect(self.on_aperture_add)
+        self.ui.addaperture_btn.clicked.connect(lambda: self.on_aperture_add())
+        self.ui.apsize_entry.returnPressed.connect(lambda: self.on_aperture_add())
+        self.ui.apdim_entry.returnPressed.connect(lambda: self.on_aperture_add())
 
-        self.ui.delaperture_btn.clicked.connect(self.on_aperture_delete)
+        self.ui.delaperture_btn.clicked.connect(lambda: self.on_aperture_delete())
         self.ui.apertures_table.cellPressed.connect(self.on_row_selected)
         self.ui.apertures_table.selectionModel().selectionChanged.connect(self.on_table_selection)
 
@@ -3771,7 +3779,9 @@ class AppGerberEditor(QtCore.QObject):
                         }
 
                         self.ui.apsize_entry.set_value(size_val)
-
+                        # self.oldapcode_newapcode dict keeps the evidence on current aperture codes as keys and gets
+                        # updated on values  each time a aperture code is edited or added
+                        self.oldapcode_newapcode[ap_code] = ap_code
                     except Exception as e:
                         self.app.log.error("AppGerberEditor.on_aperture_add() --> "
                                            "the R or O aperture dims has to be in a "
@@ -3793,15 +3803,25 @@ class AppGerberEditor(QtCore.QObject):
                                                  _("Aperture size value is missing or wrong format. Add it and retry."))
                             return
 
-                    self.storage_dict[ap_code] = {
-                        'type': type_val,
-                        'size': size_val,
-                        'geometry': []
-                    }
+                    if size_val == 0.0:
+                        if 0 not in self.tid2apcode:
+                            self.storage_dict[0] = {
+                                'type': 'REG',
+                                'size': 0.0,
+                                'geometry': []
+                            }
+                        self.oldapcode_newapcode[0] = 0
 
-                # self.oldapcode_newapcode dict keeps the evidence on current aperture codes as keys and gets updated on
-                # values  each time a aperture code is edited or added
-                self.oldapcode_newapcode[ap_code] = ap_code
+                    else:
+                        self.storage_dict[ap_code] = {
+                            'type': type_val,
+                            'size': size_val,
+                            'geometry': []
+                        }
+
+                        # self.oldapcode_newapcode dict keeps the evidence on current aperture codes as keys and gets
+                        # updated on values  each time a aperture code is edited or added
+                        self.oldapcode_newapcode[ap_code] = ap_code
             else:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Aperture already in the aperture table."))
                 return

@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+22.02.2022
+
+- in Gerber Editor: if the aperture size is 0 then an aperture code 0 is added (if it does not exist yet)
+- in Gerber Editor: when the Eraser tool is used, after it is applied if some geometries elements are empty, they are now removed
+
 20.02.2022
 
 - fixed a minor error in the Gerber Editor which created a graphic glitch on shape selection
