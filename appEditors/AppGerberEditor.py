@@ -5577,7 +5577,7 @@ class AppGerberEditor(QtCore.QObject):
                     for elem in self.storage_dict[storage]['geometry']:
                         if 'solid' in elem.geo:
                             geometric_data = elem.geo['solid']
-                            if geometric_data is None:
+                            if geometric_data is None or geometric_data.is_empty:
                                 continue
 
                             if elem in self.selected:

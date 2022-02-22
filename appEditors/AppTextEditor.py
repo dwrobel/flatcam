@@ -253,7 +253,7 @@ class AppTextEditor(QtWidgets.QWidget):
         try:
             filename = str(FCFileSaveDialog.get_saved_filename(
                 caption=_("Export Code ..."),
-                directory=self.app.options["global_last_folder"] + '/' + str(obj_name),
+                directory=self.app.defaults["global_last_folder"] + '/' + str(obj_name),
                 ext_filter=_filter_
             )[0])
         except TypeError:

@@ -2980,16 +2980,16 @@ class App(QtCore.QObject):
         Get the folder path from where the last file was opened.
         :return: String, last opened folder path
         """
-        return self.options["global_last_folder"]
+        return self.defaults["global_last_folder"]
 
     def get_last_save_folder(self):
         """
         Get the folder path from where the last file was saved.
         :return: String, last saved folder path
         """
-        loc = self.options["global_last_save_folder"]
+        loc = self.defaults["global_last_save_folder"]
         if loc is None:
-            loc = self.options["global_last_folder"]
+            loc = self.defaults["global_last_folder"]
         if loc is None:
             loc = os.path.dirname(__file__)
         return loc
@@ -3076,8 +3076,8 @@ class App(QtCore.QObject):
         date = date.replace(' ', '_')
 
         filter__ = "HTML File .html (*.html);;TXT File .txt (*.txt);;All Files (*.*)"
-        path_to_save = self.options["global_last_save_folder"] if \
-            self.options["global_last_save_folder"] is not None else self.data_path
+        path_to_save = self.defaults["global_last_save_folder"] if \
+            self.defaults["global_last_save_folder"] is not None else self.data_path
         final_path = os.path.join(path_to_save, 'file_%s' % str(date))
 
         try:
@@ -8335,7 +8335,7 @@ class App(QtCore.QObject):
         :param filename:    the last folder is extracted from the filename
         :return:            None
         """
-        self.options["global_last_folder"] = os.path.split(str(filename))[0]
+        self.defaults["global_last_folder"] = os.path.split(str(filename))[0]
 
     def register_save_folder(self, filename):
         """
@@ -8344,7 +8344,7 @@ class App(QtCore.QObject):
         :param filename:    the last folder is extracted from the filename
         :return:            None
         """
-        self.options["global_last_save_folder"] = os.path.split(str(filename))[0]
+        self.defaults["global_last_save_folder"] = os.path.split(str(filename))[0]
 
     # def set_progress_bar(self, percentage, text=""):
     #     """
@@ -10795,8 +10795,8 @@ class MenuFileHandlers(QtCore.QObject):
         :return:
         """
         if filename is None:
-            filename = self.options["global_last_save_folder"] if self.options["global_last_save_folder"] \
-                                                                   is not None else self.options["global_last_folder"]
+            filename = self.app.defaults["global_last_save_folder"] if \
+                self.app.defaults["global_last_save_folder"] is not None else self.app.defaults["global_last_folder"]
 
         self.log.debug("export_svg()")
 
@@ -10937,10 +10937,10 @@ class MenuFileHandlers(QtCore.QObject):
         """
 
         if filename is None:
-            if self.options["global_last_save_folder"]:
-                filename = self.options["global_last_save_folder"] + '/' + 'exported_excellon'
+            if self.app.defaults["global_last_save_folder"]:
+                filename = self.app.defaults["global_last_save_folder"] + '/' + 'exported_excellon'
             else:
-                filename = self.options["global_last_folder"] + '/' + 'exported_excellon'
+                filename = self.app.defaults["global_last_folder"] + '/' + 'exported_excellon'
 
         self.log.debug("export_excellon()")
 
@@ -11095,8 +11095,8 @@ class MenuFileHandlers(QtCore.QObject):
         :return:
         """
         if filename is None:
-            filename = self.options["global_last_save_folder"] if self.options["global_last_save_folder"] \
-                                                                   is not None else self.options["global_last_folder"]
+            filename = self.app.defaults["global_last_save_folder"] if \
+                self.app.defaults["global_last_save_folder"] is not None else self.app.defaults["global_last_folder"]
 
         self.log.debug("export_gerber()")
 
@@ -11229,8 +11229,8 @@ class MenuFileHandlers(QtCore.QObject):
         :return:
         """
         if filename is None:
-            filename = self.options["global_last_save_folder"] if self.options["global_last_save_folder"] \
-                                                                   is not None else self.options["global_last_folder"]
+            filename = self.app.defaults["global_last_save_folder"] if \
+                self.app.defaults["global_last_save_folder"] is not None else self.app.defaults["global_last_folder"]
 
         self.log.debug("export_dxf()")
 
@@ -12065,8 +12065,8 @@ class MenuFileHandlers(QtCore.QObject):
         """
 
         if filename is None:
-            filename = self.options["global_last_save_folder"] if self.options["global_last_save_folder"] \
-                                                                   is not None else self.options["global_last_folder"]
+            filename = self.app.defaults["global_last_save_folder"] if \
+                self.app.defaults["global_last_save_folder"] is not None else self.app.defaults["global_last_folder"]
 
         self.log.debug("save_source_file()")
 
@@ -12076,8 +12076,8 @@ class MenuFileHandlers(QtCore.QObject):
         time_string = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
 
         if file_string.getvalue() == '':
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Save cancelled because source file is empty. Try to export the file."))
+            msg = _("Save cancelled because source file is empty. Try to export the file.")
+            self.inform.emit('[ERROR_NOTCL] %s' % msg)
             return 'fail'
 
         try:
