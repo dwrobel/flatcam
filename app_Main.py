@@ -4091,6 +4091,9 @@ class App(QtCore.QObject):
             self.plotcanvas.graph_event_disconnect(self.mdc)
             self.plotcanvas.graph_event_disconnect(self.kp)
 
+        # make sure that any change we made while working in the app is saved to the defaults
+        # TODO in the future we need to make a difference between settings that need to be persistent all the time
+        self.defaults.update(self.options)
         self.preferencesUiManager.save_defaults(silent=True)
         if silent is False:
             self.log.debug("App.quit_application() --> App Defaults saved.")
