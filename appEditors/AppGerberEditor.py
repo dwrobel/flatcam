@@ -2484,32 +2484,56 @@ class EraserEditorGrb(ShapeToolEditorGrb):
             eraser_sel_shapes.append(temp_shape)
         eraser_sel_shapes = unary_union(eraser_sel_shapes)
 
+        # all shapes that are `cut` will be stored in the 0 aperture
+        intersection_geo_list = []
+        # if at least one of the apertures have zero geometry left then we delete it so we need to rebuild UI
+        should_build = False
+        # populate intersection list
         for storage in list(self.draw_app.storage_dict.keys()):
             to_delete = []
             try:
                 for idx, geo_el in enumerate(self.draw_app.storage_dict[storage]['geometry']):
                     if 'solid' in geo_el.geo:
-                        geometric_data = geo_el.geo['solid']
-                        if eraser_sel_shapes.within(geometric_data) or eraser_sel_shapes.intersects(geometric_data):
-                            geos = geometric_data.difference(eraser_sel_shapes)
-                            if geos is None or geos.is_empty:
-                                to_delete.append(idx)
-                                continue
+                        new_geo_el = {}
+                        solid_data = geo_el.geo['solid']
+                        if eraser_sel_shapes.within(solid_data) or eraser_sel_shapes.intersects(solid_data):
+                            geos = solid_data.difference(eraser_sel_shapes)
+                            to_delete.append(idx)
                             geos = geos.buffer(0)
-                            geo_el.geo['solid'] = deepcopy(geos)
+                            new_geo_el['solid'] = deepcopy(geos)
+                            if 'follow' in geo_el.geo:
+                                follow_data = geo_el.geo['solid']
+                                if eraser_sel_shapes.within(follow_data) or eraser_sel_shapes.intersects(follow_data):
+                                    geos_f = follow_data.difference(eraser_sel_shapes)
+                                    geos_f = geos_f.buffer(0)
+                                    new_geo_el['follow'] = deepcopy(geos_f)
+                        intersection_geo_list.append(DrawToolShape(new_geo_el))
             except KeyError:
                 pass
 
+            if intersection_geo_list:
+                if 0 not in self.draw_app.storage_dict.keys():
+                    self.draw_app.storage_dict[0] = {
+                        'type': 'REG',
+                        'size': 0.0,
+                        'geometry': intersection_geo_list
+                    }
+                else:
+                    self.draw_app.storage_dict[0]['geometry'] += intersection_geo_list
+
             if len(to_delete) == len(self.draw_app.storage_dict[storage]['geometry']):
                 self.draw_app.storage_dict.pop(storage, None)
+                should_build = True
             else:
                 # delete empty geometries
                 for td in to_delete[::-1]:
                     self.draw_app.storage_dict[storage]['geometry'].pop(td)
 
-        self.draw_app.build_ui()
+        if should_build:
+            self.draw_app.build_ui()
         self.draw_app.delete_utility_geometry()
-        self.draw_app.plot_all()
+        if intersection_geo_list:
+            self.draw_app.plot_all()
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         try:
             self.draw_app.app.jump_signal.disconnect()

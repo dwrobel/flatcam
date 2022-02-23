@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+23.02.2022
+
+- in Gerber Editor: in Eraser tool now the intersected shapes are stored properly such that when exporting the edited Gerber, it is done properly
+
 22.02.2022
 
 - in Gerber Editor: if the aperture size is 0 then an aperture code 0 is added (if it does not exist yet)
