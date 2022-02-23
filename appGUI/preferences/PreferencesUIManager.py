@@ -1,7 +1,7 @@
 import os
 from PyQt6 import QtGui, QtCore, QtWidgets
 from PyQt6.QtCore import QSettings
-from defaults import FlatCAMDefaults
+from defaults import AppDefaults
 
 from appGUI.GUIElements import FCMessageBox
 
@@ -16,7 +16,7 @@ if '_' not in builtins.__dict__:
 
 class PreferencesUIManager:
 
-    def __init__(self, defaults: FlatCAMDefaults, data_path: str, ui, inform, options):
+    def __init__(self, defaults: AppDefaults, data_path: str, ui, inform, options):
         """
         Class that control the Preferences Tab
 

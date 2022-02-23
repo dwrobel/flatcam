@@ -233,6 +233,7 @@ def restart_program(app, ask=None):
         if response == bt_yes:
             app.f_handlers.on_file_saveprojectas(use_thread=True, quit_action=True)
 
+    app.defaults.update(app.options)
     app.preferencesUiManager.save_defaults()
 
     try:

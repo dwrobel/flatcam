@@ -599,7 +599,7 @@ class Film(AppTool):
         self.app.defaults.report_usage("export_negative()")
 
         if filename is None:
-            filename = self.app.defaults["global_last_save_folder"]
+            filename = self.app.options["global_last_save_folder"]
 
         self.app.log.debug("Film.export_svg() negative")
 
@@ -949,7 +949,7 @@ class Film(AppTool):
         self.app.defaults.report_usage("export_positive()")
 
         if filename is None:
-            filename = self.app.defaults["global_last_save_folder"]
+            filename = self.app.options["global_last_save_folder"]
 
         self.app.log.debug("Film.export_positive() black")
 

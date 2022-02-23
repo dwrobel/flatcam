@@ -16,11 +16,11 @@ from appParsers.ParseGerber import Gerber
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
-# log = logging.getLogger('FlatCAMDefaults')
+# log = logging.getLogger('AppDefaults')
 log = logging.getLogger('base')
 
 
-class FlatCAMDefaults:
+class AppDefaults:
 
     factory_defaults = {
         # Global
@@ -1048,3 +1048,73 @@ class FlatCAMDefaults:
             self.defaults['global_stats'][resource] += 1
         else:
             self.defaults['global_stats'][resource] = 1
+
+
+class AppOptions:
+    def __init__(self, version, callback=lambda x: None):
+        """
+        Class that holds the options parameters used throughout the app.
+
+        :param callback:    A method called each time that one of the values are changed in the self.defaults LouDict
+        """
+        self.options = LoudDict()
+        self.current_options = {}  # copy used for restoring after cancelled prefs changes
+        self.version = version
+        self.options.set_change_callback(callback)
+
+    # #### Pass-through to the defaults LoudDict #####
+    def __len__(self):
+        return self.options.__len__()
+
+    def __getitem__(self, item):
+        return self.options.__getitem__(item)
+
+    def __setitem__(self, key, value):
+        return self.options.__setitem__(key, value)
+
+    def __delitem__(self, key):
+        return self.options.__delitem__(key)
+
+    def __iter__(self):
+        return self.options.__iter__()
+
+    def __getattr__(self, item):
+        # Unfortunately this method alone is not enough to pass through the other magic methods above.
+        return self.options.__getattribute__(item)
+
+    def load(self, filename: str, inform):
+        """
+        Loads the options from a file on disk, performing migration if required.
+
+        :param filename:    a path to the file that is to be loaded
+        :param inform:      a pyqtSignal used to display information's in the StatusBar of the GUI
+        """
+
+        # Read in the file
+        try:
+            f = open(filename)
+            options = f.read()
+            f.close()
+        except IOError:
+            log.error("Could not load defaults file.")
+            inform.emit('[ERROR] %s' % _("Could not load the file."))
+            # in case the defaults file can't be loaded, show all toolbars
+            self.options["global_toolbar_view"] = 511
+            return
+
+        # Parse the JSON
+        try:
+            options = simplejson.loads(options)
+        except Exception:
+            # in case the defaults file can't be loaded, show all toolbars
+            self.defaults["global_toolbar_view"] = 511
+            e = sys.exc_info()[0]
+            log.error(str(e))
+            inform.emit('[ERROR] %s' % _("Failed to parse defaults file."))
+            return
+        if options is None:
+            return
+
+        # Save the resulting defaults
+        self.options.update(options)
+        self.current_options.update(self.options)

@@ -331,7 +331,7 @@ class PcbWizard(AppTool):
             self.process_finished = True
 
         # Register recent file
-        self.app.defaults["global_last_folder"] = os.path.split(str(filename))[0]
+        self.app.options["global_last_folder"] = os.path.split(str(filename))[0]
 
     def on_import_excellon(self, signal=None, excellon_fileobj=None):
         self.app.log.debug("import_2files_excellon()")

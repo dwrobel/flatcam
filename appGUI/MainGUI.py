@@ -2164,20 +2164,20 @@ class MainGUI(QtWidgets.QMainWindow):
 
         :return: None
         """
-        self.app.defaults["global_def_win_x"] = x
-        self.app.defaults["global_def_win_y"] = y
-        self.app.defaults["global_def_win_w"] = width
-        self.app.defaults["global_def_win_h"] = height
-        self.app.defaults["global_def_notebook_width"] = notebook_width
-        self.app.preferencesUiManager.save_defaults()
+        self.app.options["global_def_win_x"] = x
+        self.app.options["global_def_win_y"] = y
+        self.app.options["global_def_win_w"] = width
+        self.app.options["global_def_win_h"] = height
+        self.app.options["global_def_notebook_width"] = notebook_width
+        # self.app.preferencesUiManager.save_defaults()
 
     def restore_main_win_geom(self):
         try:
-            self.setGeometry(self.app.defaults["global_def_win_x"],
-                             self.app.defaults["global_def_win_y"],
-                             self.app.defaults["global_def_win_w"],
-                             self.app.defaults["global_def_win_h"])
-            self.splitter.setSizes([self.app.defaults["global_def_notebook_width"], 0])
+            self.setGeometry(self.app.options["global_def_win_x"],
+                             self.app.options["global_def_win_y"],
+                             self.app.options["global_def_win_w"],
+                             self.app.options["global_def_win_h"])
+            self.splitter.setSizes([self.app.options["global_def_notebook_width"], 0])
         except KeyError as e:
             self.app.log.debug("appGUI.MainGUI.restore_main_win_geom() --> %s" % str(e))
 
@@ -2188,7 +2188,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         :return: None
         """
-        tb = self.app.defaults["global_toolbar_view"]
+        tb = self.app.options["global_toolbar_view"]
 
         if tb & 1:
             self.toolbarfile.setVisible(True)

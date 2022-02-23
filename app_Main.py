@@ -62,7 +62,8 @@ from vispy.gloo.util import _screenshot
 from vispy.io import write_png
 
 # App defaults (preferences)
-from defaults import FlatCAMDefaults
+from defaults import AppDefaults
+from defaults import AppOptions
 
 # App Objects
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
@@ -556,7 +557,7 @@ class App(QtCore.QObject):
             f.close()
 
         # the factory defaults are written only once at the first launch of the application after installation
-        FlatCAMDefaults.save_factory_defaults(self.factory_defaults_path(), self.version)
+        AppDefaults.save_factory_defaults(self.factory_defaults_path(), self.version)
 
         # create a recent files json file if there is none
         rec_f_path = self.recent_files_path()
@@ -596,7 +597,7 @@ class App(QtCore.QObject):
         # ############################################################################################################
         # ################################# DEFAULTS - PREFERENCES STORAGE ###########################################
         # ############################################################################################################
-        self.defaults = FlatCAMDefaults(beta=self.beta, version=self.version)
+        self.defaults = AppDefaults(beta=self.beta, version=self.version)
 
         # current_defaults_path = os.path.join(self.data_path, "current_defaults.FlatConfig")
         current_defaults_path = self.defaults_path()
@@ -606,7 +607,7 @@ class App(QtCore.QObject):
         # ###########################################################################################################
         # ######################################## UPDATE THE OPTIONS ###############################################
         # ###########################################################################################################
-        self.options = LoudDict()
+        self.options = AppOptions(version=self.version)
         # -----------------------------------------------------------------------------------------------------------
         #   Update the self.options from the self.defaults
         #   The self.options holds the application defaults while the self.options holds the object defaults
@@ -1077,8 +1078,8 @@ class App(QtCore.QObject):
         # ###########################################################################################################
         # ##################################### UPDATE PREFERENCES GUI FORMS ########################################
         # ###########################################################################################################
-        self.preferencesUiManager = PreferencesUIManager(defaults=self.defaults, data_path=self.data_path, ui=self.ui,
-                                                         inform=self.inform, options=self.options)
+        self.preferencesUiManager = PreferencesUIManager(data_path=self.data_path, ui=self.ui, inform=self.inform,
+                                                         options=self.options, defaults=self.defaults)
 
         self.preferencesUiManager.defaults_write_form()
 
@@ -1092,8 +1093,8 @@ class App(QtCore.QObject):
         # ###################################### CREATE UNIQUE SERIAL NUMBER ########################################
         # ###########################################################################################################
         chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
-        if self.defaults['global_serial'] == 0 or len(str(self.defaults['global_serial'])) < 10:
-            self.defaults['global_serial'] = ''.join([random.choice(chars) for __ in range(20)])
+        if self.options['global_serial'] == 0 or len(str(self.options['global_serial'])) < 10:
+            self.options['global_serial'] = ''.join([random.choice(chars) for __ in range(20)])
             self.preferencesUiManager.save_defaults(silent=True, first_time=True)
 
         self.defaults.propagate_defaults()
@@ -1359,7 +1360,7 @@ class App(QtCore.QObject):
         # ##################################### FIRST RUN SECTION ###################################################
         # ################################ It's done only once after install   #####################################
         # ###########################################################################################################
-        if self.defaults["first_run"] is True:
+        if self.options["first_run"] is True:
             # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'minimal'
             self.log.debug("-> First Run: Setting up the first Layout")
             initial_lay = 'minimal'
@@ -1370,7 +1371,7 @@ class App(QtCore.QObject):
             self.ui.general_pref_form.general_gui_group.layout_combo.setCurrentIndex(idx)
 
             # after the first run, this object should be False
-            self.defaults["first_run"] = False
+            self.options["first_run"] = False
             self.log.debug("-> First Run: Updating the Defaults file with Factory Defaults")
             self.preferencesUiManager.save_defaults(silent=True)
 
@@ -1764,6 +1765,7 @@ class App(QtCore.QObject):
 
             elif 'save'.lower() in argument.lower():
                 self.log.debug("App.on_startup_args() --> Save event. App Defaults saved.")
+                self.defaults.update(self.options)
                 self.preferencesUiManager.save_defaults()
             else:
                 exc_list = self.ui.util_pref_form.fa_excellon_group.exc_list_text.get_value().split(',')
@@ -2401,12 +2403,11 @@ class App(QtCore.QObject):
         except Exception as c_err:
             self.log.error("App.connect_toolbar_signals() tools signals -> %s" % str(c_err))
 
-    def on_layout(self, index=None, lay=None, connect_signals=True):
+    def on_layout(self, lay=None, connect_signals=True):
         """
         Set the toolbars layout (location).
 
         :param connect_signals: Useful when used in the App.__init__(); bool
-        :param index:
         :param lay:             Type of layout to be set on the toolbard
         :return:                None
         """
@@ -2981,16 +2982,16 @@ class App(QtCore.QObject):
         Get the folder path from where the last file was opened.
         :return: String, last opened folder path
         """
-        return self.defaults["global_last_folder"]
+        return self.options["global_last_folder"]
 
     def get_last_save_folder(self):
         """
         Get the folder path from where the last file was saved.
         :return: String, last saved folder path
         """
-        loc = self.defaults["global_last_save_folder"]
+        loc = self.options["global_last_save_folder"]
         if loc is None:
-            loc = self.defaults["global_last_folder"]
+            loc = self.options["global_last_folder"]
         if loc is None:
             loc = os.path.dirname(__file__)
         return loc
@@ -3077,8 +3078,8 @@ class App(QtCore.QObject):
         date = date.replace(' ', '_')
 
         filter__ = "HTML File .html (*.html);;TXT File .txt (*.txt);;All Files (*.*)"
-        path_to_save = self.defaults["global_last_save_folder"] if \
-            self.defaults["global_last_save_folder"] is not None else self.data_path
+        path_to_save = self.options["global_last_save_folder"] if \
+            self.options["global_last_save_folder"] is not None else self.data_path
         final_path = os.path.join(path_to_save, 'file_%s' % str(date))
 
         try:
@@ -8339,7 +8340,7 @@ class App(QtCore.QObject):
         :param filename:    the last folder is extracted from the filename
         :return:            None
         """
-        self.defaults["global_last_folder"] = os.path.split(str(filename))[0]
+        self.options["global_last_folder"] = os.path.split(str(filename))[0]
 
     def register_save_folder(self, filename):
         """
@@ -8348,7 +8349,7 @@ class App(QtCore.QObject):
         :param filename:    the last folder is extracted from the filename
         :return:            None
         """
-        self.defaults["global_last_save_folder"] = os.path.split(str(filename))[0]
+        self.options["global_last_save_folder"] = os.path.split(str(filename))[0]
 
     # def set_progress_bar(self, percentage, text=""):
     #     """
@@ -10317,6 +10318,7 @@ class MenuFileHandlers(QtCore.QObject):
             response = msgbox.clickedButton()
 
             if response == bt_yes:
+                self.app.defaults.update(self.app.options)
                 self.app.preferencesUiManager.save_defaults()
             if response == bt_no:
                 pass
@@ -10799,8 +10801,8 @@ class MenuFileHandlers(QtCore.QObject):
         :return:
         """
         if filename is None:
-            filename = self.app.defaults["global_last_save_folder"] if \
-                self.app.defaults["global_last_save_folder"] is not None else self.app.defaults["global_last_folder"]
+            filename = self.app.options["global_last_save_folder"] if \
+                self.app.options["global_last_save_folder"] is not None else self.app.options["global_last_folder"]
 
         self.log.debug("export_svg()")
 
@@ -10941,10 +10943,10 @@ class MenuFileHandlers(QtCore.QObject):
         """
 
         if filename is None:
-            if self.app.defaults["global_last_save_folder"]:
-                filename = self.app.defaults["global_last_save_folder"] + '/' + 'exported_excellon'
+            if self.app.options["global_last_save_folder"]:
+                filename = self.app.options["global_last_save_folder"] + '/' + 'exported_excellon'
             else:
-                filename = self.app.defaults["global_last_folder"] + '/' + 'exported_excellon'
+                filename = self.app.options["global_last_folder"] + '/' + 'exported_excellon'
 
         self.log.debug("export_excellon()")
 
@@ -11099,8 +11101,8 @@ class MenuFileHandlers(QtCore.QObject):
         :return:
         """
         if filename is None:
-            filename = self.app.defaults["global_last_save_folder"] if \
-                self.app.defaults["global_last_save_folder"] is not None else self.app.defaults["global_last_folder"]
+            filename = self.app.options["global_last_save_folder"] if \
+                self.app.options["global_last_save_folder"] is not None else self.app.options["global_last_folder"]
 
         self.log.debug("export_gerber()")
 
@@ -11233,8 +11235,8 @@ class MenuFileHandlers(QtCore.QObject):
         :return:
         """
         if filename is None:
-            filename = self.app.defaults["global_last_save_folder"] if \
-                self.app.defaults["global_last_save_folder"] is not None else self.app.defaults["global_last_folder"]
+            filename = self.app.options["global_last_save_folder"] if \
+                self.app.options["global_last_save_folder"] is not None else self.app.options["global_last_folder"]
 
         self.log.debug("export_dxf()")
 
@@ -12069,8 +12071,8 @@ class MenuFileHandlers(QtCore.QObject):
         """
 
         if filename is None:
-            filename = self.app.defaults["global_last_save_folder"] if \
-                self.app.defaults["global_last_save_folder"] is not None else self.app.defaults["global_last_folder"]
+            filename = self.app.options["global_last_save_folder"] if \
+                self.app.options["global_last_save_folder"] is not None else self.app.options["global_last_folder"]
 
         self.log.debug("save_source_file()")
 
@@ -12107,6 +12109,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         :return: None
         """
+        self.app.defaults.update(self.app.options)
         self.app.preferencesUiManager.save_defaults()
 
 
