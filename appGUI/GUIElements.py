@@ -5238,11 +5238,15 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
     """
     This class create a place to display the App messages in the Status Bar
     """
+    clicked = QtCore.pyqtSignal(bool)
 
     def __init__(self, parent=None, app=None):
         super(FlatCAMInfoBar, self).__init__(parent=parent)
 
         self.app = app
+
+        # for the usage of this label as a clickable label, to know that current state
+        self.clicked_state = False
 
         self.icon = QtWidgets.QLabel(self)
         self.icon.setGeometry(0, 0, 12, 12)
@@ -5269,6 +5273,11 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
 
         layout.addWidget(self.text)
         layout.addStretch()
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.clicked_state = not self.clicked_state
+            self.clicked.emit(self.clicked_state)
 
     def set_text_(self, text, color=None):
         self.text.setText(text)
@@ -5487,7 +5496,54 @@ class FCMessageBox(QtWidgets.QMessageBox):
     def mouseMoveEvent(self, event):
         if self.moving:
             self.move(event.globalPosition().toPoint() - self.offset.toPoint())
-            
+
+
+class FCDateTime(QtWidgets.QDateTimeEdit):
+
+    def __init__(self, parent):
+        super(FCDateTime, self).__init__(parent)
+
+    def set_value(self, val):
+        year = val[0]
+        month = val[1]
+        day = val[2]
+        hour = val[3]
+        min = val[4]
+        date = QDateTime(year, month, day, hour, min)
+        self.setDateTime(date)
+
+    def get_value(self):
+        dt = self.dateTime()
+        date = dt.date()
+        time = dt.time()
+        date_list = [date.year(), date.month(), date.day(), time.hour(), time.minute()]
+        return date_list
+
+
+class FCDate(QtWidgets.QDateEdit):
+
+    def __init__(self, parent=None):
+        super(FCDate, self).__init__(parent)
+        self.setStyleSheet("""
+        QDateEdit {
+            border: 0px solid white;
+            background-color : none;
+        }
+        """)
+
+    def set_value(self, val):
+        val_split = val.split('-')
+        year = int(val_split[0])
+        month = int(val_split[1])
+        day = int(val_split[2])
+        date = QDate(year, month, day)
+        self.setDate(date)
+
+    def get_value(self):
+        date = self.date()
+        date_formated = date.toString(QtCore.Qt.DateFormat.ISODate)
+        return date_formated
+   
 
 def message_dialog(title, message, kind="info", parent=None):
     """

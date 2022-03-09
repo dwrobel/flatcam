@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+9.03.2022
+
+- added a few new GUI custom widgets
+- removed the status bar Tcl Shell toggleable QLable. Now the Tcl Shell is toggled by clicking the Message in the Status bar
+
 24.02.2022
 
 - some changes to the Preferences

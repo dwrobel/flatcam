@@ -1354,12 +1354,6 @@ class MainGUI(QtWidgets.QMainWindow):
         self.status_toolbar.addWidget(self.pref_status_label)
         self.status_toolbar.addWidget(FCLabel(" "))
 
-        self.shell_status_label = FCLabel()
-        self.shell_status_label.setToolTip(_("Command Line"))
-        self.shell_status_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/shell20.png'))
-        self.status_toolbar.addWidget(self.shell_status_label)
-        self.status_toolbar.addWidget(FCLabel(" "))
-
         self.hud_label = FCLabel()
         self.hud_label.setToolTip(_("HUD (Heads up display)"))
         self.hud_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/hud16.png'))
@@ -2009,7 +2003,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.clear_btn.clicked.connect(self.on_gui_clear)
 
         self.wplace_label.clicked.connect(self.app.on_workspace_toggle)
-        self.shell_status_label.clicked.connect(self.toggle_shell_ui)
+        self.fcinfo.clicked.connect(self.toggle_shell_ui)
 
         # to be used in the future
         # self.plot_tab_area.tab_attached.connect(lambda x: print(x))
@@ -2035,8 +2029,6 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.geom_update[int, int, int, int, int].connect(self.save_geometry)
         self.final_save.connect(self.app.final_save)
-
-        self.shell_dock.visibilityChanged.connect(self.on_shelldock_toggled)
 
         # Notebook and Plot Tab Area signals
         # make the right click on the notebook tab and plot tab area tab raise a menu
@@ -2852,20 +2844,6 @@ class MainGUI(QtWidgets.QMainWindow):
             # f = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonRelease, pos, QtCore.Qt.LeftButton, QtCore.Qt.LeftButton,
             #                       no_km)
             # QtCore.QCoreApplication.instance().sendEvent(self.shell._edit, f)
-
-    def on_shelldock_toggled(self, visibility):
-        if visibility is True:
-            self.shell_status_label.setStyleSheet("""
-                                                  QLabel
-                                                  {
-                                                      color: black;
-                                                      background-color: lightcoral;
-                                                  }
-                                                  """)
-            self.app.inform[str, bool].emit(_("Shell enabled."), False)
-        else:
-            self.shell_status_label.setStyleSheet("")
-            self.app.inform[str, bool].emit(_("Shell disabled."), False)
 
     def keyPressEvent(self, event):
         """
