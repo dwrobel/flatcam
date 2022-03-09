@@ -3714,7 +3714,8 @@ class AppExcEditor(QtCore.QObject):
                     continue
 
                 if shape_plus in self.selected:
-                    self.plot_shape(geometry=shape_plus.geo, color=self.app.options['global_sel_draw_color'] + 'FF',
+                    self.plot_shape(geometry=shape_plus.geo,
+                                    color=self.app.options['global_sel_draw_color'][:-2] + 'FF',
                                     linewidth=2)
                     continue
                 self.plot_shape(geometry=shape_plus.geo, color=self.app.options['global_draw_color'][:-2] + 'FF')

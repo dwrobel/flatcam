@@ -26,6 +26,7 @@ from appTool import AppTool
 import numpy as np
 from numpy.linalg import norm as numpy_norm
 import math
+import inspect
 
 # from vispy.io import read_png
 # import pngcanvas
@@ -2629,6 +2630,8 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
             self.draw_app.plot_object.disconnect()
         except (TypeError, AttributeError):
             pass
+
+        # after the shape is selected make sure that the aperture row in the Aperture Table is selected
         self.draw_app.plot_object.connect(self.after_selection)
 
         # if the shapes are not visible make them visible
@@ -2713,7 +2716,7 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
 
                 self.draw_app.update_ui_sig.emit()
 
-                editor_obj.plot_object.emit(None)
+            editor_obj.plot_object.emit(None)
 
         self.draw_app.app.worker_task.emit({'fcn': job_thread, 'params': [self.draw_app]})
 
@@ -2732,29 +2735,33 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
         self.sel_aperture.clear()
         self.draw_app.ui.apertures_table.clearSelection()
 
-        # disconnect signal when clicking in the table
-        try:
-            self.draw_app.ui.apertures_table.cellPressed.disconnect()
-        except Exception as e:
-            log.error("AppGerberEditor.SelectEditorGrb.click_release() --> %s" % str(e))
-
         for shape_s in self.draw_app.selected:
             for storage in self.draw_app.storage_dict:
                 if shape_s in self.draw_app.storage_dict[storage]['geometry']:
                     self.sel_aperture.add(storage)
 
+        # disconnect signal when clicking in the table
+        try:
+            self.draw_app.ui.apertures_table.cellPressed.disconnect(self.draw_app.on_row_selected)
+        except Exception as e:
+            log.error("AppGerberEditor.SelectEditorGrb.click_release() --> %s" % str(e))
+        try:
+            self.draw_app.ui.apertures_table.selectionModel().selectionChanged.disconnect(
+                self.draw_app.on_table_selection)
+        except Exception as e:
+            log.error("AppGerberEditor.SelectEditorGrb.click_release() selectionChanged.disconnect() --> %s" % str(e))
         # actual row selection is done here
-        self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.MultiSelection)
+        # self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
         for aper in self.sel_aperture:
             for row in range(self.draw_app.ui.apertures_table.rowCount()):
                 if str(aper) == self.draw_app.ui.apertures_table.item(row, 1).text():
                     if row not in set(idx.row() for idx in self.draw_app.ui.apertures_table.selectedIndexes()):
                         self.draw_app.ui.apertures_table.selectRow(row)
                         self.draw_app.last_aperture_selected = aper
-        self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
-
+        # self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
         # reconnect signal when clicking in the table
         self.draw_app.ui.apertures_table.cellPressed.connect(self.draw_app.on_row_selected)
+        self.draw_app.ui.apertures_table.selectionModel().selectionChanged.connect(self.draw_app.on_table_selection)
 
         # and plot all
         self.draw_app.plot_all()
@@ -4175,6 +4182,8 @@ class AppGerberEditor(QtCore.QObject):
         self.app.worker_task.emit({'fcn': task_job, 'params': []})
 
     def update_ui(self):
+        is_zoom_selected = self.ui.geo_zoom.get_value()
+
         if not self.selected:
             self.ui.geo_coords_entry.setText('')
             self.ui.geo_vertex_entry.set_value(0)
@@ -4182,10 +4191,12 @@ class AppGerberEditor(QtCore.QObject):
             self.ui.is_valid_entry.setText('None')
             return
 
+        # update the GUI only with the last selected shape information's
         last_sel_geo = self.selected[-1].geo
         last_sel_geo_solid = last_sel_geo['solid']
 
-        if self.ui.geo_zoom.get_value():
+        # zoom on selected
+        if is_zoom_selected:
             xmin, ymin, xmax, ymax = last_sel_geo_solid.bounds
             if xmin == xmax and ymin != ymax:
                 xmin = ymin
@@ -4225,6 +4236,7 @@ class AppGerberEditor(QtCore.QObject):
                 ymax += 0.05 * height
                 self.app.plotcanvas.adjust_axes(xmin, ymin, xmax, ymax)
 
+        # calculate the coordinates and vertex points number for the selected shape
         if last_sel_geo_solid.geom_type == 'Polygon':
             coords = list(last_sel_geo_solid.exterior.coords)
             vertex_nr = len(coords)
@@ -4236,11 +4248,12 @@ class AppGerberEditor(QtCore.QObject):
         else:
             return
 
+        # update Validity in GUI
         validity = last_sel_geo_solid.is_valid
-
         self.ui.is_valid_entry.setText(str(validity))
+        # update the selected shape coordinates in GUI
         self.ui.geo_coords_entry.setText(str(coords))
-
+        # update the vertex number in GUI
         self.ui.geo_vertex_entry.set_value(vertex_nr)
 
     def change_level(self, level):
@@ -5038,7 +5051,7 @@ class AppGerberEditor(QtCore.QObject):
                 self.active_tool = SelectEditorGrb(self)
 
     def on_row_selected(self, row, col):
-        # if col == 0:
+        # log.debug("AppGerberEditor.on_row_selected() --> %s" % str(inspect.stack()[1][3]))
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
         if self.app.options["global_mselect_key"] == 'Control':
             modifier_to_use = Qt.KeyboardModifier.ControlModifier
@@ -5094,6 +5107,7 @@ class AppGerberEditor(QtCore.QObject):
         self.plot_all()
 
     def on_table_selection(self):
+        # log.debug("AppGerberEditor.on_table_selection() -> %s" % str(inspect.stack()[1][3]))
         selected_rows = self.ui.apertures_table.selectionModel().selectedRows(0)
 
         if len(selected_rows) == self.ui.apertures_table.rowCount():

@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+10.03.2022
+
+- fixed an issue where using the 'G' shortcut key in Editors will not toggle the grid snap
+- fixed an issue in the Excellon Editor where selecting the drills did not highlight them but instead made them invisible (although the selection still worked)
+- fixed an issue in the Gerber Editor where selecting one shape will auto-select all the shapes made with the same aperture
+
 9.03.2022
 
 - added a few new GUI custom widgets

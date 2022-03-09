@@ -3516,7 +3516,7 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.app.ui.grid_snap_btn.trigger()
 
                     # make sure that the cursor shape is enabled/disabled, too
-                    if self.app.geo_editor.obj_options['grid_snap'] is True:
+                    if self.app.geo_editor.editor_options['grid_snap'] is True:
                         self.app.app_cursor.enabled = True
                     else:
                         self.app.app_cursor.enabled = False
@@ -3821,7 +3821,7 @@ class MainGUI(QtWidgets.QMainWindow):
                     if key == QtCore.Qt.Key.Key_G or key == 'G':
                         self.app.grb_editor.launched_from_shortcuts = True
                         # make sure that the cursor shape is enabled/disabled, too
-                        if self.app.grb_editor.obj_options['grid_snap'] is True:
+                        if self.app.grb_editor.editor_options['grid_snap'] is True:
                             self.app.app_cursor.enabled = False
                         else:
                             self.app.app_cursor.enabled = True
@@ -3994,7 +3994,7 @@ class MainGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key.Key_G or key == 'G':
                     self.app.exc_editor.launched_from_shortcuts = True
                     # make sure that the cursor shape is enabled/disabled, too
-                    if self.app.exc_editor.obj_options['grid_snap'] is True:
+                    if self.app.exc_editor.editor_options['grid_snap'] is True:
                         self.app.app_cursor.enabled = False
                     else:
                         self.app.app_cursor.enabled = True
