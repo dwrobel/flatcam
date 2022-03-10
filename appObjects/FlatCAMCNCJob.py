@@ -64,6 +64,22 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             "dwell": False,
             "dwelltime": 1,
             "type": 'Geometry',
+
+            "cncjob_tooldia": self.app.options["cncjob_tooldia"],
+            "cncjob_coords_type": self.app.options["cncjob_coords_type"],
+            "cncjob_coords_decimals": self.app.options["cncjob_coords_decimals"],
+            "cncjob_fr_decimals": self.app.options["cncjob_fr_decimals"],
+
+            # bed square compensation
+            "cncjob_bed_max_x": self.app.options["cncjob_bed_max_x"],
+            "cncjob_bed_max_y": self.app.options["cncjob_bed_max_y"],
+            "cncjob_bed_offset_x": self.app.options["cncjob_bed_offset_x"],
+            "cncjob_bed_offset_y": self.app.options["cncjob_bed_offset_y"],
+            "cncjob_bed_skew_x": self.app.options["cncjob_bed_skew_x"],
+            "cncjob_bed_skew_y": self.app.options["cncjob_bed_skew_y"],
+
+            "cncjob_steps_per_circle": 16,
+
             # "toolchange_macro": '',
             # "toolchange_macro_enable": False
             "tools_al_travelz": self.app.options["tools_al_travelz"],
