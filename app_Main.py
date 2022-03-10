@@ -10261,7 +10261,7 @@ class MenuFileHandlers(QtCore.QObject):
         # Clear project filename
         self.app.project_filename = None
 
-        default_file = self.app.options_path()
+        default_file = self.app.defaults_path()
         # Load the application options
         self.options.load(filename=default_file, inform=self.inform)
 

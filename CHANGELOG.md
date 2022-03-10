@@ -21,6 +21,7 @@ CHANGELOG for FlatCAM beta
 - more work in Film Plugin, in the `ratio` skew feature
 - fixed a typo in the Distance Plugin which made that the Delta Y value was always the same as Delta X value
 - made sure that the app starts with toolbar's locked
+- fixed an issue when creating a new project (due of recent massive changes)
 
 9.03.2022
 
