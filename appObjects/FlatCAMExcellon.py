@@ -1020,7 +1020,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
             geo_obj.obj_options['type'] = 'Excellon Geometry'
             geo_obj.obj_options["tools_mill_tooldia"] = str(tooldia)
-            geo_obj.obj_options["multidepth"] = app_obj.defaults["tools_mill_multidepth"]
+            geo_obj.obj_options["multidepth"] = app_obj.options["tools_mill_multidepth"]
             geo_obj.solid_geometry = []
 
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution
@@ -1117,7 +1117,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
             geo_obj.obj_options['type'] = 'Excellon Geometry'
             geo_obj.obj_options["tools_mill_tooldia"] = str(tooldia)
-            geo_obj.obj_options["tools_mill_multidepth"] = app_obj.defaults["tools_mill_multidepth"]
+            geo_obj.obj_options["tools_mill_multidepth"] = app_obj.options["tools_mill_multidepth"]
             geo_obj.solid_geometry = []
 
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution

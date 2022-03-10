@@ -12,6 +12,9 @@ CHANGELOG for FlatCAM beta
 - fixed an issue where using the 'G' shortcut key in Editors will not toggle the grid snap
 - fixed an issue in the Excellon Editor where selecting the drills did not highlight them but instead made them invisible (although the selection still worked)
 - fixed an issue in the Gerber Editor where selecting one shape will auto-select all the shapes made with the same aperture
+- fixed multiple issues in the App objects related to wrong usage of self.obj_options attribute instead of self.app.options attribute
+- remade the Film Plugin such that the `skew` feature is now done in length units as opposed with the previous usage of angles
+- refactored some big methods from the Film Plugin
 
 9.03.2022
 
@@ -3454,7 +3457,7 @@ RELEASE 8.993
 
 - working on a new tool: Extract Drills Tool who will create a Excellon object out of the apertures of a Gerber object
 - finished the GUI in the Extract Drills Tool
-- fixed issue in Film Tool where some parameters names in calls of method export_positive() were not matching the actual parameters name
+- fixed issue in Film Tool where some parameters names in calls of method export_positive_handler() were not matching the actual parameters name
 - finished the Extract Drills Tool
 - fixed a small issue in the DoubleSided Tool
 

@@ -585,12 +585,12 @@ class GerberObject(FlatCAMObj, Gerber):
 
                 # store here the default data for Geometry Data
                 default_data = {}
-                for opt_key, opt_val in app_obj.obj_options.items():
+                for opt_key, opt_val in app_obj.options.items():
                     if opt_key.find('geometry' + "_") == 0:
                         oname = opt_key[len('geometry') + 1:]
-                        default_data[oname] = self.app.options[opt_key]
+                        default_data[oname] = app_obj.options[opt_key]
                     if opt_key.find('tools_mill' + "_") == 0:
-                        default_data[opt_key] = self.app.options[opt_key]
+                        default_data[opt_key] = app_obj.options[opt_key]
 
                 geo_obj.tools = {
                     1: {
@@ -676,7 +676,7 @@ class GerberObject(FlatCAMObj, Gerber):
                 def iso_init(geo_obj, app_obj):
                     # Propagate options
                     geo_obj.obj_options["tools_mill_tooldia"] = str(dia)
-                    geo_obj.tool_type = self.app.options["tools_iso_tool_shape"]
+                    geo_obj.tool_type = app_obj.options["tools_iso_tool_shape"]
                     geo_obj.multigeo = True
 
                     # if milling type is climb then the move is counter-clockwise around features
@@ -692,12 +692,12 @@ class GerberObject(FlatCAMObj, Gerber):
 
                     # store here the default data for Geometry Data
                     default_data = {}
-                    for opt_key, opt_val in app_obj.obj_options.items():
+                    for opt_key, opt_val in app_obj.options.items():
                         if opt_key.find('geometry' + "_") == 0:
                             oname = opt_key[len('geometry') + 1:]
-                            default_data[oname] = self.app.options[opt_key]
+                            default_data[oname] = app_obj.options[opt_key]
                         if opt_key.find('tools_mill' + "_") == 0:
-                            default_data[opt_key] = self.app.options[opt_key]
+                            default_data[opt_key] = app_obj.options[opt_key]
 
                     geo_obj.tools = {
                         1: {
@@ -786,7 +786,7 @@ class GerberObject(FlatCAMObj, Gerber):
         """
 
         if outname is None:
-            follow_name = self.obj_options["name"] + "_follow"
+            follow_name = self.options["name"] + "_follow"
         else:
             follow_name = outname
 
@@ -808,16 +808,16 @@ class GerberObject(FlatCAMObj, Gerber):
             # new_obj.obj_options["tools_mill_tooldia"] = str(self.app.options["tools_iso_tooldia"])
             new_obj.solid_geometry = deepcopy(self.follow_geometry)
 
-            new_obj.obj_options["tools_mill_tooldia"] = app_obj.defaults["tools_mill_tooldia"]
+            new_obj.obj_options["tools_mill_tooldia"] = app_obj.options["tools_mill_tooldia"]
 
             # store here the default data for Geometry Data
             default_data = {}
-            for opt_key, opt_val in app_obj.obj_options.items():
+            for opt_key, opt_val in app_obj.options.items():
                 if opt_key.find('geometry' + "_") == 0:
                     oname = opt_key[len('geometry') + 1:]
-                    default_data[oname] = self.app.options[opt_key]
+                    default_data[oname] = app_obj.options[opt_key]
                 if opt_key.find('tools_mill' + "_") == 0:
-                    default_data[opt_key] = self.app.options[opt_key]
+                    default_data[opt_key] = app_obj.options[opt_key]
 
             new_obj.tools = {
                 1: {
@@ -1021,10 +1021,7 @@ class GerberObject(FlatCAMObj, Gerber):
         #     return
 
         # for marking apertures, line color and fill color are the same
-        if 'color' in kwargs:
-            color = kwargs['color']
-        else:
-            color = self.app.options['gerber_plot_fill']
+        color = kwargs['color'] if 'color' in kwargs else self.app.options['gerber_plot_fill']
 
         if 'marked_aperture' in kwargs:
             aperture_to_plot_mark = kwargs['marked_aperture']

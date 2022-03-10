@@ -4,6 +4,7 @@
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
 # ##########################################################
+import math
 
 from PyQt6 import QtCore, QtWidgets, QtGui
 
@@ -398,16 +399,16 @@ class Film(AppTool):
         filename = str(filename)
 
         if str(filename) != "":
-            self.export_positive(name, boxname, filename,
-                                 scale_stroke_factor=factor,
-                                 scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
-                                 scale_reference=scale_reference,
-                                 skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                 skew_reference=skew_reference,
-                                 mirror=mirror,
-                                 opacity_val=1.0,
-                                 ftype=ftype
-                                 )
+            self.export_positive_handler(name, boxname, filename,
+                                         scale_stroke_factor=factor,
+                                         scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
+                                         scale_reference=scale_reference,
+                                         skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
+                                         skew_reference=skew_reference,
+                                         mirror=mirror,
+                                         opacity_val=1.0,
+                                         ftype=ftype
+                                         )
             return
 
         # if we reach here then the filename is null
@@ -553,23 +554,23 @@ class Film(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
-            self.export_negative(name, boxname, filename, border,
-                                 scale_stroke_factor=factor,
-                                 scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
-                                 scale_reference=scale_reference,
-                                 skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                 skew_reference=skew_reference,
-                                 mirror=mirror, ftype=ftype,
-                                 use_convex_hull=use_convex_hull,
-                                 rounded_box=rounded_box
-                                 )
+            self.export_negative_handler(name, boxname, filename, border,
+                                         scale_stroke_factor=factor,
+                                         scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
+                                         scale_reference=scale_reference,
+                                         skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
+                                         skew_reference=skew_reference,
+                                         mirror=mirror, ftype=ftype,
+                                         use_convex_hull=use_convex_hull,
+                                         rounded_box=rounded_box
+                                         )
 
-    def export_negative(self, obj_name, box_name, filename, boundary,
-                        scale_stroke_factor=0.00,
-                        scale_factor_x=1, scale_factor_y=1, scale_reference='center',
-                        skew_factor_x=None, skew_factor_y=None, skew_reference='center',
-                        mirror=None, opacity_val=1.0,
-                        use_thread=True, ftype='svg', use_convex_hull=False, rounded_box=False):
+    def export_negative_handler(self, obj_name, box_name, filename, boundary,
+                                scale_stroke_factor=0.00,
+                                scale_factor_x=1, scale_factor_y=1, scale_reference='center',
+                                skew_factor_x=None, skew_factor_y=None, skew_reference='center',
+                                mirror=None, opacity_val=1.0,
+                                use_thread=True, ftype='svg', use_convex_hull=False, rounded_box=False):
         """
         Exports a Geometry Object to an SVG file in negative.
 
@@ -596,7 +597,7 @@ class Film(AppTool):
                                     Works only in case the object used as box has multiple geometries
         :return:
         """
-        self.app.defaults.report_usage("export_negative()")
+        self.app.defaults.report_usage("export_negative_handler()")
 
         if filename is None:
             filename = self.app.options["global_last_save_folder"]
@@ -620,30 +621,13 @@ class Film(AppTool):
         scale_factor_x = scale_factor_x
         scale_factor_y = scale_factor_y
 
-        def get_complementary(color_param):
-            # strip the # from the beginning
-            our_color = color_param[1:]
-
-            # convert the string into hex
-            our_color = int(our_color, 16)
-
-            # invert the three bytes
-            # as good as substracting each of RGB component by 255(FF)
-            comp_color = 0xFFFFFF ^ our_color
-
-            # convert the color back to hex by prefixing a #
-            comp_color = "#%06X" % comp_color
-
-            # return the result
-            return comp_color
-
         p_size = self.ui.pagesize_combo.get_value()
         orientation = self.ui.orientation_radio.get_value()
         color = obj.obj_options['tools_film_color']
         transparency_level = opacity_val
 
         def make_negative_film(color, transparency_level, scale_factor_x, scale_factor_y, use_convex_hull, rounded_box):
-            self.app.log.debug("FilmTool.export_negative().make_negative_film()")
+            self.app.log.debug("FilmTool.export_negative_handler().make_negative_film()")
 
             self.screen_dpi = self.app.qapp.screens()[0].logicalDotsPerInch()
 
@@ -654,247 +638,35 @@ class Film(AppTool):
                 scale_factor_x += dpi_rate
                 scale_factor_y += dpi_rate
 
-            # ########################################################################################################
-            # the case when the BOX object is a Geometry Object
-            if box.kind.lower() == 'geometry':
-                flat_geo = []
-                if box.multigeo:
-                    for tool in box.tools:
-                        flat_geo += box.flatten(box.tools[tool]['solid_geometry'])
-                    box_geo = unary_union(flat_geo)
-                else:
-                    box_geo = unary_union(box.flatten())
-            else:
-                box_geo = unary_union(box.flatten())
+            transformed_box_geo = self.transform_geometry(box, scale_factor_x=scale_factor_x,
+                                                          scale_factor_y=scale_factor_y,
+                                                          scale_reference=scale_reference,
+                                                          skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
+                                                          skew_reference=skew_reference,
+                                                          mirror=mirror)
 
-            xmin, ymin, xmax, ymax = box_geo.bounds
-            ref_scale_val = 'center'
-            if scale_reference == 'topleft':
-                ref_scale_val = (xmin, ymax)
-            elif scale_reference == 'bottomleft':
-                ref_scale_val = (xmin, ymin)
-            elif scale_reference == 'topright':
-                ref_scale_val = (xmax, ymax)
-            elif scale_reference == 'bottomright':
-                ref_scale_val = (xmax, ymin)
+            transformed_obj_geo = self.transform_geometry(obj, scale_factor_x=scale_factor_x,
+                                                          scale_factor_y=scale_factor_y,
+                                                          scale_reference=scale_reference,
+                                                          skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
+                                                          skew_reference=skew_reference,
+                                                          mirror=mirror)
 
-            ref_skew_val = 'center'
-            if skew_reference == 'topleft':
-                ref_skew_val = (xmin, ymax)
-            elif skew_reference == 'bottomleft':
-                ref_skew_val = (xmin, ymin)
-            elif skew_reference == 'topright':
-                ref_skew_val = (xmax, ymax)
-            elif skew_reference == 'bottomright':
-                ref_skew_val = (xmax, ymin)
+            exported_svg = self.create_svg_geometry(transformed_obj_geo, scale_stroke_factor=scale_stroke_factor)
 
-            # Transform the box object geometry
-            transformed_box_geo = box_geo
-
-            if scale_factor_x and not scale_factor_y:
-                transformed_box_geo = affinity.scale(transformed_box_geo, scale_factor_x, 1.0, origin=ref_scale_val)
-            elif not scale_factor_x and scale_factor_y:
-                transformed_box_geo = affinity.scale(transformed_box_geo, 1.0, scale_factor_y, origin=ref_scale_val)
-            elif scale_factor_x and scale_factor_y:
-                transformed_box_geo = affinity.scale(transformed_box_geo, scale_factor_x, scale_factor_y,
-                                                     origin=ref_scale_val)
-
-            if skew_factor_x and not skew_factor_y:
-                transformed_box_geo = affinity.skew(transformed_box_geo, skew_factor_x, 0.0, origin=ref_skew_val)
-            elif not skew_factor_x and skew_factor_y:
-                transformed_box_geo = affinity.skew(transformed_box_geo, 0.0, skew_factor_y, origin=ref_skew_val)
-            elif skew_factor_x and skew_factor_y:
-                transformed_box_geo = affinity.skew(transformed_box_geo, skew_factor_x, skew_factor_y,
-                                                    origin=ref_skew_val)
-
-            if mirror:
-                if mirror == 'x':
-                    transformed_box_geo = affinity.scale(transformed_box_geo, 1.0, -1.0, origin='center')
-                if mirror == 'y':
-                    transformed_box_geo = affinity.scale(transformed_box_geo, -1.0, 1.0, origin='center')
-                if mirror == 'both':
-                    transformed_box_geo = affinity.scale(transformed_box_geo, -1.0, -1.0, origin='center')
-
+            svg_units = obj.units.lower()
             bounds = transformed_box_geo.bounds
-            size = bounds[2] - bounds[0], bounds[3] - bounds[1]
 
-            exported_svg = obj.export_svg(scale_stroke_factor=scale_stroke_factor,
-                                          scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
-                                          skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                          mirror=mirror,
-                                          scale_reference=scale_reference, skew_reference=skew_reference,
-                                          mirror_reference='center'
-                                          )
+            doc_final = self.create_negative_svg(svg_geo=exported_svg, box_bounds=bounds, r_box=rounded_box,
+                                                 box_geo=transformed_box_geo, c_hull=use_convex_hull, margin=boundary,
+                                                 color=color, opacity=transparency_level, svg_units=svg_units)
 
-            uom = obj.units.lower()
+            obj_bounds = obj.bounds()
+            ret = self.write_output_file(content2save=doc_final, filename=filename, file_type=ftype, p_size=p_size,
+                                         orientation=orientation, source_bounds=obj_bounds, box_bounds=bounds)
 
-            # Convert everything to strings for use in the xml doc
-            svgwidth = str(size[0] + (2 * boundary))
-            svgheight = str(size[1] + (2 * boundary))
-            minx = str(bounds[0] - boundary)
-            miny = str(bounds[1] + boundary + size[1])
-            # miny_rect = str(bounds[1] - boundary)
-
-            # Add a SVG Header and footer to the svg output from shapely
-            # The transform flips the Y Axis so that everything renders
-            # properly within svg apps such as inkscape
-            svg_header = '<svg xmlns="http://www.w3.org/2000/svg" ' \
-                         'version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" '
-            svg_header += 'width="' + svgwidth + uom + '" '
-            svg_header += 'height="' + svgheight + uom + '" '
-            svg_header += 'viewBox="' + minx + ' -' + miny + ' ' + svgwidth + ' ' + svgheight + '" '
-            svg_header += '>'
-            svg_header += '<g transform="scale(1,-1)">'
-            svg_footer = '</g> </svg>'
-
-            # Change the attributes of the exported SVG
-            # We don't need stroke-width - wrong, we do when we have lines with certain width
-            # We set opacity to maximum
-            # We set the color to the inversed color
-            root = ET.fromstring(exported_svg)
-            for child in root:
-                child.set('fill', get_complementary(color))
-                child.set('opacity', str(transparency_level))
-                child.set('stroke', get_complementary(color))
-
-            # first_svg_elem = 'rect x="' + minx + '" ' + 'y="' + miny_rect + '" '
-            # first_svg_elem += 'width="' + svgwidth + '" ' + 'height="' + svgheight + '" '
-            # first_svg_elem += 'fill="#000000" opacity="1.0" stroke-width="0.0"'
-
-            # first_svg_elem_tag = 'rect'
-            # first_svg_elem_attribs = {
-            #     'x': minx,
-            #     'y': miny_rect,
-            #     'width': svgwidth,
-            #     'height': svgheight,
-            #     'id': 'neg_rect',
-            #     'style': 'fill:%s;opacity:1.0;stroke-width:0.0' % str(color)
-            # }
-
-            # decide if to round the bounding box for the negative
-            join_s = 1 if rounded_box else 2
-
-            if isinstance(transformed_box_geo, (LineString, LinearRing)):
-                b_geo = Polygon(transformed_box_geo).buffer(boundary, join_style=join_s)
-                coords_list = list(b_geo.exterior.coords)
-            elif isinstance(transformed_box_geo, list) and len(transformed_box_geo) == 1 and \
-                    isinstance(transformed_box_geo[0], (LineString, LinearRing)):
-                b_geo = Polygon(transformed_box_geo[0]).buffer(boundary, join_style=join_s)
-                coords_list = list(b_geo.exterior.coords)
-            elif isinstance(transformed_box_geo, Polygon):
-                coords_list = list(transformed_box_geo.exterior.coords)
-            elif isinstance(transformed_box_geo, list) and len(transformed_box_geo) == 1 and \
-                    isinstance(transformed_box_geo[0], Polygon):
-                coords_list = list(transformed_box_geo[0].exterior.coords)
-            else:
-                if use_convex_hull:
-                    buff_box = transformed_box_geo.convex_hull.buffer(boundary, join_style=join_s)
-                else:
-                    buff_box = transformed_box_geo.envelope.buffer(boundary, join_style=join_s)
-                box_buff_outline = buff_box.exterior
-                coords_list = list(box_buff_outline.coords)
-
-            points_container = ''
-            for coord_tuple in coords_list:
-                points_container += '%s, %s ' % (str(coord_tuple[0]), str(coord_tuple[1]))
-
-            first_svg_elem_tag = 'polygon'
-            first_svg_elem_attribs = {
-                'points': points_container,
-                'id': 'neg_rect',
-                'style': 'fill:%s;opacity:1.0;stroke-width:0.0' % str(color)
-            }
-
-            root.insert(0, ET.Element(first_svg_elem_tag, first_svg_elem_attribs))
-            exported_svg = ET.tostring(root)
-
-            svg_elem = svg_header + str(exported_svg) + svg_footer
-
-            # Parse the xml through a xml parser just to add line feeds
-            # and to make it look more pretty for the output
-            doc = parse_xml_string(svg_elem)
-            doc_final = doc.toprettyxml()
-
-            if ftype == 'svg':
-                try:
-                    with open(filename, 'w') as fp:
-                        fp.write(doc_final)
-                except PermissionError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Permission denied, saving not possible.\n"
-                                           "Most likely another app is holding the file open and not accessible."))
-                    return 'fail'
-            elif ftype == 'png':
-                try:
-                    doc_final = StringIO(doc_final)
-                    drawing = svg2rlg(doc_final)
-                    renderPM.drawToFile(drawing, filename, fmt='PNG')
-
-                    # if new_png_dpi == default_dpi:
-                    #     renderPM.drawToFile(drawing, filename, 'PNG')
-                    # else:
-                    #     renderPM.drawToFile(drawing, filename, 'PNG', dpi=new_png_dpi)
-                except PermissionError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Permission denied, saving not possible.\n"
-                                           "Most likely another app is holding the file open and not accessible."))
-                    return 'fail'
-                except Exception as e:
-                    self.app.log.error("FilmTool.export_negative() --> PNG output --> %s" % str(e))
-                    return 'fail'
-            else:   # PDF
-                if self.units == 'IN':
-                    unit = inch
-                else:
-                    unit = mm
-
-                if p_size == 'Bounds':
-                    page_size = None
-                elif orientation == 'p':
-                    page_size = portrait(self.ui.pagesize[p_size])
-                else:
-                    page_size = landscape(self.ui.pagesize[p_size])
-
-                try:
-                    xmin, ymin, xmax, ymax = obj.bounds()
-                    if page_size:
-                        page_xmax, page_ymax = (
-                            page_size[0] / mm,
-                            page_size[1] / mm
-                        )
-                    else:
-                        page_xmax, page_ymax = xmax, ymax
-
-                    if xmax < 0 or ymax < 0 or xmin > page_xmax or ymin > page_ymax:
-                        err_msg = '[ERROR_NOTCL] %s %s' % \
-                                  (_("Failed."),
-                                   _("The artwork has to be within the selected page size in order to be visible.\n"
-                                     "For 'Bounds' page size, it needs to be in the first quadrant."))
-                        self.app.inform.emit(err_msg)
-                        return 'fail'
-                except Exception as e:
-                    self.app.log.error("FilmTool.export_negative() --> PDF output 1 --> %s" % str(e))
-                    return 'fail'
-
-                try:
-                    doc_final = StringIO(doc_final)
-                    drawing = svg2rlg(doc_final)
-
-                    if p_size == 'Bounds':
-                        renderPDF.drawToFile(drawing, filename)
-                    else:
-                        my_canvas = canvas.Canvas(filename, pagesize=page_size)
-                        my_canvas.translate(bounds[0] * unit, bounds[1] * unit)
-                        renderPDF.draw(drawing, my_canvas, 0, 0)
-                        my_canvas.save()
-                except PermissionError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Permission denied, saving not possible.\n"
-                                           "Most likely another app is holding the file open and not accessible."))
-                    return 'fail'
-                except Exception as e:
-                    self.app.log.error("FilmTool.export_negative() --> PDF output Reportlab section --> %s" % str(e))
-                    return 'fail'
+            if ret == 'fail':
+                return 'fail'
 
             if self.app.options["global_open_style"] is False:
                 self.app.file_opened.emit("SVG", filename)
@@ -909,7 +681,7 @@ class Film(AppTool):
                                            scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
                                            use_convex_hull=use_convex_hull, rounded_box=rounded_box)
                     except Exception as e:
-                        self.app.log.error("export_negative() process -> %s" % str(e))
+                        self.app.log.error("export_negative_handler() process -> %s" % str(e))
                         return
 
             self.app.worker_task.emit({'fcn': job_thread_film, 'params': []})
@@ -917,12 +689,106 @@ class Film(AppTool):
             make_negative_film(scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
                                use_convex_hull=use_convex_hull, rounded_box=rounded_box)
 
-    def export_positive(self, obj_name, box_name, filename,
-                        scale_stroke_factor=0.00,
-                        scale_factor_x=1, scale_factor_y=1, scale_reference='center',
-                        skew_factor_x=None, skew_factor_y=None, skew_reference='center',
-                        mirror=None, opacity_val=1.0,
-                        use_thread=True, ftype='svg'):
+    def create_negative_svg(self, svg_geo, box_bounds, r_box, box_geo, c_hull, margin,  color, opacity, svg_units):
+        # Change the attributes of the exported SVG
+        # We don't need stroke-width - wrong, we do when we have lines with certain width
+        # We set opacity to maximum
+        # We set the color to the inversed color
+        root = ET.fromstring(svg_geo)
+        for child in root:
+            child.set('fill', self.get_complementary(color))
+            child.set('opacity', str(opacity))
+            child.set('stroke', self.get_complementary(color))
+
+        uom = svg_units
+
+        # Convert everything to strings for use in the xml doc
+        size = box_bounds[2] - box_bounds[0], box_bounds[3] - box_bounds[1]
+
+        svgwidth = str(size[0] + (2 * margin))
+        svgheight = str(size[1] + (2 * margin))
+        minx = str(box_bounds[0] - margin)
+        miny = str(box_bounds[1] + margin + size[1])
+        # miny_rect = str(bounds[1] - boundary)
+
+        # Add a SVG Header and footer to the svg output from shapely
+        # The transform flips the Y Axis so that everything renders
+        # properly within svg apps such as inkscape
+        svg_header = '<svg xmlns="http://www.w3.org/2000/svg" ' \
+                     'version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" '
+        svg_header += 'width="' + svgwidth + uom + '" '
+        svg_header += 'height="' + svgheight + uom + '" '
+        svg_header += 'viewBox="' + minx + ' -' + miny + ' ' + svgwidth + ' ' + svgheight + '" '
+        svg_header += '>'
+        svg_header += '<g transform="scale(1,-1)">'
+        svg_footer = '</g> </svg>'
+
+        # decide if to round the bounding box for the negative
+        join_s = 1 if r_box else 2
+
+        if isinstance(box_geo, (LineString, LinearRing)):
+            b_geo = Polygon(box_geo).buffer(margin, join_style=join_s)
+            coords_list = list(b_geo.exterior.coords)
+        elif isinstance(box_geo, list) and len(box_geo) == 1 and isinstance(box_geo[0], (LineString, LinearRing)):
+            b_geo = Polygon(box_geo[0]).buffer(margin, join_style=join_s)
+            coords_list = list(b_geo.exterior.coords)
+        elif isinstance(box_geo, Polygon):
+            coords_list = list(box_geo.exterior.coords)
+        elif isinstance(box_geo, list) and len(box_geo) == 1 and isinstance(box_geo[0], Polygon):
+            coords_list = list(box_geo[0].exterior.coords)
+        else:
+            if c_hull:
+                buff_box = box_geo.convex_hull.buffer(margin, join_style=join_s)
+            else:
+                buff_box = box_geo.envelope.buffer(margin, join_style=join_s)
+            box_buff_outline = buff_box.exterior
+            coords_list = list(box_buff_outline.coords)
+
+        points_container = ''
+        for coord_tuple in coords_list:
+            points_container += '%s, %s ' % (str(coord_tuple[0]), str(coord_tuple[1]))
+
+        first_svg_elem_tag = 'polygon'
+        first_svg_elem_attribs = {
+            'points': points_container,
+            'id': 'neg_rect',
+            'style': 'fill:%s;opacity:1.0;stroke-width:0.0' % str(color)
+        }
+
+        root.insert(0, ET.Element(first_svg_elem_tag, first_svg_elem_attribs))
+        exported_svg = ET.tostring(root)
+
+        svg_elem = svg_header + str(exported_svg) + svg_footer
+
+        # Parse the xml through a xml parser just to add line feeds
+        # and to make it look more pretty for the output
+        doc = parse_xml_string(svg_elem)
+        return doc.toprettyxml()
+
+    @staticmethod
+    def get_complementary(color_param):
+        # strip the # from the beginning
+        our_color = color_param[1:]
+
+        # convert the string into hex
+        our_color = int(our_color, 16)
+
+        # invert the three bytes
+        # as good as substracting each of RGB component by 255(FF)
+        comp_color = 0xFFFFFF ^ our_color
+
+        # convert the color back to hex by prefixing a #
+        comp_color = "#%06X" % comp_color
+
+        # return the result
+        return comp_color
+
+    def export_positive_handler(self, obj_name, box_name, filename,
+                                scale_stroke_factor=0.00,
+                                scale_factor_x=1, scale_factor_y=1, scale_reference='center',
+                                skew_factor_x=None, skew_factor_y=None, skew_reference='center',
+                                mirror=None, opacity_val=1.0,
+                                use_thread=True, ftype='svg'):
 
         """
         Exports a Geometry Object to an SVG file in positive black.
@@ -938,7 +804,7 @@ class Film(AppTool):
         :param skew_factor_x:       factor to skew the geometry on the X axis
         :param skew_factor_y:       factor to skew the geometry on the Y axis
         :param skew_reference:      reference to use for transformation.
-                                    Values: 'center', 'bottomleft', 'topleft', 'bottomright', 'topright'
+                                    Values: 'center', 'bottomleft'
         :param mirror:              can be 'x' or 'y' or 'both'. Axis on which to mirror the svg geometry
         :param opacity_val:
         :param use_thread:          if to be run in a separate thread; boolean
@@ -946,12 +812,12 @@ class Film(AppTool):
 
         :return:
         """
-        self.app.defaults.report_usage("export_positive()")
+        self.app.defaults.report_usage("export_positive_handler()")
 
         if filename is None:
             filename = self.app.options["global_last_save_folder"]
 
-        self.app.log.debug("Film.export_positive() black")
+        self.app.log.debug("Film.export_positive_handler() black")
 
         try:
             obj = self.app.collection.get_by_name(str(obj_name))
@@ -964,7 +830,7 @@ class Film(AppTool):
             return "Could not retrieve object: %s" % box_name
 
         if box is None:
-            self.inform.emit('[WARNING_NOTCL] %s: %s' % (_("No object Box. Using instead"), obj))
+            self.app.inform.emit('[WARNING_NOTCL] %s: %s' % (_("No object Box. Using instead"), obj))
             box = obj
 
         scale_factor_x = scale_factor_x
@@ -976,7 +842,7 @@ class Film(AppTool):
         transparency_level = opacity_val
 
         def make_positive_film(color, transparency_level, scale_factor_x, scale_factor_y):
-            self.app.log.debug("FilmTool.export_positive().make_positive_film()")
+            self.app.log.debug("FilmTool.export_positive_handler().make_positive_film()")
 
             self.screen_dpi = self.app.qapp.screens()[0].logicalDotsPerInch()
 
@@ -987,189 +853,36 @@ class Film(AppTool):
                 scale_factor_x += dpi_rate
                 scale_factor_y += dpi_rate
 
-            if box.kind.lower() == 'geometry':
-                flat_geo = []
-                if box.multigeo:
-                    for tool in box.tools:
-                        flat_geo += box.flatten(box.tools[tool]['solid_geometry'])
-                    box_geo = unary_union(flat_geo)
-                else:
-                    box_geo = unary_union(box.flatten())
-            else:
-                box_geo = unary_union(box.flatten())
+            transformed_box_geo = self.transform_geometry(box, scale_factor_x=scale_factor_x,
+                                                          scale_factor_y=scale_factor_y,
+                                                          scale_reference=scale_reference,
+                                                          skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
+                                                          skew_reference=skew_reference,
+                                                          mirror=mirror)
 
-            xmin, ymin, xmax, ymax = box_geo.bounds
-            ref_scale_val = 'center'
-            if scale_reference == 'topleft':
-                ref_scale_val = (xmin, ymax)
-            elif scale_reference == 'bottomleft':
-                ref_scale_val = (xmin, ymin)
-            elif scale_reference == 'topright':
-                ref_scale_val = (xmax, ymax)
-            elif scale_reference == 'bottomright':
-                ref_scale_val = (xmax, ymin)
+            transformed_obj_geo = self.transform_geometry(obj, scale_factor_x=scale_factor_x,
+                                                          scale_factor_y=scale_factor_y,
+                                                          scale_reference=scale_reference,
+                                                          skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
+                                                          skew_reference=skew_reference,
+                                                          mirror=mirror)
 
-            ref_skew_val = 'center'
-            if skew_reference == 'topleft':
-                ref_skew_val = (xmin, ymax)
-            elif skew_reference == 'bottomleft':
-                ref_skew_val = (xmin, ymin)
-            elif skew_reference == 'topright':
-                ref_skew_val = (xmax, ymax)
-            elif skew_reference == 'bottomright':
-                ref_skew_val = (xmax, ymin)
-
-            transformed_box_geo = box_geo
-
-            if scale_factor_x and not scale_factor_y:
-                transformed_box_geo = affinity.scale(transformed_box_geo, scale_factor_x, 1.0, origin=ref_scale_val)
-            elif not scale_factor_x and scale_factor_y:
-                transformed_box_geo = affinity.scale(transformed_box_geo, 1.0, scale_factor_y, origin=ref_scale_val)
-            elif scale_factor_x and scale_factor_y:
-                transformed_box_geo = affinity.scale(transformed_box_geo, scale_factor_x, scale_factor_y,
-                                                     origin=ref_scale_val)
-
-            if skew_factor_x and not skew_factor_y:
-                transformed_box_geo = affinity.skew(transformed_box_geo, skew_factor_x, 0.0, origin=ref_skew_val)
-            elif not skew_factor_x and skew_factor_y:
-                transformed_box_geo = affinity.skew(transformed_box_geo, 0.0, skew_factor_y, origin=ref_skew_val)
-            elif skew_factor_x and skew_factor_y:
-                transformed_box_geo = affinity.skew(transformed_box_geo, skew_factor_x, skew_factor_y,
-                                                    origin=ref_skew_val)
-
-            if mirror:
-                if mirror == 'x':
-                    transformed_box_geo = affinity.scale(transformed_box_geo, 1.0, -1.0, origin='center')
-                if mirror == 'y':
-                    transformed_box_geo = affinity.scale(transformed_box_geo, -1.0, 1.0, origin='center')
-                if mirror == 'both':
-                    transformed_box_geo = affinity.scale(transformed_box_geo, -1.0, -1.0, origin='center')
+            exported_svg = self.create_svg_geometry(transformed_obj_geo, scale_stroke_factor=scale_stroke_factor)
 
             bounds = transformed_box_geo.bounds
-            size = bounds[2] - bounds[0], bounds[3] - bounds[1]
-
-            exported_svg = obj.export_svg(scale_stroke_factor=scale_stroke_factor,
-                                          scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
-                                          skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                          mirror=mirror,
-                                          scale_reference=scale_reference, skew_reference=skew_reference,
-                                          mirror_reference='center'
-                                          )
-
-            # Change the attributes of the exported SVG
-            # We don't need stroke-width
-            # We set opacity to maximum
-            # We set the colour to WHITE
-            root = ET.fromstring(exported_svg)
-            for child in root:
-                child.set('fill', str(color))
-                child.set('opacity', str(transparency_level))
-                child.set('stroke', str(color))
-
-            exported_svg = ET.tostring(root)
-
-            # This contain the measure units
-            uom = obj.units.lower()
-
+            svg_units = obj.units.lower()
             # Define a boundary around SVG
-            boundary = self.ui.boundary_entry.get_value()
+            margin = self.ui.boundary_entry.get_value()
 
-            # Convert everything to strings for use in the xml doc
-            svgwidth = str(size[0] + (2 * boundary))
-            svgheight = str(size[1] + (2 * boundary))
-            minx = str(bounds[0] - boundary)
-            miny = str(bounds[1] + boundary + size[1])
+            doc_final = self.create_positive_svg(svg_geo=exported_svg, box_bounds=bounds, margin=margin, color=color,
+                                                 opacity=transparency_level, svg_units=svg_units)
 
-            # Add a SVG Header and footer to the svg output from shapely
-            # The transform flips the Y Axis so that everything renders
-            # properly within svg apps such as inkscape
-            svg_header = '<svg xmlns="http://www.w3.org/2000/svg" ' \
-                         'version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" '
-            svg_header += 'width="' + svgwidth + uom + '" '
-            svg_header += 'height="' + svgheight + uom + '" '
-            svg_header += 'viewBox="' + minx + ' -' + miny + ' ' + svgwidth + ' ' + svgheight + '" '
-            svg_header += '>'
-            svg_header += '<g transform="scale(1,-1)">'
-            svg_footer = '</g> </svg>'
+            obj_bounds = obj.bounds()
+            ret = self.write_output_file(content2save=doc_final, filename=filename, file_type=ftype, p_size=p_size,
+                                         orientation=orientation, source_bounds=obj_bounds, box_bounds=bounds)
 
-            svg_elem = str(svg_header) + str(exported_svg) + str(svg_footer)
-
-            # Parse the xml through a xml parser just to add line feeds
-            # and to make it look more pretty for the output
-            doc = parse_xml_string(svg_elem)
-            doc_final = doc.toprettyxml()
-
-            if ftype == 'svg':
-                try:
-                    with open(filename, 'w') as fp:
-                        fp.write(doc_final)
-                except PermissionError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Permission denied, saving not possible.\n"
-                                           "Most likely another app is holding the file open and not accessible."))
-                    return 'fail'
-            elif ftype == 'png':
-                try:
-                    doc_final = StringIO(doc_final)
-                    drawing = svg2rlg(doc_final)
-                    renderPM.drawToFile(drawing, filename, 'PNG')
-                except PermissionError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Permission denied, saving not possible.\n"
-                                           "Most likely another app is holding the file open and not accessible."))
-                    return 'fail'
-                except Exception as e:
-                    self.app.log.error("FilmTool.export_positive() --> PNG output --> %s" % str(e))
-                    return 'fail'
-            else:   # PDF
-                try:
-                    if self.units == 'IN':
-                        unit = inch
-                    else:
-                        unit = mm
-
-                    if p_size == 'Bounds':
-                        page_size = None
-                    elif orientation == 'p':
-                        page_size = portrait(self.ui.pagesize[p_size])
-                    else:
-                        page_size = landscape(self.ui.pagesize[p_size])
-
-                    xmin, ymin, xmax, ymax = obj.bounds()
-                    if page_size:
-                        page_xmax, page_ymax = (
-                            page_size[0] / mm,
-                            page_size[1] / mm
-                        )
-                    else:
-                        page_xmax, page_ymax = xmax, ymax
-
-                    if xmax < 0 or ymax < 0 or xmin > page_xmax or ymin > page_ymax:
-                        err_msg = '[ERROR_NOTCL] %s %s' % \
-                                  (_("Failed."),
-                                   _("The artwork has to be within the selected page size in order to be visible.\n"
-                                     "For 'Bounds' page size, it needs to be in the first quadrant."))
-                        self.app.inform.emit(err_msg)
-                        return 'fail'
-
-                    doc_final = StringIO(doc_final)
-                    drawing = svg2rlg(doc_final)
-
-                    if p_size == 'Bounds':
-                        renderPDF.drawToFile(drawing, filename)
-                    else:
-                        my_canvas = canvas.Canvas(filename, pagesize=page_size)
-                        my_canvas.translate(bounds[0] * unit, bounds[1] * unit)
-                        renderPDF.draw(drawing, my_canvas, 0, 0)
-                        my_canvas.save()
-                except PermissionError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Permission denied, saving not possible.\n"
-                                           "Most likely another app is holding the file open and not accessible."))
-                    return 'fail'
-                except Exception as e:
-                    self.app.log.error("FilmTool.export_positive() --> PDF output --> %s" % str(e))
-                    return 'fail'
+            if ret == 'fail':
+                return 'fail'
 
             if self.app.options["global_open_style"] is False:
                 self.app.file_opened.emit("SVG", filename)
@@ -1183,13 +896,236 @@ class Film(AppTool):
                         make_positive_film(color=color, transparency_level=transparency_level,
                                            scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y)
                     except Exception as e:
-                        self.app.log.error("export_positive() process -> %s" % str(e))
+                        self.app.log.error("export_positive_handler() process -> %s" % str(e))
                         return
 
             self.app.worker_task.emit({'fcn': job_thread_film, 'params': []})
         else:
             make_positive_film(color=color, transparency_level=transparency_level,
                                scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y)
+
+    @staticmethod
+    def create_positive_svg(svg_geo, box_bounds, margin,  color, opacity, svg_units):
+        # Change the attributes of the exported SVG
+        # We don't need stroke-width
+        # We set opacity to maximum
+        # We set the colour to WHITE
+        root = ET.fromstring(svg_geo)
+        for child in root:
+            child.set('fill', str(color))
+            child.set('opacity', str(opacity))
+            child.set('stroke', str(color))
+
+        exported_svg = ET.tostring(root)
+
+        # This contain the measure units
+        uom = svg_units
+
+        # Convert everything to strings for use in the xml doc
+        size = box_bounds[2] - box_bounds[0], box_bounds[3] - box_bounds[1]
+
+        svgwidth = str(size[0] + (2 * margin))
+        svgheight = str(size[1] + (2 * margin))
+        minx = str(box_bounds[0] - margin)
+        miny = str(box_bounds[1] + margin + size[1])
+
+        # Add a SVG Header and footer to the svg output from shapely
+        # The transform flips the Y Axis so that everything renders
+        # properly within svg apps such as inkscape
+        svg_header = '<svg xmlns="http://www.w3.org/2000/svg" ' \
+                     'version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" '
+        svg_header += 'width="' + svgwidth + uom + '" '
+        svg_header += 'height="' + svgheight + uom + '" '
+        svg_header += 'viewBox="' + minx + ' -' + miny + ' ' + svgwidth + ' ' + svgheight + '" '
+        svg_header += '>'
+        svg_header += '<g transform="scale(1,-1)">'
+        svg_footer = '</g> </svg>'
+
+        svg_elem = str(svg_header) + str(exported_svg) + str(svg_footer)
+
+        # Parse the xml through a xml parser just to add line feeds
+        # and to make it look more pretty for the output
+        doc = parse_xml_string(svg_elem)
+        return doc.toprettyxml()
+
+    def write_output_file(self, content2save, filename, file_type, p_size, orientation, source_bounds, box_bounds):
+        p_msg = '[ERROR_NOTCL] %s' % _("Permission denied, saving not possible.\n"
+                                       "Most likely another app is holding the file open and not accessible.")
+        if file_type == 'svg':
+            try:
+                with open(filename, 'w') as fp:
+                    fp.write(content2save)
+            except PermissionError:
+                self.app.inform.emit(p_msg)
+                return 'fail'
+        elif file_type == 'png':
+            try:
+                doc_final = StringIO(content2save)
+                drawing = svg2rlg(doc_final)
+                renderPM.drawToFile(drawing, filename, 'PNG')
+            except PermissionError:
+                self.app.inform.emit(p_msg)
+                return 'fail'
+            except Exception as e:
+                self.app.log.error("FilmTool.write_output_file() --> PNG output --> %s" % str(e))
+                return 'fail'
+        else:  # PDF
+            try:
+                if self.units == 'IN':
+                    unit = inch
+                else:
+                    unit = mm
+
+                if p_size == 'Bounds':
+                    page_size = None
+                elif orientation == 'p':
+                    page_size = portrait(self.ui.pagesize[p_size])
+                else:
+                    page_size = landscape(self.ui.pagesize[p_size])
+
+                xmin, ymin, xmax, ymax = source_bounds
+                if page_size:
+                    page_xmax, page_ymax = (
+                        page_size[0] / mm,
+                        page_size[1] / mm
+                    )
+                else:
+                    page_xmax, page_ymax = xmax, ymax
+
+                if xmax < 0 or ymax < 0 or xmin > page_xmax or ymin > page_ymax:
+                    err_msg = '[ERROR_NOTCL] %s %s' % \
+                              (
+                                  _("Failed."),
+                                  _("The artwork has to be within the selected page size in order to be visible.\n"
+                                    "For 'Bounds' page size, it needs to be in the first quadrant.")
+                              )
+                    self.app.inform.emit(err_msg)
+                    return 'fail'
+
+                doc_final = StringIO(content2save)
+                drawing = svg2rlg(doc_final)
+
+                if p_size == 'Bounds':
+                    renderPDF.drawToFile(drawing, filename)
+                else:
+                    my_canvas = canvas.Canvas(filename, pagesize=page_size)
+                    my_canvas.translate(box_bounds[0] * unit, box_bounds[1] * unit)
+                    renderPDF.draw(drawing, my_canvas, 0, 0)
+                    my_canvas.save()
+            except PermissionError:
+                self.app.inform.emit(p_msg)
+                return 'fail'
+            except Exception as e:
+                self.app.log.error("FilmTool.write_output_file() --> PDF output --> %s" % str(e))
+                return 'fail'
+
+    @staticmethod
+    def transform_geometry(obj, scale_factor_x=None, scale_factor_y=None,
+                           skew_factor_x=None, skew_factor_y=None,
+                           skew_reference='center', scale_reference='center', mirror=None):
+        """
+        Return a transformed geometry made from a Shapely geometry collection property of the `obj` object
+
+        :return: Shapely geometry transformed
+        """
+
+        # Make sure we see a Shapely Geometry class and not a list
+        if obj.kind.lower() == 'geometry':
+            flat_geo = []
+            if obj.multigeo:
+                for tool in obj.tools:
+                    flat_geo += obj.flatten(obj.tools[tool]['solid_geometry'])
+                transformed_geo = unary_union(flat_geo)
+            else:
+                transformed_geo = unary_union(obj.flatten())
+        else:
+            transformed_geo = unary_union(obj.flatten())
+
+        # SCALING
+        if scale_factor_x or scale_factor_y:
+            xmin, ymin, xmax, ymax = transformed_geo.bounds
+            ref_scale_val = 'center'
+            if scale_reference == 'topleft':
+                ref_scale_val = (xmin, ymax)
+            elif scale_reference == 'bottomleft':
+                ref_scale_val = (xmin, ymin)
+            elif scale_reference == 'topright':
+                ref_scale_val = (xmax, ymax)
+            elif scale_reference == 'bottomright':
+                ref_scale_val = (xmax, ymin)
+
+            if scale_factor_x and not scale_factor_y:
+                val_x = scale_factor_x
+                val_y = 0
+            elif not scale_factor_x and scale_factor_y:
+                val_x = 0
+                val_y = scale_factor_y
+            else:
+                val_x = scale_factor_x
+                val_y = scale_factor_y
+            transformed_geo = affinity.scale(transformed_geo, val_x, val_y, origin=ref_scale_val)
+
+        # SKEWING
+        if skew_factor_x or skew_factor_y:
+            xmin, ymin, xmax, ymax = transformed_geo.bounds
+            if skew_reference == 'bottomleft':
+                ref_skew_val = (xmin, ymin)
+                if skew_factor_x and not skew_factor_y:
+                    skew_angle_x = math.degrees(math.atan2(skew_factor_x, (ymax - ymin)))
+                    skew_angle_y = 0.0
+                elif not skew_factor_x and skew_factor_y:
+                    skew_angle_x = 0.0
+                    skew_angle_y = math.degrees(math.atan2(skew_factor_y, (xmax - xmin)))
+                else:
+                    skew_angle_x = math.degrees(math.atan2(skew_factor_x, (ymax - ymin)))
+                    skew_angle_y = math.degrees(math.atan2(skew_factor_y, (xmax - xmin)))
+            else:
+                ref_skew_val = 'center'
+                if skew_factor_x and not skew_factor_y:
+                    skew_angle_x = math.degrees(math.atan2(skew_factor_x, ((ymax - ymin) * 0.5)))
+                    skew_angle_y = 0.0
+                elif not skew_factor_x and skew_factor_y:
+                    skew_angle_x = 0.0
+                    skew_angle_y = math.degrees(math.atan2(skew_factor_y, ((xmax - xmin) * 0.5)))
+                else:
+                    skew_angle_x = math.degrees(math.atan2(skew_factor_x, ((ymax - ymin) * 0.5)))
+                    skew_angle_y = math.degrees(math.atan2(skew_factor_y, ((xmax - xmin) * 0.5)))
+
+            transformed_geo = affinity.skew(transformed_geo, skew_angle_x, skew_angle_y, origin=ref_skew_val)
+
+        if mirror:
+            if mirror == 'x':
+                transformed_geo = affinity.scale(transformed_geo, 1.0, -1.0, origin='center')
+            if mirror == 'y':
+                transformed_geo = affinity.scale(transformed_geo, -1.0, 1.0, origin='center')
+            if mirror == 'both':
+                transformed_geo = affinity.scale(transformed_geo, -1.0, -1.0, origin='center')
+
+        return transformed_geo
+
+    @staticmethod
+    def create_svg_geometry(geom, scale_stroke_factor):
+        """
+        Return SVG geometry made from a Shapely geometry collection property of the `obj` object
+
+        :param geom:                Shapely geometry collection
+        :type geom:
+        :param scale_stroke_factor: multiplication factor for the SVG stroke-width used within shapely's svg export
+                                    If 0 or less which is invalid then default to 0.01
+                                    This value appears to work for zooming, and getting the output svg line width
+                                    to match that viewed on screen with FlatCam
+                                    MS: I choose a factor of 0.01 so the scale is right for PCB UV film
+        :type scale_stroke_factor:  float
+        :return:                    SVG geometry
+        :rtype:
+        """
+
+        if scale_stroke_factor <= 0:
+            scale_stroke_factor = 0.01
+
+        # Convert to a SVG
+        svg_elem = geom.svg(scale_factor=scale_stroke_factor)
+        return svg_elem
 
     def reset_fields(self):
         self.ui.tf_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
@@ -1399,7 +1335,7 @@ class FilmUI:
         adj_grid.addWidget(self.film_skew_cb, 12, 0, 1, 2)
 
         # Skew X
-        self.film_skewx_label = FCLabel('%s:' % _("X angle"))
+        self.film_skewx_label = FCLabel('%s:' % _("X val"))
         self.film_skewx_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.film_skewx_entry.set_range(-999.9999, 999.9999)
         self.film_skewx_entry.set_precision(self.decimals)
@@ -1409,7 +1345,7 @@ class FilmUI:
         adj_grid.addWidget(self.film_skewx_entry, 14, 1)
 
         # Skew Y
-        self.film_skewy_label = FCLabel('%s:' % _("Y angle"))
+        self.film_skewy_label = FCLabel('%s:' % _("Y val"))
         self.film_skewy_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.film_skewy_entry.set_range(-999.9999, 999.9999)
         self.film_skewy_entry.set_precision(self.decimals)
@@ -1426,7 +1362,7 @@ class FilmUI:
 
         self.skew_ref_combo = FCComboBox2()
         self.skew_ref_combo.addItems(
-            [_('Center'), _('Bottom Left'), _('Top Left'), _('Bottom Right'), _('Top right')])
+            [_('Center'), _('Bottom Left')])
 
         adj_grid.addWidget(self.skew_ref_label, 18, 0)
         adj_grid.addWidget(self.skew_ref_combo, 18, 1)

@@ -446,13 +446,13 @@ class AppObject(QtCore.QObject):
             for opt_key, opt_val in app.options.items():
                 if opt_key.find('geometry' + "_") == 0:
                     oname = opt_key[len('geometry') + 1:]
-                    default_data[oname] = self.app.options[opt_key]
+                    default_data[oname] = app.options[opt_key]
                 if opt_key.find('tools_') == 0:
-                    default_data[opt_key] = self.app.options[opt_key]
+                    default_data[opt_key] = app.options[opt_key]
 
             new_obj.tools = {
                 1: {
-                    'tooldia':          float(app.defaults["tools_mill_tooldia"]),
+                    'tooldia':          float(app.options["tools_mill_tooldia"]),
                     'offset':           'Path',
                     'offset_value':     0.0,
                     'type':             'Rough',

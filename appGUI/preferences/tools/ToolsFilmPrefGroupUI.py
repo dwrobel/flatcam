@@ -111,7 +111,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         grid_skew = FCGridLayout(v_spacing=5, h_spacing=3)
         skew_frame.setLayout(grid_skew)
 
-        self.film_skewx_label = FCLabel('%s:' % _("X angle"))
+        self.film_skewx_label = FCLabel('%s:' % _("X val"))
         self.film_skewx_entry = FCDoubleSpinner()
         self.film_skewx_entry.set_range(-999.9999, 999.9999)
         self.film_skewx_entry.set_precision(self.decimals)
@@ -120,7 +120,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         grid_skew.addWidget(self.film_skewx_label, 0, 0)
         grid_skew.addWidget(self.film_skewx_entry, 0, 1)
 
-        self.film_skewy_label = FCLabel('%s:' % _("Y angle"))
+        self.film_skewy_label = FCLabel('%s:' % _("Y val"))
         self.film_skewy_entry = FCDoubleSpinner()
         self.film_skewy_entry.set_range(-999.9999, 999.9999)
         self.film_skewy_entry.set_precision(self.decimals)
@@ -137,7 +137,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
 
         self.film_skew_ref_combo = FCComboBox2()
         self.film_skew_ref_combo.addItems(
-            [_('Center'), _('Bottom Left'), _('Top Left'), _('Bottom Right'), _('Top right')])
+            [_('Center'), _('Bottom Left')])
 
         grid_skew.addWidget(self.skew_ref_label, 4, 0)
         grid_skew.addWidget(self.film_skew_ref_combo, 4, 1)
