@@ -111,14 +111,26 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         grid_skew = FCGridLayout(v_spacing=5, h_spacing=3)
         skew_frame.setLayout(grid_skew)
 
+        self.film_skew_type_lbl = FCLabel('%s:' % _("Type"))
+        self.film_skew_type_lbl.setToolTip(
+            _("'Length' -> deform by a length value\n"
+              "'Angle' -> deform by an angle\n"
+              "'Ratio' -> deform by a ratio between what should be and what is")
+        )
+        self.film_skew_type_combo = FCComboBox2()
+        self.film_skew_type_combo.addItems([_("Length"), _("Angle"), _("Ratio")])
+
+        grid_skew.addWidget(self.film_skew_type_lbl, 0, 0)
+        grid_skew.addWidget(self.film_skew_type_combo, 0, 1)
+
         self.film_skewx_label = FCLabel('%s:' % _("X val"))
         self.film_skewx_entry = FCDoubleSpinner()
         self.film_skewx_entry.set_range(-999.9999, 999.9999)
         self.film_skewx_entry.set_precision(self.decimals)
         self.film_skewx_entry.setSingleStep(0.01)
 
-        grid_skew.addWidget(self.film_skewx_label, 0, 0)
-        grid_skew.addWidget(self.film_skewx_entry, 0, 1)
+        grid_skew.addWidget(self.film_skewx_label, 2, 0)
+        grid_skew.addWidget(self.film_skewx_entry, 2, 1)
 
         self.film_skewy_label = FCLabel('%s:' % _("Y val"))
         self.film_skewy_entry = FCDoubleSpinner()
@@ -126,8 +138,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.film_skewy_entry.set_precision(self.decimals)
         self.film_skewy_entry.setSingleStep(0.01)
 
-        grid_skew.addWidget(self.film_skewy_label, 2, 0)
-        grid_skew.addWidget(self.film_skewy_entry, 2, 1)
+        grid_skew.addWidget(self.film_skewy_label, 4, 0)
+        grid_skew.addWidget(self.film_skewy_entry, 4, 1)
 
         # Skew Reference
         self.skew_ref_label = FCLabel('%s:' % _("Reference"))
@@ -139,8 +151,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.film_skew_ref_combo.addItems(
             [_('Center'), _('Bottom Left')])
 
-        grid_skew.addWidget(self.skew_ref_label, 4, 0)
-        grid_skew.addWidget(self.film_skew_ref_combo, 4, 1)
+        grid_skew.addWidget(self.skew_ref_label, 6, 0)
+        grid_skew.addWidget(self.film_skew_ref_combo, 6, 1)
 
         # Mirror Geometry
         self.film_mirror_cb = FCCheckBox('%s' % _("Mirror"))

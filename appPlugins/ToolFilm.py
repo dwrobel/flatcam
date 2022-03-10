@@ -354,6 +354,7 @@ class Film(AppTool):
         scale_factor_y = 1
         skew_factor_x = None
         skew_factor_y = None
+        skew_type = 0
         mirror = None
 
         reference_list = ['center', 'bottomleft', 'topleft', 'bottomright', 'topright']
@@ -372,6 +373,7 @@ class Film(AppTool):
                 skew_factor_x = self.ui.film_skewx_entry.get_value()
             if self.ui.film_skewy_entry.get_value() != 0.0:
                 skew_factor_y = self.ui.film_skewy_entry.get_value()
+            skew_type = self.ui.film_skew_type_combo.get_value()
 
         if self.ui.film_mirror_cb.get_value():
             mirror = self.ui.film_mirror_axis.get_value()
@@ -404,7 +406,7 @@ class Film(AppTool):
                                          scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
                                          scale_reference=scale_reference,
                                          skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                         skew_reference=skew_reference,
+                                         skew_reference=skew_reference, skew_type=skew_type,
                                          mirror=mirror,
                                          opacity_val=1.0,
                                          ftype=ftype
@@ -501,6 +503,7 @@ class Film(AppTool):
         scale_factor_y = 1
         skew_factor_x = None
         skew_factor_y = None
+        skew_type = 0
         mirror = None
 
         reference_list = ['center', 'bottomleft', 'topleft', 'bottomright', 'topright']
@@ -519,6 +522,7 @@ class Film(AppTool):
                 skew_factor_x = self.ui.film_skewx_entry.get_value()
             if self.ui.film_skewy_entry.get_value() != 0.0:
                 skew_factor_y = self.ui.film_skewy_entry.get_value()
+            skew_type = self.ui.film_skew_type_combo.get_value()
 
         if self.ui.film_mirror_cb.get_value():
             mirror = self.ui.film_mirror_axis.get_value()
@@ -559,7 +563,7 @@ class Film(AppTool):
                                          scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
                                          scale_reference=scale_reference,
                                          skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                         skew_reference=skew_reference,
+                                         skew_reference=skew_reference, skew_type=skew_type,
                                          mirror=mirror, ftype=ftype,
                                          use_convex_hull=use_convex_hull,
                                          rounded_box=rounded_box
@@ -568,7 +572,7 @@ class Film(AppTool):
     def export_negative_handler(self, obj_name, box_name, filename, boundary,
                                 scale_stroke_factor=0.00,
                                 scale_factor_x=1, scale_factor_y=1, scale_reference='center',
-                                skew_factor_x=None, skew_factor_y=None, skew_reference='center',
+                                skew_factor_x=None, skew_factor_y=None, skew_reference='center', skew_type=0,
                                 mirror=None, opacity_val=1.0,
                                 use_thread=True, ftype='svg', use_convex_hull=False, rounded_box=False):
         """
@@ -588,6 +592,10 @@ class Film(AppTool):
         :param skew_factor_y:       factor to skew the svg geometry on the Y axis
         :param skew_reference:      reference to use for transformation.
                                     Values: 'center', 'bottomleft', 'topleft', 'bottomright', 'topright'
+        :param skew_type:           Values 0, 1, 2 -> 'Length', 'Angle', 'Ratio'
+                                    Length means that the deformation is done by a specific length, angle means
+                                    deformation by angle and ratio means deformation by a ratio between what should be
+                                    and what is
         :param mirror:              can be 'x' or 'y' or 'both'. Axis on which to mirror the svg geometry
         :param opacity_val:
         :param use_thread:          if to be run in a separate thread; boolean
@@ -642,14 +650,14 @@ class Film(AppTool):
                                                           scale_factor_y=scale_factor_y,
                                                           scale_reference=scale_reference,
                                                           skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                                          skew_reference=skew_reference,
+                                                          skew_reference=skew_reference, skew_type=skew_type,
                                                           mirror=mirror)
 
             transformed_obj_geo = self.transform_geometry(obj, scale_factor_x=scale_factor_x,
                                                           scale_factor_y=scale_factor_y,
                                                           scale_reference=scale_reference,
                                                           skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                                          skew_reference=skew_reference,
+                                                          skew_reference=skew_reference, skew_type=skew_type,
                                                           mirror=mirror)
 
             exported_svg = self.create_svg_geometry(transformed_obj_geo, scale_stroke_factor=scale_stroke_factor)
@@ -786,7 +794,7 @@ class Film(AppTool):
     def export_positive_handler(self, obj_name, box_name, filename,
                                 scale_stroke_factor=0.00,
                                 scale_factor_x=1, scale_factor_y=1, scale_reference='center',
-                                skew_factor_x=None, skew_factor_y=None, skew_reference='center',
+                                skew_factor_x=None, skew_factor_y=None, skew_reference='center', skew_type=0,
                                 mirror=None, opacity_val=1.0,
                                 use_thread=True, ftype='svg'):
 
@@ -805,6 +813,10 @@ class Film(AppTool):
         :param skew_factor_y:       factor to skew the geometry on the Y axis
         :param skew_reference:      reference to use for transformation.
                                     Values: 'center', 'bottomleft'
+        :param skew_type:           Values 0, 1, 2 -> 'Length', 'Angle', 'Ratio'
+                                    Length means that the deformation is done by a specific length, angle means
+                                    deformation by angle and ratio means deformation by a ratio between what should be
+                                    and what is
         :param mirror:              can be 'x' or 'y' or 'both'. Axis on which to mirror the svg geometry
         :param opacity_val:
         :param use_thread:          if to be run in a separate thread; boolean
@@ -857,14 +869,14 @@ class Film(AppTool):
                                                           scale_factor_y=scale_factor_y,
                                                           scale_reference=scale_reference,
                                                           skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                                          skew_reference=skew_reference,
+                                                          skew_reference=skew_reference, skew_type=skew_type,
                                                           mirror=mirror)
 
             transformed_obj_geo = self.transform_geometry(obj, scale_factor_x=scale_factor_x,
                                                           scale_factor_y=scale_factor_y,
                                                           scale_reference=scale_reference,
                                                           skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                                          skew_reference=skew_reference,
+                                                          skew_reference=skew_reference, skew_type=skew_type,
                                                           mirror=mirror)
 
             exported_svg = self.create_svg_geometry(transformed_obj_geo, scale_stroke_factor=scale_stroke_factor)
@@ -1020,9 +1032,9 @@ class Film(AppTool):
                 return 'fail'
 
     @staticmethod
-    def transform_geometry(obj, scale_factor_x=None, scale_factor_y=None,
+    def transform_geometry(obj, scale_factor_x=None, scale_factor_y=None, scale_reference='center',
                            skew_factor_x=None, skew_factor_y=None,
-                           skew_reference='center', scale_reference='center', mirror=None):
+                           skew_reference='center', skew_type=0, mirror=None):
         """
         Return a transformed geometry made from a Shapely geometry collection property of the `obj` object
 
@@ -1070,27 +1082,77 @@ class Film(AppTool):
             xmin, ymin, xmax, ymax = transformed_geo.bounds
             if skew_reference == 'bottomleft':
                 ref_skew_val = (xmin, ymin)
-                if skew_factor_x and not skew_factor_y:
-                    skew_angle_x = math.degrees(math.atan2(skew_factor_x, (ymax - ymin)))
-                    skew_angle_y = 0.0
-                elif not skew_factor_x and skew_factor_y:
-                    skew_angle_x = 0.0
-                    skew_angle_y = math.degrees(math.atan2(skew_factor_y, (xmax - xmin)))
-                else:
-                    skew_angle_x = math.degrees(math.atan2(skew_factor_x, (ymax - ymin)))
-                    skew_angle_y = math.degrees(math.atan2(skew_factor_y, (xmax - xmin)))
+                if skew_type == 0: # "length"
+                    if skew_factor_x and not skew_factor_y:
+                        skew_angle_x = math.degrees(math.atan2(skew_factor_x, (ymax - ymin)))
+                        skew_angle_y = 0.0
+                    elif not skew_factor_x and skew_factor_y:
+                        skew_angle_x = 0.0
+                        skew_angle_y = math.degrees(math.atan2(skew_factor_y, (xmax - xmin)))
+                    else:
+                        skew_angle_x = math.degrees(math.atan2(skew_factor_x, (ymax - ymin)))
+                        skew_angle_y = math.degrees(math.atan2(skew_factor_y, (xmax - xmin)))
+                elif skew_type == 1: # "angle"
+                    if skew_factor_x and not skew_factor_y:
+                        skew_angle_x = skew_factor_x
+                        skew_angle_y = 0.0
+                    elif not skew_factor_x and skew_factor_y:
+                        skew_angle_x = 0.0
+                        skew_angle_y = skew_factor_y
+                    else:
+                        skew_angle_x = skew_factor_x
+                        skew_angle_y = skew_factor_y
+                else:   # "ratio"
+
+                    if skew_factor_x and not skew_factor_y:
+                        future_x = (xmax - xmin) * skew_factor_x
+                        skew_angle_x = math.degrees(math.atan2(future_x, (ymax - ymin)))
+                        skew_angle_y = 0.0
+                    elif not skew_factor_x and skew_factor_y:
+                        future_y = (ymax - ymin) * skew_factor_y
+                        skew_angle_x = 0.0
+                        skew_angle_y = math.degrees(math.atan2(future_y, (xmax - xmin)))
+                    else:
+                        future_x = (xmax - xmin) * skew_factor_x
+                        future_y = (ymax - ymin) * skew_factor_y
+                        skew_angle_x = math.degrees(math.atan2(future_x, (ymax - ymin)))
+                        skew_angle_y = math.degrees(math.atan2(future_y, (xmax - xmin)))
             else:
                 ref_skew_val = 'center'
-                if skew_factor_x and not skew_factor_y:
-                    skew_angle_x = math.degrees(math.atan2(skew_factor_x, ((ymax - ymin) * 0.5)))
-                    skew_angle_y = 0.0
-                elif not skew_factor_x and skew_factor_y:
-                    skew_angle_x = 0.0
-                    skew_angle_y = math.degrees(math.atan2(skew_factor_y, ((xmax - xmin) * 0.5)))
-                else:
-                    skew_angle_x = math.degrees(math.atan2(skew_factor_x, ((ymax - ymin) * 0.5)))
-                    skew_angle_y = math.degrees(math.atan2(skew_factor_y, ((xmax - xmin) * 0.5)))
-
+                if skew_type == 0:  # "length"
+                    if skew_factor_x and not skew_factor_y:
+                        skew_angle_x = math.degrees(math.atan2(skew_factor_x, ((ymax - ymin) * 0.5)))
+                        skew_angle_y = 0.0
+                    elif not skew_factor_x and skew_factor_y:
+                        skew_angle_x = 0.0
+                        skew_angle_y = math.degrees(math.atan2(skew_factor_y, ((xmax - xmin) * 0.5)))
+                    else:
+                        skew_angle_x = math.degrees(math.atan2(skew_factor_x, ((ymax - ymin) * 0.5)))
+                        skew_angle_y = math.degrees(math.atan2(skew_factor_y, ((xmax - xmin) * 0.5)))
+                elif skew_type == 1:  # "angle"
+                    if skew_factor_x and not skew_factor_y:
+                        skew_angle_x = skew_factor_x
+                        skew_angle_y = 0.0
+                    elif not skew_factor_x and skew_factor_y:
+                        skew_angle_x = 0.0
+                        skew_angle_y = skew_factor_y
+                    else:
+                        skew_angle_x = skew_factor_x
+                        skew_angle_y = skew_factor_y
+                else:  # "ratio"
+                    if skew_factor_x and not skew_factor_y:
+                        future_x = (xmax - xmin) * skew_factor_x
+                        skew_angle_x = math.degrees(math.atan2(future_x, ((ymax - ymin) * 0.5)))
+                        skew_angle_y = 0.0
+                    elif not skew_factor_x and skew_factor_y:
+                        future_y = (ymax - ymin) * skew_factor_y
+                        skew_angle_x = 0.0
+                        skew_angle_y = math.degrees(math.atan2(future_y, ((xmax - xmin) * 0.5)))
+                    else:
+                        future_x = (xmax - xmin) * skew_factor_x
+                        future_y = (ymax - ymin) * skew_factor_y
+                        skew_angle_x = math.degrees(math.atan2(future_x, ((ymax - ymin) * 0.5)))
+                        skew_angle_y = math.degrees(math.atan2(future_y, ((xmax - xmin) * 0.5)))
             transformed_geo = affinity.skew(transformed_geo, skew_angle_x, skew_angle_y, origin=ref_skew_val)
 
         if mirror:
@@ -1334,6 +1396,18 @@ class FilmUI:
         )
         adj_grid.addWidget(self.film_skew_cb, 12, 0, 1, 2)
 
+        self.film_skew_type_lbl = FCLabel('%s:' % _("Type"))
+        self.film_skew_type_lbl.setToolTip(
+            _("'Length' -> deform by a length value\n"
+              "'Angle' -> deform by an angle\n"
+              "'Ratio' -> deform by a ratio between what should be and what is")
+        )
+        self.film_skew_type_combo = FCComboBox2()
+        self.film_skew_type_combo.addItems([_("Length"), _("Angle"), _("Ratio")])
+
+        adj_grid.addWidget(self.film_skew_type_lbl, 14, 0)
+        adj_grid.addWidget(self.film_skew_type_combo, 14, 1)
+
         # Skew X
         self.film_skewx_label = FCLabel('%s:' % _("X val"))
         self.film_skewx_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -1341,8 +1415,8 @@ class FilmUI:
         self.film_skewx_entry.set_precision(self.decimals)
         self.film_skewx_entry.setSingleStep(0.01)
 
-        adj_grid.addWidget(self.film_skewx_label, 14, 0)
-        adj_grid.addWidget(self.film_skewx_entry, 14, 1)
+        adj_grid.addWidget(self.film_skewx_label, 16, 0)
+        adj_grid.addWidget(self.film_skewx_entry, 16, 1)
 
         # Skew Y
         self.film_skewy_label = FCLabel('%s:' % _("Y val"))
@@ -1351,8 +1425,8 @@ class FilmUI:
         self.film_skewy_entry.set_precision(self.decimals)
         self.film_skewy_entry.setSingleStep(0.01)
 
-        adj_grid.addWidget(self.film_skewy_label, 16, 0)
-        adj_grid.addWidget(self.film_skewy_entry, 16, 1)
+        adj_grid.addWidget(self.film_skewy_label, 18, 0)
+        adj_grid.addWidget(self.film_skewy_entry, 18, 1)
 
         # Skew Reference
         self.skew_ref_label = FCLabel('%s:' % _("Reference"))
@@ -1364,11 +1438,13 @@ class FilmUI:
         self.skew_ref_combo.addItems(
             [_('Center'), _('Bottom Left')])
 
-        adj_grid.addWidget(self.skew_ref_label, 18, 0)
-        adj_grid.addWidget(self.skew_ref_combo, 18, 1)
+        adj_grid.addWidget(self.skew_ref_label, 20, 0)
+        adj_grid.addWidget(self.skew_ref_combo, 20, 1)
 
         self.ois_skew = OptionalHideInputSection(self.film_skew_cb,
                                                  [
+                                                     self.film_skew_type_lbl,
+                                                     self.film_skew_type_combo,
                                                      self.film_skewx_label,
                                                      self.film_skewx_entry,
                                                      self.film_skewy_label,
@@ -1380,7 +1456,7 @@ class FilmUI:
         self.skew_separator_line1 = QtWidgets.QFrame()
         self.skew_separator_line1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         self.skew_separator_line1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        adj_grid.addWidget(self.skew_separator_line1, 20, 0, 1, 2)
+        adj_grid.addWidget(self.skew_separator_line1, 22, 0, 1, 2)
 
         # Mirror Geometry
         self.film_mirror_cb = FCCheckBox('%s' % _("Mirror"))
@@ -1392,7 +1468,7 @@ class FilmUI:
             QCheckBox {font-weight: bold; color: black}
             """
         )
-        adj_grid.addWidget(self.film_mirror_cb, 22, 0, 1, 2)
+        adj_grid.addWidget(self.film_mirror_cb, 24, 0, 1, 2)
 
         self.film_mirror_axis = RadioSet([{'label': _('X'), 'value': 'x'},
                                           {'label': _('Y'), 'value': 'y'},
@@ -1403,8 +1479,8 @@ class FilmUI:
             _("Mirror the film geometry on the selected axis or on both.")
         )
 
-        adj_grid.addWidget(self.film_mirror_axis_label, 24, 0)
-        adj_grid.addWidget(self.film_mirror_axis, 24, 1)
+        adj_grid.addWidget(self.film_mirror_axis_label, 26, 0)
+        adj_grid.addWidget(self.film_mirror_axis, 26, 1)
 
         self.ois_mirror = OptionalHideInputSection(self.film_mirror_cb,
                                                    [

@@ -509,6 +509,7 @@ class PreferencesUIManager:
             "tools_film_scale_ref": self.ui.plugin_pref_form.tools_film_group.film_scale_ref_combo,
 
             "tools_film_skew_cb": self.ui.plugin_pref_form.tools_film_group.film_skew_cb,
+            "tools_film_skew_type": self.ui.plugin_pref_form.tools_film_group.film_skew_type_combo,  # "length"
             "tools_film_skew_x_entry": self.ui.plugin_pref_form.tools_film_group.film_skewx_entry,
             "tools_film_skew_y_entry": self.ui.plugin_pref_form.tools_film_group.film_skewy_entry,
             "tools_film_skew_ref": self.ui.plugin_pref_form.tools_film_group.film_skew_ref_combo,

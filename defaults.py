@@ -579,6 +579,8 @@ class AppDefaults:
         "tools_film_scale_ref": 0,  # "center
 
         "tools_film_skew_cb": False,
+        "tools_film_skew_type": 0,  # "length"
+
         "tools_film_skew_x_entry": 0.0,
         "tools_film_skew_y_entry": 0.0,
         "tools_film_skew_ref": 0,  # "center

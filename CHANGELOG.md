@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - fixed multiple issues in the App objects related to wrong usage of self.obj_options attribute instead of self.app.options attribute
 - remade the Film Plugin such that the `skew` feature is now done in length units as opposed with the previous usage of angles
 - refactored some big methods from the Film Plugin
+- `skew` feature in Film Plugin now have multiple options. `skew` can be done by length, by angle and by ratio (factor)
 
 9.03.2022
 
