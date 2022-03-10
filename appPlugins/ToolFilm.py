@@ -1106,16 +1106,16 @@ class Film(AppTool):
                 else:   # "ratio"
 
                     if skew_factor_x and not skew_factor_y:
-                        future_x = (xmax - xmin) * skew_factor_x
+                        future_x = (xmax - xmin) * skew_factor_x - (xmax - xmin)
                         skew_angle_x = math.degrees(math.atan2(future_x, (ymax - ymin)))
                         skew_angle_y = 0.0
                     elif not skew_factor_x and skew_factor_y:
-                        future_y = (ymax - ymin) * skew_factor_y
+                        future_y = (ymax - ymin) * skew_factor_y - (ymax - ymin)
                         skew_angle_x = 0.0
                         skew_angle_y = math.degrees(math.atan2(future_y, (xmax - xmin)))
                     else:
-                        future_x = (xmax - xmin) * skew_factor_x
-                        future_y = (ymax - ymin) * skew_factor_y
+                        future_x = (xmax - xmin) * skew_factor_x - (xmax - xmin)
+                        future_y = (ymax - ymin) * skew_factor_y - (ymax - ymin)
                         skew_angle_x = math.degrees(math.atan2(future_x, (ymax - ymin)))
                         skew_angle_y = math.degrees(math.atan2(future_y, (xmax - xmin)))
             else:
@@ -1142,16 +1142,16 @@ class Film(AppTool):
                         skew_angle_y = skew_factor_y
                 else:  # "ratio"
                     if skew_factor_x and not skew_factor_y:
-                        future_x = (xmax - xmin) * skew_factor_x
+                        future_x = (xmax - xmin) * skew_factor_x - (xmax - xmin)
                         skew_angle_x = math.degrees(math.atan2(future_x, ((ymax - ymin) * 0.5)))
                         skew_angle_y = 0.0
                     elif not skew_factor_x and skew_factor_y:
-                        future_y = (ymax - ymin) * skew_factor_y
+                        future_y = (ymax - ymin) * skew_factor_y - (ymax - ymin)
                         skew_angle_x = 0.0
                         skew_angle_y = math.degrees(math.atan2(future_y, ((xmax - xmin) * 0.5)))
                     else:
-                        future_x = (xmax - xmin) * skew_factor_x
-                        future_y = (ymax - ymin) * skew_factor_y
+                        future_x = (xmax - xmin) * skew_factor_x - (xmax - xmin)
+                        future_y = (ymax - ymin) * skew_factor_y - (ymax - ymin)
                         skew_angle_x = math.degrees(math.atan2(future_x, ((ymax - ymin) * 0.5)))
                         skew_angle_y = math.degrees(math.atan2(future_y, ((xmax - xmin) * 0.5)))
             transformed_geo = affinity.skew(transformed_geo, skew_angle_x, skew_angle_y, origin=ref_skew_val)
