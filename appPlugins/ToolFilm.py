@@ -207,6 +207,7 @@ class Film(AppTool):
         self.ui.scale_ref_combo.set_value(self.app.options["tools_film_scale_ref"])
 
         self.ui.film_skew_cb.set_value(self.app.options["tools_film_skew_cb"])
+        self.ui.film_skew_type_combo.set_value(self.app.options["tools_film_skew_type"])
         self.ui.film_skewx_entry.set_value(float(self.app.options["tools_film_skew_x_entry"]))
         self.ui.film_skewy_entry.set_value(float(self.app.options["tools_film_skew_y_entry"]))
         self.ui.skew_ref_combo.set_value(self.app.options["tools_film_skew_ref"])

@@ -17,6 +17,7 @@ CHANGELOG for FlatCAM beta
 - refactored some big methods from the Film Plugin
 - `skew` feature in Film Plugin now have multiple options. `skew` can be done by length, by angle and by ratio (factor)
 - fixed an issue when importing GCode which made the loaded GCode object un-plotable
+- fixed Film Plugin not using the set value in Preferences for the `skew type`
 
 9.03.2022
 
