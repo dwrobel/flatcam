@@ -622,7 +622,7 @@ class Distance(AppTool):
         if dx:
             self.ui.distance_x_entry.set_value(str(self.app.dec_format(abs(dx), self.decimals)))
         if dy:
-            self.ui.distance_y_entry.set_value(str(self.app.dec_format(abs(dx), self.decimals)))
+            self.ui.distance_y_entry.set_value(str(self.app.dec_format(abs(dy), self.decimals)))
 
     def update_distance(self, pos, prev_pos=None):
         if prev_pos is None:
