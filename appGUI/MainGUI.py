@@ -1989,7 +1989,7 @@ class MainGUI(QtWidgets.QMainWindow):
                 lock_state = False
                 self.lock_action.setChecked(False)
         else:
-            lock_state = False
+            lock_state = True
             qsettings.setValue('toolbar_lock', lock_state)
 
             # This will write the setting to the platform specific storage.
