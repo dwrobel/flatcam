@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - made sure that on canvas context menu pop-up, some actions are disabled if there is no object selected
 - made sure that on canvas context menu pop-up, if 'Properties' action is clicked and there is no object selected then the Properties tab is selected
 - in the Grid Toolbar, the Grid Y entry is now by default hidden and shown only when there is a need (grid gap link is disabled) in order to maximize the status bar space availability
+- in Distance Plugin made sure that the 0.0 value for the angle is displayed
 
 10.03.2022
 

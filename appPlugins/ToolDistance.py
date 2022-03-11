@@ -594,7 +594,7 @@ class Distance(AppTool):
         return angle
 
     def display_angle(self, val):
-        if val:
+        if val is not None:
             self.ui.angle_entry.set_value(str(self.app.dec_format(val, self.decimals)))
 
     def display_start(self, val):
