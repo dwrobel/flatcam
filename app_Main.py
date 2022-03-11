@@ -7660,10 +7660,25 @@ class App(QtCore.QObject):
             sel_obj_list = self.collection.get_selected()
             self.ui.pop_menucolor.setDisabled(True)
             if sel_obj_list:
+                self.ui.popmenu_copy.setDisabled(False)
+                self.ui.popmenu_delete.setDisabled(False)
+                self.ui.popmenu_edit.setDisabled(False)
+
+                self.ui.popmenu_numeric_move.setDisabled(False)
+                self.ui.popmenu_move2origin.setDisabled(False)
+                self.ui.popmenu_move.setDisabled(False)
                 for obj in sel_obj_list:
                     if obj.kind in ["gerber", "excellon"]:
                         self.ui.pop_menucolor.setDisabled(False)
                         break
+            else:
+                self.ui.popmenu_copy.setDisabled(True)
+                self.ui.popmenu_delete.setDisabled(True)
+                self.ui.popmenu_edit.setDisabled(True)
+
+                self.ui.popmenu_numeric_move.setDisabled(True)
+                self.ui.popmenu_move2origin.setDisabled(True)
+                self.ui.popmenu_move.setDisabled(True)
 
     def selection_area_handler(self, start_pos, end_pos, sel_type):
         """

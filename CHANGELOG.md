@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 11.03.2022
 
 - added a new feature: now in the context menu (and main menu -> Edit) there is a new command that allow to move a selection of objects at specified numeric coordinates (either absolute or relative to current position) 
+- made sure that on canvas context menu pop-up, some actions are disabled if there is no object selected
 
 10.03.2022
 
@@ -30,7 +31,7 @@ CHANGELOG for FlatCAM beta
 9.03.2022
 
 - added a few new GUI custom widgets
-- removed the status bar Tcl Shell toggleable QLable. Now the Tcl Shell is toggled by clicking the Message in the Status bar
+- removed the status bar Tcl Shell toggleable QLabel. Now the Tcl Shell is toggled by clicking the Message in the Status bar
 
 24.02.2022
 
