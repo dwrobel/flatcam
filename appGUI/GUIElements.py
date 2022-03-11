@@ -3706,19 +3706,30 @@ class OptionalHideInputSection:
         self.cb.stateChanged.connect(self.on_cb_change)
 
     def on_cb_change(self):
-
         if self.cb.checkState() is Qt.CheckState.Checked:
             for widget in self.optinputs:
                 if self.logic is True:
-                    widget.show()
+                    try:
+                        widget.setVisible(True)
+                    except Exception:
+                        widget.show()
                 else:
-                    widget.hide()
+                    try:
+                        widget.setVisible(False)
+                    except Exception:
+                        widget.hide()
         else:
             for widget in self.optinputs:
                 if self.logic is True:
-                    widget.hide()
+                    try:
+                        widget.setVisible(False)
+                    except Exception:
+                        widget.hide()
                 else:
-                    widget.show()
+                    try:
+                        widget.setVisible(True)
+                    except Exception:
+                        widget.show()
 
 
 class FCTable(QtWidgets.QTableWidget):

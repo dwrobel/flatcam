@@ -1326,11 +1326,15 @@ class MainGUI(QtWidgets.QMainWindow):
         self.grid_gap_y_entry = FCEntry2()
         self.grid_gap_y_entry.setMaximumWidth(70)
         self.grid_gap_y_entry.setToolTip(_("Grid Y snapping distance"))
-        self.grid_toolbar.addWidget(self.grid_gap_y_entry)
+
+        self.grid_gap_y_entry.setVisible(False)
+
+        self.gridy_entry_action = self.grid_toolbar.addWidget(self.grid_gap_y_entry)
         self.grid_toolbar.addWidget(FCLabel(" "))
 
-        self.ois_grid = OptionalInputSection(self.grid_gap_link_cb, [self.grid_gap_y_entry], logic=False)
-
+        # self.ois_grid = OptionalInputSection(self.grid_gap_link_cb, [self.grid_gap_y_entry], logic=False)
+        self.grid_gap_link_cb.clicked.connect(
+            lambda x: self.gridy_entry_action.setVisible(False) if x else self.gridy_entry_action.setVisible(True))
         self.corner_snap_btn = self.grid_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/corner32.png'), _('Snap to corner'))
 
