@@ -12,7 +12,7 @@
 # ##########################################################
 
 from PyQt6 import QtGui, QtCore, QtWidgets
-from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal
+from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal, QDate, QDateTime
 from PyQt6.QtWidgets import QTextEdit, QCompleter
 from PyQt6.QtGui import QKeySequence, QTextCursor, QAction
 
@@ -75,6 +75,100 @@ class RadioSet(QtWidgets.QWidget):
             layout.addStretch()
 
         self.setLayout(layout)
+
+        self.group_toggle_fn = lambda: None
+
+    def on_toggle(self, checked):
+        # log.debug("Radio toggled")
+        # radio = self.sender()
+
+        if checked:
+            self.group_toggle_fn()
+            ret_val = str(self.get_value())
+            self.activated_custom.emit(ret_val)
+        return
+
+    def get_value(self):
+        for choice in self.choices:
+            if choice['radio'].isChecked():
+                return choice['value']
+        log.error("No button was toggled in RadioSet.")
+        return None
+
+    def set_value(self, val):
+        for choice in self.choices:
+            if choice['value'] == val:
+                choice['radio'].setChecked(True)
+                return
+        log.error(str(inspect.stack()[1][3]) + " -> Value given is not part of this RadioSet: %s" % str(val))
+        log.error(str(self.choices))
+
+    def setOptionsDisabled(self, options: list, val: bool) -> None:
+        for option in self.choices:
+            if option['label'] in options:
+                option['radio'].setDisabled(val)
+
+    def values(self):
+        return [choice['value'] for choice in self.choices]
+
+
+class RadioSetCross(QtWidgets.QWidget):
+    activated_custom = QtCore.pyqtSignal(str)
+
+    def __init__(self, choices, parent=None, compact=False):
+        """
+        The choices are specified as a list of dictionaries containing:
+
+        * 'label': Shown in the UI
+        * 'value': The value returned is selected
+
+        :param choices: List of 5 choices. See description.
+                        The list of choices is in this order: [top-left, top-right, bottom-left, bottom-right, center]
+        :param orientation: 'horizontal' (default) of 'vertical'.
+        :param parent: Qt parent widget.
+        :type choices: list
+        """
+        super(RadioSetCross, self).__init__(parent)
+
+        if len(choices) > 5:
+            raise ValueError("RadioSetCross. Too many choice: only 5 are allowed.")
+
+        self.choices = copy(choices)
+
+        # add a main layout
+        main_layout = QtWidgets.QVBoxLayout()
+        self.setLayout(main_layout)
+
+        # in the main layout add a FCFrame widget
+        self.main_frame = FCFrame()
+        self.main_frame.setContentsMargins(10, 5, 10, 5)
+        main_layout.addWidget(self.main_frame)
+
+        # in the main frame install a Grid Layout
+        layout = QtWidgets.QGridLayout()
+        self.main_frame.setLayout(layout)
+
+        group = QtWidgets.QButtonGroup(self)
+        for choice in range(len(self.choices)):
+            self.choices[choice]['radio'] = QtWidgets.QRadioButton(self.choices[choice]['label'])
+            group.addButton(self.choices[choice]['radio'])
+            self.choices[choice]['radio'].toggled.connect(self.on_toggle)
+
+        # add to layout
+        layout.addWidget(self.choices[0]['radio'], 0, 0)    # top-left
+        layout.addWidget(self.choices[1]['radio'], 0, 2)    # top-right
+        layout.addWidget(self.choices[2]['radio'], 2, 0)    # bottom-left
+        layout.addWidget(self.choices[3]['radio'], 2, 2)    # bottom-right
+        layout.addWidget(self.choices[4]['radio'], 1, 1)    # center
+
+        layout.setContentsMargins(0, 0, 0, 0)
+
+        val = 1 if compact else 0
+        layout.setColumnStretch(0, val)
+        layout.setColumnStretch(1, val)
+        layout.setColumnStretch(1, val)
+        layout.setColumnStretch(1, val)
+        layout.setColumnStretch(1, val)
 
         self.group_toggle_fn = lambda: None
 
@@ -2459,34 +2553,43 @@ class FCComboBox2(FCComboBox):
 
 
 class DialogBoxChoice(QtWidgets.QDialog):
-    def __init__(self, title=None, icon=None, choice='bl'):
+    def __init__(self, choices, title=None, icon=None, default_choice='bl', parent=None):
         """
+        The choices are specified as a list of dictionaries containing:
 
-        :param title: string with the window title
+        * 'label': Shown in the UI
+        * 'value': The value returned is selected
+
+        :param choices:         List of 5 choices. See description.
+                                The list of choices is in this order:
+                                [top-left, top-right, bottom-left, bottom-right, center]
+        :param title:           string with the window title
+        :param icon:            a QIcon that is set as Window Icon
+        :param default_choice:  the default selection
+        :param parent:          parent of this widget
         """
-        super(DialogBoxChoice, self).__init__()
+        super(DialogBoxChoice, self).__init__(parent=parent)
 
         self.ok = False
+        self.offset = None
+        self.moving = None
 
         self.setWindowIcon(icon)
         self.setWindowTitle(str(title))
+        self.setWindowFlags(self.windowFlags() | Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowSystemMenuHint)
 
         grid0 = FCGridLayout(parent=self, h_spacing=5, v_spacing=5)
+        main_label = FCLabel(str(title))
+        grid0.addWidget(main_label, 0, 0)
 
-        self.ref_radio = RadioSet([
-            {"label": _("Bottom Left"), "value": "bl"},
-            {"label": _("Top Left"), "value": "tl"},
-            {"label": _("Bottom Right"), "value": "br"},
-            {"label": _("Top Right"), "value": "tr"},
-            {"label": _("Center"), "value": "c"}
-        ], orientation='vertical', compact=True)
-        self.ref_radio.set_value(choice)
-        grid0.addWidget(self.ref_radio, 0, 0)
+        self.ref_radio = RadioSetCross(choices, compact=True)
+        self.ref_radio.set_value(default_choice)
+        grid0.addWidget(self.ref_radio, 2, 0)
 
         self.button_box = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel,
             Qt.Orientation.Horizontal, parent=self)
-        grid0.addWidget(self.button_box, 1, 0)
+        grid0.addWidget(self.button_box, 4, 0)
 
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)
@@ -2498,6 +2601,21 @@ class DialogBoxChoice(QtWidgets.QDialog):
             self.ok = False
             self.location_point = None
 
+        #   "background-color: palette(base); "
+        self.setStyleSheet(
+            "QDialog { "
+            "border: 1px solid palette(shadow); "
+            "}"
+        )
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.moving = True
+            self.offset = event.position()
+
+    def mouseMoveEvent(self, event):
+        if self.moving:
+            self.move(event.globalPosition().toPoint() - self.offset.toPoint())
 
 class FCInputDialog(QtWidgets.QInputDialog):
     def __init__(self, parent=None, ok=False, val=None, title=None, text=None, min=None, max=None, decimals=None,
@@ -4163,7 +4281,8 @@ class DialogBoxRadio(QtWidgets.QDialog):
             _("The Location value is a tuple (x,y).\n"
               "If the reference is Absolute then the Jump will be at the position (x,y).\n"
               "If the reference is Relative then the Jump will be at the (x,y) distance\n"
-              "from the current mouse location point.")
+              "from the current position (in some cases, last mouse click position).\n"
+              "WARNING: comma is a separator between values.")
         )
         self.lineEdit = EvalEntry(parent=self)
         self.lineEdit.setText(str(self.location).replace('(', '').replace(')', ''))

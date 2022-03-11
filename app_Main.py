@@ -5537,49 +5537,18 @@ class App(QtCore.QObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No object(s) selected..."))
             return
 
-        class DialogBoxChoice(QtWidgets.QDialog):
-            def __init__(self, title=None, icon=None, choice='c'):
-                """
-
-                :param title: string with the window title
-                """
-                super(DialogBoxChoice, self).__init__()
-
-                self.ok = False
-
-                self.setWindowIcon(icon)
-                self.setWindowTitle(str(title))
-
-                grid0 = FCGridLayout(parent=self, h_spacing=5, v_spacing=5)
-
-                self.ref_radio = RadioSet([
-                    {"label": _("Quadrant 1"), "value": "bl"},
-                    {"label": _("Quadrant 2"), "value": "br"},
-                    {"label": _("Quadrant 3"), "value": "tr"},
-                    {"label": _("Quadrant 4"), "value": "tl"},
-                    {"label": _("Center"), "value": "c"}
-                ], orientation='vertical', compact=True)
-                self.ref_radio.set_value(choice)
-                grid0.addWidget(self.ref_radio, 0, 0)
-
-                self.button_box = QtWidgets.QDialogButtonBox(
-                    QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel,
-                    Qt.Orientation.Horizontal, parent=self)
-                grid0.addWidget(self.button_box, 1, 0)
-
-                self.button_box.accepted.connect(self.accept)
-                self.button_box.rejected.connect(self.reject)
-
-                if self.exec() == QtWidgets.QDialog.DialogCode.Accepted:
-                    self.ok = True
-                    self.location_point = self.ref_radio.get_value()
-                else:
-                    self.ok = False
-                    self.location_point = None
-
-        dia_box = DialogBoxChoice(title='%s ...' % _("Custom Origin"),
-                                  icon=QtGui.QIcon(self.resource_location + '/origin3_32.png'))
-
+        choices = [
+            {"label": _("Quadrant 2"), "value": "tl"},
+            {"label": _("Quadrant 1"), "value": "tr"},
+            {"label": _("Quadrant 3"), "value": "bl"},
+            {"label": _("Quadrant 4"), "value": "br"},
+            {"label": _("Center"), "value": "c"}
+        ]
+        dia_box = DialogBoxChoice(title='%s:' % _("Custom Origin"),
+                                  icon=QtGui.QIcon(self.resource_location + '/origin3_32.png'),
+                                  choices=choices,
+                                  default_choice='c',
+                                  parent=self.ui)
         if dia_box.ok is True:
             try:
                 location_point = dia_box.location_point
@@ -5801,9 +5770,18 @@ class App(QtCore.QObject):
             self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return 'fail'
 
+        choices = [
+            {"label": _("T Left"), "value": "tl"},
+            {"label": _("T Right"), "value": "tr"},
+            {"label": _("B Left"), "value": "bl"},
+            {"label": _("B Right"), "value": "br"},
+            {"label": _("Center"), "value": "c"}
+        ]
         dia_box = DialogBoxChoice(title=_("Locate ..."),
                                   icon=QtGui.QIcon(self.resource_location + '/locate16.png'),
-                                  choice=self.options['global_locate_pt'])
+                                  choices=choices,
+                                  default_choice=self.options['global_locate_pt'],
+                                  parent=self.ui)
 
         if dia_box.ok is True:
             try:
@@ -5954,9 +5932,8 @@ class App(QtCore.QObject):
 
             if dia_box.ok is True:
                 try:
-                    location = eval(dia_box.location)
-
-                    if not isinstance(location, tuple):
+                    location = [float(x) if x != '' else 0.0 for x in dia_box.location.split(',')]
+                    if not isinstance(location, (tuple, list)):
                         self.inform.emit(_("Wrong coordinates. Enter coordinates in format: X,Y"))
                         return
 

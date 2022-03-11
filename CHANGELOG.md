@@ -15,6 +15,8 @@ CHANGELOG for FlatCAM beta
 - in the Grid Toolbar, the Grid Y entry is now by default hidden and shown only when there is a need (grid gap link is disabled) in order to maximize the status bar space availability
 - in Distance Plugin made sure that the 0.0 value for the angle is displayed
 - some UI changes (startup splash image changed)
+- changed the look for the Location/Jump To widgets; it is now like a cross being more relevant visually
+- the Numeric Move now can take only a parameter instead of a tuple but only if the comma is added, the not added parameter will be assumed 0.0. Therefore ",10" will move to (0, 10).
 
 10.03.2022
 
