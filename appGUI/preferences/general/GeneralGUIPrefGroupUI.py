@@ -2,7 +2,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtCore import QSettings
 
 from appGUI.GUIElements import RadioSet, FCCheckBox, FCComboBox, FCSliderWithSpinner, FCColorEntry, FCLabel, \
-    FCGridLayout, FCFrame
+    FCGridLayout, FCFrame, FCComboBox2
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -128,6 +128,20 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
               "right to left.")
         )
         grid0.addWidget(self.selection_cb, 12, 0, 1, 3)
+
+        # Select the GUI layout
+        self.ui_lay_lbl = FCLabel('%s:' % _('GUI Layout'))
+        self.ui_lay_lbl.setToolTip(
+            _("Select a GUI layout for the Preferences.\n"
+              "Can be:\n"
+              "'Normal' -> a normal and compact layout.\n"
+              "'Columnar' -> a layout the auto-adjust such\n"
+              "that columns are preferentially showed in columns")
+        )
+        self.gui_lay_combo = FCComboBox2()
+        self.gui_lay_combo.addItems([_("Normal"), _("Columnar")])
+        grid0.addWidget(self.ui_lay_lbl, 14, 0)
+        grid0.addWidget(self.gui_lay_combo, 14, 1, 1, 2)
 
         # #############################################################################################################
         # Grid1 Frame

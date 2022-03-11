@@ -6,12 +6,17 @@ from appGUI.preferences.utilities.FAGrbPrefGroupUI import FAGrbPrefGroupUI
 from appGUI.preferences.utilities.FAGcoPrefGroupUI import FAGcoPrefGroupUI
 from appGUI.preferences.utilities.FAExcPrefGroupUI import FAExcPrefGroupUI
 
+from appGUI.ColumnarFlowLayout import ColumnarFlowLayout
+
 
 class UtilPreferencesUI(QtWidgets.QWidget):
 
     def __init__(self, app, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
-        self.layout = QtWidgets.QHBoxLayout()
+        if app.defaults['global_gui_layout'] == 0:
+            self.layout = QtWidgets.QHBoxLayout()
+        else:
+            self.layout = ColumnarFlowLayout()
         self.setLayout(self.layout)
 
         self.fa_excellon_group = FAExcPrefGroupUI(app=app)

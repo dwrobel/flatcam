@@ -159,7 +159,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
 
         FCGridLayout.set_common_column_size([plot_grid, opt_grid, obj_grid, fuse_grid], 0)
 
-        self.layout.addStretch()
+        self.layout.addStretch(1)
 
         current_platform = platform.architecture()[0]
         if current_platform == '64bit':

@@ -8,6 +8,7 @@
 import sys
 
 from PyQt6.QtCore import QRect, QSize, Qt
+from PyQt6 import QtWidgets
 from PyQt6.QtWidgets import QLayout
 import math
 
@@ -85,6 +86,7 @@ class ColumnarFlowLayout(QLayout):
         column_count = math.floor(rect.width() / (widest + spacing))
         column_count = min(column_count, len(self.itemList))
         column_count = max(1, column_count)
+        # TODO somehow this should be adjusted to introduce a kind of stretch to the right of the layout
         column_width = math.floor((rect.width() - (column_count-1)*spacing - 1) / column_count)
 
         # Get the heights for all of our items
@@ -179,3 +181,14 @@ class ColumnarFlowLayout(QLayout):
 
         # Return the overall height
         return max(column_heights)
+
+    def addStretch(self, val=None):
+        wdg = QtWidgets.QWidget()
+        wdg.setMinimumWidth(0)
+        return wdg
+
+    def addLayout(self, layout):
+        for idx in range(layout.count()):
+            wdg = layout.itemAt(idx).widget()
+            if wdg:
+                self.addWidget(wdg)

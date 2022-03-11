@@ -75,4 +75,4 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
 
         gcode_grid.addWidget(self.annotation_cb, 2, 0, 1, 2)
 
-        # self.layout.addStretch()
+        self.layout.addStretch(2)

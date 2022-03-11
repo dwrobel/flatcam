@@ -77,6 +77,7 @@ class PreferencesUIManager:
             "global_layout": self.ui.general_pref_form.general_gui_group.layout_combo,
             "global_hover_shape": self.ui.general_pref_form.general_gui_group.hover_cb,
             "global_selection_shape": self.ui.general_pref_form.general_gui_group.selection_cb,
+            "global_gui_layout": self.ui.general_pref_form.general_gui_group.gui_lay_combo,
 
             "global_sel_fill": self.ui.general_pref_form.general_gui_group.sf_color_entry,
             "global_sel_line": self.ui.general_pref_form.general_gui_group.sl_color_entry,

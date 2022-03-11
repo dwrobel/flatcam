@@ -359,4 +359,4 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
 
         FCGridLayout.set_common_column_size([par_grid, tool_grid, gen_grid], 0)
 
-        # self.layout.addStretch()
+        self.layout.addStretch(1)

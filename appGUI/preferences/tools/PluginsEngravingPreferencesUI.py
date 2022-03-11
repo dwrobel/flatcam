@@ -7,6 +7,8 @@ from appGUI.preferences.tools.ToolsNCCPrefGroupUI import ToolsNCCPrefGroupUI
 from appGUI.preferences.tools.ToolsPaintPrefGroupUI import ToolsPaintPrefGroupUI
 from appGUI.preferences.tools.ToolsISOPrefGroupUI import ToolsISOPrefGroupUI
 
+from appGUI.ColumnarFlowLayout import ColumnarFlowLayout
+
 import gettext
 import appTranslation as fcTranslate
 import builtins
@@ -20,23 +22,26 @@ class PluginsEngravingPreferencesUI(QtWidgets.QWidget):
 
     def __init__(self, app, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
-        self.layout = QtWidgets.QHBoxLayout()
+        if app.defaults['global_gui_layout'] == 0:
+            self.layout = QtWidgets.QHBoxLayout()
+        else:
+            self.layout = ColumnarFlowLayout()
         self.setLayout(self.layout)
 
         self.tools_iso_group = ToolsISOPrefGroupUI(app=app)
-        self.tools_iso_group.setMinimumWidth(220)
+        self.tools_iso_group.setMinimumWidth(270)
 
         self.tools_ncc_group = ToolsNCCPrefGroupUI(app=app)
-        self.tools_ncc_group.setMinimumWidth(220)
+        self.tools_ncc_group.setMinimumWidth(270)
 
         self.tools_paint_group = ToolsPaintPrefGroupUI(app=app)
-        self.tools_paint_group.setMinimumWidth(220)
+        self.tools_paint_group.setMinimumWidth(250)
 
         self.tools_2sided_group = Tools2sidedPrefGroupUI(app=app)
-        self.tools_2sided_group.setMinimumWidth(220)
+        self.tools_2sided_group.setMinimumWidth(250)
 
         self.tools_level_group = ToolsLevelPrefGroupUI(app=app)
-        self.tools_level_group.setMinimumWidth(220)
+        self.tools_level_group.setMinimumWidth(250)
 
         self.vlay = QtWidgets.QVBoxLayout()
         self.vlay.addWidget(self.tools_iso_group)

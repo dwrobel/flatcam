@@ -6,6 +6,8 @@ from appGUI.preferences.excellon.ExcellonAdvOptPrefGroupUI import ExcellonAdvOpt
 from appGUI.preferences.excellon.ExcellonOptPrefGroupUI import ExcellonOptPrefGroupUI
 from appGUI.preferences.excellon.ExcellonGenPrefGroupUI import ExcellonGenPrefGroupUI
 
+from appGUI.ColumnarFlowLayout import ColumnarFlowLayout
+
 import gettext
 import appTranslation as fcTranslate
 import builtins
@@ -19,7 +21,10 @@ class ExcellonPreferencesUI(QtWidgets.QWidget):
 
     def __init__(self, app, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
-        self.layout = QtWidgets.QHBoxLayout()
+        if app.defaults['global_gui_layout'] == 0:
+            self.layout = QtWidgets.QHBoxLayout()
+        else:
+            self.layout = ColumnarFlowLayout()
         self.setLayout(self.layout)
 
         self.excellon_gen_group = ExcellonGenPrefGroupUI(app=app)

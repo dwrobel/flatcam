@@ -1516,6 +1516,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.hlay1.addStretch()
 
         self.general_scroll_area = QtWidgets.QScrollArea()
+        self.general_scroll_area.setWidgetResizable(True)
         self.general_tab_lay.addWidget(self.general_scroll_area)
 
         self.gerber_tab = QtWidgets.QWidget()
@@ -1526,6 +1527,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.gerber_tab.setLayout(self.gerber_tab_lay)
 
         self.gerber_scroll_area = QtWidgets.QScrollArea()
+        self.gerber_scroll_area.setWidgetResizable(True)
         self.gerber_tab_lay.addWidget(self.gerber_scroll_area)
 
         self.excellon_tab = QtWidgets.QWidget()
@@ -1536,6 +1538,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.excellon_tab.setLayout(self.excellon_tab_lay)
 
         self.excellon_scroll_area = QtWidgets.QScrollArea()
+        self.excellon_scroll_area.setWidgetResizable(True)
         self.excellon_tab_lay.addWidget(self.excellon_scroll_area)
 
         self.geometry_tab = QtWidgets.QWidget()
@@ -1546,6 +1549,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.geometry_tab.setLayout(self.geometry_tab_lay)
 
         self.geometry_scroll_area = QtWidgets.QScrollArea()
+        self.geometry_scroll_area.setWidgetResizable(True)
         self.geometry_tab_lay.addWidget(self.geometry_scroll_area)
 
         self.text_editor_tab = QtWidgets.QWidget()
@@ -1556,6 +1560,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.text_editor_tab.setLayout(self.cncjob_tab_lay)
 
         self.cncjob_scroll_area = QtWidgets.QScrollArea()
+        self.cncjob_scroll_area.setWidgetResizable(True)
         self.cncjob_tab_lay.addWidget(self.cncjob_scroll_area)
 
         self.plugins_eng_tab = QtWidgets.QWidget()
@@ -1565,6 +1570,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.plugins_eng_tab.setLayout(self.plugins_eng_tab_lay)
 
         self.plugins_engraving_scroll_area = QtWidgets.QScrollArea()
+        self.plugins_engraving_scroll_area.setWidgetResizable(True)
         self.plugins_eng_tab_lay.addWidget(self.plugins_engraving_scroll_area)
 
         self.tools_tab = QtWidgets.QWidget()
@@ -1574,6 +1580,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.tools_tab.setLayout(self.tools_tab_lay)
 
         self.tools_scroll_area = QtWidgets.QScrollArea()
+        self.tools_scroll_area.setWidgetResizable(True)
         self.tools_tab_lay.addWidget(self.tools_scroll_area)
 
         self.tools2_tab = QtWidgets.QWidget()
@@ -1583,6 +1590,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.tools2_tab.setLayout(self.tools2_tab_lay)
 
         self.tools2_scroll_area = QtWidgets.QScrollArea()
+        self.tools2_scroll_area.setWidgetResizable(True)
         self.tools2_tab_lay.addWidget(self.tools2_scroll_area)
 
         self.fa_tab = QtWidgets.QWidget()
@@ -1593,6 +1601,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.fa_tab.setLayout(self.fa_tab_lay)
 
         self.fa_scroll_area = QtWidgets.QScrollArea()
+        self.fa_scroll_area.setWidgetResizable(True)
         self.fa_tab_lay.addWidget(self.fa_scroll_area)
 
         self.pref_tab_bottom_layout = QtWidgets.QHBoxLayout()

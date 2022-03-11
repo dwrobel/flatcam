@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+12.03.2022
+
+- added to the application an older contribution by another user: Columnar Layout for the Preferences Tab. It can be set in Preferences -> General -> GUI section
+
 11.03.2022
 
 - added a new feature: now in the context menu (and main menu -> Edit) there is a new command that allow to move a selection of objects at specified numeric coordinates (either absolute or relative to current position) 

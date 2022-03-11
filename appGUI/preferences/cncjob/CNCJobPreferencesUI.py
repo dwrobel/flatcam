@@ -6,11 +6,17 @@ from appGUI.preferences.cncjob.CNCJobGenPrefGroupUI import CNCJobGenPrefGroupUI
 from appGUI.preferences.cncjob.CNCJobEditorPrefGroupUI import CNCJobEditorPrefGroupUI
 from appGUI.preferences.cncjob.CNCJobPPGroupUI import CNCJobPPGroupUI
 
+from appGUI.ColumnarFlowLayout import ColumnarFlowLayout
+
+
 class CNCJobPreferencesUI(QtWidgets.QWidget):
 
     def __init__(self, app, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
-        self.layout = QtWidgets.QHBoxLayout()
+        if app.defaults['global_gui_layout'] == 0:
+            self.layout = QtWidgets.QHBoxLayout()
+        else:
+            self.layout = ColumnarFlowLayout()
         self.setLayout(self.layout)
 
         self.cncjob_gen_group = CNCJobGenPrefGroupUI(app=app)
@@ -31,6 +37,7 @@ class CNCJobPreferencesUI(QtWidgets.QWidget):
         vlay.addWidget(self.cncjob_opt_group)
         vlay.addWidget(self.cncjob_adv_opt_group)
         vlay.addWidget(self.cncjob_pp_group)
+        vlay.addStretch()
 
         self.layout.addWidget(self.cncjob_gen_group)
         self.layout.addLayout(vlay)

@@ -6,6 +6,8 @@ from appGUI.preferences.geometry.GeometryExpPrefGroupUI import GeometryExpPrefGr
 from appGUI.preferences.geometry.GeometryOptPrefGroupUI import GeometryOptPrefGroupUI
 from appGUI.preferences.geometry.GeometryGenPrefGroupUI import GeometryGenPrefGroupUI
 
+from appGUI.ColumnarFlowLayout import ColumnarFlowLayout
+
 import gettext
 import appTranslation as fcTranslate
 import builtins
@@ -19,7 +21,10 @@ class GeometryPreferencesUI(QtWidgets.QWidget):
 
     def __init__(self, app, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
-        self.layout = QtWidgets.QHBoxLayout()
+        if app.defaults['global_gui_layout'] == 0:
+            self.layout = QtWidgets.QHBoxLayout()
+        else:
+            self.layout = ColumnarFlowLayout()
         self.setLayout(self.layout)
 
         self.geometry_gen_group = GeometryGenPrefGroupUI(app=app)
@@ -27,11 +32,11 @@ class GeometryPreferencesUI(QtWidgets.QWidget):
         self.geometry_exp_group = GeometryExpPrefGroupUI(app=app)
         self.geometry_exp_group.setMinimumWidth(220)
         self.geometry_opt_group = GeometryOptPrefGroupUI(app=app)
-        self.geometry_opt_group.setMinimumWidth(300)
+        self.geometry_opt_group.setMinimumWidth(250)
         self.geometry_adv_opt_group = GeometryAdvOptPrefGroupUI(app=app)
         self.geometry_adv_opt_group.setMinimumWidth(270)
         self.geometry_editor_group = GeometryEditorPrefGroupUI(app=app)
-        self.geometry_editor_group.setMinimumWidth(250)
+        self.geometry_editor_group.setMinimumWidth(270)
 
         self.layout.addWidget(self.geometry_gen_group)
 
