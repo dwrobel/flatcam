@@ -17,6 +17,7 @@ CHANGELOG for FlatCAM beta
 - some UI changes (startup splash image changed)
 - changed the look for the Location/Jump To widgets; it is now like a cross being more relevant visually
 - the Numeric Move now can take only a parameter instead of a tuple but only if the comma is added, the not added parameter will be assumed 0.0. Therefore ",10" will move to (0, 10).
+- added a new splash image for the case of using a dark theme
 
 10.03.2022
 
