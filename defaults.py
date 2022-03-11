@@ -40,6 +40,8 @@ class AppDefaults:
         "global_jump_ref": 'abs',
         "global_locate_pt": 'bl',
 
+        "global_move_ref": 'abs',
+
         "global_toolbar_view": 511,
 
         "global_background_timeout": 300000,  # Default value is 5 minutes

@@ -151,68 +151,7 @@ class ToolMove(AppTool):
                     dx = pos[0] - self.point1[0]
                     dy = pos[1] - self.point1[1]
 
-                    # move only the objects selected and plotted and visible
-                    obj_list = [obj for obj in self.app.collection.get_selected()
-                                if obj.obj_options['plot'] and obj.visible is True]
-
-                    def job_move(app_obj):
-                        with self.app.proc_container.new('%s...' % _("Moving")):
-
-                            if not obj_list:
-                                app_obj.app.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed."),
-                                                                                 _("No object is selected.")))
-                                return "fail"
-
-                            try:
-                                # remove any mark aperture shape that may be displayed
-                                for sel_obj in obj_list:
-                                    # if the Gerber mark shapes are enabled they need to be disabled before move
-                                    if sel_obj.kind == 'gerber':
-                                        sel_obj.ui.aperture_table_visibility_cb.setChecked(False)
-
-                                    try:
-                                        sel_obj.replotApertures.emit()
-                                    except Exception:
-                                        pass
-
-                                    # offset solid_geometry
-                                    sel_obj.offset((dx, dy))
-
-                                    # Update the object bounding box options
-                                    a, b, c, d = sel_obj.bounds()
-                                    sel_obj.obj_options['xmin'] = a
-                                    sel_obj.obj_options['ymin'] = b
-                                    sel_obj.obj_options['xmax'] = c
-                                    sel_obj.obj_options['ymax'] = d
-
-                                    try:
-                                        sel_obj.set_offset_values()
-                                    except AttributeError:
-                                        # not all objects have this method
-                                        pass
-
-                                # update the source_file with the new positions
-                                for sel_obj in obj_list:
-                                    out_name = sel_obj.obj_options["name"]
-                                    if sel_obj.kind == 'gerber':
-                                        sel_obj.source_file = self.app.f_handlers.export_gerber(
-                                            obj_name=out_name, filename=None, local_use=sel_obj, use_thread=False)
-                                    elif sel_obj.kind == 'excellon':
-                                        sel_obj.source_file = self.app.f_handlers.export_excellon(
-                                            obj_name=out_name, filename=None, local_use=sel_obj, use_thread=False)
-                            except Exception as err:
-                                app_obj.log.error('[ERROR_NOTCL] %s --> %s' % ('ToolMove.on_left_click()', str(err)))
-                                return "fail"
-
-                            # time to plot the moved objects
-                            app_obj.replot_signal.emit(obj_list)
-
-                        # delete the selection bounding box
-                        self.delete_shape()
-                        self.app.inform.emit('[success] %s %s ...' %
-                                             (str(sel_obj.kind).capitalize(), _('object was moved')))
-
-                    self.app.worker_task.emit({'fcn': job_move, 'params': [self]})
+                    self.move_handler(offset=(dx, dy))
 
                     self.clicked_move = 0
                     self.toggle()
@@ -233,6 +172,85 @@ class ToolMove(AppTool):
                     sel_obj.plot()
 
         self.app.worker_task.emit({'fcn': worker_task, 'params': []})
+
+    def move_handler(self, offset, objects=None):
+        """
+        Actual move is done here.
+
+        :param offset:  How much to move objects on both directions
+        :type offset:   tuple
+        :param objects: objects to move
+        :type objects:  [list, None]
+        :return:
+        :rtype:
+        """
+
+        dx, dy = offset
+
+        if not objects:
+            # move only the objects selected and plotted and visible
+            obj_list = [
+                obj for obj in self.app.collection.get_selected() if obj.obj_options['plot'] and obj.visible is True
+            ]
+        else:
+            obj_list = objects
+
+        def job_move(app_obj):
+            with self.app.proc_container.new('%s...' % _("Moving")):
+
+                if not obj_list:
+                    app_obj.app.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed."), _("No object is selected.")))
+                    return "fail"
+
+                try:
+                    # remove any mark aperture shape that may be displayed
+                    for sel_obj in obj_list:
+                        # if the Gerber mark shapes are enabled they need to be disabled before move
+                        if sel_obj.kind == 'gerber':
+                            sel_obj.ui.aperture_table_visibility_cb.setChecked(False)
+
+                        try:
+                            sel_obj.replotApertures.emit()
+                        except Exception:
+                            pass
+
+                        # offset solid_geometry
+                        sel_obj.offset((dx, dy))
+
+                        # Update the object bounding box options
+                        a, b, c, d = sel_obj.bounds()
+                        sel_obj.obj_options['xmin'] = a
+                        sel_obj.obj_options['ymin'] = b
+                        sel_obj.obj_options['xmax'] = c
+                        sel_obj.obj_options['ymax'] = d
+
+                        try:
+                            sel_obj.set_offset_values()
+                        except AttributeError:
+                            # not all objects have this method
+                            pass
+
+                    # update the source_file with the new positions
+                    for sel_obj in obj_list:
+                        out_name = sel_obj.obj_options["name"]
+                        if sel_obj.kind == 'gerber':
+                            sel_obj.source_file = self.app.f_handlers.export_gerber(
+                                obj_name=out_name, filename=None, local_use=sel_obj, use_thread=False)
+                        elif sel_obj.kind == 'excellon':
+                            sel_obj.source_file = self.app.f_handlers.export_excellon(
+                                obj_name=out_name, filename=None, local_use=sel_obj, use_thread=False)
+                except Exception as err:
+                    app_obj.log.error('[ERROR_NOTCL] %s --> %s' % ('ToolMove.move_handler()', str(err)))
+                    return "fail"
+
+                # time to plot the moved objects
+                app_obj.replot_signal.emit(obj_list)
+
+            # delete the selection bounding box
+            self.delete_shape()
+            self.app.inform.emit('[success] %s' % _("Done."))
+
+        self.app.worker_task.emit({'fcn': job_move, 'params': [self]})
 
     def on_move(self, event):
         event_pos = event.pos if self.app.use_3d_engine else (event.xdata, event.ydata)

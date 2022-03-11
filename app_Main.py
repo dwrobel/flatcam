@@ -20,7 +20,7 @@ from datetime import datetime
 import ctypes
 import traceback
 
-from shapely.geometry import Point, MultiPolygon
+from shapely.geometry import Point, MultiPolygon, MultiLineString
 from shapely.ops import unary_union
 from io import StringIO
 
@@ -83,7 +83,7 @@ from appGUI.PlotCanvasLegacy import *
 from appGUI.PlotCanvas3d import *
 from appGUI.MainGUI import *
 from appGUI.GUIElements import FCFileSaveDialog, message_dialog, FlatCAMSystemTray, FCInputDialogSlider, \
-    FCGridLayout, FCLabel
+    FCGridLayout, FCLabel, DialogBoxChoice
 
 # App Pre-processors
 from appPreProcessor import load_preprocessors
@@ -295,7 +295,7 @@ class App(QtCore.QObject):
         handler.setFormatter(formatter)
         self.log.addHandler(handler)
 
-        self.log.info("FlatCAM Starting...")
+        self.log.info("Starting the application...")
 
         self.qapp = qapp
 
@@ -1891,13 +1891,13 @@ class App(QtCore.QObject):
 
         self.distance_tool = Distance(self)
         self.distance_tool.install(icon=QtGui.QIcon(self.resource_location + '/distance16.png'), pos=self.ui.menuedit,
-                                   before=self.ui.menueditorigin,
+                                   before=self.ui.menuedit_numeric_move,
                                    separator=False)
 
         self.distance_min_tool = ObjectDistance(self)
         self.distance_min_tool.install(icon=QtGui.QIcon(self.resource_location + '/distance_min16.png'),
                                        pos=self.ui.menuedit,
-                                       before=self.ui.menueditorigin,
+                                       before=self.ui.menuedit_numeric_move,
                                        separator=True)
 
         self.dblsidedtool = DblSidedTool(self)
@@ -1941,7 +1941,7 @@ class App(QtCore.QObject):
 
         self.move_tool = ToolMove(self)
         self.move_tool.install(icon=QtGui.QIcon(self.resource_location + '/move16.png'), pos=self.ui.menuedit,
-                               before=self.ui.menueditorigin, separator=True)
+                               before=self.ui.menuedit_numeric_move, separator=True)
 
         self.cutout_tool = CutOut(self)
         self.cutout_tool.install(icon=QtGui.QIcon(self.resource_location + '/cut32.png'), pos=self.ui.menu_plugins,
@@ -2193,6 +2193,8 @@ class App(QtCore.QObject):
         self.ui.menueditconvert_any2gerber.triggered.connect(lambda: self.convert_any2gerber())
         self.ui.menueditconvert_any2excellon.triggered.connect(lambda: self.convert_any2excellon())
 
+        self.ui.menuedit_numeric_move.triggered.connect(lambda: self.on_numeric_move())
+
         self.ui.menueditorigin.triggered.connect(self.on_set_origin)
         self.ui.menuedit_move2origin.triggered.connect(self.on_move2origin)
         self.ui.menuedit_center_in_origin.triggered.connect(self.on_custom_origin)
@@ -2297,6 +2299,7 @@ class App(QtCore.QObject):
         self.ui.popmenu_delete.triggered.connect(self.on_delete)
         self.ui.popmenu_edit.triggered.connect(self.object2editor)
         self.ui.popmenu_save.triggered.connect(lambda: self.editor2object())
+        self.ui.popmenu_numeric_move.triggered.connect(lambda: self.on_numeric_move())
         self.ui.popmenu_move.triggered.connect(self.obj_move)
         self.ui.popmenu_move2origin.triggered.connect(self.on_move2origin)
 
@@ -5798,46 +5801,6 @@ class App(QtCore.QObject):
             self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return 'fail'
 
-        class DialogBoxChoice(QtWidgets.QDialog):
-            def __init__(self, title=None, icon=None, choice='bl'):
-                """
-
-                :param title: string with the window title
-                """
-                super(DialogBoxChoice, self).__init__()
-
-                self.ok = False
-
-                self.setWindowIcon(icon)
-                self.setWindowTitle(str(title))
-
-                grid0 = FCGridLayout(parent=self, h_spacing=5, v_spacing=5)
-
-                self.ref_radio = RadioSet([
-                    {"label": _("Bottom Left"), "value": "bl"},
-                    {"label": _("Top Left"), "value": "tl"},
-                    {"label": _("Bottom Right"), "value": "br"},
-                    {"label": _("Top Right"), "value": "tr"},
-                    {"label": _("Center"), "value": "c"}
-                ], orientation='vertical', compact=True)
-                self.ref_radio.set_value(choice)
-                grid0.addWidget(self.ref_radio, 0, 0)
-
-                self.button_box = QtWidgets.QDialogButtonBox(
-                    QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel,
-                    Qt.Orientation.Horizontal, parent=self)
-                grid0.addWidget(self.button_box, 1, 0)
-
-                self.button_box.accepted.connect(self.accept)
-                self.button_box.rejected.connect(self.reject)
-
-                if self.exec() == QtWidgets.QDialog.DialogCode.Accepted:
-                    self.ok = True
-                    self.location_point = self.ref_radio.get_value()
-                else:
-                    self.ok = False
-                    self.location_point = None
-
         dia_box = DialogBoxChoice(title=_("Locate ..."),
                                   icon=QtGui.QIcon(self.resource_location + '/locate16.png'),
                                   choice=self.options['global_locate_pt'])
@@ -5938,6 +5901,78 @@ class App(QtCore.QObject):
 
         self.inform.emit('[success] %s' % _("Done."))
         return location
+
+    def on_numeric_move(self, val=None):
+        """
+        Move to a specific location (absolute or relative against current position)'
+
+        :param val: custom offset value, (x, y)
+        :type val:  tuple
+        :return:    None
+        :rtype:     None
+        """
+
+        # move only the objects selected and plotted and visible
+        obj_list = [
+            obj for obj in self.collection.get_selected() if obj.obj_options['plot'] and obj.visible is True
+        ]
+
+        if not obj_list:
+            self.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed."), _("Nothing selected.")))
+            return
+
+        def bounds_rec(obj):
+            try:
+                minx = Inf
+                miny = Inf
+                maxx = -Inf
+                maxy = -Inf
+
+                work_geo = obj.geoms if isinstance(obj, (MultiPolygon, MultiLineString)) else obj
+                for k in work_geo:
+                    minx_, miny_, maxx_, maxy_ = bounds_rec(k)
+                    minx = min(minx, minx_)
+                    miny = min(miny, miny_)
+                    maxx = max(maxx, maxx_)
+                    maxy = max(maxy, maxy_)
+                return minx, miny, maxx, maxy
+            except TypeError:
+                # it's a App object, return its bounds
+                if obj:
+                    return obj.bounds()
+
+        bounds = bounds_rec(obj_list)
+
+        if not val:
+            dia_box_location = (0.0, 0.0)
+
+            dia_box = DialogBoxRadio(title=_("Move to ..."),
+                                     label=_("Enter the coordinates in format X,Y:"),
+                                     icon=QtGui.QIcon(self.resource_location + '/move32_bis.png'),
+                                     initial_text=dia_box_location,
+                                     reference=self.options['global_move_ref'])
+
+            if dia_box.ok is True:
+                try:
+                    location = eval(dia_box.location)
+
+                    if not isinstance(location, tuple):
+                        self.inform.emit(_("Wrong coordinates. Enter coordinates in format: X,Y"))
+                        return
+
+                    if dia_box.reference == 'abs':
+                        abs_x =  location[0] - bounds[0]
+                        abs_y =  location[1] - bounds[1]
+                        location = (abs_x, abs_y)
+                    self.options['global_jump_ref'] = dia_box.reference
+                except Exception:
+                    return
+            else:
+                return
+        else:
+            location = val
+
+        self.move_tool.move_handler(offset=location, objects=obj_list)
 
     def on_copy_command(self):
         """
@@ -8685,14 +8720,14 @@ class App(QtCore.QObject):
 
         # ## Latest version?
         if self.version >= data["version"]:
-            self.log.debug("FlatCAM is up to date!")
-            self.inform.emit('[success] %s' % _("FlatCAM is up to date!"))
+            self.log.debug("THe application is up to date!")
+            self.inform.emit('[success] %s' % _("The application is up to date!"))
             return
 
         self.log.debug("Newer version available.")
         title = _("Newer Version Available")
         msg = '%s<br><br>><b>%s</b><br>%s' % (
-                _("There is a newer version of FlatCAM available for download:"),
+                _("There is a newer version available for download:"),
                 str(data["name"]),
                 str(data["message"])
             )

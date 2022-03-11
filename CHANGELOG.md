@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+11.03.2022
+
+- added a new feature: now in the context menu (and main menu -> Edit) there is a new command that allow to move a selection of objects at specified numeric coordinates (either absolute or relative to current position) 
+
 10.03.2022
 
 - fixed an issue where using the 'G' shortcut key in Editors will not toggle the grid snap

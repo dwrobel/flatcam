@@ -2458,6 +2458,47 @@ class FCComboBox2(FCComboBox):
             self.setCurrentIndex(0)
 
 
+class DialogBoxChoice(QtWidgets.QDialog):
+    def __init__(self, title=None, icon=None, choice='bl'):
+        """
+
+        :param title: string with the window title
+        """
+        super(DialogBoxChoice, self).__init__()
+
+        self.ok = False
+
+        self.setWindowIcon(icon)
+        self.setWindowTitle(str(title))
+
+        grid0 = FCGridLayout(parent=self, h_spacing=5, v_spacing=5)
+
+        self.ref_radio = RadioSet([
+            {"label": _("Bottom Left"), "value": "bl"},
+            {"label": _("Top Left"), "value": "tl"},
+            {"label": _("Bottom Right"), "value": "br"},
+            {"label": _("Top Right"), "value": "tr"},
+            {"label": _("Center"), "value": "c"}
+        ], orientation='vertical', compact=True)
+        self.ref_radio.set_value(choice)
+        grid0.addWidget(self.ref_radio, 0, 0)
+
+        self.button_box = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel,
+            Qt.Orientation.Horizontal, parent=self)
+        grid0.addWidget(self.button_box, 1, 0)
+
+        self.button_box.accepted.connect(self.accept)
+        self.button_box.rejected.connect(self.reject)
+
+        if self.exec() == QtWidgets.QDialog.DialogCode.Accepted:
+            self.ok = True
+            self.location_point = self.ref_radio.get_value()
+        else:
+            self.ok = False
+            self.location_point = None
+
+
 class FCInputDialog(QtWidgets.QInputDialog):
     def __init__(self, parent=None, ok=False, val=None, title=None, text=None, min=None, max=None, decimals=None,
                  init_val=None):

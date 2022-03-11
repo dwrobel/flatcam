@@ -429,6 +429,9 @@ class MainGUI(QtWidgets.QMainWindow):
 
         # Separator
         self.menuedit.addSeparator()
+        self.menuedit_numeric_move = self.menuedit.addAction(
+            QtGui.QIcon(self.app.resource_location + '/move32_bis.png'),
+            '%s\t%s' % (_('Num Move'), ''))
         self.menueditorigin = self.menuedit.addAction(
             QtGui.QIcon(self.app.resource_location + '/origin16.png'),
             '%s\t%s' % (_('Set Origin'), _('O')))
@@ -1664,10 +1667,20 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################################################################
         self.popMenu = FCMenu()
 
-        self.popmenu_disable = self.popMenu.addAction(
+        # View
+        self.cmenu_viewmenu = self.popMenu.addMenu(
+            QtGui.QIcon(self.app.resource_location + '/view64.png'), _("View"))
+        self.popmenu_disable = self.cmenu_viewmenu.addAction(
             QtGui.QIcon(self.app.resource_location + '/disable32.png'), _("Toggle Visibility"))
-        self.popmenu_panel_toggle = self.popMenu.addAction(
+        self.popmenu_panel_toggle = self.cmenu_viewmenu.addAction(
             QtGui.QIcon(self.app.resource_location + '/notebook16.png'), _("Toggle Panel"))
+        self.cmenu_viewmenu.addSeparator()
+        self.zoomfit = self.cmenu_viewmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/zoom_fit32.png'), _("Zoom Fit"))
+        self.clearplot = self.cmenu_viewmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/clear_plot32.png'), _("Clear Plot"))
+        self.replot = self.cmenu_viewmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/replot32.png'), _("Replot"))
 
         self.popMenu.addSeparator()
         self.cmenu_newmenu = self.popMenu.addMenu(
@@ -1686,16 +1699,6 @@ class MainGUI(QtWidgets.QMainWindow):
         # Grids
         self.cmenu_gridmenu = self.popMenu.addMenu(
             QtGui.QIcon(self.app.resource_location + '/grid32_menu.png'), _("Grids"))
-
-        # View
-        self.cmenu_viewmenu = self.popMenu.addMenu(
-            QtGui.QIcon(self.app.resource_location + '/view64.png'), _("View"))
-        self.zoomfit = self.cmenu_viewmenu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/zoom_fit32.png'), _("Zoom Fit"))
-        self.clearplot = self.cmenu_viewmenu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/clear_plot32.png'), _("Clear Plot"))
-        self.replot = self.cmenu_viewmenu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/replot32.png'), _("Replot"))
 
         self.popMenu.addSeparator()
 
@@ -1846,6 +1849,8 @@ class MainGUI(QtWidgets.QMainWindow):
         self.popmenu_save.setVisible(False)
         self.popMenu.addSeparator()
 
+        self.popmenu_numeric_move = self.popMenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/move32_bis.png'), _("Num Move"))
         self.popmenu_move2origin = self.popMenu.addAction(
             QtGui.QIcon(self.app.resource_location + '/origin2_32.png'), _("Move2Origin"))
         self.popmenu_move = self.popMenu.addAction(
