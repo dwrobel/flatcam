@@ -943,7 +943,7 @@ class App(QtCore.QObject):
             self.splash.show()
             self.splash.showMessage(_("The application is initializing ..."),
                                     alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
-                                    color=QtGui.QColor("gray"))
+                                    color=QtGui.QColor("lightgray"))
         else:
             self.splash = None
             show_splash = 0
@@ -1146,7 +1146,7 @@ class App(QtCore.QObject):
             self.splash.showMessage(_("The application is initializing ...\n"
                                       "Canvas initialization started."),
                                     alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
-                                    color=QtGui.QColor("gray"))
+                                    color=QtGui.QColor("lightgray"))
         start_plot_time = time.time()  # debug
 
         # setup the PlotCanvas
@@ -1188,7 +1188,7 @@ class App(QtCore.QObject):
                                                      "Canvas initialization started.\n"
                                                      "Canvas initialization finished in"), '%.2f' % self.used_time),
                                     alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
-                                    color=QtGui.QColor("gray"))
+                                    color=QtGui.QColor("lightgray"))
         self.ui.splitter.setStretchFactor(1, 2)
 
         # ###########################################################################################################
@@ -1651,7 +1651,7 @@ class App(QtCore.QObject):
                     #           "Canvas initialization finished in"), '%.2f' % self.used_time,
                     #         _("Executing Tcl Script ...")),
                     #                             alignment=Qt.AlignBottom | Qt.AlignLeft,
-                    #                             color=QtGui.QColor("gray"))
+                    #                             color=QtGui.QColor("lightgray"))
                     cmd_line_shellfile_text = myfile.read()
                     if self.cmd_line_headless != 1:
                         self.shell.exec_command(cmd_line_shellfile_text)
@@ -9568,7 +9568,7 @@ class MenuFileHandlers(QtCore.QObject):
                                                        '%.2f' % self.app.used_time,
                                                        _("Opening Gerber file.")),
                                     alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
-                                    color=QtGui.QColor("gray"))
+                                    color=QtGui.QColor("lightgray"))
 
         if len(filenames) == 0:
             self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
@@ -9606,7 +9606,7 @@ class MenuFileHandlers(QtCore.QObject):
                                                        '%.2f' % self.app.used_time,
                                                        _("Opening Excellon file.")),
                                     alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
-                                    color=QtGui.QColor("gray"))
+                                    color=QtGui.QColor("lightgray"))
 
         if len(filenames) == 0:
             self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
@@ -9649,7 +9649,7 @@ class MenuFileHandlers(QtCore.QObject):
                                                        '%.2f' % self.app.used_time,
                                                        _("Opening G-Code file.")),
                                     alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
-                                    color=QtGui.QColor("gray"))
+                                    color=QtGui.QColor("lightgray"))
 
         if len(filenames) == 0:
             self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
@@ -9713,7 +9713,7 @@ class MenuFileHandlers(QtCore.QObject):
                                                        '%.2f' % self.app.used_time,
                                                        _("Opening HPGL2 file.")),
                                     alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
-                                    color=QtGui.QColor("gray"))
+                                    color=QtGui.QColor("lightgray"))
 
         if len(filenames) == 0:
             self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
@@ -10508,7 +10508,7 @@ class MenuFileHandlers(QtCore.QObject):
                                          _("Executing ScriptObject file.")
                                          ),
                                         alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
-                                        color=QtGui.QColor("gray"))
+                                        color=QtGui.QColor("lightgray"))
         else:
             _filter_ = "TCL script .FlatScript (*.FlatScript);;TCL script .tcl (*.TCL);;TCL script .txt (*.TXT);;" \
                        "All Files (*.*)"
@@ -11811,7 +11811,7 @@ class MenuFileHandlers(QtCore.QObject):
                                                        '%.2f' % self.app.used_time,
                                                        _("Opening FlatCAM Config file.")),
                                     alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
-                                    color=QtGui.QColor("gray"))
+                                    color=QtGui.QColor("lightgray"))
         # # add the tab if it was closed
         # self.ui.plot_tab_area.addTab(self.ui.text_editor_tab, _("Code Editor"))
         # # first clear previous text in text editor (if any)
@@ -11876,7 +11876,7 @@ class MenuFileHandlers(QtCore.QObject):
                                                        '%.2f' % self.app.used_time,
                                                        _("Opening FlatCAM Project file.")),
                                     alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
-                                    color=QtGui.QColor("gray"))
+                                    color=QtGui.QColor("lightgray"))
 
         # Open and parse an uncompressed Project file
         try:
