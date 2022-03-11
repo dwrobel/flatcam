@@ -8116,9 +8116,14 @@ class App(QtCore.QObject):
 
         :return:
         """
-
-        self.defaults.report_usage("obj_properties()")
-        self.report_tool.run(toggle=True)
+        sel_objs = self.collection.get_selected()
+        if sel_objs:
+            self.report_tool.run(toggle=True)
+        else:
+            # if the splitter is hidden, display it
+            if self.ui.splitter.sizes()[0] == 0:
+                self.ui.splitter.setSizes([1, 1])
+            self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
 
     def on_project_context_save(self):
         """

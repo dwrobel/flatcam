@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - added a new feature: now in the context menu (and main menu -> Edit) there is a new command that allow to move a selection of objects at specified numeric coordinates (either absolute or relative to current position) 
 - made sure that on canvas context menu pop-up, some actions are disabled if there is no object selected
+- made sure that on canvas context menu pop-up, if 'Properties' action is clicked and there is no object selected then the Properties tab is selected
 
 10.03.2022
 
