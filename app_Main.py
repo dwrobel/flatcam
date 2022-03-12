@@ -6562,7 +6562,7 @@ class App(QtCore.QObject):
 
         # detect changes in the preferences
         for idx in range(self.ui.pref_tab_area.count()):
-            for tb in self.ui.pref_tab_area.widget(idx).findChildren(QtCore.QObject):
+            for tb in self.ui.pref_tab_area.widget(idx).findChildren(QtWidgets.QWidget):
                 try:
                     try:
                         tb.textEdited.disconnect(self.preferencesUiManager.on_preferences_edited)

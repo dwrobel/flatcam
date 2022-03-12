@@ -10,6 +10,9 @@ CHANGELOG for FlatCAM beta
 12.03.2022
 
 - added to the application an older contribution by another user: Columnar Layout for the Preferences Tab. It can be set in Preferences -> General -> GUI section
+- installed an eventFilter for the Sliders in the Preferences tab such that only if a slider has focus the mouse wheel will change its value
+- in Preferences made sure that the changes of the scrollbar no longer interfere with signalling changes
+
 
 11.03.2022
 

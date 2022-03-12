@@ -1075,6 +1075,7 @@ class FCSliderWithSpinner(QtWidgets.QFrame):
         self.spinner.valueChanged.connect(self._on_spinner)
 
         self.valueChanged = self.spinner.valueChanged
+        self.slider.installEventFilter(self)
 
     def get_value(self) -> int:
         return self.spinner.get_value()
@@ -1089,6 +1090,12 @@ class FCSliderWithSpinner(QtWidgets.QFrame):
     def _on_slider(self):
         slider_value = self.slider.value()
         self.spinner.set_value(slider_value)
+
+    def eventFilter(self, object, event):
+        if event.type() == QtCore.QEvent.Type.Wheel:
+            if not self.slider.hasFocus():
+                return True
+        return False
 
 
 class FCSpinner(QtWidgets.QSpinBox):

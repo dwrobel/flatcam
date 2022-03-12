@@ -14,7 +14,7 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
-class PreferencesUIManager:
+class PreferencesUIManager(QtCore.QObject):
 
     def __init__(self, defaults: AppDefaults, data_path: str, ui, inform, options):
         """
@@ -26,6 +26,7 @@ class PreferencesUIManager:
         :param inform:      a pyqtSignal used to display information's in the StatusBar of the GUI
         :param options:     a dict holding the current defaults loaded in the application
         """
+        super(PreferencesUIManager, self).__init__()
 
         self.defaults = defaults
         self.data_path = data_path
@@ -1239,6 +1240,9 @@ class PreferencesUIManager:
         Will color the Preferences tab text to Red color.
         :return:
         """
+        if isinstance(self.sender(), QtWidgets.QScrollBar):
+            return
+
         if self.preferences_changed_flag is False:
             self.inform.emit('[WARNING_NOTCL] %s' % _("Preferences edited but not saved."))
 
