@@ -5669,7 +5669,8 @@ class App(QtCore.QObject):
                                      label=_("Enter the coordinates in format X,Y:"),
                                      icon=QtGui.QIcon(self.resource_location + '/jump_to16.png'),
                                      initial_text=dia_box_location,
-                                     reference=self.options['global_jump_ref'])
+                                     reference=self.options['global_jump_ref'],
+                                     parent=self.ui)
 
             if dia_box.ok is True:
                 try:
@@ -5928,7 +5929,8 @@ class App(QtCore.QObject):
                                      label=_("Enter the coordinates in format X,Y:"),
                                      icon=QtGui.QIcon(self.resource_location + '/move32_bis.png'),
                                      initial_text=dia_box_location,
-                                     reference=self.options['global_move_ref'])
+                                     reference=self.options['global_move_ref'],
+                                     parent=self.ui)
 
             if dia_box.ok is True:
                 try:
