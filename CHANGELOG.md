@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+13.03.2022
+
+- fixed issues when saving the project due of changed serializable attributes
+
 12.03.2022
 
 - added to the application an older contribution by another user: Columnar Layout for the Preferences Tab. It can be set in Preferences -> General -> GUI section

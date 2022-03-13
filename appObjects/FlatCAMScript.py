@@ -48,7 +48,7 @@ class ScriptObject(FlatCAMObj):
 
         self.script_editor_tab = None
 
-        self.ser_attrs = ['options', 'kind', 'source_file']
+        self.ser_attrs = ['obj_options', 'kind', 'source_file']
         self.source_file = ''
         self.script_code = ''
         self.script_filename = ''

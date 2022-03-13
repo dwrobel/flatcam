@@ -37,7 +37,7 @@ class DocumentObject(FlatCAMObj):
         self.kind = "document"
         self.units = ''
 
-        self.ser_attrs = ['options', 'kind', 'source_file']
+        self.ser_attrs = ['obj_options', 'kind', 'source_file']
         self.source_file = ''
         self.doc_code = ''
 
