@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 15.03.2022
 
 - fixed an issue in Calculators Plugin that could crash the app, in the Electroplating section
+- changed estimated time for new release
 
 13.03.2022
 
