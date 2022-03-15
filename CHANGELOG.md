@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+15.03.2022
+
+- fixed an issue in Calculators Plugin that could crash the app, in the Electroplating section
+
 13.03.2022
 
 - fixed issues when saving the project due of changed serializable attributes

@@ -4,7 +4,7 @@
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
 # ##########################################################
-
+import numpy as np
 from PyQt6 import QtWidgets, QtGui
 from appTool import AppTool
 from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, NumericalEvalEntry, FCLabel, RadioSet, FCButton, \
@@ -321,7 +321,10 @@ class ToolCalculator(AppTool):
         density = self.ui.cdensity_entry.get_value()
         growth = self.ui.growth_entry.get_value()
 
-        calculated_time = growth * 2.142857142857143 * float(20 / density)
+        try:
+            calculated_time = growth * 2.142857142857143 * float(20 / density)
+        except ZeroDivisionError:
+            calculated_time = 0.0
 
         self.ui.time_entry.set_value('%.1f' % calculated_time)
         self.ui_connect()
