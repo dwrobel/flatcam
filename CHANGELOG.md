@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+16.03.2022
+
+- fixed an exception encountered on saving projects due of getting a "circular error" on serializing the project objects
+
 15.03.2022
 
 - fixed an issue in Calculators Plugin that could crash the app, in the Electroplating section

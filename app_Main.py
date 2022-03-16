@@ -12000,15 +12000,23 @@ class MenuFileHandlers(QtCore.QObject):
             except Exception as e:
                 self.log.error("save_project() --> There was no active object. Skipping read_form. %s" % str(e))
 
+            app_options = {k: v for k, v in self.app.options.items()}
             d = {
                 "objs":             [obj.to_dict() for obj in self.app.collection.get_list()],
-                "options":          self.app.options,
+                "options":          app_options,
                 "version":          self.app.version
             }
 
             if self.options["global_save_compressed"] is True:
                 try:
                     project_as_json = json.dumps(d, default=to_dict, indent=2, sort_keys=True).encode('utf-8')
+                except Exception as e:
+                    self.log.error(
+                        "Failed to serialize file before compression: %s because: %s" % (str(filename), str(e)))
+                    self.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                    return
+
+                try:
                     # with lzma.open(filename, "w", preset=int(self.options['global_compression_level'])) as f:
                     #     # # Write
                     #     f.write(project_as_json)
@@ -12017,8 +12025,8 @@ class MenuFileHandlers(QtCore.QObject):
                     out1 = compressor_obj.compress(project_as_json)
                     out2 = compressor_obj.flush()
                     project_zipped = b"".join([out1, out2])
-                except Exception:
-                    self.log.error("Failed to save file: %s" % str(filename))
+                except Exception as err:
+                    self.log.error("Failed to save compressed file: %s because: %s" % (str(filename), str(err)))
                     self.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                     return
 
@@ -12028,7 +12036,7 @@ class MenuFileHandlers(QtCore.QObject):
 
                     self.inform.emit('[success] %s: %s' % (_("Project saved to"), str(filename)))
                 else:
-                    self.log.error("Failed to save file: %s", str(filename))
+                    self.log.error("Failed to save file: %s. Empty binary file.", str(filename))
                     self.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                     return
             else:
@@ -12041,7 +12049,13 @@ class MenuFileHandlers(QtCore.QObject):
                     return
 
                 # Write
-                json.dump(d, f, default=to_dict, indent=2, sort_keys=True)
+                try:
+                    json.dump(d, f, default=to_dict, indent=2, sort_keys=True)
+                except Exception as e:
+                    self.log.error(
+                        "Failed to serialize file: %s because: %s" % (str(filename), str(e)))
+                    self.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                    return
                 f.close()
 
                 # verification of the saved project
