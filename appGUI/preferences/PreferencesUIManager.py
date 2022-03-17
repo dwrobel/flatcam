@@ -506,6 +506,7 @@ class PreferencesUIManager(QtCore.QObject):
             "tools_film_color": self.ui.plugin_pref_form.tools_film_group.film_color_entry,
 
             "tools_film_scale_cb": self.ui.plugin_pref_form.tools_film_group.film_scale_cb,
+            "tools_film_scale_type": self.ui.plugin_pref_form.tools_film_group.film_scale_type_combo,  # "length"
             "tools_film_scale_x_entry": self.ui.plugin_pref_form.tools_film_group.film_scalex_entry,
             "tools_film_scale_y_entry": self.ui.plugin_pref_form.tools_film_group.film_scaley_entry,
             "tools_film_scale_ref": self.ui.plugin_pref_form.tools_film_group.film_scale_ref_combo,

@@ -58,25 +58,37 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         grid_scale = FCGridLayout(v_spacing=5, h_spacing=3)
         scale_frame.setLayout(grid_scale)
 
+        # Scale Type
+        self.film_scale_type_lbl = FCLabel('%s:' % _("Type"))
+        self.film_scale_type_lbl.setToolTip(
+            _("'Length' -> scale by a length value\n"
+              "'Factor' -> scale by a ratio")
+        )
+        self.film_scale_type_combo = FCComboBox2()
+        self.film_scale_type_combo.addItems([_("Length"), _("Factor")])
+
+        grid_scale.addWidget(self.film_scale_type_lbl, 0, 0)
+        grid_scale.addWidget(self.film_scale_type_combo, 0, 1)
+
         # Scale X factor
-        self.film_scalex_label = FCLabel('%s:' % _("X factor"))
+        self.film_scalex_label = FCLabel('%s:' % _("X val"))
         self.film_scalex_entry = FCDoubleSpinner()
-        self.film_scalex_entry.set_range(-999.9999, 999.9999)
+        self.film_scalex_entry.set_range(-10000.0000, 10000.0000)
         self.film_scalex_entry.set_precision(self.decimals)
         self.film_scalex_entry.setSingleStep(0.01)
 
-        grid_scale.addWidget(self.film_scalex_label, 0, 0)
-        grid_scale.addWidget(self.film_scalex_entry, 0, 1)
+        grid_scale.addWidget(self.film_scalex_label, 2, 0)
+        grid_scale.addWidget(self.film_scalex_entry, 2, 1)
 
         # Scale Y factor
-        self.film_scaley_label = FCLabel('%s:' % _("Y factor"))
+        self.film_scaley_label = FCLabel('%s:' % _("Y val"))
         self.film_scaley_entry = FCDoubleSpinner()
-        self.film_scaley_entry.set_range(-999.9999, 999.9999)
+        self.film_scaley_entry.set_range(-10000.0000, 10000.0000)
         self.film_scaley_entry.set_precision(self.decimals)
         self.film_scaley_entry.setSingleStep(0.01)
 
-        grid_scale.addWidget(self.film_scaley_label, 2, 0)
-        grid_scale.addWidget(self.film_scaley_entry, 2, 1)
+        grid_scale.addWidget(self.film_scaley_label, 4, 0)
+        grid_scale.addWidget(self.film_scaley_entry, 4, 1)
 
         # Scale reference
         self.scale_ref_label = FCLabel('%s:' % _("Reference"))
@@ -88,8 +100,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.film_scale_ref_combo.addItems(
             [_('Center'), _('Bottom Left'), _('Top Left'), _('Bottom Right'), _('Top right')])
 
-        grid_scale.addWidget(self.scale_ref_label, 4, 0)
-        grid_scale.addWidget(self.film_scale_ref_combo, 4, 1)
+        grid_scale.addWidget(self.scale_ref_label, 6, 0)
+        grid_scale.addWidget(self.film_scale_ref_combo, 6, 1)
 
         # Skew Geometry
         self.film_skew_cb = FCCheckBox('%s' % _("Skew"))
@@ -102,11 +114,11 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
             QCheckBox {font-weight: bold; color: black}
             """
         )
-        adj_grid.addWidget(self.film_skew_cb, 6, 0, 1, 2)
+        adj_grid.addWidget(self.film_skew_cb, 8, 0, 1, 2)
 
         # SKEW FRAME
         skew_frame = FCFrame()
-        adj_grid.addWidget(skew_frame, 8, 0, 1, 2)
+        adj_grid.addWidget(skew_frame, 10, 0, 1, 2)
 
         grid_skew = FCGridLayout(v_spacing=5, h_spacing=3)
         skew_frame.setLayout(grid_skew)
@@ -115,17 +127,17 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.film_skew_type_lbl.setToolTip(
             _("'Length' -> deform by a length value\n"
               "'Angle' -> deform by an angle\n"
-              "'Ratio' -> deform by a ratio between what should be and what is")
+              "'Factor' -> deform by a ratio between what should be and what is")
         )
         self.film_skew_type_combo = FCComboBox2()
-        self.film_skew_type_combo.addItems([_("Length"), _("Angle"), _("Ratio")])
+        self.film_skew_type_combo.addItems([_("Length"), _("Angle"), _("Factor")])
 
         grid_skew.addWidget(self.film_skew_type_lbl, 0, 0)
         grid_skew.addWidget(self.film_skew_type_combo, 0, 1)
 
         self.film_skewx_label = FCLabel('%s:' % _("X val"))
         self.film_skewx_entry = FCDoubleSpinner()
-        self.film_skewx_entry.set_range(-999.9999, 999.9999)
+        self.film_skewx_entry.set_range(-10000.0000, 10000.0000)
         self.film_skewx_entry.set_precision(self.decimals)
         self.film_skewx_entry.setSingleStep(0.01)
 
@@ -134,7 +146,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
 
         self.film_skewy_label = FCLabel('%s:' % _("Y val"))
         self.film_skewy_entry = FCDoubleSpinner()
-        self.film_skewy_entry.set_range(-999.9999, 999.9999)
+        self.film_skewy_entry.set_range(-10000.0000, 10000.0000)
         self.film_skewy_entry.set_precision(self.decimals)
         self.film_skewy_entry.setSingleStep(0.01)
 
@@ -164,7 +176,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
             QCheckBox {font-weight: bold; color: black}
             """
         )
-        adj_grid.addWidget(self.film_mirror_cb, 10, 0, 1, 2)
+        adj_grid.addWidget(self.film_mirror_cb, 12, 0, 1, 2)
 
         self.film_mirror_axis = RadioSet([{'label': _('X'), 'value': 'x'},
                                           {'label': _('Y'), 'value': 'y'},
@@ -172,8 +184,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
                                          compact=True)
         self.film_mirror_axis_label = FCLabel('%s:' % _("Mirror Axis"))
 
-        adj_grid.addWidget(self.film_mirror_axis_label, 12, 0)
-        adj_grid.addWidget(self.film_mirror_axis, 12, 1)
+        adj_grid.addWidget(self.film_mirror_axis_label, 14, 0)
+        adj_grid.addWidget(self.film_mirror_axis, 14, 1)
 
         # separator_line3 = QtWidgets.QFrame()
         # separator_line3.setFrameShape(QtWidgets.QFrame.Shape.HLine)

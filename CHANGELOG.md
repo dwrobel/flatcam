@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+17.03.2022
+
+- fixed issues in the Scale feature of the Film Plugin
+- in the Scale feature of the Film plugin added ability to scale by a length amount
+
 16.03.2022
 
 - fixed an exception encountered on saving projects due of getting a "circular error" on serializing the project objects

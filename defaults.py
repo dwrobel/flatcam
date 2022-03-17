@@ -577,16 +577,18 @@ class AppDefaults:
         "tools_film_color": '#000000',
 
         "tools_film_scale_cb": False,
-        "tools_film_scale_x_entry": 1.0,
-        "tools_film_scale_y_entry": 1.0,
-        "tools_film_scale_ref": 0,  # "center
+        "tools_film_scale_type": 0,  # "length"
+
+        "tools_film_scale_x_entry": 0.0,
+        "tools_film_scale_y_entry": 0.0,
+        "tools_film_scale_ref": 1,  # "bottom left"
 
         "tools_film_skew_cb": False,
         "tools_film_skew_type": 0,  # "length"
 
         "tools_film_skew_x_entry": 0.0,
         "tools_film_skew_y_entry": 0.0,
-        "tools_film_skew_ref": 0,  # "center
+        "tools_film_skew_ref": 1,  # "bottom left"
 
         "tools_film_mirror_cb": False,
         "tools_film_mirror_axis_radio": 'x',
