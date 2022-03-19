@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+19.03.2022
+
+- fixed some errors for when loading a saved project
+
 17.03.2022
 
 - fixed issues in the Scale feature of the Film Plugin

@@ -11922,8 +11922,9 @@ class MenuFileHandlers(QtCore.QObject):
                     ("Failed to open the CNCJob file:", str(obj['options']['name']), "Maybe it is an old project."))
                 continue
 
-            self.app.log.debug(
-                "Recreating from opened project an %s object: %s" % (obj['kind'].capitalize(), obj['options']['name']))
+            msg = "Recreating from opened project an %s object: %s" % \
+                  (obj['kind'].capitalize(), obj['obj_options']['name'])
+            self.app.log.debug(msg)
 
             def obj_init(new_obj, app_inst):
 
@@ -11931,18 +11932,28 @@ class MenuFileHandlers(QtCore.QObject):
                     with app_inst.proc_container.new('%s...' % _("Opening")):
                         try:
                             new_obj.from_dict(obj)
-
-                            # try to make the keys in the tools dictionary to be integers
-                            # JSON serialization makes them strings
-                            # not all FlatCAM objects have the 'tools' dictionary attribute
-                            try:
-                                new_obj.tools = {
-                                    int(tool): tool_dict for tool, tool_dict in list(new_obj.tools.items())
-                                }
-                            except Exception:
-                                pass
                         except Exception as erro:
                             app_inst.log.error('MenuFileHandlers.open_project() --> ' + str(erro))
+                            return 'fail'
+
+                        # try to make the keys in the tools dictionary to be integers
+                        # JSON serialization makes them strings
+                        # not all FlatCAM objects have the 'tools' dictionary attribute
+                        try:
+                            new_obj.tools = {
+                                int(tool): tool_dict for tool, tool_dict in list(new_obj.tools.items())
+                            }
+                        except Exception as erro:
+                            app_inst.log.error('MenuFileHandlers.open_project() keys to int--> ' + str(erro))
+                            return 'fail'
+
+                        # make the 'obj_options' dict a LoudDict
+                        try:
+                            new_obj_options = LoudDict()
+                            new_obj_options.update(new_obj.obj_options)
+                            new_obj.obj_options = new_obj_options
+                        except Exception as erro:
+                            app_inst.log.error('MenuFileHandlers.open_project() make a LoudDict--> ' + str(erro))
                             return 'fail'
 
                 worker_task()
@@ -11952,9 +11963,9 @@ class MenuFileHandlers(QtCore.QObject):
             # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
             if cli is None:
                 self.app.ui.set_ui_title(name="{} {}: {}".format(
-                    _("Loading Project ... restoring"), obj['kind'].upper(), obj['options']['name']))
+                    _("Loading Project ... restoring"), obj['kind'].upper(), obj['obj_options']['name']))
 
-            ret = self.app.app_obj.new_object(obj['kind'], obj['options']['name'], obj_init, plot=plot)
+            ret = self.app.app_obj.new_object(obj['kind'], obj['obj_options']['name'], obj_init, plot=plot)
             if ret == 'fail':
                 continue
 
