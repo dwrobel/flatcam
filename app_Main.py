@@ -11922,8 +11922,13 @@ class MenuFileHandlers(QtCore.QObject):
                     ("Failed to open the CNCJob file:", str(obj['options']['name']), "Maybe it is an old project."))
                 continue
 
-            msg = "Recreating from opened project an %s object: %s" % \
-                  (obj['kind'].capitalize(), obj['obj_options']['name'])
+            try:
+                msg = "Recreating from opened project an %s object: %s" % \
+                      (obj['kind'].capitalize(), obj['obj_options']['name'])
+            except KeyError:
+                # allowance for older projects
+                msg = "Recreating from opened project an %s object: %s" % \
+                      (obj['kind'].capitalize(), obj['options']['name'])
             self.app.log.debug(msg)
 
             def obj_init(new_obj, app_inst):
@@ -11952,6 +11957,10 @@ class MenuFileHandlers(QtCore.QObject):
                             new_obj_options = LoudDict()
                             new_obj_options.update(new_obj.obj_options)
                             new_obj.obj_options = new_obj_options
+                        except AttributeError:
+                            new_obj_options = LoudDict()
+                            new_obj_options.update(new_obj.options)
+                            new_obj.obj_options = new_obj_options
                         except Exception as erro:
                             app_inst.log.error('MenuFileHandlers.open_project() make a LoudDict--> ' + str(erro))
                             return 'fail'
@@ -11961,11 +11970,21 @@ class MenuFileHandlers(QtCore.QObject):
 
             # for some reason, setting ui_title does not work when this method is called from Tcl Shell
             # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
-            if cli is None:
-                self.app.ui.set_ui_title(name="{} {}: {}".format(
-                    _("Loading Project ... restoring"), obj['kind'].upper(), obj['obj_options']['name']))
+            try:
+                if cli is None:
+                    self.app.ui.set_ui_title(name="{} {}: {}".format(
+                        _("Loading Project ... restoring"), obj['kind'].upper(), obj['obj_options']['name']))
 
-            ret = self.app.app_obj.new_object(obj['kind'], obj['obj_options']['name'], obj_init, plot=plot)
+                ret = self.app.app_obj.new_object(obj['kind'], obj['obj_options']['name'], obj_init, plot=plot)
+            except KeyError:
+                # allowance for older projects
+                if cli is None:
+                    self.app.ui.set_ui_title(name="{} {}: {}".format(
+                        _("Loading Project ... restoring"), obj['kind'].upper(), obj['options']['name']))
+                try:
+                    ret = self.app.app_obj.new_object(obj['kind'], obj['options']['name'], obj_init, plot=plot)
+                except Exception:
+                    continue
             if ret == 'fail':
                 continue
 

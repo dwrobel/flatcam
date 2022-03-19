@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - updated the app translation strings to match the ones in the sources, for all languages
 - updated the Romanian language (native)
 - updated the Spanish language (Google-translated)
+- added a way to load older projects (made before recent changes)
 
 17.03.2022
 

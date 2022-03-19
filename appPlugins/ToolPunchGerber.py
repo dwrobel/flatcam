@@ -75,6 +75,15 @@ class ToolPunchGerber(AppTool, Gerber):
         self.connect_signals_at_init()
 
     def on_object_combo_changed(self):
+        punch_plugin_found = False
+        for idx in range(self.app.ui.notebook.count()):
+            if self.app.ui.notebook.tabText(idx) == _("Punch Gerber"):
+                punch_plugin_found = True
+                break
+
+        if punch_plugin_found is False:
+            return
+
         # get the Gerber file who is the source of the punched Gerber
         selection_index = self.ui.gerber_object_combo.currentIndex()
         model_index = self.app.collection.index(selection_index, 0, self.ui.gerber_object_combo.rootModelIndex())
