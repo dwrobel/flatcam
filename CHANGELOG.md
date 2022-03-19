@@ -10,6 +10,9 @@ CHANGELOG for FlatCAM beta
 19.03.2022
 
 - fixed some errors for when loading a saved project
+- updated the app translation strings to match the ones in the sources, for all languages
+- updated the Romanian language (native)
+- updated the Spanish language (Google-translated)
 
 17.03.2022
 
