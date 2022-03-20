@@ -165,8 +165,11 @@ class AppTextEditor(QtWidgets.QWidget):
         self.buttonPrint.clicked.connect(self.handlePrint)
         self.buttonPreview.clicked.connect(self.handlePreview)
         self.buttonFind.clicked.connect(self.handleFindGCode)
-        self.entryFind.editingFinished.connect(self.handleFindGCode)
+        self.entryFind.returnPressed.connect(self.handleFindGCode)
         self.buttonReplace.clicked.connect(self.handleReplaceGCode)
+
+        self.entryFind.textChanged.connect(self.on_text_changed)
+
         # self.button_copy_all.clicked.connect(self.handleCopyAll)
 
         self.code_editor.set_model_data(self.app.myKeywords)
@@ -350,7 +353,7 @@ class AppTextEditor(QtWidgets.QWidget):
             bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.ButtonRole.AcceptRole)
             bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
 
-            msgbox.setDefaultButton(bt_cancel)
+            msgbox.setDefaultButton(bt_ok)
             msgbox.exec()
             response = msgbox.clickedButton()
 
@@ -387,6 +390,22 @@ class AppTextEditor(QtWidgets.QWidget):
                 qc.insertText(new)
             # Mark end of undo block
             cursor.endEditBlock()
+
+    def on_text_changed(self, txt):
+        extra_sel_list = []
+        flags = QtGui.QTextDocument.FindFlag.FindCaseSensitively
+        self.code_editor.moveCursor(QtGui.QTextCursor.MoveOperation.Start)
+
+        while self.code_editor.find(str(txt), flags):
+            extra_sel = QtWidgets.QTextEdit.ExtraSelection()
+            extra_sel.cursor = self.code_editor.textCursor()
+            fmt = QtGui.QTextCharFormat()
+            fmt.setBackground(QtCore.Qt.GlobalColor.yellow)
+            extra_sel.format = fmt
+            extra_sel_list.append(extra_sel)
+
+        self.code_editor.moveCursor(QtGui.QTextCursor.MoveOperation.Start)
+        self.code_editor.setExtraSelections(extra_sel_list)
 
     # def handleCopyAll(self):
     #     text = self.code_editor.toPlainText()

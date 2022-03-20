@@ -12,6 +12,8 @@ CHANGELOG for FlatCAM beta
 - added a last resort option to load old projects; the result is not guaranteed if the differences are too great
 - updated the code in FlatCAMCNCJob object such that more attributes will be serialized in order for loading a project correctly when it has CNCJob objects
 - another fix to make the app save correctly the CNCJob objects when saving a project
+- in all text editors, when writing in the Find entry, all instances of typed chars will be selected
+- in all text editors, pressing Enter on Find Entry will search for next instance of the searched text (no longer for focus out)
 
 19.03.2022
 
