@@ -859,7 +859,12 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         if self.obj_options['type'].lower() == 'geometry':
             try:
                 for key in self.tools:
-                    ppg = self.tools[key]['data']['tools_mill_ppname_g']
+                    try:
+                        ppg = self.tools[key]['data']['tools_mill_ppname_g']
+                    except KeyError:
+                        # for older loaded projects
+                        ppg = self.app.options['tools_mill_ppname_g']
+
                     if 'marlin' in ppg.lower() or 'repetier' in ppg.lower():
                         marlin = True
                         break
@@ -1001,7 +1006,13 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             # for the case that self.tools is empty: old projects
             try:
                 first_key = list(self.tools.keys())[0]
-                include_header = self.app.preprocessors[self.tools[first_key]['data']['tools_mill_ppname_g']]
+                try:
+                    include_header = self.app.preprocessors[self.tools[first_key]['data']['tools_mill_ppname_g']]
+                except KeyError:
+                    # for older loaded projects
+                    self.app.log.debug("CNCJobObject.export_gcode() --> old project detected. Results are unreliable.")
+                    include_header = self.app.preprocessors[self.app.options['tools_mill_ppname_g']]
+
                 include_header = include_header.include_header
             except (TypeError, IndexError):
                 include_header = self.app.preprocessors['default'].include_header
@@ -1019,6 +1030,12 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                     # for older loaded projects
                     include_header = self.app.preprocessors[
                         self.tools[first_key]['data']['ppname_e']
+                    ].include_header
+                except Exception:
+                    self.app.log.debug("CNCJobObject.export_gcode() --> old project detected. Results are unreliable.")
+                    # for older loaded projects
+                    include_header = self.app.preprocessors[
+                        self.app.options['tools_drill_ppname_e']
                     ].include_header
             except TypeError:
                 # when self.tools is empty - old projects

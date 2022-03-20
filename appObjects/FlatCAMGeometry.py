@@ -196,6 +196,9 @@ class GeometryObject(FlatCAMObj, Geometry):
                 offset_item_txt = self.offset_item_options[tooluid_value['data']['tools_mill_offset_type']]
             except TypeError:
                 offset_item_txt = tooluid_value['data']['tools_mill_offset_type']
+            except KeyError:
+                # for older loaded projects
+                offset_item_txt = self.app.options['tools_mill_offset_type']
             offset_item = QtWidgets.QTableWidgetItem(offset_item_txt)
             offset_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.geo_tools_table.setItem(row_idx, 2, offset_item)  # Offset Type
@@ -205,6 +208,9 @@ class GeometryObject(FlatCAMObj, Geometry):
                 job_item_txt = self.job_item_options[tooluid_value['data']['tools_mill_job_type']]
             except TypeError:
                 job_item_txt = tooluid_value['data']['tools_mill_job_type']
+            except KeyError:
+                # for older loaded projects
+                job_item_txt = self.app.options['tools_mill_job_type']
             job_item = QtWidgets.QTableWidgetItem(job_item_txt)
             job_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.geo_tools_table.setItem(row_idx, 3, job_item)  # Job Type
@@ -214,6 +220,9 @@ class GeometryObject(FlatCAMObj, Geometry):
                 tool_shape_item_txt = self.tool_type_item_options[tooluid_value['data']['tools_mill_tool_shape']]
             except TypeError:
                 tool_shape_item_txt = tooluid_value['data']['tools_mill_tool_shape']
+            except KeyError:
+                # for older loaded projects
+                tool_shape_item_txt = self.app.options['tools_mill_tool_shape']
             tool_shape_item = QtWidgets.QTableWidgetItem(tool_shape_item_txt)
             tool_shape_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.geo_tools_table.setItem(row_idx, 4, tool_shape_item)  # Tool Shape

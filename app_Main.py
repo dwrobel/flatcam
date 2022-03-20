@@ -10333,30 +10333,6 @@ class MenuFileHandlers(QtCore.QObject):
             self.app.ui.plot_tab_area.insertTab(0, self.app.ui.plot_tab, _("Plot Area"))
             self.app.ui.plot_tab_area.protectTab(0)
 
-        if silenced is None or silenced is False:
-            msgbox = FCMessageBox(parent=self.app.ui)
-            title = _("Save preferences")
-            txt = _("Do you want to save the loaded project settings as the default settings?")
-            msgbox.setWindowTitle(title)  # taskbar still shows it
-            msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
-            msgbox.setText('<b>%s</b>' % title)
-            msgbox.setInformativeText(txt)
-            msgbox.setIconPixmap(QtGui.QPixmap(self.app.resource_location + '/save_as.png'))
-
-            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
-            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
-            # bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
-
-            msgbox.setDefaultButton(bt_yes)
-            msgbox.exec()
-            response = msgbox.clickedButton()
-
-            if response == bt_yes:
-                self.app.defaults.update(self.app.options)
-                self.app.preferencesUiManager.save_defaults()
-            if response == bt_no:
-                pass
-
         # take the focus of the Notebook on Project Tab.
         self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
 
@@ -11893,6 +11869,41 @@ class MenuFileHandlers(QtCore.QObject):
                 self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open project file"), filename))
                 return
 
+            # Check for older projects
+            found_older_project = False
+            for obj in d['objs']:
+                if 'cnc_tools' in obj or 'exc_cnc_tools' in obj or 'apertures' in obj:
+                    self.app.log.error(
+                        'MenuFileHandlers.open_project() --> %s %s. %s' %
+                        ("Failed to open the CNCJob file:", str(obj['options']['name']),
+                         "Maybe it is an old project."))
+                    found_older_project = True
+
+            if found_older_project:
+                if not run_from_arg or not cli or from_tcl is False:
+                    msgbox = FCMessageBox(parent=self.app.ui)
+                    title = _("Legacy Project")
+                    txt = _("The loaded project was made for an older version.\n"
+                            "It may not load correctly. Do you want to continue?")
+                    msgbox.setWindowTitle(title)  # taskbar still shows it
+                    msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
+                    msgbox.setText('<b>%s</b>' % title)
+                    msgbox.setInformativeText(txt)
+                    msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
+
+                    bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.ButtonRole.AcceptRole)
+                    bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
+
+                    msgbox.setDefaultButton(bt_ok)
+                    msgbox.exec()
+                    response = msgbox.clickedButton()
+
+                    if response == bt_cancel:
+                        return
+                else:
+                    self.app.log.error("Legacy Project. Loading not supported.")
+                    return
+
         # Clear the current project
         # # NOT THREAD SAFE # ##
         if run_from_arg is True:
@@ -11902,8 +11913,35 @@ class MenuFileHandlers(QtCore.QObject):
         else:
             self.on_file_new_project()
 
-        # Project options
-        self.app.options.update(d['options'])
+        if not run_from_arg or not cli or from_tcl is False:
+            msgbox = FCMessageBox(parent=self.app.ui)
+            title = _("Save preferences")
+            txt = _("Do you want to import the loaded project settings?")
+            msgbox.setWindowTitle(title)  # taskbar still shows it
+            msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
+            msgbox.setText('<b>%s</b>' % title)
+            msgbox.setInformativeText(txt)
+            msgbox.setIconPixmap(QtGui.QPixmap(self.app.resource_location + '/save_as.png'))
+
+            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
+            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
+            # bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
+
+            msgbox.setDefaultButton(bt_yes)
+            msgbox.exec()
+            response = msgbox.clickedButton()
+
+            if response == bt_yes:
+                # self.app.defaults.update(self.app.options)
+                # self.app.preferencesUiManager.save_defaults()
+                # Project options
+                self.app.options.update(d['options'])
+            if response == bt_no:
+                pass
+        else:
+            # Load by default new options when not using GUI
+            # Project options
+            self.app.options.update(d['options'])
 
         self.app.project_filename = filename
 
@@ -11916,12 +11954,6 @@ class MenuFileHandlers(QtCore.QObject):
         self.log.debug(" **************** Started PROEJCT loading... **************** ")
 
         for obj in d['objs']:
-            if 'cnc_tools' in obj or 'exc_cnc_tools' in obj:
-                self.app.log.error(
-                    'MenuFileHandlers.open_project() --> %s %s. %s' %
-                    ("Failed to open the CNCJob file:", str(obj['options']['name']), "Maybe it is an old project."))
-                continue
-
             try:
                 msg = "Recreating from opened project an %s object: %s" % \
                       (obj['kind'].capitalize(), obj['obj_options']['name'])
@@ -11941,12 +11973,31 @@ class MenuFileHandlers(QtCore.QObject):
                             app_inst.log.error('MenuFileHandlers.open_project() --> ' + str(erro))
                             return 'fail'
 
+                        # #############################################################################################
+                        # for older projects loading try to convert the 'apertures' or 'cnc_tools' or 'exc_cnc_tools'
+                        # attributes, if found,  to 'tools'
+                        # #############################################################################################
+                        # for older loaded projects
+                        if 'apertures' in obj:
+                            new_obj.__dict__['tools'] = obj['apertures']
+                        if 'cnc_tools' in obj:
+                            new_obj.__dict__['tools'] = obj['cnc_tools']
+                        if 'exc_cnc_tools' in obj:
+                            new_obj.__dict__['tools'] = obj['exc_cnc_tools']
+                        # #############################################################################################
+                        # #############################################################################################
+
                         # try to make the keys in the tools dictionary to be integers
                         # JSON serialization makes them strings
                         # not all FlatCAM objects have the 'tools' dictionary attribute
                         try:
                             new_obj.tools = {
                                 int(tool): tool_dict for tool, tool_dict in list(new_obj.tools.items())
+                            }
+                        except ValueError:
+                            # for older loaded projects
+                            new_obj.tools = {
+                                float(tool): tool_dict for tool, tool_dict in list(new_obj.tools.items())
                             }
                         except Exception as erro:
                             app_inst.log.error('MenuFileHandlers.open_project() keys to int--> ' + str(erro))
@@ -11969,7 +12020,7 @@ class MenuFileHandlers(QtCore.QObject):
                 # app_inst.worker_task.emit({'fcn': worker_task, 'params': []})
 
             # for some reason, setting ui_title does not work when this method is called from Tcl Shell
-            # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
+            # it's because the TclCommand is run in another thread (it inherits TclCommandSignaled)
             try:
                 if cli is None:
                     self.app.ui.set_ui_title(name="{} {}: {}".format(

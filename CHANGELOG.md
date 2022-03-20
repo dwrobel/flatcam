@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+20.03.2022
+
+- added a last resort option to load old projects; the result is not guaranteed if the differences are too great
+
 19.03.2022
 
 - fixed some errors for when loading a saved project
