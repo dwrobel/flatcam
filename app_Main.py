@@ -11591,6 +11591,60 @@ class MenuFileHandlers(QtCore.QObject):
                 app_obj_.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open"), filename))
                 return "fail"
 
+            # try to find from what kind of object this GCode was created
+            gcode_origin = 'Geometry'
+            match = re.search(r'^.*Type:\s*.*(\bGeometry\b|\bExcellon\b)', gcode, re.MULTILINE)
+            if match:
+                gcode_origin = match.group(1)
+                job_obj.obj_options['type'] = gcode_origin
+                # add at least one default tool
+                if 'excellon' in gcode_origin.lower():
+                    job_obj.tools = {1: {'data': {'tools_drill_ppname_e': 'default'}}}
+                if 'geometry' in gcode_origin.lower():
+                    job_obj.tools = {1: {'data': {'tools_mill_ppname_g': 'default'}}}
+
+            # try to find from what kind of object this GCode was created
+            match = re.search(r'^.*Preprocessor:\s*.*\bGeometry\b|\bExcellon\b:\s(\b.*\b)', gcode, re.MULTILINE)
+            detected_preprocessor = 'default'
+            if match:
+                detected_preprocessor = match.group(1)
+            # determine if there is any tool data
+            match = re.findall(r'^.*Tool:\s*([0-9]*)\s*->\s*Dia:\s*(\d*\.?\d*)', gcode, re.MULTILINE)
+            if match:
+                job_obj.tools = {}
+                for m in match:
+                    if 'excellon' in gcode_origin.lower():
+                        job_obj.tools[int(m[0])] = {
+                            'tooldia': float(m[1]),
+                            'nr_drills': 0,
+                            'nr_slots': 0,
+                            'offset_z': 0,
+                            'data': {'tools_drill_ppname_e': detected_preprocessor}
+                        }
+                    # if 'geometry' in gcode_origin.lower():
+                    #     job_obj.tools[int(m[0])] = {
+                    #         'tooldia': float(m[1]),
+                    #         'data': {
+                    #             'tools_mill_ppname_g': detected_preprocessor,
+                    #             'tools_mill_offset_value': 0.0,
+                    #             'tools_mill_job_type': _('Roughing'),
+                    #             'tools_mill_tool_shape': "C1"
+                    #
+                    #         }
+                    #     }
+                job_obj.used_tools = list(job_obj.tools.keys())
+            # determine if there is any Cut Z data
+            match = re.findall(r'^.*Tool:\s*([0-9]*)\s*->\s*Z_Cut:\s*([\-|+]?\d*\.?\d*)', gcode, re.MULTILINE)
+            if match:
+                for m in match:
+                    if 'excellon' in gcode_origin.lower():
+                        if int(m[0]) in job_obj.tools:
+                            job_obj.tools[int(m[0])]['offset_z'] = 0.0
+                            job_obj.tools[int(m[0])]['data']['tools_drill_cutz'] = float(m[1])
+                    # if 'geometry' in gcode_origin.lower():
+                    #     if int(m[0]) in job_obj.tools:
+                    #         job_obj.tools[int(m[0])]['data']['tools_mill_cutz'] = float(m[1])
+
             job_obj.gcode = gcode
 
             gcode_ret = job_obj.gcode_parse(force_parsing=force_parsing)
@@ -11598,6 +11652,12 @@ class MenuFileHandlers(QtCore.QObject):
                 self.inform.emit('[ERROR_NOTCL] %s' % _("This is not GCODE"))
                 return "fail"
 
+            for k in job_obj.tools:
+                job_obj.tools[k]['gcode'] = gcode
+                job_obj.tools[k]['gcode_parsed'] = []
+
+            for k in job_obj.tools:
+                print(k, job_obj.tools[k])
             job_obj.create_geometry()
 
         with self.app.proc_container.new('%s...' % _("Opening")):

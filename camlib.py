@@ -2837,7 +2837,7 @@ class CNCjob(Geometry):
         self.routing_time = 0.0
 
         # store here the Excellon source object tools to be accessible locally
-        self.exc_tools = None
+        self.exc_tools = {}
 
         # search for toolchange parameters in the Toolchange Custom Code
         self.re_toolchange_custom = re.compile(r'(%[a-zA-Z0-9\-_]+%)')
@@ -6663,7 +6663,7 @@ class CNCjob(Geometry):
         :param tool_data:       when dealing with multi tool objects we need the tool data
         :type tool_data:        dict
         :return:
-        :rtype:                 dict
+        :rtype:                 list
         """
 
         kind = ["C", "F"]  # T=travel, C=cut, F=fast, S=slow
@@ -7069,6 +7069,8 @@ class CNCjob(Geometry):
 
         if tooldia == 0:
             for geo in gcode_parsed:
+                if not geo:
+                    continue
                 if kind == 'all':
                     obj.add_shape(shape=geo['geom'], color=color[geo['kind'][0]][1], visible=visible)
                 elif kind == 'travel':
@@ -7084,6 +7086,9 @@ class CNCjob(Geometry):
             if self.coordinates_type == "G90":
                 # For Absolute coordinates type G90
                 for geo in gcode_parsed:
+                    if not geo:
+                        continue
+
                     if geo['kind'][0] == 'T':
                         start_position = geo['geom'].coords[0]
 

@@ -365,9 +365,11 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 tooldia = self.tools[t_id]['tooldia']
 
                 try:
-                    offset_val = self.app.dec_format(float(dia_value['offset']), self.decimals) + self.z_cut
+                    offset_val = self.app.dec_format(float(dia_value['offset']), self.decimals) + \
+                                 float(dia_value['data']['tools_drill_cutz'])
                 except KeyError:
-                    offset_val = self.app.dec_format(float(dia_value['offset_z']), self.decimals) + self.z_cut
+                    offset_val = self.app.dec_format(float(dia_value['offset_z']), self.decimals) + \
+                                 float(dia_value['data']['tools_drill_cutz'])
                 except ValueError:
                     # for older loaded projects
                     offset_val = self.z_cut
@@ -412,7 +414,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY # ##
                 self.ui.exc_cnc_tools_table.setItem(row_no, 4, t_id_item_2)  # Tool unique ID)
                 self.ui.exc_cnc_tools_table.setItem(row_no, 5, cutz_item)
-                self.ui.exc_cnc_tools_table.setCellWidget(row_no, 6, plot_cnc_exc_item)
+                # add it only if there is any gcode in the tool storage
+                if dia_value['gcode_parsed']:
+                    self.ui.exc_cnc_tools_table.setCellWidget(row_no, 6, plot_cnc_exc_item)
 
                 row_no += 1
 
@@ -478,9 +482,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # this means that the object that created this CNCJob was an Excellon or Geometry
         try:
             if self.travel_distance:
-                self.ui.t_distance_label.show()
-                self.ui.t_distance_entry.setVisible(True)
-                self.ui.t_distance_entry.setDisabled(True)
+                self.ui.estimated_frame.show()
                 self.ui.t_distance_entry.set_value(self.app.dec_format(self.travel_distance, self.decimals))
                 self.ui.units_label.setText(str(self.units).lower())
                 self.ui.units_label.setDisabled(True)

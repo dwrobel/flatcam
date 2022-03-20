@@ -1373,10 +1373,18 @@ class CNCObjectUI(ObjectUI):
         self.custom_box.addWidget(self.param_label)
 
         self.gp_frame = FCFrame()
+        self.gp_frame.setSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
         self.custom_box.addWidget(self.gp_frame)
 
         grid_par = FCGridLayout(v_spacing=5, h_spacing=3)
         self.gp_frame.setLayout(grid_par)
+
+        self.estimated_frame = QtWidgets.QFrame()
+        self.estimated_frame.setContentsMargins(0, 0, 0, 0)
+        estimated_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        estimated_grid.setContentsMargins(0, 0, 0, 0)
+        self.estimated_frame.setLayout(estimated_grid)
+        grid_par.addWidget(self.estimated_frame, 4, 0, 1, 3)
 
         # Travelled Distance
         self.t_distance_label = FCLabel("<b>%s:</b>" % _("Travelled distance"))
@@ -1387,9 +1395,9 @@ class CNCObjectUI(ObjectUI):
         self.t_distance_entry = FCEntry()
         self.units_label = FCLabel()
 
-        grid_par.addWidget(self.t_distance_label, 4, 0)
-        grid_par.addWidget(self.t_distance_entry, 4, 1)
-        grid_par.addWidget(self.units_label, 4, 2)
+        estimated_grid.addWidget(self.t_distance_label, 0, 0)
+        estimated_grid.addWidget(self.t_distance_entry, 0, 1)
+        estimated_grid.addWidget(self.units_label, 0, 2)
 
         # Estimated Time
         self.t_time_label = FCLabel("<b>%s:</b>" % _("Estimated time"))
@@ -1400,19 +1408,18 @@ class CNCObjectUI(ObjectUI):
         self.t_time_entry = FCEntry()
         self.units_time_label = FCLabel()
 
-        grid_par.addWidget(self.t_time_label, 8, 0)
-        grid_par.addWidget(self.t_time_entry, 8, 1)
-        grid_par.addWidget(self.units_time_label, 8, 2)
-
-        self.t_distance_label.hide()
-        self.t_distance_entry.setVisible(False)
-        self.t_time_label.hide()
-        self.t_time_entry.setVisible(False)
+        estimated_grid.addWidget(self.t_time_label, 2, 0)
+        estimated_grid.addWidget(self.t_time_entry, 2, 1)
+        estimated_grid.addWidget(self.units_time_label, 2, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid_par.addWidget(separator_line, 10, 0, 1, 3)
+        estimated_grid.addWidget(separator_line, 4, 0, 1, 3)
+
+        self.estimated_frame.hide()
+        self.gp_frame.resize(self.gp_frame.minimumSizeHint())
+        self.gp_frame.adjustSize()
 
         # CNC Code snippets
         self.snippets_cb = FCCheckBox(_("Use CNC Code Snippets"))
@@ -1546,7 +1553,8 @@ class CNCObjectUI(ObjectUI):
         self.export_gcode_button.setToolTip(
             _("Opens dialog to save CNC Code file.")
         )
-        self.export_gcode_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.export_gcode_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
+                                               QtWidgets.QSizePolicy.Policy.Minimum)
         g_export_lay.addWidget(self.export_gcode_button)
 
         self.review_gcode_button = QtWidgets.QToolButton()

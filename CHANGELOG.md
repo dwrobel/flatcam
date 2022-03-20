@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+21.03.2022
+
+- optimized the UI for the CNCJob object
+- when loading a Gcode file in the app now the application makes an attempt in adding information's such that the CncJob UI works correctly; if so information's are not found then assumptions are made. Only for GCode that is detected as made from an Excellon object
+
 20.03.2022
 
 - added a last resort option to load old projects; the result is not guaranteed if the differences are too great

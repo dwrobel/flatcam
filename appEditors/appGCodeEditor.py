@@ -280,14 +280,17 @@ class AppGCodeEditor(QtCore.QObject):
         self.ui.exc_cnc_tools_table.setItem(row_no, 1, start_item)
 
         for toolid_key, t_value in self.gcode_obj.tools.items():
-            tooldia = self.gcode_obj.tools[toolid_key]['tooldia']
             tool_idx += 1
             row_no += 1
 
+            tooldia = self.gcode_obj.tools[toolid_key]['tooldia']
+            nr_drills = int(t_value['nr_drills'])
+            nr_slots = int(t_value['nr_slots'])
+
             t_id = QtWidgets.QTableWidgetItem('%d' % int(tool_idx))
             dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooldia)))
-            nr_drills_item = QtWidgets.QTableWidgetItem('%d' % int(t_value['nr_drills']))
-            nr_slots_item = QtWidgets.QTableWidgetItem('%d' % int(t_value['nr_slots']))
+            nr_drills_item = QtWidgets.QTableWidgetItem('%d' % nr_drills)
+            nr_slots_item = QtWidgets.QTableWidgetItem('%d' % nr_slots)
 
             try:
                 cutz_item = QtWidgets.QTableWidgetItem('%.*f' % (
