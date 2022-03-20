@@ -123,7 +123,7 @@ class ScriptObject(FlatCAMObj):
 
         self.ui.autocomplete_cb.stateChanged.connect(self.on_autocomplete_changed)
 
-        self.ser_attrs = ['options', 'kind', 'source_file']
+        self.ser_attrs = ['obj_options', 'kind', 'source_file']
 
         # ---------------------------------------------------- #
         # ----------- LOAD THE TEXT SOURCE FILE -------------- #
