@@ -149,6 +149,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # (like the one in the TCL Command), False
         self.multitool = False
 
+        self.multigeo = False
+
         self.coords_decimals = 4
         self.fr_decimals = 2
 
@@ -196,7 +198,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # from predecessors.
         self.ser_attrs += [
             'obj_options', 'kind', 'tools', 'multitool', 'append_snippet', 'prepend_snippet', 'gc_header', 'gc_start',
-            'multigeo', 'travel_distance', 'routing_time', 'used_tools'
+            'multigeo', 'used_tools'
         ]
 
         # this is used, so we don't recreate the GCode for loaded objects in set_ui(), it is already there

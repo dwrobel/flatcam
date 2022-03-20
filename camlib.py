@@ -2850,7 +2850,7 @@ class CNCjob(Geometry):
         # from Geometry.
         self.ser_attrs += ['kind', 'z_cut', 'z_move', 'z_toolchange', 'feedrate', 'z_feedrate', 'feedrate_rapid',
                            'tooldia', 'gcode', 'input_geometry_bounds', 'gcode_parsed', 'steps_per_circle',
-                           'z_depthpercut', 'spindlespeed', 'dwell', 'dwelltime']
+                           'z_depthpercut', 'spindlespeed', 'dwell', 'dwelltime', 'travel_distance', 'routing_time']
 
     @property
     def postdata(self):

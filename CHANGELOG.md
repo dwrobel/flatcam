@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - added a last resort option to load old projects; the result is not guaranteed if the differences are too great
 - updated the code in FlatCAMCNCJob object such that more attributes will be serialized in order for loading a project correctly when it has CNCJob objects
+- another fix to make the app save correctly the CNCJob objects when saving a project
 
 19.03.2022
 
