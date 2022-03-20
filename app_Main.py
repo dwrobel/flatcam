@@ -11883,8 +11883,9 @@ class MenuFileHandlers(QtCore.QObject):
                 if not run_from_arg or not cli or from_tcl is False:
                     msgbox = FCMessageBox(parent=self.app.ui)
                     title = _("Legacy Project")
-                    txt = _("The loaded project was made for an older version.\n"
-                            "It may not load correctly. Do you want to continue?")
+                    txt = _("The project was made with an older app version.\n"
+                            "It may not load correctly.\n\n"
+                            "Do you want to continue?")
                     msgbox.setWindowTitle(title)  # taskbar still shows it
                     msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
                     msgbox.setText('<b>%s</b>' % title)
@@ -11915,13 +11916,13 @@ class MenuFileHandlers(QtCore.QObject):
 
         if not run_from_arg or not cli or from_tcl is False:
             msgbox = FCMessageBox(parent=self.app.ui)
-            title = _("Save preferences")
+            title = _("Import Settings")
             txt = _("Do you want to import the loaded project settings?")
             msgbox.setWindowTitle(title)  # taskbar still shows it
             msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
             msgbox.setText('<b>%s</b>' % title)
             msgbox.setInformativeText(txt)
-            msgbox.setIconPixmap(QtGui.QPixmap(self.app.resource_location + '/save_as.png'))
+            msgbox.setIconPixmap(QtGui.QPixmap(self.app.resource_location + '/import.png'))
 
             bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
             bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
@@ -11973,17 +11974,39 @@ class MenuFileHandlers(QtCore.QObject):
                             app_inst.log.error('MenuFileHandlers.open_project() --> ' + str(erro))
                             return 'fail'
 
+                        # make the 'obj_options' dict a LoudDict
+                        try:
+                            new_obj_options = LoudDict()
+                            new_obj_options.update(new_obj.obj_options)
+                            new_obj.obj_options = new_obj_options
+                        except AttributeError:
+                            new_obj_options = LoudDict()
+                            new_obj_options.update(new_obj.options)
+                            new_obj.obj_options = new_obj_options
+                        except Exception as erro:
+                            app_inst.log.error('MenuFileHandlers.open_project() make a LoudDict--> ' + str(erro))
+                            return 'fail'
+
                         # #############################################################################################
                         # for older projects loading try to convert the 'apertures' or 'cnc_tools' or 'exc_cnc_tools'
-                        # attributes, if found,  to 'tools'
+                        # attributes, if found, to 'tools'
                         # #############################################################################################
                         # for older loaded projects
                         if 'apertures' in obj:
-                            new_obj.__dict__['tools'] = obj['apertures']
-                        if 'cnc_tools' in obj:
-                            new_obj.__dict__['tools'] = obj['cnc_tools']
-                        if 'exc_cnc_tools' in obj:
-                            new_obj.__dict__['tools'] = obj['exc_cnc_tools']
+                            new_obj.tools = obj['apertures']
+                        if 'cnc_tools' in obj and obj['cnc_tools']:
+                            new_obj.tools = obj['cnc_tools']
+                            # new_obj.used_tools = [int(k) for k in new_obj.tools.keys()]
+                            # first_key = list(obj['cnc_tools'].keys())[0]
+                            # used_preprocessor = obj['cnc_tools'][first_key]['data']['ppname_g']
+                            # new_obj.gc_start = new_obj.doformat(self.app.preprocessors[used_preprocessor].start_code)
+                        if 'exc_cnc_tools' in obj and obj['exc_cnc_tools']:
+                            new_obj.tools = obj['exc_cnc_tools']
+                            # add the used_tools (all of them will be used)
+                            new_obj.used_tools = [float(k) for k in new_obj.tools.keys()]
+                            # add a missing key, 'tooldia' used for plotting CNCJob objects
+                            for td in new_obj.tools:
+                                new_obj.tools[td]['tooldia'] = float(td)
                         # #############################################################################################
                         # #############################################################################################
 
@@ -12003,18 +12026,19 @@ class MenuFileHandlers(QtCore.QObject):
                             app_inst.log.error('MenuFileHandlers.open_project() keys to int--> ' + str(erro))
                             return 'fail'
 
-                        # make the 'obj_options' dict a LoudDict
-                        try:
-                            new_obj_options = LoudDict()
-                            new_obj_options.update(new_obj.obj_options)
-                            new_obj.obj_options = new_obj_options
-                        except AttributeError:
-                            new_obj_options = LoudDict()
-                            new_obj_options.update(new_obj.options)
-                            new_obj.obj_options = new_obj_options
-                        except Exception as erro:
-                            app_inst.log.error('MenuFileHandlers.open_project() make a LoudDict--> ' + str(erro))
-                            return 'fail'
+                        # #############################################################################################
+                        # for older loaded projects
+                        # ony older CNCJob objects hold those
+                        if 'cnc_tools' in obj:
+                            new_obj.obj_options['type'] = 'Geometry'
+                        if 'exc_cnc_tools' in obj:
+                            new_obj.obj_options['type'] = 'Excellon'
+                        # #############################################################################################
+
+                        if new_obj.kind == 'cncjob':
+                            # some attributes are serialized so we need t otake this into consideration in
+                            # CNCJob.set_ui()
+                            new_obj.is_loaded_from_project = True
 
                 worker_task()
                 # app_inst.worker_task.emit({'fcn': worker_task, 'params': []})

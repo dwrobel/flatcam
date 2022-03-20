@@ -195,9 +195,12 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # Always append to it because it carries contents
         # from predecessors.
         self.ser_attrs += [
-            'obj_options', 'kind', 'tools', 'multitool', 'append_snippet',
-            'prepend_snippet', 'gc_header'
+            'obj_options', 'kind', 'tools', 'multitool', 'append_snippet', 'prepend_snippet', 'gc_header', 'gc_start',
+            'multigeo', 'travel_distance', 'routing_time', 'used_tools'
         ]
+
+        # this is used, so we don't recreate the GCode for loaded objects in set_ui(), it is already there
+        self.is_loaded_from_project = False
 
     def build_ui(self):
         self.ui_disconnect()
@@ -219,7 +222,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             try:
                 self.build_excellon_cnc_tools()
             except Exception as err:
-                self.app.log.error("camlib.CNCJobObject.build_ui -> %s" % str(err))
+                self.app.log.error("appObjects.CNCJobObject.build_ui -> %s" % str(err))
             self.ui.exc_cnc_tools_table.show()
 
         self.ui_connect()
@@ -363,11 +366,26 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                     offset_val = self.app.dec_format(float(dia_value['offset']), self.decimals) + self.z_cut
                 except KeyError:
                     offset_val = self.app.dec_format(float(dia_value['offset_z']), self.decimals) + self.z_cut
+                except ValueError:
+                    # for older loaded projects
+                    offset_val = self.z_cut
+
+                try:
+                    nr_drills = int(dia_value['nr_drills'])
+                except (KeyError, ValueError):
+                    # for older loaded projects
+                    nr_drills = 0
+
+                try:
+                    nr_slots = int(dia_value['nr_slots'])
+                except (KeyError, ValueError):
+                    # for older loaded projects
+                    nr_slots = 0
 
                 t_id_item = QtWidgets.QTableWidgetItem('%d' % int(t_id))
                 dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooldia)))
-                nr_drills_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_drills']))
-                nr_slots_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_slots']))
+                nr_drills_item = QtWidgets.QTableWidgetItem('%d' % nr_drills)
+                nr_slots_item = QtWidgets.QTableWidgetItem('%d' % nr_slots)
                 cutz_item = QtWidgets.QTableWidgetItem('%f' % offset_val)
                 t_id_item_2 = QtWidgets.QTableWidgetItem('%d' % int(t_id))
 
@@ -534,21 +552,18 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # ###################################### END Signal connections ###############################################
         # #############################################################################################################
 
-        self.append_snippet = self.app.options['cncjob_append']
-        self.prepend_snippet = self.app.options['cncjob_prepend']
-
-        if self.append_snippet != '' or self.prepend_snippet != '':
-            self.ui.snippets_cb.set_value(True)
-
         # On CNCJob object creation, generate the GCode
-        preamble = ''
-        postamble = ''
-        if self.append_snippet != '' or self.prepend_snippet != '':
-            preamble = self.prepend_snippet
-            postamble = self.append_snippet
+        if self.is_loaded_from_project is False:
+            self.prepend_snippet = self.app.options['cncjob_prepend']
+            self.append_snippet = self.app.options['cncjob_append']
+            self.gc_header = self.gcode_header()
+        else:
+            # this is dealt when loading the project, the header, prepend and append are already loaded
+            # by being 'serr_attrs' attributes
+            pass
 
-        self.gc_header = self.gcode_header()
-        gc = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
+        gc = self.export_gcode(preamble=self.prepend_snippet, postamble=self.append_snippet, to_file=True,
+                               s_code=self.gc_start)
 
         # set the Source File attribute with the calculated GCode
         try:
@@ -557,6 +572,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         except AttributeError:
             # gc is text
             self.source_file = gc
+
+        if self.append_snippet != '' or self.prepend_snippet != '':
+            self.ui.snippets_cb.set_value(True)
 
         # Show/Hide Advanced Options
         app_mode = self.app.options["global_app_level"]
@@ -718,18 +736,6 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             new_name = os.path.split(str(filename))[1].rpartition('.')[0]
             self.ui.name_entry.set_value(new_name)
             self.on_name_activate(silent=True)
-
-        # try:
-        #     if self.ui.snippets_cb.get_value():
-        #         preamble = self.prepend_snippet
-        #         postamble = self.append_snippet
-        #     gc = self.export_gcode(filename, preamble=preamble, postamble=postamble)
-        # except Exception as err:
-        #     log.error("CNCJobObject.export_gcode_handler() --> %s" % str(err))
-        #     gc = self.export_gcode(filename)
-        #
-        # if gc == 'fail':
-        #     return
 
         if self.source_file == '':
             return 'fail'
@@ -968,7 +974,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         else:
             return 'M02'
 
-    def export_gcode(self, filename=None, preamble='', postamble='', to_file=False, from_tcl=False):
+    def export_gcode(self, filename=None, preamble='', postamble='', to_file=False, from_tcl=False, glob_gcode='',
+                     s_code=''):
         """
         This will save the GCode from the Gcode object to a file on the OS filesystem
 
@@ -977,13 +984,12 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         :param postamble:   a custom Gcode block to be added at the end of the Gcode file
         :param to_file:     if False then no actual file is saved but the app will know that a file was created
         :param from_tcl:    True if run from Tcl Shell
+        :param glob_gcode:  Passing an object attribute that is used to hold GCode; string
         :return:            None
         """
-        # gcode = ''
-        # roland = False
-        # hpgl = False
-        # isel_icp = False
 
+        global_gcode = self.gcode if glob_gcode == '' else glob_gcode
+        start_code = self.gc_start if s_code == '' else s_code
         include_header = True
 
         if preamble == '':
@@ -1009,9 +1015,16 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 try:
                     include_header = self.app.preprocessors[self.tools[first_key]['data']['tools_mill_ppname_g']]
                 except KeyError:
-                    # for older loaded projects
-                    self.app.log.debug("CNCJobObject.export_gcode() --> old project detected. Results are unreliable.")
-                    include_header = self.app.preprocessors[self.app.options['tools_mill_ppname_g']]
+                    try:
+                        # for older loaded projects
+                        self.app.log.debug(
+                            "CNCJobObject.export_gcode() --> old project detected. Results are unreliable.")
+                        include_header = self.app.preprocessors[self.app.options['ppname_g']]
+                    except KeyError:
+                        # for older loaded projects
+                        self.app.log.debug(
+                            "CNCJobObject.export_gcode() --> old project detected. Results are unreliable.")
+                        include_header = self.app.preprocessors[self.app.options['tools_mill_ppname_g']]
 
                 include_header = include_header.include_header
             except (TypeError, IndexError):
@@ -1028,20 +1041,23 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                     ].include_header
                 except KeyError:
                     # for older loaded projects
-                    include_header = self.app.preprocessors[
-                        self.tools[first_key]['data']['ppname_e']
-                    ].include_header
-                except Exception:
-                    self.app.log.debug("CNCJobObject.export_gcode() --> old project detected. Results are unreliable.")
-                    # for older loaded projects
-                    include_header = self.app.preprocessors[
-                        self.app.options['tools_drill_ppname_e']
-                    ].include_header
+                    try:
+                        include_header = self.app.preprocessors[
+                            self.tools[first_key]['data']['ppname_e']
+                        ].include_header
+                    except KeyError:
+                        self.app.log.debug(
+                            "CNCJobObject.export_gcode() --> old project detected. Results are unreliable.")
+                        # for older loaded projects
+                        include_header = self.app.preprocessors[
+                            self.app.options['tools_drill_ppname_e']
+                        ].include_header
             except TypeError:
                 # when self.tools is empty - old projects
                 include_header = self.app.preprocessors['default'].include_header
 
         gcode = ''
+
         if include_header is False:
             # detect if using multi-tool and make the Gcode summation correctly for each case
             if self.multitool is True:
@@ -1055,19 +1071,19 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 except TypeError:
                     pass
             else:
-                gcode += self.gcode
+                gcode += global_gcode
 
-            # g = self.gc_start + '\n' + preamble + '\n' + gcode + '\n' + postamble
+            # g = sstart_code + '\n' + preamble + '\n' + gcode + '\n' + postamble
             g = ''
             end_gcode = self.gcode_footer() if self.app.options['cncjob_footer'] is True else ''
             if preamble != '' and postamble != '':
-                g = self.gc_start + '\n' + preamble + '\n' + gcode + '\n' + postamble + '\n' + end_gcode
+                g = start_code + '\n' + preamble + '\n' + gcode + '\n' + postamble + '\n' + end_gcode
             if preamble == '':
-                g = self.gc_start + '\n' + gcode + '\n' + postamble + '\n' + end_gcode
+                g = start_code + '\n' + gcode + '\n' + postamble + '\n' + end_gcode
             if postamble == '':
-                g = self.gc_start + '\n' + preamble + '\n' + gcode + '\n' + end_gcode
+                g = start_code + '\n' + preamble + '\n' + gcode + '\n' + end_gcode
             if preamble == '' and postamble == '':
-                g = self.gc_start + '\n' + gcode + '\n' + end_gcode
+                g = start_code + '\n' + gcode + '\n' + end_gcode
         else:
             # detect if using multi-tool and make the Gcode summation correctly for each case
             if self.multitool is True:
@@ -1089,7 +1105,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 except TypeError:
                     pass
             else:
-                gcode += self.gcode
+                gcode += global_gcode
 
             end_gcode = self.gcode_footer() if self.app.options['cncjob_footer'] is True else ''
 
@@ -1128,51 +1144,19 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                         processed_body_gcode += gline + '\n'
 
                 gcode = processed_body_gcode
-                g = self.gc_header + '\n' + self.gc_start + '\n' + preamble + '\n' + \
+                g = self.gc_header + '\n' + start_code + '\n' + preamble + '\n' + \
                     gcode + '\n' + postamble + end_gcode
             else:
-                # try:
-                #     g_idx = gcode.index('G94')
-                #     if preamble != '' and postamble != '':
-                #         g = self.gc_header + gcode[:g_idx + 3] + '\n' + preamble + '\n' + \
-                #             gcode[(g_idx + 3):] + postamble + end_gcode
-                #     elif preamble == '':
-                #         g = self.gc_header + gcode[:g_idx + 3] + '\n' + \
-                #             gcode[(g_idx + 3):] + postamble + end_gcode
-                #     elif postamble == '':
-                #         g = self.gc_header + gcode[:g_idx + 3] + '\n' + preamble + '\n' + \
-                #             gcode[(g_idx + 3):] + end_gcode
-                #     else:
-                #         g = self.gc_header + gcode[:g_idx + 3] + gcode[(g_idx + 3):] + end_gcode
-                # except ValueError:
-                #     self.app.inform.emit('[ERROR_NOTCL] %s' %
-                #                          _("G-code does not have a G94 code.\n"
-                #                            "Append Code snippet will not be used.."))
-                #     g = self.gc_header + '\n' + gcode + postamble + end_gcode
                 g = ''
                 if preamble != '' and postamble != '':
-                    g = self.gc_header + self.gc_start + '\n' + preamble + '\n' + gcode + '\n' + \
+                    g = self.gc_header + start_code + '\n' + preamble + '\n' + gcode + '\n' + \
                         postamble + '\n' + end_gcode
                 if preamble == '':
-                    g = self.gc_header + self.gc_start + '\n' + gcode + '\n' + postamble + '\n' + end_gcode
+                    g = self.gc_header + start_code + '\n' + gcode + '\n' + postamble + '\n' + end_gcode
                 if postamble == '':
-                    g = self.gc_header + self.gc_start + '\n' + preamble + '\n' + gcode + '\n' + end_gcode
+                    g = self.gc_header + start_code + '\n' + preamble + '\n' + gcode + '\n' + end_gcode
                 if preamble == '' and postamble == '':
-                    g = self.gc_header + self.gc_start + '\n' + gcode + '\n' + end_gcode
-
-        # if toolchange custom is used, replace M6 code with the code from the Toolchange Custom Text box
-        # if self.ui.toolchange_cb.get_value() is True:
-        #     # match = self.re_toolchange.search(g)
-        #     if 'M6' in g:
-        #         m6_code = self.parse_custom_toolchange_code(self.ui.toolchange_text.get_value())
-        #         if m6_code is None or m6_code == '':
-        #             self.app.inform.emit(
-        #                 '[ERROR_NOTCL] %s' % _("Cancelled. The Toolchange Custom code is enabled but it's empty.")
-        #             )
-        #             return 'fail'
-        #
-        #         g = g.replace('M6', m6_code)
-        #         self.app.inform.emit('[success] %s' % _("Toolchange G-code was replaced by a custom code."))
+                    g = self.gc_header + start_code + '\n' + gcode + '\n' + end_gcode
 
         lines = StringIO(g)
 
@@ -1206,34 +1190,6 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.app.inform.emit('[success] %s: %s' % (_("Saved to"), filename))
         else:
             return lines
-
-    # def on_toolchange_custom_clicked(self, signal):
-    #     """
-    #     Handler for clicking toolchange custom.
-    #
-    #     :param signal:
-    #     :return:
-    #     """
-    #
-    #     try:
-    #         if 'toolchange_custom' not in str(self.obj_options['ppname_e']).lower():
-    #             if self.ui.toolchange_cb.get_value():
-    #                 self.ui.toolchange_cb.set_value(False)
-    #                 self.app.inform.emit('[WARNING_NOTCL] %s' %
-    #                                      _("The used preprocessor file has to have in it's name: 'toolchange_custom'")
-    #                                      )
-    #     except KeyError:
-    #         try:
-    #             for key in self.cnc_tools:
-    #                 ppg = self.cnc_tools[key]['data']['ppname_g']
-    #                 if 'toolchange_custom' not in str(ppg).lower():
-    #                     if self.ui.toolchange_cb.get_value():
-    #                         self.ui.toolchange_cb.set_value(False)
-    #                         self.app.inform.emit('[WARNING_NOTCL] %s' %
-    #                                              _("The used preprocessor file has to have in it's name: "
-    #                                                "'toolchange_custom'"))
-    #         except KeyError:
-    #             self.app.inform.emit('[ERROR] %s' % _("There is no preprocessor file."))
 
     def get_gcode(self, preamble='', postamble=''):
         """
@@ -1392,7 +1348,6 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                             gcode_parsed = self.tools[tooluid_key]['gcode_parsed']
                             self.plot2(tooldia=dia_plot, obj=self, visible=visible, gcode_parsed=gcode_parsed,
                                        kind=kind)
-
             self.shapes.redraw()
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
