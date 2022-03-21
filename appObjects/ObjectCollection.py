@@ -66,13 +66,36 @@ class EventSensitiveListView(QtWidgets.QTreeView):
         # self.setDragEnabled(True)
         # self.viewport().setAcceptDrops(True)
         # self.setDropIndicatorShown(True)
-        # self.DragDropMode(QtWidgets.QAbstractItemView.InternalMove)
+        # self.DragDropMode(QtWidgets.QAbstractItemView.DragDropMode.InternalMove)
+        # self.DragDropMode(QtWidgets.QAbstractItemView.DragDropMode.DragDrop)
+
         # self.current_idx = None
         # self.current_group = None
         # self.dropped_obj = None
 
     keyPressed = QtCore.pyqtSignal(int)
     mouseReleased = QtCore.pyqtSignal(object)
+
+    # def mouseMoveEvent(self, event):  # is called whenever the mouse moves while a mouse button is held down
+    #     super().mouseMoveEvent(event)  # propagate
+    #
+    #     realfile = 'a.txt'
+    #     fileurl = "file:///%s" % realfile  # build url
+    #     url = QtCore.QUrl(fileurl)
+    #     urllist = []
+    #     urllist.append(url)  # only 1 file
+    #
+    #     drag = QtGui.QDrag(self)
+    #
+    #     md = QtCore.QMimeData()
+    #     md.setUrls(urllist)
+    #     drag.setMimeData(md)
+    #     result = drag.exec(Qt.DropAction.CopyAction)
+    #
+    #     source = drag.source()
+    #     print("source = %s" % source)
+    #     target = drag.target()  # returns widget if inside the application, returns None if windows desktop ... etc.
+    #     print("target = %s" % target)
 
     def keyPressEvent(self, event):
         # super(EventSensitiveListView, self).keyPressEvent(event)
