@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+22.03.2022
+
+- fixed the GCode generation such that (for milling Geometries) the choice of using (or not) and end position is respected
+- for `hpgl` code generation made sure that the first travel line is not marked as a cut line when using a toolchange event
+
 21.03.2022
 
 - optimized the UI for the CNCJob object

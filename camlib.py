@@ -4027,12 +4027,16 @@ class CNCjob(Geometry):
                 t_gcode += self.doformat(p.lift_code, x=current_pt[0], y=current_pt[1])
                 t_gcode += self.doformat(p.spindle_stop_code)
 
-            if isinstance(self.xy_end, tuple):
+            if isinstance(self.xy_end, (tuple, list)):
                 endx = self.xy_end[0]
                 endy = self.xy_end[1]
             else:
-                endx = 0
-                endy = 0
+                try:
+                    endx = current_pt[0]
+                    endy = current_pt[1]
+                except Exception:
+                    endx = 0.0
+                    endy = 0.0
 
             t_gcode += self.doformat(p.end_code, x=endx, y=endy)
             self.app.inform.emit(
@@ -6600,6 +6604,9 @@ class CNCjob(Geometry):
                     command['Z'] = 1
                 else:
                     command['Z'] = 0
+            match_toolchange = re.search(r"^SP\d*", gline)
+            if match_toolchange:
+                command['Z'] = 1
 
         elif 'laser' in self.pp_excellon_name.lower() or 'laser' in self.pp_geometry_name.lower() or \
                 (self.pp_solderpaste_name is not None and 'paste' in self.pp_solderpaste_name.lower()):
