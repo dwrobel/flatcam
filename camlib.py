@@ -3782,7 +3782,10 @@ class CNCjob(Geometry):
         self.z_feedrate = float(tool_dict['tools_mill_feedrate_z'])
         self.feedrate_rapid = float(tool_dict['tools_mill_feedrate_rapid'])
 
-        self.laser_min_power = float(tool_dict['tools_mill_min_power'])
+        try:
+            self.laser_min_power = float(tool_dict['tools_mill_min_power'])
+        except KeyError:
+            self.laser_min_power = 0.0
 
         try:
             self.spindlespeed = float(tool_dict['tools_mill_spindlespeed'])
