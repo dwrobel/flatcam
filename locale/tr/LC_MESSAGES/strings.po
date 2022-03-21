@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2022-03-19 18:00+0200\n"
-"PO-Revision-Date: 2022-03-19 18:00+0200\n"
+"PO-Revision-Date: 2022-03-21 20:39+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: Poedit 2.2\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: build\n"
@@ -1393,13 +1393,13 @@ msgstr ""
 "Otomatik PCB kesimi için kullanılan geçit sayısı.\n"
 "Geçit sayısı en fazla 8 olabilir.\n"
 "Seçenekler:\n"
-"- Yok-->geçit yok\n"
-"- Sol Sağ-->sol + sağ\n"
-"- Üst Alt-->üst + alt\n"
-"- 4--> sol + sağ +üst + alt\n"
-"- 2 Sol Sağ--> 2*sol + 2*sağ\n"
-"- 2 Üst Alt--> 2*üst + 2*alt\n"
-"- 8-->2*sol + 2*sağ +2*üst + 2*alt"
+"- None: Geçit yok\n"
+"- LR: Birer tane sol ve sağda\n"
+"- TB: Birer tane üst ve altta\n"
+"- 4: 4 yönde birer tane\n"
+"- 2 LR: 2 tane solda, 2 tane sağda\n"
+"- 2 TB: 2 tane üstte, 2 tane altta\n"
+"- 8: 2 tane solda, 2 tane solda, 2 iki tane üstte, 2 tane altta"
 
 #: appDatabase.py:1265
 msgid "Add Tool in DB"
@@ -4517,13 +4517,6 @@ msgid "Location"
 msgstr "Konum"
 
 #: appGUI/GUIElements.py:4288
-#, fuzzy
-#| msgid ""
-#| "The Location value is a tuple (x,y).\n"
-#| "If the reference is Absolute then the Jump will be at the position (x,"
-#| "y).\n"
-#| "If the reference is Relative then the Jump will be at the (x,y) distance\n"
-#| "from the current mouse location point."
 msgid ""
 "The Location value is a tuple (x,y).\n"
 "If the reference is Absolute then the Jump will be at the position (x,y).\n"
@@ -4531,10 +4524,11 @@ msgid ""
 "from the current position (in some cases, last mouse click position).\n"
 "WARNING: comma is a separator between values."
 msgstr ""
-"Konum değeri bir gruptur (x, y).\n"
-"Referans Kesinse, geçiş (x, y) konumunda olacaktır.\n"
-"Referans Değişen ise, geçiş farenin geçerli \n"
-"konumundan (x, y) mesafede olacaktır."
+"Konum değeri bir gruptur (x,y).\n"
+"Referans Kesin ise, atlama (x,y) konumunda olacaktır.\n"
+"Referans Değişen ise, atlama geçerli konumdan (x,y) uzaklıkta \n"
+"olacaktır (bazı durumlarda, farenin son tıklama konumu).\n"
+"UYARI: Virgül, değerler arasında bir ayırıcıdır."
 
 #: appGUI/GUIElements.py:4372
 msgid "Ctrl+F"
@@ -5061,10 +5055,8 @@ msgid "DEL"
 msgstr "DEL"
 
 #: appGUI/MainGUI.py:434 appGUI/MainGUI.py:1866
-#, fuzzy
-#| msgid "Move"
 msgid "Num Move"
-msgstr "Taşı"
+msgstr "Koordinata Taşı"
 
 #: appGUI/MainGUI.py:437 appGUI/MainGUI.py:1057 appGUI/MainGUI.py:2429
 #: appGUI/MainGUI.py:4878
@@ -5779,7 +5771,7 @@ msgstr "Takip Et"
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:117
 #: appPlugins/ToolCutOut.py:2300
 msgid "Panel"
-msgstr "Panelli PCB"
+msgstr "Panel"
 
 #: appGUI/MainGUI.py:1126 appGUI/MainGUI.py:2496 appGUI/ObjectUI.py:415
 #: appPlugins/ToolFilm.py:158 appPlugins/ToolFilm.py:1230
@@ -9162,10 +9154,8 @@ msgstr ""
 "sürüklediğinizde görüntülenir."
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:133
-#, fuzzy
-#| msgid "Layout"
 msgid "GUI Layout"
-msgstr "Düzen"
+msgstr "Arayüz Düzeni"
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:135
 msgid ""
@@ -9175,6 +9165,11 @@ msgid ""
 "'Columnar' -> a layout the auto-adjust such\n"
 "that columns are preferentially showed in columns"
 msgstr ""
+"Ayarlar için bir arayüz düzeni seçin.\n"
+"Arayüz düzeni şunlar olabilir:\n"
+"'Normal' -> normal ve kompakt bir düzen.\n"
+"'Sütunlu' -> sütunların tercihen sütunlarda gösterileceği şekilde otomatik "
+"olarak ayarlanan bir düzen"
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:142
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:350
@@ -9184,10 +9179,8 @@ msgid "Normal"
 msgstr "Normal"
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:142
-#, fuzzy
-#| msgid "Columns"
 msgid "Columnar"
-msgstr "Sütunlar"
+msgstr "Sütunlu"
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:149
 msgid "Colors"
@@ -11096,7 +11089,7 @@ msgstr ""
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:21
 msgid "Cutout Plugin"
-msgstr "PCB Kesime Eklentisi"
+msgstr "PCB Kesim Eklentisi"
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:28
 msgid ""
@@ -11166,13 +11159,13 @@ msgstr ""
 "Kesim için kullanılan geçit sayısı.\n"
 "Geçit sayısı en fazla 8 olabilir.\n"
 "Seçenekler:\n"
-"- Yok-->geçit yok\n"
-"- Sol Sağ-->sol + sağ\n"
-"- Üst Alt-->üst + alt\n"
-"- 4--> sol + sağ +üst + alt\n"
-"- 2 Sol Sağ--> 2*sol + 2*sağ\n"
-"- 2 Üst Alt--> 2*üst + 2*alt\n"
-"- 8-->2*sol + 2*sağ +2*üst + 2*alt"
+"- None: Geçit yok\n"
+"- LR: Birer tane sol ve sağda\n"
+"- TB: Birer tane üst ve altta\n"
+"- 4: 4 yönde birer tane\n"
+"- 2 LR: 2 tane solda, 2 tane sağda\n"
+"- 2 TB: 2 tane üstte, 2 tane altta\n"
+"- 8: 2 tane solda, 2 tane solda, 2 iki tane üstte, 2 tane altta"
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:257
 #: appPlugins/ToolCutOut.py:2637
@@ -11616,6 +11609,8 @@ msgid ""
 "'Length' -> scale by a length value\n"
 "'Factor' -> scale by a ratio"
 msgstr ""
+"Uzunluk: Bir uzunluk değerine göre ölçeklendir\n"
+"Değer: Bir orana göre ölçeklendir"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:96
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:159
@@ -11656,6 +11651,9 @@ msgid ""
 "'Angle' -> deform by an angle\n"
 "'Factor' -> deform by a ratio between what should be and what is"
 msgstr ""
+"Uzunluk: Bir uzunluk değerine göre eğrilt\n"
+"Açı: Bir açıyla eğrilt\n"
+"Değer: Olması gereken ile olan arasındaki oran ile eğrilt"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:170
 #: appPlugins/ToolDblSided.py:1022 appPlugins/ToolFilm.py:1508
@@ -14411,8 +14409,9 @@ msgid ""
 "Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8.\n"
 "Fill in a correct value and retry."
 msgstr ""
-"Geçitlerin sayısı yalnızca şunlardan biri olabilir: 'Yok', 'Sol Sağ', 'Üst "
-"Alt', '2 Sol Sağ', '2 Üst Alt', 4 veya 8.\n"
+"Geçitlerin sayısı yalnızca şunlardan biri olabilir: 'Yok', 'Birer tane Sol "
+"ve Sağda', 'Birer tane Üst ve Altta ', '2 tene Sol ve Sağda', '2 tene Üst ve "
+"Altta', 4 veya 8.\n"
 "Doğru sayıyı girin ve tekrar deneyin."
 
 #: appPlugins/ToolCutOut.py:1014 appPlugins/ToolCutOut.py:1323
@@ -15531,6 +15530,9 @@ msgid ""
 "'Angle' -> deform by an angle\n"
 "'Ratio' -> deform by a ratio between what should be and what is"
 msgstr ""
+"Uzunluk: Bir uzunluk değerine göre eğrilt\n"
+"Açı: Bir açıyla eğrilt\n"
+"Oran: Olması gereken ile olan arasındaki oran kadar eğrilt"
 
 #: appPlugins/ToolFilm.py:1622
 msgid "Punch drill holes"
@@ -18732,38 +18734,28 @@ msgid "Wrong coordinates. Enter coordinates in format: X,Y"
 msgstr "Yanlış koordinat girildi. Koordinatları şu biçimde girin: X, Y"
 
 #: app_Main.py:5775
-#, fuzzy
-#| msgid "Top Left"
 msgid "T Left"
 msgstr "Sol Üst"
 
 #: app_Main.py:5776
-#, fuzzy
-#| msgid "Top Right"
 msgid "T Right"
 msgstr "Sağ Üst"
 
 #: app_Main.py:5777
-#, fuzzy
-#| msgid "Bot Left X"
 msgid "B Left"
-msgstr "Sol Üst X"
+msgstr "Sol Üst"
 
 #: app_Main.py:5778
-#, fuzzy
-#| msgid "Bot Right X"
 msgid "B Right"
-msgstr "Sağ Alt X"
+msgstr "Sağ Alt"
 
 #: app_Main.py:5781
 msgid "Locate ..."
 msgstr "Bul ..."
 
 #: app_Main.py:5928
-#, fuzzy
-#| msgid "Move to Origin."
 msgid "Move to ..."
-msgstr "Başlangıç Noktsına Git."
+msgstr "Şuraya taşı..."
 
 #: app_Main.py:6485 app_Main.py:9385
 msgid "Aborting."
@@ -18954,20 +18946,16 @@ msgid "Could not parse information about latest version."
 msgstr "En son sürüm bilgileri okunamıyor."
 
 #: app_Main.py:8723
-#, fuzzy
-#| msgid "The application will restart."
 msgid "The application is up to date!"
-msgstr "Uygulama yeniden başlatılır."
+msgstr "Uygulama güncel!"
 
 #: app_Main.py:8727
 msgid "Newer Version Available"
 msgstr "Daha yeni bir sürüm var"
 
 #: app_Main.py:8729
-#, fuzzy
-#| msgid "There is a newer version of FlatCAM available for download:"
 msgid "There is a newer version available for download:"
-msgstr "İndirebileceğiniz daha yeni bir FlatCAM sürümü var:"
+msgstr "İndirilebilecek daha yeni bir sürüm var:"
 
 #: app_Main.py:8759
 msgid ""
@@ -19613,8 +19601,8 @@ msgstr "Kesilecek nesnenin adı eksik. Ekleyip tekrar deneyin."
 #: tclCommands/TclCommandGeoCutout.py:186
 msgid "Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8."
 msgstr ""
-"Boşluk değeri 'sol-sağ', 'üst-alt', '2*sol-sağ', '2*üst-alt', 4 veya 8'den "
-"biri olabilir."
+"Boşluk değeri: sol-sağ, üst-alt, ikişer tane solda ve sağ, ikişer tane üst "
+"ve alt, 4 veya 8'den biri olabilir."
 
 #: tclCommands/TclCommandGeoCutout.py:217
 msgid "Cancelled. Object type is not supported."

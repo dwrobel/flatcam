@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - optimized the UI for the CNCJob object
 - when loading a Gcode file in the app now the application makes an attempt in adding information's such that the CncJob UI works correctly; if so information's are not found then assumptions are made. Only for GCode that is detected as made from an Excellon object
+- updated Turkish language strings by Mehmet Kaya
 
 20.03.2022
 
