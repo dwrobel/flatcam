@@ -582,7 +582,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.menuview.addSeparator()
         self.menuview_show_log = self.menuview.addAction(
             QtGui.QIcon(self.app.resource_location + '/log32.png'),
-            '%s\t%s' % (_("Log"), ''))
+            '%s\t%s' % (_("Error Log"), ''))
 
         # ########################################################################
         # ########################## Objects # ###################################
