@@ -16,12 +16,12 @@ from PyQt6.QtCore import Qt, QSettings
 from PyQt6.QtGui import QColor
 # from PyQt6.QtCore import QModelIndex
 
-from appObjects.FlatCAMObj import FlatCAMObj
-from appObjects.FlatCAMCNCJob import CNCJobObject
-from appObjects.FlatCAMDocument import DocumentObject
-from appObjects.FlatCAMExcellon import ExcellonObject
-from appObjects.FlatCAMGeometry import GeometryObject
-from appObjects.FlatCAMGerber import GerberObject
+from appObjects.AppObjectTemplate import FlatCAMObj
+from appObjects.CNCJobObject import CNCJobObject
+from appObjects.DocumentObject import DocumentObject
+from appObjects.ExcellonObject import ExcellonObject
+from appObjects.GeometryObject import GeometryObject
+from appObjects.GerberObject import GerberObject
 from appObjects.FlatCAMScript import ScriptObject
 
 import inspect  # TODO: Remove

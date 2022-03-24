@@ -15,7 +15,7 @@ import shapely.affinity as affinity
 
 from camlib import Geometry, flatten_shapely_geometry
 
-from appObjects.FlatCAMObj import *
+from appObjects.AppObjectTemplate import *
 
 import ezdxf
 import numpy as np

@@ -8,7 +8,7 @@
 from PyQt6 import QtGui, QtCore, QtWidgets
 from PyQt6.QtCore import Qt
 
-from camlib import distance, arc, FlatCAMRTreeStorage
+from camlib import distance, arc, AppRTreeStorage
 from appGUI.GUIElements import FCEntry, FCTable, FCDoubleSpinner, RadioSet, FCSpinner, FCButton, FCLabel, FCGridLayout
 from appEditors.AppGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, AppGeoEditor
 
@@ -1955,7 +1955,7 @@ class AppExcEditor(QtCore.QObject):
     @staticmethod
     def make_storage():
         # ## Shape storage.
-        storage = FlatCAMRTreeStorage()
+        storage = AppRTreeStorage()
         storage.get_points = DrawToolShape.get_pts
 
         return storage

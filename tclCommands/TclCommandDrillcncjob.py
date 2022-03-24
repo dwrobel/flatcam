@@ -82,8 +82,8 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             ('las_min_pwr', 'Used with "laser" preprocessors. Set the laser power when not cutting, travelling'),
             ('pp', 'This is the Excellon preprocessor name: case_sensitive, no_quotes'),
             ('opt_type', 'Name of move optimization type. B by default for Basic OR-Tools, M for Metaheuristic OR-Tools'
-                         'T from Travelling Salesman Algorithm. B and M works only for 64bit version of FlatCAM and '
-                         'T works only for 32bit version of FlatCAM'),
+                         'T from Travelling Salesman Algorithm. B and M works only for 64bit application flavor and '
+                         'T works only for 32bit application flavor'),
             ('diatol', 'Tolerance. Percentange (0.0 ... 100.0) within which dias in drilled_dias will be judged to be '
                        'the same as the ones in the tools from the Excellon object. E.g: if in drill_dias we have a '
                        'diameter with value 1.0, in the Excellon we have a tool with dia = 1.05 and we set a tolerance '

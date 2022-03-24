@@ -8,7 +8,7 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtCore import Qt
 
-from appObjects.FlatCAMObj import ObjectDeleted
+from appObjects.AppObjectTemplate import ObjectDeleted
 from appTool import AppTool
 from appGUI.VisPyVisuals import *
 from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy

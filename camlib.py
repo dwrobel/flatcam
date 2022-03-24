@@ -43,7 +43,6 @@ import ezdxf
 
 from appCommon.Common import GracefulException as grace
 
-# Commented for FlatCAM packaging with cx_freeze
 # from scipy.spatial import KDTree, Delaunay
 # from scipy.spatial import Delaunay
 
@@ -570,7 +569,7 @@ class Geometry(object):
 
     def make_index(self):
         self.flatten()
-        self.index = FlatCAMRTree()
+        self.index = AppRTree()
 
         for i, g in enumerate(self.flat_geometry):
             self.index.insert(i, g)
@@ -1038,7 +1037,7 @@ class Geometry(object):
     #             pts += list(o.coords)
     #         return pts
     #
-    #     storage = FlatCAMRTreeStorage()
+    #     storage = AppRTreeStorage()
     #     storage.get_points = get_pts
     #     for shape in self.flat_geometry:
     #         storage.insert(shape)
@@ -1440,7 +1439,7 @@ class Geometry(object):
         def get_pts(o):
             return [o.coords[0], o.coords[-1]]
 
-        geoms = FlatCAMRTreeStorage()
+        geoms = AppRTreeStorage()
         geoms.get_points = get_pts
 
         # Can only result in a Polygon or MultiPolygon
@@ -1529,7 +1528,7 @@ class Geometry(object):
         :param contour:             Cut contour inside the polygon.
         :param prog_plot:           boolean; if True use the progressive plotting
         :return:                    List of toolpaths covering polygon.
-        :rtype:                     FlatCAMRTreeStorage | None
+        :rtype:                     AppRTreeStorage | None
         """
 
         # log.debug("camlib.clear_polygon2()")
@@ -1542,7 +1541,7 @@ class Geometry(object):
         def get_pts(o):
             return [o.coords[0], o.coords[-1]]
 
-        geom_elems = FlatCAMRTreeStorage()
+        geom_elems = AppRTreeStorage()
         geom_elems.get_points = get_pts
 
         # Path margin
@@ -1653,7 +1652,7 @@ class Geometry(object):
         def get_pts(o):
             return [o.coords[0], o.coords[-1]]
 
-        geoms = FlatCAMRTreeStorage()
+        geoms = AppRTreeStorage()
         geoms.get_points = get_pts
 
         lines_trimmed = []
@@ -1839,7 +1838,7 @@ class Geometry(object):
             b = (p1[0] + EXTRAPOL_RATIO * (p2[0] - p1[0]), p1[1] + EXTRAPOL_RATIO * (p2[1] - p1[1]))
             return [a, b]
 
-        geoms = FlatCAMRTreeStorage()
+        geoms = AppRTreeStorage()
         geoms.get_points = get_pts
 
         lines_trimmed = []
@@ -2020,7 +2019,7 @@ class Geometry(object):
         within the paint area. This avoids unnecessary tool lifting.
 
         :param storage: Geometry to be optimized.
-        :type storage: FlatCAMRTreeStorage
+        :type storage: AppRTreeStorage
         :param boundary: Polygon defining the limits of the paintable area.
         :type boundary: Polygon
         :param tooldia: Tool diameter.
@@ -2029,7 +2028,7 @@ class Geometry(object):
         :param max_walk: Maximum allowable distance without lifting tool.
         :type max_walk: float or None
         :return: Optimized geometry.
-        :rtype: FlatCAMRTreeStorage
+        :rtype: AppRTreeStorage
         """
 
         # If max_walk is not specified, the maximum allowed is
@@ -2042,7 +2041,7 @@ class Geometry(object):
         def get_pts(o):
             return [o.coords[0], o.coords[-1]]
 
-        # storage = FlatCAMRTreeStorage()
+        # storage = AppRTreeStorage()
         # storage.get_points = get_pts
         #
         # for shape in geolist:
@@ -2054,7 +2053,7 @@ class Geometry(object):
 
         # ## Iterate over geometry paths getting the nearest each time.
         # optimized_paths = []
-        optimized_paths = FlatCAMRTreeStorage()
+        optimized_paths = AppRTreeStorage()
         optimized_paths.get_points = get_pts
         path_count = 0
         current_pt = (0, 0)
@@ -2133,7 +2132,7 @@ class Geometry(object):
         :rtype storage:     FlatCAMRTreeStorage
         :param origin:      tuple; point from which to calculate the nearest point
         :return:            Simplified storage.
-        :rtype:             FlatCAMRTreeStorage
+        :rtype:             AppRTreeStorage
         """
 
         # log.debug("path_connect()")
@@ -2143,7 +2142,7 @@ class Geometry(object):
             return [o.coords[0], o.coords[-1]]
 
         #
-        # storage = FlatCAMRTreeStorage()
+        # storage = AppRTreeStorage()
         # storage.get_points = get_pts
         #
         # for shape in pathlist:
@@ -2154,7 +2153,7 @@ class Geometry(object):
         pt, geo = storage.nearest(origin)
         storage.remove(geo)
         # optimized_geometry = [geo]
-        optimized_geometry = FlatCAMRTreeStorage()
+        optimized_geometry = AppRTreeStorage()
         optimized_geometry.get_points = get_pts
         # optimized_geometry.insert(geo)
         try:
@@ -3144,7 +3143,7 @@ class CNCjob(Geometry):
             return [o.coords[0], o.coords[-1]]
 
         # Create the indexed storage.
-        storage = FlatCAMRTreeStorage()
+        storage = AppRTreeStorage()
         storage.get_points = get_pts
 
         # Store the geometry
@@ -3188,7 +3187,7 @@ class CNCjob(Geometry):
             return [(o.x, o.y)]
 
         # Create the indexed storage.
-        storage = FlatCAMRTreeStorage()
+        storage = AppRTreeStorage()
         storage.get_points = get_pts
 
         # Store the geometry
@@ -5657,7 +5656,7 @@ class CNCjob(Geometry):
             return [o.coords[0], o.coords[-1]]
 
         # Create the indexed storage.
-        storage = FlatCAMRTreeStorage()
+        storage = AppRTreeStorage()
         storage.get_points = get_pts
 
         # Store the geometry
@@ -6086,7 +6085,7 @@ class CNCjob(Geometry):
             return [o.coords[0], o.coords[-1]]
 
         # Create the indexed storage.
-        storage = FlatCAMRTreeStorage()
+        storage = AppRTreeStorage()
         storage.get_points = get_pts
 
         # Store the geometry
@@ -6316,7 +6315,7 @@ class CNCjob(Geometry):
         self.app.log.debug("%d paths" % len(flat_geometry))
 
         # Create the indexed storage.
-        storage = FlatCAMRTreeStorage()
+        storage = AppRTreeStorage()
         storage.get_points = get_pts
 
         # Store the geometry
@@ -8934,7 +8933,7 @@ def distance_euclidian(x1, y1, x2, y2):
     return np.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
 
-class FlatCAMRTree(object):
+class AppRTree(object):
     """
     Indexes geometry (Any object with "cooords" property containing
     a list of tuples with x, y values). Objects are indexed by
@@ -9009,14 +9008,14 @@ class FlatCAMRTree(object):
         return next(self.rti.intersection(pt, objects=True))
 
 
-class FlatCAMRTreeStorage(FlatCAMRTree):
+class AppRTreeStorage(AppRTree):
     """
-    Just like FlatCAMRTree it indexes geometry, but also serves
+    Just like AppRTree it indexes geometry, but also serves
     as storage for the geometry.
     """
 
     def __init__(self):
-        # super(FlatCAMRTreeStorage, self).__init__()
+        # super(AppRTreeStorage, self).__init__()
         super().__init__()
 
         self.objects = []
@@ -9037,7 +9036,7 @@ class FlatCAMRTreeStorage(FlatCAMRTree):
         # self.indexes[obj] = idx
         self.indexes[id(obj)] = idx
 
-        # super(FlatCAMRTreeStorage, self).insert(idx, obj)
+        # super(AppRTreeStorage, self).insert(idx, obj)
         super().insert(idx, obj)
 
     # @profile
@@ -9065,7 +9064,7 @@ class FlatCAMRTreeStorage(FlatCAMRTree):
           matching point.
         :rtype: tuple
         """
-        tidx = super(FlatCAMRTreeStorage, self).nearest(pt)
+        tidx = super(AppRTreeStorage, self).nearest(pt)
         return (tidx.bbox[0], tidx.bbox[1]), self.objects[tidx.object]
 
 # class myO:
@@ -9081,7 +9080,7 @@ class FlatCAMRTreeStorage(FlatCAMRTree):
 #
 #     os = [o1, o2]
 #
-#     idx = FlatCAMRTree()
+#     idx = AppRTree()
 #
 #     for o in range(len(os)):
 #         idx.insert(o, os[o])
@@ -9105,7 +9104,7 @@ class FlatCAMRTreeStorage(FlatCAMRTree):
 #
 #     os = [o1, o2]
 #
-#     idx = FlatCAMRTreeStorage()
+#     idx = AppRTreeStorage()
 #
 #     for o in range(len(os)):
 #         idx.insert(os[o])

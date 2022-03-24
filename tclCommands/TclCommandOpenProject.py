@@ -5,13 +5,13 @@ import collections
 
 class TclCommandOpenProject(TclCommandSignaled):
     """
-    Tcl shell command to open a FlatCAM project.
+    Tcl shell command to open an application project.
     """
 
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['open_project']
 
-    description = '%s %s' % ("--", "Opens an FlatCAm project file, parse it and recreate all the objects.")
+    description = '%s %s' % ("--", "Opens an application project file, parse it and recreate all the objects.")
 
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
@@ -30,7 +30,7 @@ class TclCommandOpenProject(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Opens an FlatCAm project file, parse it and recreate all the objects.",
+        'main': "Opens an application project file, parse it and recreate all the objects.",
         'args': collections.OrderedDict([
             ('filename', 'Absolute path to file to open. Required.\n'
                          'WARNING: no spaces are allowed. If unsure enclose the entire path with quotes.'),

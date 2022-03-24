@@ -11,7 +11,7 @@
 # ##########################################################
 
 from appEditors.AppTextEditor import AppTextEditor
-from appObjects.FlatCAMObj import *
+from appObjects.AppObjectTemplate import *
 from appGUI.ObjectUI import *
 
 import gettext

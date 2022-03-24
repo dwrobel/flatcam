@@ -14,7 +14,7 @@ from io import StringIO
 from datetime import datetime
 
 from appEditors.AppTextEditor import AppTextEditor
-from appObjects.FlatCAMObj import *
+from appObjects.AppObjectTemplate import *
 
 from camlib import CNCjob
 

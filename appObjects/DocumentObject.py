@@ -10,7 +10,7 @@
 # File modified by: Marius Stanciu                         #
 # ##########################################################
 from appEditors.AppTextEditor import AppTextEditor
-from appObjects.FlatCAMObj import *
+from appObjects.AppObjectTemplate import *
 
 import gettext
 import appTranslation as fcTranslate

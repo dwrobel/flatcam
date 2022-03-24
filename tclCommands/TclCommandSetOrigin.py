@@ -1,5 +1,5 @@
 # ##########################################################
-# FlatCAM: 2D Post-processing for Manufacturing            #
+# FlatCAM Evo: 2D Post-processing for Manufacturing        #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 8/17/2019                                          #
 # MIT Licence                                              #
@@ -25,7 +25,7 @@ log = logging.getLogger('base')
 
 class TclCommandSetOrigin(TclCommand):
     """
-    Tcl shell command to set the origin to zero or to a specified location for all loaded objects in FlatCAM.
+    Tcl shell command to set the origin to zero or to a specified location for all loaded objects in the application.
 
     example:
 

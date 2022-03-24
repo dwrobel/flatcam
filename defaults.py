@@ -973,7 +973,7 @@ class AppDefaults:
             self.defaults.update(defaults)
             self.current_defaults.update(self.defaults)
 
-        # log.debug("FlatCAM defaults loaded from: %s" % filename)
+        # log.debug("App defaults loaded from: %s" % filename)
 
     def __is_old_defaults(self, defaults: dict) -> bool:
         """Takes a defaults dict and determines whether or not migration is necessary."""
@@ -1032,7 +1032,7 @@ class AppDefaults:
                 try:
                     routes[param].defaults[param] = self.defaults[param]
                 except KeyError:
-                    # log.error("FlatCAMApp.propagate_defaults() --> ERROR: " + param + " not in defaults.")
+                    # log.error("AppDefaults.propagate_defaults() --> ERROR: " + param + " not in defaults.")
                     pass
             else:
                 # Try extracting the name:

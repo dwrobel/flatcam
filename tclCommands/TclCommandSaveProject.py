@@ -5,13 +5,13 @@ import collections
 
 class TclCommandSaveProject(TclCommandSignaled):
     """
-    Tcl shell command to save the FlatCAM project to file.
+    Tcl shell command to save the application project to file.
     """
 
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['save_project']
 
-    description = '%s %s' % ("--", "Saves the FlatCAM project to file.")
+    description = '%s %s' % ("--", "Saves the application project to file.")
 
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
@@ -30,7 +30,7 @@ class TclCommandSaveProject(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Saves the FlatCAM project to file.",
+        'main': "Saves the application project to file.",
         'args': collections.OrderedDict([
             ('filename', 'Absolute path to file to save. Required.\n'
                          'WARNING: no spaces are allowed. If unsure enclose the entire path with quotes.'),

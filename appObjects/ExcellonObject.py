@@ -14,7 +14,7 @@
 from shapely.geometry import LineString
 
 from appParsers.ParseExcellon import Excellon
-from appObjects.FlatCAMObj import *
+from appObjects.AppObjectTemplate import *
 
 import itertools
 import numpy as np

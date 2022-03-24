@@ -1,11 +1,15 @@
-FlatCAM BETA (c) 2019 - by Marius Stanciu
+FlatCAM Evo BETA (c) 2019 - by Marius Stanciu
 Based on FlatCAM: 
 2D Computer-Aided PCB Manufacturing by (c) 2014-2016 Juan Pablo Caram
 =================================================
 
-CHANGELOG for FlatCAM beta
+CHANGELOG for FlatCAM Evo beta
 
 =================================================
+
+24.03.2022
+
+- refactoring names for some classes
 
 22.03.2022
 
@@ -612,7 +616,7 @@ CHANGELOG for FlatCAM beta
 - in 2Sided Plugin added a new typ of alignment drills: manual. This mode will no longer add pairs of drill holes mirrored against reference but only add in place drill holes
 - in 2Sided Plugin clicking LMB and also pressing CTRL+Shift will add the click coordinates to the Drill Alignment Coordinates
 - added support for all Plugins to handle the LMB click release event without connect/reconnect of the mouse events
-- code refactoring in app_Main file
+- code refactoring in appMain file
 - in 2Sided Plugin, deleting the last drill alignment coordinates will update the clipboard values too
 - added the circle approximation parameter for Excellon geometry in Preferences
 - updated the language strings
@@ -1590,7 +1594,7 @@ a
 - in Geometry Object Properties UI - added the UI for Utilities and within Utilities added the Simplification UI
 - in Geometry Object Properties UI - finished the new feature Simplification and Vertex Points calculation which should greatly reduce the resulting GCode size
 - in Tool Isolation, for Polygon Selection method, added ability to select all/clear all polygons allowing thus negative selection (select all followed by deselection of the polygons you don't want isolated, e.g a ground plane)
-- some refactoring between app_Main class and MainGUI class
+- some refactoring between appMain class and MainGUI class
 - on tab close in Notebook the tool_shapes are deleted (shape markings used by some of the App Tools) therefore part fo the clean-up
 - added some protections in case the Editors could not start such that the app is not crashed
 - fixed wrong display of editor actions in the Editor toolbar at the first start of the app
@@ -1729,7 +1733,7 @@ a
 
 12.11.2020
 
-- some fixes in the app_Main class
+- some fixes in the appMain class
 - removed the "follow" functionality from the Isolation Tool
 - created a new application Tool named Follow Tool
 - added the "follow" functionality in the Follow Tool and added the new feature of allowing to perform "follow" on an area selection
@@ -2132,7 +2136,7 @@ RELEASE 8.994
 24.09.2020
 
 - fixed a bug where end_xy parameter in Drilling Tool was not used
-- fixed an issue in Delete All method in the app_Main.py
+- fixed an issue in Delete All method in the appMain.py
 
 23.09.2020
 
@@ -2885,7 +2889,7 @@ RELEASE 8.993
 - solved a circular import
 - updated the language translation files to the latest changes (no translation)
 - working on a new Tool: Etch Compensation Tool -> installed the tool and created the GUI and class template
-- moved more methods out of App_Main class
+- moved more methods out of appMain class
 - added confirmation messages for toggle of HUD, Grid, Grid Snap, Axis
 - added icon in status bar for HUD; clicking on it will toggle the HUD (heads up display)
 - fixes due of recent changes

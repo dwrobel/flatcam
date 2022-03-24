@@ -17,7 +17,7 @@ from shapely.geometry import MultiPolygon, Point
 from shapely.ops import unary_union
 
 from appParsers.ParseGerber import Gerber
-from camlib import Geometry, FlatCAMRTreeStorage, grace
+from camlib import Geometry, AppRTreeStorage, grace
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 

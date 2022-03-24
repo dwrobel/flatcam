@@ -8,11 +8,11 @@
 # ###########################################################
 
 from appObjects.ObjectCollection import *
-from appObjects.FlatCAMCNCJob import CNCJobObject
-from appObjects.FlatCAMDocument import DocumentObject
-from appObjects.FlatCAMExcellon import ExcellonObject
-from appObjects.FlatCAMGeometry import GeometryObject
-from appObjects.FlatCAMGerber import GerberObject
+from appObjects.CNCJobObject import CNCJobObject
+from appObjects.DocumentObject import DocumentObject
+from appObjects.ExcellonObject import ExcellonObject
+from appObjects.GeometryObject import GeometryObject
+from appObjects.GerberObject import GerberObject
 from appObjects.FlatCAMScript import ScriptObject
 
 import time

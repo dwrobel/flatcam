@@ -69,7 +69,7 @@ from defaults import AppOptions
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 from appGUI.preferences.PreferencesUIManager import PreferencesUIManager
 from appObjects.ObjectCollection import *
-from appObjects.FlatCAMObj import FlatCAMObj
+from appObjects.AppObjectTemplate import FlatCAMObj
 from appObjects.AppObject import AppObject
 
 # App Parsing files
@@ -1320,22 +1320,22 @@ class App(QtCore.QObject):
         try:
             self.geo_editor = AppGeoEditor(self)
         except Exception as es:
-            self.log.error("app_Main.__init__() --> Geo Editor Error: %s" % str(es))
+            self.log.error("appMain.__init__() --> Geo Editor Error: %s" % str(es))
 
         try:
             self.exc_editor = AppExcEditor(self)
         except Exception as es:
-            self.log.error("app_Main.__init__() --> Excellon Editor Error: %s" % str(es))
+            self.log.error("appMain.__init__() --> Excellon Editor Error: %s" % str(es))
 
         try:
             self.grb_editor = AppGerberEditor(self)
         except Exception as es:
-            self.log.error("app_Main.__init__() --> Gerber Editor Error: %s" % str(es))
+            self.log.error("appMain.__init__() --> Gerber Editor Error: %s" % str(es))
 
         try:
             self.gcode_editor = AppGCodeEditor(self)
         except Exception as es:
-            self.log.error("app_Main.__init__() --> GCode Editor Error: %s" % str(es))
+            self.log.error("appMain.__init__() --> GCode Editor Error: %s" % str(es))
 
         self.log.debug("Finished adding FlatCAM Editor's.")
 
@@ -5017,7 +5017,7 @@ class App(QtCore.QObject):
             # update Object UI forms
             current = self.collection.get_active()
             if current is not None:
-                # the transfer of converted values to the UI form for Geometry is done local in the FlatCAMObj.py
+                # the transfer of converted values to the UI form for Geometry is done local in the AppObjectTemplate.py
                 if not isinstance(current, GeometryObject):
                     current.to_form()
 

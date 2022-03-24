@@ -87,7 +87,7 @@ msgstr "Либо название, либо ссылка уже в таблиц�
 msgid "Bookmark added."
 msgstr "Закладка добавлена."
 
-#: Bookmark.py:245 app_Main.py:3889 app_Main.py:3931
+#: Bookmark.py:245 appMain.py:3889 appMain.py:3931
 msgid "Backup Site"
 msgstr "Резервный сайт"
 
@@ -122,14 +122,14 @@ msgstr "Закладки"
 #: appPlugins/ToolMarkers.py:844 appPlugins/ToolMove.py:284
 #: appPlugins/ToolPcbWizard.py:224 appPlugins/ToolPcbWizard.py:247
 #: appPlugins/ToolQRCode.py:616 appPlugins/ToolQRCode.py:665
-#: appPlugins/ToolSolderPaste.py:888 app_Main.py:1722 app_Main.py:3102
-#: app_Main.py:5039 app_Main.py:5455 app_Main.py:9553 app_Main.py:9591
-#: app_Main.py:9634 app_Main.py:9659 app_Main.py:9698 app_Main.py:9722
-#: app_Main.py:9773 app_Main.py:9811 app_Main.py:9857 app_Main.py:9899
-#: app_Main.py:9941 app_Main.py:9982 app_Main.py:10024 app_Main.py:10069
-#: app_Main.py:10127 app_Main.py:10159 app_Main.py:10189 app_Main.py:10427
-#: app_Main.py:10464 app_Main.py:10507 app_Main.py:10583 app_Main.py:10641
-#: app_Main.py:10914 app_Main.py:10949
+#: appPlugins/ToolSolderPaste.py:888 appMain.py:1722 appMain.py:3102
+#: appMain.py:5039 appMain.py:5455 appMain.py:9553 appMain.py:9591
+#: appMain.py:9634 appMain.py:9659 appMain.py:9698 appMain.py:9722
+#: appMain.py:9773 appMain.py:9811 appMain.py:9857 appMain.py:9899
+#: appMain.py:9941 appMain.py:9982 appMain.py:10024 appMain.py:10069
+#: appMain.py:10127 appMain.py:10159 appMain.py:10189 appMain.py:10427
+#: appMain.py:10464 appMain.py:10507 appMain.py:10583 appMain.py:10641
+#: appMain.py:10914 appMain.py:10949
 msgid "Cancelled."
 msgstr "Отменено."
 
@@ -137,8 +137,8 @@ msgstr "Отменено."
 #: appObjects/FlatCAMCNCJob.py:752 appObjects/FlatCAMCNCJob.py:1179
 #: appPlugins/ToolFilm.py:982 appPlugins/ToolLevelling.py:1513
 #: appPlugins/ToolLevelling.py:1705 appPlugins/ToolSolderPaste.py:1179
-#: app_Main.py:3110 app_Main.py:10884 app_Main.py:11092 app_Main.py:11227
-#: app_Main.py:11293 app_Main.py:12160
+#: appMain.py:3110 appMain.py:10884 appMain.py:11092 appMain.py:11227
+#: appMain.py:11293 appMain.py:12160
 msgid ""
 "Permission denied, saving not possible.\n"
 "Most likely another app is holding the file open and not accessible."
@@ -148,7 +148,7 @@ msgstr ""
 
 #: Bookmark.py:321 Bookmark.py:351 appDatabase.py:1735 appDatabase.py:2155
 #: appDatabase.py:2189 appPlugins/ToolNCC.py:1221 appPlugins/ToolPaint.py:867
-#: app_Main.py:3121 app_Main.py:6632 defaults.py:936 defaults.py:1107
+#: appMain.py:3121 appMain.py:6632 defaults.py:936 defaults.py:1107
 msgid "Could not load the file."
 msgstr "Не удалось загрузить файл."
 
@@ -252,7 +252,7 @@ msgstr "Резать"
 
 #: appDatabase.py:28 appGUI/MainGUI.py:887 appGUI/MainGUI.py:1752
 #: appPlugins/ToolMilling.py:4367 appPlugins/ToolMilling.py:4375
-#: app_Main.py:9104
+#: appMain.py:9104
 msgid "Custom"
 msgstr "Своё"
 
@@ -299,7 +299,7 @@ msgstr "ИД"
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:376
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:379
 #: appPlugins/ToolCalibration.py:954 appPlugins/ToolFiducials.py:885
-#: app_Main.py:8611
+#: appMain.py:8611
 msgid "Name"
 msgstr "Имя"
 
@@ -403,7 +403,7 @@ msgstr ""
 #: appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:20
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:23
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:22
-#: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:23 app_Main.py:8609
+#: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:23 appMain.py:8609
 msgid "General"
 msgstr "Основные"
 
@@ -1481,8 +1481,8 @@ msgstr ""
 #: appGUI/GUIElements.py:2848 appGUI/GUIElements.py:2913
 #: appGUI/GUIElements.py:4307 appGUI/MainGUI.py:1667
 #: appGUI/preferences/PreferencesUIManager.py:1078
-#: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:418 app_Main.py:2755
-#: app_Main.py:4022 app_Main.py:4987 app_Main.py:5246 app_Main.py:10218
+#: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:418 appMain.py:2755
+#: appMain.py:4022 appMain.py:4987 appMain.py:5246 appMain.py:10218
 msgid "Cancel"
 msgstr "Отмена"
 
@@ -1586,7 +1586,7 @@ msgstr "Копировать из БД"
 msgid "Delete from DB"
 msgstr "Удалить из БД"
 
-#: appDatabase.py:1620 appTranslation.py:216 app_Main.py:4010 app_Main.py:10206
+#: appDatabase.py:1620 appTranslation.py:216 appMain.py:4010 appMain.py:10206
 msgid "Save changes"
 msgstr "Сохранить изменения"
 
@@ -1597,9 +1597,9 @@ msgstr "Сохранить изменения"
 #: appPlugins/ToolIsolation.py:3024 appPlugins/ToolMilling.py:2271
 #: appPlugins/ToolNCC.py:3939 appPlugins/ToolNCC.py:3949
 #: appPlugins/ToolNCC.py:4025 appPlugins/ToolPaint.py:2807
-#: appPlugins/ToolPaint.py:2817 appPlugins/ToolPaint.py:2902 app_Main.py:6636
-#: app_Main.py:6673 app_Main.py:6760 app_Main.py:6772 app_Main.py:6781
-#: app_Main.py:6791
+#: appPlugins/ToolPaint.py:2817 appPlugins/ToolPaint.py:2902 appMain.py:6636
+#: appMain.py:6673 appMain.py:6760 appMain.py:6772 appMain.py:6781
+#: appMain.py:6791
 msgid "Tools Database"
 msgstr "База данных"
 
@@ -1731,7 +1731,7 @@ msgstr "Чтобы добавить отверстие, сначала выбе�
 #: appPlugins/ToolIsolation.py:1624 appPlugins/ToolMarkers.py:998
 #: appPlugins/ToolMove.py:251 appPlugins/ToolObjectDistance.py:440
 #: appPlugins/ToolPaint.py:2335 appPlugins/ToolPanelize.py:1110
-#: appPlugins/ToolSolderPaste.py:892 app_Main.py:5756 app_Main.py:5881
+#: appPlugins/ToolSolderPaste.py:892 appMain.py:5756 appMain.py:5881
 #: tclCommands/TclCommandPanelize.py:430 tclCommands/TclCommandPanelize.py:440
 #: tclCommands/TclCommandSetOrigin.py:113
 msgid "Done."
@@ -1790,8 +1790,8 @@ msgstr "Слишком много элементов для выбранного
 #: appPlugins/ToolMarkers.py:950 appPlugins/ToolMarkers.py:959
 #: appPlugins/ToolMarkers.py:996 appPlugins/ToolMove.py:202
 #: appPlugins/ToolPaint.py:2329 appPlugins/ToolSolderPaste.py:793
-#: app_Main.py:5290 app_Main.py:5900 app_Main.py:9171 app_Main.py:10735
-#: app_Main.py:12027 app_Main.py:12041 app_Main.py:12051 app_Main.py:12068
+#: appMain.py:5290 appMain.py:5900 appMain.py:9171 appMain.py:10735
+#: appMain.py:12027 appMain.py:12041 appMain.py:12051 appMain.py:12068
 #: camlib.py:1225 camlib.py:2464 camlib.py:2537 camlib.py:2605 camlib.py:2677
 #: camlib.py:2680 camlib.py:5544 camlib.py:5963
 msgid "Failed."
@@ -1857,7 +1857,7 @@ msgstr "Кликните на конечную точку ..."
 #: appPlugins/ToolDrilling.py:313 appPlugins/ToolIsolation.py:231
 #: appPlugins/ToolMilling.py:431 appPlugins/ToolMilling.py:443
 #: appPlugins/ToolNCC.py:233 appPlugins/ToolPaint.py:230
-#: appPlugins/ToolSolderPaste.py:139 app_Main.py:7232
+#: appPlugins/ToolSolderPaste.py:139 appMain.py:7232
 msgid "Delete"
 msgstr "Удалить"
 
@@ -1947,8 +1947,8 @@ msgstr "В файле нет инструментов. Прерывание со
 #: appObjects/AppObject.py:170 appObjects/FlatCAMGeometry.py:652
 #: appParsers/ParseExcellon.py:976 appPlugins/ToolMilling.py:3061
 #: appPlugins/ToolPcbWizard.py:354 appPlugins/ToolSolderPaste.py:973
-#: app_Main.py:6716 app_Main.py:8758 app_Main.py:11475 app_Main.py:11546
-#: app_Main.py:11682 app_Main.py:11747
+#: appMain.py:6716 appMain.py:8758 appMain.py:11475 appMain.py:11546
+#: appMain.py:11682 appMain.py:11747
 msgid "An internal error has occurred. See shell.\n"
 msgstr "Произошла внутренняя ошибка. Смотрите командную строку.\n"
 
@@ -2061,7 +2061,7 @@ msgstr "Диаметр нового инструмента"
 #: appPlugins/ToolCopperThieving.py:1753 appPlugins/ToolDblSided.py:945
 #: appPlugins/ToolLevelling.py:2100 appPlugins/ToolNCC.py:227
 #: appPlugins/ToolPaint.py:224 appPlugins/ToolSolderPaste.py:136
-#: appPlugins/ToolTransform.py:639 app_Main.py:7230
+#: appPlugins/ToolTransform.py:639 appMain.py:7230
 msgid "Add"
 msgstr "Добавить"
 
@@ -2400,7 +2400,7 @@ msgstr "Укажите, сколько пазов должно быть в ма�
 #: appEditors/AppExcEditor.py:4545 appEditors/AppGeoEditor.py:3637
 #: appEditors/AppGerberEditor.py:6751 appEditors/appGCodeEditor.py:74
 #: appEditors/appGCodeEditor.py:75 appEditors/appGCodeEditor.py:886
-#: appGUI/MainGUI.py:351 appGUI/MainGUI.py:1861 app_Main.py:2744
+#: appGUI/MainGUI.py:351 appGUI/MainGUI.py:1861 appMain.py:2744
 msgid "Exit Editor"
 msgstr "Выход Из Редактора"
 
@@ -2748,7 +2748,7 @@ msgstr "Минимальное расстояние"
 #: appPlugins/ToolRulesCheck.py:1656 appPlugins/ToolRulesCheck.py:1694
 #: appPlugins/ToolRulesCheck.py:1731 appPlugins/ToolRulesCheck.py:1756
 #: appPlugins/ToolTransform.py:630 appPlugins/ToolTransform.py:995
-#: app_Main.py:9147
+#: appMain.py:9147
 msgid "Value"
 msgstr "Значение"
 
@@ -3100,7 +3100,7 @@ msgstr "Прорисовка"
 #: appPlugins/ToolTransform.py:352 appPlugins/ToolTransform.py:392
 #: appPlugins/ToolTransform.py:431 appPlugins/ToolTransform.py:466
 #: appPlugins/ToolTransform.py:503 appPlugins/ToolTransform.py:538
-#: app_Main.py:6976 app_Main.py:7022
+#: appMain.py:6976 appMain.py:7022
 msgid "Action was not executed"
 msgstr "Действие не выполнено"
 
@@ -3109,12 +3109,12 @@ msgid "Flipping"
 msgstr ""
 
 #: appEditors/AppGeoEditor.py:1435 appEditors/AppGerberEditor.py:7512
-#: appPlugins/ToolTransform.py:379 app_Main.py:6974
+#: appPlugins/ToolTransform.py:379 appMain.py:6974
 msgid "Flip on Y axis done"
 msgstr "Отражение по оси Y завершено"
 
 #: appEditors/AppGeoEditor.py:1438 appEditors/AppGerberEditor.py:7520
-#: appPlugins/ToolTransform.py:388 app_Main.py:7020
+#: appPlugins/ToolTransform.py:388 appMain.py:7020
 msgid "Flip on X axis done"
 msgstr "Отражение по оси Х завершено"
 
@@ -3554,7 +3554,7 @@ msgstr ""
 msgid "Ring"
 msgstr "Кольцо"
 
-#: appEditors/AppGeoEditor.py:3938 app_Main.py:8318
+#: appEditors/AppGeoEditor.py:3938 appMain.py:8318
 msgid "Line"
 msgstr "Линия"
 
@@ -3662,7 +3662,7 @@ msgstr ""
 
 #: appEditors/AppGeoEditor.py:5710 appEditors/AppGeoEditor.py:5787
 #: appEditors/AppGeoEditor.py:5855 appEditors/AppGeoEditor.py:5920
-#: app_Main.py:5900
+#: appMain.py:5900
 msgid "Nothing selected."
 msgstr "Ничего не выбрано."
 
@@ -3879,7 +3879,7 @@ msgstr "Диаметр"
 
 #: appEditors/AppGerberEditor.py:4712 appObjects/FlatCAMCNCJob.py:769
 #: appObjects/FlatCAMScript.py:131 appPlugins/ToolLevelling.py:1519
-#: app_Main.py:8220
+#: appMain.py:8220
 msgid "Loading"
 msgstr "Загрузка"
 
@@ -3910,7 +3910,7 @@ msgstr "Отмена. Нет выбранных отверстий"
 
 #: appEditors/AppGerberEditor.py:5253 appObjects/FlatCAMExcellon.py:552
 #: appPlugins/ToolDrilling.py:1720 appPlugins/ToolMilling.py:3817
-#: app_Main.py:7603 app_Main.py:7625
+#: appMain.py:7603 appMain.py:7625
 #, fuzzy
 #| msgid "Name copied to clipboard ..."
 msgid "Copied to clipboard."
@@ -3925,7 +3925,7 @@ msgstr "Имя скопировано в буфер обмена ..."
 #: appObjects/FlatCAMObj.py:361 appObjects/FlatCAMObj.py:392
 #: appObjects/FlatCAMObj.py:408 appPlugins/ToolCopperThieving.py:1172
 #: appPlugins/ToolFiducials.py:685 appPlugins/ToolMarkers.py:1010
-#: appPlugins/ToolMove.py:170 appPlugins/ToolQRCode.py:551 app_Main.py:5343
+#: appPlugins/ToolMove.py:170 appPlugins/ToolQRCode.py:551 appMain.py:5343
 msgid "Plotting"
 msgstr "Прорисовка"
 
@@ -4349,7 +4349,7 @@ msgstr "Открыть файл"
 #: appObjects/FlatCAMCNCJob.py:693 appObjects/FlatCAMCNCJob.py:699
 #: appPlugins/ToolLevelling.py:1485 appPlugins/ToolLevelling.py:1491
 #: appPlugins/ToolLevelling.py:1677 appPlugins/ToolLevelling.py:1683
-#: appPlugins/ToolSolderPaste.py:1146 app_Main.py:8132 app_Main.py:8138
+#: appPlugins/ToolSolderPaste.py:1146 appMain.py:8132 appMain.py:8138
 msgid "Export Code ..."
 msgstr "Экспорт кода ..."
 
@@ -4374,8 +4374,8 @@ msgstr ""
 #: appEditors/AppTextEditor.py:350 appGUI/GUIElements.py:2716
 #: appGUI/GUIElements.py:2786 appGUI/GUIElements.py:2847
 #: appGUI/GUIElements.py:2912 appGUI/GUIElements.py:4306
-#: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:417 app_Main.py:4986
-#: app_Main.py:5154 app_Main.py:5245 app_Main.py:9752 app_Main.py:10106
+#: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:417 appMain.py:4986
+#: appMain.py:5154 appMain.py:5245 appMain.py:9752 appMain.py:10106
 msgid "Ok"
 msgstr "Да"
 
@@ -4385,7 +4385,7 @@ msgstr "Да"
 msgid "Ctrl+S"
 msgstr "Ctrl+S"
 
-#: appEditors/appGCodeEditor.py:82 app_Main.py:8295
+#: appEditors/appGCodeEditor.py:82 appMain.py:8295
 msgid "Code Editor"
 msgstr "Редактор кода"
 
@@ -4734,13 +4734,13 @@ msgid "Open"
 msgstr "Открыть"
 
 #: appGUI/GUIElements.py:5537 appGUI/MainGUI.py:131 appGUI/MainGUI.py:1022
-#: appGUI/MainGUI.py:2394 appGUI/MainGUI.py:4898 app_Main.py:9651
-#: app_Main.py:9654
+#: appGUI/MainGUI.py:2394 appGUI/MainGUI.py:4898 appMain.py:9651
+#: appMain.py:9654
 msgid "Open Project"
 msgstr "Открыть проект"
 
 #: appGUI/GUIElements.py:5543 appGUI/MainGUI.py:138 appGUI/MainGUI.py:1017
-#: appGUI/MainGUI.py:2389 app_Main.py:9534 app_Main.py:9539
+#: appGUI/MainGUI.py:2389 appMain.py:9534 appMain.py:9539
 msgid "Open Gerber"
 msgstr "Открыть Gerber"
 
@@ -4749,7 +4749,7 @@ msgid "Ctrl+G"
 msgstr "Ctrl+G"
 
 #: appGUI/GUIElements.py:5548 appGUI/MainGUI.py:143 appGUI/MainGUI.py:1019
-#: appGUI/MainGUI.py:2391 app_Main.py:9573 app_Main.py:9578
+#: appGUI/MainGUI.py:2391 appMain.py:9573 appMain.py:9578
 msgid "Open Excellon"
 msgstr "Открыть Excellon"
 
@@ -4758,8 +4758,8 @@ msgstr "Открыть Excellon"
 msgid "Ctrl+E"
 msgstr "Ctrl+E"
 
-#: appGUI/GUIElements.py:5553 appGUI/MainGUI.py:148 app_Main.py:9615
-#: app_Main.py:9620
+#: appGUI/GUIElements.py:5553 appGUI/MainGUI.py:148 appMain.py:9615
+#: appMain.py:9620
 msgid "Open G-Code"
 msgstr "Открыть G-Code"
 
@@ -4985,11 +4985,11 @@ msgid "Export"
 msgstr "Экспорт"
 
 #: appGUI/MainGUI.py:252 appPlugins/ToolQRCode.py:654
-#: appPlugins/ToolQRCode.py:659 app_Main.py:9762 app_Main.py:9767
+#: appPlugins/ToolQRCode.py:659 appMain.py:9762 appMain.py:9767
 msgid "Export SVG"
 msgstr "Экспорт SVG"
 
-#: appGUI/MainGUI.py:257 app_Main.py:10116 app_Main.py:10121
+#: appGUI/MainGUI.py:257 appMain.py:10116 appMain.py:10121
 msgid "Export DXF"
 msgstr "Экспорт DXF"
 
@@ -5008,7 +5008,7 @@ msgstr ""
 "сохраненное изображение будет содержать визуальную\n"
 "информацию, открытую в настоящее время в пространстве отрисовки FlatCAM."
 
-#: appGUI/MainGUI.py:276 app_Main.py:10013 app_Main.py:10018
+#: appGUI/MainGUI.py:276 appMain.py:10013 appMain.py:10018
 msgid "Export Excellon"
 msgstr "Экспорт Excellon"
 
@@ -5022,7 +5022,7 @@ msgstr ""
 "формат координат, единицы измерения и нули\n"
 "устанавливаются в Настройки -> Экспорт Excellon."
 
-#: appGUI/MainGUI.py:286 app_Main.py:10058 app_Main.py:10063
+#: appGUI/MainGUI.py:286 appMain.py:10058 appMain.py:10063
 msgid "Export Gerber"
 msgstr "Экспорт Gerber"
 
@@ -5180,7 +5180,7 @@ msgid "Shift+O"
 msgstr "Shift+O"
 
 #: appGUI/MainGUI.py:443 appGUI/MainGUI.py:1061 appGUI/MainGUI.py:2433
-#: app_Main.py:5547 app_Main.py:5561
+#: appMain.py:5547 appMain.py:5561
 #, fuzzy
 #| msgid "Set Origin"
 msgid "Custom Origin"
@@ -5204,7 +5204,7 @@ msgstr "Разместить объект"
 msgid "Shift+J"
 msgstr "Shift+J"
 
-#: appGUI/MainGUI.py:456 app_Main.py:4976
+#: appGUI/MainGUI.py:456 appMain.py:4976
 msgid "Toggle Units"
 msgstr "Единицы измерения"
 
@@ -5217,8 +5217,8 @@ msgstr "Q"
 #: appGUI/preferences/PreferencesUIManager.py:1042
 #: appGUI/preferences/PreferencesUIManager.py:1140
 #: appGUI/preferences/PreferencesUIManager.py:1251
-#: appGUI/preferences/PreferencesUIManager.py:1339 app_Main.py:6518
-#: app_Main.py:6523 app_Main.py:6543
+#: appGUI/preferences/PreferencesUIManager.py:1339 appMain.py:6518
+#: appMain.py:6523 appMain.py:6543
 msgid "Preferences"
 msgstr "Настройки"
 
@@ -5284,7 +5284,7 @@ msgstr "Ctrl+D"
 msgid "Experimental"
 msgstr "Инкрементальный"
 
-#: appGUI/MainGUI.py:511 app_Main.py:6701
+#: appGUI/MainGUI.py:511 appMain.py:6701
 #, fuzzy
 #| msgid "Area"
 msgid "3D Area"
@@ -5475,7 +5475,7 @@ msgstr "Онлайн справка"
 msgid "F1"
 msgstr "F1"
 
-#: appGUI/MainGUI.py:621 app_Main.py:3946 app_Main.py:3955
+#: appGUI/MainGUI.py:621 appMain.py:3946 appMain.py:3955
 msgid "Bookmarks Manager"
 msgstr "Диспетчер закладок"
 
@@ -5511,11 +5511,11 @@ msgstr "F4"
 msgid "Donate"
 msgstr ""
 
-#: appGUI/MainGUI.py:652 app_Main.py:3723
+#: appGUI/MainGUI.py:652 appMain.py:3723
 msgid "How To"
 msgstr "Kак"
 
-#: appGUI/MainGUI.py:656 app_Main.py:3214
+#: appGUI/MainGUI.py:656 appMain.py:3214
 msgid "About"
 msgstr "О программе"
 
@@ -5713,7 +5713,7 @@ msgstr "Alt+A"
 msgid "Eraser"
 msgstr "Ластик"
 
-#: appGUI/MainGUI.py:819 app_Main.py:7045 app_Main.py:7099 app_Main.py:7147
+#: appGUI/MainGUI.py:819 appMain.py:7045 appMain.py:7099 appMain.py:7147
 msgid "Transform"
 msgstr "Трансформация"
 
@@ -5729,44 +5729,44 @@ msgstr "Отключить участок"
 msgid "Set Color"
 msgstr "Установить цвет"
 
-#: appGUI/MainGUI.py:858 appGUI/MainGUI.py:1723 app_Main.py:9083
+#: appGUI/MainGUI.py:858 appGUI/MainGUI.py:1723 appMain.py:9083
 msgid "Red"
 msgstr "Красный"
 
-#: appGUI/MainGUI.py:861 appGUI/MainGUI.py:1726 app_Main.py:9085
+#: appGUI/MainGUI.py:861 appGUI/MainGUI.py:1726 appMain.py:9085
 msgid "Blue"
 msgstr "Синий"
 
-#: appGUI/MainGUI.py:864 appGUI/MainGUI.py:1729 app_Main.py:9088
+#: appGUI/MainGUI.py:864 appGUI/MainGUI.py:1729 appMain.py:9088
 msgid "Yellow"
 msgstr "Жёлтый"
 
-#: appGUI/MainGUI.py:867 appGUI/MainGUI.py:1732 app_Main.py:9090
+#: appGUI/MainGUI.py:867 appGUI/MainGUI.py:1732 appMain.py:9090
 msgid "Green"
 msgstr "Зелёный"
 
-#: appGUI/MainGUI.py:870 appGUI/MainGUI.py:1735 app_Main.py:9092
+#: appGUI/MainGUI.py:870 appGUI/MainGUI.py:1735 appMain.py:9092
 msgid "Purple"
 msgstr "Фиолетовый"
 
-#: appGUI/MainGUI.py:873 appGUI/MainGUI.py:1738 app_Main.py:9094
+#: appGUI/MainGUI.py:873 appGUI/MainGUI.py:1738 appMain.py:9094
 msgid "Brown"
 msgstr "Коричневый"
 
-#: appGUI/MainGUI.py:876 appGUI/MainGUI.py:1741 app_Main.py:9096
+#: appGUI/MainGUI.py:876 appGUI/MainGUI.py:1741 appMain.py:9096
 msgid "Indigo"
 msgstr ""
 
-#: appGUI/MainGUI.py:879 appGUI/MainGUI.py:1744 app_Main.py:9098
-#: app_Main.py:9176
+#: appGUI/MainGUI.py:879 appGUI/MainGUI.py:1744 appMain.py:9098
+#: appMain.py:9176
 msgid "White"
 msgstr "Белый"
 
-#: appGUI/MainGUI.py:882 appGUI/MainGUI.py:1747 app_Main.py:9100
+#: appGUI/MainGUI.py:882 appGUI/MainGUI.py:1747 appMain.py:9100
 msgid "Black"
 msgstr "Чёрный"
 
-#: appGUI/MainGUI.py:892 appGUI/MainGUI.py:1757 app_Main.py:9141
+#: appGUI/MainGUI.py:892 appGUI/MainGUI.py:1757 appMain.py:9141
 msgid "Opacity"
 msgstr "Непрозрачность"
 
@@ -5777,7 +5777,7 @@ msgstr "Непрозрачность"
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:67
 #: appPlugins/ToolDrilling.py:2494 appPlugins/ToolIsolation.py:3418
 #: appPlugins/ToolMilling.py:4160 appPlugins/ToolNCC.py:4199
-#: appPlugins/ToolPaint.py:3072 app_Main.py:9115
+#: appPlugins/ToolPaint.py:3072 appMain.py:9115
 msgid "Default"
 msgstr "По умолчанию"
 
@@ -5786,12 +5786,12 @@ msgid "View Source"
 msgstr "Просмотреть код"
 
 #: appGUI/MainGUI.py:913 appGUI/MainGUI.py:926 appGUI/MainGUI.py:1442
-#: appGUI/MainGUI.py:1872 app_Main.py:2690 app_Main.py:2958 app_Main.py:8577
+#: appGUI/MainGUI.py:1872 appMain.py:2690 appMain.py:2958 appMain.py:8577
 msgid "Properties"
 msgstr "Свойства"
 
 #: appGUI/MainGUI.py:926 appGUI/MainGUI.py:1426 appGUI/MainGUI.py:1709
-#: app_Main.py:2696 app_Main.py:2961 app_Main.py:10572
+#: appMain.py:2696 appMain.py:2961 appMain.py:10572
 msgid "Project"
 msgstr "Проект"
 
@@ -5853,8 +5853,8 @@ msgstr "Сохранить проект"
 #: appGUI/preferences/cncjob/CNCJobEditorPrefGroupUI.py:21
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:19
 #: appGUI/preferences/geometry/GeometryEditorPrefGroupUI.py:20
-#: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:21 app_Main.py:2693
-#: app_Main.py:2956
+#: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:21 appMain.py:2693
+#: appMain.py:2956
 msgid "Editor"
 msgstr "Редактор"
 
@@ -6082,7 +6082,7 @@ msgid "TCL Shell"
 msgstr "Оболочка TCL"
 
 #: appGUI/MainGUI.py:1472 appGUI/MainGUI.py:1480 appGUI/MainGUI.py:2808
-#: appGUI/MainGUI.py:2814 app_Main.py:2974 app_Main.py:10333
+#: appGUI/MainGUI.py:2814 appMain.py:2974 appMain.py:10333
 msgid "Plot Area"
 msgstr "Рабочая область"
 
@@ -6243,14 +6243,14 @@ msgstr "Вы уверены, что хотите сбросить настрой
 
 #: appGUI/MainGUI.py:2363 appGUI/preferences/PreferencesUIManager.py:1077
 #: appGUI/preferences/PreferencesUIManager.py:1310 appTranslation.py:120
-#: appTranslation.py:226 app_Main.py:2752 app_Main.py:4020 app_Main.py:6824
-#: app_Main.py:10216 app_Main.py:10346
+#: appTranslation.py:226 appMain.py:2752 appMain.py:4020 appMain.py:6824
+#: appMain.py:10216 appMain.py:10346
 msgid "Yes"
 msgstr "Да"
 
 #: appGUI/MainGUI.py:2364 appGUI/preferences/PreferencesUIManager.py:1311
-#: appTranslation.py:121 appTranslation.py:227 app_Main.py:2753
-#: app_Main.py:4021 app_Main.py:6825 app_Main.py:10217 app_Main.py:10347
+#: appTranslation.py:121 appTranslation.py:227 appMain.py:2753
+#: appMain.py:4021 appMain.py:6825 appMain.py:10217 appMain.py:10347
 msgid "No"
 msgstr "Нет"
 
@@ -6306,23 +6306,23 @@ msgstr ""
 #: appGUI/MainGUI.py:4136 appPlugins/ToolIsolation.py:1008
 #: appPlugins/ToolNCC.py:1382 appPlugins/ToolPaint.py:672
 #: appPlugins/ToolSolderPaste.py:344 appPlugins/ToolSolderPaste.py:1284
-#: app_Main.py:5125
+#: appMain.py:5125
 msgid "New Tool"
 msgstr "Новый инструмент"
 
 #: appGUI/MainGUI.py:4137 appPlugins/ToolIsolation.py:1009
 #: appPlugins/ToolNCC.py:1383 appPlugins/ToolPaint.py:673
-#: appPlugins/ToolSolderPaste.py:345 app_Main.py:5126
+#: appPlugins/ToolSolderPaste.py:345 appMain.py:5126
 msgid "Enter a Tool Diameter"
 msgstr "Введите диаметр инструмента"
 
 #: appGUI/MainGUI.py:4149 appPlugins/ToolIsolation.py:1030
 #: appPlugins/ToolNCC.py:1404 appPlugins/ToolPaint.py:686
-#: appPlugins/ToolSolderPaste.py:357 app_Main.py:5142
+#: appPlugins/ToolSolderPaste.py:357 appMain.py:5142
 msgid "Adding Tool cancelled"
 msgstr "Добавление инструмента отменено"
 
-#: appGUI/MainGUI.py:4427 app_Main.py:4005
+#: appGUI/MainGUI.py:4427 appMain.py:4005
 msgid "Application is saving the project. Please wait ..."
 msgstr "Приложение сохраняет проект. Пожалуйста, подождите ..."
 
@@ -6370,7 +6370,7 @@ msgstr "Создать Gerber"
 msgid "Edit Object (if selected)"
 msgstr "Редактировать объект (если выбран)"
 
-#: appGUI/MainGUI.py:4873 app_Main.py:7218
+#: appGUI/MainGUI.py:4873 appMain.py:7218
 msgid "Grid On/Off"
 msgstr "Сетка вкл/откл"
 
@@ -7628,7 +7628,7 @@ msgstr "Выравнивание по левому краю"
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:164
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:101
 #: appPlugins/ToolFilm.py:1409 appPlugins/ToolFilm.py:1485
-#: appPlugins/ToolMarkers.py:1283 app_Main.py:5545 app_Main.py:5779
+#: appPlugins/ToolMarkers.py:1283 appMain.py:5545 appMain.py:5779
 msgid "Center"
 msgstr "По центру"
 
@@ -7714,8 +7714,8 @@ msgstr "Вы уверены что хотите продолжить?"
 msgid "Preferences default values are restored."
 msgstr "Настройки по умолчанию восстановлены."
 
-#: appGUI/preferences/PreferencesUIManager.py:1191 app_Main.py:3134
-#: app_Main.py:10960
+#: appGUI/preferences/PreferencesUIManager.py:1191 appMain.py:3134
+#: appMain.py:10960
 msgid "Failed to write defaults to file."
 msgstr "Не удалось записать значения по умолчанию в файл."
 
@@ -8616,7 +8616,7 @@ msgstr "Настройки приложения"
 msgid "Grid Settings"
 msgstr "Настройки сетки"
 
-#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:51 app_Main.py:8625
+#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:51 appMain.py:8625
 msgid "X value"
 msgstr "Значение X"
 
@@ -8624,7 +8624,7 @@ msgstr "Значение X"
 msgid "This is the Grid snap value on X axis."
 msgstr "Это значение привязки сетки по оси X."
 
-#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:63 app_Main.py:8628
+#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:63 appMain.py:8628
 msgid "Y value"
 msgstr "Значение Y"
 
@@ -8671,14 +8671,14 @@ msgstr ""
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:183
 #: appGUI/preferences/general/GeneralAppSettingsGroupUI.py:165
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:310
-#: appPlugins/ToolFilm.py:1712 app_Main.py:8645
+#: appPlugins/ToolFilm.py:1712 appMain.py:8645
 msgid "Portrait"
 msgstr "Портретная"
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:184
 #: appGUI/preferences/general/GeneralAppSettingsGroupUI.py:166
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:311
-#: appPlugins/ToolFilm.py:1713 app_Main.py:8647
+#: appPlugins/ToolFilm.py:1713 appMain.py:8647
 msgid "Landscape"
 msgstr "Альбомная"
 
@@ -8698,7 +8698,7 @@ msgstr ""
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:225
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:286
-#: appPlugins/ToolDblSided.py:882 appPlugins/ToolFilm.py:1523 app_Main.py:8633
+#: appPlugins/ToolDblSided.py:882 appPlugins/ToolFilm.py:1523 appMain.py:8633
 msgid "Axis"
 msgstr "Оси"
 
@@ -8718,7 +8718,7 @@ msgstr ""
 "Это устанавливает размер шрифта для полей ввода текста\n"
 "которые используются в приложении."
 
-#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:264 app_Main.py:8650
+#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:264 appMain.py:8650
 msgid "HUD"
 msgstr "HUD"
 
@@ -9912,8 +9912,8 @@ msgstr "Удаление всех отмеченных полигонов."
 
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:446
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:507
-#: appObjects/AppObject.py:323 app_Main.py:9167 app_Main.py:9216
-#: app_Main.py:9225
+#: appObjects/AppObject.py:323 appMain.py:9167 appMain.py:9216
+#: appMain.py:9225
 msgid "Layer"
 msgstr ""
 
@@ -10770,7 +10770,7 @@ msgstr ""
 "в выбранный файл Gerber, или его можно экспортировать в файл."
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:42
-#: appPlugins/ToolQRCode.py:827 app_Main.py:8613
+#: appPlugins/ToolQRCode.py:827 appMain.py:8613
 msgid "Version"
 msgstr "Версия"
 
@@ -11208,7 +11208,7 @@ msgid "Box"
 msgstr "Рамка"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:109
-#: appPlugins/ToolDblSided.py:914 app_Main.py:8622
+#: appPlugins/ToolDblSided.py:914 appMain.py:8622
 msgid "Snap"
 msgstr "Щелчок"
 
@@ -12451,7 +12451,7 @@ msgstr ""
 "- Сетка: автоматически генерирует сетку точек зондирования"
 
 #: appGUI/preferences/tools/ToolsLevelPrefGroupUI.py:49
-#: appPlugins/ToolLevelling.py:1924 app_Main.py:8617
+#: appPlugins/ToolLevelling.py:1924 appMain.py:8617
 msgid "Grid"
 msgstr "Сетка"
 
@@ -13707,7 +13707,7 @@ msgstr "Трансформация"
 #: appObjects/ObjectCollection.py:961 appObjects/ObjectCollection.py:967
 #: appObjects/ObjectCollection.py:973 appObjects/ObjectCollection.py:979
 #: appObjects/ObjectCollection.py:985 appObjects/ObjectCollection.py:991
-#: app_Main.py:7863 app_Main.py:7869 app_Main.py:7875 app_Main.py:7881
+#: appMain.py:7863 appMain.py:7869 appMain.py:7875 appMain.py:7881
 msgid "selected"
 msgstr "выбранный"
 
@@ -14312,12 +14312,12 @@ msgstr "Отмена. Для генерации GCode необходимы че�
 #: appPlugins/ToolTransform.py:327 appPlugins/ToolTransform.py:359
 #: appPlugins/ToolTransform.py:404 appPlugins/ToolTransform.py:438
 #: appPlugins/ToolTransform.py:473 appPlugins/ToolTransform.py:510
-#: app_Main.py:2583 app_Main.py:5290 app_Main.py:5771 app_Main.py:6180
-#: app_Main.py:6264 app_Main.py:6444 app_Main.py:6753 app_Main.py:6949
-#: app_Main.py:6995 app_Main.py:7042 app_Main.py:7097 app_Main.py:7145
-#: app_Main.py:7303 app_Main.py:9736 app_Main.py:9833 app_Main.py:9875
-#: app_Main.py:9917 app_Main.py:9959 app_Main.py:10000 app_Main.py:10045
-#: app_Main.py:10090 app_Main.py:10617 app_Main.py:10621 camlib.py:2464
+#: appMain.py:2583 appMain.py:5290 appMain.py:5771 appMain.py:6180
+#: appMain.py:6264 appMain.py:6444 appMain.py:6753 appMain.py:6949
+#: appMain.py:6995 appMain.py:7042 appMain.py:7097 appMain.py:7145
+#: appMain.py:7303 appMain.py:9736 appMain.py:9833 appMain.py:9875
+#: appMain.py:9917 appMain.py:9959 appMain.py:10000 appMain.py:10045
+#: appMain.py:10090 appMain.py:10617 appMain.py:10621 camlib.py:2464
 #: camlib.py:2537 camlib.py:2605 camlib.py:2680
 msgid "No object is selected."
 msgstr "Объект не выбран."
@@ -14822,7 +14822,7 @@ msgstr ""
 #: appPlugins/ToolNCC.py:1399 appPlugins/ToolPaint.py:682
 #: appPlugins/ToolPaint.py:849 appPlugins/ToolPaint.py:982
 #: appPlugins/ToolSolderPaste.py:353 appPlugins/ToolSolderPaste.py:527
-#: app_Main.py:5135
+#: appMain.py:5135
 msgid "Please enter a tool diameter with non-zero value, in Float format."
 msgstr ""
 "Пожалуйста, введите диаметр инструмента с ненулевым значением в float "
@@ -14861,8 +14861,8 @@ msgid "Default tool added."
 msgstr "Добавлен инструмент по умолчанию."
 
 #: appPlugins/ToolCutOut.py:579 appPlugins/ToolIsolation.py:2938
-#: appPlugins/ToolNCC.py:3943 appPlugins/ToolPaint.py:2811 app_Main.py:6764
-#: app_Main.py:6785
+#: appPlugins/ToolNCC.py:3943 appPlugins/ToolPaint.py:2811 appMain.py:6764
+#: appMain.py:6785
 msgid "Selected tool can't be used here. Pick another."
 msgstr "Выбранный инструмент здесь использовать нельзя. Выберите другой."
 
@@ -15536,7 +15536,7 @@ msgstr "Несколько инструментов"
 #: appPlugins/ToolIsolation.py:893 appPlugins/ToolMilling.py:1675
 #: appPlugins/ToolMilling.py:1744 appPlugins/ToolNCC.py:554
 #: appPlugins/ToolNCC.py:589 appPlugins/ToolPaint.py:514
-#: appPlugins/ToolPaint.py:568 app_Main.py:2622
+#: appPlugins/ToolPaint.py:568 appMain.py:2622
 msgid "No Tool Selected"
 msgstr "Инструмент не выбран"
 
@@ -16234,15 +16234,15 @@ msgstr "Импорт"
 msgid "Import IMAGE"
 msgstr "Импорт изображения"
 
-#: appPlugins/ToolImage.py:176 appPlugins/ToolPDF.py:114 app_Main.py:11339
-#: app_Main.py:11395 app_Main.py:11490 app_Main.py:11529 app_Main.py:11597
-#: app_Main.py:11754 app_Main.py:11841
+#: appPlugins/ToolImage.py:176 appPlugins/ToolPDF.py:114 appMain.py:11339
+#: appMain.py:11395 appMain.py:11490 appMain.py:11529 appMain.py:11597
+#: appMain.py:11754 appMain.py:11841
 #, fuzzy
 #| msgid "No object available."
 msgid "File no longer available."
 msgstr "Нет доступных объектов."
 
-#: appPlugins/ToolImage.py:188 app_Main.py:11349 app_Main.py:11405
+#: appPlugins/ToolImage.py:188 appMain.py:11349 appMain.py:11405
 msgid ""
 "Not supported type is picked as parameter. Only Geometry and Gerber are "
 "supported"
@@ -16251,13 +16251,13 @@ msgstr ""
 "Geometry и Gerber"
 
 #: appPlugins/ToolImage.py:216 appPlugins/ToolPcbWizard.py:373
-#: app_Main.py:11368 app_Main.py:11425 tclCommands/TclCommandImportSvg.py:84
+#: appMain.py:11368 appMain.py:11425 tclCommands/TclCommandImportSvg.py:84
 msgid "Importing"
 msgstr "Импортирование"
 
-#: appPlugins/ToolImage.py:228 appPlugins/ToolPDF.py:230 app_Main.py:11366
-#: app_Main.py:11423 app_Main.py:11511 app_Main.py:11580 app_Main.py:11650
-#: app_Main.py:11715 app_Main.py:11775
+#: appPlugins/ToolImage.py:228 appPlugins/ToolPDF.py:230 appMain.py:11366
+#: appMain.py:11423 appMain.py:11511 appMain.py:11580 appMain.py:11650
+#: appMain.py:11715 appMain.py:11775
 msgid "Opened"
 msgstr "Открыт"
 
@@ -16514,7 +16514,7 @@ msgid "Click the end point of the paint area."
 msgstr "Нажмите на конечную точку области рисования."
 
 #: appPlugins/ToolIsolation.py:2951 appPlugins/ToolNCC.py:3956
-#: appPlugins/ToolPaint.py:2824 app_Main.py:6776 app_Main.py:6795
+#: appPlugins/ToolPaint.py:2824 appMain.py:6776 appMain.py:6795
 msgid "Tool from DB added in Tool Table."
 msgstr "Инструмент из БД добавлен в таблицу инструментов."
 
@@ -17696,11 +17696,11 @@ msgstr "Открытие PDF отменено"
 msgid "Parsing"
 msgstr "Анализируя ..."
 
-#: appPlugins/ToolPDF.py:212 app_Main.py:11615
+#: appPlugins/ToolPDF.py:212 appMain.py:11615
 msgid "Failed to open"
 msgstr "Не удалось открыть"
 
-#: appPlugins/ToolPDF.py:288 appPlugins/ToolPcbWizard.py:368 app_Main.py:11560
+#: appPlugins/ToolPDF.py:288 appPlugins/ToolPcbWizard.py:368 appMain.py:11560
 msgid "No geometry found in file"
 msgstr "Геометрия не найдена в файле"
 
@@ -18040,7 +18040,7 @@ msgstr "Inf-файл PcbWizard загружен."
 msgid "Main PcbWizard Excellon file loaded."
 msgstr "Файл PcbWizard Excellon загружен."
 
-#: appPlugins/ToolPcbWizard.py:346 app_Main.py:11539
+#: appPlugins/ToolPcbWizard.py:346 appMain.py:11539
 msgid "This is not Excellon file."
 msgstr "Это не Excellon файл."
 
@@ -18939,7 +18939,7 @@ msgstr "Приложение будет перезапущено."
 msgid "Are you sure do you want to change the current language to"
 msgstr "Вы уверены, что хотите изменить текущий язык на"
 
-#: appTranslation.py:217 app_Main.py:4011
+#: appTranslation.py:217 appMain.py:4011
 msgid ""
 "There are files/objects modified in FlatCAM. \n"
 "Do you want to Save the project?"
@@ -18965,15 +18965,15 @@ msgstr ""
 msgid "Quit"
 msgstr ""
 
-#: app_Main.py:944
+#: appMain.py:944
 msgid "The application is initializing ..."
 msgstr "Приложение инициализируется ..."
 
-#: app_Main.py:968
+#: appMain.py:968
 msgid "Could not find the Language files. The App strings are missing."
 msgstr "Не удалось найти языковые файлы. Строки приложения отсутствуют."
 
-#: app_Main.py:1146
+#: appMain.py:1146
 msgid ""
 "The application is initializing ...\n"
 "Canvas initialization started."
@@ -18981,7 +18981,7 @@ msgstr ""
 "Приложение инициализируется …\n"
 "Инициализация рабочей области."
 
-#: app_Main.py:1187
+#: appMain.py:1187
 msgid ""
 "The application is initializing ...\n"
 "Canvas initialization started.\n"
@@ -18991,48 +18991,48 @@ msgstr ""
 "Инициализация рабочей области.\n"
 "Инициализация рабочей области завершена за"
 
-#: app_Main.py:1342 app_Main.py:10364
+#: appMain.py:1342 appMain.py:10364
 msgid "New Project - Not saved"
 msgstr "Новый проект - Не сохранён"
 
-#: app_Main.py:1671
+#: appMain.py:1671
 msgid ""
 "Found old default preferences files. Please reboot the application to update."
 msgstr ""
 "Найдены старые файлы настроек по умолчанию. Пожалуйста, перезагрузите "
 "приложение для обновления."
 
-#: app_Main.py:1738
+#: appMain.py:1738
 msgid "Open Config file failed."
 msgstr "Не удалось открыть файл конфигурации."
 
-#: app_Main.py:1753
+#: appMain.py:1753
 msgid "Open Script file failed."
 msgstr "Ошибка открытия файла сценария."
 
-#: app_Main.py:1780
+#: appMain.py:1780
 msgid "Open Excellon file failed."
 msgstr "Не удалось открыть файл Excellon."
 
-#: app_Main.py:1793
+#: appMain.py:1793
 msgid "Open GCode file failed."
 msgstr "Не удалось открыть файл GCode."
 
-#: app_Main.py:1806
+#: appMain.py:1806
 msgid "Open Gerber file failed."
 msgstr "Не удалось открыть файл Gerber."
 
-#: app_Main.py:2583 app_Main.py:2599 app_Main.py:2642 app_Main.py:2658
-#: app_Main.py:2677
+#: appMain.py:2583 appMain.py:2599 appMain.py:2642 appMain.py:2658
+#: appMain.py:2677
 msgid "The Editor could not start."
 msgstr ""
 
-#: app_Main.py:2590
+#: appMain.py:2590
 msgid "Select a Geometry, Gerber, Excellon or CNCJob Object to edit."
 msgstr ""
 "Выберите объект Geometry, Gerber , Excellon или CNCJob для редактирования."
 
-#: app_Main.py:2615
+#: appMain.py:2615
 msgid ""
 "Simultaneous editing of tools geometry in a MultiGeo Geometry is not "
 "possible.\n"
@@ -19041,85 +19041,85 @@ msgstr ""
 "Одновременное редактирование геометрии в MultiGeo Geometry невозможно.\n"
 "Редактируйте только одну геометрию за раз."
 
-#: app_Main.py:2717
+#: appMain.py:2717
 msgid "EDITOR Area"
 msgstr "РЕДАКТОР"
 
-#: app_Main.py:2720
+#: appMain.py:2720
 msgid "Editor is activated ..."
 msgstr "Редактор активирован ..."
 
-#: app_Main.py:2745
+#: appMain.py:2745
 msgid "Do you want to save the edited object?"
 msgstr "Вы хотите сохранить редактируемый объект?"
 
-#: app_Main.py:2796
+#: appMain.py:2796
 msgid "Object empty after edit."
 msgstr "Объект пуст после редактирования."
 
-#: app_Main.py:2801 app_Main.py:2819 app_Main.py:2850 app_Main.py:2866
+#: appMain.py:2801 appMain.py:2819 appMain.py:2850 appMain.py:2866
 msgid "Editor exited. Editor content saved."
 msgstr "Редактор закрыт. Содержимое редактора сохранено."
 
-#: app_Main.py:2870 app_Main.py:2922
+#: appMain.py:2870 appMain.py:2922
 msgid "Select a Gerber, Geometry, Excellon or CNCJob Object to update."
 msgstr "Выберите объект Gerber, Geometry, Excellon или CNCJob для обновления."
 
-#: app_Main.py:2880
+#: appMain.py:2880
 msgid "is updated, returning to App..."
 msgstr "обновлён, возврат в приложение ..."
 
-#: app_Main.py:2897
+#: appMain.py:2897
 msgid "Editor exited. Editor content was not saved."
 msgstr "Редактор закрыт. Содержимое редактора не сохранено."
 
-#: app_Main.py:2947
+#: appMain.py:2947
 #, fuzzy
 #| msgid "Select a Gerber, Geometry, Excellon or CNCJob Object to update."
 msgid "Select a Gerber, Geometry, Excellon or CNCJob object to update."
 msgstr "Выберите объект Gerber, Geometry, Excellon или CNCJob для обновления."
 
-#: app_Main.py:3090 app_Main.py:3096
+#: appMain.py:3090 appMain.py:3096
 msgid "Save to file"
 msgstr "Сохранить в файл"
 
-#: app_Main.py:3137
+#: appMain.py:3137
 msgid "Exported file to"
 msgstr "Файл экспортируется в"
 
-#: app_Main.py:3174
+#: appMain.py:3174
 msgid "Failed to open recent files file for writing."
 msgstr "Не удалось открыть файл истории для записи."
 
-#: app_Main.py:3185
+#: appMain.py:3185
 msgid "Failed to open recent projects file for writing."
 msgstr "Не удалось открыть файл последних проектов для записи."
 
-#: app_Main.py:3240
+#: appMain.py:3240
 msgid "PCB Manufacturing files Viewer/Editor with Plugins"
 msgstr ""
 
-#: app_Main.py:3241
+#: appMain.py:3241
 msgid "Development"
 msgstr "Исходный код"
 
-#: app_Main.py:3242
+#: appMain.py:3242
 msgid "DOWNLOAD"
 msgstr "Страница загрузок"
 
-#: app_Main.py:3243
+#: appMain.py:3243
 msgid "Issue tracker"
 msgstr "Issue-трекер"
 
-#: app_Main.py:3247 app_Main.py:3807 app_Main.py:3990
+#: appMain.py:3247 appMain.py:3807 appMain.py:3990
 msgid "Close"
 msgstr "Закрыть"
 
-#: app_Main.py:3262
+#: appMain.py:3262
 msgid "Licensed under the MIT license"
 msgstr "Под лицензией MIT"
 
-#: app_Main.py:3271
+#: appMain.py:3271
 msgid ""
 "Permission is hereby granted, free of charge, to any person obtaining a "
 "copy\n"
@@ -19167,7 +19167,7 @@ msgstr ""
 "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n"
 "THE SOFTWARE."
 
-#: app_Main.py:3293
+#: appMain.py:3293
 msgid ""
 "Some of the icons used are from the following sources:<br><div>Icons by <a "
 "href=\"https://www.flaticon.com/authors/freepik\" title=\"Freepik\">Freepik</"
@@ -19189,116 +19189,116 @@ msgstr ""
 "perfect\">Pixel perfect</a> из <a href=\"https://www.flaticon.com/\" title="
 "\"Flaticon\">www.flaticon.com</a></div>"
 
-#: app_Main.py:3329
+#: appMain.py:3329
 msgid "Splash"
 msgstr "Информация"
 
-#: app_Main.py:3335
+#: appMain.py:3335
 msgid "Programmers"
 msgstr "Разработчики"
 
-#: app_Main.py:3341
+#: appMain.py:3341
 msgid "Translators"
 msgstr "Переводчики"
 
-#: app_Main.py:3347
+#: appMain.py:3347
 msgid "License"
 msgstr "Лицензия"
 
-#: app_Main.py:3353
+#: appMain.py:3353
 msgid "Attributions"
 msgstr "Пояснения"
 
-#: app_Main.py:3583
+#: appMain.py:3583
 msgid "Programmer"
 msgstr "Разработчик"
 
-#: app_Main.py:3584
+#: appMain.py:3584
 msgid "Status"
 msgstr "Статус"
 
-#: app_Main.py:3585 app_Main.py:3667
+#: appMain.py:3585 appMain.py:3667
 msgid "E-mail"
 msgstr "E-mail"
 
-#: app_Main.py:3589
+#: appMain.py:3589
 #, fuzzy
 #| msgid "FlatCAM Evo"
 msgid "FlatCAM Author"
 msgstr "FlatCAM Evo"
 
-#: app_Main.py:3593
+#: appMain.py:3593
 msgid "FlatCAM Evo Author/Maintainer"
 msgstr ""
 
-#: app_Main.py:3665
+#: appMain.py:3665
 msgid "Language"
 msgstr "Язык"
 
-#: app_Main.py:3666
+#: appMain.py:3666
 msgid "Translator"
 msgstr "Переводчик"
 
-#: app_Main.py:3775
+#: appMain.py:3775
 #, python-format
 msgid "This program is %s and free in a very wide meaning of the word."
 msgstr "Эта программа %s и бесплатная в очень широком смысле этого слова."
 
-#: app_Main.py:3776
+#: appMain.py:3776
 msgid "Yet it cannot evolve without <b>contributions</b>."
 msgstr "И все же он не может развиваться без <b> вклада </b>."
 
-#: app_Main.py:3777
+#: appMain.py:3777
 msgid "If you want to see this application grow and become better and better"
 msgstr ""
 "Если вы хотите, чтобы это приложение росло и становилось все лучше и лучше"
 
-#: app_Main.py:3778
+#: appMain.py:3778
 msgid "you can <b>contribute</b> to the development yourself by:"
 msgstr "вы можете <b> внести свой вклад </b> в разработку самостоятельно:"
 
-#: app_Main.py:3779
+#: appMain.py:3779
 msgid "Pull Requests on the Bitbucket repository, if you are a developer"
 msgstr "Pull Requests в репозитории Bitbucket, если вы разработчик"
 
-#: app_Main.py:3781
+#: appMain.py:3781
 msgid "Bug Reports by providing the steps required to reproduce the bug"
 msgstr ""
 "Отчеты об ошибках, предоставляя шаги, необходимые для воспроизведения ошибки"
 
-#: app_Main.py:3783
+#: appMain.py:3783
 msgid "If you like what you have seen so far ..."
 msgstr "Если вам нравится то, что вы видели ..."
 
-#: app_Main.py:3784
+#: appMain.py:3784
 msgid "Donations are NOT required."
 msgstr "Пожертвования НЕ требуются."
 
-#: app_Main.py:3784
+#: appMain.py:3784
 msgid "But they are welcomed"
 msgstr "Но их приветствуют"
 
-#: app_Main.py:3815
+#: appMain.py:3815
 msgid "Contribute"
 msgstr "Делать вклад"
 
-#: app_Main.py:3836
+#: appMain.py:3836
 msgid "Links Exchange"
 msgstr "Обмен ссылками"
 
-#: app_Main.py:3849 app_Main.py:3869
+#: appMain.py:3849 appMain.py:3869
 msgid "Soon ..."
 msgstr "Скоро ..."
 
-#: app_Main.py:3856
+#: appMain.py:3856
 msgid "How To's"
 msgstr "Как это"
 
-#: app_Main.py:3976
+#: appMain.py:3976
 msgid "Alternative website"
 msgstr "Альтернативный сайт"
 
-#: app_Main.py:3977
+#: appMain.py:3977
 msgid ""
 "This entry will resolve to another website if:\n"
 "\n"
@@ -19318,25 +19318,25 @@ msgstr ""
 "Если вы не можете получить информацию о приложении\n"
 "используйте ссылку на канал YouTube из меню «Справка»."
 
-#: app_Main.py:4335
+#: appMain.py:4335
 msgid "Selected Excellon file extensions registered with FlatCAM."
 msgstr "Выбранные расширения файлов Excellon, зарегистрированные в FlatCAM."
 
-#: app_Main.py:4352
+#: appMain.py:4352
 msgid "Selected GCode file extensions registered with FlatCAM."
 msgstr "Выбранные расширения файлов GCode, зарегистрированные в FlatCAM."
 
-#: app_Main.py:4368
+#: appMain.py:4368
 msgid "Selected Gerber file extensions registered with FlatCAM."
 msgstr "Выбранные расширения файлов Gerber, зарегистрированные в FlatCAM."
 
-#: app_Main.py:4556 app_Main.py:4619 app_Main.py:4650
+#: appMain.py:4556 appMain.py:4619 appMain.py:4650
 msgid "At least two objects are required for join. Objects currently selected"
 msgstr ""
 "Для объединения требуются как минимум два объекта. Объекты, выбранные в "
 "данный момент"
 
-#: app_Main.py:4565
+#: appMain.py:4565
 msgid ""
 "Failed join. The Geometry objects are of different types.\n"
 "At least one is MultiGeo type and the other is SingleGeo type. A possibility "
@@ -19352,47 +19352,47 @@ msgstr ""
 "потеряна, и результат может не соответствовать ожидаемому. \n"
 "Проверьте сгенерированный GCODE."
 
-#: app_Main.py:4580 app_Main.py:4591
+#: appMain.py:4580 appMain.py:4591
 msgid "Geometry merging finished"
 msgstr "Слияние Geometry завершено"
 
-#: app_Main.py:4614
+#: appMain.py:4614
 msgid "Failed. Excellon joining works only on Excellon objects."
 msgstr "Неудача. Присоединение Excellon работает только на объектах Excellon."
 
-#: app_Main.py:4627
+#: appMain.py:4627
 msgid "Excellon merging finished"
 msgstr "Слияние Excellon завершено"
 
-#: app_Main.py:4645
+#: appMain.py:4645
 msgid "Failed. Gerber joining works only on Gerber objects."
 msgstr "Неудача. Объединение Gerber работает только на объектах Gerber."
 
-#: app_Main.py:4655
+#: appMain.py:4655
 msgid "Gerber merging finished"
 msgstr "Слияние Gerber завершено"
 
-#: app_Main.py:4675 app_Main.py:4711
+#: appMain.py:4675 appMain.py:4711
 msgid "Failed. Select a Geometry Object and try again."
 msgstr "Неудалось. Выберите объект Geometry и попробуйте снова."
 
-#: app_Main.py:4679 app_Main.py:4715
+#: appMain.py:4679 appMain.py:4715
 msgid "Expected a GeometryObject, got"
 msgstr "Ожидается GeometryObject, получено"
 
-#: app_Main.py:4694
+#: appMain.py:4694
 msgid "A Geometry object was converted to MultiGeo type."
 msgstr "Объект Geometry был преобразован в тип MultiGeo."
 
-#: app_Main.py:4732
+#: appMain.py:4732
 msgid "A Geometry object was converted to SingleGeo type."
 msgstr "Объект Geometry был преобразован в тип SingleGeo."
 
-#: app_Main.py:4968
+#: appMain.py:4968
 msgid "Units cannot be changed while the editor is active."
 msgstr ""
 
-#: app_Main.py:4977
+#: appMain.py:4977
 msgid ""
 "Changing the units of the project\n"
 "will scale all objects.\n"
@@ -19403,31 +19403,31 @@ msgstr ""
 "масштабированию всех всех объектов.\n"
 "Продолжить?"
 
-#: app_Main.py:5031
+#: appMain.py:5031
 msgid "Converted units to"
 msgstr "Конвертирование единиц в"
 
-#: app_Main.py:5065
+#: appMain.py:5065
 msgid "Workspace enabled."
 msgstr "Рабочая область включена."
 
-#: app_Main.py:5068
+#: appMain.py:5068
 msgid "Workspace disabled."
 msgstr "Рабочая область отключена."
 
-#: app_Main.py:5090
+#: appMain.py:5090
 #, fuzzy
 #| msgid "FlatCAM Preferences Folder opened."
 msgid "FlatCAM log opened."
 msgstr "Папка настроек FlatCAM открыта."
 
-#: app_Main.py:5145
+#: appMain.py:5145
 #, fuzzy
 #| msgid "Loading..."
 msgid "Tool adding ..."
 msgstr "Загрузка..."
 
-#: app_Main.py:5146
+#: appMain.py:5146
 msgid ""
 "Adding Tool works only when Advanced is checked.\n"
 "Go to Preferences -> General - Show Advanced Options."
@@ -19436,11 +19436,11 @@ msgstr ""
 "«Дополнительно».\n"
 "Перейдите в Настройки -> Основные парам. - Показать дополнительные параметры."
 
-#: app_Main.py:5236
+#: appMain.py:5236
 msgid "Delete objects"
 msgstr "Удалить объекты"
 
-#: app_Main.py:5237
+#: appMain.py:5237
 msgid ""
 "Are you sure you want to permanently delete\n"
 "the selected objects?"
@@ -19448,107 +19448,107 @@ msgstr ""
 "Вы уверены, что хотите удалить навсегда\n"
 "выделенные объекты?"
 
-#: app_Main.py:5292
+#: appMain.py:5292
 msgid "Save the work in Editor and try again ..."
 msgstr "Сохраните работу в редакторе и попробуйте снова ..."
 
-#: app_Main.py:5325
+#: appMain.py:5325
 msgid "Object deleted"
 msgstr "Объект(ы) удален"
 
-#: app_Main.py:5338
+#: appMain.py:5338
 msgid "Click to set the origin ..."
 msgstr "Кликните, чтобы указать начало координат ..."
 
-#: app_Main.py:5377
+#: appMain.py:5377
 msgid "Setting Origin..."
 msgstr "Установка точки начала координат..."
 
-#: app_Main.py:5398 app_Main.py:5519 app_Main.py:5631
+#: appMain.py:5398 appMain.py:5519 appMain.py:5631
 msgid "Origin set"
 msgstr "Начало координат установлено"
 
-#: app_Main.py:5418
+#: appMain.py:5418
 msgid "Origin coordinates specified but incomplete."
 msgstr "Координаты начала указаны, но неполны."
 
-#: app_Main.py:5465
+#: appMain.py:5465
 msgid "Moving to Origin..."
 msgstr "Переход к началу координат..."
 
-#: app_Main.py:5469 app_Main.py:5537
+#: appMain.py:5469 appMain.py:5537
 msgid "Failed. No object(s) selected..."
 msgstr "Нудача. Объекты не выбраны ..."
 
-#: app_Main.py:5541
+#: appMain.py:5541
 msgid "Quadrant 2"
 msgstr ""
 
-#: app_Main.py:5542
+#: appMain.py:5542
 msgid "Quadrant 1"
 msgstr ""
 
-#: app_Main.py:5543
+#: appMain.py:5543
 msgid "Quadrant 3"
 msgstr ""
 
-#: app_Main.py:5544
+#: appMain.py:5544
 msgid "Quadrant 4"
 msgstr ""
 
-#: app_Main.py:5668
+#: appMain.py:5668
 msgid "Jump to ..."
 msgstr "Перейти к ..."
 
-#: app_Main.py:5669 app_Main.py:5929
+#: appMain.py:5669 appMain.py:5929
 msgid "Enter the coordinates in format X,Y:"
 msgstr "Введите координаты в формате X, Y:"
 
-#: app_Main.py:5680 app_Main.py:5939
+#: appMain.py:5680 appMain.py:5939
 msgid "Wrong coordinates. Enter coordinates in format: X,Y"
 msgstr "Неверные координаты. Введите координаты в формате: X, Y"
 
-#: app_Main.py:5775
+#: appMain.py:5775
 #, fuzzy
 #| msgid "Top Left"
 msgid "T Left"
 msgstr "Верхний левый"
 
-#: app_Main.py:5776
+#: appMain.py:5776
 #, fuzzy
 #| msgid "Top Right"
 msgid "T Right"
 msgstr "Верхний правый"
 
-#: app_Main.py:5777
+#: appMain.py:5777
 #, fuzzy
 #| msgid "Bot Left X"
 msgid "B Left"
 msgstr "Нижний левый X"
 
-#: app_Main.py:5778
+#: appMain.py:5778
 #, fuzzy
 #| msgid "Bot Right X"
 msgid "B Right"
 msgstr "Нижний правый X"
 
-#: app_Main.py:5781
+#: appMain.py:5781
 msgid "Locate ..."
 msgstr "Размещение ..."
 
-#: app_Main.py:5928
+#: appMain.py:5928
 #, fuzzy
 #| msgid "Move to Origin."
 msgid "Move to ..."
 msgstr "Переместитесь в начало координат."
 
-#: app_Main.py:6485 app_Main.py:9385
+#: appMain.py:6485 appMain.py:9385
 #, fuzzy
 #| msgid "Importing"
 msgid "Aborting."
 msgstr "Импортирование"
 
-#: app_Main.py:6485
+#: appMain.py:6485
 #, fuzzy
 #| msgid ""
 #| "Aborting. The current task will be gracefully closed as soon as "
@@ -19556,23 +19556,23 @@ msgstr "Импортирование"
 msgid "The current task will be gracefully closed as soon as possible..."
 msgstr "Прерывание. Текущая задача будет закрыта как можно скорее..."
 
-#: app_Main.py:6492
+#: appMain.py:6492
 msgid "The current task was gracefully closed on user request..."
 msgstr "Текущая задача была закрыта по запросу пользователя ..."
 
-#: app_Main.py:6695
+#: appMain.py:6695
 msgid "Not available for Legacy 2D graphic mode."
 msgstr ""
 
-#: app_Main.py:6797
+#: appMain.py:6797
 msgid "Adding tool from DB is not allowed for this object."
 msgstr "Добавление инструмента из БД для данного объекта запрещено."
 
-#: app_Main.py:6815
+#: appMain.py:6815
 msgid "Save Tools Database"
 msgstr "Сохранить БД"
 
-#: app_Main.py:6816
+#: appMain.py:6816
 #, fuzzy
 #| msgid ""
 #| "One or more Tools are edited.\n"
@@ -19584,185 +19584,185 @@ msgstr ""
 "Один или несколько инструментов изменены.\n"
 "Вы хотите обновить базу данных инструментов?"
 
-#: app_Main.py:7045 app_Main.py:7099 app_Main.py:7147
+#: appMain.py:7045 appMain.py:7099 appMain.py:7147
 msgid "Enter the Angle value:"
 msgstr "Введите значение угла:"
 
-#: app_Main.py:7078
+#: appMain.py:7078
 msgid "Rotation done."
 msgstr "Вращение завершено."
 
-#: app_Main.py:7080
+#: appMain.py:7080
 msgid "Rotation movement was not executed."
 msgstr "Вращение не было выполнено."
 
-#: app_Main.py:7129
+#: appMain.py:7129
 msgid "Skew on X axis done."
 msgstr "Наклон по оси X выполнен."
 
-#: app_Main.py:7177
+#: appMain.py:7177
 msgid "Skew on Y axis done."
 msgstr "Наклон по оси Y выполнен."
 
-#: app_Main.py:7248
+#: appMain.py:7248
 msgid "New Grid ..."
 msgstr "Новая сетка ..."
 
-#: app_Main.py:7249
+#: appMain.py:7249
 msgid "Enter a Grid Value:"
 msgstr "Введите размер сетки:"
 
-#: app_Main.py:7258 app_Main.py:7283
+#: appMain.py:7258 appMain.py:7283
 msgid "Please enter a grid value with non-zero value, in Float format."
 msgstr ""
 "Пожалуйста, введите значение сетки с ненулевым значением в формате float."
 
-#: app_Main.py:7263
+#: appMain.py:7263
 msgid "New Grid added"
 msgstr "Новая сетка добавлена"
 
-#: app_Main.py:7265
+#: appMain.py:7265
 msgid "Grid already exists"
 msgstr "Сетка уже существует"
 
-#: app_Main.py:7267
+#: appMain.py:7267
 msgid "Adding New Grid cancelled"
 msgstr "Добавление новой сетки отменено"
 
-#: app_Main.py:7289
+#: appMain.py:7289
 msgid "Grid Value does not exist"
 msgstr "Значение сетки не существует"
 
-#: app_Main.py:7291
+#: appMain.py:7291
 msgid "Grid Value deleted"
 msgstr "Значение сетки удалено"
 
-#: app_Main.py:7293
+#: appMain.py:7293
 msgid "Delete Grid value cancelled"
 msgstr "Удаление значения сетки отменено"
 
-#: app_Main.py:7307
+#: appMain.py:7307
 msgid "Name copied to clipboard ..."
 msgstr "Имя скопировано в буфер обмена ..."
 
-#: app_Main.py:8212 app_Main.py:8216
+#: appMain.py:8212 appMain.py:8216
 msgid "Select an Gerber or Excellon file to view it's source file."
 msgstr "Выберите файл Gerber или Excellon для просмотра исходного кода."
 
-#: app_Main.py:8219
+#: appMain.py:8219
 msgid "Viewing the source code of the selected object."
 msgstr "Просмотр исходного кода выбранного объекта."
 
-#: app_Main.py:8233
+#: appMain.py:8233
 msgid "Source Editor"
 msgstr "Редактор исходного кода"
 
-#: app_Main.py:8269 app_Main.py:8276
+#: appMain.py:8269 appMain.py:8276
 msgid "There is no selected object for which to see it's source file code."
 msgstr "Нет выбранного объекта, для просмотра исходного кода файла."
 
-#: app_Main.py:8284
+#: appMain.py:8284
 msgid "Failed to load the source code for the selected object"
 msgstr "Не удалось загрузить исходный код выбранного объекта"
 
-#: app_Main.py:8317
+#: appMain.py:8317
 msgid "Go to Line ..."
 msgstr "Перейти к строке ..."
 
-#: app_Main.py:8348
+#: appMain.py:8348
 msgid "Redrawing all objects"
 msgstr "Перерисовка всех объектов"
 
-#: app_Main.py:8443
+#: appMain.py:8443
 msgid "Failed to load recent item list."
 msgstr "Не удалось загрузить список недавних файлов."
 
-#: app_Main.py:8450
+#: appMain.py:8450
 msgid "Failed to parse recent item list."
 msgstr "Не удалось прочитать список недавних файлов."
 
-#: app_Main.py:8460
+#: appMain.py:8460
 msgid "Failed to load recent projects item list."
 msgstr "Не удалось загрузить список элементов последних проектов."
 
-#: app_Main.py:8467
+#: appMain.py:8467
 msgid "Failed to parse recent project item list."
 msgstr "Не удалось проанализировать список последних элементов проекта."
 
-#: app_Main.py:8491
+#: appMain.py:8491
 #, fuzzy
 #| msgid "Recent files"
 msgid "Recent files list was reset."
 msgstr "Открыть недавние"
 
-#: app_Main.py:8505
+#: appMain.py:8505
 #, fuzzy
 #| msgid "Recent projects"
 msgid "Recent projects list was reset."
 msgstr "Недавние проекты"
 
-#: app_Main.py:8530
+#: appMain.py:8530
 msgid "Clear Recent projects"
 msgstr "Очистить недавние проекты"
 
-#: app_Main.py:8554
+#: appMain.py:8554
 msgid "Clear Recent files"
 msgstr "Очистить список"
 
-#: app_Main.py:8611
+#: appMain.py:8611
 msgid "FlatCAM Evo"
 msgstr "FlatCAM Evo"
 
-#: app_Main.py:8615
+#: appMain.py:8615
 msgid "Release date"
 msgstr "Дата выпуска"
 
-#: app_Main.py:8619
+#: appMain.py:8619
 msgid "Displayed"
 msgstr "Отображается"
 
-#: app_Main.py:8631
+#: appMain.py:8631
 msgid "Canvas"
 msgstr "Дисплей"
 
-#: app_Main.py:8636
+#: appMain.py:8636
 msgid "Workspace active"
 msgstr "W-пробел активен"
 
-#: app_Main.py:8640
+#: appMain.py:8640
 msgid "Workspace size"
 msgstr "W-размер пространства"
 
-#: app_Main.py:8644
+#: appMain.py:8644
 msgid "Workspace orientation"
 msgstr "Ориентация W-пространства"
 
-#: app_Main.py:8706
+#: appMain.py:8706
 msgid "Failed checking for latest version. Could not connect."
 msgstr ""
 "Не удалось проверить обновление программы. Отсутствует интернет подключение ."
 
-#: app_Main.py:8713
+#: appMain.py:8713
 msgid "Could not parse information about latest version."
 msgstr "Не удается обработать информацию о последней версии."
 
-#: app_Main.py:8723
+#: appMain.py:8723
 #, fuzzy
 #| msgid "The application will restart."
 msgid "The application is up to date!"
 msgstr "Приложение будет перезапущено."
 
-#: app_Main.py:8727
+#: appMain.py:8727
 msgid "Newer Version Available"
 msgstr "Доступна новая версия"
 
-#: app_Main.py:8729
+#: appMain.py:8729
 #, fuzzy
 #| msgid "There is a newer version of FlatCAM available for download:"
 msgid "There is a newer version available for download:"
 msgstr "Новая версия FlatCAM доступна для загрузки:"
 
-#: app_Main.py:8759
+#: appMain.py:8759
 msgid ""
 "OpenGL canvas initialization failed. HW or HW configuration not supported."
 "Change the graphic engine to Legacy(2D) in Edit -> Preferences -> General "
@@ -19774,44 +19774,44 @@ msgstr ""
 "Настройки -> вкладка Основные.\n"
 "\n"
 
-#: app_Main.py:8850
+#: appMain.py:8850
 msgid "All plots disabled."
 msgstr "Все участки отключены."
 
-#: app_Main.py:8856
+#: appMain.py:8856
 msgid "All non selected plots disabled."
 msgstr "Все не выбранные участки отключены."
 
-#: app_Main.py:8862
+#: appMain.py:8862
 msgid "All plots enabled."
 msgstr "Все участки включены."
 
-#: app_Main.py:8868
+#: appMain.py:8868
 msgid "All non selected plots enabled."
 msgstr "Все невыбранные участки включены."
 
-#: app_Main.py:8876
+#: appMain.py:8876
 msgid "Selected plots enabled..."
 msgstr "Выбранные участки включены..."
 
-#: app_Main.py:8884
+#: appMain.py:8884
 msgid "Selected plots disabled..."
 msgstr "Выбранные участки отключены..."
 
-#: app_Main.py:8926
+#: appMain.py:8926
 msgid "Enabling plots ..."
 msgstr "Включение участков ..."
 
-#: app_Main.py:8979
+#: appMain.py:8979
 msgid "Disabling plots ..."
 msgstr "Отключение участков ..."
 
-#: app_Main.py:9147
+#: appMain.py:9147
 msgid "Set alpha level ..."
 msgstr "Установка уровня прозрачности ..."
 
-#: app_Main.py:9545 app_Main.py:9583 app_Main.py:9626 app_Main.py:9690
-#: app_Main.py:10485 app_Main.py:11788 app_Main.py:11853
+#: appMain.py:9545 appMain.py:9583 appMain.py:9626 appMain.py:9690
+#: appMain.py:10485 appMain.py:11788 appMain.py:11853
 msgid ""
 "Canvas initialization started.\n"
 "Canvas initialization finished in"
@@ -19819,91 +19819,91 @@ msgstr ""
 "Инициализация холста.\n"
 "Инициализация холста завершена за"
 
-#: app_Main.py:9548
+#: appMain.py:9548
 msgid "Opening Gerber file."
 msgstr "Открытие файла Gerber."
 
-#: app_Main.py:9586
+#: appMain.py:9586
 msgid "Opening Excellon file."
 msgstr "Открытие файла Excellon."
 
-#: app_Main.py:9629
+#: appMain.py:9629
 msgid "Opening G-Code file."
 msgstr "Открытие файла G-Code."
 
-#: app_Main.py:9681 app_Main.py:9685
+#: appMain.py:9681 appMain.py:9685
 msgid "Open HPGL2"
 msgstr "Открыть HPGL2"
 
-#: app_Main.py:9693
+#: appMain.py:9693
 msgid "Opening HPGL2 file."
 msgstr "Открытие файла HPGL2."
 
-#: app_Main.py:9715 app_Main.py:9718
+#: appMain.py:9715 appMain.py:9718
 msgid "Open Configuration File"
 msgstr "Открыть файл конфигурации"
 
-#: app_Main.py:9744
+#: appMain.py:9744
 msgid "Only Geometry, Gerber and CNCJob objects can be used."
 msgstr "Можно использовать только объекты Geometry, Gerber и CNCJob."
 
-#: app_Main.py:9794
+#: appMain.py:9794
 msgid "Data must be a 3D array with last dimension 3 or 4"
 msgstr "Данные должны быть 3D массивом с последним размером 3 или 4"
 
-#: app_Main.py:9800 app_Main.py:9805
+#: appMain.py:9800 appMain.py:9805
 msgid "Export PNG Image"
 msgstr "Экспорт PNG изображения"
 
-#: app_Main.py:9838 app_Main.py:10050
+#: appMain.py:9838 appMain.py:10050
 msgid "Failed. Only Gerber objects can be saved as Gerber files..."
 msgstr "Ошибка. Только объекты Gerber могут быть сохранены как файлы Gerber..."
 
-#: app_Main.py:9851
+#: appMain.py:9851
 msgid "Save Gerber source file"
 msgstr "Сохранить исходный файл Gerber"
 
-#: app_Main.py:9880
+#: appMain.py:9880
 msgid "Failed. Only Script objects can be saved as TCL Script files..."
 msgstr ""
 "Ошибка. Только объекты сценария могут быть сохранены как файлы TCL-"
 "сценария..."
 
-#: app_Main.py:9893
+#: appMain.py:9893
 msgid "Save Script source file"
 msgstr "Сохранить исходный файл сценария"
 
-#: app_Main.py:9922
+#: appMain.py:9922
 msgid "Failed. Only Document objects can be saved as Document files..."
 msgstr ""
 "Ошибка. Только объекты Document могут быть сохранены как файлы Document..."
 
-#: app_Main.py:9935
+#: appMain.py:9935
 msgid "Save Document source file"
 msgstr "Сохранить исходный файл Document"
 
-#: app_Main.py:9964 app_Main.py:10005 app_Main.py:11001
+#: appMain.py:9964 appMain.py:10005 appMain.py:11001
 msgid "Failed. Only Excellon objects can be saved as Excellon files..."
 msgstr ""
 "Ошибка. Только объекты Excellon могут быть сохранены как файлы Excellon..."
 
-#: app_Main.py:9972 app_Main.py:9977
+#: appMain.py:9972 appMain.py:9977
 msgid "Save Excellon source file"
 msgstr "Сохранить исходный файл Excellon"
 
-#: app_Main.py:10095
+#: appMain.py:10095
 msgid "Only Geometry objects can be used."
 msgstr "Можно использовать только объекты Geometry."
 
-#: app_Main.py:10146 app_Main.py:10150
+#: appMain.py:10146 appMain.py:10150
 msgid "Import SVG"
 msgstr "Импорт SVG"
 
-#: app_Main.py:10176 app_Main.py:10180
+#: appMain.py:10176 appMain.py:10180
 msgid "Import DXF"
 msgstr "Импорт DXF"
 
-#: app_Main.py:10207
+#: appMain.py:10207
 msgid ""
 "There are files/objects opened in FlatCAM.\n"
 "Creating a New project will delete them.\n"
@@ -19913,159 +19913,159 @@ msgstr ""
 "Создание нового проекта удалит их.\n"
 "Вы хотите сохранить проект?"
 
-#: app_Main.py:10338
+#: appMain.py:10338
 #, fuzzy
 #| msgid "Save Preferences"
 msgid "Save preferences"
 msgstr "Сохранить настройки"
 
-#: app_Main.py:10339
+#: appMain.py:10339
 #, fuzzy
 #| msgid "Do you want to save the edited object?"
 msgid ""
 "Do you want to save the loaded project settings as the default settings?"
 msgstr "Вы хотите сохранить редактируемый объект?"
 
-#: app_Main.py:10363
+#: appMain.py:10363
 #, fuzzy
 #| msgid "New Project created"
 msgid "Project created in"
 msgstr "Новый проект создан"
 
-#: app_Main.py:10363
+#: appMain.py:10363
 msgid "seconds"
 msgstr ""
 
-#: app_Main.py:10366
+#: appMain.py:10366
 msgid "New Project created"
 msgstr "Новый проект создан"
 
-#: app_Main.py:10394
+#: appMain.py:10394
 msgid "New TCL script file created in Code Editor."
 msgstr "Новый файл сценария создан в редакторе кода."
 
-#: app_Main.py:10421 app_Main.py:10423 app_Main.py:10458 app_Main.py:10460
+#: appMain.py:10421 appMain.py:10423 appMain.py:10458 appMain.py:10460
 msgid "Open TCL script"
 msgstr "Открыть сценарий TCL"
 
-#: app_Main.py:10487
+#: appMain.py:10487
 msgid "Executing ScriptObject file."
 msgstr "Выполнение файла ScriptObject."
 
-#: app_Main.py:10495 app_Main.py:10499
+#: appMain.py:10495 appMain.py:10499
 msgid "Run TCL script"
 msgstr "Запустить сценарий TCL"
 
-#: app_Main.py:10522
+#: appMain.py:10522
 msgid "TCL script file opened in Code Editor and executed."
 msgstr "Файл сценария открывается в редакторе кода и выполняется."
 
-#: app_Main.py:10570 app_Main.py:10577
+#: appMain.py:10570 appMain.py:10577
 msgid "Save Project As ..."
 msgstr "Сохранить проект как..."
 
-#: app_Main.py:10614
+#: appMain.py:10614
 msgid "FlatCAM objects print"
 msgstr "Печать объектов FlatCAM"
 
-#: app_Main.py:10627 app_Main.py:10635
+#: appMain.py:10627 appMain.py:10635
 msgid "Save Object as PDF ..."
 msgstr "Сохранить объект как PDF ..."
 
-#: app_Main.py:10645
+#: appMain.py:10645
 msgid "Printing PDF ..."
 msgstr "Печать PDF ..."
 
-#: app_Main.py:10826
+#: appMain.py:10826
 msgid "PDF file saved to"
 msgstr "Файл PDF сохранён в"
 
-#: app_Main.py:10848 app_Main.py:11108 app_Main.py:11242 app_Main.py:11309
+#: appMain.py:10848 appMain.py:11108 appMain.py:11242 appMain.py:11309
 msgid "Exporting ..."
 msgstr "Экспортирование ..."
 
-#: app_Main.py:10891
+#: appMain.py:10891
 msgid "SVG file exported to"
 msgstr "Файл SVG экспортируется в"
 
-#: app_Main.py:10906 app_Main.py:10910
+#: appMain.py:10906 appMain.py:10910
 msgid "Import FlatCAM Preferences"
 msgstr "Импорт настроек FlatCAM"
 
-#: app_Main.py:10921
+#: appMain.py:10921
 msgid "Imported Defaults from"
 msgstr "Значения по умолчанию импортированы из"
 
-#: app_Main.py:10940 app_Main.py:10946
+#: appMain.py:10940 appMain.py:10946
 msgid "Export FlatCAM Preferences"
 msgstr "Экспорт настроек FlatCAM"
 
-#: app_Main.py:10966
+#: appMain.py:10966
 msgid "Exported preferences to"
 msgstr "Экспорт настроек в"
 
-#: app_Main.py:11099
+#: appMain.py:11099
 msgid "Excellon file exported to"
 msgstr "Файл Excellon экспортируется в"
 
-#: app_Main.py:11113 app_Main.py:11120 app_Main.py:11247 app_Main.py:11254
-#: app_Main.py:11314 app_Main.py:11321
+#: appMain.py:11113 appMain.py:11120 appMain.py:11247 appMain.py:11254
+#: appMain.py:11314 appMain.py:11321
 msgid "Could not export."
 msgstr "Не удалось экспортировать."
 
-#: app_Main.py:11234
+#: appMain.py:11234
 msgid "Gerber file exported to"
 msgstr "Файл Gerber экспортируется в"
 
-#: app_Main.py:11300
+#: appMain.py:11300
 msgid "DXF file exported to"
 msgstr "Файл DXF экспортируется в"
 
-#: app_Main.py:11376 app_Main.py:11433
+#: appMain.py:11376 appMain.py:11433
 msgid "Import failed."
 msgstr "Не удалось импортировать."
 
-#: app_Main.py:11467 app_Main.py:11674 app_Main.py:11739
+#: appMain.py:11467 appMain.py:11674 appMain.py:11739
 msgid "Failed to open file"
 msgstr "Не удалось открыть файл"
 
-#: app_Main.py:11470 app_Main.py:11677 app_Main.py:11742
+#: appMain.py:11470 appMain.py:11677 appMain.py:11742
 msgid "Failed to parse file"
 msgstr "Не удаётся прочитать файл"
 
-#: app_Main.py:11482
+#: appMain.py:11482
 msgid "Object is not Gerber file or empty. Aborting object creation."
 msgstr ""
 "Объект не является файлом Gerber или пуст. Прерывание создания объекта."
 
-#: app_Main.py:11493 app_Main.py:11563 app_Main.py:11627 app_Main.py:11701
-#: app_Main.py:11757 app_Main.py:11932 tclCommands/TclCommandOpenDXF.py:90
+#: appMain.py:11493 appMain.py:11563 appMain.py:11627 appMain.py:11701
+#: appMain.py:11757 appMain.py:11932 tclCommands/TclCommandOpenDXF.py:90
 #, fuzzy
 #| msgid "Opening ..."
 msgid "Opening"
 msgstr "Открытие ..."
 
-#: app_Main.py:11504
+#: appMain.py:11504
 msgid "Open Gerber failed. Probable not a Gerber file."
 msgstr "Открыть Гербер не удалось. Вероятно, не файл Гербера."
 
-#: app_Main.py:11542
+#: appMain.py:11542
 msgid "Cannot open file"
 msgstr "Не удается открыть файл"
 
-#: app_Main.py:11573
+#: appMain.py:11573
 msgid "Open Excellon file failed. Probable not an Excellon file."
 msgstr "Не удалось открыть файл Excellon. Вероятно это не файл Excellon."
 
-#: app_Main.py:11609
+#: appMain.py:11609
 msgid "Reading GCode file"
 msgstr "Чтение файла GCode"
 
-#: app_Main.py:11622
+#: appMain.py:11622
 msgid "This is not GCODE"
 msgstr "Это не GCODE"
 
-#: app_Main.py:11640
+#: appMain.py:11640
 msgid ""
 "Failed to create CNCJob Object. Probable not a GCode file. Try to load it "
 "from File menu.\n"
@@ -20077,76 +20077,76 @@ msgstr ""
 " Попытка создать объект FlatCAM CNCJob из файла G-кода не удалась во время "
 "обработки"
 
-#: app_Main.py:11696
+#: appMain.py:11696
 msgid "Object is not HPGL2 file or empty. Aborting object creation."
 msgstr ""
 "Объект не является файлом HPGL2 или пустым. Прерывание создания объекта."
 
-#: app_Main.py:11708
+#: appMain.py:11708
 msgid "Failed. Probable not a HPGL2 file."
 msgstr "Не удалось. Вероятно, это не файл HPGL2."
 
-#: app_Main.py:11734
+#: appMain.py:11734
 msgid "TCL script file opened in Code Editor."
 msgstr "Файл сценария открыт в редакторе кода."
 
-#: app_Main.py:11768
+#: appMain.py:11768
 msgid "Failed to open TCL Script."
 msgstr "Не удалось открыть TCL-сценарий."
 
-#: app_Main.py:11791
+#: appMain.py:11791
 msgid "Opening FlatCAM Config file."
 msgstr "Открытие файла конфигурации."
 
-#: app_Main.py:11818
+#: appMain.py:11818
 msgid "Failed to open config file"
 msgstr "Не удалось открыть файл конфигурации"
 
-#: app_Main.py:11850
+#: appMain.py:11850
 msgid "Loading Project ... Please Wait ..."
 msgstr "Загрузка проекта ... Пожалуйста, подождите ..."
 
-#: app_Main.py:11856
+#: appMain.py:11856
 msgid "Opening FlatCAM Project file."
 msgstr "Открытие файла проекта FlatCAM."
 
-#: app_Main.py:11871 app_Main.py:11875 app_Main.py:11893
+#: appMain.py:11871 appMain.py:11875 appMain.py:11893
 msgid "Failed to open project file"
 msgstr "Не удалось открыть файл проекта"
 
-#: app_Main.py:11966
+#: appMain.py:11966
 msgid "Loading Project ... restoring"
 msgstr "Загрузка проекта ... восстановление"
 
-#: app_Main.py:11972
+#: appMain.py:11972
 msgid "Project loaded from"
 msgstr "Проект загружен из"
 
-#: app_Main.py:12004
+#: appMain.py:12004
 msgid "Saving Project ..."
 msgstr "Сохранение Проекта ..."
 
-#: app_Main.py:12048 app_Main.py:12104
+#: appMain.py:12048 appMain.py:12104
 msgid "Project saved to"
 msgstr "Проект сохранён в"
 
-#: app_Main.py:12059
+#: appMain.py:12059
 msgid "The object is used by another application."
 msgstr "Объект используется другим приложением."
 
-#: app_Main.py:12079
+#: appMain.py:12079
 msgid "Failed to verify project file"
 msgstr "Не удалось проверить файл проекта"
 
-#: app_Main.py:12079 app_Main.py:12088 app_Main.py:12096 app_Main.py:12109
+#: appMain.py:12079 appMain.py:12088 appMain.py:12096 appMain.py:12109
 msgid "Retry to save it."
 msgstr "Повторите попытку, чтобы сохранить его."
 
-#: app_Main.py:12086 app_Main.py:12094 app_Main.py:12107
+#: appMain.py:12086 appMain.py:12094 appMain.py:12107
 msgid "Failed to parse saved project file"
 msgstr "Не удалось проанализировать сохраненный файл проекта"
 
-#: app_Main.py:12144
+#: appMain.py:12144
 msgid "Save cancelled because source file is empty. Try to export the file."
 msgstr ""
 "Сохранение отменено, потому что исходный файл пуст. Попробуйте "

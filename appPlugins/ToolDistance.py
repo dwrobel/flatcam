@@ -14,7 +14,7 @@ from appGUI.GUIElements import FCEntry, FCButton, FCCheckBox, FCLabel, VerticalS
 from shapely.geometry import Point, MultiLineString, Polygon
 
 import appTranslation as fcTranslate
-from camlib import FlatCAMRTreeStorage
+from camlib import AppRTreeStorage
 from appEditors.AppGeoEditor import DrawToolShape
 
 from copy import copy
@@ -670,7 +670,7 @@ class Distance(AppTool):
     @staticmethod
     def make_storage():
         # ## Shape storage.
-        storage = FlatCAMRTreeStorage()
+        storage = AppRTreeStorage()
         storage.get_points = DrawToolShape.get_pts
 
         return storage

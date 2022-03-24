@@ -27,7 +27,7 @@ class AppTool(QtWidgets.QWidget):
         """
 
         :param app:         The application this tool will run in.
-        :type app:          app_Main.App
+        :type app:          appMain.App
         :param parent:      Qt Parent
         :return:            AppTool
         """

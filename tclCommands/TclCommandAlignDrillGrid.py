@@ -92,7 +92,7 @@ class TclCommandAlignDrillGrid(TclCommandSignaled):
             object once it's created.
 
             :param init_obj: The new object.
-            :param app_obj: The application (FlatCAMApp)
+            :param app_obj: The application (appMain class)
             :return: None
             """
 

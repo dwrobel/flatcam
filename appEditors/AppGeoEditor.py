@@ -16,7 +16,7 @@ from PyQt6.QtCore import Qt
 
 # import inspect
 
-from camlib import distance, arc, three_point_circle, Geometry, FlatCAMRTreeStorage, flatten_shapely_geometry
+from camlib import distance, arc, three_point_circle, Geometry, AppRTreeStorage, flatten_shapely_geometry
 from appTool import AppTool
 from appGUI.GUIElements import OptionalInputSection, FCCheckBox, FCLabel, FCComboBox, FCTextAreaRich, \
     FCDoubleSpinner, FCButton, FCInputDoubleSpinner, FCTree, NumericalEvalTupleEntry, FCEntry, FCTextEdit, \
@@ -5211,7 +5211,7 @@ class AppGeoEditor(QtCore.QObject):
     def make_storage():
 
         # Shape storage.
-        storage = FlatCAMRTreeStorage()
+        storage = AppRTreeStorage()
         storage.get_points = DrawToolShape.get_pts
 
         return storage

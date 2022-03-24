@@ -272,7 +272,7 @@ class ToolEtchCompensation(AppTool):
             :param new_obj:     New object
             :type new_obj:      ObjectCollection
             :param app_obj:     App
-            :type app_obj:      app_Main.App
+            :type app_obj:      appMain.App
             :return:            None
             :rtype:
             """

@@ -15,7 +15,7 @@ from shapely.geometry import MultiLineString, LinearRing
 from camlib import flatten_shapely_geometry
 
 from appParsers.ParseGerber import Gerber
-from appObjects.FlatCAMObj import *
+from appObjects.AppObjectTemplate import *
 
 import numpy as np
 from copy import deepcopy

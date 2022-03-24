@@ -1,5 +1,5 @@
 # ##########################################################
-# FlatCAM: 2D Post-processing for Manufacturing            #
+# FlatCAM Evo: 2D Post-processing for Manufacturing        #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 8/17/2019                                          #
 # MIT Licence                                              #
@@ -13,7 +13,7 @@ import collections
 
 class TclCommandQuit(TclCommand):
     """
-    Tcl shell command to quit FlatCAM from Tcl shell.
+    Tcl shell command to quit the application from Tcl shell.
 
     example:
 
@@ -22,7 +22,7 @@ class TclCommandQuit(TclCommand):
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['quit_app']
 
-    description = '%s %s' % ("--", "Tcl shell command to quit FlatCAM from Tcl shell.")
+    description = '%s %s' % ("--", "Tcl shell command to quit the application from Tcl shell.")
 
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
@@ -39,7 +39,7 @@ class TclCommandQuit(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Tcl shell command to quit FlatCAM from Tcl shell.",
+        'main': "Tcl shell command to quit the application from Tcl shell.",
         'args': collections.OrderedDict([
 
         ]),

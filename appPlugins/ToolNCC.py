@@ -2264,7 +2264,7 @@ class NonCopperClear(AppTool, Gerber):
         Clear the excess copper from the entire object.
 
         :param ncc_obj:         ncc cleared object
-        :type ncc_obj:          appObjects.FlatCAMGerber.GerberObject
+        :type ncc_obj:          appObjects.GerberObject.GerberObject
         :param ncctooldia:      a list of diameters of the tools to be used to ncc clear
         :type ncctooldia:       list
         :param isotooldia:      a list of diameters of the tools to be used for isolation

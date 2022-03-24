@@ -12,7 +12,7 @@ from appTool import AppTool
 from copy import deepcopy
 
 from appParsers.ParseGerber import Gerber
-from camlib import Geometry, FlatCAMRTreeStorage, grace
+from camlib import Geometry, AppRTreeStorage, grace
 from appGUI.GUIElements import FCTable, FCDoubleSpinner, FCCheckBox, FCInputDoubleSpinner, RadioSet, \
     FCButton, FCComboBox, FCLabel, FCComboBox2, VerticalScrollArea, FCGridLayout, FCFrame
 
@@ -1617,7 +1617,7 @@ class ToolPaint(AppTool, Gerber):
 
         if paint_method == 0:   # _("Standard")
             try:
-                # Type(cp) == FlatCAMRTreeStorage | None
+                # Type(cp) == AppRTreeStorage | None
                 cpoly = self.clear_polygon(polyg,
                                            tooldia=tooldiameter,
                                            steps_per_circle=self.circle_steps,
@@ -1631,7 +1631,7 @@ class ToolPaint(AppTool, Gerber):
                 self.app.log.error("ToolPaint.paint_polygon_worker() Standard --> %s" % str(ee))
         elif paint_method == 1:  # _("Seed")
             try:
-                # Type(cp) == FlatCAMRTreeStorage | None
+                # Type(cp) == AppRTreeStorage | None
                 cpoly = self.clear_polygon2(polyg,
                                             tooldia=tooldiameter,
                                             steps_per_circle=self.circle_steps,
@@ -1645,7 +1645,7 @@ class ToolPaint(AppTool, Gerber):
                 self.app.log.error("ToolPaint.paint_polygon_worker() Seed --> %s" % str(ee))
         elif paint_method == 2:  # _("Lines")
             try:
-                # Type(cp) == FlatCAMRTreeStorage | None
+                # Type(cp) == AppRTreeStorage | None
                 cpoly = self.clear_polygon3(polyg,
                                             tooldia=tooldiameter,
                                             steps_per_circle=self.circle_steps,
@@ -1705,7 +1705,7 @@ class ToolPaint(AppTool, Gerber):
             except Exception as ee:
                 self.app.log.error("ToolPaint.paint_polygon_worker() Laser Lines -> Identify flashes/traces--> %s" % str(ee))
 
-            cpoly = FlatCAMRTreeStorage()
+            cpoly = AppRTreeStorage()
             pads_lines_list = []
 
             # process the flashes found in the selected polygon with the 'lines' method for rectangular

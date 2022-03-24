@@ -6,7 +6,7 @@
 # ##########################################################
 
 from appEditors.AppTextEditor import AppTextEditor
-from appObjects.FlatCAMCNCJob import CNCJobObject
+from appObjects.CNCJobObject import CNCJobObject
 from appGUI.GUIElements import FCTextArea, FCEntry, FCButton, FCTable, FCGridLayout, FCLabel
 from PyQt6 import QtWidgets, QtCore, QtGui
 

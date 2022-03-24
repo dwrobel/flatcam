@@ -14,7 +14,7 @@ class TclCommandSetActive(TclCommand):
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['set_active']
 
-    description = '%s %s' % ("--", "Sets a FlatCAM object as active (selected).")
+    description = '%s %s' % ("--", "Sets an application object as active (selected).")
 
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
@@ -31,9 +31,9 @@ class TclCommandSetActive(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': 'Sets a FlatCAM object as active (selected).',
+        'main': 'Sets an application object as active (selected).',
         'args': collections.OrderedDict([
-            ('name', 'Name of the FlatCAM object to be set as active (selected). Required.'),
+            ('name', 'Name of the application object to be set as active (selected). Required.'),
         ]),
         'examples': ['set_active object_name']
     }

@@ -3297,7 +3297,7 @@ class ToolMilling(AppTool, Excellon):
                             # graceful abort requested by the user
                             raise grace
 
-                        # Type(cpoly) == FlatCAMRTreeStorage | None
+                        # Type(cpoly) == AppRTreeStorage | None
                         cpoly = None
                         if paint_method == 0:  # Standard
                             cpoly = self.clear_polygon(bbox,

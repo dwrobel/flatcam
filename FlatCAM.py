@@ -5,7 +5,7 @@ from datetime import datetime
 
 from PyQt6 import QtWidgets, QtGui
 from PyQt6.QtCore import QSettings, QTimer
-from app_Main import App
+from appMain import App
 from appGUI import VisPyPatches
 
 from appGUI.GUIElements import FCMessageBox
