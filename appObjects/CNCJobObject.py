@@ -1218,12 +1218,14 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         """
         if self.muted_ui:
             return
+
         kind = self.ui.cncplot_method_combo.get_value()
-        self.plot(kind=kind)
         self.read_form_item('plot')
 
         self.ui_disconnect()
-        cb_flag = self.ui.plot_cb.isChecked()
+        # cb_flag = self.ui.plot_cb.isChecked()
+        cb_flag = self.obj_options['plot']
+
         try:
             for row in range(self.ui.cnc_tools_table.rowCount()):
                 table_cb = self.ui.cnc_tools_table.cellWidget(row, 6)
@@ -1235,6 +1237,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             # TODO from Tcl commands - should fix it sometime
             pass
         self.ui_connect()
+
+        self.plot(kind=kind)
 
     def on_plot_cb_click_table(self):
         """

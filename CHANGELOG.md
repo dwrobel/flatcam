@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM Evo beta
 27.03.2022
 
 - trying to make loading a project an easier task for the application
+- fixed toggling the visibility for the CNCJob objects (was in reverse to the expected state)
 
 24.03.2022
 
