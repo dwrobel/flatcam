@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+27.03.2022
+
+- trying to make loading a project an easier task for the application
+
 24.03.2022
 
 - refactoring names for some classes

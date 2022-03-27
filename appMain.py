@@ -226,21 +226,16 @@ class App(QtCore.QObject):
     file_opened = QtCore.pyqtSignal(str, str)
     # File type and filename
     file_saved = QtCore.pyqtSignal(str, str)
-
     # close app signal
     close_app_signal = pyqtSignal()
-
     # will perform the cleanup operation after a Graceful Exit
     # usefull for the NCC Tool and Paint Tool where some progressive plotting might leave
     # graphic residues behind
     cleanup = pyqtSignal()
-
     # emitted when the new_project is created in a threaded way
     new_project_signal = pyqtSignal()
-
     # Percentage of progress
     progress = QtCore.pyqtSignal(int)
-
     # Emitted when a new object has been added or deleted from/to the collection
     object_status_changed = QtCore.pyqtSignal(object, str, str)
 
@@ -248,31 +243,28 @@ class App(QtCore.QObject):
 
     # Emmited when shell command is finished(one command only)
     shell_command_finished = QtCore.pyqtSignal(object)
-
     # Emitted when multiprocess pool has been recreated
     pool_recreated = QtCore.pyqtSignal(object)
-
     # Emitted when an unhandled exception happens
     # in the worker task.
     thread_exception = QtCore.pyqtSignal(object)
-
     # used to signal that there are arguments for the app
     args_at_startup = QtCore.pyqtSignal(list)
-
     # a reusable signal to replot a list of objects
     # should be disconnected after use so it can be reused
     replot_signal = pyqtSignal(list)
-
     # signal emitted when jumping
     jump_signal = pyqtSignal(tuple)
-
     # signal emitted when jumping
     locate_signal = pyqtSignal(tuple, str)
 
     proj_selection_changed = pyqtSignal(object, object)
-
-    # used by the FlatCAMScript object to process a script
+    # used by the AppScript object to process a script
     run_script = pyqtSignal(str)
+    # used when loading a project and parsing the project file
+    restore_project = pyqtSignal(object, str, bool, bool, bool, bool)
+    # used when loading a project and restoring objects
+    restore_project_objects_sig = pyqtSignal(object, str, bool, bool)
 
     def __init__(self, qapp, user_defaults=True):
         """
@@ -1411,6 +1403,9 @@ class App(QtCore.QObject):
 
         # signals for displaying messages in the Tcl Shell are now connected in the ToolShell class
 
+        # loading an project
+        self.restore_project.connect(self.f_handlers.restore_project_handler)
+        self.restore_project_objects_sig.connect(self.f_handlers.restore_project_objects)
         # signal to be called when the app is quiting
         self.app_quit.connect(self.quit_application, type=Qt.ConnectionType.QueuedConnection)
         self.message.connect(
@@ -1494,7 +1489,6 @@ class App(QtCore.QObject):
         # ###########################################################################################################
         # ####################################### FILE ASSOCIATIONS SIGNALS #########################################
         # ###########################################################################################################
-
         self.ui.util_pref_form.fa_excellon_group.restore_btn.clicked.connect(
             lambda: self.restore_extensions(ext_type='excellon'))
         self.ui.util_pref_form.fa_gcode_group.restore_btn.clicked.connect(
@@ -2119,12 +2113,13 @@ class App(QtCore.QObject):
         self.ui.menu_plugins_shell.triggered.connect(self.ui.toggle_shell_ui)
 
         # third install all of them
+        t0 = time.time()
         try:
             self.install_tools(init_tcl=init_tcl)
         except AttributeError:
             pass
 
-        self.log.debug("Tools are initialized.")
+        self.log.debug("%s: %s" % ("Tools are initialized in", str(time.time() - t0)))
 
     # def parse_system_fonts(self):
     #     self.worker_task.emit({'fcn': self.f_parse.get_fonts_by_types,
@@ -10245,7 +10240,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         self.log.debug("on_file_new_project()")
 
-        t0 = time.time()
+        t_start_proj = time.time()
 
         # close any editor that might be open
         if self.app.call_source != 'app':
@@ -10281,13 +10276,16 @@ class MenuFileHandlers(QtCore.QObject):
         # delete any selection shape on canvas
         self.app.delete_selection_shape()
 
-        # delete all FlatCAM objects
+        # delete all App objects
         if keep_scripts is True:
             for prj_obj in self.app.collection.get_list():
                 if prj_obj.kind != 'script':
                     self.app.collection.delete_by_name(prj_obj.obj_options['name'], select_project=False)
         else:
             self.app.collection.delete_all()
+
+        self.log.debug('%s: %s %s.' %
+                       ("Deleted all the application objects", str(time.time() - t_start_proj), _("seconds")))
 
         # add in Selected tab an initial text that describe the flow of work in FlatCAm
         self.app.setup_default_properties_tab()
@@ -10305,6 +10303,7 @@ class MenuFileHandlers(QtCore.QObject):
         if use_thread is True:
             self.app.new_project_signal.emit()
         else:
+            t0 = time.time()
             # Clear pool
             self.app.clear_pool()
 
@@ -10313,6 +10312,8 @@ class MenuFileHandlers(QtCore.QObject):
                 self.app.init_tools(init_tcl=True)
             else:
                 self.app.init_tools(init_tcl=False)
+            self.log.debug(
+                '%s: %s %s.' % ("Initiated the MP pool and plugins in: ", str(time.time() - t0), _("seconds")))
 
             # tcl needs to be reinitialized, otherwise old shell variables etc  remains
             # self.app.shell.init_tcl()
@@ -10336,7 +10337,7 @@ class MenuFileHandlers(QtCore.QObject):
         # take the focus of the Notebook on Project Tab.
         self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
 
-        self.log.debug('%s: %s %s.' % (_("Project created in"), str(time.time() - t0), _("seconds")))
+        self.log.debug('%s: %s %s.' % (_("Project created in"), str(time.time() - t_start_proj), _("seconds")))
         self.app.ui.set_ui_title(name=_("New Project - Not saved"))
 
         self.inform.emit('[success] %s...' % _("New Project created"))
@@ -10348,6 +10349,7 @@ class MenuFileHandlers(QtCore.QObject):
         :return:
         :rtype:
         """
+        t0 = time.time()
 
         # Clear pool
         self.log.debug("New Project: cleaning multiprocessing pool.")
@@ -10356,6 +10358,7 @@ class MenuFileHandlers(QtCore.QObject):
         # Init FlatCAMTools
         self.log.debug("New Project: initializing the Tools and Tcl Shell.")
         self.app.init_tools(init_tcl=True)
+        self.log.debug('%s: %s %s.' % ("Initiated the MP pool and plugins in: ", str(time.time() - t0), _("seconds")))
 
     def on_filenewscript(self, silent=False):
         """
@@ -11854,7 +11857,7 @@ class MenuFileHandlers(QtCore.QObject):
             self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open config file"), filename))
             return
 
-    def open_project(self, filename, run_from_arg=None, plot=True, cli=None, from_tcl=False):
+    def open_project(self, filename, run_from_arg=False, plot=True, cli=False, from_tcl=False):
         """
         Loads a project from the specified file.
 
@@ -11872,8 +11875,11 @@ class MenuFileHandlers(QtCore.QObject):
         :param from_tcl:        True if run from Tcl Sehll
         :return:                None
         """
-        self.log.debug("Opening project: " + filename)
-        if not os.path.exists(filename):
+
+        project_filename = filename
+
+        self.log.debug("Opening project: " + project_filename)
+        if not os.path.exists(project_filename):
             self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
             return
 
@@ -11893,78 +11899,85 @@ class MenuFileHandlers(QtCore.QObject):
                                     alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
                                     color=QtGui.QColor("lightgray"))
 
-        # Open and parse an uncompressed Project file
-        try:
-            f = open(filename, 'r')
-        except IOError:
-            if from_tcl:
-                name = filename.split('/')[-1].split('\\')[-1]
-                filename = self.options['global_tcl_path'] + '/' + name
+        def parse_worker(prj_filename):
+            with self.app.proc_container.new('%s' % _("Parsing...")):
+                # Open and parse an uncompressed Project file
                 try:
-                    f = open(filename, 'r')
+                    f = open(prj_filename, 'r')
                 except IOError:
-                    self.log.error("Failed to open project file: %s" % filename)
-                    self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open project file"), filename))
-                    return
-            else:
-                self.log.error("Failed to open project file: %s" % filename)
-                self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open project file"), filename))
-                return
-
-        try:
-            d = json.load(f, object_hook=dict2obj)
-        except Exception as e:
-            self.log.debug(
-                "Failed to parse project file, trying to see if it loads as an LZMA archive: %s because %s" %
-                (filename, str(e)))
-            f.close()
-
-            # Open and parse a compressed Project file
-            try:
-                with lzma.open(filename) as f:
-                    file_content = f.read().decode('utf-8')
-                    d = json.loads(file_content, object_hook=dict2obj)
-            except Exception as e:
-                self.log.error("Failed to open project file: %s with error: %s" % (filename, str(e)))
-                self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open project file"), filename))
-                return
-
-            # Check for older projects
-            found_older_project = False
-            for obj in d['objs']:
-                if 'cnc_tools' in obj or 'exc_cnc_tools' in obj or 'apertures' in obj:
-                    self.app.log.error(
-                        'MenuFileHandlers.open_project() --> %s %s. %s' %
-                        ("Failed to open the CNCJob file:", str(obj['options']['name']),
-                         "Maybe it is an old project."))
-                    found_older_project = True
-
-            if found_older_project:
-                if not run_from_arg or not cli or from_tcl is False:
-                    msgbox = FCMessageBox(parent=self.app.ui)
-                    title = _("Legacy Project")
-                    txt = _("The project was made with an older app version.\n"
-                            "It may not load correctly.\n\n"
-                            "Do you want to continue?")
-                    msgbox.setWindowTitle(title)  # taskbar still shows it
-                    msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
-                    msgbox.setText('<b>%s</b>' % title)
-                    msgbox.setInformativeText(txt)
-                    msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
-
-                    bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.ButtonRole.AcceptRole)
-                    bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
-
-                    msgbox.setDefaultButton(bt_ok)
-                    msgbox.exec()
-                    response = msgbox.clickedButton()
-
-                    if response == bt_cancel:
+                    if from_tcl:
+                        name = prj_filename.split('/')[-1].split('\\')[-1]
+                        prj_filename = os.path.join(self.options['global_tcl_path'], name)
+                        try:
+                            f = open(prj_filename, 'r')
+                        except IOError:
+                            self.log.error("Failed to open project file: %s" % prj_filename)
+                            self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open project file"), prj_filename))
+                            return
+                    else:
+                        self.log.error("Failed to open project file: %s" % prj_filename)
+                        self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open project file"), prj_filename))
                         return
-                else:
-                    self.app.log.error("Legacy Project. Loading not supported.")
-                    return
 
+                try:
+                    d = json.load(f, object_hook=dict2obj)
+                except Exception as e:
+                    self.log.debug(
+                        "Failed to parse project file, trying to see if it loads as an LZMA archive: %s because %s" %
+                        (prj_filename, str(e)))
+                    f.close()
+
+                    # Open and parse a compressed Project file
+                    try:
+                        with lzma.open(prj_filename) as f:
+                            file_content = f.read().decode('utf-8')
+                            d = json.loads(file_content, object_hook=dict2obj)
+                    except Exception as e:
+                        self.log.error("Failed to open project file: %s with error: %s" % (prj_filename, str(e)))
+                        self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open project file"), prj_filename))
+                        return
+
+                # Check for older projects
+                found_older_project = False
+                for obj in d['objs']:
+                    if 'cnc_tools' in obj or 'exc_cnc_tools' in obj or 'apertures' in obj:
+                        self.app.log.error(
+                            'MenuFileHandlers.open_project() --> %s %s. %s' %
+                            ("Failed to open the CNCJob file:", str(obj['options']['name']),
+                             "Maybe it is an old project."))
+                        found_older_project = True
+
+                if found_older_project:
+                    if not run_from_arg or not cli or from_tcl is False:
+                        msgbox = FCMessageBox(parent=self.app.ui)
+                        title = _("Legacy Project")
+                        txt = _("The project was made with an older app version.\n"
+                                "It may not load correctly.\n\n"
+                                "Do you want to continue?")
+                        msgbox.setWindowTitle(title)  # taskbar still shows it
+                        msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
+                        msgbox.setText('<b>%s</b>' % title)
+                        msgbox.setInformativeText(txt)
+                        msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
+
+                        bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.ButtonRole.AcceptRole)
+                        bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
+
+                        msgbox.setDefaultButton(bt_ok)
+                        msgbox.exec()
+                        response = msgbox.clickedButton()
+
+                        if response == bt_cancel:
+                            return
+                    else:
+                        self.app.log.error("Legacy Project. Loading not supported.")
+                        return
+
+                self.app.restore_project.emit(d, prj_filename, run_from_arg, from_tcl, cli, plot)
+
+        self.app.worker_task.emit({'fcn': parse_worker, 'params': [project_filename]})
+
+    def restore_project_handler(self, proj_dict, filename, run_from_arg, from_tcl, cli, plot):
         # Clear the current project
         # # NOT THREAD SAFE # ##
         if run_from_arg is True:
@@ -11996,13 +12009,13 @@ class MenuFileHandlers(QtCore.QObject):
                 # self.app.defaults.update(self.app.options)
                 # self.app.preferencesUiManager.save_defaults()
                 # Project options
-                self.app.options.update(d['options'])
+                self.app.options.update(proj_dict['options'])
             if response == bt_no:
                 pass
         else:
             # Load by default new options when not using GUI
             # Project options
-            self.app.options.update(d['options'])
+            self.app.options.update(proj_dict['options'])
 
         self.app.project_filename = filename
 
@@ -12011,23 +12024,25 @@ class MenuFileHandlers(QtCore.QObject):
         if cli is None:
             self.app.set_screen_units(self.app.options["units"])
 
-        # Re create objects
-        self.log.debug(" **************** Started PROEJCT loading... **************** ")
+        self.app.restore_project_objects_sig.emit(proj_dict, filename, cli, plot)
 
-        for obj in d['objs']:
-            try:
-                msg = "Recreating from opened project an %s object: %s" % \
-                      (obj['kind'].capitalize(), obj['obj_options']['name'])
-            except KeyError:
-                # allowance for older projects
-                msg = "Recreating from opened project an %s object: %s" % \
-                      (obj['kind'].capitalize(), obj['options']['name'])
-            self.app.log.debug(msg)
+    def restore_project_objects(self, proj_dict, filename, cli, plot):
 
-            def obj_init(new_obj, app_inst):
+        def worker_task():
+            with self.app.proc_container.new('%s' % _("Loading...")):
+                # Re create objects
+                self.log.debug(" **************** Started PROEJCT loading... **************** ")
+                for obj in proj_dict['objs']:
+                    try:
+                        msg = "Recreating from opened project an %s object: %s" % \
+                              (obj['kind'].capitalize(), obj['obj_options']['name'])
+                    except KeyError:
+                        # allowance for older projects
+                        msg = "Recreating from opened project an %s object: %s" % \
+                              (obj['kind'].capitalize(), obj['options']['name'])
+                    self.app.log.debug(msg)
 
-                def worker_task():
-                    with app_inst.proc_container.new('%s...' % _("Opening")):
+                    def obj_init(new_obj, app_inst):
                         try:
                             new_obj.from_dict(obj)
                         except Exception as erro:
@@ -12100,43 +12115,42 @@ class MenuFileHandlers(QtCore.QObject):
                             # CNCJob.set_ui()
                             new_obj.is_loaded_from_project = True
 
-                worker_task()
-                # app_inst.worker_task.emit({'fcn': worker_task, 'params': []})
+                    # for some reason, setting ui_title does not work when this method is called from Tcl Shell
+                    # it's because the TclCommand is run in another thread (it inherits TclCommandSignaled)
+                    try:
+                        if cli is None:
+                            self.app.ui.set_ui_title(name="{} {}: {}".format(
+                                _("Loading Project ... restoring"), obj['kind'].upper(), obj['obj_options']['name']))
 
-            # for some reason, setting ui_title does not work when this method is called from Tcl Shell
-            # it's because the TclCommand is run in another thread (it inherits TclCommandSignaled)
-            try:
+                        ret = self.app.app_obj.new_object(obj['kind'], obj['obj_options']['name'], obj_init, plot=plot)
+                    except KeyError:
+                        # allowance for older projects
+                        if cli is None:
+                            self.app.ui.set_ui_title(name="{} {}: {}".format(
+                                _("Loading Project ... restoring"), obj['kind'].upper(), obj['options']['name']))
+                        try:
+                            ret = self.app.app_obj.new_object(obj['kind'], obj['options']['name'], obj_init, plot=plot)
+                        except Exception:
+                            continue
+                    if ret == 'fail':
+                        continue
+
+                self.inform.emit('[success] %s: %s' % (_("Project loaded from"), filename))
+
+                self.app.should_we_save = False
+                self.app.file_opened.emit("project", filename)
+
+                # restore autosaving after a project was loaded
+                self.app.block_autosave = False
+
+                # for some reason, setting ui_title does not work when this method is called from Tcl Shell
+                # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
                 if cli is None:
-                    self.app.ui.set_ui_title(name="{} {}: {}".format(
-                        _("Loading Project ... restoring"), obj['kind'].upper(), obj['obj_options']['name']))
+                    self.app.ui.set_ui_title(name=self.app.project_filename)
 
-                ret = self.app.app_obj.new_object(obj['kind'], obj['obj_options']['name'], obj_init, plot=plot)
-            except KeyError:
-                # allowance for older projects
-                if cli is None:
-                    self.app.ui.set_ui_title(name="{} {}: {}".format(
-                        _("Loading Project ... restoring"), obj['kind'].upper(), obj['options']['name']))
-                try:
-                    ret = self.app.app_obj.new_object(obj['kind'], obj['options']['name'], obj_init, plot=plot)
-                except Exception:
-                    continue
-            if ret == 'fail':
-                continue
+                self.log.debug(" **************** Finished PROJECT loading... **************** ")
 
-        self.inform.emit('[success] %s: %s' % (_("Project loaded from"), filename))
-
-        self.app.should_we_save = False
-        self.app.file_opened.emit("project", filename)
-
-        # restore autosaving after a project was loaded
-        self.app.block_autosave = False
-
-        # for some reason, setting ui_title does not work when this method is called from Tcl Shell
-        # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
-        if cli is None:
-            self.app.ui.set_ui_title(name=self.app.project_filename)
-
-        self.log.debug(" **************** Finished PROJECT loading... **************** ")
+        self.app.worker_task.emit({'fcn': worker_task, 'params': []})
 
     def save_project(self, filename, quit_action=False, silent=False, from_tcl=False):
         """
