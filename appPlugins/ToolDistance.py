@@ -188,6 +188,7 @@ class Distance(AppTool):
         self.initial_view()
 
         if self.ui.big_cursor_cb.get_value():
+            self.app.app_cursor.enabled = True
             self.app.on_cursor_type(val="big", control_cursor=True)
 
         self.app.call_source = 'measurement'
@@ -561,6 +562,8 @@ class Distance(AppTool):
                 if grid_snap_state:
                     pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
                 else:
+                    if self.app.app_cursor.enabled is False:
+                        self.app.app_cursor.enabled = True
                     pos = (pos_canvas[0], pos_canvas[1])
                 # Update cursor
                 self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),

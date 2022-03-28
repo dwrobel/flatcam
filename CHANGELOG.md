@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM Evo beta
 28.03.2022
 
 - in Distance Plugin added the ability to use a big cursor; not finished: when the grid is off it is not displayed
+- in Distance Plugin finished the 'big cursor' feature
 
 27.03.2022
 
