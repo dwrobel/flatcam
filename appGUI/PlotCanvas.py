@@ -160,7 +160,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         # TEXT HUD
         self.text_hud = Text('', color=self.text_hud_color, method='gpu', anchor_x='left', parent=None)
         # RECT HUD
-        self.rect_hud = Rectangle(width=10, height=10, radius=[5, 5, 5, 5], center = (20, 20),
+        self.rect_hud = Rectangle(width=10, height=10, radius=[5, 5, 5, 5], center=(20, 20),
                                   border_color=self.rect_hud_color, color=self.rect_hud_color, parent=None)
         self.rect_hud.set_gl_state(depth_test=False)
 
@@ -196,8 +196,10 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         self.text_collection.enabled = True
 
+        # Mouse Custom Cursor
         self.c = None
         self.big_cursor = None
+        self._cursor_color = self.fcapp.cursor_color_3D
 
         # Parent container
         # self.container = container
@@ -525,6 +527,19 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         return self.c
 
+    @property
+    def cursor_color(self):
+        return self._cursor_color
+
+    @cursor_color.setter
+    def cursor_color(self, color):
+        self._cursor_color = Color(color).rgba
+        if self.big_cursor is True:
+            self.cursor_h_line.set_data(color=self._cursor_color)
+            self.cursor_v_line.set_data(color=self._cursor_color)
+        else:
+            self.fcapp.cursor_color_3D = self._cursor_color
+
     def on_mouse_state(self, state):
         if state:
             self.cursor_h_line.parent = self.view.scene
@@ -536,7 +551,8 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
     def on_mouse_position(self, pos):
 
         if self.fcapp.options['global_cursor_color_enabled']:
-            color = Color(self.fcapp.options['global_cursor_color']).rgba
+            # color = Color(self.fcapp.options['global_cursor_color']).rgba
+            color = self.cursor_color
         else:
             color = self.line_color
 
@@ -578,7 +594,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
             # Update cursor
             self.fcapp.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
-                                           symbol='++', edge_color=self.fcapp.cursor_color_3D,
+                                           symbol='++', edge_color=self.cursor_color,
                                            edge_width=self.fcapp.options["global_cursor_width"],
                                            size=self.fcapp.options["global_cursor_size"])
 

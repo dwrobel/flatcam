@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+29.03.2022
+
+- added ability to change the mouse cursor color on the fly
+- in Distance Plugin made sure that the 'big cursor' (when is used) is black in color (visible in most situations)
+- in Distance Plugin, for the 2D graphic mode activated the utility line
+
 28.03.2022
 
 - in Distance Plugin added the ability to use a big cursor; not finished: when the grid is off it is not displayed

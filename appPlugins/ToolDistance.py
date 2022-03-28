@@ -74,6 +74,9 @@ class Distance(AppTool):
         # store the grid status here
         self.grid_status_memory = False
 
+        # store here the cursor color
+        self.cursor_color_memory = None
+
         # store here if the snap button was clicked
         self.snap_toggled = None
 
@@ -188,8 +191,13 @@ class Distance(AppTool):
         self.initial_view()
 
         if self.ui.big_cursor_cb.get_value():
-            self.app.app_cursor.enabled = True
             self.app.on_cursor_type(val="big", control_cursor=True)
+            self.cursor_color_memory = self.app.plotcanvas.cursor_color
+            if self.app.use_3d_engine is True:
+                self.app.plotcanvas.cursor_color = '#000000FF'
+            else:
+                self.app.plotcanvas.cursor_color = '#000000'
+            self.app.app_cursor.enabled = True
 
         self.app.call_source = 'measurement'
 
@@ -207,9 +215,6 @@ class Distance(AppTool):
             # disengage the grid snapping since it will be hard to find the drills or pads on grid
             if self.app.ui.grid_snap_btn.isChecked():
                 self.app.ui.grid_snap_btn.trigger()
-
-            if self.ui.big_cursor_cb.get_value():
-                self.app.on_cursor_type(val="big", control_cursor=True)
 
     def on_start_measuring(self):
         # ENABLE the Measuring TOOL
@@ -329,6 +334,7 @@ class Distance(AppTool):
 
         # restore cursor
         self.app.on_cursor_type(val=self.old_cursor_type, control_cursor=False)
+        self.app.plotcanvas.cursor_color = self.cursor_color_memory
 
         # restore the grid status
         if (self.app.ui.grid_snap_btn.isChecked() and self.grid_status_memory is False) or \
@@ -553,7 +559,7 @@ class Distance(AppTool):
                     pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
                     # Update cursor
                     self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
-                                                 symbol='++', edge_color=self.app.cursor_color_3D,
+                                                 symbol='++', edge_color=self.app.plotcanvas.cursor_color,
                                                  edge_width=self.app.options["global_cursor_width"],
                                                  size=self.app.options["global_cursor_size"])
                 else:
@@ -567,7 +573,7 @@ class Distance(AppTool):
                     pos = (pos_canvas[0], pos_canvas[1])
                 # Update cursor
                 self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
-                                             symbol='++', edge_color=self.app.cursor_color_3D,
+                                             symbol='++', edge_color=self.app.plotcanvas.cursor_color,
                                              edge_width=self.app.options["global_cursor_width"],
                                              size=self.app.options["global_cursor_size"])
 
@@ -689,15 +695,19 @@ class Distance(AppTool):
         else:
             theme = 'white'
 
-        if theme == 'white':
-            color = '#000000FF'
+        if self.app.use_3d_engine:
+            if theme == 'white':
+                color = '#000000FF'
+            else:
+                color = '#FFFFFFFF'
         else:
-            color = '#FFFFFFFF'
+            if theme == 'white':
+                color = '#000000'
+            else:
+                color = '#FFFFFF'
 
         self.last_shape = self.sel_shapes.add(meas_line, color=color, update=True, layer=0, tolerance=None, linewidth=2)
-
-        if self.app.use_3d_engine:
-            self.sel_shapes.redraw()
+        self.sel_shapes.redraw()
 
     def delete_all_shapes(self):
         self.sel_shapes.clear()

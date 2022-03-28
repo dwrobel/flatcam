@@ -2945,7 +2945,7 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
             x, y = self.app.geo_editor.snap(x, y)
 
             # Update cursor
-            self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color=self.app.cursor_color_3D,
+            self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color=self.app.plotcanvas.cursor_color,
                                          edge_width=self.app.options["global_cursor_width"],
                                          size=self.app.options["global_cursor_size"])
 
@@ -5506,7 +5506,7 @@ class AppGerberEditor(QtCore.QObject):
             x, y = self.app.geo_editor.snap(x, y)
 
             # Update cursor
-            self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color=self.app.cursor_color_3D,
+            self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color=self.app.plotcanvas.cursor_color,
                                          edge_width=self.app.options["global_cursor_width"],
                                          size=self.app.options["global_cursor_size"])
 

@@ -247,6 +247,8 @@ class PlotCanvasLegacy(QtCore.QObject):
         axis_color = self.color_hex2tuple(axis_default_color)
         axis_color = axis_color[0], axis_color[1], axis_color[2]
 
+        self._cursor_color = self.app.options["global_cursor_color"]
+
         # self.h_line = self.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
         self.h_line = None
         self.v_line = None
@@ -572,7 +574,7 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         self.app.ui.wplace_label.set_value(workspace_size[:3])
         self.app.ui.wplace_label.setToolTip(workspace_size)
-        self.fcapp.ui.wplace_label.setStyleSheet("""
+        self.app.ui.wplace_label.setStyleSheet("""
                         QLabel
                         {
                             color: black;
@@ -586,7 +588,7 @@ class PlotCanvasLegacy(QtCore.QObject):
             self.canvas.draw()
         except Exception:
             pass
-        self.fcapp.ui.wplace_label.setStyleSheet("")
+        self.app.ui.wplace_label.setStyleSheet("")
 
     def graph_event_connect(self, event_name, callback):
         """
@@ -653,6 +655,26 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         return c
 
+    @property
+    def cursor_color(self):
+        return self._cursor_color
+
+    @cursor_color.setter
+    def cursor_color(self, color):
+        self._cursor_color = color
+        if self.big_cursor is True:
+            try:
+                self.ch_line.remove()
+                self.cv_line.remove()
+                self.canvas.draw_idle()
+            except Exception as e:
+                self.app.log.error("PlotCanvasLegacy.cursor_color() --> %s" % str(e))
+
+            self.ch_line = self.axes.axhline(color=color, linewidth=self.app.options["global_cursor_width"])
+            self.cv_line = self.axes.axvline(color=color, linewidth=self.app.options["global_cursor_width"])
+        else:
+            self.app.cursor_color_3D = color
+
     def draw_cursor(self, x_pos, y_pos, color=None):
         """
         Draw a cursor at the mouse grid snapped position
@@ -664,70 +686,73 @@ class PlotCanvasLegacy(QtCore.QObject):
         """
 
         # there is no point in drawing mouse cursor when panning as it jumps in a confusing way
-        if self.app.app_cursor.enabled is True and self.panning is False:
-            if color:
-                color = color
+        if self.app.app_cursor.enabled is False or self.panning is True:
+            return
+
+        if color:
+            color = color
+        else:
+            if self.app.options['global_theme'] == 'white':
+                color = '#000000'
             else:
-                if self.app.options['global_theme'] == 'white':
-                    color = '#000000'
-                else:
-                    color = '#FFFFFF'
+                color = '#FFFFFF'
 
-            if self.big_cursor is False:
-                try:
-                    x, y = self.snap(x_pos, y_pos)
+        if self.big_cursor is False:
+            try:
+                x, y = self.snap(x_pos, y_pos)
 
-                    # Pointer (snapped)
-                    # The size of the cursor is multiplied by 1.65 because that value made the cursor similar with the
-                    # one in the OpenGL(3D) graphic engine
-                    pointer_size = int(float(self.app.options["global_cursor_size"]) * 1.65)
-                    elements = self.axes.plot(x, y, '+', color=color, ms=pointer_size,
-                                              mew=self.app.options["global_cursor_width"], animated=True)
-                    for el in elements:
-                        self.axes.draw_artist(el)
-                except Exception as e:
-                    # this happen at app initialization since self.app.geo_editor does not exist yet
-                    # I could reshuffle the object instantiating order but what's the point?
-                    # I could crash something else and that's pythonic, too
-                    self.app.log.error("PlotCanvasLegacy.draw_cursor() big_cursor is False --> %s" % str(e))
-            else:
-                try:
-                    self.ch_line.set_markeredgewidth(self.app.options["global_cursor_width"])
-                    self.cv_line.set_markeredgewidth(self.app.options["global_cursor_width"])
-                except Exception:
-                    pass
+                # Pointer (snapped)
+                # The size of the cursor is multiplied by 1.65 because that value made the cursor similar with the
+                # one in the OpenGL(3D) graphic engine
+                pointer_size = int(float(self.app.options["global_cursor_size"]) * 1.65)
+                elements = self.axes.plot(x, y, '+', color=color, ms=pointer_size,
+                                          mew=self.app.options["global_cursor_width"], animated=True)
+                for el in elements:
+                    self.axes.draw_artist(el)
+            except Exception as e:
+                # this happen at app initialization since self.app.geo_editor does not exist yet
+                # I could reshuffle the object instantiating order but what's the point?
+                # I could crash something else and that's pythonic, too
+                self.app.log.error("PlotCanvasLegacy.draw_cursor() big_cursor is False --> %s" % str(e))
+        else:
+            try:
+                self.ch_line.set_markeredgewidth(self.app.options["global_cursor_width"])
+                self.cv_line.set_markeredgewidth(self.app.options["global_cursor_width"])
+            except Exception:
+                pass
 
-                try:
-                    x, y = self.app.geo_editor.snap(x_pos, y_pos)
-                    self.ch_line.set_ydata(y)
-                    self.cv_line.set_xdata(x)
-                except Exception:
-                    # this happen at app initialization since self.app.geo_editor does not exist yet
-                    # I could reshuffle the object instantiating order but what's the point?
-                    # I could crash something else and that's pythonic, too
-                    pass
-                self.canvas.draw_idle()
+            try:
+                x, y = self.app.geo_editor.snap(x_pos, y_pos)
+                self.ch_line.set_ydata(y)
+                self.cv_line.set_xdata(x)
+            except Exception:
+                # this happen at app initialization since self.app.geo_editor does not exist yet
+                # I could reshuffle the object instantiating order but what's the point?
+                # I could crash something else and that's pythonic, too
+                pass
+            self.canvas.draw_idle()
 
-            self.canvas.blit(self.axes.bbox)
+        self.canvas.blit(self.axes.bbox)
 
     def clear_cursor(self, state):
+        if self.app.options['global_theme'] == 'white':
+            color = '#000000'
+        else:
+            color = '#FFFFFF'
+
         if state is True:
             if self.big_cursor is True and self.big_cursor_isdisabled is True:
                 if self.app.options["global_cursor_color_enabled"]:
-                    color = self.app.options["global_cursor_color"]
-                else:
-                    if self.app.options['global_theme'] == 'white':
-                        color = '#000000'
-                    else:
-                        color = '#FFFFFF'
-
+                    color = self.cursor_color
                 self.ch_line = self.axes.axhline(color=color, linewidth=self.app.options["global_cursor_width"])
                 self.cv_line = self.axes.axvline(color=color, linewidth=self.app.options["global_cursor_width"])
                 self.big_cursor_isdisabled = False
+
             if self.app.options["global_cursor_color_enabled"] is True:
-                self.draw_cursor(x_pos=self.mouse[0], y_pos=self.mouse[1], color=self.app.cursor_color_3D)
+                color = self.cursor_color
+                self.draw_cursor(x_pos=self.mouse[0], y_pos=self.mouse[1], color=color)
             else:
-                self.draw_cursor(x_pos=self.mouse[0], y_pos=self.mouse[1])
+                self.draw_cursor(x_pos=self.mouse[0], y_pos=self.mouse[1], color=None)
         else:
             if self.big_cursor is True:
                 self.big_cursor_isdisabled = True
@@ -1118,9 +1143,10 @@ class PlotCanvasLegacy(QtCore.QObject):
             # self.update_screen_request.emit([0, 0, 0, 0, 0])
 
         if self.app.options["global_cursor_color_enabled"] is True:
-            self.draw_cursor(x_pos=x, y_pos=y, color=self.app.cursor_color_3D)
+            # self.draw_cursor(x_pos=x, y_pos=y, color=self.app.cursor_color_3D)
+            self.draw_cursor(x_pos=x, y_pos=y, color=self.cursor_color)
         else:
-            self.draw_cursor(x_pos=x, y_pos=y)
+            self.draw_cursor(x_pos=x, y_pos=y, color=None)
         # self.canvas.blit(self.axes.bbox)
 
     @staticmethod
@@ -1571,7 +1597,8 @@ class ShapeCollectionLegacy:
 
                             self.axes.add_patch(patch)
                         except Exception as e:
-                            self.app.log.error("ShapeCollectionLegacy.redraw() utility poly with face_color --> %s" % str(e))
+                            self.app.log.error(
+                                "ShapeCollectionLegacy.redraw() utility poly with face_color --> %s" % str(e))
                     else:
                         if isinstance(local_shapes[element]['shape'], Polygon):
                             try:
@@ -1586,7 +1613,8 @@ class ShapeCollectionLegacy:
                                         self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-',
                                                        linewidth=local_shapes[element]['linewidth'])
                             except Exception as e:
-                                self.app.log.error("ShapeCollectionLegacy.redraw() utility poly no face_color --> %s" % str(e))
+                                self.app.log.error(
+                                    "ShapeCollectionLegacy.redraw() utility poly no face_color --> %s" % str(e))
                         else:
                             try:
                                 if local_shapes[element]['shape'] is not None:
@@ -1594,7 +1622,8 @@ class ShapeCollectionLegacy:
                                     self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-',
                                                    linewidth=local_shapes[element]['linewidth'])
                             except Exception as e:
-                                self.app.log.error("ShapeCollectionLegacy.redraw() utility lines no face_color --> %s" % str(e))
+                                self.app.log.error(
+                                    "ShapeCollectionLegacy.redraw() utility lines no face_color --> %s" % str(e))
         self.app.plotcanvas.auto_adjust_axes()
 
     def set(self, text, pos, visible=True, font_size=16, color=None):

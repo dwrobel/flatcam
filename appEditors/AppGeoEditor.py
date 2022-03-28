@@ -4766,7 +4766,7 @@ class AppGeoEditor(QtCore.QObject):
             x, y = self.snap(x, y)
 
             # Update cursor
-            self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color=self.app.cursor_color_3D,
+            self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color=self.app.plotcanvas.cursor_color,
                                          edge_width=self.app.options["global_cursor_width"],
                                          size=self.app.options["global_cursor_size"])
 

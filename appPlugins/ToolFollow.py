@@ -559,7 +559,7 @@ class ToolFollow(AppTool, Gerber):
             curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
 
             self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
-                                         symbol='++', edge_color=self.app.cursor_color_3D,
+                                         symbol='++', edge_color=self.app.plotcanvas.cursor_color,
                                          edge_width=self.app.options["global_cursor_width"],
                                          size=self.app.options["global_cursor_size"])
 

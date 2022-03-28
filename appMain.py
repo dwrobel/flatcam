@@ -5741,7 +5741,7 @@ class App(QtCore.QObject):
         if self.grid_status():
             # Update cursor
             self.app_cursor.set_data(np.asarray([(location[0], location[1])]),
-                                     symbol='++', edge_color=self.cursor_color_3D,
+                                     symbol='++', edge_color=self.plotcanvas.cursor_color,
                                      edge_width=self.options["global_cursor_width"],
                                      size=self.options["global_cursor_size"])
 
@@ -5857,7 +5857,7 @@ class App(QtCore.QObject):
         if self.grid_status():
             # Update cursor
             self.app_cursor.set_data(np.asarray([(location[0], location[1])]),
-                                     symbol='++', edge_color=self.cursor_color_3D,
+                                     symbol='++', edge_color=self.plotcanvas.cursor_color,
                                      edge_width=self.options["global_cursor_width"],
                                      size=self.options["global_cursor_size"])
 
@@ -7394,7 +7394,7 @@ class App(QtCore.QObject):
 
                     # Update cursor
                     self.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
-                                             symbol='++', edge_color=self.cursor_color_3D,
+                                             symbol='++', edge_color=self.plotcanvas.cursor_color,
                                              edge_width=self.options["global_cursor_width"],
                                              size=self.options["global_cursor_size"])
                 else:
