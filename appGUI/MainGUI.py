@@ -4181,6 +4181,8 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 if key == QtCore.Qt.Key.Key_G or key == 'G':
                     self.app.ui.grid_snap_btn.trigger()
+                    if self.app.distance_tool.ui.big_cursor_cb.get_value():
+                        self.app.app_cursor.enabled = True
                     return
 
                 # Jump to coords

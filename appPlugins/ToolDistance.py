@@ -79,6 +79,9 @@ class Distance(AppTool):
 
         self.mouse_is_dragging = False
 
+        # store the current cursor type to be restored after manual geo
+        self.old_cursor_type = self.app.options["global_cursor_type"]
+
         # VisPy visuals
         if self.app.use_3d_engine:
             self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
@@ -89,6 +92,7 @@ class Distance(AppTool):
         # Signals
         self.ui.measure_btn.clicked.connect(self.on_start_measuring)
         self.ui.multipoint_cb.stateChanged.connect(self.on_multipoint_measurement_changed)
+        self.ui.big_cursor_cb.stateChanged.connect(self.on_cursor_change)
 
     def run(self, toggle=False):
 
@@ -102,6 +106,8 @@ class Distance(AppTool):
             self.app.ui.splitter.setSizes([1, 1])
         if toggle:
             pass
+
+        self.old_cursor_type = self.app.options["global_cursor_type"]
 
         self.on_start_measuring() if self.active is False else self.on_exit()
 
@@ -154,6 +160,7 @@ class Distance(AppTool):
         self.app.command_active = "Distance"
 
         self.ui.snap_center_cb.set_value(self.app.options['tools_dist_snap_center'])
+        self.ui.big_cursor_cb.set_value(self.app.options['tools_dist_big_cursor'])
 
         # snap center works only for Gerber and Execellon Editor's
         if self.original_call_source == 'exc_editor' or self.original_call_source == 'grb_editor':
@@ -179,6 +186,10 @@ class Distance(AppTool):
 
         # initial view of the layout
         self.initial_view()
+
+        if self.ui.big_cursor_cb.get_value():
+            self.app.on_cursor_type(val="big", control_cursor=True)
+
         self.app.call_source = 'measurement'
 
     def initial_view(self):
@@ -196,6 +207,9 @@ class Distance(AppTool):
             if self.app.ui.grid_snap_btn.isChecked():
                 self.app.ui.grid_snap_btn.trigger()
 
+            if self.ui.big_cursor_cb.get_value():
+                self.app.on_cursor_type(val="big", control_cursor=True)
+
     def on_start_measuring(self):
         # ENABLE the Measuring TOOL
         self.active = True
@@ -209,8 +223,8 @@ class Distance(AppTool):
         self.units = self.app.app_units.lower()
 
         self.ui_connect()
-
         self.set_tool_ui()
+
         self.app.inform.emit(_("MEASURING: Click on the Start point ..."))
 
     def ui_connect(self):
@@ -311,6 +325,9 @@ class Distance(AppTool):
 
         # delete the measuring line
         self.delete_all_shapes()
+
+        # restore cursor
+        self.app.on_cursor_type(val=self.old_cursor_type, control_cursor=False)
 
         # restore the grid status
         if (self.app.ui.grid_snap_btn.isChecked() and self.grid_status_memory is False) or \
@@ -502,6 +519,14 @@ class Distance(AppTool):
             self.ui.angle_label.setDisabled(False)
             self.ui.angle_entry.setDisabled(False)
 
+    def on_cursor_change(self, val):
+        if val:
+            self.app.options['tools_dist_big_cursor'] = True
+            self.app.on_cursor_type(val="big", control_cursor=True)
+        else:
+            self.app.options['tools_dist_big_cursor'] = False
+            self.app.on_cursor_type(val="small", control_cursor=True)
+
     def on_mouse_move(self, event):
         multipoint = self.ui.multipoint_cb.get_value()
 
@@ -520,16 +545,28 @@ class Distance(AppTool):
 
             pos_canvas = self.app.plotcanvas.translate_coords((x, y))
 
-            if self.app.grid_status():
-                pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
-
+            big_cursor_state = self.ui.big_cursor_cb.get_value()
+            grid_snap_state = self.app.grid_status()
+            if big_cursor_state is False:
+                if grid_snap_state:
+                    pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
+                    # Update cursor
+                    self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
+                                                 symbol='++', edge_color=self.app.cursor_color_3D,
+                                                 edge_width=self.app.options["global_cursor_width"],
+                                                 size=self.app.options["global_cursor_size"])
+                else:
+                    pos = (pos_canvas[0], pos_canvas[1])
+            else:
+                if grid_snap_state:
+                    pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
+                else:
+                    pos = (pos_canvas[0], pos_canvas[1])
                 # Update cursor
                 self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
                                              symbol='++', edge_color=self.app.cursor_color_3D,
                                              edge_width=self.app.options["global_cursor_width"],
                                              size=self.app.options["global_cursor_size"])
-            else:
-                pos = (pos_canvas[0], pos_canvas[1])
 
             self.app.ui.update_location_labels(dx=None, dy=None, x=pos[0], y=pos[1])
             self.app.plotcanvas.on_update_text_hud('0.0', '0.0', pos[0], pos[1])
@@ -717,6 +754,12 @@ class DistanceUI:
             _("Make a measurement over multiple distance segments.")
         )
         param_grid.addWidget(self.multipoint_cb, 2, 0, 1, 2)
+
+        # Big Cursor
+        self.big_cursor_cb = FCCheckBox('%s' % _("Big cursor"))
+        self.big_cursor_cb.setToolTip(
+            _("Use a big cursor."))
+        param_grid.addWidget(self.big_cursor_cb, 4, 0, 1, 2)
 
         # #############################################################################################################
         # Coordinates Frame

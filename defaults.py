@@ -664,6 +664,7 @@ class AppDefaults:
 
         # Distance Tool
         "tools_dist_snap_center": False,
+        "tools_dist_big_cursor": True,
 
         # Markers Tool
         "tools_markers_thickness": 0.1,

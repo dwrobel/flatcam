@@ -3744,7 +3744,7 @@ class AppGeoEditor(QtCore.QObject):
         self.app.ui.snap_max_dist_entry.textChanged.connect(
             lambda: self.entry2option("snap_max", self.app.ui.snap_max_dist_entry))
 
-        self.app.ui.grid_snap_btn.triggered.connect(self.on_grid_toggled)
+        self.app.ui.grid_snap_btn.triggered.connect(lambda: self.on_grid_toggled())
         self.app.ui.corner_snap_btn.setCheckable(True)
         self.app.ui.corner_snap_btn.triggered.connect(lambda: self.toolbar_tool_toggle("corner_snap"))
 
@@ -4662,8 +4662,8 @@ class AppGeoEditor(QtCore.QObject):
             self.app.app_cursor.enabled = True
         else:
             self.app.options['global_grid_snap'] = False
-            self.app.app_cursor.enabled = False
             self.app.inform[str, bool].emit(_("Grid Snap disabled."), False)
+            self.app.app_cursor.enabled = False
 
     def on_canvas_click(self, event):
         """

@@ -5084,10 +5084,11 @@ class App(QtCore.QObject):
             subprocess.Popen(['xdg-open', self.log_path()])
         self.inform.emit('[success] %s' % _("FlatCAM log opened."))
 
-    def on_cursor_type(self, val):
+    def on_cursor_type(self, val, control_cursor=True):
         """
 
-        :param val: type of mouse cursor, set in Preferences ('small' or 'big')
+        :param val:                 type of mouse cursor, set in Preferences ('small' or 'big')
+        :param control_cursor:      if True, it is enabled only if the grid snap is active
         :return: None
         """
         self.app_cursor.enabled = False
@@ -5101,10 +5102,13 @@ class App(QtCore.QObject):
             self.ui.general_pref_form.general_app_set_group.cursor_size_lbl.setDisabled(True)
             self.app_cursor = self.plotcanvas.new_cursor(big=True)
 
-        if self.ui.grid_snap_btn.isChecked():
-            self.app_cursor.enabled = True
+        if control_cursor is True:
+            if self.ui.grid_snap_btn.isChecked():
+                self.app_cursor.enabled = True
+            else:
+                self.app_cursor.enabled = False
         else:
-            self.app_cursor.enabled = False
+            self.app_cursor.enabled = True
 
     def on_tool_add_keypress(self):
         # ## Current application units in Upper Case
