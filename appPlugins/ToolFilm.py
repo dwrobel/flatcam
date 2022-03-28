@@ -509,8 +509,8 @@ class Film(AppTool):
         use_convex_hull = self.ui.convex_box_cb.get_value()
         rounded_box = self.ui.rounded_cb.get_value()
 
-        scale_factor_x = 1
-        scale_factor_y = 1
+        scale_factor_x = None
+        scale_factor_y = None
         scale_type = 0
         skew_factor_x = None
         skew_factor_y = None
@@ -523,11 +523,18 @@ class Film(AppTool):
         skew_reference = reference_list[int(self.ui.skew_ref_combo.get_value())]
 
         if self.ui.film_scale_cb.get_value():
-            if self.ui.film_scalex_entry.get_value() != 1.0:
-                scale_factor_x = self.ui.film_scalex_entry.get_value()
-            if self.ui.film_scaley_entry.get_value() != 1.0:
-                scale_factor_y = self.ui.film_scaley_entry.get_value()
             scale_type = self.ui.film_scale_type_combo.get_value()
+
+            if scale_type == 0:
+                if self.ui.film_scalex_entry.get_value() != 0.0:
+                    scale_factor_x = self.ui.film_scalex_entry.get_value()
+                if self.ui.film_scaley_entry.get_value() != 0.0:
+                    scale_factor_y = self.ui.film_scaley_entry.get_value()
+            else:
+                if self.ui.film_scalex_entry.get_value() != 1.0:
+                    scale_factor_x = self.ui.film_scalex_entry.get_value()
+                if self.ui.film_scaley_entry.get_value() != 1.0:
+                    scale_factor_y = self.ui.film_scaley_entry.get_value()
 
         if self.ui.film_skew_cb.get_value():
             if self.ui.film_skewx_entry.get_value() != 0.0:
@@ -583,7 +590,7 @@ class Film(AppTool):
 
     def export_negative_handler(self, obj_name, box_name, filename, boundary,
                                 scale_stroke_factor=0.00,
-                                scale_factor_x=1, scale_factor_y=1, scale_reference='center', scale_type=0,
+                                scale_factor_x=None, scale_factor_y=None, scale_reference='center', scale_type=0,
                                 skew_factor_x=None, skew_factor_y=None, skew_reference='center', skew_type=0,
                                 mirror=None, opacity_val=1.0,
                                 use_thread=True, ftype='svg', use_convex_hull=False, rounded_box=False):
@@ -1049,7 +1056,8 @@ class Film(AppTool):
                 self.app.log.error("FilmTool.write_output_file() --> PDF output --> %s" % str(e))
                 return 'fail'
 
-    def transform_geometry(self, obj, scale_factor_x=None, scale_factor_y=None, scale_reference='center', scale_type=0,
+    @staticmethod
+    def transform_geometry(obj, scale_factor_x=None, scale_factor_y=None, scale_reference='center', scale_type=0,
                            skew_factor_x=None, skew_factor_y=None,
                            skew_reference='center', skew_type=0, mirror=None):
         """

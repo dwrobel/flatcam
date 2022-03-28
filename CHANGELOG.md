@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM Evo beta
 
 - in Distance Plugin added the ability to use a big cursor; not finished: when the grid is off it is not displayed
 - in Distance Plugin finished the 'big cursor' feature
+- in the Film Plugin fixed an error which triggered an unwanted 'length' scaling
 
 27.03.2022
 
