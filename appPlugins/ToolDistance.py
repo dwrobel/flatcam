@@ -274,7 +274,7 @@ class Distance(AppTool):
             if self.app.use_3d_engine:
                 self.canvas.graph_event_disconnect('mouse_move', self.app.grb_editor.on_canvas_move)
                 self.canvas.graph_event_disconnect('mouse_press', self.app.grb_editor.on_canvas_click)
-                self.canvas.graph_event_disconnect('mouse_release', self.app.grb_editor.on_grb_click_release)
+                self.canvas.graph_event_disconnect('mouse_release', self.app.grb_editor.on_canvas_click_release)
             else:
                 self.canvas.graph_event_disconnect(self.app.grb_editor.mm)
                 self.canvas.graph_event_disconnect(self.app.grb_editor.mp)
@@ -302,7 +302,7 @@ class Distance(AppTool):
             self.app.grb_editor.mm = self.canvas.graph_event_connect('mouse_move', self.app.grb_editor.on_canvas_move)
             self.app.grb_editor.mp = self.canvas.graph_event_connect('mouse_press', self.app.grb_editor.on_canvas_click)
             self.app.grb_editor.mr = self.canvas.graph_event_connect('mouse_release',
-                                                                     self.app.grb_editor.on_grb_click_release)
+                                                                     self.app.grb_editor.on_canvas_click_release)
 
         # disconnect the mouse/key events from functions of measurement tool
         if self.app.use_3d_engine:
@@ -373,7 +373,7 @@ class Distance(AppTool):
                     pos = pos_canvas[0], pos_canvas[1]
             else:
                 pos = (pos_canvas[0], pos_canvas[1])
-                self.snap_handler(pos)
+                pos = self.snap_handler(pos)
 
             self.points.append(pos)
 
@@ -464,7 +464,7 @@ class Distance(AppTool):
 
             # if it's a drill
             if isinstance(closest_shape.geo, MultiLineString):
-                radius = closest_shape.geo[0].length / 2.0
+                radius = closest_shape.geo.geoms[0].length / 2.0
                 center_pt = closest_shape.geo.centroid
 
                 geo_buffered = center_pt.buffer(radius)
@@ -509,6 +509,7 @@ class Distance(AppTool):
                                      symbol='++', edge_color='#000000',
                                      edge_width=self.app.options["global_cursor_width"],
                                      size=self.app.options["global_cursor_size"])
+        return pos
 
     def on_multipoint_measurement_changed(self, val):
         if val:
