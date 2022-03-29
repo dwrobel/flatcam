@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+30.03.2022
+
+- a minor fix in the Plotcanvas() class
+- fixed the OR-tools path optimization (it required now a cast to int when creating the distances' matrix)
+
 29.03.2022
 
 - added ability to change the mouse cursor color on the fly

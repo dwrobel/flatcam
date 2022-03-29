@@ -199,7 +199,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         # Mouse Custom Cursor
         self.c = None
         self.big_cursor = None
-        self._cursor_color = self.fcapp.cursor_color_3D
+        self._cursor_color = Color(self.fcapp.cursor_color_3D).rgba
 
         # Parent container
         # self.container = container

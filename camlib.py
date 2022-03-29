@@ -2948,8 +2948,16 @@ class CNCjob(Geometry):
             self.matrix = {}
 
             if locs:
+                # for from_counter, from_node in enumerate(locs):
+                #     self.matrix[from_counter] = {}
+                #     for to_counter, to_node in enumerate(locs):
+                #         if from_counter == to_counter:
+                #             self.matrix[from_counter][to_counter] = 0
+                #         else:
+                #             # Euclidean distance
+                #             self.matrix[from_counter][to_counter] = (int(
+                #                 math.hypot((from_node[0] - to_node[0]), (from_node[1] - to_node[1]))))
                 size = len(locs)
-
                 for from_node in range(size):
                     self.matrix[from_node] = {}
                     for to_node in range(size):
@@ -2960,11 +2968,9 @@ class CNCjob(Geometry):
                             y1 = locs[from_node][1]
                             x2 = locs[to_node][0]
                             y2 = locs[to_node][1]
-                            self.matrix[from_node][to_node] = distance_euclidian(x1, y1, x2, y2)
+                            self.matrix[from_node][to_node] = int(distance_euclidian(x1, y1, x2, y2))
 
-        # def Distance(self, from_node, to_node):
-        #     return int(self.matrix[from_node][to_node])
-        def Distance(self, from_index, to_index):
+        def distance_callback(self, from_index, to_index):
             # Convert from routing variable Index to distance matrix NodeIndex.
             from_node = self.manager.IndexToNode(from_index)
             to_node = self.manager.IndexToNode(to_index)
@@ -3010,8 +3016,7 @@ class CNCjob(Geometry):
         if not dist_between_locations:
             return
 
-        dist_callback = dist_between_locations.Distance
-        transit_callback_index = routing.RegisterTransitCallback(dist_callback)
+        transit_callback_index = routing.RegisterTransitCallback(dist_between_locations.distance_callback)
         routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
 
         # Solve, returns a solution if any.
@@ -3044,52 +3049,49 @@ class CNCjob(Geometry):
         optimized_path = []
 
         tsp_size = len(locations)
-        num_routes = 1  # The number of routes, which is 1 in the TSP.
-
-        # Nodes are indexed from 0 to tsp_size - 1. The depot is the starting node of the route.
-        depot = 0 if start is None else start
-
-        # Create routing model.
         if tsp_size == 0:
             self.app.log.warning('Specify an instance greater than 0.')
-            return optimized_path
-
+            return []
+        num_routes = 1  # The number of routes, which is 1 in the TSP.
+        # Nodes are indexed from 0 to tsp_size - 1. The depot is the starting node of the route.
+        depot = 0 if start is None else start
+        # Create routing index manager
         manager = pywrapcp.RoutingIndexManager(tsp_size, num_routes, depot)
+
+        # Create routing model.
         routing = pywrapcp.RoutingModel(manager)
-        search_parameters = pywrapcp.DefaultRoutingSearchParameters()
 
         # Callback to the distance function. The callback takes two
         # arguments (the from and to node indices) and returns the distance between them.
         dist_between_locations = self.CreateDistanceCallback(locs=locations, manager=manager)
-
         # if there are no distances then go to the next tool
         if not dist_between_locations:
             return
 
-        dist_callback = dist_between_locations.Distance
-        transit_callback_index = routing.RegisterTransitCallback(dist_callback)
+        # START transit_callback
+        transit_callback_index = routing.RegisterTransitCallback(dist_between_locations.distance_callback)
+        # Define cost of each arc.
         routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
 
         # Setting first solution heuristic.
+        search_parameters = pywrapcp.DefaultRoutingSearchParameters()
         search_parameters.first_solution_strategy = (
             routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC)
 
         # Solve, returns a solution if any.
-        assignment = routing.SolveWithParameters(search_parameters)
+        solution = routing.SolveWithParameters(search_parameters)
 
-        if assignment:
+        if solution:
             # Solution cost.
-            self.app.log.info("Total distance: " + str(assignment.ObjectiveValue()))
+            self.app.log.info("Total distance: {}".format(solution.ObjectiveValue()))
 
             # Inspect solution.
             # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1.
             route_number = 0
             node = routing.Start(route_number)
-            start_node = node
-
             while not routing.IsEnd(node):
                 optimized_path.append(node)
-                node = assignment.Value(routing.NextVar(node))
+                node = solution.Value(routing.NextVar(node))
         else:
             self.app.log.warning('No solution found.')
 
