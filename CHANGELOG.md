@@ -11,11 +11,13 @@ CHANGELOG for FlatCAM Evo beta
 
 - a minor fix in the Plotcanvas() class
 - fixed the OR-tools path optimization (it required now a cast to int when creating the distances' matrix)
+- in Distance Plugin made sure that the grid snapping restore is working properly (previously it always restored it to the ON state)
+- the HUD display is no longer default active on new installations
 
 29.03.2022
 
 - added ability to change the mouse cursor color on the fly
-- in Distance Plugin made sure that the 'big cursor' (when is used) is black in color (visible in most situations)
+- in Distance Plugin made sure that the 'big cursor' (when is used) is black (visible in most situations)
 - in Distance Plugin, for the 2D graphic mode activated the utility line
 - in Distance Plugin, fixed the `Snap to center` feature to work as intended
 

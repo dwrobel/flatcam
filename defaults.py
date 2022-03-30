@@ -140,7 +140,7 @@ class AppDefaults:
         "global_workspace_orientation": 'p',
         "global_axis": True,
         "global_axis_color": '#B34D4D',
-        "global_hud": True,
+        "global_hud": False,
         "global_grid_lines": True,
         "global_grid_snap": True,
 

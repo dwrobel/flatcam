@@ -184,8 +184,7 @@ class Distance(AppTool):
         self.app.ui.grid_snap_btn.trigger()
         self.app.ui.grid_snap_btn.trigger()
 
-        if self.app.ui.grid_snap_btn.isChecked():
-            self.grid_status_memory = True
+        self.grid_status_memory = True if self.app.ui.grid_snap_btn.isChecked() else False
 
         # initial view of the layout
         self.initial_view()
@@ -337,8 +336,7 @@ class Distance(AppTool):
         self.app.plotcanvas.cursor_color = self.cursor_color_memory
 
         # restore the grid status
-        if (self.app.ui.grid_snap_btn.isChecked() and self.grid_status_memory is False) or \
-                (not self.app.ui.grid_snap_btn.isChecked() and self.grid_status_memory is True):
+        if self.app.ui.grid_snap_btn.isChecked() !=  self.grid_status_memory:
             self.app.ui.grid_snap_btn.trigger()
 
         if self.tool_done is False:
