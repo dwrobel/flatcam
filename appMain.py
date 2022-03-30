@@ -10594,15 +10594,16 @@ class MenuFileHandlers(QtCore.QObject):
             if len(obj_selection) == 1:
                 obj_name = str(obj_selection[0].obj_options['name'])
             else:
-                obj_name = _("FlatCAM objects print")
+                obj_name = _("General_print")
         except AttributeError as att_err:
             self.log.debug("App.on_file_save_object_pdf() --> %s" % str(att_err))
-            self.inform.emit('[ERROR_NOTCL] %s' % _("No object is selected."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
             return
 
         if not obj_selection:
-            self.inform.emit('[ERROR_NOTCL] %s' % _("No object is selected."))
-            return
+            self.inform.emit(
+                '[WARNING_NOTCL] %s %s' % (_("No object is selected."), _("Print everything in the workspace.")))
+            obj_selection = self.app.collection.get_list()
 
         filter_ = "PDF File .pdf (*.PDF);; All Files (*.*)"
         try:
