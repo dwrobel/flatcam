@@ -19,6 +19,7 @@ CHANGELOG for FlatCAM Evo beta
 - when changing workspace orientation fixed leaving behind the old frame on the canvas
 - improved how the PDF printing works: now the Excellon files are always on top and from the rest of objects the first selected is on top, below the Excellons
 - when doing PDF printing and no object is selected now the default action is to print everything that fits within the workspace
+- when doing PDF printing, the cncjob objects are prioritized and placed on top of Gerber objects
 
 29.03.2022
 
