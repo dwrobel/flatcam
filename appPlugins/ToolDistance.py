@@ -641,6 +641,11 @@ class Distance(AppTool):
     def display_angle(self, val):
         if val is not None:
             self.ui.angle_entry.set_value(str(self.app.dec_format(val, self.decimals)))
+            if val > 180:
+                val = 360 - val
+                val = -val
+            self.ui.angle2_entry.set_value(str(self.app.dec_format(val, self.decimals)))
+
 
     def display_start(self, val):
         if val:
@@ -867,10 +872,23 @@ class DistanceUI:
         res_grid.addWidget(self.angle_entry, 4, 1)
         res_grid.addWidget(FCLabel("%s" % "°"), 4, 2)
 
+        # Angle 2
+        self.angle2_label = FCLabel('%s 2:' % _("Angle"))
+        self.angle2_label.setToolTip(_("This is orientation angle of the measuring line."))
+
+        self.angle2_entry = FCEntry()
+        self.angle2_entry.setReadOnly(True)
+        self.angle2_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.angle2_entry.setToolTip(_("This is orientation angle of the measuring line."))
+
+        res_grid.addWidget(self.angle2_label, 6, 0)
+        res_grid.addWidget(self.angle2_entry, 6, 1)
+        res_grid.addWidget(FCLabel("%s" % "°"), 6, 2)
+
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        res_grid.addWidget(separator_line, 6, 0, 1, 3)
+        res_grid.addWidget(separator_line, 8, 0, 1, 3)
 
         # Distance
         self.total_distance_label = FCLabel("<b>%s:</b>" % _('DISTANCE'))
@@ -882,9 +900,9 @@ class DistanceUI:
                                                QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.total_distance_entry.setToolTip(_("This is the point to point Euclidian distance."))
 
-        res_grid.addWidget(self.total_distance_label, 8, 0)
-        res_grid.addWidget(self.total_distance_entry, 8, 1)
-        res_grid.addWidget(FCLabel("%s" % self.units), 8, 2)
+        res_grid.addWidget(self.total_distance_label, 10, 0)
+        res_grid.addWidget(self.total_distance_entry, 10, 1)
+        res_grid.addWidget(FCLabel("%s" % self.units), 10, 2)
 
         # Buttons
         self.measure_btn = FCButton(_("Measure"))

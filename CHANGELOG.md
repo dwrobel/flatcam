@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM Evo beta
 - fixed the OR-tools path optimization (it required now a cast to int when creating the distances' matrix)
 - in Distance Plugin made sure that the grid snapping restore is working properly (previously it always restored it to the ON state)
 - the HUD display is no longer default active on new installations
+- in Distance Plugin: added a new way to display the angle (angles between 181° and 359° are subtracted from 360°)
 
 29.03.2022
 
