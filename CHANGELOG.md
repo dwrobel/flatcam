@@ -15,6 +15,8 @@ CHANGELOG for FlatCAM Evo beta
 - the HUD display is no longer default active on new installations
 - in Distance Plugin: added a new way to display the angle (angles between 181° and 359° are subtracted from 360°)
 - in Distance Plugin: "snap to center" feature now works outside the Editors too (for Gerber object pads and Excellon object drill holes)
+- some minor changes in Distance Plugin
+- when changing workspace orientation fixed leaving behind the old frame on the cavnas
 
 29.03.2022
 

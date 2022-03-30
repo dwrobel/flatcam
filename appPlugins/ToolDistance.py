@@ -205,6 +205,7 @@ class Distance(AppTool):
         self.display_start((0.0, 0.0))
         self.display_end((0.0, 0.0))
         self.ui.angle_entry.set_value('%.*f' % (self.decimals, 0.0))
+        self.ui.angle2_entry.set_value('%.*f' % (self.decimals, 0.0))
         self.ui.distance_x_entry.set_value('%.*f' % (self.decimals, 0.0))
         self.ui.distance_y_entry.set_value('%.*f' % (self.decimals, 0.0))
         self.ui.total_distance_entry.set_value('%.*f' % (self.decimals, 0.0))
@@ -560,6 +561,8 @@ class Distance(AppTool):
             self.ui.distance_y_entry.setDisabled(True)
             self.ui.angle_label.setDisabled(True)
             self.ui.angle_entry.setDisabled(True)
+            self.ui.angle2_label.setDisabled(True)
+            self.ui.angle2_entry.setDisabled(True)
         else:
             self.ui.distance_x_label.setDisabled(False)
             self.ui.distance_x_entry.setDisabled(False)
@@ -567,6 +570,8 @@ class Distance(AppTool):
             self.ui.distance_y_entry.setDisabled(False)
             self.ui.angle_label.setDisabled(False)
             self.ui.angle_entry.setDisabled(False)
+            self.ui.angle2_label.setDisabled(False)
+            self.ui.angle2_entry.setDisabled(False)
 
     def on_cursor_change(self, val):
         if val:

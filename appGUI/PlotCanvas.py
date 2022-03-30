@@ -418,6 +418,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         :param workspace_size: the workspace size; tuple
         :return:
         """
+        self.delete_workspace()
         try:
             if self.fcapp.app_units.upper() == 'MM':
                 dims = self.pagesize_dict[workspace_size]
