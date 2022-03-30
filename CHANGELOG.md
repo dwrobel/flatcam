@@ -16,7 +16,8 @@ CHANGELOG for FlatCAM Evo beta
 - in Distance Plugin: added a new way to display the angle (angles between 181° and 359° are subtracted from 360°)
 - in Distance Plugin: "snap to center" feature now works outside the Editors too (for Gerber object pads and Excellon object drill holes)
 - some minor changes in Distance Plugin
-- when changing workspace orientation fixed leaving behind the old frame on the cavnas
+- when changing workspace orientation fixed leaving behind the old frame on the canvas
+- improved how the PDF printing works: now the Excellon files are always on top and from the rest of objects the first selected is on top, below the Excellons
 
 29.03.2022
 

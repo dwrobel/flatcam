@@ -10696,6 +10696,13 @@ class MenuFileHandlers(QtCore.QObject):
             }
         )
 
+        # make sure that the Excellon objeacts are drawn on top of everything
+        excellon_objs = [obj for obj in obj_selection if obj.kind == 'excellon']
+        # reverse the object order such that the first selected is on top
+        non_excellon_objs = [obj for obj in obj_selection if obj.kind != 'excellon'][::-1]
+        obj_selection = non_excellon_objs + excellon_objs
+
+        # generate the SVG files from the application objects
         exported_svg = []
         for obj in obj_selection:
             svg_obj = obj.export_svg(scale_stroke_factor=0.0)
