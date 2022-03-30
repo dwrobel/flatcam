@@ -5,13 +5,9 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore
-
-from appTool import AppTool
+from appTool import *
 from appGUI.VisPyVisuals import *
 from appGUI.GUIElements import FCEntry, FCButton, FCCheckBox, FCLabel, VerticalScrollArea, FCGridLayout, FCFrame
-
-from shapely.geometry import Point, MultiLineString, Polygon
 
 import appTranslation as fcTranslate
 from camlib import AppRTreeStorage
@@ -165,19 +161,24 @@ class Distance(AppTool):
         self.ui.snap_center_cb.set_value(self.app.options['tools_dist_snap_center'])
         self.ui.big_cursor_cb.set_value(self.app.options['tools_dist_big_cursor'])
 
-        # snap center works only for Gerber and Execellon Editor's
-        if self.original_call_source == 'exc_editor' or self.original_call_source == 'grb_editor':
-            self.ui.snap_center_cb.show()
-            snap_center = self.app.options['tools_dist_snap_center']
-            self.on_snap_toggled(snap_center)
+        # # snap center works only for Gerber and Execellon Editor's
+        # if self.original_call_source == 'exc_editor' or self.original_call_source == 'grb_editor':
+        #     self.ui.snap_center_cb.show()
+        #     snap_center = self.app.options['tools_dist_snap_center']
+        #     self.on_snap_toggled(snap_center)
+        #
+        #     self.ui.snap_center_cb.toggled.connect(self.on_snap_toggled)
+        # else:
+        #     self.ui.snap_center_cb.hide()
+        #     try:
+        #         self.ui.snap_center_cb.toggled.disconnect(self.on_snap_toggled)
+        #     except (TypeError, AttributeError):
+        #         pass
+        self.ui.snap_center_cb.show()
+        snap_center = self.app.options['tools_dist_snap_center']
+        self.on_snap_toggled(snap_center)
 
-            self.ui.snap_center_cb.toggled.connect(self.on_snap_toggled)
-        else:
-            self.ui.snap_center_cb.hide()
-            try:
-                self.ui.snap_center_cb.toggled.disconnect(self.on_snap_toggled)
-            except (TypeError, AttributeError):
-                pass
+        self.ui.snap_center_cb.toggled.connect(self.on_snap_toggled)
 
         # this is a hack; seems that triggering the grid will make the visuals better
         # trigger it twice to return to the original state
@@ -336,7 +337,7 @@ class Distance(AppTool):
         self.app.plotcanvas.cursor_color = self.cursor_color_memory
 
         # restore the grid status
-        if self.app.ui.grid_snap_btn.isChecked() !=  self.grid_status_memory:
+        if self.app.ui.grid_snap_btn.isChecked() != self.grid_status_memory:
             self.app.ui.grid_snap_btn.trigger()
 
         if self.tool_done is False:
@@ -485,7 +486,7 @@ class Distance(AppTool):
                     for shape_stored in self.app.grb_editor.storage_dict[storage]['geometry']:
                         if 'solid' in shape_stored.geo:
                             geometric_data = shape_stored.geo['solid']
-                            if Point(current_pt).within(geometric_data):
+                            if current_pt.within(geometric_data):
                                 if isinstance(shape_stored.geo['follow'], Point):
                                     clicked_pads.append(shape_stored.geo['follow'])
                 except KeyError:
@@ -500,9 +501,51 @@ class Distance(AppTool):
             if clicked_pads:
                 pos = (clicked_pads[0].x, clicked_pads[0].y)
 
+        elif self.original_call_source == 'app':
+            loaded_obj_list = self.app.collection.get_list()
+            snapable_obj_list = [o for o in loaded_obj_list if o.kind == 'excellon' or o.kind == 'gerber']
+            if not snapable_obj_list:
+                return pos
+
+            clicked_geo = []
+            for obj in snapable_obj_list:
+                if obj.kind == 'gerber':
+                    for t in obj.tools:
+                        if obj.tools[t]['geometry']:
+                            for geo_dict in obj.tools[t]['geometry']:
+                                if isinstance(geo_dict['follow'], Point):
+                                    if current_pt.within(geo_dict['solid']):
+                                        clicked_geo.append(geo_dict['follow'])
+                elif obj.kind == 'excellon':
+                    for t in obj.tools:
+                        if obj.tools[t]['solid_geometry']:
+                            for drill_geo in obj.tools[t]['solid_geometry']:
+                                if current_pt.within(drill_geo):
+                                    clicked_geo.append(drill_geo.centroid)
+
+            if clicked_geo:
+                # search for 'pad within pad' or 'drill within drill' situation and choose the closest geo center
+                tree = STRtree(clicked_geo)
+                closest_pt = tree.nearest(current_pt)
+                assert isinstance(closest_pt, Point)
+                # snap to the closest geometry in the clicked_geo list
+                pos = (closest_pt.x, closest_pt.y)
+            else:
+                return pos
+        else:
+            return pos
+
         self.app.on_jump_to(custom_location=pos, fit_center=False)
         # Update cursor
         self.app.app_cursor.enabled = True
+        if self.ui.big_cursor_cb.get_value():
+            self.app.on_cursor_type(val="big", control_cursor=True)
+            self.cursor_color_memory = self.app.plotcanvas.cursor_color
+            if self.app.use_3d_engine is True:
+                self.app.plotcanvas.cursor_color = '#000000FF'
+            else:
+                self.app.plotcanvas.cursor_color = '#000000'
+
         self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
                                      symbol='++', edge_color='#000000',
                                      edge_width=self.app.options["global_cursor_width"],
@@ -645,7 +688,6 @@ class Distance(AppTool):
                 val = 360 - val
                 val = -val
             self.ui.angle2_entry.set_value(str(self.app.dec_format(val, self.decimals)))
-
 
     def display_start(self, val):
         if val:

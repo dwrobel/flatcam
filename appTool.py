@@ -8,7 +8,8 @@
 
 from PyQt6 import QtCore, QtWidgets, QtGui
 
-from shapely.geometry import Polygon, LineString
+from shapely.geometry import Polygon, LineString, box, MultiPolygon, MultiPoint, MultiLineString, LinearRing, Point
+from shapely.strtree import STRtree
 
 import gettext
 import appTranslation as fcTranslate
