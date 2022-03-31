@@ -5,24 +5,8 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtGui, QtCore
-from appTool import AppTool
-
-from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCCheckBox, OptionalInputSection, FCComboBox, \
-    FCButton, FCLabel, VerticalScrollArea, FCGridLayout, FCFrame
+from appTool import *
 from camlib import grace
-
-from copy import deepcopy
-import numpy as np
-
-import shapely.affinity as affinity
-from shapely.ops import unary_union, linemerge, snap
-from shapely.geometry import LineString, MultiLineString, Polygon, MultiPolygon
-
-import gettext
-import appTranslation as fcTranslate
-import builtins
-import logging
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -328,18 +312,18 @@ class Panelize(AppTool):
         boxname = self.ui.box_combo.currentText()
 
         try:
-            box = self.app.collection.get_by_name(boxname)
+            box_obj = self.app.collection.get_by_name(boxname)
         except Exception as e:
             self.app.log.error("Panelize.on_panelize() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), boxname))
             return
 
-        if box is None:
+        if box_obj is None:
             self.app.inform.emit('[WARNING_NOTCL] %s: %s' % (_("No object Box. Using instead"), panel_source_obj))
             self.ui.reference_radio.set_value('bbox')
 
         if self.ui.reference_radio.get_value() == 'bbox':
-            box = panel_source_obj
+            box_obj = panel_source_obj
 
         self.outname = name + '_panelized'
 
@@ -365,7 +349,7 @@ class Panelize(AppTool):
                                  _("Columns or Rows are zero value. Change them to a positive integer."))
             return
 
-        xmin, ymin, xmax, ymax = box.bounds()
+        xmin, ymin, xmax, ymax = box_obj.bounds()
         lenghtx = xmax - xmin + spacing_columns
         lenghty = ymax - ymin + spacing_rows
 
@@ -450,7 +434,7 @@ class Panelize(AppTool):
                                                 raise grace
 
                                             # offset / panelization
-                                            point_offseted = affinity.translate(drill, currentx, currenty)
+                                            point_offseted = translate(drill, currentx, currenty)
                                             obj_fin.tools[tool]['drills'].append(point_offseted)
 
                                             # update progress
@@ -474,8 +458,8 @@ class Panelize(AppTool):
                                                 raise grace
 
                                             # offset / panelization
-                                            start_offseted = affinity.translate(slot[0], currentx, currenty)
-                                            stop_offseted = affinity.translate(slot[1], currentx, currenty)
+                                            start_offseted = translate(slot[0], currentx, currenty)
+                                            stop_offseted = translate(slot[1], currentx, currenty)
                                             offseted_slot = (
                                                 start_offseted,
                                                 stop_offseted
@@ -522,7 +506,7 @@ class Panelize(AppTool):
                                     geoms.append(res_geo)
                             return geoms
                         else:
-                            return affinity.translate(geom, xoff=currentx, yoff=currenty)
+                            return translate(geom, xoff=currentx, yoff=currenty)
 
                     new_obj.solid_geometry = []
 
@@ -836,7 +820,7 @@ class Panelize(AppTool):
                                     geoms.append(res_geo)
                             return geoms
                         else:
-                            return affinity.translate(geom, xoff=currentx, yoff=currenty)
+                            return translate(geom, xoff=currentx, yoff=currenty)
 
                     new_obj.solid_geometry = []
 

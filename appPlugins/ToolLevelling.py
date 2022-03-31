@@ -5,34 +5,19 @@
 # License:  MIT Licence                                    #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-from PyQt6.QtCore import Qt
-
+from appTool import *
 from appObjects.AppObjectTemplate import ObjectDeleted
-from appTool import AppTool
 from appGUI.VisPyVisuals import *
 from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
-from appGUI.GUIElements import RadioSet, FCButton, FCComboBox, FCLabel, FCFileSaveDialog, FCCheckBox, FCTable, \
-    FCDoubleSpinner, FCSpinner, FCDetachableTab, FCZeroAxes, FCJog, FCSliderWithDoubleSpinner, RotatedToolButton, \
-    FCEntry, VerticalScrollArea, FCGridLayout, FCFrame, FCComboBox2
 from appEditors.AppTextEditor import AppTextEditor
 
 from camlib import CNCjob
 
-from copy import deepcopy
 import time
 import serial
 import glob
 import random
-import sys
 from io import StringIO
-from datetime import datetime
-
-import numpy as np
-
-from shapely.ops import unary_union
-from shapely.geometry import Point, MultiPoint, box, MultiPolygon
-import shapely.affinity as affinity
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
@@ -47,11 +32,6 @@ except Exception:
         # from appCommon.Common import voronoi_diagram
     except Exception:
         VORONOI_ENABLED = False
-
-import logging
-import gettext
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -263,7 +243,7 @@ class ToolLevelling(AppTool, CNCjob):
 
         # Shapes container for the Voronoi cells in Autolevelling
         if self.app.use_3d_engine:
-            self.probing_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
+            self.probing_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1, pool=self.app.pool)
         else:
             self.probing_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=name + "_probing_shapes")
 
@@ -352,7 +332,8 @@ class ToolLevelling(AppTool, CNCjob):
 
             # Shapes container for the Voronoi cells in Autolevelling
             if self.app.use_3d_engine:
-                self.probing_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
+                self.probing_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1,
+                                                      pool=self.app.pool)
             else:
                 self.probing_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=obj_name + "_probing_shapes")
             return
@@ -745,7 +726,7 @@ class ToolLevelling(AppTool, CNCjob):
         except Exception as e:
             self.app.log.error("CNCJobObject.generate_voronoi_geometry() --> %s" % str(e))
             for pt_index in range(len(pts)):
-                new_pts[pt_index] = affinity.translate(
+                new_pts[pt_index] = translate(
                     new_pts[pt_index], random.random() * 1e-09, random.random() * 1e-09)
 
             pts_union = MultiPoint(new_pts)
@@ -1609,7 +1590,7 @@ class ToolLevelling(AppTool, CNCjob):
                 return
         except IOError:
             self.app.log.error("Failed to open height map file: %s" % filename)
-            self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open height map file"), filename))
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open height map file"), filename))
             return
 
         idx = 0
@@ -1729,7 +1710,7 @@ class ToolLevelling(AppTool, CNCjob):
             pass
 
     def reset_fields(self):
-        self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.ui.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
 
 
 class LevelUI:
@@ -1980,7 +1961,7 @@ class LevelUI:
         self.tools_box.addWidget(self.al_controller_label)
 
         self.c_frame = FCFrame()
-        self.tools_box.addWidget( self.c_frame)
+        self.tools_box.addWidget(self.c_frame)
 
         ctrl_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.c_frame.setLayout(ctrl_grid)

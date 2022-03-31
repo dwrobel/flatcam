@@ -5,24 +5,8 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-
-from appTool import AppTool
-from appGUI.GUIElements import FCDoubleSpinner, RadioSet, EvalEntry, FCTable, FCComboBox, FCButton, FCLabel, \
-    VerticalScrollArea, FCGridLayout, FCFrame, FCComboBox2
+from appTool import *
 from appCommon.Common import LoudDict
-
-from shapely.geometry import Point, Polygon, MultiPolygon, LineString
-from shapely.geometry import box as box
-from shapely.ops import unary_union
-
-import math
-import logging
-from copy import deepcopy
-
-import gettext
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -490,8 +474,7 @@ class ToolFiducials(AppTool):
 
                 :param center_pt:
                 :param side_size:
-                :return:
-                :type return:       Polygon
+                :return:            Polygon
                 """
                 half_s = side_size / 2
                 x_center = center_pt[0]
@@ -947,7 +930,7 @@ class FidoUI:
         self.points_table.setMinimumHeight(self.points_table.getHeight() + 2)
         self.points_table.setMaximumHeight(self.points_table.getHeight() + 2)
 
-        # remove the frame on the QLineEdit childrens of the table
+        # remove the frame on the QLineEdit children of the table
         for row in range(self.points_table.rowCount()):
             self.points_table.cellWidget(row, 2).setFrame(False)
 

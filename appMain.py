@@ -1158,12 +1158,12 @@ class App(QtCore.QObject):
         # VisPy visuals
         if self.use_3d_engine:
             try:
-                self.tool_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
+                self.tool_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1, pool=self.pool)
             except AttributeError:
                 self.tool_shapes = None
 
             # Storage for Hover Shapes
-            self.hover_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
+            self.hover_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1, pool=self.pool)
         else:
             from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.tool_shapes = ShapeCollectionLegacy(obj=self, app=self, name="tool")
@@ -5133,7 +5133,7 @@ class App(QtCore.QObject):
                                              _("Please enter a tool diameter with non-zero value, in Float format."))
                             return
                         try:
-                            self.collection.get_active().on_tool_add(clicked_state=False, dia=float(val))
+                            self.collection.get_active().on_tool_add(dia=float(val))
                         except Exception as tadd_err:
                             self.log.debug("App.on_tool_add_keypress() --> %s" % str(tadd_err))
                     else:

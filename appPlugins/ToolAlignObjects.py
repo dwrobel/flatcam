@@ -5,20 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-from appTool import AppTool
-
-from appGUI.GUIElements import FCComboBox, RadioSet, FCLabel, FCButton, VerticalScrollArea, FCGridLayout, FCFrame
-
-import math
-
-from shapely.geometry import Point
-from shapely.affinity import translate
-
-import gettext
-import appTranslation as fcTranslate
-import builtins
-import logging
+from appTool import *
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:

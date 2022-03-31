@@ -5,29 +5,13 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtGui, QtCore, QtWidgets
-
-from appTool import AppTool
+from appTool import *
 from appCommon.Common import LoudDict
-from appGUI.GUIElements import FCComboBox, FCEntry, FCTable, FCDoubleSpinner, FCSpinner, FCFileSaveDialog, \
-    FCInputSpinner, FCButton, VerticalScrollArea, FCGridLayout, FCLabel, FCFrame, FCComboBox2
 
 from camlib import distance
 from appEditors.AppTextEditor import AppTextEditor
 
-from copy import deepcopy
-from datetime import datetime
-import re
-
-from shapely.geometry import Polygon, LineString, MultiPolygon, MultiLineString, Point
-from shapely.ops import unary_union
-
-import traceback
 from io import StringIO
-
-import gettext
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -185,7 +169,7 @@ class SolderPaste(AppTool):
 
         for option in self.app.options:
             if option.find('tools_') == 0:
-                self.obj_options[option] = deepcopy(self.app.options[option] )
+                self.obj_options[option] = deepcopy(self.app.options[option])
         self.read_form_to_options()
 
         self.clear_context_menu()
@@ -276,7 +260,8 @@ class SolderPaste(AppTool):
         # make the diameter column editable
         for row in range(tool_id):
             self.ui.tools_table.item(row, 1).setFlags(
-                QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+                QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsSelectable |
+                QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         # all the tools are selected by default
         self.ui.tools_table.selectColumn(0)
@@ -374,6 +359,7 @@ class SolderPaste(AppTool):
         # on any change to the widgets that matter it will be called self.gui_form_to_storage which will save the
         # changes in geometry UI
         for grid in self.ui.tools_box.parentWidget().findChildren(FCGridLayout):
+            assert isinstance(grid, QtWidgets.QGridLayout)
             for i in range(grid.count()):
                 wdg = grid.itemAt(i).widget()
                 if isinstance(wdg, (FCComboBox, FCComboBox2)):
@@ -389,6 +375,7 @@ class SolderPaste(AppTool):
     def ui_disconnect(self):
         # if connected, disconnect the signal from the slot on item_changed as it creates issues
         for grid in self.ui.tools_box.parentWidget().findChildren(FCGridLayout):
+            assert isinstance(grid, QtWidgets.QGridLayout)
             for i in range(grid.count()):
                 wdg = grid.itemAt(i).widget()
                 if isinstance(wdg, (FCComboBox, FCComboBox2)):
@@ -820,9 +807,9 @@ class SolderPaste(AppTool):
                 geo_obj.tools[tooluid]['solid_geometry'] = []
                 geo_obj.tools[tooluid]['type'] = 'SolderPaste'
 
-                geo_obj.tools[tooluid]['data']['tools_mill_offset_type']= 0  # 'Path'
+                geo_obj.tools[tooluid]['data']['tools_mill_offset_type'] = 0  # 'Path'
                 geo_obj.tools[tooluid]['data']['tools_mill_offset_value'] = 0.0
-                geo_obj.tools[tooluid]['data']['tools_mill_job_type'] = 'SP'  #'
+                geo_obj.tools[tooluid]['data']['tools_mill_job_type'] = 'SP'  # ''
                 geo_obj.tools[tooluid]['data']['tools_mill_tool_shape'] = 'DN'  # 'DN'
 
                 # self.flat_geometry is a list of LinearRings produced by flatten() from the exteriors of the Polygons
@@ -1704,7 +1691,7 @@ class SolderUI:
 
         # action to be added in the combobox context menu
         self.combo_context_del_action = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/trash16.png'),
-                                                          _("Delete Object"))
+                                                      _("Delete Object"))
 
         # #################################### FINSIHED GUI ###########################
         # #############################################################################

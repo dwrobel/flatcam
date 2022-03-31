@@ -5,28 +5,10 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtGui, QtCore
-from appTool import AppTool
-from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox, OptionalInputSection, FCButton, \
-    FCLabel, VerticalScrollArea, FCGridLayout, FCFrame, FCComboBox2
-
-from shapely.geometry import box, MultiPolygon, Polygon, LineString, LinearRing, MultiLineString, Point
-from shapely.ops import unary_union, linemerge
-import shapely.affinity as affinity
-from camlib import flatten_shapely_geometry
-
+from appTool import *
+from camlib import grace, flatten_shapely_geometry
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
-
 from numpy import Inf
-from copy import deepcopy
-import math
-import logging
-import gettext
-import sys
-import simplejson as json
-
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -1168,8 +1150,8 @@ class CutOut(AppTool):
                                 except TypeError:
                                     gaps_solid_geo.append(self_c.subtract_geo(geom_struct, c_geo))
                     elif cutout_obj.kind == 'gerber' and margin < 0:
-                        msg = '[WARNING_NOTCL] %s' % _("Rectangular cutout with negative margin is not possible.")
-                        app_obj.inform.emit(msg)
+                        mesg = '[WARNING_NOTCL] %s' % _("Rectangular cutout with negative margin is not possible.")
+                        app_obj.inform.emit(mesg)
                         return "fail"
 
                 if not solid_geo:
@@ -1982,7 +1964,7 @@ class CutOut(AppTool):
 
         # rotate only if there is an angle to rotate to
         if rot_angle != 0:
-            cut_geo = affinity.rotate(cut_geo, -rot_angle)
+            cut_geo = rotate(cut_geo, -rot_angle)
 
         # Remove any previous utility shape
         self.app.geo_editor.tool_shape.clear(update=True)
@@ -2157,7 +2139,7 @@ class CutOut(AppTool):
                 maxx = -Inf
                 maxy = -Inf
 
-                work_geo = obj.geoms if isinstance(obj , (MultiPolygon, MultiLineString)) else obj
+                work_geo = obj.geoms if isinstance(obj, (MultiPolygon, MultiLineString)) else obj
                 for k in work_geo:
                     minx_, miny_, maxx_, maxy_ = bounds_rec(k)
                     minx = min(minx, minx_)

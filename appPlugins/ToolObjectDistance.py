@@ -5,20 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-from appTool import AppTool
-from appGUI.GUIElements import FCEntry, FCLabel, FCButton, VerticalScrollArea, FCGridLayout, FCFrame, FCComboBox2
-
-from shapely.ops import nearest_points
-from shapely.geometry import Point, MultiPolygon
-from shapely.ops import unary_union
-from copy import deepcopy
-
-import math
-import logging
-import gettext
-import appTranslation as fcTranslate
-import builtins
+from appTool import *
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:

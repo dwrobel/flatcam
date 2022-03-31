@@ -5,20 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-
-from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCLabel, FCTable, \
-    VerticalScrollArea, FCGridLayout, FCFrame
-
-from shapely.geometry import Point, MultiPolygon, Polygon, box
-
-from copy import deepcopy
-
-import logging
-import gettext
-import appTranslation as fcTranslate
-import builtins
+from appTool import *
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -1098,7 +1085,8 @@ class ExtractUI:
         self.apertures_table.horizontalHeaderItem(3).setToolTip(
             _("Mark the aperture instances on canvas."))
 
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                           QtWidgets.QSizePolicy.Policy.Preferred)
         self.apertures_table.setSizePolicy(sizePolicy)
         self.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.MultiSelection)
 

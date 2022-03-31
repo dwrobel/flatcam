@@ -4,24 +4,10 @@
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
 # ##########################################################
-from PyQt6 import QtGui, QtWidgets
-import os
 
-from shapely.geometry import shape
-from shapely.ops import unary_union
-from shapely.affinity import scale, translate
-
-import numpy as np
-
+from appTool import *
 from rasterio import open as rasterio_open
 from rasterio.features import shapes
-
-from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCComboBox, FCSpinner, FCLabel, VerticalScrollArea, FCGridLayout
-
-import gettext
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:

@@ -5,22 +5,8 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtGui
-
-from appTool import AppTool
-from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, OptionalInputSection, FCComboBox, FCLabel, FCButton, \
-    VerticalScrollArea, FCGridLayout, FCFrame
-from copy import deepcopy
-
+from appTool import *
 from appPool import *
-# from os import getpid
-from shapely.ops import nearest_points
-from shapely.geometry import MultiPolygon, Polygon
-
-import logging
-import gettext
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -135,7 +121,6 @@ class RulesCheck(AppTool):
 
         self.ui.e1_cb.stateChanged.connect(lambda st: self.ui.e1_object.setDisabled(not st))
         self.ui.e2_cb.stateChanged.connect(lambda st: self.ui.e2_object.setDisabled(not st))
-
 
         self.ui.run_button.clicked.connect(self.execute)
 
@@ -593,7 +578,7 @@ class RulesCheck(AppTool):
                 try:
                     # minimize the number of distances by not taking into considerations those that are too small
                     dist = abs(geo.exterior.distance(s_geo))
-                except Exception as e:
+                except Exception:
                     # log.error("RulesCheck.check_gerber_annular_ring() --> %s" % str(e))
                     pass
 
@@ -692,7 +677,7 @@ class RulesCheck(AppTool):
                         _("Value is not valid.")))
                     return
 
-                if self.copper_t_cb.get_value():
+                if self.ui.copper_t_cb.get_value():
                     copper_t_obj = self.ui.copper_t_object.currentText()
                     copper_t_dict = {}
 
@@ -789,7 +774,7 @@ class RulesCheck(AppTool):
                         _("Value is not valid.")))
                     return
 
-                if self.ss_t_cb.get_value():
+                if self.ui.ss_t_cb.get_value():
                     silk_obj = self.ui.ss_t_object.currentText()
                     if silk_obj != '':
                         silk_dict['name'] = deepcopy(silk_obj)
@@ -1826,6 +1811,7 @@ class RulesUI:
                    [self.outline_grid.itemAt(i).widget() for i in range(self.outline_grid.count())
                     if isinstance(self.outline_grid.itemAt(i).widget(), FCCheckBox)]
         for cb in cb_items:
+            assert isinstance(cb, FCCheckBox)
             if state:
                 cb.setChecked(True)
             else:
@@ -1835,6 +1821,7 @@ class RulesUI:
         cb_items = [self.exc_grid.itemAt(i).widget() for i in range(self.exc_grid.count())
                     if isinstance(self.exc_grid.itemAt(i).widget(), FCCheckBox)]
         for cb in cb_items:
+            assert isinstance(cb, FCCheckBox)
             if state:
                 cb.setChecked(True)
             else:
@@ -1844,6 +1831,7 @@ class RulesUI:
         cb_items = [self.copper_grid.itemAt(i).widget() for i in range(self.copper_grid.count())
                     if isinstance(self.copper_grid.itemAt(i).widget(), FCCheckBox)]
         for cb in cb_items:
+            assert isinstance(cb, FCCheckBox)
             if state:
                 cb.setChecked(True)
             else:
@@ -1853,6 +1841,7 @@ class RulesUI:
         cb_items = [self.silk_grid.itemAt(i).widget() for i in range(self.silk_grid.count())
                     if isinstance(self.silk_grid.itemAt(i).widget(), FCCheckBox)]
         for cb in cb_items:
+            assert isinstance(cb, FCCheckBox)
             if state:
                 cb.setChecked(True)
             else:
@@ -1862,6 +1851,7 @@ class RulesUI:
         cb_items = [self.solder_grid.itemAt(i).widget() for i in range(self.solder_grid.count())
                     if isinstance(self.solder_grid.itemAt(i).widget(), FCCheckBox)]
         for cb in cb_items:
+            assert isinstance(cb, FCCheckBox)
             if state:
                 cb.setChecked(True)
             else:
@@ -1871,6 +1861,7 @@ class RulesUI:
         cb_items = [self.holes_grid.itemAt(i).widget() for i in range(self.holes_grid.count())
                     if isinstance(self.holes_grid.itemAt(i).widget(), FCCheckBox)]
         for cb in cb_items:
+            assert isinstance(cb, FCCheckBox)
             if state:
                 cb.setChecked(True)
             else:

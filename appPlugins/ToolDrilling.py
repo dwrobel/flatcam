@@ -5,31 +5,9 @@
 # License:  MIT Licence                                    #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-
-from appTool import AppTool
-from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCButton, \
-    FCComboBox, OptionalInputSection, FCSpinner, NumericalEvalEntry, OptionalHideInputSection, FCLabel, \
-    NumericalEvalTupleEntry, FCComboBox2, VerticalScrollArea, FCGridLayout, FCFrame
+from appTool import *
 from appParsers.ParseExcellon import Excellon
-
-from copy import deepcopy
-
-import numpy as np
-
-from shapely.geometry import LineString
-
-import json
-import sys
-import re
-
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
-
-import logging
-import gettext
-import appTranslation as fcTranslate
-import builtins
-import platform
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -2080,7 +2058,8 @@ class ToolDrilling(AppTool, Excellon):
                                 drill_no = len(points[selected_id])
                                 for drill in points[selected_id]:
                                     sol_geo.append(
-                                        drill.buffer((selected_tooldia / 2.0), resolution=cnc_job_obj.geo_steps_per_circle)
+                                        drill.buffer((selected_tooldia / 2.0),
+                                                     resolution=cnc_job_obj.geo_steps_per_circle)
                                     )
 
                             slot_no = 0
@@ -2131,7 +2110,8 @@ class ToolDrilling(AppTool, Excellon):
                                 drill_no += len(points[selected_id])
                                 for drill in points[selected_id]:
                                     sol_geo.append(
-                                        drill.buffer((selected_tooldia / 2.0), resolution=cnc_job_obj.geo_steps_per_circle)
+                                        drill.buffer((selected_tooldia / 2.0),
+                                                     resolution=cnc_job_obj.geo_steps_per_circle)
                                     )
 
                             convert_slots = self.excellon_tools[selected_id]['data']['tools_drill_drill_slots']

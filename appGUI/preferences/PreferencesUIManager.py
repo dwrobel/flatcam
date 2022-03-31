@@ -316,6 +316,8 @@ class PreferencesUIManager(QtCore.QObject):
             "tools_iso_poly_ints":      self.ui.plugin_eng_pref_form.tools_iso_group.poly_int_cb,
             "tools_iso_force":          self.ui.plugin_eng_pref_form.tools_iso_group.force_iso_cb,
             "tools_iso_area_shape":     self.ui.plugin_eng_pref_form.tools_iso_group.area_shape_radio,
+            "tools_iso_simplification":     self.ui.plugin_eng_pref_form.tools_iso_group.simplify_cb,
+            "tools_iso_simplification_tol": self.ui.plugin_eng_pref_form.tools_iso_group.sim_tol_entry,
             "tools_iso_plotting":       self.ui.plugin_eng_pref_form.tools_iso_group.plotting_radio,
 
             # #########################################################################################################

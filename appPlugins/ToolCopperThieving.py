@@ -5,28 +5,11 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-
-from camlib import grace, flatten_shapely_geometry
-from appTool import AppTool
-from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCEntry, FCComboBox, FCLabel, FCCheckBox, \
-    VerticalScrollArea, FCGridLayout, FCFrame, FCComboBox2
+from appTool import *
 from appCommon.Common import LoudDict
-
+from appCommon.Common import GracefulException as grace
+from  camlib import flatten_shapely_geometry
 import shapely.geometry.base as base
-from shapely.ops import unary_union
-from shapely.geometry import Polygon, MultiPolygon, Point, LineString
-from shapely.geometry import box as box
-import shapely.affinity as affinity
-
-import logging
-from copy import deepcopy
-import numpy as np
-from collections.abc import Iterable
-
-import gettext
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -383,7 +366,7 @@ class ToolCopperThieving(AppTool):
                 self.ref_obj = self.app.collection.get_by_name(bound_obj_name)
             except Exception as e:
                 self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(e)))
-                return "Could not retrieve object: %s" % self.obj_name
+                return "Could not retrieve object: %s" % self.grb_object.obj_options['name']
 
             self.copper_thieving(
                 thieving_obj=self.grb_object,
@@ -787,7 +770,7 @@ class ToolCopperThieving(AppTool):
                 dx = bounding_box.centroid.x - thieving_box_geo.centroid.x
                 dy = bounding_box.centroid.y - thieving_box_geo.centroid.y
 
-                thieving_box_geo = affinity.translate(thieving_box_geo, xoff=dx, yoff=dy)
+                thieving_box_geo = translate(thieving_box_geo, xoff=dx, yoff=dy)
                 thieving_box_geo = flatten_shapely_geometry(thieving_box_geo)
 
                 thieving_geo = []
@@ -916,7 +899,7 @@ class ToolCopperThieving(AppTool):
                 geo_list.append(tool_obj.thief_solid_geometry)
 
                 # append into the 0 aperture
-                geo_elem = {'solid': tool_obj.new_solid_geometry, 'follow': tool_obj.new_solid_geometry.exterior}
+                geo_elem = {'solid': tool_obj.thief_solid_geometry, 'follow': tool_obj.thief_solid_geometry.exterior}
                 new_apertures[0]['geometry'].append(deepcopy(geo_elem))
 
             # prepare also the solid_geometry for the new object having the thieving geometry

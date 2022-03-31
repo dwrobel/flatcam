@@ -5,25 +5,8 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-
-from appTool import AppTool
-from appGUI.GUIElements import FCDoubleSpinner, EvalEntry, FCCheckBox, OptionalInputSection, FCEntry, \
-    VerticalScrollArea, FCTable, FCComboBox, RadioSet, FCGridLayout, FCLabel
+from appTool import *
 from appEditors.AppTextEditor import AppTextEditor
-
-from shapely.geometry import Point
-from shapely.geometry.base import *
-from shapely.affinity import scale, skew
-
-import math
-from datetime import datetime
-import logging
-from copy import deepcopy
-
-import gettext
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:

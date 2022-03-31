@@ -4,16 +4,8 @@
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
 # ##########################################################
-import numpy as np
-from PyQt6 import QtWidgets, QtGui
-from appTool import AppTool
-from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, NumericalEvalEntry, FCLabel, RadioSet, FCButton, \
-    VerticalScrollArea, FCGridLayout, FCFrame
-import math
 
-import gettext
-import appTranslation as fcTranslate
-import builtins
+from appTool import *
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -337,9 +329,9 @@ class ToolCalculator(AppTool):
     def on_calculate_growth(self):
         self.ui_disconnect()
         density = self.ui.cdensity_entry.get_value()
-        time = self.ui.time_entry.get_value()
+        g_time = self.ui.time_entry.get_value()
 
-        growth = time / (2.142857142857143 * float(20 / density))
+        growth = g_time / (2.142857142857143 * float(20 / density))
 
         self.ui.growth_entry.set_value(self.app.dec_format(growth, self.decimals))
         self.app.inform.emit('[success] %s' % _("Done."))

@@ -390,6 +390,8 @@ class AppDefaults:
         "tools_iso_poly_ints":      False,
         "tools_iso_force":          True,
         "tools_iso_area_shape":     "square",
+        "tools_iso_simplification":     False,
+        "tools_iso_simplification_tol": 0.01,
         "tools_iso_plotting":       'normal',
 
         # Drilling Plugin

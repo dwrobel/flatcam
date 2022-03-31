@@ -5,16 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtGui, QtCore
-from appTool import AppTool
-from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCButton, OptionalInputSection, FCComboBox, \
-    NumericalEvalTupleEntry, FCLabel, VerticalScrollArea, FCGridLayout, FCFrame
-
-import numpy as np
-
-import gettext
-import appTranslation as fcTranslate
-import builtins
+from appTool import *
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -517,14 +508,14 @@ class ToolTransform(AppTool):
                             self.app.inform.emit(_("CNCJob objects can't be buffered."))
                         elif sel_obj.kind.lower() == 'gerber':
                             sel_obj.buffer(value, join, factor)
-                            sel_obj.source_file = self.app.f_handlers.export_gerber(obj_name=sel_obj.obj_options['name'],
-                                                                                    filename=None, local_use=sel_obj,
-                                                                                    use_thread=False)
+                            sel_obj.source_file = self.app.f_handlers.export_gerber(
+                                obj_name=sel_obj.obj_options['name'], filename=None, local_use=sel_obj,
+                                use_thread=False)
                         elif sel_obj.kind.lower() == 'excellon':
                             sel_obj.buffer(value, join, factor)
-                            sel_obj.source_file = self.app.f_handlers.export_excellon(obj_name=sel_obj.obj_options['name'],
-                                                                                      filename=None, local_use=sel_obj,
-                                                                                      use_thread=False)
+                            sel_obj.source_file = self.app.f_handlers.export_excellon(
+                                obj_name=sel_obj.obj_options['name'], filename=None, local_use=sel_obj,
+                                use_thread=False)
                         elif sel_obj.kind.lower() == 'geometry':
                             sel_obj.buffer(value, join, factor)
 

@@ -243,7 +243,8 @@ class ExclusionAreas(QtCore.QObject):
         # VisPy visuals
         if self.app.use_3d_engine:
             try:
-                self.exclusion_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
+                self.exclusion_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1,
+                                                        pool=self.app.pool)
             except AttributeError:
                 self.exclusion_shapes = None
         else:

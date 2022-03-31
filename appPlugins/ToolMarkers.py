@@ -5,23 +5,9 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-
-from appTool import AppTool
+from appTool import *
 from appCommon.Common import LoudDict
-from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCComboBox, FCButton, RadioSet, FCLabel, \
-    VerticalScrollArea, FCGridLayout, FCFrame
 from camlib import flatten_shapely_geometry
-
-from shapely.geometry import MultiPolygon, LineString, Point
-from shapely.ops import unary_union
-
-from copy import deepcopy
-import logging
-
-import gettext
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -381,7 +367,8 @@ class ToolMarkers(AppTool):
         assert isinstance(geo_list, list), 'Geometry list should be a list but the type is: %s' % str(type(geo_list))
         new_name = '%s_%s' % (str(self.grb_object.obj_options['name']), 'markers')
 
-        return_val = self.generate_gerber_obj_with_markers(new_grb_obj=g_obj, marker_geometry=geo_list, outname=new_name)
+        return_val = self.generate_gerber_obj_with_markers(
+            new_grb_obj=g_obj, marker_geometry=geo_list, outname=new_name)
 
         return return_val
 
@@ -421,7 +408,7 @@ class ToolMarkers(AppTool):
             xmin, ymin, xmax, ymax = self.grb_object.bounds()
             center_x = (xmax - xmin) / 2
             center_y = (ymax - ymin) / 2
-            offset_x -=  center_x
+            offset_x -= center_x
             offset_y -= center_y
 
         return offset_x, offset_y
@@ -997,7 +984,7 @@ class ToolMarkers(AppTool):
         else:
             self.app.inform.emit('[success] %s' % _("Done."))
 
-    def on_points_changed(self, *args):
+    def on_points_changed(self):
         if self.points:
             self.ui.insert_frame.setDisabled(False)
             self.ui.insert_markers_button.setDisabled(False)
@@ -1126,8 +1113,8 @@ class ToolMarkers(AppTool):
         ])
 
         outline = '#0000FFAF'
-        for shape in [line_geo_hor, line_geo_vert]:
-            self.temp_shapes.add(shape, color=outline, update=True, layer=0, tolerance=None)
+        for shp in [line_geo_hor, line_geo_vert]:
+            self.temp_shapes.add(shp, color=outline, update=True, layer=0, tolerance=None)
 
         if self.app.use_3d_engine:
             self.temp_shapes.redraw()

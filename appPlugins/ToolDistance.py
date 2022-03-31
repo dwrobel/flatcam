@@ -7,17 +7,8 @@
 
 from appTool import *
 from appGUI.VisPyVisuals import *
-from appGUI.GUIElements import FCEntry, FCButton, FCCheckBox, FCLabel, VerticalScrollArea, FCGridLayout, FCFrame
-
-import appTranslation as fcTranslate
 from camlib import AppRTreeStorage
 from appEditors.AppGeoEditor import DrawToolShape
-
-from copy import copy
-import math
-import logging
-import gettext
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -83,7 +74,7 @@ class Distance(AppTool):
 
         # VisPy visuals
         if self.app.use_3d_engine:
-            self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
+            self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1, pool=self.app.pool)
         else:
             from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.sel_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name='measurement')

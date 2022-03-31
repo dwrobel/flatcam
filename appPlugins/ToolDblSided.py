@@ -1,20 +1,5 @@
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-
-from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCButton, FCComboBox, NumericalEvalTupleEntry, FCLabel, \
-    VerticalScrollArea, FCGridLayout, FCComboBox2, FCFrame
-
-from numpy import Inf
-from copy import deepcopy
-
-from shapely.geometry import Point
-from shapely import affinity
-
-import logging
-import gettext
-import appTranslation as fcTranslate
-import builtins
+from appTool import *
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -297,6 +282,7 @@ class DblSidedTool(AppTool):
         align_type = self.ui.align_type_radio.get_value()
         mode = self.ui.axis_location.get_value()
 
+        px = py = 0.0
         if align_type in ["X", "Y"]:
             if mode == "point":
                 try:
@@ -350,7 +336,7 @@ class DblSidedTool(AppTool):
 
             for hole in holes:
                 point = Point(hole)
-                point_mirror = affinity.scale(point, xscale, yscale, origin=(px, py))
+                point_mirror = scale(point, xscale, yscale, origin=(px, py))
 
                 tools[1]['drills'] += [point, point_mirror]
                 tools[1]['solid_geometry'] += [point, point_mirror]
@@ -1169,8 +1155,7 @@ class DsidedUI:
                                 }
                                 """)
         self.tools_box.addWidget(self.reset_button)
-        
-        
+
         self.align_type_radio.activated_custom.connect(self.on_align_type_changed)
         # #################################### FINSIHED GUI ###########################
         # #############################################################################

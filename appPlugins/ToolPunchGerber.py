@@ -5,25 +5,11 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtCore, QtWidgets, QtGui
-
-from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCTable, FCButton, FCLabel, \
-    VerticalScrollArea, FCGridLayout, FCFrame
-
-from copy import deepcopy
-import logging
-from shapely.geometry import MultiPolygon, Point
-from shapely.ops import unary_union
-
+from appTool import *
 from appParsers.ParseGerber import Gerber
-from camlib import Geometry, AppRTreeStorage, grace
+from camlib import Geometry
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
-
-import gettext
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -1812,26 +1798,6 @@ class ToolPunchGerber(AppTool, Gerber):
             key = event.key
 
         if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':
-            if self.area_sel_disconnect_flag is True:
-                try:
-                    if self.app.use_3d_engine:
-                        self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
-                        self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
-                        self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
-                    else:
-                        self.app.plotcanvas.graph_event_disconnect(self.mr)
-                        self.app.plotcanvas.graph_event_disconnect(self.mm)
-                        self.app.plotcanvas.graph_event_disconnect(self.kp)
-                except Exception as e:
-                    self.app.log.error("ToolPaint.on_key_press() _1 --> %s" % str(e))
-
-                self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
-                                                                      self.app.on_mouse_click_over_plot)
-                self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
-                                                                      self.app.on_mouse_move_over_plot)
-                self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
-                                                                      self.app.on_mouse_click_release_over_plot)
-
             if self.poly_sel_disconnect_flag is False:
                 try:
                     # restore the Grid snapping if it was active before
@@ -1931,10 +1897,12 @@ class ToolPunchGerber(AppTool, Gerber):
                                 }
                                 self.manual_pads.append(deepcopy(new_elem))
 
+                                sel_color = self.app.options['global_sel_draw_color'] + 'FF' if \
+                                    len(self.app.options['global_sel_draw_color']) == 7 else \
+                                    self.app.options['global_sel_draw_color']
                                 shape_id = self.app.tool_shapes.add(
                                     tolerance=self.grb_obj.drawing_tolerance, layer=0, shape=sol_geo,
-                                    color=self.app.options['global_sel_draw_color'] + 'FF',
-                                    face_color=self.app.options['global_sel_draw_color'] + 'FF', visible=True)
+                                    color=sel_color, face_color=sel_color, visible=True)
                                 self.poly_dict[shape_id] = sol_geo
         self.app.tool_shapes.redraw()
         self.app.inform.emit(_("All selectable pads are selected."))

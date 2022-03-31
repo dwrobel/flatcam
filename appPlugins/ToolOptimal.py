@@ -5,22 +5,8 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-
-from appTool import AppTool
-from appGUI.GUIElements import OptionalHideInputSection, FCTextArea, FCEntry, FCSpinner, FCCheckBox, FCComboBox, \
-    FCLabel, FCButton, VerticalScrollArea, FCGridLayout, FCFrame
+from appTool import *
 from camlib import grace
-
-from shapely.geometry import MultiPolygon
-from shapely.ops import nearest_points
-
-import numpy as np
-
-import logging
-import gettext
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
