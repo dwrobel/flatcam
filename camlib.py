@@ -3783,6 +3783,7 @@ class CNCjob(Geometry):
         self.z_feedrate = float(tool_dict['tools_mill_feedrate_z'])
         self.feedrate_rapid = float(tool_dict['tools_mill_feedrate_rapid'])
 
+        # this should not happen except for older projects
         try:
             self.laser_min_power = float(tool_dict['tools_mill_min_power'])
         except KeyError:
