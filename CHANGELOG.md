@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+1.04.2022
+
+- in Markers Plugin, for the manual mode added the choice to use a big cursor when manual placing markers
+
 31.03.2022
 
 - changed the app main icons, hopefully they are more visible on black backgrounds than the ones that FlatCAM has

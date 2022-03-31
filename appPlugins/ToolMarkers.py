@@ -24,6 +24,10 @@ class ToolMarkers(AppTool):
         self.app = app
         self.canvas = self.app.plotcanvas
 
+        self.cursor_color_memory = None
+        # store the current cursor type to be restored after manual geo
+        self.old_cursor_type = self.app.options["global_cursor_type"]
+
         self.decimals = self.app.decimals
         self.units = ''
 
@@ -156,6 +160,7 @@ class ToolMarkers(AppTool):
         self.ui.insert_type_radio.activated_custom.connect(self.on_insert_type_changed)
         self.app.proj_selection_changed.connect(self.on_object_selection_changed)
 
+        self.ui.big_cursor_cb.stateChanged.connect(self.on_cursor_change)
         self.ui.insert_markers_button.clicked.connect(self.on_insert_markers_in_external_objects)
 
     def set_tool_ui(self):
@@ -178,12 +183,14 @@ class ToolMarkers(AppTool):
         self.ui.toggle_all_cb.set_value(False)
         self.ui.type_radio.set_value(self.app.options["tools_markers_type"])
         self.ui.drill_dia_entry.set_value(self.app.options["tools_markers_drill_dia"])
-        self.ui.mode_radio.set_value("a")
+        self.ui.mode_radio.set_value(self.app.options["tools_markers_mode"])
 
         self.ui.insert_type_radio.set_value(val="grb")
 
+        self.ui.big_cursor_cb.set_value(self.app.options["tools_markers_big_cursor"])
+
         self.points.clear()
-        self.on_points_changed()
+        self.on_points_changed(None)
 
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
@@ -197,6 +204,9 @@ class ToolMarkers(AppTool):
         # Show/Hide Advanced Options
         app_mode = self.app.options["global_app_level"]
         self.change_level(app_mode)
+
+        # set cursor
+        self.old_cursor_type = self.app.options["global_cursor_type"]
 
     def change_level(self, level):
         """
@@ -264,6 +274,8 @@ class ToolMarkers(AppTool):
             self.ui.type_label.setDisabled(False)
             self.ui.type_radio.setDisabled(False)
             self.ui.off_frame.setDisabled(False)
+
+            self.ui.big_cursor_cb.hide()
         else:
             self.ui.locs_label.setDisabled(True)
             self.ui.loc_frame.setDisabled(True)
@@ -273,8 +285,29 @@ class ToolMarkers(AppTool):
             self.ui.off_frame.setDisabled(True)
             self.ui.type_radio.set_value('c')
 
+            self.ui.big_cursor_cb.show()
+
+    def on_cursor_change(self, val):
+        if val:
+            self.app.options['tools_markers_big_cursor'] = True
+        else:
+            self.app.options['tools_markers_big_cursor'] = False
+
     def add_markers(self):
         self.app.call_source = "markers_tool"
+
+        if self.ui.mode_radio.get_value() == 'm':
+            if self.ui.big_cursor_cb.get_value():
+                self.app.on_cursor_type(val="big", control_cursor=True)
+                self.cursor_color_memory = self.app.plotcanvas.cursor_color
+                if self.app.use_3d_engine is True:
+                    self.app.plotcanvas.cursor_color = '#000000FF'
+                else:
+                    self.app.plotcanvas.cursor_color = '#000000'
+                self.app.app_cursor.enabled = True
+            else:
+                self.app.on_cursor_type(val="small", control_cursor=True)
+                self.app.plotcanvas.cursor_color = self.cursor_color_memory
 
         # cleanup previous possible markers
         self.points.clear()
@@ -984,7 +1017,7 @@ class ToolMarkers(AppTool):
         else:
             self.app.inform.emit('[success] %s' % _("Done."))
 
-    def on_points_changed(self):
+    def on_points_changed(self, val=None):
         if self.points:
             self.ui.insert_frame.setDisabled(False)
             self.ui.insert_markers_button.setDisabled(False)
@@ -1005,6 +1038,10 @@ class ToolMarkers(AppTool):
 
     def on_exit(self, corner_gerber_obj=None, cancelled=None, ok=True):
         self.clear_utility_geometry()
+
+        # restore cursor
+        self.app.on_cursor_type(val=self.old_cursor_type, control_cursor=False)
+        self.app.plotcanvas.cursor_color = self.cursor_color_memory
 
         # plot the object
         if corner_gerber_obj:
@@ -1122,6 +1159,9 @@ class ToolMarkers(AppTool):
     def clear_utility_geometry(self):
         self.temp_shapes.clear(update=True)
         self.temp_shapes.redraw()
+
+    def on_plugin_cleanup(self):
+        self.on_exit(ok=False)
 
 
 class MarkersUI:
@@ -1374,6 +1414,12 @@ class MarkersUI:
         grid_sel.addWidget(self.mode_label, 0, 0)
         grid_sel.addWidget(self.mode_radio, 0, 1)
 
+        # Big Cursor
+        self.big_cursor_cb = FCCheckBox('%s' % _("Big cursor"))
+        self.big_cursor_cb.setToolTip(
+            _("Use a big cursor."))
+        grid_sel.addWidget(self.big_cursor_cb, 2, 0, 1, 2)
+
         # #############################################################################################################
         # ## Insert Corner Marker Button
         # #############################################################################################################
@@ -1458,6 +1504,10 @@ class MarkersUI:
         # Insert Markers Frame
         # #############################################################################################################
         self.insert_label = FCLabel('<span style="color:teal;"><b>%s</b></span>' % _('Insert Markers'))
+        self.insert_label.setToolTip(
+            _("Enabled only if markers are available (added to an object).\n"
+              "Those markers will be inserted in yet another object.")
+        )
         self.tools_box.addWidget(self.insert_label)
 
         self.insert_frame = FCFrame()

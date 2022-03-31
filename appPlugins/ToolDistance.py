@@ -61,14 +61,13 @@ class Distance(AppTool):
         # store the grid status here
         self.grid_status_memory = False
 
-        # store here the cursor color
-        self.cursor_color_memory = None
-
         # store here if the snap button was clicked
         self.snap_toggled = None
 
         self.mouse_is_dragging = False
 
+        # store here the cursor color
+        self.cursor_color_memory = None
         # store the current cursor type to be restored after manual geo
         self.old_cursor_type = self.app.options["global_cursor_type"]
 
