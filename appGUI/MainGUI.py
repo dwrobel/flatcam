@@ -1397,6 +1397,7 @@ class MainGUI(QtWidgets.QMainWindow):
         # ####################### TCL Shell DOCK ################################
         # #######################################################################
         self.shell_dock = FCDock(_("TCL Shell"), close_callback=self.toggle_shell_ui)
+        self.shell_dock.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/app24.png'))
         self.shell_dock.setObjectName('Shell_DockWidget')
         self.shell_dock.setAllowedAreas(QtCore.Qt.DockWidgetArea.AllDockWidgetAreas)
         self.shell_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable |
@@ -1913,12 +1914,13 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################## SET GUI Elements # ##########################
         # ########################################################################
         self.app_icon = QtGui.QIcon()
-        self.app_icon.addFile(self.app.resource_location + '/flatcam_icon16.png', QtCore.QSize(16, 16))
-        self.app_icon.addFile(self.app.resource_location + '/flatcam_icon24.png', QtCore.QSize(24, 24))
-        self.app_icon.addFile(self.app.resource_location + '/flatcam_icon32.png', QtCore.QSize(32, 32))
-        self.app_icon.addFile(self.app.resource_location + '/flatcam_icon48.png', QtCore.QSize(48, 48))
-        self.app_icon.addFile(self.app.resource_location + '/flatcam_icon128.png', QtCore.QSize(128, 128))
-        self.app_icon.addFile(self.app.resource_location + '/flatcam_icon256.png', QtCore.QSize(256, 256))
+        self.app_icon.addFile(self.app.resource_location + '/app16.png', QtCore.QSize(16, 16))
+        self.app_icon.addFile(self.app.resource_location + '/app24.png', QtCore.QSize(24, 24))
+        self.app_icon.addFile(self.app.resource_location + '/app32.png', QtCore.QSize(32, 32))
+        self.app_icon.addFile(self.app.resource_location + '/app48.png', QtCore.QSize(48, 48))
+        self.app_icon.addFile(self.app.resource_location + '/app64.png', QtCore.QSize(64, 64))
+        self.app_icon.addFile(self.app.resource_location + '/app128.png', QtCore.QSize(128, 128))
+        self.app_icon.addFile(self.app.resource_location + '/app256.png', QtCore.QSize(256, 256))
         self.setWindowIcon(self.app_icon)
 
         self.setGeometry(100, 100, 1024, 650)
@@ -2355,7 +2357,7 @@ class MainGUI(QtWidgets.QMainWindow):
             title = _("Clear GUI Settings")
             txt = _("Are you sure you want to delete the GUI Settings? \n")
             msgbox.setWindowTitle(title)  # taskbar still shows it
-            msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
+            msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/app128.png'))
             msgbox.setText('<b>%s</b>' % title)
             msgbox.setInformativeText(txt)
             msgbox.setIconPixmap(QtGui.QPixmap(self.app.resource_location + '/trash32.png'))
@@ -3414,7 +3416,7 @@ class MainGUI(QtWidgets.QMainWindow):
                         messagebox = FCMessageBox(parent=self)
                         title = _("Warning")
                         messagebox.setWindowTitle(title)  # taskbar still shows it
-                        messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
+                        messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/app128.png'))
                         messagebox.setText('<b>%s</b>' % title)
                         messagebox.setInformativeText(msg)
                         messagebox.setIcon(QtWidgets.QMessageBox.Icon.Warning)
@@ -3576,7 +3578,7 @@ class MainGUI(QtWidgets.QMainWindow):
                             messagebox = FCMessageBox(parent=self)
                             title = _("Warning")
                             messagebox.setWindowTitle(title)  # taskbar still shows it
-                            messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
+                            messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/app128.png'))
                             messagebox.setText('<b>%s</b>' % title)
                             messagebox.setInformativeText(msg)
                             messagebox.setIcon(QtWidgets.QMessageBox.Icon.Warning)
@@ -3620,12 +3622,12 @@ class MainGUI(QtWidgets.QMainWindow):
                         else:
                             msg = _(
                                 "Please select geometry items \n"
-                                "on which to perform Substraction Tool.")
+                                "on which to perform Subtraction.")
 
                             messagebox = FCMessageBox(parent=self)
                             title = _("Warning")
                             messagebox.setWindowTitle(title)  # taskbar still shows it
-                            messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
+                            messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/app128.png'))
                             messagebox.setText('<b>%s</b>' % title)
                             messagebox.setInformativeText(msg)
                             messagebox.setIcon(QtWidgets.QMessageBox.Icon.Warning)
@@ -3649,7 +3651,7 @@ class MainGUI(QtWidgets.QMainWindow):
                             messagebox = FCMessageBox(parent=self)
                             title = _("Warning")
                             messagebox.setWindowTitle(title)  # taskbar still shows it
-                            messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
+                            messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/app128.png'))
                             messagebox.setText('<b>%s</b>' % title)
                             messagebox.setInformativeText(msg)
                             messagebox.setIcon(QtWidgets.QMessageBox.Icon.Warning)

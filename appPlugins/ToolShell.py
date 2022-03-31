@@ -316,9 +316,9 @@ class FCShell(TermWidget):
         self._edit.set_model_data(self.app.myKeywords)
 
         app_icon = QtGui.QIcon()
-        app_icon.addFile(self.app.resource_location + '/flatcam_icon16.png', QtCore.QSize(16, 16))
-        app_icon.addFile(self.app.resource_location + '/flatcam_icon24.png', QtCore.QSize(24, 24))
-        app_icon.addFile(self.app.resource_location + '/flatcam_icon32.png', QtCore.QSize(32, 32))
+        app_icon.addFile(self.app.resource_location + '/app16.png', QtCore.QSize(16, 16))
+        app_icon.addFile(self.app.resource_location + '/app24.png', QtCore.QSize(24, 24))
+        app_icon.addFile(self.app.resource_location + '/app32.png', QtCore.QSize(32, 32))
 
         self.setWindowIcon(app_icon)
         self.setWindowTitle(_("FlatCAM Evo Shell"))

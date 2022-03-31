@@ -345,7 +345,7 @@ class AppTextEditor(QtWidgets.QWidget):
             title = _("End of document.")
             txt = '%s' % _("Start from beginning?")
             msgbox.setWindowTitle(_('Find'))  # taskbar still shows it
-            msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
+            msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/app128.png'))
             msgbox.setText('<b>%s</b>' % title)
             msgbox.setInformativeText(txt)
             msgbox.setIconPixmap(QtGui.QPixmap(self.app.resource_location + '/find32.png'))

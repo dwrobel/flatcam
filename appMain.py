@@ -1375,14 +1375,13 @@ class App(QtCore.QObject):
             # if running headless always have the systray to be able to quit the app correctly
             self.trayIcon = FlatCAMSystemTray(app=self,
                                               icon=QtGui.QIcon(self.resource_location +
-                                                               '/flatcam_icon32_green.png'),
+                                                               '/app32.png'),
                                               headless=True,
                                               parent=self.parent_w)
         else:
             if self.options["global_systray_icon"]:
                 self.trayIcon = FlatCAMSystemTray(app=self,
-                                                  icon=QtGui.QIcon(self.resource_location +
-                                                                   '/flatcam_icon32_green.png'),
+                                                  icon=QtGui.QIcon(self.resource_location + '/app32.png'),
                                                   parent=self.parent_w)
 
         # ###########################################################################################################
@@ -2739,7 +2738,7 @@ class App(QtCore.QObject):
             title = _("Exit Editor")
             txt = _("Do you want to save the edited object?")
             msgbox.setWindowTitle(title)    # taskbar still shows it
-            msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/flatcam_icon128.png'))
+            msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/app128.png'))
             msgbox.setText('<b>%s</b>' % title)
             msgbox.setInformativeText(txt)
             msgbox.setIconPixmap(QtGui.QPixmap(self.resource_location + '/save_as.png'))
@@ -3221,7 +3220,7 @@ class App(QtCore.QObject):
                 # self.setPalette(palette)
 
                 logo = FCLabel()
-                logo.setPixmap(QtGui.QPixmap(self.app.resource_location + '/flatcam_icon256.png'))
+                logo.setPixmap(QtGui.QPixmap(self.app.resource_location + '/app256.png'))
 
                 title = FCLabel(
                     "<font size=8><B>FlatCAM Evo</B></font><BR>"
@@ -3976,7 +3975,7 @@ class App(QtCore.QObject):
                 "If you can't get any informations about the application\n"
                 "use the YouTube channel link from the Help menu.")
         msgbox.setWindowTitle(title)  # taskbar still shows it
-        msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/flatcam_icon128.png'))
+        msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/app128.png'))
         msgbox.setText('<b>%s</b>\n\n' % title)
         msgbox.setInformativeText(txt)
 
@@ -4007,7 +4006,7 @@ class App(QtCore.QObject):
                     "\n"
                     "Do you want to Save the project?")
             msgbox.setWindowTitle(title)  # taskbar still shows it
-            msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/flatcam_icon128.png'))
+            msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/app128.png'))
             msgbox.setText('<b>%s</b>' % title)
             msgbox.setInformativeText(txt)
             msgbox.setIconPixmap(QtGui.QPixmap(self.resource_location + '/save_as.png'))
@@ -4973,7 +4972,7 @@ class App(QtCore.QObject):
                 "will scale all objects.\n\n"
                 "Do you want to continue?")
         msgbox.setWindowTitle(title)  # taskbar still shows it
-        msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/flatcam_icon128.png'))
+        msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/app128.png'))
         msgbox.setText('<b>%s</b>' % title)
         msgbox.setInformativeText(txt)
         msgbox.setIconPixmap(QtGui.QPixmap(self.resource_location + '/toggle_units32.png'))
@@ -5145,7 +5144,7 @@ class App(QtCore.QObject):
                     txt = _("Adding Tool works only when Advanced is checked.\n"
                             "Go to Preferences -> General - Show Advanced Options.")
                     msgbox.setWindowTitle(title)  # taskbar still shows it
-                    msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/flatcam_icon128.png'))
+                    msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/app128.png'))
                     msgbox.setText('<b>%s</b>' % title)
                     msgbox.setInformativeText(txt)
                     msgbox.setIconPixmap(QtGui.QPixmap(self.resource_location + '/warning.png'))
@@ -5236,7 +5235,7 @@ class App(QtCore.QObject):
                 txt = _("Are you sure you want to permanently delete\n"
                         "the selected objects?")
                 msgbox.setWindowTitle(title)  # taskbar still shows it
-                msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/flatcam_icon128.png'))
+                msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/app128.png'))
                 msgbox.setText('<b>%s</b>' % title)
                 msgbox.setInformativeText(txt)
                 msgbox.setIconPixmap(QtGui.QPixmap(self.resource_location + '/deleteshape32.png'))
@@ -6815,7 +6814,7 @@ class App(QtCore.QObject):
                 txt = _("One or more Tools are edited.\n"
                         "Do you want to save?")
                 msgbox.setWindowTitle(title)  # taskbar still shows it
-                msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/flatcam_icon128.png'))
+                msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/app128.png'))
                 msgbox.setText('<b>%s</b>' % title)
                 msgbox.setInformativeText(txt)
                 msgbox.setIconPixmap(QtGui.QPixmap(self.resource_location + '/save_as.png'))
@@ -9743,7 +9742,7 @@ class MenuFileHandlers(QtCore.QObject):
             msg = _("Only Geometry, Gerber and CNCJob objects can be used.")
             msgbox = FCMessageBox(parent=self.app.ui)
             msgbox.setWindowTitle(msg)  # taskbar still shows it
-            msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
+            msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/app128.png'))
 
             msgbox.setInformativeText(msg)
             msgbox.setIconPixmap(QtGui.QPixmap(self.app.resource_location + '/waning.png'))
@@ -10094,7 +10093,7 @@ class MenuFileHandlers(QtCore.QObject):
             msg = _("Only Geometry objects can be used.")
             msgbox = FCMessageBox(parent=self.app.ui)
             msgbox.setWindowTitle(msg)  # taskbar still shows it
-            msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
+            msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/app128.png'))
 
             msgbox.setInformativeText(msg)
             msgbox.setIconPixmap(QtGui.QPixmap(self.app.resource_location + '/waning.png'))
@@ -10207,7 +10206,7 @@ class MenuFileHandlers(QtCore.QObject):
                     "Creating a New project will delete them.\n"
                     "Do you want to Save the project?")
             msgbox.setWindowTitle(title)  # taskbar still shows it
-            msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
+            msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/app128.png'))
             msgbox.setText('<b>%s</b>' % title)
             msgbox.setInformativeText(txt)
             msgbox.setIconPixmap(QtGui.QPixmap(self.app.resource_location + '/save_as.png'))
@@ -11968,7 +11967,7 @@ class MenuFileHandlers(QtCore.QObject):
                                 "It may not load correctly.\n\n"
                                 "Do you want to continue?")
                         msgbox.setWindowTitle(title)  # taskbar still shows it
-                        msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
+                        msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/app128.png'))
                         msgbox.setText('<b>%s</b>' % title)
                         msgbox.setInformativeText(txt)
                         msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
@@ -12005,7 +12004,7 @@ class MenuFileHandlers(QtCore.QObject):
             title = _("Import Settings")
             txt = _("Do you want to import the loaded project settings?")
             msgbox.setWindowTitle(title)  # taskbar still shows it
-            msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/flatcam_icon128.png'))
+            msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/app128.png'))
             msgbox.setText('<b>%s</b>' % title)
             msgbox.setInformativeText(txt)
             msgbox.setIconPixmap(QtGui.QPixmap(self.app.resource_location + '/import.png'))

@@ -3429,7 +3429,7 @@ class AppGeoEditor(QtCore.QObject):
         self.tools_box.addLayout(self.title_box)
 
         # ## Page Title icon
-        pixmap = QtGui.QPixmap(self.app.resource_location + '/flatcam_icon32.png')
+        pixmap = QtGui.QPixmap(self.app.resource_location + '/app32.png')
         self.icon = FCLabel()
         self.icon.setPixmap(pixmap)
         self.title_box.addWidget(self.icon, stretch=0)

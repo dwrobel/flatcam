@@ -4011,7 +4011,7 @@ class AppExcEditorUI:
         self.ui_vertical_lay.addLayout(self.title_box)
 
         # Page Title
-        pixmap = QtGui.QPixmap(self.app.resource_location + '/flatcam_icon32.png')
+        pixmap = QtGui.QPixmap(self.app.resource_location + '/app32.png')
         self.icon = FCLabel()
         self.icon.setPixmap(pixmap)
 

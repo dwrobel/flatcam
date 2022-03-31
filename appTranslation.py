@@ -112,7 +112,7 @@ def on_language_apply_click(app, restart=False):
         title = _("The application will restart.")
         txt = '%s %s?' % (_("Are you sure do you want to change the current language to"), name.capitalize())
         msgbox.setWindowTitle('%s ...' % _("Apply Language"))  # taskbar still shows it
-        msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/flatcam_icon128.png'))
+        msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/app128.png'))
         msgbox.setText('<b>%s</b>' % title)
         msgbox.setInformativeText(txt)
         msgbox.setIconPixmap(QtGui.QPixmap(resource_loc + '/language32.png'))
@@ -218,7 +218,7 @@ def restart_program(app, ask=None):
                 "\n"
                 "Do you want to Save the project?")
         msgbox.setWindowTitle(title)  # taskbar still shows it
-        msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/flatcam_icon128.png'))
+        msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/app128.png'))
         msgbox.setText('<b>%s</b>' % title)
         msgbox.setInformativeText(txt)
         msgbox.setIconPixmap(QtGui.QPixmap(resource_loc + '/save_as.png'))
@@ -245,7 +245,7 @@ def restart_program(app, ask=None):
         title = _("The language will be applied at the next application start.")
         txt = _("The user does not have admin rights or UAC issues.")
         msgbox.setWindowTitle('%s ...' % _("Quit"))  # taskbar still shows it
-        msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/flatcam_icon128.png'))
+        msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/app128.png'))
         msgbox.setText('<b>%s</b>' % title)
         msgbox.setInformativeText(txt)
         msgbox.setIcon(QtWidgets.QMessageBox.Icon.Critical)

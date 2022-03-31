@@ -1069,7 +1069,7 @@ class PreferencesUIManager(QtCore.QObject):
             title = _("Application will restart")
             txt = _("Are you sure you want to continue?")
             msgbox.setWindowTitle(title)  # taskbar still shows it
-            msgbox.setWindowIcon(QtGui.QIcon(self.ui.app.resource_location + '/flatcam_icon128.png'))
+            msgbox.setWindowIcon(QtGui.QIcon(self.ui.app.resource_location + '/app128.png'))
             msgbox.setText('<b>%s</b>' % title)
             msgbox.setInformativeText(txt)
             msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
@@ -1302,7 +1302,7 @@ class PreferencesUIManager(QtCore.QObject):
             txt = _("One or more values are changed.\n"
                     "Do you want to save?")
             msgbox.setWindowTitle(title)  # taskbar still shows it
-            msgbox.setWindowIcon(QtGui.QIcon(self.ui.app.resource_location + '/flatcam_icon128.png'))
+            msgbox.setWindowIcon(QtGui.QIcon(self.ui.app.resource_location + '/app128.png'))
             msgbox.setText('<b>%s</b>' % title)
             msgbox.setInformativeText(txt)
             msgbox.setIconPixmap(QtGui.QPixmap(self.ui.app.resource_location + '/save_as.png'))
