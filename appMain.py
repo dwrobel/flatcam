@@ -1833,7 +1833,7 @@ class App(QtCore.QObject):
         return os.path.join(self.data_path, 'log.txt')
 
     def on_options_value_changed(self, key_changed):
-        # when changing those properties the associated keys change so we get an updated Properties default Tab
+        # when changing those properties the associated keys change, so we get an updated Properties default Tab
         if key_changed in [
             "global_grid_lines", "global_grid_snap", "global_axis", "global_workspace", "global_workspaceT",
             "global_workspace_orientation", "global_hud"

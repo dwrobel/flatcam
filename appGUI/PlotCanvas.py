@@ -450,6 +450,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
                             background-color: olivedrab;
                         }
                         """)
+        self.fcapp.options['global_workspace'] = True
 
     def delete_workspace(self):
         try:
@@ -457,6 +458,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         except Exception:
             pass
         self.fcapp.ui.wplace_label.setStyleSheet("")
+        self.fcapp.options['global_workspace'] = False
 
     # redraw the workspace lines on the plot by re adding them to the parent view.scene
     def restore_workspace(self):

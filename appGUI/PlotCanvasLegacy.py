@@ -581,6 +581,7 @@ class PlotCanvasLegacy(QtCore.QObject):
                             background-color: olivedrab;
                         }
                         """)
+        self.app.options['global_workspace'] = True
 
     def delete_workspace(self):
         try:
@@ -589,6 +590,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         except Exception:
             pass
         self.app.ui.wplace_label.setStyleSheet("")
+        self.app.options['global_workspace'] = False
 
     def graph_event_connect(self, event_name, callback):
         """

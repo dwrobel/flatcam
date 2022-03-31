@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM Evo beta
 31.03.2022
 
 - changed the app main icons, hopefully they are more visible on black backgrounds than the ones that FlatCAM has
+- make sure that the state of the workspace is saved correctly on change
 
 30.03.2022
 
