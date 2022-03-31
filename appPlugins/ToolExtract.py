@@ -124,7 +124,8 @@ class ToolExtract(AppTool):
         self.set_tool_ui()
         self.build_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Extract"))
+        # trigger this once at plugin launch
+        self.on_object_combo_changed()
 
     def connect_signals_at_init(self):
         # ## Signals
@@ -207,9 +208,18 @@ class ToolExtract(AppTool):
 
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
-        if obj and obj.kind == 'gerber':
-            obj_name = obj.obj_options['name']
-            self.ui.gerber_object_combo.set_value(obj_name)
+        if obj:
+            if obj.kind == 'gerber':
+                obj_name = obj.obj_options['name']
+                self.ui.gerber_object_combo.set_value(obj_name)
+        else:
+            # take first available Gerber file, if any
+            available_gerber_list = [o for o in self.app.collection.get_list() if o.kind == 'gerber']
+            if available_gerber_list:
+                obj_name = available_gerber_list[0].obj_options['name']
+                self.ui.gerber_object_combo.set_value(obj_name)
+
+        self.app.ui.notebook.setTabText(2, _("Extract"))
 
     def build_tool_ui(self):
         self.ui_disconnect()
@@ -329,6 +339,17 @@ class ToolExtract(AppTool):
         self.ui.apertures_table.setSortingEnabled(False)
         # self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
         # self.ui.apertures_table.setMaximumHeight(self.ui.apertures_table.getHeight())
+
+        # make sure you clear the Gerber aperture markings when the table is rebuilt
+        # get the Gerber file who is the source of the punched Gerber
+        selection_index = self.ui.gerber_object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.ui.gerber_object_combo.rootModelIndex())
+        try:
+            grb_obj = model_index.internalPointer().obj
+        except Exception:
+            self.ui_connect()
+            return
+        grb_obj.clear_plot_apertures()
 
         self.ui_connect()
 

@@ -16,6 +16,8 @@ CHANGELOG for FlatCAM Evo beta
 - fixed some bugs in the Punch Gerber plugin
 - fixed some bugs where the 'pool' parameter was not passed when creating shapes collections (in 3D graphic mode); I wonder how it worked until now
 - added a new feature in the Isolation Plugin: now for all the isolation Geometry objects this plugin can do a supplementary simplification of the geometry using the tolerance parameter defined in the General Parameters. This should lead to a reduced number of tool lifts when doing corners
+- fixed aperture marking in Extract Plugin
+- in Extract Plugin if no Gerber object is selected then the first Gerber object in the project list is selected (if any)
 
 30.03.2022
 
