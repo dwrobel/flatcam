@@ -150,7 +150,8 @@ class ToolPunchGerber(AppTool, Gerber):
         self.set_tool_ui()
         self.build_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Punch Geber"))
+        # trigger this once at plugin launch
+        self.on_object_combo_changed()
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+H', **kwargs)
@@ -238,13 +239,22 @@ class ToolPunchGerber(AppTool, Gerber):
 
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
-        if obj and obj.kind == 'gerber':
-            obj_name = obj.obj_options['name']
-            self.ui.gerber_object_combo.set_value(obj_name)
+        if obj:
+            if obj.kind == 'gerber':
+                obj_name = obj.obj_options['name']
+                self.ui.gerber_object_combo.set_value(obj_name)
+        else:
+            # take first available Gerber file, if any
+            available_gerber_list = [o for o in self.app.collection.get_list() if o.kind == 'gerber']
+            if available_gerber_list:
+                obj_name = available_gerber_list[0].obj_options['name']
+                self.ui.gerber_object_combo.set_value(obj_name)
 
         # Show/Hide Advanced Options
         app_mode = self.app.options["global_app_level"]
         self.change_level(app_mode)
+
+        self.app.ui.notebook.setTabText(2, _("Punch Gerber"))
 
     def build_tool_ui(self):
         self.ui_disconnect()
@@ -365,6 +375,17 @@ class ToolPunchGerber(AppTool, Gerber):
         # self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
         # self.ui.apertures_table.setMaximumHeight(self.ui.apertures_table.getHeight())
 
+        # make sure you clear the Gerber aperture markings when the table is rebuilt
+        # get the Gerber file who is the source of the punched Gerber
+        selection_index = self.ui.gerber_object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.ui.gerber_object_combo.rootModelIndex())
+        try:
+            grb_obj = model_index.internalPointer().obj
+        except Exception:
+            self.ui_connect()
+            return
+        grb_obj.clear_plot_apertures()
+
         self.ui_connect()
 
     def change_level(self, level):
@@ -474,10 +495,14 @@ class ToolPunchGerber(AppTool, Gerber):
         # Mark Checkboxes
         for row in range(self.ui.apertures_table.rowCount()):
             try:
-                self.ui.apertures_table.cellWidget(row, 3).clicked.disconnect()
+                wdg = self.ui.apertures_table.cellWidget(row, 3)
+                assert isinstance(wdg, FCCheckBox)
+                wdg.clicked.disconnect()
             except (TypeError, AttributeError):
                 pass
-            self.ui.apertures_table.cellWidget(row, 3).clicked.connect(self.on_mark_cb_click_table)
+            wdg = self.ui.apertures_table.cellWidget(row, 3)
+            assert isinstance(wdg, FCCheckBox)
+            wdg.clicked.connect(self.on_mark_cb_click_table)
 
     def ui_disconnect(self):
         try:
@@ -488,7 +513,9 @@ class ToolPunchGerber(AppTool, Gerber):
         # Mark Checkboxes
         for row in range(self.ui.apertures_table.rowCount()):
             try:
-                self.ui.apertures_table.cellWidget(row, 3).clicked.disconnect()
+                wdg = self.ui.apertures_table.cellWidget(row, 3)
+                assert isinstance(wdg, FCCheckBox)
+                wdg.clicked.disconnect()
             except (TypeError, AttributeError):
                 pass
 
@@ -1858,10 +1885,14 @@ class ToolPunchGerber(AppTool, Gerber):
         except Exception:
             return
 
-        if self.ui.apertures_table.cellWidget(cw_row, 3).isChecked():
+        wdg = self.ui.apertures_table.cellWidget(cw_row, 3)
+        assert isinstance(wdg, FCCheckBox)
+        if wdg.isChecked():
             # self.plot_aperture(color='#2d4606bf', marked_aperture=aperture, visible=True)
-            grb_obj.plot_aperture(color='#e32b07' + '60',
-                                  marked_aperture=aperture, visible=True, run_thread=True)
+            # color = '#e32b0760'
+            color = self.app.options['global_sel_draw_color']
+            color = (color + 'AA') if len(color) == 7 else (color[:-2] + 'AA')
+            grb_obj.plot_aperture(color=color,  marked_aperture=aperture, visible=True, run_thread=True)
         else:
             grb_obj.clear_plot_apertures(aperture=aperture)
 
@@ -1933,7 +1964,12 @@ class ToolPunchGerber(AppTool, Gerber):
         """
 
         for row in range(self.ui.apertures_table.rowCount()):
-            self.ui.apertures_table.cellWidget(row, 3).set_value(False)
+            wdg = self.ui.apertures_table.cellWidget(row, 3)
+            assert isinstance(wdg, FCCheckBox)
+            wdg.set_value(False)
+
+    def on_plugin_cleanup(self):
+        self.reset_fields()
 
     def reset_fields(self):
         self.ui.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

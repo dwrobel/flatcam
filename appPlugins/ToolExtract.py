@@ -359,10 +359,14 @@ class ToolExtract(AppTool):
         # Mark Checkboxes
         for row in range(self.ui.apertures_table.rowCount()):
             try:
-                self.ui.apertures_table.cellWidget(row, 3).clicked.disconnect()
+                wdg = self.ui.apertures_table.cellWidget(row, 3)
+                assert isinstance(wdg, FCCheckBox)
+                wdg.clicked.disconnect()
             except (TypeError, AttributeError):
                 pass
-            self.ui.apertures_table.cellWidget(row, 3).stateChanged.connect(self.on_mark_cb_click_table)
+            wdg = self.ui.apertures_table.cellWidget(row, 3)
+            assert isinstance(wdg, FCCheckBox)
+            wdg.stateChanged.connect(self.on_mark_cb_click_table)
 
     def ui_disconnect(self):
         try:
@@ -373,7 +377,9 @@ class ToolExtract(AppTool):
         # Mark Checkboxes
         for row in range(self.ui.apertures_table.rowCount()):
             try:
-                self.ui.apertures_table.cellWidget(row, 3).stateChanged.disconnect()
+                wdg = self.ui.apertures_table.cellWidget(row, 3)
+                assert isinstance(wdg, FCCheckBox)
+                wdg.stateChanged.disconnect()
             except (TypeError, AttributeError):
                 pass
 
@@ -943,13 +949,18 @@ class ToolExtract(AppTool):
         except Exception:
             return
 
-        if self.ui.apertures_table.cellWidget(cw_row, 3).isChecked():
+        wdg = self.ui.apertures_table.cellWidget(cw_row, 3)
+        assert isinstance(wdg, FCCheckBox)
+        if wdg.isChecked():
             # self.plot_aperture(color='#2d4606bf', marked_aperture=aperture, visible=True)
             color = self.app.options['global_sel_draw_color']
             color = (color + 'AA') if len(color) == 7 else (color[:-2] + 'AA')
             grb_obj.plot_aperture(color=color, marked_aperture=aperture, visible=True, run_thread=True)
         else:
             grb_obj.clear_plot_apertures(aperture=aperture)
+
+    def on_plugin_cleanup(self):
+        self.reset_fields()
 
     def clear_aperture_marking(self):
         """
@@ -960,7 +971,9 @@ class ToolExtract(AppTool):
         """
 
         for row in range(self.ui.apertures_table.rowCount()):
-            self.ui.apertures_table.cellWidget(row, 3).set_value(False)
+            wdg = self.ui.apertures_table.cellWidget(row, 3)
+            assert isinstance(wdg, FCCheckBox)
+            wdg.set_value(False)
 
     def reset_fields(self):
         self.ui.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

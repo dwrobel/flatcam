@@ -18,6 +18,8 @@ CHANGELOG for FlatCAM Evo beta
 - added a new feature in the Isolation Plugin: now for all the isolation Geometry objects this plugin can do a supplementary simplification of the geometry using the tolerance parameter defined in the General Parameters. This should lead to a reduced number of tool lifts when doing corners
 - fixed aperture marking in Extract Plugin
 - in Extract Plugin if no Gerber object is selected then the first Gerber object in the project list is selected (if any)
+- in Punch Gerber Plugin if no Gerber object is selected then the first Gerber object in the project list is selected (if any); fixed aperture marking in Punch Gerber Plugin
+- in Punch Gerber and Extrat plugins, clean up the aperture markings on Plugin exit
 
 30.03.2022
 
