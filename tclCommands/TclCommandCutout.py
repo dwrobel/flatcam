@@ -1,3 +1,4 @@
+from matplotlib.colors import LinearSegmentedColormap
 from tclCommands.TclCommand import TclCommand
 
 import collections
@@ -6,6 +7,8 @@ from copy import deepcopy
 
 from shapely.ops import unary_union
 from shapely.geometry import LineString
+from shapely.geometry import box
+from shapely.ops import linemerge
 
 log = logging.getLogger('base')
 
@@ -50,7 +53,7 @@ class TclCommandCutout(TclCommand):
             ('dia', 'Tool diameter.'),
             ('margin', 'Margin over bounds.'),
             ('gapsize', 'Size of gap.'),
-            ('gaps', "Type of gaps. Can be: 'tb' = top-bottom, 'lr' = left-right and '4' = one each side."),
+            ('gaps', "Type of gaps. Can be: 'None' = no-tabs, 'TB' = top-bottom, 'LR' = left-right and '4' = one each side."),
             ('outname', 'Name of the object to create.')
         ]),
         'examples': ['cutout cut_object -dia 1.2 -margin 0.1 -gapsize 1 -gaps "tb" -outname cutout_geo']
@@ -82,9 +85,9 @@ class TclCommandCutout(TclCommand):
             dia_par = float(self.app.options["tools_cutout_tooldia"])
 
         if 'gaps' in args:
-            if args['gaps'] not in ["tb", "lr", "4", 4]:
+            if args['gaps'] not in ["None", "TB", "LR", "2TB", "2LR", "4", 4, "8", 8]:
                 self.raise_tcl_error(
-                    "Incorrect -gaps values. Can be only a string from: 'tb', 'lr' and '4'.")
+                    "Incorrect -gaps values. Can be only a string from: 'None', 'TB', 'LR', '2TB', '2LR', '4', and '8'.")
                 return "fail"
             gaps_par = str(args['gaps'])
         else:
@@ -109,49 +112,34 @@ class TclCommandCutout(TclCommand):
 
         def geo_init_me(geo_obj, app_obj):
             geo_obj.multigeo = True
+            solid_geo = []
 
-            margin = margin_par + dia_par / 2
-            gap_size = dia_par + gapsize_par
+            gapsize = gapsize_par + dia_par
 
-            minx, miny, maxx, maxy = obj.bounds()
-            minx -= margin
-            maxx += margin
-            miny -= margin
-            maxy += margin
-            midx = 0.5 * (minx + maxx)
-            midy = 0.5 * (miny + maxy)
-            hgap = 0.5 * gap_size
-            pts = [[midx - hgap, maxy],
-                   [minx, maxy],
-                   [minx, midy + hgap],
-                   [minx, midy - hgap],
-                   [minx, miny],
-                   [midx - hgap, miny],
-                   [midx + hgap, miny],
-                   [maxx, miny],
-                   [maxx, midy - hgap],
-                   [maxx, midy + hgap],
-                   [maxx, maxy],
-                   [midx + hgap, maxy]]
+            xmin, ymin, xmax, ymax = obj.bounds()
+            geo = box(xmin, ymin, xmax, ymax)
 
-            cases = {
-                "tb": [
-                    [pts[0], pts[1], pts[4], pts[5]],
-                    [pts[6], pts[7], pts[10], pts[11]]
-                ],
-                "lr": [
-                    [pts[9], pts[10], pts[1], pts[2]],
-                    [pts[3], pts[4], pts[7], pts[8]]
-                ],
-                "4": [
-                    [pts[0], pts[1], pts[2]],
-                    [pts[3], pts[4], pts[5]],
-                    [pts[6], pts[7], pts[8]],
-                    [pts[9], pts[10], pts[11]]
-                ]
-            }
-            cuts = cases[gaps_par]
-            geo_obj.solid_geometry = unary_union([LineString(segment) for segment in cuts])
+            if obj.kind == 'gerber':
+                if margin_par >= 0:
+                    work_margin = margin_par + abs(dia_par / 2)
+                else:
+                    work_margin = margin_par - abs(dia_par / 2)
+                geo = geo.buffer(work_margin)
+
+            solid_geo = self.app.cutout_tool.rect_cutout_handler(geo, dia_par, gaps_par, gapsize, margin_par, xmin, ymin, xmax, ymax)
+
+            if not solid_geo:
+                self.app.log.debug("TclCommandCutout.geo_init_me() -> Empty solid geometry.")
+                app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                return "fail"
+
+            try:
+                solid_geo = linemerge(solid_geo)
+            except Exception:
+                # there are not lines but polygon
+                pass
+
+            geo_obj.solid_geometry = solid_geo
 
             if not geo_obj.solid_geometry:
                 app_obj.log("TclCommandCutout.execute(). No geometry after cutout.")
