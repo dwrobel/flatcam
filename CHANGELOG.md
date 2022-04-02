@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM Evo beta
 - in Markers Plugin, added a numeric mode
 - in Fiducials Plugin, for manual mode: added utility geometry and the ability to use a big cursor
 - minor fix in Fiducials Plugin
+- make sure that replotting objects is done only for enabled objects
 
 1.04.2022
 

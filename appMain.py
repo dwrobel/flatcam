@@ -8346,6 +8346,8 @@ class App(QtCore.QObject):
             self.inform[str, bool].emit('%s...' % _("Redrawing all objects"), False)
 
         for plot_obj in self.collection.get_list():
+            if plot_obj.obj_options['plot'] is False:
+                continue
             def worker_task(obj):
                 with self.proc_container.new("Plotting"):
                     if obj.kind == 'cncjob':
