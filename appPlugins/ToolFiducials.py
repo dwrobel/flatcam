@@ -886,7 +886,7 @@ class ToolFiducials(AppTool):
         self.temp_shapes.redraw()
 
     def on_plugin_cleanup(self):
-        self.on_exit(ok=False)
+        self.on_exit()
 
 
 class FidoUI:
