@@ -676,7 +676,7 @@ class AppDefaults:
         "tools_markers_offset_y": 0.0,
         "tools_markers_type": 's',
         "tools_markers_drill_dia": 0.5,
-        "tools_markers_mode": "a",
+        "tools_markers_mode": 0,            # 'automatic'
         "tools_markers_big_cursor": True,
 
         # ########################################################################################################

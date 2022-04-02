@@ -40,7 +40,6 @@ class ToolMarkers(AppTool):
         # #############################################################################
         self.ui = MarkersUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
-        self.connect_signals_at_init()
 
         # Objects involved in Copper thieving
         self.grb_object = None
@@ -156,7 +155,7 @@ class ToolMarkers(AppTool):
         self.ui.toggle_all_cb.toggled.connect(self.on_toggle_all)
         self.ui.drill_button.clicked.connect(self.on_create_drill_object)
         self.ui.check_button.clicked.connect(self.on_create_check_object)
-        self.ui.mode_radio.activated_custom.connect(self.on_selection_changed)
+        self.ui.mode_combo.currentIndexChanged.connect(self.on_selection_changed)
         self.ui.insert_type_radio.activated_custom.connect(self.on_insert_type_changed)
         self.app.proj_selection_changed.connect(self.on_object_selection_changed)
 
@@ -183,8 +182,8 @@ class ToolMarkers(AppTool):
         self.ui.toggle_all_cb.set_value(False)
         self.ui.type_radio.set_value(self.app.options["tools_markers_type"])
         self.ui.drill_dia_entry.set_value(self.app.options["tools_markers_drill_dia"])
-        self.ui.mode_radio.set_value(self.app.options["tools_markers_mode"])
-
+        self.ui.mode_combo.set_value(self.app.options["tools_markers_mode"])
+        self.on_selection_changed(self.app.options["tools_markers_mode"])
         self.ui.insert_type_radio.set_value(val="grb")
 
         self.ui.big_cursor_cb.set_value(self.app.options["tools_markers_big_cursor"])
@@ -267,16 +266,17 @@ class ToolMarkers(AppTool):
         self.ui.tr_cb.set_value(val)
 
     def on_selection_changed(self, val):
-        if val == 'a':
+        if val == 0:    # 'auto'
             self.ui.locs_label.setDisabled(False)
             self.ui.loc_frame.setDisabled(False)
 
             self.ui.type_label.setDisabled(False)
             self.ui.type_radio.setDisabled(False)
             self.ui.off_frame.setDisabled(False)
-
+            self.ui.marker_coords_lbl.setVisible(False)
+            self.ui.marker_coords_entry.setVisible(False)
             self.ui.big_cursor_cb.hide()
-        else:
+        elif val == 1:  # 'manual'
             self.ui.locs_label.setDisabled(True)
             self.ui.loc_frame.setDisabled(True)
 
@@ -284,8 +284,21 @@ class ToolMarkers(AppTool):
             self.ui.type_radio.setDisabled(True)
             self.ui.off_frame.setDisabled(True)
             self.ui.type_radio.set_value('c')
+            self.ui.marker_coords_lbl.setVisible(False)
+            self.ui.marker_coords_entry.setVisible(False)
 
             self.ui.big_cursor_cb.show()
+        else:   # 'numeric'
+            self.ui.locs_label.setDisabled(True)
+            self.ui.loc_frame.setDisabled(True)
+            self.ui.type_radio.set_value('c')
+            self.ui.type_label.setDisabled(True)
+            self.ui.type_radio.setDisabled(True)
+            self.ui.off_frame.setDisabled(True)
+
+            self.ui.marker_coords_lbl.setVisible(True)
+            self.ui.marker_coords_entry.setVisible(True)
+            self.ui.big_cursor_cb.hide()
 
     def on_cursor_change(self, val):
         if val:
@@ -296,7 +309,15 @@ class ToolMarkers(AppTool):
     def add_markers(self):
         self.app.call_source = "markers_tool"
 
-        if self.ui.mode_radio.get_value() == 'm':
+        # cleanup previous possible markers
+        self.points.clear()
+
+        select_type = self.ui.mode_combo.get_value()
+        if select_type == 0:    # 'auto'
+            self.handle_automatic_placement()
+        elif select_type == 1:  # 'manual'
+            self.app.inform.emit('%s' % _("Click to add next marker or right click to finish."))
+
             if self.ui.big_cursor_cb.get_value():
                 self.app.on_cursor_type(val="big", control_cursor=True)
                 self.cursor_color_memory = self.app.plotcanvas.cursor_color
@@ -309,18 +330,12 @@ class ToolMarkers(AppTool):
                 self.app.on_cursor_type(val="small", control_cursor=True)
                 self.app.plotcanvas.cursor_color = self.cursor_color_memory
 
-        # cleanup previous possible markers
-        self.points.clear()
-
-        select_type = self.ui.mode_radio.get_value()
-        if select_type == 'a':
-            self.handle_automatic_placement()
-        else:
-            self.app.inform.emit('%s' % _("Click to add next marker or right click to finish."))
             # it works only with cross markers
             self.ui.type_radio.set_value('c')
             self.app.ui.notebook.setDisabled(True)
             self.connect_event_handlers()
+        else:   # 'numeric'
+            self.handle_numeric_placement()
 
     def handle_automatic_placement(self):
         self.points.clear()
@@ -379,6 +394,38 @@ class ToolMarkers(AppTool):
 
         ret_val = self.add_marker_geo(self.points, g_obj=self.grb_object)
         if ret_val == 'fail':
+            self.on_exit(ok=False)
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+            return
+        self.on_exit()
+
+    def handle_numeric_placement(self):
+        location = self.ui.marker_coords_entry.get_value()
+        if not isinstance(location, tuple):
+            self.app.log.error("ToolMarkers.handle_numeric_placement() -> not a tuple")
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+            return
+
+        if 'manual' not in self.points:
+            self.points['manual'] = []
+        self.points['manual'].append(location)
+        self.draw_utility_geometry(pos=location)
+
+        # get the Gerber object on which the corner marker will be inserted
+        selection_index = self.ui.object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.ui.object_combo.rootModelIndex())
+
+        try:
+            self.grb_object = model_index.internalPointer().obj
+        except Exception as e:
+            self.app.log.error("ToolMarkers.add_markers() --> %s" % str(e))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
+            self.on_exit()
+            return
+
+        ret_val = self.add_marker_geo(self.points, g_obj=self.grb_object)
+        if ret_val == 'fail':
+            self.app.log.error("ToolMarkers.handle_numeric_placement() -> failed to add numeric geo")
             self.on_exit(ok=False)
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
             return
@@ -458,7 +505,7 @@ class ToolMarkers(AppTool):
         marker_type = self.ui.type_radio.get_value()
         line_thickness = self.ui.thick_entry.get_value()
         line_length = self.ui.l_entry.get_value() / 2.0
-        mode = self.ui.mode_radio.get_value()
+        mode = self.ui.mode_combo.get_value()
 
         offset_x, offset_y = self.offset_values()
         geo_list = []
@@ -467,7 +514,7 @@ class ToolMarkers(AppTool):
             self.app.inform.emit("[ERROR_NOTCL] %s." % _("Please select at least a location"))
             return 'fail'
 
-        if mode == 'a':
+        if mode == 0:   # 'automatic'
             for key in points_storage:
                 if key == 'tl':
                     pt = points_storage[key]
@@ -549,7 +596,7 @@ class ToolMarkers(AppTool):
                         ])
                     geo_list.append(line_geo_hor)
                     geo_list.append(line_geo_vert)
-        elif mode == 'm':
+        elif mode == 1 or mode == 2:     # 'manual' or 'numeric'
             if 'manual' in points_storage:
                 if points_storage['manual']:
                     for man_pt in points_storage['manual']:
@@ -1406,19 +1453,27 @@ class MarkersUI:
               "are manually placed on canvas.")
         )
 
-        self.mode_radio = RadioSet([
-            {"label": _("Auto"), "value": "a"},
-            {"label": _("Manual"), "value": "m"},
-        ])
-
+        self.mode_combo = FCComboBox2()
+        self.mode_combo.addItems([_("Auto"), _("Manual"), _("Numeric")])
         grid_sel.addWidget(self.mode_label, 0, 0)
-        grid_sel.addWidget(self.mode_radio, 0, 1)
+        grid_sel.addWidget(self.mode_combo, 0, 1)
 
         # Big Cursor
         self.big_cursor_cb = FCCheckBox('%s' % _("Big cursor"))
         self.big_cursor_cb.setToolTip(
             _("Use a big cursor."))
         grid_sel.addWidget(self.big_cursor_cb, 2, 0, 1, 2)
+
+        # Parametric Entry
+        self.marker_coords_lbl = FCLabel('%s:' % _("Coordinates"))
+        self.marker_coords_lbl.setToolTip(
+            _("Tuple of marker coordinates.")
+        )
+        self.marker_coords_entry = NumericalEvalTupleEntry(border_color='#0069A9')
+        self.marker_coords_entry.setPlaceholderText(_("Comma separated values"))
+
+        grid_sel.addWidget(self.marker_coords_lbl, 4, 0)
+        grid_sel.addWidget(self.marker_coords_entry, 4, 1)
 
         # #############################################################################################################
         # ## Insert Corner Marker Button

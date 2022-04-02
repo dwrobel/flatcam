@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+2.04.2022
+
+- in Markers Plugin, added a numeric mode
+
 1.04.2022
 
 - in Markers Plugin, for the manual mode added the choice to use a big cursor when manual placing markers
@@ -23,7 +27,7 @@ CHANGELOG for FlatCAM Evo beta
 - fixed aperture marking in Extract Plugin
 - in Extract Plugin if no Gerber object is selected then the first Gerber object in the project list is selected (if any)
 - in Punch Gerber Plugin if no Gerber object is selected then the first Gerber object in the project list is selected (if any); fixed aperture marking in Punch Gerber Plugin
-- in Punch Gerber and Extrat plugins, clean up the aperture markings on Plugin exit
+- in Punch Gerber and Extract plugins, clean up the aperture markings on Plugin exit
 
 30.03.2022
 
