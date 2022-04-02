@@ -747,6 +747,7 @@ class AppDefaults:
         "tools_fiducials_second_pos": 'up',
         "tools_fiducials_type": 'circular',
         "tools_fiducials_line_thickness": 0.25,
+        "tools_fiducials_big_cursor": True,
 
         # Calibration Tool
         "tools_cal_calsource": 'object',
