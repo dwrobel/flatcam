@@ -59,8 +59,8 @@ class TclCommandGeoCutout(TclCommandSignaled):
             ('dia', 'Tool diameter.'),
             ('margin', 'Margin over bounds.'),
             ('gapsize', 'size of gap.'),
-            ('gaps', "type of gaps. Can be: 'tb' = top-bottom, 'lr' = left-right, '2tb' = 2top-2bottom, "
-                     "'2lr' = 2left-2right, '4' = 4 cuts, '8' = 8 cuts"),
+            ('gaps', "type of gaps. Can be: 'None' = no-gaps, 'TB' = top-bottom, 'LR' = left-right, '2TB' = 2top-2bottom, "
+                     "'2LR' = 2left-2right, '4' = 4 cuts, '8' = 8 cuts"),
             ('outname', 'Name of the resulting Geometry object.'),
         ]),
         'examples': ["      #isolate margin for example from Fritzing arduino shield or any svg etc\n" +
@@ -181,9 +181,10 @@ class TclCommandGeoCutout(TclCommandSignaled):
                 "[WARNING] %s" % _("Tool Diameter is zero value. Change it to a positive real number."))
             return "fail"
 
-        if gaps not in ['lr', 'tb', '2lr', '2tb', '4', '8', 4, 8]:
-            self.app.inform.emit(
-                "[WARNING] %s" % _("Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8."))
+        if gaps not in ['None', 'LR', 'TB', '2LR', '2TB', '4', '8']:
+            self.app.inform.emit('[WARNING] %s' %
+                                 _("Gaps value can be only one of: 'None', 'LR', 'TB', '2LR', '2TB', 4 or 8.\n"
+                                   "Fill in a correct value and retry."))
             return "fail"
 
         # Get min and max data for each object as we just cut rectangles across X or Y
@@ -221,7 +222,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
             geo_obj.multigeo = True
             geo = geo_to_cutout
 
-            if gaps_u == 8 or gaps_u == '2lr':
+            if gaps_u == 8 or gaps_u == '2LR':
                 geo = substract_rectangle_geo(geo,
                                               xmin - gapsize,               # botleft_x
                                               py - gapsize + lenghty / 4,   # botleft_y
@@ -233,7 +234,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
                                               xmax + gapsize,
                                               py + gapsize - lenghty / 4)
 
-            if gaps_u == 8 or gaps_u == '2tb':
+            if gaps_u == 8 or gaps_u == '2TB':
                 geo = substract_rectangle_geo(geo,
                                               px - gapsize + lenghtx / 4,
                                               ymin - gapsize,
@@ -245,14 +246,14 @@ class TclCommandGeoCutout(TclCommandSignaled):
                                               px + gapsize - lenghtx / 4,
                                               ymax + gapsize)
 
-            if gaps_u == 4 or gaps_u == 'lr':
+            if gaps_u == 4 or gaps_u == 'LR':
                 geo = substract_rectangle_geo(geo,
                                               xmin - gapsize,
                                               py - gapsize,
                                               xmax + gapsize,
                                               py + gapsize)
 
-            if gaps_u == 4 or gaps_u == 'tb':
+            if gaps_u == 4 or gaps_u == 'TB':
                 geo = substract_rectangle_geo(geo,
                                               px - gapsize,
                                               ymin - gapsize,
