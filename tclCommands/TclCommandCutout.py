@@ -130,7 +130,7 @@ class TclCommandCutout(TclCommand):
 
             if not solid_geo:
                 self.app.log.debug("TclCommandCutout.geo_init_me() -> Empty solid geometry.")
-                app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                app_obj.inform.emit('[ERROR] %s' % _("Failed."))
                 return "fail"
 
             try:
