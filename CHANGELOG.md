@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+3.04.2022
+
+- in Cutout Plugin exposed the any_cutout_handler() method and made sure that the `gaps` parameter case does not matter
+
 2.04.2022
 
 - in Markers Plugin, added a numeric mode

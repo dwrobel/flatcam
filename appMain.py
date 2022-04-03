@@ -3558,6 +3558,11 @@ class App(QtCore.QObject):
                         'description': '',
                         'email': ''
                     },
+                    {
+                        'name': "Ali Khalil",
+                        'description': '',
+                        'email': ''
+                    },
                 ]
 
                 self.prog_grid_lay = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0, 1])

@@ -672,103 +672,6 @@ class CutOut(AppTool):
                                    "Fill in a correct value and retry."))
             return
 
-        def any_cutout_handler(geom, cut_diameter, gaps, gapsize, margin):
-            r_temp_geo = []
-            initial_geo = deepcopy(geom)
-
-            # Get min and max data for each object as we just cut rectangles across X or Y
-            xxmin, yymin, xxmax, yymax = CutOut.recursive_bounds(geom)
-
-            px = 0.5 * (xxmax - xxmin) + xxmin     # center X
-            py = 0.5 * (yymax - yymin) + yymin     # center Y
-            lenx = (xxmax - xxmin) + (margin * 2)
-            leny = (yymax - yymin) + (margin * 2)
-
-            if gaps != 'None':
-                if gaps == '8' or gaps == '2LR':
-                    points = (
-                        xxmin - (gapsize + cut_diameter),          # botleft_x
-                        py - (gapsize / 2) + leny / 4,        # botleft_y
-                        xxmax + (gapsize + cut_diameter),          # topright_x
-                        py + (gapsize / 2) + leny / 4         # topright_y
-                    )
-                    geom = self.subtract_poly_from_geo(geom, points)
-                    r_temp_geo.append(
-                        self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
-                    )
-
-                    points = (
-                        xxmin - (gapsize + cut_diameter),
-                        py - (gapsize / 2) - leny / 4,
-                        xxmax + (gapsize + cut_diameter),
-                        py + (gapsize / 2) - leny / 4
-                    )
-                    geom = self.subtract_poly_from_geo(geom, points)
-                    r_temp_geo.append(
-                        self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
-                    )
-
-                if gaps == '8' or gaps == '2TB':
-                    points = (
-                        px - (gapsize / 2) + lenx / 4,
-                        yymin - (gapsize + cut_diameter),
-                        px + (gapsize / 2) + lenx / 4,
-                        yymax + (gapsize + cut_diameter)
-                    )
-                    geom = self.subtract_poly_from_geo(geom, points)
-                    r_temp_geo.append(
-                        self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
-                    )
-
-                    points = (
-                        px - (gapsize / 2) - lenx / 4,
-                        yymin - (gapsize + cut_diameter),
-                        px + (gapsize / 2) - lenx / 4,
-                        yymax + (gapsize + cut_diameter)
-                    )
-                    geom = self.subtract_poly_from_geo(geom, points)
-                    r_temp_geo.append(
-                        self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
-                    )
-
-                if gaps == '4' or gaps == 'LR':
-                    points = (
-                        xxmin - (gapsize + cut_diameter),
-                        py - (gapsize / 2),
-                        xxmax + (gapsize + cut_diameter),
-                        py + (gapsize / 2)
-                    )
-                    geom = self.subtract_poly_from_geo(geom, points)
-                    r_temp_geo.append(
-                        self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
-                    )
-
-                if gaps == '4' or gaps == 'TB':
-                    points = (
-                        px - (gapsize / 2),
-                        yymin - (gapsize + cut_diameter),
-                        px + (gapsize / 2),
-                        yymax + (gapsize + cut_diameter)
-                    )
-                    geom = self.subtract_poly_from_geo(geom, points)
-                    r_temp_geo.append(
-                        self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
-                    )
-
-            try:
-                # for g in geom:
-                #     proc_geometry.append(g)
-                work_geom = geom.geoms if isinstance(geom, (MultiPolygon, MultiLineString)) else geom
-                proc_geometry = [g for g in work_geom if not g.is_empty]
-            except TypeError:
-                # proc_geometry.append(geom)
-                proc_geometry = [geom]
-
-            r_temp_geo = CutOut.flatten(r_temp_geo)
-            rest_geometry = [g for g in r_temp_geo if g and not g.is_empty]
-
-            return proc_geometry, rest_geometry
-
         with self.app.proc_container.new("Generating Cutout ..."):
             formatted_name = cutout_obj.obj_options["name"].rpartition('.')[0]
             if formatted_name != '':
@@ -847,7 +750,7 @@ class CutOut(AppTool):
                         self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                         return 'fail'
 
-                    solid_geo, rest_geo = any_cutout_handler(geo, cut_dia, gaps, gapsize, margin)
+                    solid_geo, rest_geo = self.any_cutout_handler(geo, cut_dia, gaps, gapsize, margin)
                     if gap_type == 1 and thin_entry != 0:   # "Thin gaps"
                         gaps_solid_geo = rest_geo
                 else:
@@ -860,7 +763,7 @@ class CutOut(AppTool):
                                 geom_struct_buff = geom_struct.buffer(-margin + abs(cut_dia / 2))
                                 geom_struct = geom_struct_buff.interiors
 
-                        c_geo, r_geo = any_cutout_handler(geom_struct, cut_dia, gaps, gapsize, margin)
+                        c_geo, r_geo = self.any_cutout_handler(geom_struct, cut_dia, gaps, gapsize, margin)
                         solid_geo += c_geo
                         if gap_type == 1 and thin_entry != 0:   # "Thin gaps"
                             gaps_solid_geo += r_geo
@@ -900,7 +803,7 @@ class CutOut(AppTool):
                             geo_buf = mb_object_geo.buffer(0)
                             mb_geo = geo_buf.exterior
 
-                        __, rest_geo = any_cutout_handler(mb_geo, cut_dia, gaps, gapsize, margin)
+                        __, rest_geo = self.any_cutout_handler(mb_geo, cut_dia, gaps, gapsize, margin)
                         mouse_bites_geo = rest_geo
                     else:
                         mb_object_geo = flatten_shapely_geometry(mb_object_geo)
@@ -913,7 +816,7 @@ class CutOut(AppTool):
                                     mb_geom_struct = mb_geom_struct.buffer(-margin + mb_buff_val)
                                     mb_geom_struct = mb_geom_struct.interiors
 
-                            __, mb_r_geo = any_cutout_handler(mb_geom_struct, cut_dia, gaps, gapsize, margin)
+                            __, mb_r_geo = self.any_cutout_handler(mb_geom_struct, cut_dia, gaps, gapsize, margin)
                             mouse_bites_geo += mb_r_geo
 
                     # list of Shapely Points to mark the drill points centers
@@ -1010,6 +913,103 @@ class CutOut(AppTool):
                     app_obj.app.log.error(str(ee))
 
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+
+    def any_cutout_handler(self, geom, cut_diameter, gaps, gapsize, margin):
+        r_temp_geo = []
+        initial_geo = deepcopy(geom)
+
+        # Get min and max data for each object as we just cut rectangles across X or Y
+        xxmin, yymin, xxmax, yymax = CutOut.recursive_bounds(geom)
+
+        px = 0.5 * (xxmax - xxmin) + xxmin  # center X
+        py = 0.5 * (yymax - yymin) + yymin  # center Y
+        lenx = (xxmax - xxmin) + (margin * 2)
+        leny = (yymax - yymin) + (margin * 2)
+
+        if gaps.lower() != 'none':
+            if gaps == '8' or gaps in ['2LR', '2lr']:
+                points = (
+                    xxmin - (gapsize + cut_diameter),  # botleft_x
+                    py - (gapsize / 2) + leny / 4,  # botleft_y
+                    xxmax + (gapsize + cut_diameter),  # topright_x
+                    py + (gapsize / 2) + leny / 4  # topright_y
+                )
+                geom = self.subtract_poly_from_geo(geom, points)
+                r_temp_geo.append(
+                    self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                )
+
+                points = (
+                    xxmin - (gapsize + cut_diameter),
+                    py - (gapsize / 2) - leny / 4,
+                    xxmax + (gapsize + cut_diameter),
+                    py + (gapsize / 2) - leny / 4
+                )
+                geom = self.subtract_poly_from_geo(geom, points)
+                r_temp_geo.append(
+                    self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                )
+
+            if gaps == '8' or gaps in ['2TB', '2tb']:
+                points = (
+                    px - (gapsize / 2) + lenx / 4,
+                    yymin - (gapsize + cut_diameter),
+                    px + (gapsize / 2) + lenx / 4,
+                    yymax + (gapsize + cut_diameter)
+                )
+                geom = self.subtract_poly_from_geo(geom, points)
+                r_temp_geo.append(
+                    self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                )
+
+                points = (
+                    px - (gapsize / 2) - lenx / 4,
+                    yymin - (gapsize + cut_diameter),
+                    px + (gapsize / 2) - lenx / 4,
+                    yymax + (gapsize + cut_diameter)
+                )
+                geom = self.subtract_poly_from_geo(geom, points)
+                r_temp_geo.append(
+                    self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                )
+
+            if gaps == '4' or gaps in ['LR', 'lr']:
+                points = (
+                    xxmin - (gapsize + cut_diameter),
+                    py - (gapsize / 2),
+                    xxmax + (gapsize + cut_diameter),
+                    py + (gapsize / 2)
+                )
+                geom = self.subtract_poly_from_geo(geom, points)
+                r_temp_geo.append(
+                    self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                )
+
+            if gaps == '4' or gaps in ['TB', 'tb']:
+                points = (
+                    px - (gapsize / 2),
+                    yymin - (gapsize + cut_diameter),
+                    px + (gapsize / 2),
+                    yymax + (gapsize + cut_diameter)
+                )
+                geom = self.subtract_poly_from_geo(geom, points)
+                r_temp_geo.append(
+                    self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                )
+
+        try:
+            # for g in geom:
+            #     proc_geometry.append(g)
+            work_geom = geom.geoms if isinstance(geom, (MultiPolygon, MultiLineString)) else geom
+            proc_geometry = [g for g in work_geom if not g.is_empty]
+        except TypeError:
+            # proc_geometry.append(geom)
+            proc_geometry = [geom]
+
+        r_temp_geo = CutOut.flatten(r_temp_geo)
+        rest_geometry = [g for g in r_temp_geo if g and not g.is_empty]
+
+        return proc_geometry, rest_geometry
 
     def on_rectangular_cutout(self):
         self.app.log.debug("CutOut.on_rectangular_cutout() is running....")
@@ -1334,8 +1334,8 @@ class CutOut(AppTool):
 
         # we need to make sure that the cutting polygon extends enough so it intersects the target
         # for that we need to add the cutting dia to gapsize in the corners that matter
-        if gaps != 'None':
-            if gaps == '8' or gaps == '2LR':
+        if gaps.lower() != 'none':
+            if gaps == '8' or gaps in ['2LR', '2lr']:
                 points = (
                     xmin - (gapsize + cut_dia),         # botleft_x     = X_MIN
                     py - (gapsize / 2) + leny / 4,      # botleft_y     = Y_MIN
@@ -1351,7 +1351,7 @@ class CutOut(AppTool):
                 )
                 geom = self.subtract_poly_from_geo(geom, points)
 
-            if gaps == '8' or gaps == '2TB':
+            if gaps == '8' or gaps in ['2TB', '2tb']:
                 points = (
                     px - (gapsize / 2) + lenx / 4,
                     ymin - (gapsize + cut_dia),
@@ -1367,7 +1367,7 @@ class CutOut(AppTool):
                 )
                 geom = self.subtract_poly_from_geo(geom, points)
 
-            if gaps == '4' or gaps == 'LR':
+            if gaps == '4' or gaps in ['LR', 'lr']:
                 points = (
                     xmin - (gapsize + cut_dia),
                     py - (gapsize / 2),
@@ -1376,7 +1376,7 @@ class CutOut(AppTool):
                 )
                 geom = self.subtract_poly_from_geo(geom, points)
 
-            if gaps == '4' or gaps == 'TB':
+            if gaps == '4' or gaps in ['TB', 'tb']:
                 points = (
                     px - (gapsize / 2),
                     ymin - (gapsize + cut_dia),
