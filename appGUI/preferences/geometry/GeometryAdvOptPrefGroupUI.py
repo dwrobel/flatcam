@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, FCLabel, FCGridLayout, FCFrame
+from appGUI.GUIElements import FCDoubleSpinner, FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -35,7 +35,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         adv_frame = FCFrame()
         self.layout.addWidget(adv_frame)
 
-        adv_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        adv_grid = GLay(v_spacing=5, h_spacing=3)
         adv_frame.setLayout(adv_grid)
 
         # Size of trace segment on X axis

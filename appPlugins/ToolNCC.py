@@ -4071,7 +4071,7 @@ class NccUI:
         self.tools_box.addWidget(obj_frame)
 
         # Grid Layout
-        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        obj_grid = GLay(v_spacing=5, h_spacing=3)
         obj_frame.setLayout(obj_grid)
 
         # #############################################################################################################
@@ -4121,7 +4121,7 @@ class NccUI:
         tt_frame = FCFrame()
         self.tools_box.addWidget(tt_frame)
 
-        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tool_grid = GLay(v_spacing=5, h_spacing=3)
         tt_frame.setLayout(tool_grid)
 
         # Tools Table
@@ -4181,7 +4181,7 @@ class NccUI:
         self.add_tool_frame.setContentsMargins(0, 0, 0, 0)
         tool_grid.addWidget(self.add_tool_frame, 6, 0, 1, 2)
 
-        new_tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        new_tool_grid = GLay(v_spacing=5, h_spacing=3)
         new_tool_grid.setContentsMargins(0, 0, 0, 0)
         self.add_tool_frame.setLayout(new_tool_grid)
 
@@ -4203,7 +4203,7 @@ class NccUI:
         )
         new_tool_grid.addWidget(self.new_tooldia_lbl, 4, 0)
 
-        # nt_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[1, 0])
+        # nt_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[1, 0])
         # nt_grid.setContentsMargins(0, 0, 0, 0)
         # new_tool_grid.addLayout(nt_grid, 4, 1)
 
@@ -4228,7 +4228,7 @@ class NccUI:
         # #############################################################################################################
         # ################################    Button Grid   ###########################################################
         # #############################################################################################################
-        button_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        button_grid = GLay(v_spacing=5, h_spacing=3)
         button_grid.setColumnStretch(0, 1)
         button_grid.setColumnStretch(1, 0)
         new_tool_grid.addLayout(button_grid, 6, 0, 1, 3)
@@ -4280,7 +4280,7 @@ class NccUI:
         tt_frame = FCFrame()
         self.tools_box.addWidget(tt_frame)
 
-        par_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_grid = GLay(v_spacing=5, h_spacing=3)
         tt_frame.setLayout(par_grid)
 
         # Operation
@@ -4453,7 +4453,7 @@ class NccUI:
         gp_frame = FCFrame()
         self.tools_box.addWidget(gp_frame)
 
-        gen_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        gen_grid = GLay(v_spacing=5, h_spacing=3)
         gp_frame.setLayout(gen_grid)
 
         # Rest Machining
@@ -4591,7 +4591,7 @@ class NccUI:
 
         gen_grid.addWidget(self.valid_cb, 16, 0, 1, 2)
 
-        FCGridLayout.set_common_column_size([obj_grid, tool_grid, new_tool_grid, par_grid, gen_grid], 0)
+        GLay.set_common_column_size([obj_grid, tool_grid, new_tool_grid, par_grid, gen_grid], 0)
 
         # #############################################################################################################
         # Generate NCC Geometry Button

@@ -1,7 +1,7 @@
 from PyQt6 import QtWidgets
 
 from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, FCComboBox, FCLabel, RadioSet, NumericalEvalTupleEntry, \
-    FCGridLayout, FCFrame
+    GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -35,7 +35,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         par_frame = FCFrame()
         self.layout.addWidget(par_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         par_frame.setLayout(param_grid)
 
         # Selection Limit
@@ -125,7 +125,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(lin_frame)
 
         # ## Grid Layout
-        lin_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        lin_grid = GLay(v_spacing=5, h_spacing=3)
         lin_frame.setLayout(lin_grid)
 
         # Linear Pad Array direction
@@ -179,7 +179,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(circ_frame)
 
         # ## Grid Layout
-        circ_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        circ_grid = GLay(v_spacing=5, h_spacing=3)
         circ_frame.setLayout(circ_grid)
 
         # Circular Pad Array direction
@@ -219,7 +219,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(buff_frame)
 
         # ## Grid Layout
-        buf_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        buf_grid = GLay(v_spacing=5, h_spacing=3)
         buff_frame.setLayout(buf_grid)
 
         # Buffer Distance
@@ -244,7 +244,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(scale_frame)
 
         # ## Grid Layout
-        scale_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        scale_grid = GLay(v_spacing=5, h_spacing=3)
         scale_frame.setLayout(scale_grid)
 
         # Scale Factor
@@ -269,7 +269,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(ma_frame)
 
         # ## Grid Layout
-        ma_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        ma_grid = GLay(v_spacing=5, h_spacing=3)
         ma_frame.setLayout(ma_grid)
 
         # Mark area Tool low threshold
@@ -296,6 +296,6 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         ma_grid.addWidget(self.grb_ma_high_label, 2, 0)
         ma_grid.addWidget(self.grb_ma_high_entry, 2, 1)
 
-        FCGridLayout.set_common_column_size([param_grid, lin_grid, circ_grid, buf_grid, scale_grid, ma_grid], 0)
+        GLay.set_common_column_size([param_grid, lin_grid, circ_grid, buf_grid, scale_grid, ma_grid], 0)
 
         self.layout.addStretch()

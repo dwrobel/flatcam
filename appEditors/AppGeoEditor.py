@@ -20,7 +20,7 @@ from camlib import distance, arc, three_point_circle, Geometry, AppRTreeStorage,
 from appTool import AppTool
 from appGUI.GUIElements import OptionalInputSection, FCCheckBox, FCLabel, FCComboBox, FCTextAreaRich, \
     FCDoubleSpinner, FCButton, FCInputDoubleSpinner, FCTree, NumericalEvalTupleEntry, FCEntry, FCTextEdit, \
-    VerticalScrollArea, FCGridLayout
+    VerticalScrollArea, GLay
 from appParsers.ParseFont import *
 
 from vispy.geometry import Rect
@@ -83,7 +83,7 @@ class BufferSelectionTool(AppTool):
         self.buffer_tool_frame.setLayout(self.buffer_tools_box)
 
         # Grid Layout
-        grid_buffer = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_buffer = GLay(v_spacing=5, h_spacing=3)
         self.buffer_tools_box.addLayout(grid_buffer)
 
         # Buffer distance
@@ -265,7 +265,7 @@ class TextInputTool(AppTool):
         self.text_tools_box.addWidget(title_label)
 
         # Grid Layout
-        self.grid_text = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.grid_text = GLay(v_spacing=5, h_spacing=3)
         self.text_tools_box.addLayout(self.grid_text)
 
         # Font type
@@ -501,7 +501,7 @@ class PaintOptionsTool(AppTool):
                         """)
         self.layout.addWidget(title_label)
 
-        grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid = GLay(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid)
 
         # Tool dia
@@ -729,7 +729,7 @@ class TransformEditorTool(AppTool):
         self.layout.addWidget(FCLabel(''))
 
         # ## Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
+        grid0 = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
         self.layout.addLayout(grid0)
 
         grid0.addWidget(FCLabel(''))
@@ -3452,7 +3452,7 @@ class AppGeoEditor(QtCore.QObject):
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
-        self.grid_d = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.grid_d = GLay(v_spacing=5, h_spacing=3)
         self.tools_box.addLayout(self.grid_d)
 
         # Tool diameter
@@ -3494,7 +3494,7 @@ class AppGeoEditor(QtCore.QObject):
         self.adv_frame.setContentsMargins(0, 0, 0, 0)
         self.tools_box.addWidget(self.adv_frame)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0 = GLay(v_spacing=5, h_spacing=3)
         grid0.setContentsMargins(0, 0, 0, 0)
         self.adv_frame.setLayout(grid0)
 

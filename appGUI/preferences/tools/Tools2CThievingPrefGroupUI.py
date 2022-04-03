@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCLabel, FCCheckBox, FCGridLayout, FCFrame, \
+from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCLabel, FCCheckBox, GLay, FCFrame, \
     FCComboBox2
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
@@ -36,7 +36,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(par_frame)
 
         # ## Grid Layout
-        grid_par = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_par = GLay(v_spacing=5, h_spacing=3)
         par_frame.setLayout(grid_par)
 
         # CIRCLE STEPS - to be used when buffering
@@ -149,7 +149,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(dots_frame)
 
         # ## Grid Layout
-        grid_dots = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_dots = GLay(v_spacing=5, h_spacing=3)
         dots_frame.setLayout(grid_dots)
 
         # Dot diameter #
@@ -188,7 +188,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(square_frame)
 
         # ## Grid Layout
-        grid_square = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_square = GLay(v_spacing=5, h_spacing=3)
         square_frame.setLayout(grid_square)
 
         # Square Size #
@@ -227,7 +227,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(line_frame)
 
         # ## Grid Layout
-        grid_line = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_line = GLay(v_spacing=5, h_spacing=3)
         line_frame.setLayout(grid_line)
 
         # Line Size #
@@ -270,7 +270,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(rob_frame)
 
         # ## Grid Layout
-        grid_robber = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_robber = GLay(v_spacing=5, h_spacing=3)
         rob_frame.setLayout(grid_robber)
 
         # ROBBER BAR MARGIN #
@@ -312,7 +312,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(ppm_frame)
 
         # ## Grid Layout
-        grid_ppm = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_ppm = GLay(v_spacing=5, h_spacing=3)
         ppm_frame.setLayout(grid_ppm)
 
         # Use Only Pads
@@ -346,7 +346,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         grid_ppm.addWidget(self.ppm_choice_label, 4, 0)
         grid_ppm.addWidget(self.ppm_choice_combo, 4, 1)
 
-        FCGridLayout.set_common_column_size(
+        GLay.set_common_column_size(
             [grid_par, grid_ppm, grid_line, grid_dots, grid_robber, grid_square], 0)
 
         self.layout.addStretch()

@@ -2,7 +2,7 @@ from PyQt6 import QtWidgets, QtCore
 from PyQt6.QtCore import Qt
 
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox, FCCheckBox, FCSpinner, NumericalEvalTupleEntry, \
-    OptionalInputSection, NumericalEvalEntry, FCLabel, FCGridLayout, FCComboBox2, FCFrame
+    OptionalInputSection, NumericalEvalEntry, FCLabel, GLay, FCComboBox2, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -34,7 +34,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         param_frame = FCFrame()
         self.layout.addWidget(param_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         param_frame.setLayout(param_grid)
 
         # Tool order Radio Button
@@ -232,7 +232,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         ds_frame = FCFrame()
         self.layout.addWidget(ds_frame)
 
-        ds_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        ds_grid = GLay(v_spacing=5, h_spacing=3)
         ds_frame.setLayout(ds_grid)
 
         # Drill slots
@@ -281,7 +281,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         adv_frame = FCFrame()
         self.layout.addWidget(adv_frame)
 
-        adv_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        adv_grid = GLay(v_spacing=5, h_spacing=3)
         adv_frame.setLayout(adv_grid)
 
         # Offset Z
@@ -426,7 +426,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         area_frame = FCFrame()
         self.layout.addWidget(area_frame)
 
-        area_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        area_grid = GLay(v_spacing=5, h_spacing=3)
         area_frame.setLayout(area_grid)
 
         # Exclusion Area CB
@@ -475,6 +475,6 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         area_grid.addWidget(self.over_z_label, 6, 0)
         area_grid.addWidget(self.over_z_entry, 6, 1, 1, 2)
 
-        FCGridLayout.set_common_column_size([param_grid, ds_grid, adv_grid, area_grid], 0)
+        GLay.set_common_column_size([param_grid, ds_grid, adv_grid, area_grid], 0)
 
         self.layout.addStretch()

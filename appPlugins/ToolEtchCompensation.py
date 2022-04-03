@@ -339,7 +339,7 @@ class EtchUI:
         self.tools_box.addWidget(util_frame)
 
         # Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0 = GLay(v_spacing=5, h_spacing=3)
         util_frame.setLayout(grid0)
 
         # Oz to um conversion
@@ -396,7 +396,7 @@ class EtchUI:
         self.gp_frame = FCFrame()
         self.tools_box.addWidget(self.gp_frame)
 
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1 = GLay(v_spacing=5, h_spacing=3)
         self.gp_frame.setLayout(grid1)
 
         # Thickness

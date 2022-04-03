@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, FCLabel, FCGridLayout, FCFrame
+from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -34,7 +34,7 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
         copper_frame = FCFrame()
         self.layout.addWidget(copper_frame)
 
-        self.copper_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.copper_grid = GLay(v_spacing=5, h_spacing=3)
         copper_frame.setLayout(self.copper_grid)
 
         # Trace size
@@ -133,7 +133,7 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
         silk_frame = FCFrame()
         self.layout.addWidget(silk_frame)
 
-        self.silk_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.silk_grid = GLay(v_spacing=5, h_spacing=3)
         silk_frame.setLayout(self.silk_grid)
 
         # Silkscreen2silkscreen clearance
@@ -211,7 +211,7 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
         solder_frame = FCFrame()
         self.layout.addWidget(solder_frame)
 
-        self.solder_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.solder_grid = GLay(v_spacing=5, h_spacing=3)
         solder_frame.setLayout(self.solder_grid)
 
         # Soldermask2soldermask clearance
@@ -246,7 +246,7 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
         holes_frame = FCFrame()
         self.layout.addWidget(holes_frame)
 
-        self.holes_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.holes_grid = GLay(v_spacing=5, h_spacing=3)
         holes_frame.setLayout(self.holes_grid)
 
         # Hole2Hole clearance

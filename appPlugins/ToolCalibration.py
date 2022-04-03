@@ -764,7 +764,7 @@ class CalibrationUI:
         self.layout.addWidget(title_label)
 
         # ## Grid Layout
-        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
+        grid_lay = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
         self.layout.addLayout(grid_lay)
 
         self.gcode_title_label = FCLabel('<b>%s:</b>' % _('Parameters'))

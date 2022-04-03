@@ -3,7 +3,7 @@ import sys
 from PyQt6.QtCore import QSettings
 
 from appGUI.GUIElements import RadioSet, FCSpinner, FCCheckBox, FCComboBox, FCButton, OptionalInputSection, \
-    FCDoubleSpinner, FCLabel, FCGridLayout, RadioSetDefaults, FCFrame, FCComboBox2
+    FCDoubleSpinner, FCLabel, GLay, RadioSetDefaults, FCFrame, FCComboBox2
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -37,7 +37,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0_frame = FCFrame()
         self.layout.addWidget(grid0_frame)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0 = GLay(v_spacing=5, h_spacing=3)
         grid0_frame.setLayout(grid0)
 
         # Units for FlatCAM
@@ -85,7 +85,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid1_frame = FCFrame()
         self.layout.addWidget(grid1_frame)
 
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1 = GLay(v_spacing=5, h_spacing=3)
         grid1_frame.setLayout(grid1)
 
         # Graphic Engine for FlatCAM
@@ -177,7 +177,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid2_frame = FCFrame()
         self.layout.addWidget(grid2_frame)
 
-        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid2 = GLay(v_spacing=5, h_spacing=3)
         grid2_frame.setLayout(grid2)
 
         # Application Level for FlatCAM
@@ -196,7 +196,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid3_frame = FCFrame()
         self.layout.addWidget(grid3_frame)
 
-        grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid3 = GLay(v_spacing=5, h_spacing=3)
         grid3_frame.setLayout(grid3)
 
         self.language_combo = FCComboBox()
@@ -222,7 +222,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid4_frame = FCFrame()
         self.layout.addWidget(grid4_frame)
 
-        grid4 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid4 = GLay(v_spacing=5, h_spacing=3)
         grid4_frame.setLayout(grid4)
 
         # Splash Screen
@@ -293,7 +293,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid6_frame = FCFrame()
         self.layout.addWidget(grid6_frame)
 
-        grid6 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid6 = GLay(v_spacing=5, h_spacing=3)
         grid6_frame.setLayout(grid6)
 
         # Save compressed project CB
@@ -358,7 +358,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid7_frame = FCFrame()
         self.layout.addWidget(grid7_frame)
 
-        grid7 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid7 = GLay(v_spacing=5, h_spacing=3)
         grid7_frame.setLayout(grid7)
 
         # Top Margin value
@@ -415,7 +415,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
         self.layout.addStretch()
 
-        FCGridLayout.set_common_column_size([grid0, grid1, grid6, grid7], 0)
+        GLay.set_common_column_size([grid0, grid1, grid6, grid7], 0)
 
         if sys.platform != 'win32':
             self.portability_cb.hide()

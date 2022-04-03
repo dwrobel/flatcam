@@ -1,4 +1,4 @@
-from appGUI.GUIElements import FCCheckBox, FCLabel, FCFrame, FCGridLayout
+from appGUI.GUIElements import FCCheckBox, FCLabel, FCFrame, GLay
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -31,7 +31,7 @@ class ToolsSubPrefGroupUI(OptionsGroupUI):
         param_frame = FCFrame()
         self.layout.addWidget(param_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         param_frame.setLayout(param_grid)
 
         self.close_paths_cb = FCCheckBox(_("Close paths"))

@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCCheckBox, RadioSet, FCDoubleSpinner, FCLabel, FCGridLayout, FCFrame
+from appGUI.GUIElements import FCCheckBox, RadioSet, FCDoubleSpinner, FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -36,7 +36,7 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
         param_frame = FCFrame()
         self.layout.addWidget(param_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         param_frame.setLayout(param_grid)
 
         # Circular Aperture Selection
@@ -90,7 +90,7 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
         met_frame = FCFrame()
         self.layout.addWidget(met_frame)
 
-        met_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        met_grid = GLay(v_spacing=5, h_spacing=3)
         met_frame.setLayout(met_grid)
 
         self.hole_size_radio = RadioSet(
@@ -122,7 +122,7 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
         fix_frame = FCFrame()
         self.layout.addWidget(fix_frame)
 
-        fix_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        fix_grid = GLay(v_spacing=5, h_spacing=3)
         fix_frame.setLayout(fix_grid)
 
         # Diameter value
@@ -152,7 +152,7 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
         ring_frame = FCFrame()
         self.layout.addWidget(ring_frame)
 
-        ring_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        ring_grid = GLay(v_spacing=5, h_spacing=3)
         ring_frame.setLayout(ring_grid)
 
         # Circular Annular Ring Value
@@ -229,7 +229,7 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
         prop_frame = FCFrame()
         self.layout.addWidget(prop_frame)
 
-        prop_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        prop_grid = GLay(v_spacing=5, h_spacing=3)
         prop_frame.setLayout(prop_grid)
 
         # Factor value
@@ -247,7 +247,7 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
         prop_grid.addWidget(self.factor_label, 0, 0)
         prop_grid.addWidget(self.factor_entry, 0, 1)
 
-        FCGridLayout.set_common_column_size(
+        GLay.set_common_column_size(
             [param_grid, ring_grid, prop_grid, met_grid, fix_grid], 0)
 
         self.layout.addStretch()

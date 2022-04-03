@@ -1791,7 +1791,7 @@ class LevelUI:
         self.al_box.setContentsMargins(0, 0, 0, 0)
         self.al_frame.setLayout(self.al_box)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0 = GLay(v_spacing=5, h_spacing=3)
         self.al_box.addLayout(grid0)
 
         self.al_title = FCLabel('<b>%s</b>' % _("Probe Points Table"))
@@ -1815,7 +1815,7 @@ class LevelUI:
         self.tools_box.addWidget(tt_frame)
 
         # Grid Layout
-        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
+        tool_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
         tt_frame.setLayout(tool_grid)
 
         self.al_probe_points_table = FCTable()
@@ -1848,7 +1848,7 @@ class LevelUI:
         self.tools_box.addWidget(tp_frame)
 
         # Grid Layout
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         tp_frame.setLayout(param_grid)
 
         # Travel Z Probe
@@ -1963,7 +1963,7 @@ class LevelUI:
         self.c_frame = FCFrame()
         self.tools_box.addWidget(self.c_frame)
 
-        ctrl_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        ctrl_grid = GLay(v_spacing=5, h_spacing=3)
         self.c_frame.setLayout(ctrl_grid)
 
         self.al_controller_combo = FCComboBox()
@@ -2034,7 +2034,7 @@ class LevelUI:
         self.connect_frame = FCFrame()
         self.gr_conn_tab_layout.addWidget(self.connect_frame)
 
-        grbl_conn_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
+        grbl_conn_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
         self.connect_frame.setLayout(grbl_conn_grid)
 
         # COM list
@@ -2114,12 +2114,12 @@ class LevelUI:
         # #############################################################################################################
         self.ctrl_grbl_frame = FCFrame()
         self.gr_ctrl_tab_layout.addWidget(self.ctrl_grbl_frame)
-        grbl_ctrl_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
+        grbl_ctrl_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
         self.ctrl_grbl_frame.setLayout(grbl_ctrl_grid)
 
         self.ctrl_grbl_frame2 = FCFrame()
         self.gr_ctrl_tab_layout.addWidget(self.ctrl_grbl_frame2)
-        grbl_ctrl2_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        grbl_ctrl2_grid = GLay(v_spacing=5, h_spacing=3)
         self.ctrl_grbl_frame2.setLayout(grbl_ctrl2_grid)
 
         self.gr_ctrl_tab_layout.addStretch(1)
@@ -2221,7 +2221,7 @@ class LevelUI:
         self.sender_frame = FCFrame()
         self.gr_send_tab_layout.addWidget(self.sender_frame)
 
-        grbl_send_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[1, 0])
+        grbl_send_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[1, 0])
         self.sender_frame.setLayout(grbl_send_grid)
 
         # Send CUSTOM COMMAND

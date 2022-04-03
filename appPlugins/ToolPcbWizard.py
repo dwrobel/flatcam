@@ -405,7 +405,7 @@ class WizardUI:
         self.layout.addWidget(FCLabel("<b>%s:</b>" % _("Load files")))
 
         # Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0 = GLay(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
 
         self.excellon_label = FCLabel('%s:' % _("Excellon file"))
@@ -443,7 +443,7 @@ class WizardUI:
         self.layout.addWidget(FCLabel("<b>%s:</b>" % _("Excellon Format")))
 
         # Grid Layout
-        grid01 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid01 = GLay(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid01)
 
         # Integral part of the coordinates

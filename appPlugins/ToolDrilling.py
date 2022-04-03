@@ -2407,7 +2407,7 @@ class DrillingUI:
         self.tools_box.addWidget(self.obj_combo_label)
 
         # Grid Layout
-        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        obj_grid = GLay(v_spacing=5, h_spacing=3)
         self.tools_box.addLayout(obj_grid)
 
         # ################################################
@@ -2436,7 +2436,7 @@ class DrillingUI:
         tt_frame = FCFrame()
         self.tools_box.addWidget(tt_frame)
 
-        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
+        tool_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
         tt_frame.setLayout(tool_grid)
 
         # Tools Table
@@ -2514,7 +2514,7 @@ class DrillingUI:
         self.exc_tools_box.addWidget(tp_frame)
 
         # Grid Layout
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         tp_frame.setLayout(param_grid)
 
         # Cut Z
@@ -2753,7 +2753,7 @@ class DrillingUI:
         gp_frame = FCFrame()
         self.exc_tools_box.addWidget(gp_frame)
 
-        all_par_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        all_par_grid = GLay(v_spacing=5, h_spacing=3)
         gp_frame.setLayout(all_par_grid)
 
         # Tool change
@@ -2932,7 +2932,7 @@ class DrillingUI:
 
         self.exclusion_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
 
-        exclud_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        exclud_grid = GLay(v_spacing=5, h_spacing=3)
         self.exclusion_box.addLayout(exclud_grid)
 
         # Chose Strategy
@@ -2998,7 +2998,7 @@ class DrillingUI:
         # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         # all_par_grid.addWidget(separator_line, 25, 0, 1, 2)
 
-        FCGridLayout.set_common_column_size([obj_grid, tool_grid, param_grid, all_par_grid], 0)
+        GLay.set_common_column_size([obj_grid, tool_grid, param_grid, all_par_grid], 0)
 
         self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))
         self.generate_cnc_button.setIcon(QtGui.QIcon(self.app.resource_location + '/cnc16.png'))

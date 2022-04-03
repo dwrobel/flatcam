@@ -90,11 +90,58 @@ class Distance(AppTool):
 
         self.init_plugin()
 
-        # if the splitter is hidden, display it
-        if self.app.ui.splitter.sizes()[0] == 0:
-            self.app.ui.splitter.setSizes([1, 1])
         if toggle:
-            pass
+            # if the splitter is hidden, display it
+            if self.app.ui.splitter.sizes()[0] == 0:
+                self.app.ui.splitter.setSizes([1, 1])
+
+            # if the Tool Tab is hidden display it, else hide it but only if the objectName is the same
+            found_idx = None
+            for idx in range(self.app.ui.notebook.count()):
+                if self.app.ui.notebook.widget(idx).objectName() == "plugin_tab":
+                    found_idx = idx
+                    break
+            # show the Tab
+            if not found_idx:
+                try:
+                    self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
+                except RuntimeError:
+                    self.app.ui.plugin_tab = QtWidgets.QWidget()
+                    self.app.ui.plugin_tab.setObjectName("plugin_tab")
+                    self.app.ui.plugin_tab_layout = QtWidgets.QVBoxLayout(self.app.ui.plugin_tab)
+                    self.app.ui.plugin_tab_layout.setContentsMargins(2, 2, 2, 2)
+
+                    self.app.ui.plugin_scroll_area = VerticalScrollArea()
+                    self.app.ui.plugin_tab_layout.addWidget(self.app.ui.plugin_scroll_area)
+                    self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
+                # focus on Tool Tab
+                self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
+
+            try:
+                if self.app.ui.plugin_scroll_area.widget().objectName() == self.pluginName and found_idx:
+                    # if the Tool Tab is not focused, focus on it
+                    if not self.app.ui.notebook.currentWidget() is self.app.ui.plugin_tab:
+                        # focus on Tool Tab
+                        self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
+                    else:
+                        # else remove the Tool Tab
+                        self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
+                        self.app.ui.notebook.removeTab(2)
+
+                        # if there are no objects loaded in the app then hide the Notebook widget
+                        if not self.app.collection.get_list():
+                            self.app.ui.splitter.setSizes([0, 1])
+
+                        if self.active:
+                            self.on_exit()
+                        return
+            except AttributeError:
+                pass
+
+            AppTool.run(self)
+        else:
+            if self.app.ui.splitter.sizes()[0] == 0:
+                self.app.ui.splitter.setSizes([1, 1])
 
         self.old_cursor_type = self.app.options["global_cursor_type"]
 
@@ -793,7 +840,7 @@ class DistanceUI:
         self.par_frame = FCFrame()
         self.layout.addWidget(self.par_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         self.par_frame.setLayout(param_grid)
 
         self.snap_center_cb = FCCheckBox(_("Snap to center"))
@@ -824,7 +871,7 @@ class DistanceUI:
         coords_frame = FCFrame()
         self.layout.addWidget(coords_frame)
 
-        coords_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        coords_grid = GLay(v_spacing=5, h_spacing=3)
         coords_frame.setLayout(coords_grid)
 
         # separator_line = QtWidgets.QFrame()
@@ -867,7 +914,7 @@ class DistanceUI:
         res_frame = FCFrame()
         self.layout.addWidget(res_frame)
 
-        res_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        res_grid = GLay(v_spacing=5, h_spacing=3)
         res_frame.setLayout(res_grid)
 
         # DX distance
@@ -945,7 +992,7 @@ class DistanceUI:
         self.measure_btn = FCButton(_("Measure"))
         self.layout.addWidget(self.measure_btn)
 
-        FCGridLayout.set_common_column_size([param_grid, coords_grid, res_grid], 0)
+        GLay.set_common_column_size([param_grid, coords_grid, res_grid], 0)
 
         self.layout.addStretch(1)
 

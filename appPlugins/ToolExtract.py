@@ -1040,15 +1040,15 @@ class ExtractUI:
         self.tools_box.addWidget(pads_frame)
 
         # ## Grid Layout
-        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_lay = GLay(v_spacing=5, h_spacing=3)
         grid_lay.setColumnStretch(0, 1)
         grid_lay.setColumnStretch(1, 0)
         pads_frame.setLayout(grid_lay)
 
-        pad_all_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        pad_all_grid = GLay(v_spacing=5, h_spacing=3)
         grid_lay.addLayout(pad_all_grid, 5, 0, 1, 2)
 
-        pad_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0])
+        pad_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0])
         pad_all_grid.addLayout(pad_grid, 0, 0)
 
         # All Aperture Selection
@@ -1141,7 +1141,7 @@ class ExtractUI:
         self.tools_box.addWidget(ed_frame)
 
         # ## Grid Layout
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1 = GLay(v_spacing=5, h_spacing=3)
         ed_frame.setLayout(grid1)
 
         self.method_label = FCLabel('%s:' % _("Method"))
@@ -1181,7 +1181,7 @@ class ExtractUI:
         self.ring_frame.setLayout(self.ring_box)
 
         # ## Grid Layout
-        ring_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        ring_grid = GLay(v_spacing=5, h_spacing=3)
         ring_grid.setContentsMargins(0, 0, 0, 0)
         self.ring_box.addLayout(ring_grid)
 
@@ -1266,7 +1266,7 @@ class ExtractUI:
         self.fix_frame.setContentsMargins(0, 0, 0, 0)
         grid1.addWidget(self.fix_frame, 10, 0, 1, 2)
 
-        fixed_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        fixed_grid = GLay(v_spacing=5, h_spacing=3)
         fixed_grid.setContentsMargins(0, 0, 0, 0)
         self.fix_frame.setLayout(fixed_grid)
 
@@ -1294,7 +1294,7 @@ class ExtractUI:
         self.prop_frame.setContentsMargins(0, 0, 0, 0)
         grid1.addWidget(self.prop_frame, 12, 0, 1, 2)
 
-        prop_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        prop_grid = GLay(v_spacing=5, h_spacing=3)
         prop_grid.setContentsMargins(0, 0, 0, 0)
         self.prop_frame.setLayout(prop_grid)
 
@@ -1345,7 +1345,7 @@ class ExtractUI:
         self.es_frame = FCFrame()
         self.tools_box.addWidget(self.es_frame)
 
-        es_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        es_grid = GLay(v_spacing=5, h_spacing=3)
         self.es_frame.setLayout(es_grid)
 
         # CLEARANCE
@@ -1390,7 +1390,7 @@ class ExtractUI:
         self.ec_frame = FCFrame()
         self.tools_box.addWidget(self.ec_frame)
 
-        ec_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        ec_grid = GLay(v_spacing=5, h_spacing=3)
         self.ec_frame.setLayout(ec_grid)
 
         # Margin
@@ -1421,7 +1421,7 @@ class ExtractUI:
         ec_grid.addWidget(self.thick_cut_label, 2, 0)
         ec_grid.addWidget(self.thick_cut_entry, 2, 1)
 
-        FCGridLayout.set_common_column_size(
+        GLay.set_common_column_size(
             [grid1, grid_lay, ring_grid, ec_grid, prop_grid, fixed_grid, ring_grid, es_grid, pad_all_grid, pad_grid], 0)
 
         # #############################################################################################################

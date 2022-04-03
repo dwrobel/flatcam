@@ -1,7 +1,7 @@
 from PyQt6 import QtWidgets, QtGui
 
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry, FCComboBox, FCLabel, \
-    FCGridLayout, FCFrame
+    GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -35,7 +35,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         param_frame = FCFrame()
         self.layout.addWidget(param_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         param_frame.setLayout(param_grid)
 
         # Reference Type
@@ -91,7 +91,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         rot_frame = FCFrame()
         self.layout.addWidget(rot_frame)
 
-        rot_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        rot_grid = GLay(v_spacing=5, h_spacing=3)
         rot_frame.setLayout(rot_grid)
 
         self.rotate_entry = FCDoubleSpinner()
@@ -132,7 +132,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         skew_frame = FCFrame()
         self.layout.addWidget(skew_frame)
 
-        skew_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        skew_grid = GLay(v_spacing=5, h_spacing=3)
         skew_frame.setLayout(skew_grid)
 
         self.skewx_entry = FCDoubleSpinner()
@@ -183,7 +183,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         scale_frame = FCFrame()
         self.layout.addWidget(scale_frame)
 
-        scale_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        scale_grid = GLay(v_spacing=5, h_spacing=3)
         scale_frame.setLayout(scale_grid)
 
         self.scalex_entry = FCDoubleSpinner()
@@ -220,7 +220,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         off_frame = FCFrame()
         self.layout.addWidget(off_frame)
 
-        off_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        off_grid = GLay(v_spacing=5, h_spacing=3)
         off_frame.setLayout(off_grid)
 
         self.offx_entry = FCDoubleSpinner()
@@ -273,7 +273,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         buff_frame = FCFrame()
         self.layout.addWidget(buff_frame)
 
-        buff_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        buff_grid = GLay(v_spacing=5, h_spacing=3)
         buff_frame.setLayout(buff_grid)
 
         self.buffer_label = FCLabel('%s:' % _("Distance"))
@@ -311,7 +311,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         buff_grid.addWidget(self.buffer_factor_label, 4, 0)
         buff_grid.addWidget(self.buffer_factor_entry, 4, 1)
 
-        FCGridLayout.set_common_column_size(
+        GLay.set_common_column_size(
             [param_grid, rot_grid, skew_grid, scale_grid, off_grid, buff_grid], 0)
 
         self.layout.addStretch()

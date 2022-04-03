@@ -1,6 +1,6 @@
 from PyQt6 import QtGui, QtCore, QtWidgets
 from appGUI.GUIElements import FCEntry, FCButton, FCDoubleSpinner, FCComboBox, FCCheckBox, FCSpinner, \
-    FCTree, RadioSet, FCFileSaveDialog, FCLabel, FCComboBox2, FCGridLayout
+    FCTree, RadioSet, FCFileSaveDialog, FCLabel, FCComboBox2, GLay
 from camlib import to_dict
 
 import sys
@@ -195,7 +195,7 @@ class ToolsDB2UI:
         # ###########################################################################
         # ################ Tool UI form #############################################
         # ###########################################################################
-        self.grid_tool = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.grid_tool = GLay(v_spacing=5, h_spacing=3)
         self.description_vlay.addLayout(self.grid_tool)
         self.description_vlay.addStretch()
 
@@ -277,7 +277,7 @@ class ToolsDB2UI:
         # ###########################################################################
         # ############### MILLING UI form ###########################################
         # ###########################################################################
-        self.grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.grid0 = GLay(v_spacing=5, h_spacing=3)
         self.milling_vlay.addLayout(self.grid0)
         self.milling_vlay.addStretch()
 
@@ -575,7 +575,7 @@ class ToolsDB2UI:
         # ############### NCC UI form ###############################################
         # ###########################################################################
 
-        self.grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.grid2 = GLay(v_spacing=5, h_spacing=3)
         self.ncc_vlay.addLayout(self.grid2)
         self.ncc_vlay.addStretch()
 
@@ -719,7 +719,7 @@ class ToolsDB2UI:
         # ############### Paint UI form #############################################
         # ###########################################################################
 
-        self.grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.grid3 = GLay(v_spacing=5, h_spacing=3)
         self.paint_vlay.addLayout(self.grid3)
         self.paint_vlay.addStretch()
 
@@ -806,7 +806,7 @@ class ToolsDB2UI:
         # ############### Isolation UI form #########################################
         # ###########################################################################
 
-        self.grid4 = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.grid4 = GLay(v_spacing=5, h_spacing=3)
         self.iso_vlay.addLayout(self.grid4)
         self.iso_vlay.addStretch()
 
@@ -881,7 +881,7 @@ class ToolsDB2UI:
         # ###########################################################################
         # ################ DRILLING UI form #########################################
         # ###########################################################################
-        self.grid5 = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.grid5 = GLay(v_spacing=5, h_spacing=3)
         self.drill_vlay.addLayout(self.grid5)
         self.drill_vlay.addStretch()
 
@@ -1104,7 +1104,7 @@ class ToolsDB2UI:
         # ###########################################################################
         # ################### Cutout UI form ########################################
         # ###########################################################################
-        self.grid6 = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.grid6 = GLay(v_spacing=5, h_spacing=3)
         self.cutout_vlay.addLayout(self.grid6)
         self.cutout_vlay.addStretch()
 
@@ -1386,7 +1386,7 @@ class ToolsDB2(QtWidgets.QWidget):
         # TOOLS DATABASE UI
         # ##############################################################################
         # ##############################################################################
-        layout = FCGridLayout(v_spacing=5, h_spacing=3)
+        layout = GLay(v_spacing=5, h_spacing=3)
         self.setLayout(layout)
         self.ui = ToolsDB2UI(app=self.app, grid_layout=layout)
 

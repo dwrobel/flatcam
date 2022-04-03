@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCLabel, FCGridLayout, FCFrame
+from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -35,7 +35,7 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         par_frame = FCFrame()
         self.layout.addWidget(par_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         par_frame.setLayout(param_grid)
 
         # ## Drill diameter for alignment holes
@@ -95,7 +95,7 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         mirror_frame = FCFrame()
         self.layout.addWidget(mirror_frame)
 
-        mirror_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        mirror_grid = GLay(v_spacing=5, h_spacing=3)
         mirror_frame.setLayout(mirror_grid)
 
         mirror_grid.addWidget(self.mirax_label, 0, 0)
@@ -122,6 +122,6 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         mirror_grid.addWidget(self.axloc_label, 2, 0)
         mirror_grid.addWidget(self.axis_location_radio, 2, 1)
 
-        FCGridLayout.set_common_column_size([param_grid, mirror_grid], 0)
+        GLay.set_common_column_size([param_grid, mirror_grid], 0)
 
         # self.layout.addStretch(1)

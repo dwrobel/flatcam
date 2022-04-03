@@ -2,7 +2,7 @@ from PyQt6 import QtWidgets, QtCore
 from PyQt6.QtCore import Qt
 
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox, FCCheckBox, FCSpinner, NumericalEvalTupleEntry, \
-    OptionalInputSection, NumericalEvalEntry, FCLabel, FCComboBox2, FCEntry, FCGridLayout, FCFrame
+    OptionalInputSection, NumericalEvalEntry, FCLabel, FCComboBox2, FCEntry, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -34,7 +34,7 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         param_frame = FCFrame()
         self.layout.addWidget(param_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         param_frame.setLayout(param_grid)
 
         # Tooldia
@@ -298,7 +298,7 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         adv_frame = FCFrame()
         self.layout.addWidget(adv_frame)
 
-        adv_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        adv_grid = GLay(v_spacing=5, h_spacing=3)
         adv_frame.setLayout(adv_grid)
 
         # Toolchange X,Y
@@ -446,7 +446,7 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         area_frame = FCFrame()
         self.layout.addWidget(area_frame)
 
-        area_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        area_grid = GLay(v_spacing=5, h_spacing=3)
         area_frame.setLayout(area_grid)
 
         # Exclusion Area CB
@@ -513,7 +513,7 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         polish_frame = FCFrame()
         self.layout.addWidget(polish_frame)
 
-        polish_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        polish_grid = GLay(v_spacing=5, h_spacing=3)
         polish_frame.setLayout(polish_grid)
 
         # Polish Margin
@@ -571,7 +571,7 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         excellon_mill_frame = FCFrame()
         self.layout.addWidget(excellon_mill_frame)
 
-        excellon_mill_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        excellon_mill_grid = GLay(v_spacing=5, h_spacing=3)
         excellon_mill_frame.setLayout(excellon_mill_grid)
 
         # Milling Type
@@ -639,6 +639,6 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
 
         excellon_mill_grid.addWidget(self.connect_cb, 8, 0, 1, 2)
 
-        FCGridLayout.set_common_column_size([param_grid, adv_grid, area_grid, polish_grid, excellon_mill_grid], 0)
+        GLay.set_common_column_size([param_grid, adv_grid, area_grid, polish_grid, excellon_mill_grid], 0)
 
         self.layout.addStretch()

@@ -536,7 +536,7 @@ class CalcUI:
         # Units Calculators
         # #############################################################################################################
         # Grid Layout
-        grid_units_layout = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_units_layout = GLay(v_spacing=5, h_spacing=3)
         units_frame.setLayout(grid_units_layout)
 
         # Length conversion
@@ -594,7 +594,7 @@ class CalcUI:
         v_frame = FCFrame()
         self.layout.addWidget(v_frame)
 
-        grid_vshape = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_vshape = GLay(v_spacing=5, h_spacing=3)
         v_frame.setLayout(grid_vshape)
 
         # self.v_shape_spacer_label = FCLabel(" ")
@@ -672,7 +672,7 @@ class CalcUI:
         ep_frame = FCFrame()
         self.layout.addWidget(ep_frame)
 
-        grid_electro = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_electro = GLay(v_spacing=5, h_spacing=3)
         ep_frame.setLayout(grid_electro)
 
         # grid_electro.addWidget(FCLabel(""), 0, 0, 1, 2)
@@ -858,7 +858,7 @@ class CalcUI:
         tin_frame = FCFrame()
         self.layout.addWidget(tin_frame)
 
-        grid_tin = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_tin = GLay(v_spacing=5, h_spacing=3)
         tin_frame.setLayout(grid_tin)
 
         # Solution
@@ -1037,7 +1037,7 @@ class CalcUI:
         )
         grid_tin.addWidget(self.calculate_tin_button, 30, 0, 1, 2)
 
-        FCGridLayout.set_common_column_size([grid_units_layout, grid_electro, grid_vshape, grid_tin], 0)
+        GLay.set_common_column_size([grid_units_layout, grid_electro, grid_vshape, grid_tin], 0)
 
         self.layout.addStretch(1)
 

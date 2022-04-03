@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCLabel, FCGridLayout, FCComboBox2, FCFrame
+from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCLabel, GLay, FCComboBox2, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -33,7 +33,7 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         par_frame = FCFrame()
         self.layout.addWidget(par_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         par_frame.setLayout(param_grid)
 
         # DIAMETER #
@@ -124,7 +124,7 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(s_frame)
 
         # Grid Layout
-        grid_sel = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_sel = GLay(v_spacing=5, h_spacing=3)
         s_frame.setLayout(grid_sel)
 
         # Mode #
@@ -140,6 +140,6 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         grid_sel.addWidget(self.mode_label, 0, 0)
         grid_sel.addWidget(self.mode_radio, 0, 1)
 
-        FCGridLayout.set_common_column_size([param_grid, grid_sel], 0)
+        GLay.set_common_column_size([param_grid, grid_sel], 0)
 
         self.layout.addStretch(1)

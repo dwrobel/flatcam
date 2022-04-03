@@ -3954,7 +3954,7 @@ class MillingUI:
         self.tools_box.addWidget(obj_frame)
 
         # Grid Layout
-        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        obj_grid = GLay(v_spacing=5, h_spacing=3)
         obj_frame.setLayout(obj_grid)
 
         self.target_label = FCLabel('%s:' % _("Type"))
@@ -3993,7 +3993,7 @@ class MillingUI:
         # #############################################################################################################
 
         # Grid Layout
-        tool_title_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tool_title_grid = GLay(v_spacing=5, h_spacing=3)
         self.tools_box.addLayout(tool_title_grid)
 
         self.tools_table_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Tools Table'))
@@ -4012,7 +4012,7 @@ class MillingUI:
         self.tools_box.addWidget(tt_frame)
 
         # Grid Layout
-        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tool_grid = GLay(v_spacing=5, h_spacing=3)
         tt_frame.setLayout(tool_grid)
 
         # ################################################
@@ -4175,7 +4175,7 @@ class MillingUI:
         self.add_tool_frame.setContentsMargins(0, 0, 0, 0)
         tool_grid.addWidget(self.add_tool_frame, 6, 0, 1, 2)
 
-        new_tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        new_tool_grid = GLay(v_spacing=5, h_spacing=3)
         new_tool_grid.setContentsMargins(0, 0, 0, 0)
         self.add_tool_frame.setLayout(new_tool_grid)
 
@@ -4203,7 +4203,7 @@ class MillingUI:
         # #############################################################################################################
         # ################################    Button Grid   ###########################################################
         # #############################################################################################################
-        button_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        button_grid = GLay(v_spacing=5, h_spacing=3)
         button_grid.setColumnStretch(0, 1)
         button_grid.setColumnStretch(1, 0)
         new_tool_grid.addLayout(button_grid, 5, 0, 1, 2)
@@ -4273,7 +4273,7 @@ class MillingUI:
         self.tool_params_box.addWidget(tp_frame)
 
         # Grid Layout
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         tp_frame.setLayout(param_grid)
 
         # Milling Type
@@ -4769,7 +4769,7 @@ class MillingUI:
         gp_frame = FCFrame()
         self.tool_params_box.addWidget(gp_frame)
 
-        gen_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        gen_grid = GLay(v_spacing=5, h_spacing=3)
         gp_frame.setLayout(gen_grid)
 
         # Tool change Z:
@@ -4982,7 +4982,7 @@ class MillingUI:
 
         self.exclusion_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
 
-        grid_a1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_a1 = GLay(v_spacing=5, h_spacing=3)
         self.exclusion_box.addLayout(grid_a1)
 
         # Chose Strategy
@@ -5043,7 +5043,7 @@ class MillingUI:
         # -------------------------- EXCLUSION AREAS END -------------------------------------------------------------
         # ------------------------------------------------------------------------------------------------------------
 
-        FCGridLayout.set_common_column_size(
+        GLay.set_common_column_size(
             [obj_grid, tool_title_grid, tool_grid, new_tool_grid, param_grid, gen_grid], 0)
 
         # #############################################################################################################

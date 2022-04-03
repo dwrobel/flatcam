@@ -1,7 +1,7 @@
 from PyQt6 import QtGui
 
 from appGUI.GUIElements import FCCheckBox, RadioSet, FCSpinner, FCDoubleSpinner, FCSliderWithSpinner, FCColorEntry, \
-    FCLabel, FCGridLayout, FCFrame
+    FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -30,7 +30,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         plot_frame = FCFrame()
         self.layout.addWidget(plot_frame)
 
-        plot_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        plot_grid = GLay(v_spacing=5, h_spacing=3)
         plot_frame.setLayout(plot_grid)
 
         # Plot CB
@@ -76,7 +76,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         dec_frame = FCFrame()
         self.layout.addWidget(dec_frame)
 
-        dec_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        dec_grid = GLay(v_spacing=5, h_spacing=3)
         dec_frame.setLayout(dec_grid)
 
         # Number of decimals to use in GCODE coordinates
@@ -147,7 +147,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         travel_frame = FCFrame()
         self.layout.addWidget(travel_frame)
 
-        travel_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        travel_grid = GLay(v_spacing=5, h_spacing=3)
         travel_frame.setLayout(travel_grid)
 
         # Plot Line Color
@@ -196,7 +196,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         obj_frame = FCFrame()
         self.layout.addWidget(obj_frame)
 
-        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        obj_grid = GLay(v_spacing=5, h_spacing=3)
         obj_frame.setLayout(obj_grid)
 
         # Plot Line Color
@@ -221,7 +221,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         obj_grid.addWidget(self.fill_color_label, 2, 0)
         obj_grid.addWidget(self.fill_color_entry, 2, 1)
 
-        FCGridLayout.set_common_column_size([plot_grid, dec_grid, travel_grid, obj_grid], 0)
+        GLay.set_common_column_size([plot_grid, dec_grid, travel_grid, obj_grid], 0)
 
         self.layout.addStretch()
 

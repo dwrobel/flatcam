@@ -1276,7 +1276,7 @@ class FilmUI:
         obj_frame = FCFrame()
         self.tools_box.addWidget(obj_frame)
 
-        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        obj_grid = GLay(v_spacing=5, h_spacing=3)
         obj_frame.setLayout(obj_grid)
 
         # Type of object for which to create the film
@@ -1342,7 +1342,7 @@ class FilmUI:
         self.adj_frame = FCFrame()
         self.tools_box.addWidget(self.adj_frame)
 
-        adj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        adj_grid = GLay(v_spacing=5, h_spacing=3)
         self.adj_frame.setLayout(adj_grid)
 
         # Scale Geometry
@@ -1535,7 +1535,7 @@ class FilmUI:
         par_frame = FCFrame()
         self.tools_box.addWidget(par_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         par_frame.setLayout(param_grid)
 
         # Convex Shape
@@ -1622,7 +1622,7 @@ class FilmUI:
         self.punch_frame.setContentsMargins(0, 0, 0, 0)
         param_grid.addWidget(self.punch_frame, 12, 0, 1, 2)
 
-        punch_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        punch_grid = GLay(v_spacing=5, h_spacing=3)
         punch_grid.setContentsMargins(0, 0, 0, 0)
         self.punch_frame.setLayout(punch_grid)
 
@@ -1675,7 +1675,7 @@ class FilmUI:
         exp_frame = FCFrame()
         self.tools_box.addWidget(exp_frame)
 
-        export_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        export_grid = GLay(v_spacing=5, h_spacing=3)
         exp_frame.setLayout(export_grid)
 
         self.file_type_label = FCLabel('%s:' % _("Film Type"))
@@ -1790,7 +1790,7 @@ class FilmUI:
         self.png_dpi_label.hide()
         self.png_dpi_spinner.hide()
 
-        FCGridLayout.set_common_column_size([adj_grid, param_grid, obj_grid, export_grid, punch_grid], 0)
+        GLay.set_common_column_size([adj_grid, param_grid, obj_grid, export_grid, punch_grid], 0)
 
         # Buttons
         self.film_object_button = FCButton(_("Save Film"))

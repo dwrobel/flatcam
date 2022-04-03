@@ -1173,7 +1173,7 @@ class PanelizeUI:
         self.tools_box.addWidget(obj_frame)
 
         # Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0 = GLay(v_spacing=5, h_spacing=3)
         obj_frame.setLayout(grid0)
 
         # Type of object to be panelized
@@ -1222,7 +1222,7 @@ class PanelizeUI:
         self.tools_box.addWidget(pr_frame)
 
         # Grid Layout
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1 = GLay(v_spacing=5, h_spacing=3)
         pr_frame.setLayout(grid1)
 
         self.reference_radio = RadioSet([{'label': _('Object'), 'value': 'object'},
@@ -1277,7 +1277,7 @@ class PanelizeUI:
         pd_frame = FCFrame()
         self.tools_box.addWidget(pd_frame)
 
-        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid2 = GLay(v_spacing=5, h_spacing=3)
         pd_frame.setLayout(grid2)
 
         # Spacing Columns
@@ -1338,7 +1338,7 @@ class PanelizeUI:
         self.gp_frame = FCFrame()
         self.tools_box.addWidget(self.gp_frame)
 
-        grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid3 = GLay(v_spacing=5, h_spacing=3)
         self.gp_frame.setLayout(grid3)
 
         # Type of resulting Panel object
@@ -1406,7 +1406,7 @@ class PanelizeUI:
         self.separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid3.addWidget(self.separator_line, 10, 0, 1, 2)
 
-        FCGridLayout.set_common_column_size([grid0, grid1, grid2, grid3], 0)
+        GLay.set_common_column_size([grid0, grid1, grid2, grid3], 0)
 
         # #############################################################################################################
         # Generate Panel Button

@@ -2032,7 +2032,7 @@ class PunchUI:
         self.tools_box.addWidget(self.obj_combo_label)
 
         # Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0 = GLay(v_spacing=5, h_spacing=3)
         self.tools_box.addLayout(grid0)
 
         # ## Gerber Object
@@ -2059,10 +2059,10 @@ class PunchUI:
         tt_frame = FCFrame()
         self.tools_box.addWidget(tt_frame)
 
-        pad_all_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        pad_all_grid = GLay(v_spacing=5, h_spacing=3)
         tt_frame.setLayout(pad_all_grid)
 
-        pad_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0])
+        pad_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0])
         pad_all_grid.addLayout(pad_grid, 0, 0)
 
         # Select all
@@ -2154,7 +2154,7 @@ class PunchUI:
         self.tools_box.addWidget(m_frame)
 
         # Grid Layout
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1 = GLay(v_spacing=5, h_spacing=3)
         m_frame.setLayout(grid1)
 
         self.method_punch = RadioSet(
@@ -2225,7 +2225,7 @@ class PunchUI:
         self.ring_box.addWidget(self.ring_label)
 
         # ## Grid Layout
-        self.grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.grid1 = GLay(v_spacing=5, h_spacing=3)
         self.ring_box.addLayout(self.grid1)
 
         # Circular Annular Ring Value
@@ -2324,7 +2324,7 @@ class PunchUI:
         self.tools_box.addWidget(self.s_frame)
 
         # Grid Layout
-        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid2 = GLay(v_spacing=5, h_spacing=3)
         self.s_frame.setLayout(grid2)
 
         # Type of doing the punch

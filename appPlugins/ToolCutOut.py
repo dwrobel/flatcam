@@ -2266,7 +2266,7 @@ class CutoutUI:
         self.tools_box.addWidget(obj_frame)
 
         # Grid Layout
-        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        obj_grid = GLay(v_spacing=5, h_spacing=3)
         obj_frame.setLayout(obj_grid)
 
         # Object kind
@@ -2319,7 +2319,7 @@ class CutoutUI:
         self.tools_box.addWidget(tool_frame)
 
         # Grid Layout
-        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tool_grid = GLay(v_spacing=5, h_spacing=3)
         tool_frame.setLayout(tool_grid)
 
         # Tool Diameter
@@ -2377,7 +2377,7 @@ class CutoutUI:
         self.tools_box.addWidget(tool_par_frame)
 
         # Grid Layout
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         tool_par_frame.setLayout(param_grid)
 
         # Convex Shape
@@ -2456,7 +2456,7 @@ class CutoutUI:
         self.tools_box.addWidget(gaps_frame)
 
         # Grid Layout
-        gaps_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        gaps_grid = GLay(v_spacing=5, h_spacing=3)
         gaps_frame.setLayout(gaps_grid)
 
         # Gapsize
@@ -2606,7 +2606,7 @@ class CutoutUI:
         self.man_frame.setContentsMargins(0, 0, 0, 0)
         gaps_grid.addWidget(self.man_frame, 20, 0, 1, 2)
 
-        man_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        man_grid = GLay(v_spacing=5, h_spacing=3)
         man_grid.setContentsMargins(0, 0, 0, 0)
         self.man_frame.setLayout(man_grid)
 
@@ -2705,7 +2705,7 @@ class CutoutUI:
         self.tools_box.addWidget(self.drill_cut_frame)
 
         # Grid Layout
-        drill_cut_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        drill_cut_grid = GLay(v_spacing=5, h_spacing=3)
         self.drill_cut_frame.setLayout(drill_cut_grid)
 
         # Drilling Geo Object Label
@@ -2765,7 +2765,7 @@ class CutoutUI:
         drill_cut_grid.addWidget(self.drill_margin_label, 8, 0)
         drill_cut_grid.addWidget(self.drill_margin_entry, 8, 1)
 
-        FCGridLayout.set_common_column_size([obj_grid, tool_grid, param_grid, man_grid, drill_cut_grid, gaps_grid], 0)
+        GLay.set_common_column_size([obj_grid, tool_grid, param_grid, man_grid, drill_cut_grid, gaps_grid], 0)
 
         # Drill Cut Button
         self.drillcut_btn = FCButton(_("Cut by Drilling"))

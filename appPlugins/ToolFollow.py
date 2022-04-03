@@ -720,7 +720,7 @@ class FollowUI:
         self.gp_frame = FCFrame()
         self.tools_box.addWidget(self.gp_frame)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0 = GLay(v_spacing=5, h_spacing=3)
         self.gp_frame.setLayout(grid0)
 
         # Polygon selection

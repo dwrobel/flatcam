@@ -1057,7 +1057,7 @@ class FidoUI:
         par_frame = FCFrame()
         self.tools_box.addWidget(par_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         par_frame.setLayout(param_grid)
 
         # DIAMETER #
@@ -1153,7 +1153,7 @@ class FidoUI:
         self.tools_box.addWidget(self.s_frame)
 
         # Grid Layout
-        grid_sel = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_sel = GLay(v_spacing=5, h_spacing=3)
         self.s_frame.setLayout(grid_sel)
 
         # Mode #
@@ -1175,7 +1175,7 @@ class FidoUI:
             _("Use a big cursor."))
         grid_sel.addWidget(self.big_cursor_cb, 2, 0, 1, 2)
 
-        FCGridLayout.set_common_column_size([grid_sel, param_grid, param_grid], 0)
+        GLay.set_common_column_size([grid_sel, param_grid, param_grid], 0)
 
         # ## Insert Copper Fiducial
         self.add_cfid_button = FCButton(_("Add Fiducial"))

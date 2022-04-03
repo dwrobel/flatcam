@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets, QtCore
 
-from appGUI.GUIElements import RadioSet, FCSpinner, FCLabel, FCGridLayout, FCFrame
+from appGUI.GUIElements import RadioSet, FCSpinner, FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -28,7 +28,7 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(exp_frame)
 
         # ## Grid Layout
-        exp_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        exp_grid = GLay(v_spacing=5, h_spacing=3)
         exp_frame.setLayout(exp_grid)
 
         # Gerber Units

@@ -749,7 +749,7 @@ class QRcodeUI:
         self.title_box.addWidget(self.level)
 
         # ## Grid Layout
-        i_grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
+        i_grid_lay = GLay(v_spacing=5, h_spacing=3)
         self.tools_box.addLayout(i_grid_lay)
 
         self.grb_object_combo = FCComboBox()
@@ -780,7 +780,7 @@ class QRcodeUI:
         self.tools_box.addWidget(tq_frame)
 
         # Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0 = GLay(v_spacing=5, h_spacing=3)
         tq_frame.setLayout(grid0)
 
         self.text_data = FCTextArea()
@@ -808,7 +808,7 @@ class QRcodeUI:
         self.tools_box.addWidget(p_frame)
 
         # ## Grid Layout
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1 = GLay(v_spacing=5, h_spacing=3)
         p_frame.setLayout(grid1)
 
         # VERSION #
@@ -921,7 +921,7 @@ class QRcodeUI:
         self.export_frame = FCFrame()
         self.tools_box.addWidget(self.export_frame)
 
-        self.export_lay = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.export_lay = GLay(v_spacing=5, h_spacing=3)
         self.export_frame.setLayout(self.export_lay)
 
         # default is hidden

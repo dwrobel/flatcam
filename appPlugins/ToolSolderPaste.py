@@ -358,7 +358,7 @@ class SolderPaste(AppTool):
     def ui_connect(self):
         # on any change to the widgets that matter it will be called self.gui_form_to_storage which will save the
         # changes in geometry UI
-        for grid in self.ui.tools_box.parentWidget().findChildren(FCGridLayout):
+        for grid in self.ui.tools_box.parentWidget().findChildren(GLay):
             assert isinstance(grid, QtWidgets.QGridLayout)
             for i in range(grid.count()):
                 wdg = grid.itemAt(i).widget()
@@ -374,7 +374,7 @@ class SolderPaste(AppTool):
 
     def ui_disconnect(self):
         # if connected, disconnect the signal from the slot on item_changed as it creates issues
-        for grid in self.ui.tools_box.parentWidget().findChildren(FCGridLayout):
+        for grid in self.ui.tools_box.parentWidget().findChildren(GLay):
             assert isinstance(grid, QtWidgets.QGridLayout)
             for i in range(grid.count()):
                 wdg = grid.itemAt(i).widget()
@@ -1245,7 +1245,7 @@ class SolderUI:
         tt_frame = FCFrame()
         self.tools_box.addWidget(tt_frame)
 
-        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
+        tool_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
         tt_frame.setLayout(tool_grid)
 
         self.tools_table = FCTable()
@@ -1313,7 +1313,7 @@ class SolderUI:
         par_frame = FCFrame()
         self.tools_box.addWidget(par_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         par_frame.setLayout(param_grid)
 
         # Z travel
@@ -1339,7 +1339,7 @@ class SolderUI:
         disp_frame = FCFrame()
         self.tools_box.addWidget(disp_frame)
 
-        disp_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        disp_grid = GLay(v_spacing=5, h_spacing=3)
         disp_frame.setLayout(disp_grid)
 
         # Z dispense start
@@ -1390,7 +1390,7 @@ class SolderUI:
         tc_frame = FCFrame()
         self.tools_box.addWidget(tc_frame)
 
-        tc_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tc_grid = GLay(v_spacing=5, h_spacing=3)
         tc_frame.setLayout(tc_grid)
 
         # X,Y Toolchange location
@@ -1425,7 +1425,7 @@ class SolderUI:
         fr_frame = FCFrame()
         self.tools_box.addWidget(fr_frame)
 
-        fr_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        fr_grid = GLay(v_spacing=5, h_spacing=3)
         fr_frame.setLayout(fr_grid)
 
         # Feedrate X-Y
@@ -1478,7 +1478,7 @@ class SolderUI:
         sp_fw_frame = FCFrame()
         self.tools_box.addWidget(sp_fw_frame)
 
-        sp_fw_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        sp_fw_grid = GLay(v_spacing=5, h_spacing=3)
         sp_fw_frame.setLayout(sp_fw_grid)
 
         # Spindle Speed Forward
@@ -1516,7 +1516,7 @@ class SolderUI:
         sp_rev_frame = FCFrame()
         self.tools_box.addWidget(sp_rev_frame)
 
-        sp_rev_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        sp_rev_grid = GLay(v_spacing=5, h_spacing=3)
         sp_rev_frame.setLayout(sp_rev_grid)
 
         self.speedrev_entry = FCSpinner(callback=self.confirmation_message_int)
@@ -1551,7 +1551,7 @@ class SolderUI:
         pp_frame = FCFrame()
         self.tools_box.addWidget(pp_frame)
 
-        pp_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        pp_grid = GLay(v_spacing=5, h_spacing=3)
         pp_frame.setLayout(pp_grid)
 
         pp_label = FCLabel('%s:' % _('Preprocessor'))
@@ -1572,7 +1572,7 @@ class SolderUI:
         geo_frame = FCFrame()
         self.tools_box.addWidget(geo_frame)
 
-        geo_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        geo_grid = GLay(v_spacing=5, h_spacing=3)
         geo_frame.setLayout(geo_grid)
 
         # Generate Geometry
@@ -1613,7 +1613,7 @@ class SolderUI:
         cnc_frame = FCFrame()
         self.tools_box.addWidget(cnc_frame)
 
-        cnc_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        cnc_grid = GLay(v_spacing=5, h_spacing=3)
         cnc_frame.setLayout(cnc_grid)
 
         # ## Buttons
@@ -1669,7 +1669,7 @@ class SolderUI:
         buttons_hlay.addWidget(self.solder_gcode_view_btn)
         self.tools_box.addLayout(buttons_hlay)
 
-        FCGridLayout.set_common_column_size(
+        GLay.set_common_column_size(
             [geo_grid, fr_grid, tc_grid, disp_grid, tool_grid, sp_fw_grid, sp_rev_grid, param_grid, cnc_grid,
              pp_grid], 0)
 

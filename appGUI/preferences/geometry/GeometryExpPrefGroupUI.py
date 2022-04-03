@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets, QtCore
 
-from appGUI.GUIElements import FCLabel, FCComboBox, FCGridLayout, FCFrame
+from appGUI.GUIElements import FCLabel, FCComboBox, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -33,7 +33,7 @@ class GeometryExpPrefGroupUI(OptionsGroupUI):
         export_frame = FCFrame()
         self.layout.addWidget(export_frame)
 
-        export_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        export_grid = GLay(v_spacing=5, h_spacing=3)
         export_frame.setLayout(export_grid)
 
         # Excellon non-decimal format

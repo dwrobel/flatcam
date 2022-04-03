@@ -1282,7 +1282,7 @@ class ThievingUI:
         self.tools_box.addWidget(self.grbobj_label)
 
         # ## Grid Layout
-        i_grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
+        i_grid_lay = GLay(v_spacing=5, h_spacing=3)
         self.tools_box.addLayout(i_grid_lay)
 
         self.grb_object_combo = FCComboBox()
@@ -1304,7 +1304,7 @@ class ThievingUI:
         tp_frame = FCFrame()
         self.tools_box.addWidget(tp_frame)
 
-        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_lay = GLay(v_spacing=5, h_spacing=3)
         tp_frame.setLayout(grid_lay)
 
         # CLEARANCE #
@@ -1440,7 +1440,7 @@ class ThievingUI:
         self.dots_frame.setContentsMargins(0, 0, 0, 0)
         grid_lay.addWidget(self.dots_frame, 20, 0, 1, 2)
 
-        dots_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        dots_grid = GLay(v_spacing=5, h_spacing=3)
         dots_grid.setContentsMargins(0, 0, 0, 0)
         self.dots_frame.setLayout(dots_grid)
         self.dots_frame.hide()
@@ -1486,7 +1486,7 @@ class ThievingUI:
         self.squares_frame.setContentsMargins(0, 0, 0, 0)
         grid_lay.addWidget(self.squares_frame, 22, 0, 1, 2)
 
-        squares_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        squares_grid = GLay(v_spacing=5, h_spacing=3)
         squares_grid.setContentsMargins(0, 0, 0, 0)
         self.squares_frame.setLayout(squares_grid)
         self.squares_frame.hide()
@@ -1532,7 +1532,7 @@ class ThievingUI:
         self.lines_frame.setContentsMargins(0, 0, 0, 0)
         grid_lay.addWidget(self.lines_frame, 24, 0, 1, 2)
 
-        lines_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        lines_grid = GLay(v_spacing=5, h_spacing=3)
         lines_grid.setContentsMargins(0, 0, 0, 0)
         self.lines_frame.setLayout(lines_grid)
         self.lines_frame.hide()
@@ -1603,7 +1603,7 @@ class ThievingUI:
         self.tools_box.addWidget(rob_frame)
 
         # ## Grid Layout
-        grid_lay_1 = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
+        grid_lay_1 = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
         rob_frame.setLayout(grid_lay_1)
 
         # separator_line_1 = QtWidgets.QFrame()
@@ -1686,7 +1686,7 @@ class ThievingUI:
         self.tools_box.addWidget(pp_frame)
 
         # ## Grid Layout
-        grid_lay_2 = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
+        grid_lay_2 = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
         pp_frame.setLayout(grid_lay_2)
 
         # Only Pads
@@ -1748,7 +1748,7 @@ class ThievingUI:
         grid_lay_2.addWidget(self.ppm_choice_label, 6, 0)
         grid_lay_2.addWidget(self.ppm_choice_combo, 6, 1, 1, 2)
 
-        FCGridLayout.set_common_column_size(
+        GLay.set_common_column_size(
             [i_grid_lay, grid_lay, grid_lay_1, grid_lay_2, dots_grid, squares_grid, lines_grid], 0)
 
         # #############################################################################################################

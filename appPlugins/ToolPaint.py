@@ -2956,7 +2956,7 @@ class PaintUI:
         self.tools_box.addWidget(obj_frame)
 
         # Grid Layout
-        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        obj_grid = GLay(v_spacing=5, h_spacing=3)
         obj_frame.setLayout(obj_grid)
 
         # #############################################################################################################
@@ -3007,7 +3007,7 @@ class PaintUI:
         self.tools_box.addWidget(tt_frame)
 
         # Grid Layout
-        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tool_grid = GLay(v_spacing=5, h_spacing=3)
         tt_frame.setLayout(tool_grid)
 
         self.tools_table = FCTable(drag_drop=True)
@@ -3062,7 +3062,7 @@ class PaintUI:
         self.add_tool_frame.setContentsMargins(0, 0, 0, 0)
         tool_grid.addWidget(self.add_tool_frame, 6, 0, 1, 2)
 
-        new_tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        new_tool_grid = GLay(v_spacing=5, h_spacing=3)
         new_tool_grid.setContentsMargins(0, 0, 0, 0)
         self.add_tool_frame.setLayout(new_tool_grid)
 
@@ -3092,7 +3092,7 @@ class PaintUI:
         # #############################################################################################################
         # ################################    Button Grid   ###########################################################
         # #############################################################################################################
-        button_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        button_grid = GLay(v_spacing=5, h_spacing=3)
         button_grid.setColumnStretch(0, 1)
         button_grid.setColumnStretch(1, 0)
         new_tool_grid.addLayout(button_grid, 6, 0, 1, 2)
@@ -3146,7 +3146,7 @@ class PaintUI:
         tt_frame = FCFrame()
         self.tools_box.addWidget(tt_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         tt_frame.setLayout(param_grid)
 
         # Overlap
@@ -3250,7 +3250,7 @@ class PaintUI:
         gp_frame = FCFrame()
         self.tools_box.addWidget(gp_frame)
 
-        gen_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        gen_grid = GLay(v_spacing=5, h_spacing=3)
         gp_frame.setLayout(gen_grid)
 
         # Rest machining
@@ -3340,7 +3340,7 @@ class PaintUI:
         self.area_shape_label.hide()
         self.area_shape_radio.hide()
 
-        FCGridLayout.set_common_column_size([obj_grid, tool_grid, new_tool_grid, param_grid, gen_grid], 0)
+        GLay.set_common_column_size([obj_grid, tool_grid, new_tool_grid, param_grid, gen_grid], 0)
 
         # #############################################################################################################
         # Generate Paint Geometry Button

@@ -1287,7 +1287,7 @@ class MarkersUI:
         par_frame = FCFrame()
         self.tools_box.addWidget(par_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         par_frame.setLayout(param_grid)
 
         # Type of Marker
@@ -1341,7 +1341,7 @@ class MarkersUI:
         self.off_frame = FCFrame()
         self.tools_box.addWidget(self.off_frame)
 
-        off_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        off_grid = GLay(v_spacing=5, h_spacing=3)
         self.off_frame.setLayout(off_grid)
 
         # Offset Reference
@@ -1405,7 +1405,7 @@ class MarkersUI:
         self.tools_box.addWidget(self.loc_frame)
 
         # Grid Layout
-        grid_loc = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_loc = GLay(v_spacing=5, h_spacing=3)
         self.loc_frame.setLayout(grid_loc)
 
         # TOP LEFT
@@ -1443,7 +1443,7 @@ class MarkersUI:
         self.tools_box.addWidget(self.s_frame)
 
         # Grid Layout
-        grid_sel = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_sel = GLay(v_spacing=5, h_spacing=3)
         self.s_frame.setLayout(grid_sel)
 
         # Type of placement of markers
@@ -1502,7 +1502,7 @@ class MarkersUI:
         self.tools_box.addWidget(self.drill_frame)
 
         # Grid Layout
-        grid_drill = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_drill = GLay(v_spacing=5, h_spacing=3)
         self.drill_frame.setLayout(grid_drill)
 
         # Drill Tooldia #
@@ -1568,7 +1568,7 @@ class MarkersUI:
         self.insert_frame = FCFrame()
         self.tools_box.addWidget(self.insert_frame)
 
-        insert_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        insert_grid = GLay(v_spacing=5, h_spacing=3)
         self.insert_frame.setLayout(insert_grid)
 
         self.insert_type_label = FCLabel('%s:' % _("Type"))
@@ -1605,7 +1605,7 @@ class MarkersUI:
                                        """)
         self.tools_box.addWidget(self.insert_markers_button)
 
-        FCGridLayout.set_common_column_size([grid_sel, param_grid, off_grid, grid_loc, grid_drill, insert_grid], 0)
+        GLay.set_common_column_size([grid_sel, param_grid, off_grid, grid_loc, grid_drill, insert_grid], 0)
 
         self.layout.addStretch(1)
 

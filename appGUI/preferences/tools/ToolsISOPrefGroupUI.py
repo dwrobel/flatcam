@@ -1,7 +1,7 @@
 from PyQt6 import QtWidgets
 
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox2, FCCheckBox, FCSpinner, NumericalEvalTupleEntry, \
-    FCLabel, FCGridLayout, FCFrame
+    FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -35,7 +35,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         par_frame = FCFrame()
         self.layout.addWidget(par_frame)
 
-        par_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_grid = GLay(v_spacing=5, h_spacing=3)
         par_frame.setLayout(par_grid)
 
         # Tool Dias
@@ -141,7 +141,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         tt_frame = FCFrame()
         self.layout.addWidget(tt_frame)
 
-        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tool_grid = GLay(v_spacing=5, h_spacing=3)
         tt_frame.setLayout(tool_grid)
 
         # Shape
@@ -254,7 +254,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         gp_frame = FCFrame()
         self.layout.addWidget(gp_frame)
 
-        gen_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        gen_grid = GLay(v_spacing=5, h_spacing=3)
         gp_frame.setLayout(gen_grid)
 
         # Rest machining CheckBox
@@ -371,6 +371,6 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         gen_grid.addWidget(plotting_label, 14, 0)
         gen_grid.addWidget(self.plotting_radio, 14, 1, 1, 2)
 
-        FCGridLayout.set_common_column_size([par_grid, tool_grid, gen_grid], 0)
+        GLay.set_common_column_size([par_grid, tool_grid, gen_grid], 0)
 
         self.layout.addStretch(1)

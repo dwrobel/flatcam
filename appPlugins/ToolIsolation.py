@@ -3413,7 +3413,7 @@ class IsoUI:
         self.tools_box.addWidget(tt_frame)
 
         # Grid Layout
-        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tool_grid = GLay(v_spacing=5, h_spacing=3)
         tt_frame.setLayout(tool_grid)
 
         self.tools_table = FCTable(drag_drop=True)
@@ -3461,7 +3461,7 @@ class IsoUI:
         self.add_tool_frame.setContentsMargins(0, 0, 0, 0)
         tool_grid.addWidget(self.add_tool_frame, 4, 0, 1, 2)
 
-        new_tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        new_tool_grid = GLay(v_spacing=5, h_spacing=3)
         new_tool_grid.setContentsMargins(0, 0, 0, 0)
         self.add_tool_frame.setLayout(new_tool_grid)
 
@@ -3502,7 +3502,7 @@ class IsoUI:
         # #############################################################################################################
         # ################################    Button Grid   ###########################################################
         # #############################################################################################################
-        button_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[1, 0])
+        button_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[1, 0])
         new_tool_grid.addLayout(button_grid, 6, 0, 1, 3)
 
         self.search_and_add_btn = FCButton(_('Search and Add'))
@@ -3568,7 +3568,7 @@ class IsoUI:
         self.tool_params_box.addWidget(tp_frame)
 
         # Grid Layout
-        tool_param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tool_param_grid = GLay(v_spacing=5, h_spacing=3)
         tp_frame.setLayout(tool_param_grid)
 
         # Tool Type
@@ -3601,7 +3601,7 @@ class IsoUI:
         self.v_frame.setContentsMargins(0, 0, 0, 0)
         tool_param_grid.addWidget(self.v_frame, 2, 0, 1, 2)
 
-        v_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        v_grid = GLay(v_spacing=5, h_spacing=3)
         v_grid.setContentsMargins(0, 0, 0, 0)
         self.v_frame.setLayout(v_grid)
 
@@ -3767,7 +3767,7 @@ class IsoUI:
         gp_frame = FCFrame()
         self.tool_params_box.addWidget(gp_frame)
 
-        gen_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        gen_grid = GLay(v_spacing=5, h_spacing=3)
         gp_frame.setLayout(gen_grid)
 
         # Rest Machining
@@ -3954,7 +3954,7 @@ class IsoUI:
         self.area_shape_label.hide()
         self.area_shape_radio.hide()
 
-        FCGridLayout.set_common_column_size([tool_grid, new_tool_grid, tool_param_grid, v_grid, gen_grid], 0)
+        GLay.set_common_column_size([tool_grid, new_tool_grid, tool_param_grid, v_grid, gen_grid], 0)
 
         # #############################################################################################################
         # Generate Geometry object

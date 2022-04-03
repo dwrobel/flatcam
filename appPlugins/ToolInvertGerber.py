@@ -249,7 +249,7 @@ class InvertUI:
         self.tools_box.addWidget(self.gp_frame)
 
         # Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0 = GLay(v_spacing=5, h_spacing=3)
         self.gp_frame.setLayout(grid0)
 
         # Margin

@@ -983,11 +983,11 @@ class MainGUI(QtWidgets.QMainWindow):
         self.addToolBar(self.grb_edit_toolbar)
 
         # ### INFOBAR TOOLBARS ###################################################
-        self.delta_coords_toolbar = QtWidgets.QToolBar(_('Delta Coordinates Toolbar'))
+        self.delta_coords_toolbar = CoordsToolbar(_('Delta Coordinates Toolbar'))
         self.delta_coords_toolbar.setObjectName('Delta_Coords_TB')
         self.delta_coords_toolbar.setStyleSheet("QToolBar{spacing:0px;}")
 
-        self.coords_toolbar = QtWidgets.QToolBar(_('Coordinates Toolbar'))
+        self.coords_toolbar = CoordsToolbar(_('Coordinates Toolbar'))
         self.coords_toolbar.setObjectName('Coords_TB')
         self.coords_toolbar.setStyleSheet("QToolBar{spacing:0px;}")
 
@@ -1876,7 +1876,8 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################## INFO BAR # ##################################
         # ########################################################################
         self.infobar = self.statusBar()
-        self.fcinfo = FlatCAMInfoBar(app=self.app)
+        self.fcinfo = AppInfoBar(app=self.app)
+
         self.infobar.addWidget(self.fcinfo, stretch=1)
 
         self.infobar.addWidget(self.delta_coords_toolbar)
@@ -2024,6 +2025,8 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.wplace_label.clicked.connect(self.app.on_workspace_toggle)
         self.fcinfo.clicked.connect(self.toggle_shell_ui)
+        self.coords_toolbar.clicked.connect(self.app.on_gui_coords_clicked)
+        self.delta_coords_toolbar.clicked.connect(self.app.on_gui_coords_clicked)
 
         # to be used in the future
         # self.plot_tab_area.tab_attached.connect(lambda x: print(x))
@@ -2780,7 +2783,8 @@ class MainGUI(QtWidgets.QMainWindow):
 
             # hide all Toolbars
             for tb in self.findChildren(QtWidgets.QToolBar):
-                tb.setVisible(False)
+                if isinstance(tb, QtWidgets.QToolBar):
+                    tb.setVisible(False)
 
             self.coords_toolbar.setVisible(self.app.defaults["global_coordsbar_show"])
             self.delta_coords_toolbar.setVisible(self.app.defaults["global_delta_coordsbar_show"])

@@ -311,7 +311,7 @@ class ImageUI:
         self.layout.addWidget(title_label)
 
         # Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0 = GLay(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
 
         # Type of object to create for the image

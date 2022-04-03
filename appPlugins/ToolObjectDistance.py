@@ -453,7 +453,7 @@ class ObjectDistanceUI:
         par_frame = FCFrame()
         self.layout.addWidget(par_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         par_frame.setLayout(param_grid)
 
         # Distance Type
@@ -479,7 +479,7 @@ class ObjectDistanceUI:
         coords_frame = FCFrame()
         self.layout.addWidget(coords_frame)
 
-        coords_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        coords_grid = GLay(v_spacing=5, h_spacing=3)
         coords_frame.setLayout(coords_grid)
 
         # separator_line = QtWidgets.QFrame()
@@ -522,7 +522,7 @@ class ObjectDistanceUI:
         res_frame = FCFrame()
         self.layout.addWidget(res_frame)
 
-        res_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        res_grid = GLay(v_spacing=5, h_spacing=3)
         res_frame.setLayout(res_grid)
 
         # DX distance
@@ -604,7 +604,7 @@ class ObjectDistanceUI:
         self.jump_hp_btn.setDisabled(True)
         self.layout.addWidget(self.jump_hp_btn)
 
-        FCGridLayout.set_common_column_size([param_grid, coords_grid, res_grid], 0)
+        GLay.set_common_column_size([param_grid, coords_grid, res_grid], 0)
 
         self.layout.addStretch(1)
 

@@ -599,7 +599,7 @@ class TransformUI:
         ref_frame = FCFrame()
         self.layout.addWidget(ref_frame)
 
-        ref_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        ref_grid = GLay(v_spacing=5, h_spacing=3)
         ref_frame.setLayout(ref_grid)
 
         ref_label = FCLabel('%s:' % _("Reference"))
@@ -677,7 +677,7 @@ class TransformUI:
         rot_frame = FCFrame()
         self.layout.addWidget(rot_frame)
 
-        rot_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        rot_grid = GLay(v_spacing=5, h_spacing=3)
         rot_frame.setLayout(rot_grid)
 
         self.rotate_label = FCLabel('%s:' % _("Angle"))
@@ -731,7 +731,7 @@ class TransformUI:
         skew_frame = FCFrame()
         self.layout.addWidget(skew_frame)
 
-        skew_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        skew_grid = GLay(v_spacing=5, h_spacing=3)
         skew_frame.setLayout(skew_grid)
 
         self.skewx_label = FCLabel('%s:' % _("X angle"))
@@ -800,7 +800,7 @@ class TransformUI:
         scale_frame = FCFrame()
         self.layout.addWidget(scale_frame)
 
-        scale_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        scale_grid = GLay(v_spacing=5, h_spacing=3)
         scale_frame.setLayout(scale_grid)
 
         self.scalex_label = FCLabel('%s:' % _("X factor"))
@@ -859,7 +859,7 @@ class TransformUI:
         mirror_frame = FCFrame()
         self.layout.addWidget(mirror_frame)
 
-        mirror_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        mirror_grid = GLay(v_spacing=5, h_spacing=3)
         mirror_frame.setLayout(mirror_grid)
 
         self.flipx_button = FCButton(_("Flip on X"))
@@ -887,7 +887,7 @@ class TransformUI:
         off_frame = FCFrame()
         self.layout.addWidget(off_frame)
 
-        off_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        off_grid = GLay(v_spacing=5, h_spacing=3)
         off_frame.setLayout(off_grid)
 
         self.offx_label = FCLabel('%s:' % _("X val"))
@@ -955,7 +955,7 @@ class TransformUI:
         buff_frame = FCFrame()
         self.layout.addWidget(buff_frame)
 
-        buff_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        buff_grid = GLay(v_spacing=5, h_spacing=3)
         buff_frame.setLayout(buff_grid)
 
         self.buffer_label = FCLabel('%s:' % _("Distance"))
@@ -1009,7 +1009,7 @@ class TransformUI:
         buff_grid.addWidget(self.buffer_factor_entry, 2, 1)
         buff_grid.addWidget(self.buffer_factor_button, 2, 2)
 
-        FCGridLayout.set_common_column_size(
+        GLay.set_common_column_size(
             [ref_grid, rot_grid, skew_grid, scale_grid, mirror_grid, off_grid, buff_grid], 0)
 
         self.layout.addStretch()

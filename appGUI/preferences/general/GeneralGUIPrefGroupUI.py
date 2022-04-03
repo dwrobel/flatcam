@@ -2,7 +2,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtCore import QSettings
 
 from appGUI.GUIElements import RadioSet, FCCheckBox, FCComboBox, FCSliderWithSpinner, FCColorEntry, FCLabel, \
-    FCGridLayout, FCFrame, FCComboBox2
+    GLay, FCFrame, FCComboBox2
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -31,7 +31,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         par_frame = FCFrame()
         self.layout.addWidget(par_frame)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0 = GLay(v_spacing=5, h_spacing=3)
         par_frame.setLayout(grid0)
 
         # Theme selection
@@ -152,7 +152,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         color_frame = FCFrame()
         self.layout.addWidget(color_frame)
 
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1 = GLay(v_spacing=5, h_spacing=3)
         color_frame.setLayout(grid1)
 
         # Plot Selection (left - right) Color
@@ -296,7 +296,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.proj_color_dis_label, 32, 0)
         grid1.addWidget(self.proj_color_dis_entry, 32, 1)
 
-        FCGridLayout.set_common_column_size([grid0, grid1], 0)
+        GLay.set_common_column_size([grid0, grid1], 0)
 
         # Project autohide CB
         self.project_autohide_cb = FCCheckBox(label=_('Project AutoHide'))

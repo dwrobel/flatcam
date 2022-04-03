@@ -1,6 +1,6 @@
 from PyQt6 import QtCore
 
-from appGUI.GUIElements import FCDoubleSpinner, FCSpinner, FCComboBox, NumericalEvalTupleEntry, FCLabel, FCGridLayout, \
+from appGUI.GUIElements import FCDoubleSpinner, FCSpinner, FCComboBox, NumericalEvalTupleEntry, FCLabel, GLay, \
     FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
@@ -35,7 +35,7 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         param_frame = FCFrame()
         self.layout.addWidget(param_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         param_frame.setLayout(param_grid)
 
         # Nozzle Tool Diameters

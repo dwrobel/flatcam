@@ -10,6 +10,8 @@ CHANGELOG for FlatCAM Evo beta
 3.04.2022
 
 - in Cutout Plugin exposed the any_cutout_handler() method and made sure that the `gaps` parameter case does not matter
+- some reformatting and class rename
+- when clicking the coordinates toolbars in the status bar now the Distance Plugin is shown and if already displayed, it is closed (toggle action)
 
 2.04.2022
 
@@ -802,7 +804,7 @@ CHANGELOG for FlatCAM Evo beta
 10.09.2021
 
 - minor changes in Film Plugin
-- fixed the FCGridLayout (in GUI elements) method that synchronize the column width for multiple grid layouts when the item on column is spanning multiple columns
+- fixed the GLay (in GUI elements) method that synchronize the column width for multiple grid layouts when the item on column is spanning multiple columns
 - updated the Turkish translation by Mehmet Kaya
 
 9.09.2021
@@ -818,7 +820,7 @@ CHANGELOG for FlatCAM Evo beta
 - on Coppper Thieving Plugin some UI updates
 - updated the GCGridLayout GUi element to automatically stretch the first column but offered also configuration; updated the use throughout the app
 - in Copper Thieving Plugin more UI changes
-- in GUI Elements the FCGridLayout has now a class method that allow adjusting column size in multiple grid layouts to the highest on that column; still work to do to take care of the situation when widgets are spanning multiple cells
+- in GUI Elements the GLay has now a class method that allow adjusting column size in multiple grid layouts to the highest on that column; still work to do to take care of the situation when widgets are spanning multiple cells
 - in Fiducials Plugin added the support for ESCAPE key from manual mode and also exit by right clicking
 - in Fiducials Plugin addressed the situation when no object is selected but there are available
 - in Fiducials Plugin when adding manual fiducials now panning is allowed without cancelling the process of adding

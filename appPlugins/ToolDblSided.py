@@ -728,7 +728,7 @@ class DsidedUI:
         self.tools_box.addWidget(source_frame)
 
         # ## Grid Layout
-        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        obj_grid = GLay(v_spacing=5, h_spacing=3)
         source_frame.setLayout(obj_grid)
 
         # Type of object to be cutout
@@ -763,7 +763,7 @@ class DsidedUI:
         self.bounds_frame = FCFrame()
         self.tools_box.addWidget(self.bounds_frame)
 
-        grid_bounds = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_bounds = GLay(v_spacing=5, h_spacing=3)
         self.bounds_frame.setLayout(grid_bounds)
 
         # Xmin value
@@ -861,7 +861,7 @@ class DsidedUI:
         mirror_frame = FCFrame()
         self.tools_box.addWidget(mirror_frame)
 
-        grid_mirror = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_mirror = GLay(v_spacing=5, h_spacing=3)
         mirror_frame.setLayout(grid_mirror)
 
         # ## Axis
@@ -946,7 +946,7 @@ class DsidedUI:
         self.br_frame.setContentsMargins(0, 0, 0, 0)
         grid_mirror.addWidget(self.br_frame, 11, 0, 1, 3)
 
-        grid_box_ref = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_box_ref = GLay(v_spacing=5, h_spacing=3)
         grid_box_ref.setContentsMargins(0, 0, 0, 0)
         self.br_frame.setLayout(grid_box_ref)
 
@@ -976,7 +976,7 @@ class DsidedUI:
         self.sr_frame.setContentsMargins(0, 0, 0, 0)
         grid_mirror.addWidget(self.sr_frame, 13, 0, 1, 3)
 
-        grid_snap_ref = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_snap_ref = GLay(v_spacing=5, h_spacing=3)
         grid_snap_ref.setContentsMargins(0, 0, 0, 0)
         self.sr_frame.setLayout(grid_snap_ref)
 
@@ -1035,7 +1035,7 @@ class DsidedUI:
         align_frame = FCFrame()
         self.tools_box.addWidget(align_frame)
 
-        grid4 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid4 = GLay(v_spacing=5, h_spacing=3)
         align_frame.setLayout(grid4)
 
         # ## Drill diameter for alignment holes
@@ -1122,7 +1122,7 @@ class DsidedUI:
         hlay.addWidget(self.delete_drill_point_button)
         grid4.addLayout(hlay, 9, 0, 1, 2)
 
-        FCGridLayout.set_common_column_size([obj_grid, grid_bounds, grid_mirror, grid_box_ref, grid4], 0)
+        GLay.set_common_column_size([obj_grid, grid_bounds, grid_mirror, grid_box_ref, grid4], 0)
 
         # ## Buttons
         self.create_excellon_button = FCButton(_("Create Excellon Object"))
