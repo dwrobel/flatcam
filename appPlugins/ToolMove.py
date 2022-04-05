@@ -5,15 +5,8 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore
-from appTool import AppTool
+from appTool import *
 from appGUI.VisPyVisuals import *
-
-from copy import copy
-import logging
-import gettext
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -48,7 +41,7 @@ class ToolMove(AppTool):
 
         # VisPy visuals
         if self.app.use_3d_engine:
-            self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
+            self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1, pool=self.app.pool)
         else:
             from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.sel_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name="move")
@@ -336,13 +329,12 @@ class ToolMove(AppTool):
         self.sel_shapes.clear()
         self.sel_shapes.redraw()
 
-    def draw_shape(self, shape):
-
+    def draw_shape(self, shp):
         if self.app.app_units.upper() == 'MM':
-            proc_shape = shape.buffer(-0.1)
+            proc_shape = shp.buffer(-0.1)
             proc_shape = proc_shape.buffer(0.2)
         else:
-            proc_shape = shape.buffer(-0.00393)
+            proc_shape = shp.buffer(-0.00393)
             proc_shape = proc_shape.buffer(0.00787)
 
         # face = Color('blue')

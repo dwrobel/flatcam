@@ -7,10 +7,36 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+3.04.2022
+
+- in Cutout Plugin exposed the any_cutout_handler() method and made sure that the `gaps` parameter case does not matter
+- some reformatting and class rename
+- when clicking the coordinates toolbars in the status bar now the Distance Plugin is shown and if already displayed, it is closed (toggle action)
+
+2.04.2022
+
+- in Markers Plugin, added a numeric mode
+- in Fiducials Plugin, for manual mode: added utility geometry and the ability to use a big cursor
+- minor fix in Fiducials Plugin
+- make sure that replotting objects is done only for enabled objects
+
+1.04.2022
+
+- in Markers Plugin, for the manual mode added the choice to use a big cursor when manual placing markers
+
 31.03.2022
 
 - changed the app main icons, hopefully they are more visible on black backgrounds than the ones that FlatCAM has
 - make sure that the state of the workspace is saved correctly on change
+- refactored the imports in the Plugins, moved almost all imports in the AppTool file
+- fixed a number of issues, mostly leftovers from moving the UI of a Plugin in its own class
+- fixed some bugs in the Punch Gerber plugin
+- fixed some bugs where the 'pool' parameter was not passed when creating shapes collections (in 3D graphic mode); I wonder how it worked until now
+- added a new feature in the Isolation Plugin: now for all the isolation Geometry objects this plugin can do a supplementary simplification of the geometry using the tolerance parameter defined in the General Parameters. This should lead to a reduced number of tool lifts when doing corners
+- fixed aperture marking in Extract Plugin
+- in Extract Plugin if no Gerber object is selected then the first Gerber object in the project list is selected (if any)
+- in Punch Gerber Plugin if no Gerber object is selected then the first Gerber object in the project list is selected (if any); fixed aperture marking in Punch Gerber Plugin
+- in Punch Gerber and Extract plugins, clean up the aperture markings on Plugin exit
 
 30.03.2022
 
@@ -778,7 +804,7 @@ CHANGELOG for FlatCAM Evo beta
 10.09.2021
 
 - minor changes in Film Plugin
-- fixed the FCGridLayout (in GUI elements) method that synchronize the column width for multiple grid layouts when the item on column is spanning multiple columns
+- fixed the GLay (in GUI elements) method that synchronize the column width for multiple grid layouts when the item on column is spanning multiple columns
 - updated the Turkish translation by Mehmet Kaya
 
 9.09.2021
@@ -794,7 +820,7 @@ CHANGELOG for FlatCAM Evo beta
 - on Coppper Thieving Plugin some UI updates
 - updated the GCGridLayout GUi element to automatically stretch the first column but offered also configuration; updated the use throughout the app
 - in Copper Thieving Plugin more UI changes
-- in GUI Elements the FCGridLayout has now a class method that allow adjusting column size in multiple grid layouts to the highest on that column; still work to do to take care of the situation when widgets are spanning multiple cells
+- in GUI Elements the GLay has now a class method that allow adjusting column size in multiple grid layouts to the highest on that column; still work to do to take care of the situation when widgets are spanning multiple cells
 - in Fiducials Plugin added the support for ESCAPE key from manual mode and also exit by right clicking
 - in Fiducials Plugin addressed the situation when no object is selected but there are available
 - in Fiducials Plugin when adding manual fiducials now panning is allowed without cancelling the process of adding

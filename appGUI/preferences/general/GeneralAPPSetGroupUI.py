@@ -2,7 +2,7 @@ from PyQt6 import QtCore, QtGui
 from PyQt6.QtCore import QSettings
 
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCComboBox, RadioSet, OptionalInputSection, FCSpinner, \
-    FCColorEntry, FCLabel, FCGridLayout, FCFrame
+    FCColorEntry, FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -44,7 +44,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.layout.addWidget(grids_frame)
 
         # Create a grid layout for the Application general settings
-        grids_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        grids_grid = GLay(v_spacing=5, h_spacing=3)
         grids_frame.setLayout(grids_grid)
 
         # Grid X Entry
@@ -96,7 +96,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         wk_frame = FCFrame()
         self.layout.addWidget(wk_frame)
 
-        wk_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        wk_grid = GLay(v_spacing=5, h_spacing=3)
         wk_frame.setLayout(wk_grid)
 
         self.workspace_cb = FCCheckBox('%s' % _('Active'))
@@ -197,7 +197,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         fnt_frame = FCFrame()
         self.layout.addWidget(fnt_frame)
 
-        fnt_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        fnt_grid = GLay(v_spacing=5, h_spacing=3)
         fnt_frame.setLayout(fnt_grid)
 
         # Notebook Font Size
@@ -289,7 +289,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         ax_frame = FCFrame()
         self.layout.addWidget(ax_frame)
 
-        ax_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        ax_grid = GLay(v_spacing=5, h_spacing=3)
         ax_frame.setLayout(ax_grid)
 
         # Axis Color
@@ -311,7 +311,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         m_frame = FCFrame()
         self.layout.addWidget(m_frame)
 
-        m_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        m_grid = GLay(v_spacing=5, h_spacing=3)
         m_frame.setLayout(m_grid)
 
         # Mouse Cursor Shape
@@ -414,7 +414,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         par_frame = FCFrame()
         self.layout.addWidget(par_frame)
 
-        par_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_grid = GLay(v_spacing=5, h_spacing=3)
         par_frame.setLayout(par_grid)
 
         # Delete confirmation
@@ -477,7 +477,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         par_grid.addWidget(self.activity_label, 10, 0)
         par_grid.addWidget(self.activity_combo, 10, 1)
 
-        FCGridLayout.set_common_column_size(
+        GLay.set_common_column_size(
             [grids_grid, m_grid, par_grid, wk_grid, fnt_grid, ax_grid], 0
         )
 

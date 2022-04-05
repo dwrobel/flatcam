@@ -5,24 +5,9 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-
-from appTool import AppTool
-from appGUI.GUIElements import FCDoubleSpinner, RadioSet, EvalEntry, FCTable, FCComboBox, FCButton, FCLabel, \
-    VerticalScrollArea, FCGridLayout, FCFrame, FCComboBox2
+from appTool import *
+import shapely.geometry
 from appCommon.Common import LoudDict
-
-from shapely.geometry import Point, Polygon, MultiPolygon, LineString
-from shapely.geometry import box as box
-from shapely.ops import unary_union
-
-import math
-import logging
-from copy import deepcopy
-
-import gettext
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -39,6 +24,10 @@ class ToolFiducials(AppTool):
         self.app = app
         self.canvas = self.app.plotcanvas
 
+        self.cursor_color_memory = None
+        # store the current cursor type to be restored after manual geo
+        self.old_cursor_type = self.app.options["global_cursor_type"]
+
         self.decimals = self.app.decimals
         self.units = ''
 
@@ -47,7 +36,6 @@ class ToolFiducials(AppTool):
         # #############################################################################
         self.ui = FidoUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
-        self.connect_signals_at_init()
 
         # Objects involved in Copper thieving
         self.grb_object = None
@@ -81,6 +69,8 @@ class ToolFiducials(AppTool):
         self.click_points = []
 
         self.handlers_connected = False
+        # storage for temporary shapes when adding manual markers
+        self.temp_shapes = self.app.move_tool.sel_shapes
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolFiducials()")
@@ -152,6 +142,9 @@ class ToolFiducials(AppTool):
         self.ui.fid_type_combo.currentIndexChanged.connect(self.on_fiducial_type)
         self.ui.pos_radio.activated_custom.connect(self.on_second_point)
         self.ui.mode_radio.activated_custom.connect(self.on_method_change)
+
+        self.ui.big_cursor_cb.stateChanged.connect(self.on_cursor_change)
+
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
     def set_tool_ui(self):
@@ -191,6 +184,11 @@ class ToolFiducials(AppTool):
 
         if obj is None:
             self.ui.grb_object_combo.setCurrentIndex(0)
+
+        self.ui.big_cursor_cb.set_value(self.app.options["tools_fiducials_big_cursor"])
+
+        # set cursor
+        self.old_cursor_type = self.app.options["global_cursor_type"]
 
     def change_level(self, level):
         """
@@ -261,6 +259,16 @@ class ToolFiducials(AppTool):
                 self.disconnect_event_handlers()
             except TypeError:
                 pass
+
+            self.ui.big_cursor_cb.hide()
+        else:
+            self.ui.big_cursor_cb.show()
+
+    def on_cursor_change(self, val):
+        if val:
+            self.app.options['tools_fiducials_big_cursor'] = True
+        else:
+            self.app.options['tools_fiducials_big_cursor'] = False
 
     def on_fiducial_type(self, val):
         if val == 2:    # 'cross'
@@ -350,6 +358,18 @@ class ToolFiducials(AppTool):
             self.ui.bottom_left_coords_entry.set_value('')
             self.ui.top_right_coords_entry.set_value('')
             self.ui.sec_points_coords_entry.set_value('')
+
+            if self.ui.big_cursor_cb.get_value():
+                self.app.on_cursor_type(val="big", control_cursor=True)
+                self.cursor_color_memory = self.app.plotcanvas.cursor_color
+                if self.app.use_3d_engine is True:
+                    self.app.plotcanvas.cursor_color = '#000000FF'
+                else:
+                    self.app.plotcanvas.cursor_color = '#000000'
+                self.app.app_cursor.enabled = True
+            else:
+                self.app.on_cursor_type(val="small", control_cursor=True)
+                self.app.plotcanvas.cursor_color = self.cursor_color_memory
 
             self.connect_event_handlers()
 
@@ -490,8 +510,7 @@ class ToolFiducials(AppTool):
 
                 :param center_pt:
                 :param side_size:
-                :return:
-                :type return:       Polygon
+                :return:            Polygon
                 """
                 half_s = side_size / 2
                 x_center = center_pt[0]
@@ -522,6 +541,7 @@ class ToolFiducials(AppTool):
             geo_buff_list = []
             if aperture_found:
                 for geo in geo_list:
+                    assert isinstance(geo, shapely.geometry.base.BaseGeometry)
                     geo_buff_list.append(geo)
 
                     dict_el = {'follow': geo.centroid, 'solid': geo}
@@ -542,6 +562,7 @@ class ToolFiducials(AppTool):
                 }
 
                 for geo in geo_list:
+                    assert isinstance(geo, shapely.geometry.base.BaseGeometry)
                     geo_buff_list.append(geo)
 
                     dict_el = {'follow': geo.centroid, 'solid': geo}
@@ -632,7 +653,7 @@ class ToolFiducials(AppTool):
                 )
             )
             self.check_points()
-
+            self.draw_utility_geometry(pos=pos)
         elif event.button == right_button and self.app.event_is_dragging is False:
             self.on_exit(cancelled=True)
 
@@ -691,7 +712,60 @@ class ToolFiducials(AppTool):
         else:
             worker_task()
 
+    def connect_event_handlers(self):
+        if self.handlers_connected is False:
+            if self.app.use_3d_engine:
+                self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
+                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+            else:
+                self.app.plotcanvas.graph_event_disconnect(self.app.mp)
+                self.app.plotcanvas.graph_event_disconnect(self.app.mr)
+
+            self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
+
+            self.handlers_connected = True
+
+    def disconnect_event_handlers(self):
+        if self.handlers_connected is True:
+            if self.app.use_3d_engine:
+                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
+            else:
+                self.app.plotcanvas.graph_event_disconnect(self.mr)
+
+            self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
+                                                                  self.app.on_mouse_click_over_plot)
+
+            self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                  self.app.on_mouse_click_release_over_plot)
+            self.handlers_connected = False
+
+    def flatten(self, geometry):
+        """
+        Creates a list of non-iterable linear geometry objects.
+        :param geometry: Shapely type or list or list of list of such.
+
+        Results are placed in self.flat_geometry
+        """
+
+        # ## If iterable, expand recursively.
+        try:
+            for geo in geometry:
+                if geo is not None:
+                    self.flatten(geometry=geo)
+
+        # ## Not iterable, do the actual indexing and add.
+        except TypeError:
+            self.flat_geometry.append(geometry)
+
+        return self.flat_geometry
+
     def on_exit(self, cancelled=None):
+        # restore cursor
+        self.app.on_cursor_type(val=self.old_cursor_type, control_cursor=False)
+        self.app.plotcanvas.cursor_color = self.cursor_color_memory
+
+        self.clear_utility_geometry()
+
         # plot the object
         for ob_name in self.copper_obj_set:
             try:
@@ -754,52 +828,65 @@ class ToolFiducials(AppTool):
 
         self.app.inform.emit('[success] %s' % _("Fiducials Tool exit."))
 
-    def connect_event_handlers(self):
-        if self.handlers_connected is False:
-            if self.app.use_3d_engine:
-                self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
-                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
-            else:
-                self.app.plotcanvas.graph_event_disconnect(self.app.mp)
-                self.app.plotcanvas.graph_event_disconnect(self.app.mr)
+    def draw_utility_geometry(self, pos):
+        fid_type = self.ui.fid_type_combo.get_value()
+        line_thickness = self.ui.line_thickness_entry.get_value()
+        fid_size = self.ui.fid_size_entry.get_value()
+        radius = fid_size / 2.0
 
-            self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
+        geo_list = []
+        pt = pos[0], pos[1]     # we ensure that this works in case the pt tuple is a return from Vispy (4 members)
 
-            self.handlers_connected = True
+        if fid_type == 0:  # 'circular'
+            geo_list = [Point(pt).buffer(radius, self.grb_steps_per_circle)]
+        elif fid_type == 1:      # 'cross'
+            x = pt[0]
+            y = pt[1]
+            line_geo_hor = LineString([
+                (x - radius + (line_thickness / 2.0), y), (x + radius - (line_thickness / 2.0), y)
+            ])
+            line_geo_vert = LineString([
+                (x, y - radius + (line_thickness / 2.0)), (x, y + radius - (line_thickness / 2.0))
+            ])
+            geo_list = [line_geo_hor, line_geo_vert]
+        else:       # 'chess' pattern
+            def make_square_poly(center_pt, side_size):
+                """
 
-    def disconnect_event_handlers(self):
-        if self.handlers_connected is True:
-            if self.app.use_3d_engine:
-                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
-            else:
-                self.app.plotcanvas.graph_event_disconnect(self.mr)
+                :param center_pt:
+                :param side_size:
+                :return:            Polygon
+                """
+                half_s = side_size / 2
+                x_center = center_pt[0]
+                y_center = center_pt[1]
 
-            self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
-                                                                  self.app.on_mouse_click_over_plot)
+                pt1 = (x_center - half_s, y_center - half_s)
+                pt2 = (x_center + half_s, y_center - half_s)
+                pt3 = (x_center + half_s, y_center + half_s)
+                pt4 = (x_center - half_s, y_center + half_s)
 
-            self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
-                                                                  self.app.on_mouse_click_release_over_plot)
-            self.handlers_connected = False
+                return Polygon([pt1, pt2, pt3, pt4, pt1])
 
-    def flatten(self, geometry):
-        """
-        Creates a list of non-iterable linear geometry objects.
-        :param geometry: Shapely type or list or list of list of such.
+            x = pt[0]
+            y = pt[1]
+            first_square = make_square_poly(center_pt=(x - fid_size / 4, y + fid_size / 4), side_size=fid_size / 2)
+            second_square = make_square_poly(center_pt=(x + fid_size / 4, y - fid_size / 4), side_size=fid_size / 2)
+            geo_list += [first_square, second_square]
 
-        Results are placed in self.flat_geometry
-        """
+        outline = '#0000FFAF'
+        for util_geo in geo_list:
+            self.temp_shapes.add(util_geo, color=outline, update=True, layer=0, tolerance=None)
 
-        # ## If iterable, expand recursively.
-        try:
-            for geo in geometry:
-                if geo is not None:
-                    self.flatten(geometry=geo)
+        if self.app.use_3d_engine:
+            self.temp_shapes.redraw()
 
-        # ## Not iterable, do the actual indexing and add.
-        except TypeError:
-            self.flat_geometry.append(geometry)
+    def clear_utility_geometry(self):
+        self.temp_shapes.clear(update=True)
+        self.temp_shapes.redraw()
 
-        return self.flat_geometry
+    def on_plugin_cleanup(self):
+        self.on_exit()
 
 
 class FidoUI:
@@ -947,9 +1034,11 @@ class FidoUI:
         self.points_table.setMinimumHeight(self.points_table.getHeight() + 2)
         self.points_table.setMaximumHeight(self.points_table.getHeight() + 2)
 
-        # remove the frame on the QLineEdit childrens of the table
+        # remove the frame on the QLineEdit children of the table
         for row in range(self.points_table.rowCount()):
-            self.points_table.cellWidget(row, 2).setFrame(False)
+            wdg = self.points_table.cellWidget(row, 2)
+            assert isinstance(wdg, QtWidgets.QLineEdit)
+            wdg.setFrame(False)
 
         # separator_line = QtWidgets.QFrame()
         # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
@@ -968,7 +1057,7 @@ class FidoUI:
         par_frame = FCFrame()
         self.tools_box.addWidget(par_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         par_frame.setLayout(param_grid)
 
         # DIAMETER #
@@ -1064,7 +1153,7 @@ class FidoUI:
         self.tools_box.addWidget(self.s_frame)
 
         # Grid Layout
-        grid_sel = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_sel = GLay(v_spacing=5, h_spacing=3)
         self.s_frame.setLayout(grid_sel)
 
         # Mode #
@@ -1080,7 +1169,13 @@ class FidoUI:
         grid_sel.addWidget(self.mode_label, 0, 0)
         grid_sel.addWidget(self.mode_radio, 0, 1)
 
-        FCGridLayout.set_common_column_size([grid_sel, param_grid, param_grid], 0)
+        # Big Cursor
+        self.big_cursor_cb = FCCheckBox('%s' % _("Big cursor"))
+        self.big_cursor_cb.setToolTip(
+            _("Use a big cursor."))
+        grid_sel.addWidget(self.big_cursor_cb, 2, 0, 1, 2)
+
+        GLay.set_common_column_size([grid_sel, param_grid, param_grid], 0)
 
         # ## Insert Copper Fiducial
         self.add_cfid_button = FCButton(_("Add Fiducial"))

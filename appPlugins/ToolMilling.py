@@ -5,36 +5,10 @@
 # License:  MIT Licence                                    #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-
-from appTool import AppTool
-from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCButton, FCComboBox2, \
-    FCComboBox, OptionalInputSection, FCSpinner, NumericalEvalTupleEntry, OptionalHideInputSection, FCLabel, \
-    VerticalScrollArea, FCGridLayout, FCFrame
+from appTool import *
 from appParsers.ParseExcellon import Excellon
-
-from camlib import grace
-import numpy as np
-
-from copy import deepcopy
-import math
-import simplejson as json
-import sys
-import traceback
-
-# from appObjects.FlatCAMObj import FlatCAMObj
-# import numpy as np
-# import math
-
-# from shapely.ops import unary_union
-from shapely.geometry import Point, LineString, box
-
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
-
-import logging
-import gettext
-import appTranslation as fcTranslate
-import builtins
+from camlib import grace
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -251,8 +225,8 @@ class ToolMilling(AppTool, Excellon):
         self.ui.level.toggled.connect(self.on_level_changed)
 
         # add Tool
-        self.ui.search_and_add_btn.clicked.connect(self.on_tool_add)
-        self.ui.deltool_btn.clicked.connect(self.on_tool_delete)
+        self.ui.search_and_add_btn.clicked.connect(lambda: self.on_tool_add())
+        self.ui.deltool_btn.clicked.connect(lambda: self.on_tool_delete())
         self.ui.addtool_from_db_btn.clicked.connect(self.on_tool_add_from_db_clicked)
 
         self.ui.target_radio.activated_custom.connect(self.on_target_changed)
@@ -585,7 +559,7 @@ class ToolMilling(AppTool, Excellon):
             "mill_spindlespeed": "tools_mill_spindlespeed",
             "mill_dwell": "tools_mill_dwell",
             "mill_dwelltime": "tools_mill_dwelltime",
-            "mill_minpower":"tools_mill_min_power",
+            "mill_minpower": "tools_mill_min_power",
 
             # General Parameters
             "mill_toolchange": "tools_mill_toolchange",
@@ -1154,9 +1128,8 @@ class ToolMilling(AppTool, Excellon):
         self.tool_row = 0
 
         for tool_no in tools:
-
-            drill_cnt = 0  # variable to store the nr of drills per tool
-            slot_cnt = 0  # variable to store the nr of slots per tool
+            # drill_cnt = 0  # variable to store the nr of drills per tool
+            # slot_cnt = 0  # variable to store the nr of slots per tool
 
             # Find no of drills for the current tool
             try:
@@ -1946,6 +1919,7 @@ class ToolMilling(AppTool, Excellon):
 
     def on_tt_change(self):
         cw = self.sender()
+        assert isinstance(cw, FCComboBox2)
 
         tool_type = cw.currentText()
         self.ui_update_v_shape(tool_type)
@@ -2043,14 +2017,14 @@ class ToolMilling(AppTool, Excellon):
         tooluid_item = int(self.ui.tools_table.item(row, 3).text())
         temp_tool_data = {}
 
-        for tooluid_key, tooluid_val in self.iso_tools.items():
+        for tooluid_key, tooluid_val in self.target_obj.tools.items():
             if int(tooluid_key) == tooluid_item:
                 # this will hold the 'data' key of the self.tools[tool] dictionary that corresponds to
                 # the current row in the tool table
                 temp_tool_data = tooluid_val['data']
                 break
 
-        for tooluid_key, tooluid_val in self.iso_tools.items():
+        for tooluid_key, tooluid_val in self.target_obj.tools.items():
             tooluid_val['data'] = deepcopy(temp_tool_data)
 
         self.app.inform.emit('[success] %s' % _("Current Tool parameters were applied to all tools."))
@@ -2060,7 +2034,7 @@ class ToolMilling(AppTool, Excellon):
         if order != 0:  # "default"
             self.build_ui()
 
-    def on_tool_add(self, clicked_state, dia=None, new_geo=None):
+    def on_tool_add(self, dia=None, new_geo=None):
         self.app.log.debug("GeometryObject.on_add_tool()")
 
         if self.target_obj is None:
@@ -2428,11 +2402,7 @@ class ToolMilling(AppTool, Excellon):
         self.builduiSig.emit()
         self.app.inform.emit('[success] %s' % _("Tool was copied in Tool Table."))
 
-    def on_tool_delete(self, clicked_signal, all_tools=None):
-        """
-        It's important to keep the not clicked_signal parameter otherwise the signal will go to the all_tools
-        parameter and I might get all the tool deleted
-        """
+    def on_tool_delete(self, all_tools=None):
         self.ui_disconnect()
 
         if all_tools is None:
@@ -2549,34 +2519,30 @@ class ToolMilling(AppTool, Excellon):
             outname = self.target_obj.obj_options["name"] + "_mill"
 
         if tooldia is None:
-            tooldia = float(self.target_obj.obj_options["tooldia"])
+            tooldia = self.ui.tooldia_entry.get_value()
 
         # Sort tools by diameter. items() -> [('name', diameter), ...]
-        sorted_tools = sorted(list(self.tools.items()), key=lambda tl: tl[1]['tooldia'])
+        # sorted_tools = sorted(list(self.tools.items()), key=lambda tl: tl[1]) # no longer works in Python3
 
-        # sort = []
-        # for k, v in self.tools.items():
-        #     sort.append((k, v.get('tooldia')))
-        # sorted_tools = sorted(sort, key=lambda t1: t1[1])
+        sort = []
+        for k, v in self.target_obj.tools.items():
+            sort.append((k, v['tooldia']))
+        sorted_tools = sorted(sort, key=lambda t1: t1[1])
 
         if tools == "all":
             tools = [i[0] for i in sorted_tools]  # List if ordered tool names.
             self.app.log.debug("Tools 'all' and sorted are: %s" % str(tools))
 
         if len(tools) == 0:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Please select one or more tools from the list and try again."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Please select one or more tools from the list and try again."))
             return False, "Error: No tools."
 
         for tool in tools:
-            if tooldia > self.tools[tool]['data']['tools_mill_tooldia']:
-                self.app.inform.emit(
-                    '[ERROR_NOTCL] %s %s: %s' % (
-                        _("Milling tool for DRILLS is larger than hole size. Cancelled."),
-                        _("Tool"),
-                        str(tool)
-                    )
-                )
+            if tooldia > self.target_obj.tools[tool]["tooldia"]:
+                mseg = '[ERROR_NOTCL] %s %s: %s' % (_("Milling tool for DRILLS is larger than hole size. Cancelled."),
+                                                    _("Tool"),
+                                                    str(tool))
+                self.app.inform.emit(mseg)
                 return False, "Error: Milling tool is larger than hole."
 
         def geo_init(geo_obj, app_obj):
@@ -2591,27 +2557,26 @@ class ToolMilling(AppTool, Excellon):
             """
             assert geo_obj.kind == 'geometry', "Initializer expected a GeometryObject, got %s" % type(geo_obj)
 
-            app_obj.inform.emit(_("Generating drills milling geometry..."))
-
             # ## Add properties to the object
 
             geo_obj.obj_options['type'] = 'Excellon Geometry'
             geo_obj.obj_options["tools_mill_tooldia"] = str(tooldia)
-            geo_obj.obj_options["tools_mill_multidepth"] = self.target_obj.obj_options["tools_mill_multidepth"]
+            geo_obj.obj_options["multidepth"] = app_obj.options["tools_mill_multidepth"]
             geo_obj.solid_geometry = []
 
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution
             # for FlatCAM is 6 decimals,
             # we add a tenth of the minimum value, meaning 0.0000001, which from our point of view is "almost zero"
-            for hole in self.drills:
-                if hole['tool'] in tools:
-                    buffer_value = self.tools[hole['tool']]["C"] / 2 - tooldia / 2
+            for etool in tools:
+                for drill in self.target_obj.tools[etool]['drills']:
+                    buffer_value = self.target_obj.tools[etool]['tooldia'] / 2 - tooldia / 2
                     if buffer_value == 0:
-                        geo_obj.solid_geometry.append(
-                            Point(hole['point']).buffer(0.0000001).exterior)
+                        geo_obj.solid_geometry.append(drill.buffer(0.0000001).exterior)
                     else:
-                        geo_obj.solid_geometry.append(
-                            Point(hole['point']).buffer(buffer_value).exterior)
+                        geo_obj.solid_geometry.append(drill.buffer(buffer_value).exterior)
+
+            if not geo_obj.solid_geometry:
+                return "fail"
 
         if use_thread:
             def geo_thread(a_obj):
@@ -2656,32 +2621,31 @@ class ToolMilling(AppTool, Excellon):
             tools = self.get_selected_tools_list()
 
         if outname is None:
-            outname = self.target_obj.obj_options["name"] + "_slots"
+            outname = self.target_obj.obj_options["name"] + "_mill"
 
         if tooldia is None:
             tooldia = float(self.target_obj.obj_options["slot_tooldia"])
 
         # Sort tools by diameter. items() -> [('name', diameter), ...]
-        sorted_tools = sorted(list(self.tools.items()), key=lambda tl: tl[1]['tooldia'])
-        #
-        # sort = []
-        # for k, v in self.tools.items():
-        #     sort.append((k, v.get('tooldia')))
-        # sorted_tools = sorted(sort, key=lambda t1: t1[1])
+        # sorted_tools = sorted(list(self.tools.items()), key=lambda tl: tl[1]) # no longer works in Python3
+
+        sort = []
+        for k, v in self.target_obj.tools.items():
+            sort.append((k, v['tooldia']))
+        sorted_tools = sorted(sort, key=lambda t1: t1[1])
 
         if tools == "all":
             tools = [i[0] for i in sorted_tools]  # List if ordered tool names.
             self.app.log.debug("Tools 'all' and sorted are: %s" % str(tools))
 
         if len(tools) == 0:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Please select one or more tools from the list and try again."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Please select one or more tools from the list and try again."))
             return False, "Error: No tools."
 
         for tool in tools:
             # I add the 0.0001 value to account for the rounding error in converting from IN to MM and reverse
             adj_toolstable_tooldia = float('%.*f' % (self.decimals, float(tooldia)))
-            adj_file_tooldia = float('%.*f' % (self.decimals, float(self.tools[tool]['data']['tools_mill_tooldia'])))
+            adj_file_tooldia = float('%.*f' % (self.decimals, float(self.target_obj.tools[tool]["tooldia"])))
             if adj_toolstable_tooldia > adj_file_tooldia + 0.0001:
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
                                      _("Milling tool for SLOTS is larger than hole size. Cancelled."))
@@ -2690,40 +2654,40 @@ class ToolMilling(AppTool, Excellon):
         def geo_init(geo_obj, app_obj):
             assert geo_obj.kind == 'geometry', "Initializer expected a GeometryObject, got %s" % type(geo_obj)
 
-            app_obj.inform.emit(_("Generating slot milling geometry..."))
-
             # ## Add properties to the object
 
             geo_obj.obj_options['type'] = 'Excellon Geometry'
             geo_obj.obj_options["tools_mill_tooldia"] = str(tooldia)
-            geo_obj.obj_options["tools_mill_multidepth"] = self.target_obj.obj_options["tools_mill_multidepth"]
+            geo_obj.obj_options["tools_mill_multidepth"] = app_obj.options["tools_mill_multidepth"]
             geo_obj.solid_geometry = []
 
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution
             # for FlatCAM is 6 decimals,
             # we add a tenth of the minimum value, meaning 0.0000001, which from our point of view is "almost zero"
-            for slot in self.slots:
-                if slot['tool'] in tools:
+            for m_tool in tools:
+                for slot in self.target_obj.tools[m_tool]['slots']:
                     toolstable_tool = float('%.*f' % (self.decimals, float(tooldia)))
-                    file_tool = float('%.*f' % (self.decimals, float(self.tools[tool]["C"])))
+                    file_tool = float('%.*f' % (self.decimals, float(self.target_obj.tools[m_tool]["tooldia"])))
 
                     # I add the 0.0001 value to account for the rounding error in converting from IN to MM and reverse
                     # for the file_tool (tooldia actually)
                     buffer_value = float(file_tool / 2) - float(toolstable_tool / 2) + 0.0001
                     if buffer_value == 0:
-                        start = slot['start']
-                        stop = slot['stop']
+                        start = slot[0]
+                        stop = slot[1]
 
                         lines_string = LineString([start, stop])
                         poly = lines_string.buffer(0.0000001, int(self.geo_steps_per_circle)).exterior
                         geo_obj.solid_geometry.append(poly)
                     else:
-                        start = slot['start']
-                        stop = slot['stop']
+                        start = slot[0]
+                        stop = slot[1]
 
                         lines_string = LineString([start, stop])
                         poly = lines_string.buffer(buffer_value, int(self.geo_steps_per_circle)).exterior
                         geo_obj.solid_geometry.append(poly)
+            if not geo_obj.solid_geometry:
+                return "fail"
 
         if use_thread:
             def geo_thread(a_obj):
@@ -3990,7 +3954,7 @@ class MillingUI:
         self.tools_box.addWidget(obj_frame)
 
         # Grid Layout
-        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        obj_grid = GLay(v_spacing=5, h_spacing=3)
         obj_frame.setLayout(obj_grid)
 
         self.target_label = FCLabel('%s:' % _("Type"))
@@ -4029,7 +3993,7 @@ class MillingUI:
         # #############################################################################################################
 
         # Grid Layout
-        tool_title_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tool_title_grid = GLay(v_spacing=5, h_spacing=3)
         self.tools_box.addLayout(tool_title_grid)
 
         self.tools_table_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Tools Table'))
@@ -4048,7 +4012,7 @@ class MillingUI:
         self.tools_box.addWidget(tt_frame)
 
         # Grid Layout
-        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tool_grid = GLay(v_spacing=5, h_spacing=3)
         tt_frame.setLayout(tool_grid)
 
         # ################################################
@@ -4211,7 +4175,7 @@ class MillingUI:
         self.add_tool_frame.setContentsMargins(0, 0, 0, 0)
         tool_grid.addWidget(self.add_tool_frame, 6, 0, 1, 2)
 
-        new_tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        new_tool_grid = GLay(v_spacing=5, h_spacing=3)
         new_tool_grid.setContentsMargins(0, 0, 0, 0)
         self.add_tool_frame.setLayout(new_tool_grid)
 
@@ -4239,7 +4203,7 @@ class MillingUI:
         # #############################################################################################################
         # ################################    Button Grid   ###########################################################
         # #############################################################################################################
-        button_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        button_grid = GLay(v_spacing=5, h_spacing=3)
         button_grid.setColumnStretch(0, 1)
         button_grid.setColumnStretch(1, 0)
         new_tool_grid.addLayout(button_grid, 5, 0, 1, 2)
@@ -4309,7 +4273,7 @@ class MillingUI:
         self.tool_params_box.addWidget(tp_frame)
 
         # Grid Layout
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         tp_frame.setLayout(param_grid)
 
         # Milling Type
@@ -4805,7 +4769,7 @@ class MillingUI:
         gp_frame = FCFrame()
         self.tool_params_box.addWidget(gp_frame)
 
-        gen_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        gen_grid = GLay(v_spacing=5, h_spacing=3)
         gp_frame.setLayout(gen_grid)
 
         # Tool change Z:
@@ -5018,7 +4982,7 @@ class MillingUI:
 
         self.exclusion_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
 
-        grid_a1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_a1 = GLay(v_spacing=5, h_spacing=3)
         self.exclusion_box.addLayout(grid_a1)
 
         # Chose Strategy
@@ -5079,7 +5043,7 @@ class MillingUI:
         # -------------------------- EXCLUSION AREAS END -------------------------------------------------------------
         # ------------------------------------------------------------------------------------------------------------
 
-        FCGridLayout.set_common_column_size(
+        GLay.set_common_column_size(
             [obj_grid, tool_title_grid, tool_grid, new_tool_grid, param_grid, gen_grid], 0)
 
         # #############################################################################################################

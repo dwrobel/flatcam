@@ -5,32 +5,10 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-
-from appTool import AppTool
-from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCButton,\
-    FCComboBox, OptionalInputSection, FCLabel, FCInputDialogSpinnerButton, FCComboBox2, \
-    VerticalScrollArea, FCGridLayout, FCFrame
+from appTool import *
 from appParsers.ParseGerber import Gerber
-
 from camlib import grace, flatten_shapely_geometry
-
-from copy import deepcopy
-
-import numpy as np
-from shapely.geometry import base
-from shapely.ops import unary_union, nearest_points
-from shapely.geometry import MultiPolygon, Polygon, MultiLineString, LineString, LinearRing
-
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
-
-import logging
-import traceback
-import sys
-import gettext
-import simplejson as json
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -68,6 +46,8 @@ class NonCopperClear(AppTool, Gerber):
 
         # store here the default data for Geometry Data
         self.default_data = {}
+
+        self.grid_status_memory = None
 
         self.obj_name = ""
         self.ncc_obj = None
@@ -809,7 +789,8 @@ class NonCopperClear(AppTool, Gerber):
 
         # make the diameter column editable
         for row in range(tool_id):
-            flags = QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled
+            flags = QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsSelectable | \
+                    QtCore.Qt.ItemFlag.ItemIsEnabled
             self.ui.tools_table.item(row, 1).setFlags(flags)
 
         self.ui.tools_table.resizeColumnsToContents()
@@ -1784,7 +1765,7 @@ class NonCopperClear(AppTool, Gerber):
         #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
         self.app.ui.update_location_labels(self.app.dx, self.app.dy, curr_pos[0], curr_pos[1])
 
-        units = self.app.app_units.lower()
+        # units = self.app.app_units.lower()
         # self.app.plotcanvas.text_hud.text = \
         #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
         #         self.app.dx, units, self.app.dy, units, curr_pos[0], units, curr_pos[1], units)
@@ -1854,14 +1835,6 @@ class NonCopperClear(AppTool, Gerber):
                     # restore the Grid snapping if it was active before
                     if self.grid_status_memory is True:
                         self.app.ui.grid_snap_btn.trigger()
-
-                    if self.app.use_3d_engine:
-                        self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_single_poly_mouse_release)
-                        self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
-                    else:
-                        self.app.plotcanvas.graph_event_disconnect(self.mr)
-                        self.app.plotcanvas.graph_event_disconnect(self.kp)
-
                     self.app.tool_shapes.clear(update=True)
                 except Exception as e:
                     self.app.log.error("ToolNCC.on_key_press() _2 --> %s" % str(e))
@@ -1919,7 +1892,7 @@ class NonCopperClear(AppTool, Gerber):
 
             box_geo = box_obj.solid_geometry
             if box_kind == 'geometry':
-                box_geo = flatten_shapely_geometry(box_geo)
+                env_obj = flatten_shapely_geometry(box_geo)
             elif box_kind == 'gerber':
                 box_geo = unary_union(box_obj.solid_geometry).convex_hull
                 ncc_geo = unary_union(ncc_obj.solid_geometry).convex_hull
@@ -2846,7 +2819,7 @@ class NonCopperClear(AppTool, Gerber):
             # Background
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
         else:
-            job_thread(app_obj=self.app)
+            job_thread(a_obj=self.app)
 
     def clear_copper_tcl(self, ncc_obj, sel_obj=None, ncctooldia=None, isotooldia=None, margin=None, has_offset=None,
                          offset=None, select_method=None, outname=None, overlap=None, connect=None, contour=None,
@@ -3890,7 +3863,7 @@ class NonCopperClear(AppTool, Gerber):
     def poly2rings(poly):
         return [poly.exterior] + [interior for interior in poly.interiors]
 
-    def generate_envelope(self, offset, invert, envelope_iso_type=2, follow=None):
+    def generate_envelope(self, offset, invert, envelope_iso_type=2):
         # isolation_geometry produces an envelope that is going on the left of the geometry
         # (the copper features). To leave the least amount of burrs on the features
         # the tool needs to travel on the right side of the features (this is called conventional milling)
@@ -3898,7 +3871,7 @@ class NonCopperClear(AppTool, Gerber):
         # the other passes overlap preceding ones and cut the left over copper. It is better for them
         # to cut on the right side of the left over copper i.e on the left side of the features.
         try:
-            geom = self.isolation_geometry(offset, iso_type=envelope_iso_type, follow=follow)
+            geom = self.isolation_geometry(offset, iso_type=envelope_iso_type)
         except Exception as e:
             self.app.log.error('NonCopperClear.generate_envelope() --> %s' % str(e))
             return 'fail'
@@ -4034,7 +4007,7 @@ class NonCopperClear(AppTool, Gerber):
         self.app.tools_db_tab.ui.cancel_tool_from_db.show()
 
     def reset_fields(self):
-        self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.ui.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
 
 
 class NccUI:
@@ -4098,7 +4071,7 @@ class NccUI:
         self.tools_box.addWidget(obj_frame)
 
         # Grid Layout
-        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        obj_grid = GLay(v_spacing=5, h_spacing=3)
         obj_frame.setLayout(obj_grid)
 
         # #############################################################################################################
@@ -4148,7 +4121,7 @@ class NccUI:
         tt_frame = FCFrame()
         self.tools_box.addWidget(tt_frame)
 
-        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tool_grid = GLay(v_spacing=5, h_spacing=3)
         tt_frame.setLayout(tool_grid)
 
         # Tools Table
@@ -4208,7 +4181,7 @@ class NccUI:
         self.add_tool_frame.setContentsMargins(0, 0, 0, 0)
         tool_grid.addWidget(self.add_tool_frame, 6, 0, 1, 2)
 
-        new_tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        new_tool_grid = GLay(v_spacing=5, h_spacing=3)
         new_tool_grid.setContentsMargins(0, 0, 0, 0)
         self.add_tool_frame.setLayout(new_tool_grid)
 
@@ -4230,7 +4203,7 @@ class NccUI:
         )
         new_tool_grid.addWidget(self.new_tooldia_lbl, 4, 0)
 
-        # nt_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[1, 0])
+        # nt_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[1, 0])
         # nt_grid.setContentsMargins(0, 0, 0, 0)
         # new_tool_grid.addLayout(nt_grid, 4, 1)
 
@@ -4255,7 +4228,7 @@ class NccUI:
         # #############################################################################################################
         # ################################    Button Grid   ###########################################################
         # #############################################################################################################
-        button_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        button_grid = GLay(v_spacing=5, h_spacing=3)
         button_grid.setColumnStretch(0, 1)
         button_grid.setColumnStretch(1, 0)
         new_tool_grid.addLayout(button_grid, 6, 0, 1, 3)
@@ -4307,7 +4280,7 @@ class NccUI:
         tt_frame = FCFrame()
         self.tools_box.addWidget(tt_frame)
 
-        par_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_grid = GLay(v_spacing=5, h_spacing=3)
         tt_frame.setLayout(par_grid)
 
         # Operation
@@ -4480,7 +4453,7 @@ class NccUI:
         gp_frame = FCFrame()
         self.tools_box.addWidget(gp_frame)
 
-        gen_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        gen_grid = GLay(v_spacing=5, h_spacing=3)
         gp_frame.setLayout(gen_grid)
 
         # Rest Machining
@@ -4618,7 +4591,7 @@ class NccUI:
 
         gen_grid.addWidget(self.valid_cb, 16, 0, 1, 2)
 
-        FCGridLayout.set_common_column_size([obj_grid, tool_grid, new_tool_grid, par_grid, gen_grid], 0)
+        GLay.set_common_column_size([obj_grid, tool_grid, new_tool_grid, par_grid, gen_grid], 0)
 
         # #############################################################################################################
         # Generate NCC Geometry Button

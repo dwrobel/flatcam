@@ -5,21 +5,8 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-
-from appTool import AppTool
-from appGUI.GUIElements import FCButton, FCDoubleSpinner, RadioSet, FCComboBox, FCLabel, \
-    VerticalScrollArea, FCGridLayout, FCFrame
+from appTool import *
 from camlib import flatten_shapely_geometry
-
-from shapely.geometry import box
-
-from copy import deepcopy
-
-import logging
-import gettext
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -262,7 +249,7 @@ class InvertUI:
         self.tools_box.addWidget(self.gp_frame)
 
         # Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0 = GLay(v_spacing=5, h_spacing=3)
         self.gp_frame.setLayout(grid0)
 
         # Margin

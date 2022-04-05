@@ -4,16 +4,8 @@
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
 # ##########################################################
-import numpy as np
-from PyQt6 import QtWidgets, QtGui
-from appTool import AppTool
-from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, NumericalEvalEntry, FCLabel, RadioSet, FCButton, \
-    VerticalScrollArea, FCGridLayout, FCFrame
-import math
 
-import gettext
-import appTranslation as fcTranslate
-import builtins
+from appTool import *
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -337,9 +329,9 @@ class ToolCalculator(AppTool):
     def on_calculate_growth(self):
         self.ui_disconnect()
         density = self.ui.cdensity_entry.get_value()
-        time = self.ui.time_entry.get_value()
+        g_time = self.ui.time_entry.get_value()
 
-        growth = time / (2.142857142857143 * float(20 / density))
+        growth = g_time / (2.142857142857143 * float(20 / density))
 
         self.ui.growth_entry.set_value(self.app.dec_format(growth, self.decimals))
         self.app.inform.emit('[success] %s' % _("Done."))
@@ -544,7 +536,7 @@ class CalcUI:
         # Units Calculators
         # #############################################################################################################
         # Grid Layout
-        grid_units_layout = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_units_layout = GLay(v_spacing=5, h_spacing=3)
         units_frame.setLayout(grid_units_layout)
 
         # Length conversion
@@ -602,7 +594,7 @@ class CalcUI:
         v_frame = FCFrame()
         self.layout.addWidget(v_frame)
 
-        grid_vshape = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_vshape = GLay(v_spacing=5, h_spacing=3)
         v_frame.setLayout(grid_vshape)
 
         # self.v_shape_spacer_label = FCLabel(" ")
@@ -680,7 +672,7 @@ class CalcUI:
         ep_frame = FCFrame()
         self.layout.addWidget(ep_frame)
 
-        grid_electro = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_electro = GLay(v_spacing=5, h_spacing=3)
         ep_frame.setLayout(grid_electro)
 
         # grid_electro.addWidget(FCLabel(""), 0, 0, 1, 2)
@@ -866,7 +858,7 @@ class CalcUI:
         tin_frame = FCFrame()
         self.layout.addWidget(tin_frame)
 
-        grid_tin = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_tin = GLay(v_spacing=5, h_spacing=3)
         tin_frame.setLayout(grid_tin)
 
         # Solution
@@ -1045,7 +1037,7 @@ class CalcUI:
         )
         grid_tin.addWidget(self.calculate_tin_button, 30, 0, 1, 2)
 
-        FCGridLayout.set_common_column_size([grid_units_layout, grid_electro, grid_vshape, grid_tin], 0)
+        GLay.set_common_column_size([grid_units_layout, grid_electro, grid_vshape, grid_tin], 0)
 
         self.layout.addStretch(1)
 

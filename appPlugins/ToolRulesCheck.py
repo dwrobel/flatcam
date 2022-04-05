@@ -5,22 +5,8 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtGui
-
-from appTool import AppTool
-from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, OptionalInputSection, FCComboBox, FCLabel, FCButton, \
-    VerticalScrollArea, FCGridLayout, FCFrame
-from copy import deepcopy
-
+from appTool import *
 from appPool import *
-# from os import getpid
-from shapely.ops import nearest_points
-from shapely.geometry import MultiPolygon, Polygon
-
-import logging
-import gettext
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -135,7 +121,6 @@ class RulesCheck(AppTool):
 
         self.ui.e1_cb.stateChanged.connect(lambda st: self.ui.e1_object.setDisabled(not st))
         self.ui.e2_cb.stateChanged.connect(lambda st: self.ui.e2_object.setDisabled(not st))
-
 
         self.ui.run_button.clicked.connect(self.execute)
 
@@ -593,7 +578,7 @@ class RulesCheck(AppTool):
                 try:
                     # minimize the number of distances by not taking into considerations those that are too small
                     dist = abs(geo.exterior.distance(s_geo))
-                except Exception as e:
+                except Exception:
                     # log.error("RulesCheck.check_gerber_annular_ring() --> %s" % str(e))
                     pass
 
@@ -692,7 +677,7 @@ class RulesCheck(AppTool):
                         _("Value is not valid.")))
                     return
 
-                if self.copper_t_cb.get_value():
+                if self.ui.copper_t_cb.get_value():
                     copper_t_obj = self.ui.copper_t_object.currentText()
                     copper_t_dict = {}
 
@@ -789,7 +774,7 @@ class RulesCheck(AppTool):
                         _("Value is not valid.")))
                     return
 
-                if self.ss_t_cb.get_value():
+                if self.ui.ss_t_cb.get_value():
                     silk_obj = self.ui.ss_t_object.currentText()
                     if silk_obj != '':
                         silk_dict['name'] = deepcopy(silk_obj)
@@ -1203,7 +1188,7 @@ class RulesUI:
         sel_frame = FCFrame()
         self.layout.addWidget(sel_frame)
 
-        sel_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[1, 0])
+        sel_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[1, 0])
         sel_frame.setLayout(sel_grid)
 
         # Select All Gerber
@@ -1257,7 +1242,7 @@ class RulesUI:
         top_frame = FCFrame()
         self.layout.addWidget(top_frame)
 
-        self.top_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 3, 0])
+        self.top_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 3, 0])
         top_frame.setLayout(self.top_grid)
 
         # Copper Top object
@@ -1323,7 +1308,7 @@ class RulesUI:
         bottom_frame = FCFrame()
         self.layout.addWidget(bottom_frame)
 
-        self.bottom_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 3, 0])
+        self.bottom_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 3, 0])
         bottom_frame.setLayout(self.bottom_grid)
 
         # Copper Bottom object
@@ -1389,7 +1374,7 @@ class RulesUI:
         outline_frame = FCFrame()
         self.layout.addWidget(outline_frame)
 
-        self.outline_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 3, 0])
+        self.outline_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 3, 0])
         outline_frame.setLayout(self.outline_grid)
 
         self.outline_object = FCComboBox()
@@ -1421,7 +1406,7 @@ class RulesUI:
         exc_frame = FCFrame()
         self.layout.addWidget(exc_frame)
 
-        self.exc_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 3, 0])
+        self.exc_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 3, 0])
         exc_frame.setLayout(self.exc_grid)
 
         # Excellon PTH object
@@ -1481,7 +1466,7 @@ class RulesUI:
         copper_frame = FCFrame()
         self.layout.addWidget(copper_frame)
 
-        self.copper_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.copper_grid = GLay(v_spacing=5, h_spacing=3)
         copper_frame.setLayout(self.copper_grid)
 
         # Trace size
@@ -1591,7 +1576,7 @@ class RulesUI:
         silk_frame = FCFrame()
         self.layout.addWidget(silk_frame)
 
-        self.silk_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.silk_grid = GLay(v_spacing=5, h_spacing=3)
         silk_frame.setLayout(self.silk_grid)
 
         # Silkscreen2silkscreen clearance
@@ -1678,7 +1663,7 @@ class RulesUI:
         solder_frame = FCFrame()
         self.layout.addWidget(solder_frame)
 
-        self.solder_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.solder_grid = GLay(v_spacing=5, h_spacing=3)
         solder_frame.setLayout(self.solder_grid)
 
         # Soldermask2soldermask clearance
@@ -1716,7 +1701,7 @@ class RulesUI:
         holes_frame = FCFrame()
         self.layout.addWidget(holes_frame)
 
-        self.holes_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.holes_grid = GLay(v_spacing=5, h_spacing=3)
         holes_frame.setLayout(self.holes_grid)
 
         # Hole2Hole clearance
@@ -1785,7 +1770,7 @@ class RulesUI:
                                 """)
         self.layout.addWidget(self.run_button)
 
-        FCGridLayout.set_common_column_size(
+        GLay.set_common_column_size(
             [self.copper_grid, self.solder_grid, self.silk_grid, self.exc_grid, self.top_grid, self.bottom_grid,
              self.outline_grid, self.holes_grid], 0)
 
@@ -1826,6 +1811,7 @@ class RulesUI:
                    [self.outline_grid.itemAt(i).widget() for i in range(self.outline_grid.count())
                     if isinstance(self.outline_grid.itemAt(i).widget(), FCCheckBox)]
         for cb in cb_items:
+            assert isinstance(cb, FCCheckBox)
             if state:
                 cb.setChecked(True)
             else:
@@ -1835,6 +1821,7 @@ class RulesUI:
         cb_items = [self.exc_grid.itemAt(i).widget() for i in range(self.exc_grid.count())
                     if isinstance(self.exc_grid.itemAt(i).widget(), FCCheckBox)]
         for cb in cb_items:
+            assert isinstance(cb, FCCheckBox)
             if state:
                 cb.setChecked(True)
             else:
@@ -1844,6 +1831,7 @@ class RulesUI:
         cb_items = [self.copper_grid.itemAt(i).widget() for i in range(self.copper_grid.count())
                     if isinstance(self.copper_grid.itemAt(i).widget(), FCCheckBox)]
         for cb in cb_items:
+            assert isinstance(cb, FCCheckBox)
             if state:
                 cb.setChecked(True)
             else:
@@ -1853,6 +1841,7 @@ class RulesUI:
         cb_items = [self.silk_grid.itemAt(i).widget() for i in range(self.silk_grid.count())
                     if isinstance(self.silk_grid.itemAt(i).widget(), FCCheckBox)]
         for cb in cb_items:
+            assert isinstance(cb, FCCheckBox)
             if state:
                 cb.setChecked(True)
             else:
@@ -1862,6 +1851,7 @@ class RulesUI:
         cb_items = [self.solder_grid.itemAt(i).widget() for i in range(self.solder_grid.count())
                     if isinstance(self.solder_grid.itemAt(i).widget(), FCCheckBox)]
         for cb in cb_items:
+            assert isinstance(cb, FCCheckBox)
             if state:
                 cb.setChecked(True)
             else:
@@ -1871,6 +1861,7 @@ class RulesUI:
         cb_items = [self.holes_grid.itemAt(i).widget() for i in range(self.holes_grid.count())
                     if isinstance(self.holes_grid.itemAt(i).widget(), FCCheckBox)]
         for cb in cb_items:
+            assert isinstance(cb, FCCheckBox)
             if state:
                 cb.setChecked(True)
             else:

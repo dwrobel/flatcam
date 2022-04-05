@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCLabel, FCGridLayout, FCFrame
+from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -32,7 +32,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         param_frame = FCFrame()
         self.layout.addWidget(param_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         param_frame.setLayout(param_grid)
 
         # Selection Limit
@@ -85,7 +85,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         lin_frame = FCFrame()
         self.layout.addWidget(lin_frame)
 
-        lin_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        lin_grid = GLay(v_spacing=5, h_spacing=3)
         lin_frame.setLayout(lin_grid)
 
         # Linear Drill Array direction
@@ -140,7 +140,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         circ_frame = FCFrame()
         self.layout.addWidget(circ_frame)
 
-        circ_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        circ_grid = GLay(v_spacing=5, h_spacing=3)
         circ_frame.setLayout(circ_grid)
 
         # Circular Drill Array direction
@@ -179,7 +179,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         slots_frame = FCFrame()
         self.layout.addWidget(slots_frame)
 
-        slots_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        slots_grid = GLay(v_spacing=5, h_spacing=3)
         slots_frame.setLayout(slots_grid)
 
         # Slot length
@@ -242,7 +242,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         slot_array_frame = FCFrame()
         self.layout.addWidget(slot_array_frame)
 
-        slot_array_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        slot_array_grid = GLay(v_spacing=5, h_spacing=3)
         slot_array_frame.setLayout(slot_array_grid)
 
         # Number of slot holes in a drill array
@@ -312,7 +312,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         circ_slot_frame = FCFrame()
         self.layout.addWidget(circ_slot_frame)
 
-        circ_slot_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        circ_slot_grid = GLay(v_spacing=5, h_spacing=3)
         circ_slot_frame.setLayout(circ_slot_grid)
 
         # Circular Slot Array direction
@@ -342,7 +342,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         circ_slot_grid.addWidget(self.slot_array_circular_angle_label, 2, 0)
         circ_slot_grid.addWidget(self.slot_array_circular_angle_entry, 2, 1)
 
-        FCGridLayout.set_common_column_size(
+        GLay.set_common_column_size(
             [param_grid, lin_grid, circ_grid, slots_grid, slot_array_grid, circ_slot_grid], 0)
 
         self.layout.addStretch()

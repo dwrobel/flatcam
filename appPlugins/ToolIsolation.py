@@ -5,31 +5,10 @@
 # License:  MIT Licence                                    #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-
-from appTool import AppTool
-from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCButton, \
-    FCComboBox, OptionalInputSection, FCSpinner, FCLabel, FCInputDialogSpinnerButton, FCComboBox2, \
-    VerticalScrollArea, FCGridLayout, FCFrame
+from appTool import *
 from appParsers.ParseGerber import Gerber
-from camlib import grace
-
-from copy import deepcopy
-import math
-
-import numpy as np
-import simplejson as json
-import sys
-
-from shapely.ops import unary_union, nearest_points
-from shapely.geometry import MultiPolygon, Polygon, MultiLineString, LineString, LinearRing, Point
-
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
-
-import logging
-import gettext
-import appTranslation as fcTranslate
-import builtins
+from camlib import grace
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -347,6 +326,9 @@ class ToolIsolation(AppTool, Gerber):
         self.ui.milling_type_radio.set_value(self.app.options["tools_iso_milling_type"])
         self.ui.combine_passes_cb.set_value(self.app.options["tools_iso_combine_passes"])
         self.ui.valid_cb.set_value(self.app.options["tools_iso_check_valid"])
+        self.ui.simplify_cb.set_value(self.app.options["tools_iso_simplification"])
+        self.ui.sim_tol_entry.set_value(self.app.options["tools_iso_simplification_tol"])
+
         self.ui.area_shape_radio.set_value(self.app.options["tools_iso_area_shape"])
         self.ui.poly_int_cb.set_value(self.app.options["tools_iso_poly_ints"])
         self.ui.forced_rest_iso_cb.set_value(self.app.options["tools_iso_force"])
@@ -1756,6 +1738,11 @@ class ToolIsolation(AppTool, Gerber):
         selection_type = args['sel_type'] if 'sel_type' in args else self.ui.select_combo.get_value()
         # tool_tip_shape: ["C1", "C2", "C3", "C4", "B", "V", "L"]
         tool_tip_shape = args['tip_shape'] if 'tip_shape' in args else self.ui.tool_shape_combo.get_value()
+        # use simplification: True/False with simplificaiton_tol: Float
+        use_simplification = args['iso_simplification'] if 'iso_simplification' in args else \
+            self.ui.simplify_cb.get_value()
+        simplification_tol = args['simplification_tol'] if 'simplification_tol' in args else \
+            self.ui.sim_tol_entry.get_value()
 
         # update the Common Parameters values in the self.iso_tools
         for tool_iso in tools_storage:
@@ -1763,6 +1750,8 @@ class ToolIsolation(AppTool, Gerber):
                 if key == 'data':
                     tools_storage[tool_iso][key]["tools_iso_rest"] = use_rest
                     tools_storage[tool_iso][key]["tools_iso_combine_passes"] = use_combine
+                    tools_storage[tool_iso][key]["tools_iso_simplification"] = use_simplification
+                    tools_storage[tool_iso][key]["tools_iso_simplification_tol"] = simplification_tol
                     tools_storage[tool_iso][key]["tools_iso_isoexcept"] = use_iso_except
                     tools_storage[tool_iso][key]["tools_iso_selection"] = selection_type
                     tools_storage[tool_iso][key]["tools_iso_area_shape"] = sel_area_shape
@@ -1772,11 +1761,13 @@ class ToolIsolation(AppTool, Gerber):
         if use_combine:
             if use_rest:
                 self.combined_rest(iso_obj=isolated_obj, iso2geo=geometry, tools_storage=tools_storage,
-                                   lim_area=limited_area, negative_dia=negative_dia, plot=plot)
+                                   lim_area=limited_area, negative_dia=negative_dia,
+                                   simp_en=use_simplification, simp_tol=simplification_tol, plot=plot)
             else:
                 self.combined_normal(iso_obj=isolated_obj, iso2geo=geometry, tools_storage=tools_storage,
                                      sel_tools=sel_tools, iso_except=use_iso_except, lim_area=limited_area,
-                                     negative_dia=negative_dia, extra_passes=use_extra_passes, plot=plot)
+                                     negative_dia=negative_dia, extra_passes=use_extra_passes,
+                                     simp_en=use_simplification, simp_tol=simplification_tol, plot=plot)
 
         else:
             prog_plot = self.app.options["tools_iso_plotting"]
@@ -1876,7 +1867,10 @@ class ToolIsolation(AppTool, Gerber):
                         iso_geo = self.area_intersection(iso_geo, intersection_geo=limited_area)
 
                     # make sure that no empty geometry element is in the solid_geometry
-                    new_solid_geo = [geo for geo in iso_geo if not geo.is_empty]
+                    new_solid_geo = self.flatten_list(iso_geo)
+                    if use_simplification:
+                        new_solid_geo = [
+                            g.simplify(tolerance=simplification_tol) for g in new_solid_geo if not g.is_empty]
 
                     tool_data.update({
                         "name": iso_name,
@@ -1940,7 +1934,8 @@ class ToolIsolation(AppTool, Gerber):
         # Switch notebook to Properties page
         # self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
-    def combined_rest(self, iso_obj, iso2geo, tools_storage, lim_area, negative_dia=None, plot=True):
+    def combined_rest(self, iso_obj, iso2geo, tools_storage, lim_area, negative_dia=None,
+                      simp_en=False, simp_tol=0.001, plot=True):
         """
         Isolate the provided Gerber object using "rest machining" strategy
 
@@ -1954,6 +1949,10 @@ class ToolIsolation(AppTool, Gerber):
         :type lim_area:         Shapely Polygon or a list of them
         :param negative_dia:    isolate the geometry with a negative value for the tool diameter
         :type negative_dia:     bool
+        :param simp_en:         enable simplification of geometry
+        :type simp_en:          bool
+        :param simp_tol:        simplification tolerance
+        :type simp_tol:         float
         :param plot:            if to plot the resulting geometry object
         :type plot:             bool
         :return:                Isolated solid geometry
@@ -2071,6 +2070,12 @@ class ToolIsolation(AppTool, Gerber):
                     if not work_geo:
                         break
 
+        total_solid_geometry = self.flatten_list(total_solid_geometry)
+        total_solid_geometry = [g for g in total_solid_geometry if not g.is_empty]
+        if simp_en:
+            total_solid_geometry = [
+                g.simplify(tolerance=simp_tol) for g in total_solid_geometry if not g.is_empty]
+
         # clean the progressive plotted shapes if it was used
         if plot and self.app.options["tools_iso_plotting"] == 'progressive':
             self.temp_shapes.clear(update=True)
@@ -2109,6 +2114,12 @@ class ToolIsolation(AppTool, Gerber):
                     not isinstance(geo_obj.solid_geometry, MultiPolygon):
                 geo_obj.solid_geometry = [geo_obj.solid_geometry]
 
+            # simplify geometry if enabled
+            if simp_en:
+                for t in geo_obj.tools:
+                    geo_obj.tools[t]['solid_geometry'] = [
+                        g.simplify(tolerance=simp_tol) for g in geo_obj.tools[t]['solid_geometry']]
+
             for g in geo_obj.solid_geometry:
                 if g:
                     break
@@ -2138,7 +2149,7 @@ class ToolIsolation(AppTool, Gerber):
             self.app.inform_shell.emit(msg=msg)
 
     def combined_normal(self, iso_obj, iso2geo, tools_storage, lim_area, sel_tools, iso_except, extra_passes=None,
-                        negative_dia=None, plot=True, prog_plot=None):
+                        negative_dia=None, simp_en=False, simp_tol=0.001, plot=True, prog_plot=None):
         """
 
         :param iso_obj:         the isolated Gerber object
@@ -2157,6 +2168,10 @@ class ToolIsolation(AppTool, Gerber):
         :type extra_passes:     int
         :param negative_dia:    isolate the geometry with a negative value for the tool diameter
         :type negative_dia:     bool
+        :param simp_en:         enable simplification of geometry
+        :type simp_en:          bool
+        :param simp_tol:        simplification tolerance
+        :type simp_tol:         float
         :param plot:            if to plot the resulting geometry object
         :type plot:             bool
         :param prog_plot:       If True a progressive plot is used
@@ -2291,6 +2306,12 @@ class ToolIsolation(AppTool, Gerber):
             if not tool_dict['solid_geometry']:
                 tools_storage.pop(tool, None)
 
+        total_solid_geometry = self.flatten_list(total_solid_geometry)
+        total_solid_geometry = [g for g in total_solid_geometry if not g.is_empty]
+        if simp_en:
+            total_solid_geometry = [
+                g.simplify(tolerance=simp_tol) for g in total_solid_geometry if not g.is_empty]
+
         def iso_init(geo_obj, app_obj):
             geo_obj.obj_options["tools_mill_tooldia"] = str(tool_dia)
 
@@ -2316,6 +2337,12 @@ class ToolIsolation(AppTool, Gerber):
             if not isinstance(geo_obj.solid_geometry, list) and \
                     not isinstance(geo_obj.solid_geometry, MultiPolygon):
                 geo_obj.solid_geometry = [geo_obj.solid_geometry]
+
+            # simplify geometry if enabled
+            if simp_en:
+                for t in geo_obj.tools:
+                    geo_obj.tools[t]['solid_geometry'] = [
+                        g.simplify(tolerance=simp_tol) for g in geo_obj.tools[t]['solid_geometry']]
 
             for g in geo_obj.solid_geometry:
                 if g:
@@ -3230,8 +3257,8 @@ class ToolIsolation(AppTool, Gerber):
                 elif isinstance(work_geo_shp, LinearRing) and work_geo_shp is not None:
                     work_geo_shp = [Polygon(work_geo_shp.coords[::-1])]
                 else:
-                    self.app.log.debug("ToolIsolation.generate_rest_geometry() Error --> Unexpected Geometry %s" %
-                              type(work_geo))
+                    self.app.log.debug(
+                        "ToolIsolation.generate_rest_geometry() Error --> Unexpected Geometry %s" % type(work_geo))
             except Exception as e:
                 self.app.log.error("ToolIsolation.generate_rest_geometry() Error --> %s" % str(e))
                 return 'fail', 'fail'
@@ -3293,6 +3320,13 @@ class ToolIsolation(AppTool, Gerber):
                 return None
 
         return None
+
+    def flatten_list(self, obj_list):
+        for item in obj_list:
+            if isinstance(item, Iterable) and not isinstance(item, (str, bytes)):
+                yield from self.flatten_list(item)
+            else:
+                yield item
 
 
 class IsoUI:
@@ -3379,7 +3413,7 @@ class IsoUI:
         self.tools_box.addWidget(tt_frame)
 
         # Grid Layout
-        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tool_grid = GLay(v_spacing=5, h_spacing=3)
         tt_frame.setLayout(tool_grid)
 
         self.tools_table = FCTable(drag_drop=True)
@@ -3427,7 +3461,7 @@ class IsoUI:
         self.add_tool_frame.setContentsMargins(0, 0, 0, 0)
         tool_grid.addWidget(self.add_tool_frame, 4, 0, 1, 2)
 
-        new_tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        new_tool_grid = GLay(v_spacing=5, h_spacing=3)
         new_tool_grid.setContentsMargins(0, 0, 0, 0)
         self.add_tool_frame.setLayout(new_tool_grid)
 
@@ -3468,7 +3502,7 @@ class IsoUI:
         # #############################################################################################################
         # ################################    Button Grid   ###########################################################
         # #############################################################################################################
-        button_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[1, 0])
+        button_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[1, 0])
         new_tool_grid.addLayout(button_grid, 6, 0, 1, 3)
 
         self.search_and_add_btn = FCButton(_('Search and Add'))
@@ -3534,7 +3568,7 @@ class IsoUI:
         self.tool_params_box.addWidget(tp_frame)
 
         # Grid Layout
-        tool_param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tool_param_grid = GLay(v_spacing=5, h_spacing=3)
         tp_frame.setLayout(tool_param_grid)
 
         # Tool Type
@@ -3567,7 +3601,7 @@ class IsoUI:
         self.v_frame.setContentsMargins(0, 0, 0, 0)
         tool_param_grid.addWidget(self.v_frame, 2, 0, 1, 2)
 
-        v_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        v_grid = GLay(v_spacing=5, h_spacing=3)
         v_grid.setContentsMargins(0, 0, 0, 0)
         self.v_frame.setLayout(v_grid)
 
@@ -3733,7 +3767,7 @@ class IsoUI:
         gp_frame = FCFrame()
         self.tool_params_box.addWidget(gp_frame)
 
-        gen_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        gen_grid = GLay(v_spacing=5, h_spacing=3)
         gp_frame.setLayout(gen_grid)
 
         # Rest Machining
@@ -3780,13 +3814,29 @@ class IsoUI:
 
         gen_grid.addWidget(self.valid_cb, 4, 0, 1, 2)
 
+        # Simplification Tolerance
+        self.simplify_cb = FCCheckBox('%s' % _("Simplify"))
+        self.simplify_cb.setToolTip(
+            _("All points in the simplified object will be\n"
+              "within the tolerance distance of the original geometry.")
+        )
+        self.sim_tol_entry = FCDoubleSpinner()
+        self.sim_tol_entry.set_precision(self.decimals)
+        self.sim_tol_entry.setSingleStep(10 ** -self.decimals)
+        self.sim_tol_entry.set_range(0.0000, 10000.0000)
+
+        self.sois = OptionalInputSection(self.simplify_cb, [self.sim_tol_entry])
+
+        gen_grid.addWidget(self.simplify_cb, 6, 0)
+        gen_grid.addWidget(self.sim_tol_entry, 6, 1)
+
         # Exception Areas
         self.except_cb = FCCheckBox(label=_('Except'))
         self.except_cb.setToolTip(_("When the isolation geometry is generated,\n"
                                     "by checking this, the area of the object below\n"
                                     "will be subtracted from the isolation geometry."))
         self.except_cb.setObjectName("i_except")
-        gen_grid.addWidget(self.except_cb, 6, 0)
+        gen_grid.addWidget(self.except_cb, 8, 0)
 
         # Type of object to be excepted
         self.type_excobj_radio = RadioSet([{'label': _("Geometry"), 'value': 'geometry'},
@@ -3798,7 +3848,7 @@ class IsoUI:
               "of objects that will populate the 'Object' combobox.")
         )
 
-        gen_grid.addWidget(self.type_excobj_radio, 6, 1)
+        gen_grid.addWidget(self.type_excobj_radio, 8, 1)
 
         # The object to be excepted
         self.exc_obj_combo = FCComboBox()
@@ -3810,7 +3860,7 @@ class IsoUI:
         self.exc_obj_combo.is_last = True
         self.exc_obj_combo.obj_type = "gerber"
 
-        gen_grid.addWidget(self.exc_obj_combo, 8, 0, 1, 2)
+        gen_grid.addWidget(self.exc_obj_combo, 10, 0, 1, 2)
 
         self.e_ois = OptionalInputSection(self.except_cb,
                                           [
@@ -3833,8 +3883,8 @@ class IsoUI:
         )
         self.select_combo.setObjectName("i_selection")
 
-        gen_grid.addWidget(self.select_label, 10, 0)
-        gen_grid.addWidget(self.select_combo, 10, 1)
+        gen_grid.addWidget(self.select_label, 12, 0)
+        gen_grid.addWidget(self.select_combo, 12, 1)
 
         # Reference Type
         self.reference_combo_type_label = FCLabel('%s:' % _("Type"))
@@ -3842,15 +3892,15 @@ class IsoUI:
         self.reference_combo_type = FCComboBox2()
         self.reference_combo_type.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
 
-        gen_grid.addWidget(self.reference_combo_type_label, 12, 0)
-        gen_grid.addWidget(self.reference_combo_type, 12, 1)
+        gen_grid.addWidget(self.reference_combo_type_label, 14, 0)
+        gen_grid.addWidget(self.reference_combo_type, 14, 1)
 
         self.reference_combo = FCComboBox()
         self.reference_combo.setModel(self.app.collection)
         self.reference_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.reference_combo.is_last = True
 
-        gen_grid.addWidget(self.reference_combo, 14, 0, 1, 2)
+        gen_grid.addWidget(self.reference_combo, 16, 0, 1, 2)
 
         self.reference_combo.hide()
         self.reference_combo_type.hide()
@@ -3863,7 +3913,7 @@ class IsoUI:
               "(holes in the polygon).")
         )
 
-        gen_grid.addWidget(self.poly_int_cb, 16, 0)
+        gen_grid.addWidget(self.poly_int_cb, 18, 0)
 
         self.poly_int_cb.hide()
 
@@ -3887,7 +3937,7 @@ class IsoUI:
 
         sel_hlay.addWidget(self.sel_all_btn)
         sel_hlay.addWidget(self.clear_all_btn)
-        gen_grid.addLayout(sel_hlay, 18, 0, 1, 2)
+        gen_grid.addLayout(sel_hlay, 20, 0, 1, 2)
 
         # Area Selection shape
         self.area_shape_label = FCLabel('%s:' % _("Shape"))
@@ -3898,13 +3948,13 @@ class IsoUI:
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
                                           {'label': _("Polygon"), 'value': 'polygon'}])
 
-        gen_grid.addWidget(self.area_shape_label, 20, 0)
-        gen_grid.addWidget(self.area_shape_radio, 20, 1)
+        gen_grid.addWidget(self.area_shape_label, 22, 0)
+        gen_grid.addWidget(self.area_shape_radio, 22, 1)
 
         self.area_shape_label.hide()
         self.area_shape_radio.hide()
 
-        FCGridLayout.set_common_column_size([tool_grid, new_tool_grid, tool_param_grid, v_grid, gen_grid], 0)
+        GLay.set_common_column_size([tool_grid, new_tool_grid, tool_param_grid, v_grid, gen_grid], 0)
 
         # #############################################################################################################
         # Generate Geometry object

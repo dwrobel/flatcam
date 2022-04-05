@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, FCLabel, FCGridLayout, FCFrame
+from appGUI.GUIElements import FCDoubleSpinner, FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -35,7 +35,7 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         v_frame = FCFrame()
         self.layout.addWidget(v_frame)
 
-        v_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        v_grid = GLay(v_spacing=5, h_spacing=3)
         v_frame.setLayout(v_grid)
 
         # ## Tip Diameter
@@ -93,7 +93,7 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         el_frame = FCFrame()
         self.layout.addWidget(el_frame)
 
-        el_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        el_grid = GLay(v_spacing=5, h_spacing=3)
         el_frame.setLayout(el_grid)
 
         # ## PCB Length
@@ -155,6 +155,6 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         el_grid.addWidget(self.growth_label, 8, 0)
         el_grid.addWidget(self.growth_entry, 8, 1)
 
-        FCGridLayout.set_common_column_size([v_grid, el_grid], 0)
+        GLay.set_common_column_size([v_grid, el_grid], 0)
 
         self.layout.addStretch()

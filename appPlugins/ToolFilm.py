@@ -4,20 +4,8 @@
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
 # ##########################################################
-import math
 
-from PyQt6 import QtCore, QtWidgets, QtGui
-
-from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, \
-    OptionalHideInputSection, FCComboBox, FCFileSaveDialog, FCButton, FCLabel, FCSpinner, \
-    VerticalScrollArea, FCGridLayout, FCFrame, FCComboBox2
-
-from copy import deepcopy
-import logging
-from shapely.geometry import Polygon, MultiPolygon, Point, LineString, LinearRing
-import shapely.affinity as affinity
-from shapely.ops import unary_union
+from appTool import *
 
 from reportlab.graphics import renderPDF
 from reportlab.pdfgen import canvas
@@ -29,10 +17,6 @@ from svglib.svglib import svg2rlg
 from xml.dom.minidom import parseString as parse_xml_string
 from lxml import etree as ET
 from io import StringIO
-
-import gettext
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -640,13 +624,13 @@ class Film(AppTool):
             return "Could not retrieve object: %s" % obj_name
 
         try:
-            box = self.app.collection.get_by_name(str(box_name))
+            box_obj = self.app.collection.get_by_name(str(box_name))
         except Exception:
             return "Could not retrieve object: %s" % box_name
 
-        if box is None:
+        if box_obj is None:
             self.app.inform.emit('[WARNING_NOTCL] %s: %s' % (_("No object Box. Using instead"), obj))
-            box = obj
+            box_obj = obj
 
         scale_factor_x = scale_factor_x
         scale_factor_y = scale_factor_y
@@ -668,7 +652,7 @@ class Film(AppTool):
                 scale_factor_x += dpi_rate
                 scale_factor_y += dpi_rate
 
-            transformed_box_geo = self.transform_geometry(box, scale_factor_x=scale_factor_x,
+            transformed_box_geo = self.transform_geometry(box_obj, scale_factor_x=scale_factor_x,
                                                           scale_factor_y=scale_factor_y,
                                                           scale_reference=scale_reference, scale_type=scale_type,
                                                           skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
@@ -862,13 +846,13 @@ class Film(AppTool):
             return "Could not retrieve object: %s" % obj_name
 
         try:
-            box = self.app.collection.get_by_name(str(box_name))
+            box_obj = self.app.collection.get_by_name(str(box_name))
         except Exception:
             return "Could not retrieve object: %s" % box_name
 
-        if box is None:
+        if box_obj is None:
             self.app.inform.emit('[WARNING_NOTCL] %s: %s' % (_("No object Box. Using instead"), obj))
-            box = obj
+            box_obj = obj
 
         scale_factor_x = scale_factor_x
         scale_factor_y = scale_factor_y
@@ -890,7 +874,7 @@ class Film(AppTool):
                 scale_factor_x += dpi_rate
                 scale_factor_y += dpi_rate
 
-            transformed_box_geo = self.transform_geometry(box, scale_factor_x=scale_factor_x,
+            transformed_box_geo = self.transform_geometry(box_obj, scale_factor_x=scale_factor_x,
                                                           scale_factor_y=scale_factor_y,
                                                           scale_reference=scale_reference, scale_type=scale_type,
                                                           skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
@@ -1113,7 +1097,7 @@ class Film(AppTool):
                     val_x = ((xmax - xmin) + scale_factor_x) / (xmax - xmin)
                     val_y = ((ymax - ymin) + scale_factor_y) / (ymax - ymin)
 
-            transformed_geo = affinity.scale(transformed_geo, val_x, val_y, origin=ref_scale_val)
+            transformed_geo = scale(transformed_geo, val_x, val_y, origin=ref_scale_val)
 
         # return transformed_geo
 
@@ -1192,15 +1176,15 @@ class Film(AppTool):
                         future_y = (ymax - ymin) * skew_factor_y - (ymax - ymin)
                         skew_angle_x = math.degrees(math.atan2(future_x, ((ymax - ymin) * 0.5)))
                         skew_angle_y = math.degrees(math.atan2(future_y, ((xmax - xmin) * 0.5)))
-            transformed_geo = affinity.skew(transformed_geo, skew_angle_x, skew_angle_y, origin=ref_skew_val)
+            transformed_geo = skew(transformed_geo, skew_angle_x, skew_angle_y, origin=ref_skew_val)
 
         if mirror:
             if mirror == 'x':
-                transformed_geo = affinity.scale(transformed_geo, 1.0, -1.0, origin='center')
+                transformed_geo = scale(transformed_geo, 1.0, -1.0, origin='center')
             if mirror == 'y':
-                transformed_geo = affinity.scale(transformed_geo, -1.0, 1.0, origin='center')
+                transformed_geo = scale(transformed_geo, -1.0, 1.0, origin='center')
             if mirror == 'both':
-                transformed_geo = affinity.scale(transformed_geo, -1.0, -1.0, origin='center')
+                transformed_geo = scale(transformed_geo, -1.0, -1.0, origin='center')
 
         return transformed_geo
 
@@ -1292,7 +1276,7 @@ class FilmUI:
         obj_frame = FCFrame()
         self.tools_box.addWidget(obj_frame)
 
-        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        obj_grid = GLay(v_spacing=5, h_spacing=3)
         obj_frame.setLayout(obj_grid)
 
         # Type of object for which to create the film
@@ -1358,7 +1342,7 @@ class FilmUI:
         self.adj_frame = FCFrame()
         self.tools_box.addWidget(self.adj_frame)
 
-        adj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        adj_grid = GLay(v_spacing=5, h_spacing=3)
         self.adj_frame.setLayout(adj_grid)
 
         # Scale Geometry
@@ -1551,7 +1535,7 @@ class FilmUI:
         par_frame = FCFrame()
         self.tools_box.addWidget(par_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         par_frame.setLayout(param_grid)
 
         # Convex Shape
@@ -1638,7 +1622,7 @@ class FilmUI:
         self.punch_frame.setContentsMargins(0, 0, 0, 0)
         param_grid.addWidget(self.punch_frame, 12, 0, 1, 2)
 
-        punch_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        punch_grid = GLay(v_spacing=5, h_spacing=3)
         punch_grid.setContentsMargins(0, 0, 0, 0)
         self.punch_frame.setLayout(punch_grid)
 
@@ -1691,7 +1675,7 @@ class FilmUI:
         exp_frame = FCFrame()
         self.tools_box.addWidget(exp_frame)
 
-        export_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        export_grid = GLay(v_spacing=5, h_spacing=3)
         exp_frame.setLayout(export_grid)
 
         self.file_type_label = FCLabel('%s:' % _("Film Type"))
@@ -1806,7 +1790,7 @@ class FilmUI:
         self.png_dpi_label.hide()
         self.png_dpi_spinner.hide()
 
-        FCGridLayout.set_common_column_size([adj_grid, param_grid, obj_grid, export_grid, punch_grid], 0)
+        GLay.set_common_column_size([adj_grid, param_grid, obj_grid, export_grid, punch_grid], 0)
 
         # Buttons
         self.film_object_button = FCButton(_("Save Film"))

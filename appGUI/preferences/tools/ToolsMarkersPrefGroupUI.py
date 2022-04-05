@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, FCLabel, RadioSet, FCGridLayout, FCFrame
+from appGUI.GUIElements import FCDoubleSpinner, FCLabel, RadioSet, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -33,7 +33,7 @@ class ToolsMarkersPrefGroupUI(OptionsGroupUI):
         param_frame = FCFrame()
         self.layout.addWidget(param_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         param_frame.setLayout(param_grid)
 
         # Type of Marker
@@ -111,7 +111,7 @@ class ToolsMarkersPrefGroupUI(OptionsGroupUI):
         off_frame = FCFrame()
         self.layout.addWidget(off_frame)
 
-        off_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        off_grid = GLay(v_spacing=5, h_spacing=3)
         off_frame.setLayout(off_grid)
 
         off_grid.addWidget(self.ref_label, 0, 0)
@@ -143,6 +143,6 @@ class ToolsMarkersPrefGroupUI(OptionsGroupUI):
         off_grid.addWidget(self.offset_y_label, 3, 0)
         off_grid.addWidget(self.offset_y_entry, 3, 1)
 
-        FCGridLayout.set_common_column_size([param_grid, off_grid], 0)
+        GLay.set_common_column_size([param_grid, off_grid], 0)
 
         self.layout.addStretch()

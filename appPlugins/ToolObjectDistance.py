@@ -5,20 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-from appTool import AppTool
-from appGUI.GUIElements import FCEntry, FCLabel, FCButton, VerticalScrollArea, FCGridLayout, FCFrame, FCComboBox2
-
-from shapely.ops import nearest_points
-from shapely.geometry import Point, MultiPolygon
-from shapely.ops import unary_union
-from copy import deepcopy
-
-import math
-import logging
-import gettext
-import appTranslation as fcTranslate
-import builtins
+from appTool import *
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -466,7 +453,7 @@ class ObjectDistanceUI:
         par_frame = FCFrame()
         self.layout.addWidget(par_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         par_frame.setLayout(param_grid)
 
         # Distance Type
@@ -492,7 +479,7 @@ class ObjectDistanceUI:
         coords_frame = FCFrame()
         self.layout.addWidget(coords_frame)
 
-        coords_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        coords_grid = GLay(v_spacing=5, h_spacing=3)
         coords_frame.setLayout(coords_grid)
 
         # separator_line = QtWidgets.QFrame()
@@ -535,7 +522,7 @@ class ObjectDistanceUI:
         res_frame = FCFrame()
         self.layout.addWidget(res_frame)
 
-        res_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        res_grid = GLay(v_spacing=5, h_spacing=3)
         res_frame.setLayout(res_grid)
 
         # DX distance
@@ -617,7 +604,7 @@ class ObjectDistanceUI:
         self.jump_hp_btn.setDisabled(True)
         self.layout.addWidget(self.jump_hp_btn)
 
-        FCGridLayout.set_common_column_size([param_grid, coords_grid, res_grid], 0)
+        GLay.set_common_column_size([param_grid, coords_grid, res_grid], 0)
 
         self.layout.addStretch(1)
 

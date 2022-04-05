@@ -1,6 +1,6 @@
 from PyQt6 import QtGui
 
-from appGUI.GUIElements import FCCheckBox, FCSpinner, FCColorEntry, RadioSet, FCLabel, FCGridLayout, FCFrame
+from appGUI.GUIElements import FCCheckBox, FCSpinner, FCColorEntry, RadioSet, FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import platform
@@ -32,7 +32,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         plot_frame = FCFrame()
         self.layout.addWidget(plot_frame)
 
-        plot_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        plot_grid = GLay(v_spacing=5, h_spacing=3)
         plot_frame.setLayout(plot_grid)
 
         # Plot CB
@@ -75,7 +75,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         opt_frame = FCFrame()
         self.layout.addWidget(opt_frame)
 
-        opt_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        opt_grid = GLay(v_spacing=5, h_spacing=3)
         opt_frame.setLayout(opt_grid)
 
         self.opt_algorithm_label = FCLabel(_('Algorithm:'))
@@ -125,7 +125,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         fuse_frame = FCFrame()
         self.layout.addWidget(fuse_frame)
 
-        fuse_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        fuse_grid = GLay(v_spacing=5, h_spacing=3)
         fuse_frame.setLayout(fuse_grid)
 
         self.fuse_tools_cb = FCCheckBox(_("Fuse Tools"))
@@ -144,7 +144,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         obj_frame = FCFrame()
         self.layout.addWidget(obj_frame)
 
-        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        obj_grid = GLay(v_spacing=5, h_spacing=3)
         obj_frame.setLayout(obj_grid)
 
         # Plot Line Color
@@ -157,7 +157,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         obj_grid.addWidget(self.line_color_label, 0, 0)
         obj_grid.addWidget(self.line_color_entry, 0, 1)
 
-        FCGridLayout.set_common_column_size([plot_grid, opt_grid, obj_grid, fuse_grid], 0)
+        GLay.set_common_column_size([plot_grid, opt_grid, obj_grid, fuse_grid], 0)
 
         self.layout.addStretch(1)
 

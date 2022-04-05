@@ -5,22 +5,8 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-
-from appTool import AppTool
-from appGUI.GUIElements import FCButton, FCDoubleSpinner, RadioSet, FCComboBox, NumericalEvalEntry, FCEntry, \
-    VerticalScrollArea, FCGridLayout, FCLabel, FCFrame
+from appTool import *
 from camlib import flatten_shapely_geometry
-
-from shapely.ops import unary_union
-
-from copy import deepcopy
-import math
-
-import logging
-import gettext
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -353,7 +339,7 @@ class EtchUI:
         self.tools_box.addWidget(util_frame)
 
         # Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0 = GLay(v_spacing=5, h_spacing=3)
         util_frame.setLayout(grid0)
 
         # Oz to um conversion
@@ -410,7 +396,7 @@ class EtchUI:
         self.gp_frame = FCFrame()
         self.tools_box.addWidget(self.gp_frame)
 
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1 = GLay(v_spacing=5, h_spacing=3)
         self.gp_frame.setLayout(grid1)
 
         # Thickness

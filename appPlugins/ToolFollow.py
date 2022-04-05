@@ -5,26 +5,10 @@
 # License:  MIT Licence                                    #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-
-from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCButton, FCComboBox, FCLabel, VerticalScrollArea, FCGridLayout, FCFrame
+from appTool import *
 from appParsers.ParseGerber import Gerber
-from camlib import flatten_shapely_geometry
-
-from copy import deepcopy
-
-import numpy as np
-
-from shapely.ops import unary_union
-from shapely.geometry import Polygon
-
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
-
-import logging
-import gettext
-import appTranslation as fcTranslate
-import builtins
+from camlib import flatten_shapely_geometry
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -350,7 +334,7 @@ class ToolFollow(AppTool, Gerber):
 
         def follow_init(new_obj, app_obj):
             new_obj.multigeo = True
-            
+
             if type(app_obj.defaults["tools_mill_tooldia"]) == float:
                 tools_list = [app_obj.defaults["tools_mill_tooldia"]]
             else:
@@ -576,7 +560,7 @@ class ToolFollow(AppTool, Gerber):
         #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
         self.app.ui.update_location_labels(self.app.dx, self.app.dy, curr_pos[0], curr_pos[1])
 
-        units = self.app.app_units.lower()
+        # units = self.app.app_units.lower()
         # self.app.plotcanvas.text_hud.text = \
         #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
         #         self.app.dx, units, self.app.dy, units, curr_pos[0], units, curr_pos[1], units)
@@ -736,7 +720,7 @@ class FollowUI:
         self.gp_frame = FCFrame()
         self.tools_box.addWidget(self.gp_frame)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0 = GLay(v_spacing=5, h_spacing=3)
         self.gp_frame.setLayout(grid0)
 
         # Polygon selection

@@ -1,7 +1,7 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
 from appGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCButton, FCSliderWithSpinner, FCLabel, \
-    FCGridLayout, FCFrame, FCTable, FCColorEntry, OptionalInputSection
+    GLay, FCFrame, FCTable, FCColorEntry, OptionalInputSection
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 from copy import deepcopy
@@ -36,7 +36,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(plot_frame)
 
         # ## Grid Layout
-        plot_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        plot_grid = GLay(v_spacing=5, h_spacing=3)
         plot_frame.setLayout(plot_grid)
 
         # Plot CB
@@ -89,7 +89,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(def_frame)
 
         # ## Grid Layout
-        def_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        def_grid = GLay(v_spacing=5, h_spacing=3)
         def_frame.setLayout(def_grid)
 
         # Gerber Units
@@ -141,7 +141,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(par_frame)
 
         # ## Grid Layout
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         par_frame.setLayout(param_grid)
 
         # Apertures Cleaning
@@ -180,7 +180,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(layers_frame)
 
         # ## Grid Layout
-        layers_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        layers_grid = GLay(v_spacing=5, h_spacing=3)
         layers_frame.setLayout(layers_grid)
 
         # Store colors
@@ -227,7 +227,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(obj_frame)
 
         # ## Grid Layout
-        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        obj_grid = GLay(v_spacing=5, h_spacing=3)
         obj_frame.setLayout(obj_grid)
 
         # Enable Outline plotting
@@ -272,7 +272,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         obj_grid.addWidget(self.gerber_alpha_label, 6, 0)
         obj_grid.addWidget(self.gerber_alpha_entry, 6, 1, 1, 2)
 
-        FCGridLayout.set_common_column_size([plot_grid, param_grid, def_grid, obj_grid], 0)
+        GLay.set_common_column_size([plot_grid, param_grid, def_grid, obj_grid], 0)
 
         self.layout.addStretch()
 
@@ -362,7 +362,7 @@ class ColorsManager(QtWidgets.QDialog):
         layers_frame.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Expanding)
         self.layout.addWidget(layers_frame)
 
-        layers_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        layers_grid = GLay(v_spacing=5, h_spacing=3)
         layers_frame.setLayout(layers_grid)
 
         # Layers Colors Table
@@ -406,7 +406,7 @@ class ColorsManager(QtWidgets.QDialog):
         # #############################################################################################################
         # ######################################## Button Grid ########################################################
         # #############################################################################################################
-        button_grid = FCGridLayout(h_spacing=5, v_spacing=5)
+        button_grid = GLay(h_spacing=5, v_spacing=5)
         self.layout.addLayout(button_grid)
 
         self.button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Ok |

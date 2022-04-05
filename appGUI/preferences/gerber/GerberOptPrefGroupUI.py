@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCLabel, FCGridLayout, FCFrame
+from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -39,7 +39,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(ncc_frame)
 
         # ## Grid Layout
-        ncc_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        ncc_grid = GLay(v_spacing=5, h_spacing=3)
         ncc_frame.setLayout(ncc_grid)
 
         # Margin
@@ -74,7 +74,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         bb_frame = FCFrame()
         self.layout.addWidget(bb_frame)
 
-        bb_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        bb_grid = GLay(v_spacing=5, h_spacing=3)
         bb_frame.setLayout(bb_grid)
 
         bbmargin = FCLabel('%s:' % _('Boundary Margin'))
@@ -99,6 +99,6 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         )
         bb_grid.addWidget(self.bbrounded_cb, 2, 0, 1, 2)
 
-        FCGridLayout.set_common_column_size([ncc_grid, bb_grid], 0)
+        GLay.set_common_column_size([ncc_grid, bb_grid], 0)
 
         self.layout.addStretch()

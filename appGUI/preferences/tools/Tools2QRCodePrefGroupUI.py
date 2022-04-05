@@ -1,6 +1,6 @@
 from PyQt6 import QtGui
 
-from appGUI.GUIElements import FCSpinner, RadioSet, FCTextArea, FCLabel, FCColorEntry, FCGridLayout, FCFrame
+from appGUI.GUIElements import FCSpinner, RadioSet, FCTextArea, FCLabel, FCColorEntry, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -35,7 +35,7 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(par_frame)
 
         # ## Grid Layout
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         par_frame.setLayout(param_grid)
 
         # VERSION #

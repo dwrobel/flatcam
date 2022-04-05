@@ -4,29 +4,11 @@
 # Date: 4/23/2019                                          #
 # MIT Licence                                              #
 # ##########################################################
-from PyQt6 import QtWidgets, QtCore
 
-from appTool import AppTool
-
-from appParsers.ParsePDF import PdfParser, grace
-from shapely.geometry import Point, MultiPolygon
-from shapely.ops import unary_union
-
-from copy import deepcopy
-# from io import BytesIO
-#
-# import zlib
-import re
-import time
-import logging
-import traceback
-import os
-
+from appTool import *
+from appParsers.ParsePDF import PdfParser
 from pikepdf import Pdf, parse_content_stream
-
-import gettext
-import appTranslation as fcTranslate
-import builtins
+from camlib import grace
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -111,7 +93,7 @@ class ToolPDF(AppTool):
 
     def open_pdf(self, filename):
         if not os.path.exists(filename):
-            self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
             return
 
         short_name = filename.split('/')[-1].split('\\')[-1]
@@ -140,7 +122,7 @@ class ToolPDF(AppTool):
                     for op in operands:
                         try:
                             line += str(op) + ' '
-                        except Exception as e:
+                        except Exception:
                             # print(str(e), operands, command)
                             pass
                     line += str(command)

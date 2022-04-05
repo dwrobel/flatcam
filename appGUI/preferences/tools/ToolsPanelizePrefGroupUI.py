@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, FCSpinner, RadioSet, FCCheckBox, FCLabel, FCGridLayout, FCFrame
+from appGUI.GUIElements import FCDoubleSpinner, FCSpinner, RadioSet, FCCheckBox, FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -35,7 +35,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         param_frame = FCFrame()
         self.layout.addWidget(param_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         param_frame.setLayout(param_grid)
 
         # ## Spacing Columns

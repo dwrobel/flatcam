@@ -5,19 +5,8 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore
-
-from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCSpinner, FCButton, FCTable, FCLabel, VerticalScrollArea, FCGridLayout
-
-import re
-import os
-from datetime import datetime
+from appTool import *
 from io import StringIO
-
-import gettext
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -333,7 +322,7 @@ class PcbWizard(AppTool):
         # Register recent file
         self.app.options["global_last_folder"] = os.path.split(str(filename))[0]
 
-    def on_import_excellon(self, signal=None, excellon_fileobj=None):
+    def on_import_excellon(self, excellon_fileobj=None):
         self.app.log.debug("import_2files_excellon()")
 
         # How the object should be initialized
@@ -416,7 +405,7 @@ class WizardUI:
         self.layout.addWidget(FCLabel("<b>%s:</b>" % _("Load files")))
 
         # Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0 = GLay(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
 
         self.excellon_label = FCLabel('%s:' % _("Excellon file"))
@@ -454,7 +443,7 @@ class WizardUI:
         self.layout.addWidget(FCLabel("<b>%s:</b>" % _("Excellon Format")))
 
         # Grid Layout
-        grid01 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid01 = GLay(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid01)
 
         # Integral part of the coordinates

@@ -1,7 +1,7 @@
 from PyQt6 import QtWidgets
 
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox2, FCCheckBox, FCSpinner, NumericalEvalTupleEntry, \
-    FCLabel, FCGridLayout, FCFrame
+    FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -35,7 +35,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         par_frame = FCFrame()
         self.layout.addWidget(par_frame)
 
-        par_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_grid = GLay(v_spacing=5, h_spacing=3)
         par_frame.setLayout(par_grid)
 
         # Tool Dias
@@ -141,7 +141,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         tt_frame = FCFrame()
         self.layout.addWidget(tt_frame)
 
-        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tool_grid = GLay(v_spacing=5, h_spacing=3)
         tt_frame.setLayout(tool_grid)
 
         # Shape
@@ -254,7 +254,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         gp_frame = FCFrame()
         self.layout.addWidget(gp_frame)
 
-        gen_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        gen_grid = GLay(v_spacing=5, h_spacing=3)
         gp_frame.setLayout(gen_grid)
 
         # Rest machining CheckBox
@@ -295,6 +295,20 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
 
         gen_grid.addWidget(self.valid_cb, 2, 0, 1, 3)
 
+        # Simplification Tolerance
+        self.simplify_cb = FCCheckBox('%s' % _("Simplify"))
+        self.simplify_cb.setToolTip(
+            _("All points in the simplified object will be\n"
+              "within the tolerance distance of the original geometry.")
+        )
+        self.sim_tol_entry = FCDoubleSpinner()
+        self.sim_tol_entry.set_precision(self.decimals)
+        self.sim_tol_entry.setSingleStep(10 ** -self.decimals)
+        self.sim_tol_entry.set_range(0.0000, 10000.0000)
+
+        gen_grid.addWidget(self.simplify_cb, 4, 0)
+        gen_grid.addWidget(self.sim_tol_entry, 4, 1)
+
         # Isolation Scope
         self.select_label = FCLabel('%s:' % _("Selection"))
         self.select_label.setToolTip(
@@ -309,8 +323,8 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
             [_("All"), _("Area Selection"), _("Polygon Selection"), _("Reference Object")]
         )
 
-        gen_grid.addWidget(self.select_label, 4, 0)
-        gen_grid.addWidget(self.select_combo, 4, 1, 1, 2)
+        gen_grid.addWidget(self.select_label, 6, 0)
+        gen_grid.addWidget(self.select_combo, 6, 1, 1, 2)
 
         # Area Shape
         self.area_shape_label = FCLabel('%s:' % _("Shape"))
@@ -321,8 +335,8 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
                                           {'label': _("Polygon"), 'value': 'polygon'}])
 
-        gen_grid.addWidget(self.area_shape_label, 6, 0)
-        gen_grid.addWidget(self.area_shape_radio, 6, 1, 1, 2)
+        gen_grid.addWidget(self.area_shape_label, 8, 0)
+        gen_grid.addWidget(self.area_shape_radio, 8, 1, 1, 2)
 
         # Polygon interiors selection
         self.poly_int_cb = FCCheckBox(_("Interiors"))
@@ -338,13 +352,13 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
               "interiors of a polygon (holes in the polygon) could not be isolated.\n"
               "Works when 'rest machining' is used.")
         )
-        gen_grid.addWidget(self.poly_int_cb, 8, 0)
-        gen_grid.addWidget(self.force_iso_cb, 8, 1)
+        gen_grid.addWidget(self.poly_int_cb, 10, 0)
+        gen_grid.addWidget(self.force_iso_cb, 10, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        gen_grid.addWidget(separator_line, 10, 0, 1, 3)
+        gen_grid.addWidget(separator_line, 12, 0, 1, 3)
 
         # ## Plotting type
         self.plotting_radio = RadioSet([{'label': _('Normal'), 'value': 'normal'},
@@ -354,9 +368,9 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
             _("- 'Normal' - normal plotting, done at the end of the job\n"
               "- 'Progressive' - each shape is plotted after it is generated")
         )
-        gen_grid.addWidget(plotting_label, 12, 0)
-        gen_grid.addWidget(self.plotting_radio, 12, 1, 1, 2)
+        gen_grid.addWidget(plotting_label, 14, 0)
+        gen_grid.addWidget(self.plotting_radio, 14, 1, 1, 2)
 
-        FCGridLayout.set_common_column_size([par_grid, tool_grid, gen_grid], 0)
+        GLay.set_common_column_size([par_grid, tool_grid, gen_grid], 0)
 
         self.layout.addStretch(1)

@@ -82,8 +82,8 @@ from appGUI.PlotCanvas import *
 from appGUI.PlotCanvasLegacy import *
 from appGUI.PlotCanvas3d import *
 from appGUI.MainGUI import *
-from appGUI.GUIElements import FCFileSaveDialog, message_dialog, FlatCAMSystemTray, FCInputDialogSlider, \
-    FCGridLayout, FCLabel, DialogBoxChoice
+from appGUI.GUIElements import FCFileSaveDialog, message_dialog, AppSystemTray, FCInputDialogSlider, \
+    GLay, FCLabel, DialogBoxChoice
 
 # App Pre-processors
 from appPreProcessor import load_preprocessors
@@ -1158,12 +1158,12 @@ class App(QtCore.QObject):
         # VisPy visuals
         if self.use_3d_engine:
             try:
-                self.tool_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
+                self.tool_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1, pool=self.pool)
             except AttributeError:
                 self.tool_shapes = None
 
             # Storage for Hover Shapes
-            self.hover_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
+            self.hover_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1, pool=self.pool)
         else:
             from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.tool_shapes = ShapeCollectionLegacy(obj=self, app=self, name="tool")
@@ -1373,16 +1373,16 @@ class App(QtCore.QObject):
         self.parent_w = QtWidgets.QWidget()
         if self.cmd_line_headless == 1:
             # if running headless always have the systray to be able to quit the app correctly
-            self.trayIcon = FlatCAMSystemTray(app=self,
-                                              icon=QtGui.QIcon(self.resource_location +
+            self.trayIcon = AppSystemTray(app=self,
+                                          icon=QtGui.QIcon(self.resource_location +
                                                                '/app32.png'),
-                                              headless=True,
-                                              parent=self.parent_w)
+                                          headless=True,
+                                          parent=self.parent_w)
         else:
             if self.options["global_systray_icon"]:
-                self.trayIcon = FlatCAMSystemTray(app=self,
-                                                  icon=QtGui.QIcon(self.resource_location + '/app32.png'),
-                                                  parent=self.parent_w)
+                self.trayIcon = AppSystemTray(app=self,
+                                              icon=QtGui.QIcon(self.resource_location + '/app32.png'),
+                                              parent=self.parent_w)
 
         # ###########################################################################################################
         # ############################################ SETUP RECENT ITEMS ###########################################
@@ -3558,9 +3558,14 @@ class App(QtCore.QObject):
                         'description': '',
                         'email': ''
                     },
+                    {
+                        'name': "Ali Khalil",
+                        'description': '',
+                        'email': ''
+                    },
                 ]
 
-                self.prog_grid_lay = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0, 1])
+                self.prog_grid_lay = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 0, 1])
                 self.prog_grid_lay.setHorizontalSpacing(20)
 
                 prog_widget = QtWidgets.QWidget()
@@ -3601,7 +3606,7 @@ class App(QtCore.QObject):
                         self.prog_grid_lay.addWidget(FCLabel(''), line, 0)
                         line += 1
 
-                self.translator_grid_lay = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0, 1, 0])
+                self.translator_grid_lay = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 0, 1, 0])
 
                 # trans_widget = QtWidgets.QWidget()
                 # trans_widget.setLayout(self.translator_grid_lay)
@@ -3808,7 +3813,7 @@ class App(QtCore.QObject):
                 self.intro_tab_layout.setContentsMargins(2, 2, 2, 2)
                 tab_widget.addTab(self.intro_tab, _("Contribute"))
 
-                self.grid_lay = FCGridLayout(v_spacing=5, h_spacing=20)
+                self.grid_lay = GLay(v_spacing=5, h_spacing=20)
                 # self.grid_lay.setHorizontalSpacing(20)
 
                 intro_wdg = QtWidgets.QWidget()
@@ -5133,7 +5138,7 @@ class App(QtCore.QObject):
                                              _("Please enter a tool diameter with non-zero value, in Float format."))
                             return
                         try:
-                            self.collection.get_active().on_tool_add(clicked_state=False, dia=float(val))
+                            self.collection.get_active().on_tool_add(dia=float(val))
                         except Exception as tadd_err:
                             self.log.debug("App.on_tool_add_keypress() --> %s" % str(tadd_err))
                     else:
@@ -6929,6 +6934,9 @@ class App(QtCore.QObject):
     # def on_close_notebook_tab(self):
         # self.tool_shapes.clear(update=True)
 
+    def on_gui_coords_clicked(self):
+        self.distance_tool.run(toggle=True)
+
     def on_flipy(self):
         """
         Executed when the menu entry in Options -> Flip on Y axis is clicked.
@@ -8346,6 +8354,8 @@ class App(QtCore.QObject):
             self.inform[str, bool].emit('%s...' % _("Redrawing all objects"), False)
 
         for plot_obj in self.collection.get_list():
+            if plot_obj.obj_options['plot'] is False:
+                continue
             def worker_task(obj):
                 with self.proc_container.new("Plotting"):
                     if obj.kind == 'cncjob':

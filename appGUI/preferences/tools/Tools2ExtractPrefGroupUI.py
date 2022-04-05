@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCCheckBox, RadioSet, FCDoubleSpinner, FCLabel, FCGridLayout, FCFrame
+from appGUI.GUIElements import FCCheckBox, RadioSet, FCDoubleSpinner, FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -36,7 +36,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
         param_frame = FCFrame()
         self.layout.addWidget(param_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         param_frame.setLayout(param_grid)
 
         # Circular Aperture Selection
@@ -90,7 +90,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
         met_frame = FCFrame()
         self.layout.addWidget(met_frame)
 
-        met_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        met_grid = GLay(v_spacing=5, h_spacing=3)
         met_frame.setLayout(met_grid)
 
         self.method_radio = RadioSet(
@@ -125,7 +125,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
         fix_frame = FCFrame()
         self.layout.addWidget(fix_frame)
 
-        fix_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        fix_grid = GLay(v_spacing=5, h_spacing=3)
         fix_frame.setLayout(fix_grid)
 
         # Diameter value
@@ -155,7 +155,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
         ring_frame = FCFrame()
         self.layout.addWidget(ring_frame)
 
-        ring_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        ring_grid = GLay(v_spacing=5, h_spacing=3)
         ring_frame.setLayout(ring_grid)
 
         # Circular Annular Ring Value
@@ -232,7 +232,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
         prop_frame = FCFrame()
         self.layout.addWidget(prop_frame)
 
-        prop_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        prop_grid = GLay(v_spacing=5, h_spacing=3)
         prop_frame.setLayout(prop_grid)
 
         # Factor value
@@ -261,7 +261,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
         solder_frame = FCFrame()
         self.layout.addWidget(solder_frame)
 
-        solder_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        solder_grid = GLay(v_spacing=5, h_spacing=3)
         solder_frame.setLayout(solder_grid)
 
         # CLEARANCE soldermask extraction
@@ -289,7 +289,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
         ecut_frame = FCFrame()
         self.layout.addWidget(ecut_frame)
 
-        ecut_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        ecut_grid = GLay(v_spacing=5, h_spacing=3)
         ecut_frame.setLayout(ecut_grid)
 
         # Margin Cutout
@@ -320,7 +320,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
         ecut_grid.addWidget(self.thick_cut_label, 2, 0)
         ecut_grid.addWidget(self.thick_cut_entry, 2, 1)
 
-        FCGridLayout.set_common_column_size(
+        GLay.set_common_column_size(
             [param_grid, ring_grid, fix_grid, prop_grid, met_grid, solder_grid, ecut_grid], 0)
 
         self.layout.addStretch()

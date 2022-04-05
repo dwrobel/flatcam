@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, FCLabel, FCGridLayout, FCFrame
+from appGUI.GUIElements import FCDoubleSpinner, FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -31,7 +31,7 @@ class CNCJobPPGroupUI(OptionsGroupUI):
         comp_frame = FCFrame()
         self.layout.addWidget(comp_frame)
 
-        comp_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        comp_grid = GLay(v_spacing=5, h_spacing=3)
         comp_frame.setLayout(comp_grid)
 
         # Bed Size X

@@ -1038,19 +1038,20 @@ class GerberObject(FlatCAMObj, Gerber):
         def job_thread(app_obj):
             with self.app.proc_container.new('%s ...' % _("Plotting")):
                 try:
-                    if aperture_to_plot_mark in self.tools:
+                    if aperture_to_plot_mark in app_obj.tools:
                         for elem in app_obj.tools[aperture_to_plot_mark]['geometry']:
                             if 'solid' in elem:
                                 if only_flashes and not isinstance(elem['follow'], Point):
                                     continue
                                 geo = elem['solid']
+                                s_geo = geo.geoms if isinstance(geo, (MultiLineString, MultiPolygon)) else geo
                                 try:
-                                    for el in geo:
+                                    for el in s_geo:
                                         shape_key = app_obj.add_mark_shape(shape=el, color=color, face_color=color,
                                                                            visible=visibility)
                                         app_obj.mark_shapes_storage[aperture_to_plot_mark].append(shape_key)
                                 except TypeError:
-                                    shape_key = app_obj.add_mark_shape(shape=geo, color=color, face_color=color,
+                                    shape_key = app_obj.add_mark_shape(shape=s_geo, color=color, face_color=color,
                                                                        visible=visibility)
                                     app_obj.mark_shapes_storage[aperture_to_plot_mark].append(shape_key)
                     app_obj.mark_shapes.redraw()

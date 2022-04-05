@@ -1,7 +1,7 @@
 from PyQt6 import QtGui
 from PyQt6.QtCore import QSettings
 
-from appGUI.GUIElements import RadioSet, FCCheckBox, FCLabel, FCGridLayout, FCFrame
+from appGUI.GUIElements import RadioSet, FCCheckBox, FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -43,7 +43,7 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
         gcode_frame = FCFrame()
         self.layout.addWidget(gcode_frame)
 
-        gcode_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        gcode_grid = GLay(v_spacing=5, h_spacing=3)
         gcode_frame.setLayout(gcode_grid)
 
         # Plot Kind

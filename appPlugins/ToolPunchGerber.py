@@ -5,25 +5,11 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtCore, QtWidgets, QtGui
-
-from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCTable, FCButton, FCLabel, \
-    VerticalScrollArea, FCGridLayout, FCFrame
-
-from copy import deepcopy
-import logging
-from shapely.geometry import MultiPolygon, Point
-from shapely.ops import unary_union
-
+from appTool import *
 from appParsers.ParseGerber import Gerber
-from camlib import Geometry, AppRTreeStorage, grace
+from camlib import Geometry
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
-
-import gettext
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -164,7 +150,8 @@ class ToolPunchGerber(AppTool, Gerber):
         self.set_tool_ui()
         self.build_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Punch Geber"))
+        # trigger this once at plugin launch
+        self.on_object_combo_changed()
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+H', **kwargs)
@@ -252,13 +239,22 @@ class ToolPunchGerber(AppTool, Gerber):
 
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
-        if obj and obj.kind == 'gerber':
-            obj_name = obj.obj_options['name']
-            self.ui.gerber_object_combo.set_value(obj_name)
+        if obj:
+            if obj.kind == 'gerber':
+                obj_name = obj.obj_options['name']
+                self.ui.gerber_object_combo.set_value(obj_name)
+        else:
+            # take first available Gerber file, if any
+            available_gerber_list = [o for o in self.app.collection.get_list() if o.kind == 'gerber']
+            if available_gerber_list:
+                obj_name = available_gerber_list[0].obj_options['name']
+                self.ui.gerber_object_combo.set_value(obj_name)
 
         # Show/Hide Advanced Options
         app_mode = self.app.options["global_app_level"]
         self.change_level(app_mode)
+
+        self.app.ui.notebook.setTabText(2, _("Punch Gerber"))
 
     def build_tool_ui(self):
         self.ui_disconnect()
@@ -379,6 +375,17 @@ class ToolPunchGerber(AppTool, Gerber):
         # self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
         # self.ui.apertures_table.setMaximumHeight(self.ui.apertures_table.getHeight())
 
+        # make sure you clear the Gerber aperture markings when the table is rebuilt
+        # get the Gerber file who is the source of the punched Gerber
+        selection_index = self.ui.gerber_object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.ui.gerber_object_combo.rootModelIndex())
+        try:
+            grb_obj = model_index.internalPointer().obj
+        except Exception:
+            self.ui_connect()
+            return
+        grb_obj.clear_plot_apertures()
+
         self.ui_connect()
 
     def change_level(self, level):
@@ -488,10 +495,14 @@ class ToolPunchGerber(AppTool, Gerber):
         # Mark Checkboxes
         for row in range(self.ui.apertures_table.rowCount()):
             try:
-                self.ui.apertures_table.cellWidget(row, 3).clicked.disconnect()
+                wdg = self.ui.apertures_table.cellWidget(row, 3)
+                assert isinstance(wdg, FCCheckBox)
+                wdg.clicked.disconnect()
             except (TypeError, AttributeError):
                 pass
-            self.ui.apertures_table.cellWidget(row, 3).clicked.connect(self.on_mark_cb_click_table)
+            wdg = self.ui.apertures_table.cellWidget(row, 3)
+            assert isinstance(wdg, FCCheckBox)
+            wdg.clicked.connect(self.on_mark_cb_click_table)
 
     def ui_disconnect(self):
         try:
@@ -502,7 +513,9 @@ class ToolPunchGerber(AppTool, Gerber):
         # Mark Checkboxes
         for row in range(self.ui.apertures_table.rowCount()):
             try:
-                self.ui.apertures_table.cellWidget(row, 3).clicked.disconnect()
+                wdg = self.ui.apertures_table.cellWidget(row, 3)
+                assert isinstance(wdg, FCCheckBox)
+                wdg.clicked.disconnect()
             except (TypeError, AttributeError):
                 pass
 
@@ -1812,26 +1825,6 @@ class ToolPunchGerber(AppTool, Gerber):
             key = event.key
 
         if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':
-            if self.area_sel_disconnect_flag is True:
-                try:
-                    if self.app.use_3d_engine:
-                        self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
-                        self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
-                        self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
-                    else:
-                        self.app.plotcanvas.graph_event_disconnect(self.mr)
-                        self.app.plotcanvas.graph_event_disconnect(self.mm)
-                        self.app.plotcanvas.graph_event_disconnect(self.kp)
-                except Exception as e:
-                    self.app.log.error("ToolPaint.on_key_press() _1 --> %s" % str(e))
-
-                self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
-                                                                      self.app.on_mouse_click_over_plot)
-                self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
-                                                                      self.app.on_mouse_move_over_plot)
-                self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
-                                                                      self.app.on_mouse_click_release_over_plot)
-
             if self.poly_sel_disconnect_flag is False:
                 try:
                     # restore the Grid snapping if it was active before
@@ -1892,10 +1885,14 @@ class ToolPunchGerber(AppTool, Gerber):
         except Exception:
             return
 
-        if self.ui.apertures_table.cellWidget(cw_row, 3).isChecked():
+        wdg = self.ui.apertures_table.cellWidget(cw_row, 3)
+        assert isinstance(wdg, FCCheckBox)
+        if wdg.isChecked():
             # self.plot_aperture(color='#2d4606bf', marked_aperture=aperture, visible=True)
-            grb_obj.plot_aperture(color='#e32b07' + '60',
-                                  marked_aperture=aperture, visible=True, run_thread=True)
+            # color = '#e32b0760'
+            color = self.app.options['global_sel_draw_color']
+            color = (color + 'AA') if len(color) == 7 else (color[:-2] + 'AA')
+            grb_obj.plot_aperture(color=color,  marked_aperture=aperture, visible=True, run_thread=True)
         else:
             grb_obj.clear_plot_apertures(aperture=aperture)
 
@@ -1931,10 +1928,12 @@ class ToolPunchGerber(AppTool, Gerber):
                                 }
                                 self.manual_pads.append(deepcopy(new_elem))
 
+                                sel_color = self.app.options['global_sel_draw_color'] + 'FF' if \
+                                    len(self.app.options['global_sel_draw_color']) == 7 else \
+                                    self.app.options['global_sel_draw_color']
                                 shape_id = self.app.tool_shapes.add(
                                     tolerance=self.grb_obj.drawing_tolerance, layer=0, shape=sol_geo,
-                                    color=self.app.options['global_sel_draw_color'] + 'FF',
-                                    face_color=self.app.options['global_sel_draw_color'] + 'FF', visible=True)
+                                    color=sel_color, face_color=sel_color, visible=True)
                                 self.poly_dict[shape_id] = sol_geo
         self.app.tool_shapes.redraw()
         self.app.inform.emit(_("All selectable pads are selected."))
@@ -1965,7 +1964,12 @@ class ToolPunchGerber(AppTool, Gerber):
         """
 
         for row in range(self.ui.apertures_table.rowCount()):
-            self.ui.apertures_table.cellWidget(row, 3).set_value(False)
+            wdg = self.ui.apertures_table.cellWidget(row, 3)
+            assert isinstance(wdg, FCCheckBox)
+            wdg.set_value(False)
+
+    def on_plugin_cleanup(self):
+        self.reset_fields()
 
     def reset_fields(self):
         self.ui.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
@@ -2028,7 +2032,7 @@ class PunchUI:
         self.tools_box.addWidget(self.obj_combo_label)
 
         # Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0 = GLay(v_spacing=5, h_spacing=3)
         self.tools_box.addLayout(grid0)
 
         # ## Gerber Object
@@ -2055,10 +2059,10 @@ class PunchUI:
         tt_frame = FCFrame()
         self.tools_box.addWidget(tt_frame)
 
-        pad_all_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        pad_all_grid = GLay(v_spacing=5, h_spacing=3)
         tt_frame.setLayout(pad_all_grid)
 
-        pad_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0])
+        pad_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0])
         pad_all_grid.addLayout(pad_grid, 0, 0)
 
         # Select all
@@ -2150,7 +2154,7 @@ class PunchUI:
         self.tools_box.addWidget(m_frame)
 
         # Grid Layout
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1 = GLay(v_spacing=5, h_spacing=3)
         m_frame.setLayout(grid1)
 
         self.method_punch = RadioSet(
@@ -2221,7 +2225,7 @@ class PunchUI:
         self.ring_box.addWidget(self.ring_label)
 
         # ## Grid Layout
-        self.grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.grid1 = GLay(v_spacing=5, h_spacing=3)
         self.ring_box.addLayout(self.grid1)
 
         # Circular Annular Ring Value
@@ -2320,7 +2324,7 @@ class PunchUI:
         self.tools_box.addWidget(self.s_frame)
 
         # Grid Layout
-        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid2 = GLay(v_spacing=5, h_spacing=3)
         self.s_frame.setLayout(grid2)
 
         # Type of doing the punch

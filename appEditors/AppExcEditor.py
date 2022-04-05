@@ -9,7 +9,7 @@ from PyQt6 import QtGui, QtCore, QtWidgets
 from PyQt6.QtCore import Qt
 
 from camlib import distance, arc, AppRTreeStorage
-from appGUI.GUIElements import FCEntry, FCTable, FCDoubleSpinner, RadioSet, FCSpinner, FCButton, FCLabel, FCGridLayout
+from appGUI.GUIElements import FCEntry, FCTable, FCDoubleSpinner, RadioSet, FCSpinner, FCButton, FCLabel, GLay
 from appEditors.AppGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, AppGeoEditor
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point
@@ -4093,7 +4093,7 @@ class AppExcEditorUI:
         # #############################################################################################################
         # ######################## ADD New Tool Grid ##################################################################
         # #############################################################################################################
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1 = GLay(v_spacing=5, h_spacing=3)
         self.ui_vertical_lay.addLayout(grid1)
 
         # Tool Diameter Label
@@ -4145,7 +4145,7 @@ class AppExcEditorUI:
         self.resize_frame.setContentsMargins(0, 0, 0, 0)
         self.ui_vertical_lay.addWidget(self.resize_frame)
 
-        self.resize_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.resize_grid = GLay(v_spacing=5, h_spacing=3)
         self.resize_grid.setContentsMargins(0, 0, 0, 0)
         self.resize_frame.setLayout(self.resize_grid)
 
@@ -4199,7 +4199,7 @@ class AppExcEditorUI:
         self.array_frame.setContentsMargins(0, 0, 0, 0)
         self.ui_vertical_lay.addWidget(self.array_frame)
 
-        self.array_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.array_grid = GLay(v_spacing=5, h_spacing=3)
         self.array_grid.setContentsMargins(0, 0, 0, 0)
         self.array_frame.setLayout(self.array_grid)
 
@@ -4240,7 +4240,7 @@ class AppExcEditorUI:
         self.array_linear_frame = QtWidgets.QFrame()
         self.array_linear_frame.setContentsMargins(0, 0, 0, 0)
         self.array_grid.addWidget(self.array_linear_frame, 6, 0, 1, 2)
-        self.lin_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.lin_grid = GLay(v_spacing=5, h_spacing=3)
         self.lin_grid.setContentsMargins(0, 0, 0, 0)
         self.array_linear_frame.setLayout(self.lin_grid)
 
@@ -4297,7 +4297,7 @@ class AppExcEditorUI:
         self.array_circular_frame.setContentsMargins(0, 0, 0, 0)
         self.array_grid.addWidget(self.array_circular_frame, 8, 0, 1, 2)
 
-        self.circ_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.circ_grid = GLay(v_spacing=5, h_spacing=3)
         self.circ_grid.setContentsMargins(0, 0, 0, 0)
         self.array_circular_frame.setLayout(self.circ_grid)
 
@@ -4339,7 +4339,7 @@ class AppExcEditorUI:
         self.slot_frame.setContentsMargins(0, 0, 0, 0)
         self.ui_vertical_lay.addWidget(self.slot_frame)
 
-        self.slot_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.slot_grid = GLay(v_spacing=5, h_spacing=3)
         self.slot_grid.setContentsMargins(0, 0, 0, 0)
         self.slot_frame.setLayout(self.slot_grid)
 
@@ -4411,7 +4411,7 @@ class AppExcEditorUI:
         self.slot_array_frame.setContentsMargins(0, 0, 0, 0)
         self.ui_vertical_lay.addWidget(self.slot_array_frame)
 
-        self.slot_array_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.slot_array_grid = GLay(v_spacing=5, h_spacing=3)
         self.slot_array_grid.setContentsMargins(0, 0, 0, 0)
         self.slot_array_frame.setLayout(self.slot_array_grid)
 
@@ -4453,7 +4453,7 @@ class AppExcEditorUI:
         self.slot_array_linear_frame.setContentsMargins(0, 0, 0, 0)
         self.slot_array_grid.addWidget(self.slot_array_linear_frame, 6, 0, 1, 2)
 
-        self.slot_array_lin_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.slot_array_lin_grid = GLay(v_spacing=5, h_spacing=3)
         self.slot_array_lin_grid.setContentsMargins(0, 0, 0, 0)
         self.slot_array_linear_frame.setLayout(self.slot_array_lin_grid)
 
@@ -4511,7 +4511,7 @@ class AppExcEditorUI:
         self.slot_array_circular_frame.setContentsMargins(0, 0, 0, 0)
         self.slot_array_grid.addWidget(self.slot_array_circular_frame, 8, 0, 1, 2)
 
-        self.slot_array_circ_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.slot_array_circ_grid = GLay(v_spacing=5, h_spacing=3)
         self.slot_array_circ_grid.setContentsMargins(0, 0, 0, 0)
         self.slot_array_circular_frame.setLayout(self.slot_array_circ_grid)
 

@@ -1,7 +1,7 @@
 from PyQt6 import QtGui
 
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCColorEntry, FCLabel, FCSpinner, \
-    FCGridLayout, FCComboBox2, FCFrame
+    GLay, FCComboBox2, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -35,7 +35,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         adj_frame = FCFrame()
         self.layout.addWidget(adj_frame)
 
-        adj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        adj_grid = GLay(v_spacing=5, h_spacing=3)
         adj_frame.setLayout(adj_grid)
 
         # Scale Geometry
@@ -55,7 +55,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         scale_frame = FCFrame()
         adj_grid.addWidget(scale_frame, 4, 0, 1, 2)
 
-        grid_scale = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_scale = GLay(v_spacing=5, h_spacing=3)
         scale_frame.setLayout(grid_scale)
 
         # Scale Type
@@ -120,7 +120,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         skew_frame = FCFrame()
         adj_grid.addWidget(skew_frame, 10, 0, 1, 2)
 
-        grid_skew = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_skew = GLay(v_spacing=5, h_spacing=3)
         skew_frame.setLayout(grid_skew)
 
         self.film_skew_type_lbl = FCLabel('%s:' % _("Type"))
@@ -205,7 +205,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         par_frame = FCFrame()
         self.layout.addWidget(par_frame)
 
-        grid_par = FCGridLayout()
+        grid_par = GLay()
         par_frame.setLayout(grid_par)
 
         # Convex Shape
@@ -393,7 +393,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
 
         # self.layout.addStretch(1)
 
-        FCGridLayout.set_common_column_size([adj_grid, grid_par, grid_skew, grid_scale], 0)
+        GLay.set_common_column_size([adj_grid, grid_par, grid_skew, grid_scale], 0)
 
         # Film Tool
         self.film_color_entry.editingFinished.connect(self.on_film_color_entry)

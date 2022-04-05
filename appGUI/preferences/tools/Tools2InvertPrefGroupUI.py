@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCLabel, FCGridLayout, FCFrame
+from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -34,7 +34,7 @@ class Tools2InvertPrefGroupUI(OptionsGroupUI):
         param_frame = FCFrame()
         self.layout.addWidget(param_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         param_frame.setLayout(param_grid)
 
         # Margin
@@ -67,7 +67,7 @@ class Tools2InvertPrefGroupUI(OptionsGroupUI):
         join_frame = FCFrame()
         self.layout.addWidget(join_frame)
 
-        join_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        join_grid = GLay(v_spacing=5, h_spacing=3)
         join_frame.setLayout(join_grid)
 
         line_join_lbl = FCLabel('%s:' % _("Value"))
@@ -81,6 +81,6 @@ class Tools2InvertPrefGroupUI(OptionsGroupUI):
         join_grid.addWidget(line_join_lbl, 0, 0)
         join_grid.addWidget(self.join_radio, 0, 1)
 
-        FCGridLayout.set_common_column_size([param_grid, join_grid], 0)
+        GLay.set_common_column_size([param_grid, join_grid], 0)
 
         self.layout.addStretch()

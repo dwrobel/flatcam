@@ -1,6 +1,6 @@
 from PyQt6 import QtGui
 
-from appGUI.GUIElements import FCSpinner, FCColorEntry, FCLabel, FCGridLayout, FCFrame
+from appGUI.GUIElements import FCSpinner, FCColorEntry, FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -33,7 +33,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         param_frame = FCFrame()
         self.layout.addWidget(param_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         param_frame.setLayout(param_grid)
 
         # Annotation Font Size

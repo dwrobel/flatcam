@@ -1,7 +1,7 @@
 from PyQt6 import QtWidgets
 
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox, FCLabel, OptionalInputSection, \
-    FCGridLayout, FCFrame, FCComboBox2
+    GLay, FCFrame, FCComboBox2
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -37,7 +37,7 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         tool_par_frame = FCFrame()
         self.layout.addWidget(tool_par_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         tool_par_frame.setLayout(param_grid)
 
         # Tool Diameter
@@ -143,7 +143,7 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(gaps_frame)
 
         # Grid Layout
-        gaps_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        gaps_grid = GLay(v_spacing=5, h_spacing=3)
         gaps_frame.setLayout(gaps_grid)
 
         # Gap Size
@@ -271,7 +271,7 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(self.drill_cut_frame)
 
         # Grid Layout
-        drill_cut_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        drill_cut_grid = GLay(v_spacing=5, h_spacing=3)
         self.drill_cut_frame.setLayout(drill_cut_grid)
 
         # Drill Tool Diameter
@@ -314,7 +314,7 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         drill_cut_grid.addWidget(self.drill_margin_label, 4, 0)
         drill_cut_grid.addWidget(self.drill_margin_entry, 4, 1)
 
-        FCGridLayout.set_common_column_size([param_grid, drill_cut_grid, gaps_grid], 0)
+        GLay.set_common_column_size([param_grid, drill_cut_grid, gaps_grid], 0)
 
 
         # self.layout.addStretch()

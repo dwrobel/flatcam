@@ -5,31 +5,9 @@
 # License:  MIT Licence                                    #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-
-from appTool import AppTool
-from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCButton, \
-    FCComboBox, OptionalInputSection, FCSpinner, NumericalEvalEntry, OptionalHideInputSection, FCLabel, \
-    NumericalEvalTupleEntry, FCComboBox2, VerticalScrollArea, FCGridLayout, FCFrame
+from appTool import *
 from appParsers.ParseExcellon import Excellon
-
-from copy import deepcopy
-
-import numpy as np
-
-from shapely.geometry import LineString
-
-import json
-import sys
-import re
-
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
-
-import logging
-import gettext
-import appTranslation as fcTranslate
-import builtins
-import platform
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -2080,7 +2058,8 @@ class ToolDrilling(AppTool, Excellon):
                                 drill_no = len(points[selected_id])
                                 for drill in points[selected_id]:
                                     sol_geo.append(
-                                        drill.buffer((selected_tooldia / 2.0), resolution=cnc_job_obj.geo_steps_per_circle)
+                                        drill.buffer((selected_tooldia / 2.0),
+                                                     resolution=cnc_job_obj.geo_steps_per_circle)
                                     )
 
                             slot_no = 0
@@ -2131,7 +2110,8 @@ class ToolDrilling(AppTool, Excellon):
                                 drill_no += len(points[selected_id])
                                 for drill in points[selected_id]:
                                     sol_geo.append(
-                                        drill.buffer((selected_tooldia / 2.0), resolution=cnc_job_obj.geo_steps_per_circle)
+                                        drill.buffer((selected_tooldia / 2.0),
+                                                     resolution=cnc_job_obj.geo_steps_per_circle)
                                     )
 
                             convert_slots = self.excellon_tools[selected_id]['data']['tools_drill_drill_slots']
@@ -2427,7 +2407,7 @@ class DrillingUI:
         self.tools_box.addWidget(self.obj_combo_label)
 
         # Grid Layout
-        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        obj_grid = GLay(v_spacing=5, h_spacing=3)
         self.tools_box.addLayout(obj_grid)
 
         # ################################################
@@ -2456,7 +2436,7 @@ class DrillingUI:
         tt_frame = FCFrame()
         self.tools_box.addWidget(tt_frame)
 
-        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
+        tool_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
         tt_frame.setLayout(tool_grid)
 
         # Tools Table
@@ -2534,7 +2514,7 @@ class DrillingUI:
         self.exc_tools_box.addWidget(tp_frame)
 
         # Grid Layout
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         tp_frame.setLayout(param_grid)
 
         # Cut Z
@@ -2773,7 +2753,7 @@ class DrillingUI:
         gp_frame = FCFrame()
         self.exc_tools_box.addWidget(gp_frame)
 
-        all_par_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        all_par_grid = GLay(v_spacing=5, h_spacing=3)
         gp_frame.setLayout(all_par_grid)
 
         # Tool change
@@ -2952,7 +2932,7 @@ class DrillingUI:
 
         self.exclusion_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
 
-        exclud_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        exclud_grid = GLay(v_spacing=5, h_spacing=3)
         self.exclusion_box.addLayout(exclud_grid)
 
         # Chose Strategy
@@ -3018,7 +2998,7 @@ class DrillingUI:
         # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         # all_par_grid.addWidget(separator_line, 25, 0, 1, 2)
 
-        FCGridLayout.set_common_column_size([obj_grid, tool_grid, param_grid, all_par_grid], 0)
+        GLay.set_common_column_size([obj_grid, tool_grid, param_grid, all_par_grid], 0)
 
         self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))
         self.generate_cnc_button.setIcon(QtGui.QIcon(self.app.resource_location + '/cnc16.png'))

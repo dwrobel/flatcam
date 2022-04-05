@@ -1,20 +1,5 @@
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-
-from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCButton, FCComboBox, NumericalEvalTupleEntry, FCLabel, \
-    VerticalScrollArea, FCGridLayout, FCComboBox2, FCFrame
-
-from numpy import Inf
-from copy import deepcopy
-
-from shapely.geometry import Point
-from shapely import affinity
-
-import logging
-import gettext
-import appTranslation as fcTranslate
-import builtins
+from appTool import *
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -297,6 +282,7 @@ class DblSidedTool(AppTool):
         align_type = self.ui.align_type_radio.get_value()
         mode = self.ui.axis_location.get_value()
 
+        px = py = 0.0
         if align_type in ["X", "Y"]:
             if mode == "point":
                 try:
@@ -350,7 +336,7 @@ class DblSidedTool(AppTool):
 
             for hole in holes:
                 point = Point(hole)
-                point_mirror = affinity.scale(point, xscale, yscale, origin=(px, py))
+                point_mirror = scale(point, xscale, yscale, origin=(px, py))
 
                 tools[1]['drills'] += [point, point_mirror]
                 tools[1]['solid_geometry'] += [point, point_mirror]
@@ -742,7 +728,7 @@ class DsidedUI:
         self.tools_box.addWidget(source_frame)
 
         # ## Grid Layout
-        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        obj_grid = GLay(v_spacing=5, h_spacing=3)
         source_frame.setLayout(obj_grid)
 
         # Type of object to be cutout
@@ -777,7 +763,7 @@ class DsidedUI:
         self.bounds_frame = FCFrame()
         self.tools_box.addWidget(self.bounds_frame)
 
-        grid_bounds = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_bounds = GLay(v_spacing=5, h_spacing=3)
         self.bounds_frame.setLayout(grid_bounds)
 
         # Xmin value
@@ -875,7 +861,7 @@ class DsidedUI:
         mirror_frame = FCFrame()
         self.tools_box.addWidget(mirror_frame)
 
-        grid_mirror = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_mirror = GLay(v_spacing=5, h_spacing=3)
         mirror_frame.setLayout(grid_mirror)
 
         # ## Axis
@@ -960,7 +946,7 @@ class DsidedUI:
         self.br_frame.setContentsMargins(0, 0, 0, 0)
         grid_mirror.addWidget(self.br_frame, 11, 0, 1, 3)
 
-        grid_box_ref = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_box_ref = GLay(v_spacing=5, h_spacing=3)
         grid_box_ref.setContentsMargins(0, 0, 0, 0)
         self.br_frame.setLayout(grid_box_ref)
 
@@ -990,7 +976,7 @@ class DsidedUI:
         self.sr_frame.setContentsMargins(0, 0, 0, 0)
         grid_mirror.addWidget(self.sr_frame, 13, 0, 1, 3)
 
-        grid_snap_ref = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_snap_ref = GLay(v_spacing=5, h_spacing=3)
         grid_snap_ref.setContentsMargins(0, 0, 0, 0)
         self.sr_frame.setLayout(grid_snap_ref)
 
@@ -1049,7 +1035,7 @@ class DsidedUI:
         align_frame = FCFrame()
         self.tools_box.addWidget(align_frame)
 
-        grid4 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid4 = GLay(v_spacing=5, h_spacing=3)
         align_frame.setLayout(grid4)
 
         # ## Drill diameter for alignment holes
@@ -1136,7 +1122,7 @@ class DsidedUI:
         hlay.addWidget(self.delete_drill_point_button)
         grid4.addLayout(hlay, 9, 0, 1, 2)
 
-        FCGridLayout.set_common_column_size([obj_grid, grid_bounds, grid_mirror, grid_box_ref, grid4], 0)
+        GLay.set_common_column_size([obj_grid, grid_bounds, grid_mirror, grid_box_ref, grid4], 0)
 
         # ## Buttons
         self.create_excellon_button = FCButton(_("Create Excellon Object"))
@@ -1169,8 +1155,7 @@ class DsidedUI:
                                 }
                                 """)
         self.tools_box.addWidget(self.reset_button)
-        
-        
+
         self.align_type_radio.activated_custom.connect(self.on_align_type_changed)
         # #################################### FINSIHED GUI ###########################
         # #############################################################################

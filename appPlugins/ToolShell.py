@@ -6,7 +6,6 @@
 # MIT Licence                                              #
 # ##########################################################
 
-
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import QSettings
 from PyQt6.QtGui import QTextCursor, QPixmap

@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCSpinner, RadioSet, FCLabel, FCGridLayout, FCFrame
+from appGUI.GUIElements import FCSpinner, RadioSet, FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -33,7 +33,7 @@ class GeometryEditorPrefGroupUI(OptionsGroupUI):
         editor_frame = FCFrame()
         self.layout.addWidget(editor_frame)
 
-        editor_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        editor_grid = GLay(v_spacing=5, h_spacing=3)
         editor_frame.setLayout(editor_grid)
 
         # Selection Limit

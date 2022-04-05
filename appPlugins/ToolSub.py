@@ -5,21 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-
-from appTool import AppTool
-from appGUI.GUIElements import FCCheckBox, FCButton, FCComboBox, FCLabel, VerticalScrollArea, FCGridLayout, FCFrame
-
-from shapely.geometry import Polygon, MultiPolygon, MultiLineString, LineString
-from shapely.ops import unary_union
-
-import traceback
-from copy import deepcopy
-import time
-import logging
-import gettext
-import appTranslation as fcTranslate
-import builtins
+from appTool import *
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -283,7 +269,8 @@ class ToolSub(AppTool):
             self.target_grb_obj = self.app.collection.get_by_name(self.target_grb_obj_name)
         except Exception as e:
             self.app.log.error("ToolSub.on_subtract_gerber_click() --> %s" % str(e))
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.obj_name))
+            self.app.inform.emit(
+                '[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.target_grb_obj.obj_options['name']))
             return "Could not retrieve object: %s" % self.target_grb_obj_name
 
         # --------------------------------
@@ -301,7 +288,8 @@ class ToolSub(AppTool):
             self.sub_grb_obj = self.app.collection.get_by_name(self.sub_grb_obj_name)
         except Exception as e:
             self.app.log.error("ToolSub.on_subtract_gerber_click() --> %s" % str(e))
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.obj_name))
+            self.app.inform.emit(
+                '[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.target_grb_obj.obj_options['name']))
             return "Could not retrieve object: %s" % self.sub_grb_obj_name
 
         if self.target_grb_obj_name == self.sub_grb_obj_name:
@@ -648,6 +636,7 @@ class ToolSub(AppTool):
 
     def new_geo_object(self, outname):
         geo_name = outname
+
         def obj_init(geo_obj, app_obj):
 
             # geo_obj.obj_options = self.target_options
@@ -825,7 +814,7 @@ class SubUI:
         self.gp_frame = FCFrame()
         self.tools_box.addWidget(self.gp_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         self.gp_frame.setLayout(param_grid)
 
         self.delete_sources_cb = FCCheckBox(_("Delete source"))
@@ -844,7 +833,7 @@ class SubUI:
         grb_frame = FCFrame()
         self.tools_box.addWidget(grb_frame)
 
-        grb_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        grb_grid = GLay(v_spacing=5, h_spacing=3)
         grb_frame.setLayout(grb_grid)
 
         # Target Gerber Object
@@ -909,7 +898,7 @@ class SubUI:
         geo_frame = FCFrame()
         self.tools_box.addWidget(geo_frame)
 
-        geo_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        geo_grid = GLay(v_spacing=5, h_spacing=3)
         geo_frame.setLayout(geo_grid)
 
         self.geo_title = FCLabel("<b>%s</b>" % _("GEOMETRY"))

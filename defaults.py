@@ -390,6 +390,8 @@ class AppDefaults:
         "tools_iso_poly_ints":      False,
         "tools_iso_force":          True,
         "tools_iso_area_shape":     "square",
+        "tools_iso_simplification":     False,
+        "tools_iso_simplification_tol": 0.01,
         "tools_iso_plotting":       'normal',
 
         # Drilling Plugin
@@ -674,6 +676,8 @@ class AppDefaults:
         "tools_markers_offset_y": 0.0,
         "tools_markers_type": 's',
         "tools_markers_drill_dia": 0.5,
+        "tools_markers_mode": 0,            # 'automatic'
+        "tools_markers_big_cursor": True,
 
         # ########################################################################################################
         # ################################ TOOLS 2 ###############################################################
@@ -743,6 +747,7 @@ class AppDefaults:
         "tools_fiducials_second_pos": 'up',
         "tools_fiducials_type": 'circular',
         "tools_fiducials_line_thickness": 0.25,
+        "tools_fiducials_big_cursor": True,
 
         # Calibration Tool
         "tools_cal_calsource": 'object',

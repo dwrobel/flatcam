@@ -99,7 +99,7 @@ class ObjectUI(QtWidgets.QWidget):
             trans_frame = FCFrame()
             layout.addWidget(trans_frame)
 
-            self.common_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+            self.common_grid = GLay(v_spacing=5, h_spacing=3)
             self.common_grid.setColumnStretch(0, 1)
             self.common_grid.setColumnStretch(1, 0)
             trans_frame.setLayout(self.common_grid)
@@ -193,7 +193,7 @@ class GerberObjectUI(ObjectUI):
         self.custom_box.addWidget(gen_frame)
 
         # Plot options
-        plot_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        plot_grid = GLay(v_spacing=5, h_spacing=3)
         plot_grid.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         gen_frame.setLayout(plot_grid)
 
@@ -292,7 +292,7 @@ class GerberObjectUI(ObjectUI):
         self.custom_box.addWidget(self.tt_frame)
 
         # Grid Layout
-        tt_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tt_grid = GLay(v_spacing=5, h_spacing=3)
         self.tt_frame.setLayout(tt_grid)
 
         # ### Gerber Apertures ####
@@ -378,7 +378,7 @@ class GerberObjectUI(ObjectUI):
         self.custom_box.addWidget(plugins_frame)
 
         # Grid Layout
-        plugins_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
+        plugins_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
         plugins_frame.setLayout(plugins_grid)
 
         # Isolation Tool - will create isolation paths around the copper features
@@ -495,7 +495,7 @@ class GerberObjectUI(ObjectUI):
         ncc_frame = FCFrame()
         self.util_box.addWidget(ncc_frame)
 
-        grid_ncc = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_ncc = GLay(v_spacing=5, h_spacing=3)
         ncc_frame.setLayout(grid_ncc)
 
         # Margin
@@ -542,7 +542,7 @@ class GerberObjectUI(ObjectUI):
         self.util_box.addWidget(bb_frame)
 
         # Grid Layout
-        grid_bb = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_bb = GLay(v_spacing=5, h_spacing=3)
         bb_frame.setLayout(grid_bb)
 
         bbmargin = FCLabel('%s:' % _('Boundary Margin'))
@@ -612,7 +612,7 @@ class ExcellonObjectUI(ObjectUI):
         self.custom_box.addWidget(gen_frame)
 
         # Plot options
-        plot_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        plot_grid = GLay(v_spacing=5, h_spacing=3)
         plot_grid.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         gen_frame.setLayout(plot_grid)
 
@@ -695,7 +695,7 @@ class ExcellonObjectUI(ObjectUI):
         self.tools_table_label.setToolTip(_("Tools/apertures in the loaded object."))
         self.custom_box.addWidget(self.tools_table_label)
 
-        tt_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tt_grid = GLay(v_spacing=5, h_spacing=3)
         tt_grid.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.custom_box.addLayout(tt_grid)
 
@@ -783,7 +783,7 @@ class ExcellonObjectUI(ObjectUI):
         plugins_frame = FCFrame()
         self.custom_box.addWidget(plugins_frame)
 
-        plugins_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
+        plugins_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
         plugins_frame.setLayout(plugins_grid)
 
         # Drilling Tool - will create GCode for drill holes
@@ -855,7 +855,7 @@ class ExcellonObjectUI(ObjectUI):
         mill_frame = FCFrame()
         self.util_box.addWidget(mill_frame)
 
-        grid_mill = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_mill = GLay(v_spacing=5, h_spacing=3)
         mill_frame.setLayout(grid_mill)
 
         self.tdlabel = FCLabel('%s:' % _('Milling Diameter'))
@@ -949,7 +949,7 @@ class GeometryObjectUI(ObjectUI):
         self.custom_box.addWidget(gen_frame)
 
         # Plot options
-        plot_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        plot_grid = GLay(v_spacing=5, h_spacing=3)
         plot_grid.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         gen_frame.setLayout(plot_grid)
 
@@ -1029,7 +1029,7 @@ class GeometryObjectUI(ObjectUI):
         self.custom_box.addWidget(self.tt_frame)
 
         # Grid Layout
-        tt_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tt_grid = GLay(v_spacing=5, h_spacing=3)
         self.tt_frame.setLayout(tt_grid)
 
         # ### Tools ####
@@ -1109,7 +1109,7 @@ class GeometryObjectUI(ObjectUI):
         plugins_frame = FCFrame()
         self.custom_box.addWidget(plugins_frame)
 
-        plugins_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
+        plugins_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
         plugins_frame.setLayout(plugins_grid)
 
         # Milling Tool - will create GCode for slot holes
@@ -1191,7 +1191,7 @@ class GeometryObjectUI(ObjectUI):
         sim_frame = FCFrame()
         self.util_box.addWidget(sim_frame)
 
-        grid_sim = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_sim = GLay(v_spacing=5, h_spacing=3)
         sim_frame.setLayout(grid_sim)
 
         # Vertex Points
@@ -1291,7 +1291,7 @@ class CNCObjectUI(ObjectUI):
         self.custom_box.addWidget(gen_frame)
 
         # Plot options
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0 = GLay(v_spacing=5, h_spacing=3)
         grid0.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         gen_frame.setLayout(grid0)
 
@@ -1376,12 +1376,12 @@ class CNCObjectUI(ObjectUI):
         self.gp_frame.setSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
         self.custom_box.addWidget(self.gp_frame)
 
-        grid_par = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_par = GLay(v_spacing=5, h_spacing=3)
         self.gp_frame.setLayout(grid_par)
 
         self.estimated_frame = QtWidgets.QFrame()
         self.estimated_frame.setContentsMargins(0, 0, 0, 0)
-        estimated_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        estimated_grid = GLay(v_spacing=5, h_spacing=3)
         estimated_grid.setContentsMargins(0, 0, 0, 0)
         self.estimated_frame.setLayout(estimated_grid)
         grid_par.addWidget(self.estimated_frame, 4, 0, 1, 3)
@@ -1449,7 +1449,7 @@ class CNCObjectUI(ObjectUI):
         self.custom_box.addWidget(self.tt_frame)
 
         # Grid Layout
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1 = GLay(v_spacing=5, h_spacing=3)
         self.tt_frame.setLayout(grid1)
 
         hlay = QtWidgets.QHBoxLayout()
@@ -1702,7 +1702,7 @@ class DocumentObjectUI(ObjectUI):
         # ############ Grid LAYOUT #####################################
         # ##############################################################
 
-        self.grid0 = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
+        self.grid0 = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
         self.custom_box.addLayout(self.grid0)
 
         # Font

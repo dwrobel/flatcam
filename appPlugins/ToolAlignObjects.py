@@ -5,20 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-from appTool import AppTool
-
-from appGUI.GUIElements import FCComboBox, RadioSet, FCLabel, FCButton, VerticalScrollArea, FCGridLayout, FCFrame
-
-import math
-
-from shapely.geometry import Point
-from shapely.affinity import translate
-
-import gettext
-import appTranslation as fcTranslate
-import builtins
-import logging
+from appTool import *
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -440,7 +427,7 @@ class AlignUI:
         self.tools_box.addWidget(m_frame)
 
         # Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0 = GLay(v_spacing=5, h_spacing=3)
         m_frame.setLayout(grid0)
 
         # Type of object to be aligned
@@ -479,7 +466,7 @@ class AlignUI:
         self.tools_box.addWidget(d_frame)
 
         # Grid Layout
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1 = GLay(v_spacing=5, h_spacing=3)
         d_frame.setLayout(grid1)
 
         # Type of object to be aligned to = aligner
@@ -512,7 +499,7 @@ class AlignUI:
         self.tools_box.addWidget(par_frame)
 
         # Grid Layout
-        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid2 = GLay(v_spacing=5, h_spacing=3)
         par_frame.setLayout(grid2)
 
         # Alignment Type
@@ -531,7 +518,7 @@ class AlignUI:
         grid2.addWidget(self.a_type_lbl, 0, 0, 1, 2)
         grid2.addWidget(self.a_type_radio, 2, 0, 1, 2)
 
-        # FCGridLayout.set_common_column_size([grid0, grid1, grid2], 0, FCLabel)
+        # GLay.set_common_column_size([grid0, grid1, grid2], 0, FCLabel)
 
         # Buttons
         self.align_object_button = FCButton(_("Align Object"))

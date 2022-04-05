@@ -20,7 +20,7 @@ import logging
 from camlib import distance, arc, three_point_circle, flatten_shapely_geometry
 from appGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, FCSpinner, RadioSet, EvalEntry2, \
     FCInputDoubleSpinner, FCButton, OptionalInputSection, FCCheckBox, NumericalEvalTupleEntry, FCLabel, FCTextEdit, \
-    VerticalScrollArea, FCGridLayout
+    VerticalScrollArea, GLay
 from appTool import AppTool
 
 import numpy as np
@@ -6213,7 +6213,7 @@ class AppGerberEditorUI:
         # #############################################################################################################
         # ############################ Add/Delete an new Aperture #####################################################
         # #############################################################################################################
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1 = GLay(v_spacing=5, h_spacing=3)
         self.apertures_box.addLayout(grid1)
 
         # Title
@@ -6312,7 +6312,7 @@ class AppGerberEditorUI:
         self.shape_frame.setContentsMargins(0, 0, 0, 0)
         self.custom_box.addWidget(self.shape_frame)
 
-        self.shape_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.shape_grid = GLay(v_spacing=5, h_spacing=3)
         self.shape_grid.setContentsMargins(0, 0, 0, 0)
         self.shape_frame.setLayout(self.shape_grid)
 
@@ -6332,7 +6332,7 @@ class AppGerberEditorUI:
         )
         self.shape_grid.addWidget(param_title, 4, 0, 1, 3)
 
-        p_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0, 0, 1, 0])
+        p_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 0, 0, 1, 0])
 
         # Is Valid
         valid_lbl = FCLabel('<b>%s</b>:' % _("Valid"))
@@ -6444,7 +6444,7 @@ class AppGerberEditorUI:
         self.buffer_tools_box.addWidget(buf_title_lbl)
 
         # Grid Layout
-        buff_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        buff_grid = GLay(v_spacing=5, h_spacing=3)
         self.buffer_tools_box.addLayout(buff_grid)
 
         # Buffer distance
@@ -6502,7 +6502,7 @@ class AppGerberEditorUI:
         self.scale_tools_box.addWidget(scale_title_lbl)
 
         # Grid Layout
-        scale_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        scale_grid = GLay(v_spacing=5, h_spacing=3)
         self.scale_tools_box.addLayout(scale_grid)
 
         self.scale_factor_lbl = FCLabel('%s:' % _("Scale factor"))
@@ -6551,7 +6551,7 @@ class AppGerberEditorUI:
         self.ma_tools_box.addWidget(ma_title_lbl)
 
         # Form Layout
-        mark_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        mark_grid = GLay(v_spacing=5, h_spacing=3)
         self.ma_tools_box.addLayout(mark_grid)
 
         # Upper Threshold
@@ -6620,7 +6620,7 @@ class AppGerberEditorUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.array_box.addWidget(separator_line)
 
-        array_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        array_grid = GLay(v_spacing=5, h_spacing=3)
         self.array_box.addLayout(array_grid)
 
         # Title
@@ -6795,7 +6795,7 @@ class TransformEditorTool(AppTool):
         self.layout.addWidget(FCLabel(''))
 
         # ## Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
+        grid0 = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
         self.layout.addLayout(grid0)
 
         grid0.addWidget(FCLabel(''))

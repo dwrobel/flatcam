@@ -5,22 +5,8 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-
-from appTool import AppTool
-from appGUI.GUIElements import OptionalHideInputSection, FCTextArea, FCEntry, FCSpinner, FCCheckBox, FCComboBox, \
-    FCLabel, FCButton, VerticalScrollArea, FCGridLayout, FCFrame
+from appTool import *
 from camlib import grace
-
-from shapely.geometry import MultiPolygon
-from shapely.ops import nearest_points
-
-import numpy as np
-
-import logging
-import gettext
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -529,7 +515,7 @@ class OptimalUI:
         par_frame = FCFrame()
         self.layout.addWidget(par_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         par_frame.setLayout(param_grid)
 
         # Precision = nr of decimals
@@ -552,7 +538,7 @@ class OptimalUI:
         res_frame = FCFrame()
         self.layout.addWidget(res_frame)
 
-        res_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
+        res_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
         res_frame.setLayout(res_grid)
 
         # Result value
@@ -617,7 +603,7 @@ class OptimalUI:
         other_frame = FCFrame()
         self.layout.addWidget(other_frame)
 
-        other_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        other_grid = GLay(v_spacing=5, h_spacing=3)
         other_frame.setLayout(other_grid)
 
         # Control if to display the locations of where the minimum was found
@@ -708,7 +694,7 @@ class OptimalUI:
         self.calculate_button.setMinimumWidth(60)
         self.layout.addWidget(self.calculate_button)
 
-        FCGridLayout.set_common_column_size([param_grid, res_grid], 0)
+        GLay.set_common_column_size([param_grid, res_grid], 0)
 
         self.layout.addStretch(1)
 

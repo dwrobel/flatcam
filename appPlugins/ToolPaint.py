@@ -5,32 +5,11 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtGui, QtCore
-from PyQt6.QtCore import Qt
-
-from appTool import AppTool
-from copy import deepcopy
-
+from appTool import *
 from appParsers.ParseGerber import Gerber
 from camlib import Geometry, AppRTreeStorage, grace
-from appGUI.GUIElements import FCTable, FCDoubleSpinner, FCCheckBox, FCInputDoubleSpinner, RadioSet, \
-    FCButton, FCComboBox, FCLabel, FCComboBox2, VerticalScrollArea, FCGridLayout, FCFrame
-
-from shapely.geometry import base, Polygon, MultiPolygon, LinearRing, Point, MultiLineString, LineString
-from shapely.ops import unary_union, linemerge
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
-
-import numpy as np
-from numpy import Inf
-import traceback
-import sys
-import logging
-import simplejson as json
-
-import gettext
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -781,7 +760,8 @@ class ToolPaint(AppTool, Gerber):
         # make the diameter column editable
         for row in range(tool_id):
             self.ui.tools_table.item(row, 1).setFlags(
-                QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+                QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsSelectable |
+                QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         # all the tools are selected by default
         self.ui.tools_table.selectColumn(0)
@@ -1235,7 +1215,7 @@ class ToolPaint(AppTool, Gerber):
             self.app.ui.notebook.setDisabled(True)
 
         elif self.select_method == 3:   # _("Reference Object")
-            self.bound_obj_name = self.reference_combo.currentText()
+            self.bound_obj_name = self.ui.reference_combo.currentText()
             # Get source object.
             try:
                 self.bound_obj = self.app.collection.get_by_name(self.bound_obj_name)
@@ -1703,7 +1683,8 @@ class ToolPaint(AppTool, Gerber):
             except grace:
                 return "fail"
             except Exception as ee:
-                self.app.log.error("ToolPaint.paint_polygon_worker() Laser Lines -> Identify flashes/traces--> %s" % str(ee))
+                self.app.log.error(
+                    "ToolPaint.paint_polygon_worker() Laser Lines -> Identify flashes/traces--> %s" % str(ee))
 
             cpoly = AppRTreeStorage()
             pads_lines_list = []
@@ -2155,15 +2136,15 @@ class ToolPaint(AppTool, Gerber):
                             geo_elems = list(geo_res.get_objects())
                             # See if the polygon was completely cleared
                             pp_cleared = unary_union(geo_elems).buffer(tool_dia / 2.0)
-                            rest = pp.difference(pp_cleared)
-                            if rest and not rest.is_empty:
+                            rest_geo = pp.difference(pp_cleared)
+                            if rest_geo and not rest_geo.is_empty:
                                 try:
-                                    for r in rest:
+                                    for r in rest_geo:
                                         if r.is_valid:
                                             rest_list.append(r)
                                 except TypeError:
-                                    if rest.is_valid:
-                                        rest_list.append(rest)
+                                    if rest_geo.is_valid:
+                                        rest_list.append(rest_geo)
 
                             if geo_res:
                                 cleared_geo += geo_elems
@@ -2195,15 +2176,15 @@ class ToolPaint(AppTool, Gerber):
 
                         # See if the polygon was completely cleared
                         pp_cleared = unary_union(geo_elems).buffer(tool_dia / 2.0)
-                        rest = poly_buf.difference(pp_cleared)
-                        if rest and not rest.is_empty:
+                        rest_geo = poly_buf.difference(pp_cleared)
+                        if rest_geo and not rest_geo.is_empty:
                             try:
-                                for r in rest:
+                                for r in rest_geo:
                                     if r.is_valid:
                                         rest_list.append(r)
                             except TypeError:
-                                if rest.is_valid:
-                                    rest_list.append(rest)
+                                if rest_geo.is_valid:
+                                    rest_list.append(rest_geo)
 
                         if geo_res:
                             cleared_geo += geo_elems
@@ -2473,7 +2454,8 @@ class ToolPaint(AppTool, Gerber):
         if obj.kind == 'gerber':
             # I don't do anything here, like buffering when the Gerber is loaded without buffering????!!!!
             if self.app.options["gerber_buffering"] == 'no':
-                msg = '%s %s %s' % (_("Paint Plugin."), _("Paint all polygons task started."), _("Buffering geometry..."))
+                msg = '%s %s %s' % (_("Paint Plugin."), _("Paint all polygons task started."),
+                                    _("Buffering geometry..."))
                 self.app.inform.emit(msg)
             else:
                 self.app.inform.emit('%s %s' % (_("Paint Plugin."), _("Paint all polygons task started.")))
@@ -2780,8 +2762,7 @@ class ToolPaint(AppTool, Gerber):
                 for k in o:
                     try:
                         minx_, miny_, maxx_, maxy_ = bounds_rec(k)
-                    except Exception as e:
-                        # log.error("ToolPaint.bounds() --> %s" % str(e))
+                    except Exception:
                         return
 
                     minx = min(minx, minx_)
@@ -2975,7 +2956,7 @@ class PaintUI:
         self.tools_box.addWidget(obj_frame)
 
         # Grid Layout
-        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        obj_grid = GLay(v_spacing=5, h_spacing=3)
         obj_frame.setLayout(obj_grid)
 
         # #############################################################################################################
@@ -3026,7 +3007,7 @@ class PaintUI:
         self.tools_box.addWidget(tt_frame)
 
         # Grid Layout
-        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tool_grid = GLay(v_spacing=5, h_spacing=3)
         tt_frame.setLayout(tool_grid)
 
         self.tools_table = FCTable(drag_drop=True)
@@ -3081,7 +3062,7 @@ class PaintUI:
         self.add_tool_frame.setContentsMargins(0, 0, 0, 0)
         tool_grid.addWidget(self.add_tool_frame, 6, 0, 1, 2)
 
-        new_tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        new_tool_grid = GLay(v_spacing=5, h_spacing=3)
         new_tool_grid.setContentsMargins(0, 0, 0, 0)
         self.add_tool_frame.setLayout(new_tool_grid)
 
@@ -3111,7 +3092,7 @@ class PaintUI:
         # #############################################################################################################
         # ################################    Button Grid   ###########################################################
         # #############################################################################################################
-        button_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        button_grid = GLay(v_spacing=5, h_spacing=3)
         button_grid.setColumnStretch(0, 1)
         button_grid.setColumnStretch(1, 0)
         new_tool_grid.addLayout(button_grid, 6, 0, 1, 2)
@@ -3165,7 +3146,7 @@ class PaintUI:
         tt_frame = FCFrame()
         self.tools_box.addWidget(tt_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         tt_frame.setLayout(param_grid)
 
         # Overlap
@@ -3269,7 +3250,7 @@ class PaintUI:
         gp_frame = FCFrame()
         self.tools_box.addWidget(gp_frame)
 
-        gen_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        gen_grid = GLay(v_spacing=5, h_spacing=3)
         gp_frame.setLayout(gen_grid)
 
         # Rest machining
@@ -3359,7 +3340,7 @@ class PaintUI:
         self.area_shape_label.hide()
         self.area_shape_radio.hide()
 
-        FCGridLayout.set_common_column_size([obj_grid, tool_grid, new_tool_grid, param_grid, gen_grid], 0)
+        GLay.set_common_column_size([obj_grid, tool_grid, new_tool_grid, param_grid, gen_grid], 0)
 
         # #############################################################################################################
         # Generate Paint Geometry Button

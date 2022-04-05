@@ -5,20 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-
-from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCLabel, FCTable, \
-    VerticalScrollArea, FCGridLayout, FCFrame
-
-from shapely.geometry import Point, MultiPolygon, Polygon, box
-
-from copy import deepcopy
-
-import logging
-import gettext
-import appTranslation as fcTranslate
-import builtins
+from appTool import *
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -137,7 +124,8 @@ class ToolExtract(AppTool):
         self.set_tool_ui()
         self.build_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Extract"))
+        # trigger this once at plugin launch
+        self.on_object_combo_changed()
 
     def connect_signals_at_init(self):
         # ## Signals
@@ -220,9 +208,18 @@ class ToolExtract(AppTool):
 
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
-        if obj and obj.kind == 'gerber':
-            obj_name = obj.obj_options['name']
-            self.ui.gerber_object_combo.set_value(obj_name)
+        if obj:
+            if obj.kind == 'gerber':
+                obj_name = obj.obj_options['name']
+                self.ui.gerber_object_combo.set_value(obj_name)
+        else:
+            # take first available Gerber file, if any
+            available_gerber_list = [o for o in self.app.collection.get_list() if o.kind == 'gerber']
+            if available_gerber_list:
+                obj_name = available_gerber_list[0].obj_options['name']
+                self.ui.gerber_object_combo.set_value(obj_name)
+
+        self.app.ui.notebook.setTabText(2, _("Extract"))
 
     def build_tool_ui(self):
         self.ui_disconnect()
@@ -343,6 +340,17 @@ class ToolExtract(AppTool):
         # self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
         # self.ui.apertures_table.setMaximumHeight(self.ui.apertures_table.getHeight())
 
+        # make sure you clear the Gerber aperture markings when the table is rebuilt
+        # get the Gerber file who is the source of the punched Gerber
+        selection_index = self.ui.gerber_object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.ui.gerber_object_combo.rootModelIndex())
+        try:
+            grb_obj = model_index.internalPointer().obj
+        except Exception:
+            self.ui_connect()
+            return
+        grb_obj.clear_plot_apertures()
+
         self.ui_connect()
 
     def ui_connect(self):
@@ -351,10 +359,14 @@ class ToolExtract(AppTool):
         # Mark Checkboxes
         for row in range(self.ui.apertures_table.rowCount()):
             try:
-                self.ui.apertures_table.cellWidget(row, 3).clicked.disconnect()
+                wdg = self.ui.apertures_table.cellWidget(row, 3)
+                assert isinstance(wdg, FCCheckBox)
+                wdg.clicked.disconnect()
             except (TypeError, AttributeError):
                 pass
-            self.ui.apertures_table.cellWidget(row, 3).stateChanged.connect(self.on_mark_cb_click_table)
+            wdg = self.ui.apertures_table.cellWidget(row, 3)
+            assert isinstance(wdg, FCCheckBox)
+            wdg.stateChanged.connect(self.on_mark_cb_click_table)
 
     def ui_disconnect(self):
         try:
@@ -365,7 +377,9 @@ class ToolExtract(AppTool):
         # Mark Checkboxes
         for row in range(self.ui.apertures_table.rowCount()):
             try:
-                self.ui.apertures_table.cellWidget(row, 3).stateChanged.disconnect()
+                wdg = self.ui.apertures_table.cellWidget(row, 3)
+                assert isinstance(wdg, FCCheckBox)
+                wdg.stateChanged.disconnect()
             except (TypeError, AttributeError):
                 pass
 
@@ -935,13 +949,18 @@ class ToolExtract(AppTool):
         except Exception:
             return
 
-        if self.ui.apertures_table.cellWidget(cw_row, 3).isChecked():
+        wdg = self.ui.apertures_table.cellWidget(cw_row, 3)
+        assert isinstance(wdg, FCCheckBox)
+        if wdg.isChecked():
             # self.plot_aperture(color='#2d4606bf', marked_aperture=aperture, visible=True)
             color = self.app.options['global_sel_draw_color']
             color = (color + 'AA') if len(color) == 7 else (color[:-2] + 'AA')
             grb_obj.plot_aperture(color=color, marked_aperture=aperture, visible=True, run_thread=True)
         else:
             grb_obj.clear_plot_apertures(aperture=aperture)
+
+    def on_plugin_cleanup(self):
+        self.reset_fields()
 
     def clear_aperture_marking(self):
         """
@@ -952,7 +971,9 @@ class ToolExtract(AppTool):
         """
 
         for row in range(self.ui.apertures_table.rowCount()):
-            self.ui.apertures_table.cellWidget(row, 3).set_value(False)
+            wdg = self.ui.apertures_table.cellWidget(row, 3)
+            assert isinstance(wdg, FCCheckBox)
+            wdg.set_value(False)
 
     def reset_fields(self):
         self.ui.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
@@ -1019,15 +1040,15 @@ class ExtractUI:
         self.tools_box.addWidget(pads_frame)
 
         # ## Grid Layout
-        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_lay = GLay(v_spacing=5, h_spacing=3)
         grid_lay.setColumnStretch(0, 1)
         grid_lay.setColumnStretch(1, 0)
         pads_frame.setLayout(grid_lay)
 
-        pad_all_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        pad_all_grid = GLay(v_spacing=5, h_spacing=3)
         grid_lay.addLayout(pad_all_grid, 5, 0, 1, 2)
 
-        pad_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0])
+        pad_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0])
         pad_all_grid.addLayout(pad_grid, 0, 0)
 
         # All Aperture Selection
@@ -1098,7 +1119,8 @@ class ExtractUI:
         self.apertures_table.horizontalHeaderItem(3).setToolTip(
             _("Mark the aperture instances on canvas."))
 
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                           QtWidgets.QSizePolicy.Policy.Preferred)
         self.apertures_table.setSizePolicy(sizePolicy)
         self.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.MultiSelection)
 
@@ -1119,7 +1141,7 @@ class ExtractUI:
         self.tools_box.addWidget(ed_frame)
 
         # ## Grid Layout
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1 = GLay(v_spacing=5, h_spacing=3)
         ed_frame.setLayout(grid1)
 
         self.method_label = FCLabel('%s:' % _("Method"))
@@ -1159,7 +1181,7 @@ class ExtractUI:
         self.ring_frame.setLayout(self.ring_box)
 
         # ## Grid Layout
-        ring_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        ring_grid = GLay(v_spacing=5, h_spacing=3)
         ring_grid.setContentsMargins(0, 0, 0, 0)
         self.ring_box.addLayout(ring_grid)
 
@@ -1244,7 +1266,7 @@ class ExtractUI:
         self.fix_frame.setContentsMargins(0, 0, 0, 0)
         grid1.addWidget(self.fix_frame, 10, 0, 1, 2)
 
-        fixed_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        fixed_grid = GLay(v_spacing=5, h_spacing=3)
         fixed_grid.setContentsMargins(0, 0, 0, 0)
         self.fix_frame.setLayout(fixed_grid)
 
@@ -1272,7 +1294,7 @@ class ExtractUI:
         self.prop_frame.setContentsMargins(0, 0, 0, 0)
         grid1.addWidget(self.prop_frame, 12, 0, 1, 2)
 
-        prop_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        prop_grid = GLay(v_spacing=5, h_spacing=3)
         prop_grid.setContentsMargins(0, 0, 0, 0)
         self.prop_frame.setLayout(prop_grid)
 
@@ -1323,7 +1345,7 @@ class ExtractUI:
         self.es_frame = FCFrame()
         self.tools_box.addWidget(self.es_frame)
 
-        es_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        es_grid = GLay(v_spacing=5, h_spacing=3)
         self.es_frame.setLayout(es_grid)
 
         # CLEARANCE
@@ -1368,7 +1390,7 @@ class ExtractUI:
         self.ec_frame = FCFrame()
         self.tools_box.addWidget(self.ec_frame)
 
-        ec_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        ec_grid = GLay(v_spacing=5, h_spacing=3)
         self.ec_frame.setLayout(ec_grid)
 
         # Margin
@@ -1399,7 +1421,7 @@ class ExtractUI:
         ec_grid.addWidget(self.thick_cut_label, 2, 0)
         ec_grid.addWidget(self.thick_cut_entry, 2, 1)
 
-        FCGridLayout.set_common_column_size(
+        GLay.set_common_column_size(
             [grid1, grid_lay, ring_grid, ec_grid, prop_grid, fixed_grid, ring_grid, es_grid, pad_all_grid, pad_grid], 0)
 
         # #############################################################################################################

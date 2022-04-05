@@ -5,32 +5,14 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtWidgets, QtCore, QtGui
-from PyQt6.QtCore import Qt
-
-from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCTextArea, FCSpinner, FCEntry, FCCheckBox, FCComboBox, FCFileSaveDialog, \
-    VerticalScrollArea, FCGridLayout, FCLabel, FCFrame
+from appTool import *
 from appParsers.ParseSVG import *
-
-from shapely.geometry.base import *
-from shapely.ops import unary_union
-from shapely.affinity import translate
-from shapely.geometry import box
-
 from io import StringIO, BytesIO
-from collections.abc import Iterable
-import logging
-from copy import deepcopy
 
 import qrcode
 import qrcode.image.svg
 import qrcode.image.pil
 from lxml import etree as ET
-
-import gettext
-import appTranslation as fcTranslate
-import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -418,21 +400,27 @@ class QRCode(AppTool):
 
         # I use the len of self.qrcode_geometry instead of the utility one because the complexity of the polygons is
         # better seen in this (bit what if the sel.qrcode_geometry is just one geo element? len will fail ...
-        if len(self.qrcode_geometry) <= self.app.options["tools_qrcode_sel_limit"]:
+
+        qrcode_geometry_len = len(self.qrcode_geometry.geoms) if isinstance(self.qrcode_geometry, MultiPolygon) else \
+            len(self.qrcode_geometry)
+        if qrcode_geometry_len <= self.app.options["tools_qrcode_sel_limit"]:
+            qrcode_geo = self.qrcode_utility_geometry.geoms if isinstance(self.qrcode_utility_geometry, MultiPolygon) \
+                else self.qrcode_utility_geometry
             try:
-                for poly in self.qrcode_utility_geometry:
+                for poly in qrcode_geo:
                     offset_geo.append(translate(poly.exterior, xoff=pos[0], yoff=pos[1]))
                     for geo_int in poly.interiors:
                         offset_geo.append(translate(geo_int, xoff=pos[0], yoff=pos[1]))
             except TypeError:
+                assert isinstance(self.qrcode_utility_geometry, Polygon)
                 offset_geo.append(translate(self.qrcode_utility_geometry.exterior, xoff=pos[0], yoff=pos[1]))
                 for geo_int in self.qrcode_utility_geometry.interiors:
                     offset_geo.append(translate(geo_int, xoff=pos[0], yoff=pos[1]))
         else:
             offset_geo = [translate(self.box_poly, xoff=pos[0], yoff=pos[1])]
 
-        for shape in offset_geo:
-            self.shapes.add(shape, color=outline, update=True, layer=0, tolerance=None)
+        for shp in offset_geo:
+            self.shapes.add(shp, color=outline, update=True, layer=0, tolerance=None)
 
         if self.app.use_3d_engine:
             self.shapes.redraw()
@@ -761,7 +749,7 @@ class QRcodeUI:
         self.title_box.addWidget(self.level)
 
         # ## Grid Layout
-        i_grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
+        i_grid_lay = GLay(v_spacing=5, h_spacing=3)
         self.tools_box.addLayout(i_grid_lay)
 
         self.grb_object_combo = FCComboBox()
@@ -792,7 +780,7 @@ class QRcodeUI:
         self.tools_box.addWidget(tq_frame)
 
         # Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0 = GLay(v_spacing=5, h_spacing=3)
         tq_frame.setLayout(grid0)
 
         self.text_data = FCTextArea()
@@ -820,7 +808,7 @@ class QRcodeUI:
         self.tools_box.addWidget(p_frame)
 
         # ## Grid Layout
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1 = GLay(v_spacing=5, h_spacing=3)
         p_frame.setLayout(grid1)
 
         # VERSION #
@@ -933,7 +921,7 @@ class QRcodeUI:
         self.export_frame = FCFrame()
         self.tools_box.addWidget(self.export_frame)
 
-        self.export_lay = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.export_lay = GLay(v_spacing=5, h_spacing=3)
         self.export_frame.setLayout(self.export_lay)
 
         # default is hidden

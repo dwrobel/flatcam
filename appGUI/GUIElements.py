@@ -2585,7 +2585,7 @@ class DialogBoxChoice(QtWidgets.QDialog):
         self.setWindowTitle(str(title))
         self.setWindowFlags(self.windowFlags() | Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowSystemMenuHint)
 
-        grid0 = FCGridLayout(parent=self, h_spacing=5, v_spacing=5)
+        grid0 = GLay(parent=self, h_spacing=5, v_spacing=5)
         main_label = FCLabel(str(title))
         grid0.addWidget(main_label, 0, 0)
 
@@ -4262,7 +4262,7 @@ class DialogBoxRadio(QtWidgets.QDialog):
         self.setWindowIcon(icon)
         self.setWindowTitle(str(title))
 
-        grid0 = FCGridLayout(parent=self, h_spacing=5, v_spacing=5)
+        grid0 = GLay(parent=self, h_spacing=5, v_spacing=5)
 
         self.ref_label = FCLabel('%s:' % _("Reference"))
         self.ref_label.setToolTip(
@@ -5119,7 +5119,7 @@ class FCJog(QtWidgets.QFrame):
         self.setLineWidth(1)
 
         # JOG axes
-        grbl_jog_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        grbl_jog_grid = GLay(v_spacing=5, h_spacing=3)
         grbl_jog_grid.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         grbl_jog_grid.setSizeConstraint(QtWidgets.QLayout.SizeConstraint.SetMinimumSize)
         grbl_jog_grid.setContentsMargins(2, 4, 2, 4)
@@ -5198,7 +5198,7 @@ class FCZeroAxes(QtWidgets.QFrame):
         self.setLineWidth(1)
 
         # Zero the axes
-        grbl_zero_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
+        grbl_zero_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
         grbl_zero_grid.setContentsMargins(2, 4, 2, 4)
         # grbl_zero_grid.setRowStretch(4, 1)
         self.setLayout(grbl_zero_grid)
@@ -5412,14 +5412,14 @@ class FlatCAMActivityView(QtWidgets.QWidget):
         self.text.setText(msg)
 
 
-class FlatCAMInfoBar(QtWidgets.QWidget):
+class AppInfoBar(QtWidgets.QWidget):
     """
     This class create a place to display the App messages in the Status Bar
     """
     clicked = QtCore.pyqtSignal(bool)
 
     def __init__(self, parent=None, app=None):
-        super(FlatCAMInfoBar, self).__init__(parent=parent)
+        super(AppInfoBar, self).__init__(parent=parent)
 
         self.app = app
 
@@ -5481,15 +5481,58 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
                 else:
                     self.icon.setPixmap(self.gray_pmap)
             except Exception as e:
-                self.app.log.error("FlatCAMInfoBar.set_status() set Icon --> %s" % str(e))
+                self.app.log.error("AppInfoBar.set_status() set Icon --> %s" % str(e))
 
         try:
             self.set_text_(text)
         except Exception as e:
-            self.app.log.error("FlatCAMInfoBar.set_status() set Text --> %s" % str(e))
+            self.app.log.error("AppInfoBar.set_status() set Text --> %s" % str(e))
 
 
-class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
+class CoordsToolbar(QtWidgets.QToolBar):
+    """
+        This class create a place to display the coordinates
+        """
+    clicked = QtCore.pyqtSignal(bool)
+
+    def __init__(self, title: str, parent=None, app=None):
+        super(CoordsToolbar, self).__init__(title, parent=parent)
+
+        self.app = app
+
+        # for the usage of this label as a clickable label, to know that current state
+        self.clicked_state = False
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.clicked_state = not self.clicked_state
+            self.clicked.emit(self.clicked_state)
+
+    def addWidget(self, widget: QtWidgets.QWidget) -> QtGui.QAction:
+        try:
+            widget.clicked.connect(lambda x: self.clicked.emit(x))
+        except AttributeError:
+            pass
+        return super().addWidget(widget)
+
+    def set_text(self, text):
+        self.setWindowTitle(text)
+        self.setToolTip(text)
+
+    def set_font(self, bold=None, size=None):
+        f = QtGui.QFont()
+        if bold:
+            f.setBold(bold)
+        if size:
+            f.setPointSize(size)
+        self.setFont(f)
+
+    def set_color(self, color):
+        if color:
+            self.setStyleSheet('QtWidgets.QToolBar {color: %s}' % str(color))
+
+
+class AppSystemTray(QtWidgets.QSystemTrayIcon):
     """
     This class create the Sys Tray icon for the app
     """
@@ -5572,7 +5615,7 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
         exitAction.triggered.connect(self.app.final_save)
 
 
-class FCGridLayout(QtWidgets.QGridLayout):
+class GLay(QtWidgets.QGridLayout):
 
     def __init__(self, *args, v_spacing=None, h_spacing=None, c_stretch=None, margins=None, parent=None):
         """
@@ -5614,7 +5657,7 @@ class FCGridLayout(QtWidgets.QGridLayout):
     def set_common_column_size(grid_layout_list, column):
         """
 
-        :param grid_layout_list:    list of FCGridLayout
+        :param grid_layout_list:    list of GLay
         :type grid_layout_list      list
         :param column:              the column for which to make the size the same in all grid_grid_layout_list; int
 

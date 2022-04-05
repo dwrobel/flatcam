@@ -1,7 +1,7 @@
 from PyQt6 import QtWidgets
 
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry, FCLabel, \
-    FCGridLayout, FCFrame
+    GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -33,7 +33,7 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
         par_frame = FCFrame()
         self.layout.addWidget(par_frame)
 
-        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
         par_frame.setLayout(param_grid)
         
         param_grid.addWidget(self.param_label, 0, 0, 1, 2)
@@ -116,7 +116,7 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
         tc_frame = FCFrame()
         self.layout.addWidget(tc_frame)
 
-        tc_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tc_grid = GLay(v_spacing=5, h_spacing=3)
         tc_frame.setLayout(tc_grid)
 
         # Toolchange X-Y entry
@@ -146,6 +146,6 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
         tc_grid.addWidget(toolchangez_lbl, 2, 0)
         tc_grid.addWidget(self.toolchangez_entry, 2, 1)
 
-        FCGridLayout.set_common_column_size([param_grid, tc_grid], 0)
+        GLay.set_common_column_size([param_grid, tc_grid], 0)
 
         self.layout.addStretch()

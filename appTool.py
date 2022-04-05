@@ -6,14 +6,34 @@
 # MIT Licence                                              #
 # ########################################################## ##
 
-from PyQt6 import QtCore, QtWidgets, QtGui
-
-from shapely.geometry import Polygon, LineString, box, MultiPolygon, MultiPoint, MultiLineString, LinearRing, Point
+from shapely.geometry import Polygon, LineString, box, MultiPolygon, MultiPoint, MultiLineString, LinearRing, Point, \
+    shape, base
 from shapely.strtree import STRtree
+from shapely.ops import unary_union, nearest_points, linemerge, snap
+from shapely.affinity import translate, scale, skew, rotate
+
+from appGUI.GUIElements import *
+
+from copy import copy, deepcopy
+import math
+
+import numpy as np
+from numpy import Inf
+
+import simplejson as json
+import os
+import sys
+import re
+import time
+import platform
+from collections.abc import Iterable
+import traceback
+from datetime import datetime
 
 import gettext
 import appTranslation as fcTranslate
 import builtins
+import logging
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
