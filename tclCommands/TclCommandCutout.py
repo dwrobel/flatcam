@@ -56,7 +56,8 @@ class TclCommandCutout(TclCommand):
             ('dia', 'Tool diameter.'),
             ('margin', 'Margin over bounds.'),
             ('gapsize', 'Size of gap.'),
-            ('gaps', "Type of gaps. Can be (case-insensitive): 'None' = no-tabs, 'TB' = top-bottom, 'LR' = left-right and '4' = one each side."),
+            ('gaps', "Type of gaps. Can be (case-insensitive): 'None' = no-tabs, 'TB' = top-bottom, 'LR' = left-right, "
+                     "'2TB' = 2-top-bottom, '2LR' = 2-left-right, '4' = one each side, and '8' = two each side."),
             ('outname', 'Name of the object to create.')
         ]),
         'examples': ['cutout cut_object -dia 1.2 -margin 0.1 -gapsize 1 -gaps "tb" -outname cutout_geo -type rect']
