@@ -29,7 +29,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
 
     # List of all command aliases, to be able use old
     # names for backward compatibility (add_poly, add_polygon)
-    aliases = ['geocutout', 'geoc']
+    aliases = ['geoc']
 
     description = '%s %s' % ("--", "Creates board cutout from an object (Gerber or Geometry) of any shape.")
 
@@ -140,7 +140,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
             name = args['name']
         else:
             msg = "[WARNING] %s" % _("The name of the object for which cutout is done is missing. Add it and retry.")
-            self.app.inform.emit(msg)
+            self.app.log.warning(msg)
             return "fail"
 
         if 'margin' in args:
@@ -177,13 +177,13 @@ class TclCommandGeoCutout(TclCommandSignaled):
             return "fail"
 
         if 0 in {dia}:
-            self.app.inform.emit(
+            self.app.log.warning(
                 "[WARNING] %s" % _("Tool Diameter is zero value. Change it to a positive real number."))
             return "fail"
 
-        if gaps not in ['None', 'LR', 'TB', '2LR', '2TB', '4', '8']:
-            self.app.inform.emit('[WARNING] %s' %
-                                 _("Gaps value can be only one of: 'None', 'LR', 'TB', '2LR', '2TB', 4 or 8.\n"
+        if str(gaps).lower() not in ['none', 'lr', 'tb', '2lr', '2tb', '4', '8']:
+            self.app.log.warning('[WARNING] %s' %
+                                 _("Gaps value can be only one of: 'none', 'lr', 'tb', '2lr', '2tb', 4 or 8.\n"
                                    "Fill in a correct value and retry."))
             return "fail"
 
@@ -215,7 +215,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
                 self.app.log.error("TclCommandGeoCutout.execute() --> %s" % str(exc))
                 return 'fail'
         else:
-            self.app.inform.emit("[ERROR] %s" % _("Cancelled. Object type is not supported."))
+            self.app.log.error("[ERROR] %s" % _("Cancelled. Object type is not supported."))
             return "fail"
 
         def geo_init(geo_obj, app_obj):
@@ -292,4 +292,4 @@ class TclCommandGeoCutout(TclCommandSignaled):
             self.app.log.error(msg)
             return "fail"
         else:
-            self.app.inform.emit("[success] %s" % _("Any-form Cutout operation finished."))
+            self.app.log.info("[success] %s" % _("Any-form Cutout operation finished."))

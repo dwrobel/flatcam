@@ -1,31 +1,32 @@
-from matplotlib.colors import LinearSegmentedColormap
+# from matplotlib.colors import LinearSegmentedColormap
 from tclCommands.TclCommand import TclCommand
 
 import collections
 import logging
 from copy import deepcopy
+import gettext
 
-from shapely.ops import unary_union
-from shapely.geometry import LineString
-from shapely.geometry import box
+from shapely.geometry import LineString, box
 from shapely.ops import linemerge
+from camlib import flatten_shapely_geometry
 
 log = logging.getLogger('base')
 
 
 class TclCommandCutout(TclCommand):
     """
-    Tcl shell command to create a board cutout geometry. Rectangular shape only.
+    Tcl shell command to create a board cutout geometry.
 
     example:
+        cutout cut_object -dia 1.2 -margin 0.1 -gapsize 1 -gaps "tb" -outname cutout_geo -type rect
 
     """
 
     # List of all command aliases, to be able use old
     # names for backward compatibility (add_poly, add_polygon)
-    aliases = ['cutout']
+    aliases = ['cutout', 'geocutout']
 
-    description = '%s %s' % ("--", "Creates board cutout from an object (Gerber or Geometry) with a rectangular shape.")
+    description = '%s %s' % ("--", "Creates board cutout from an object (Gerber or Geometry).")
 
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
@@ -35,28 +36,30 @@ class TclCommandCutout(TclCommand):
     # Dictionary of types from Tcl command, needs to be ordered,
     # this  is  for options  like -optionname value
     option_types = collections.OrderedDict([
+        ('type', str),
         ('dia', float),
         ('margin', float),
         ('gapsize', float),
         ('gaps', str),
         ('outname', str)
-    ])
+     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
     required = ['name']
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': 'Creates board cutout from an object (Gerber or Geometry) with a rectangular shape.',
+        'main': 'Creates board cutout from an object (Gerber or Geometry).',
         'args': collections.OrderedDict([
             ('name', 'Name of the object.'),
+            ('type', "Type of cutout. Can be: 'rect' or 'any'. default: any"),
             ('dia', 'Tool diameter.'),
             ('margin', 'Margin over bounds.'),
             ('gapsize', 'Size of gap.'),
-            ('gaps', "Type of gaps. Can be: 'None' = no-tabs, 'TB' = top-bottom, 'LR' = left-right and '4' = one each side."),
+            ('gaps', "Type of gaps. Can be (case-insensitive): 'None' = no-tabs, 'TB' = top-bottom, 'LR' = left-right and '4' = one each side."),
             ('outname', 'Name of the object to create.')
         ]),
-        'examples': ['cutout cut_object -dia 1.2 -margin 0.1 -gapsize 1 -gaps "tb" -outname cutout_geo']
+        'examples': ['cutout cut_object -dia 1.2 -margin 0.1 -gapsize 1 -gaps "tb" -outname cutout_geo -type rect']
     }
 
     def execute(self, args, unnamed_args):
@@ -70,7 +73,7 @@ class TclCommandCutout(TclCommand):
         if 'name' in args:
             name = args['name']
         else:
-            self.app.inform.emit(
+            self.app.log.warning(
                 "[WARNING] The name of the object for which cutout is done is missing. Add it and retry.")
             return "fail"
 
@@ -85,9 +88,9 @@ class TclCommandCutout(TclCommand):
             dia_par = float(self.app.options["tools_cutout_tooldia"])
 
         if 'gaps' in args:
-            if args['gaps'] not in ["None", "TB", "LR", "2TB", "2LR", "4", 4, "8", 8]:
+            if str(args['gaps']).lower() not in ["none", "tb", "lr", "2tb", "2lr", "4", "8"]:
                 self.raise_tcl_error(
-                    "Incorrect -gaps values. Can be only a string from: 'None', 'TB', 'LR', '2TB', '2LR', '4', and '8'.")
+                    "Incorrect -gaps values. Can be only a string from: 'none', 'tb', 'lr', '2tb', '2lr', '4', and '8'.")
                 return "fail"
             gaps_par = str(args['gaps'])
         else:
@@ -103,8 +106,17 @@ class TclCommandCutout(TclCommand):
         else:
             outname = name + "_cutout"
 
+        if 'type' in args:
+            if args['type'] not in ['rect', 'any']:
+                self.raise_tcl_error(_("Incorrect -type value. Can only an be: 'rect', 'any'. default: any"))
+                return 'fail'
+            type_par = args['type']
+        else:
+            self.app.log.info(_("No type value specified. Using default: any."))
+            type_par = 'any'
+
         try:
-            obj = self.app.collection.get_by_name(str(name))
+            cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
             self.app.log.error("TclCommandCutout.execute(). Missing object: --> %s" % str(e))
             self.app.log.debug("Could not retrieve object: %s" % name)
@@ -116,21 +128,28 @@ class TclCommandCutout(TclCommand):
 
             gapsize = gapsize_par + dia_par
 
-            xmin, ymin, xmax, ymax = obj.bounds()
-            geo = box(xmin, ymin, xmax, ymax)
+            if type_par == 'rect':
+                xmin, ymin, xmax, ymax = cutout_obj.bounds()
+                cutout_geom = flatten_shapely_geometry(box(xmin, ymin, xmax, ymax))
+            else:
+                cutout_geom = flatten_shapely_geometry(cutout_obj.solid_geometry)
 
-            if obj.kind == 'gerber':
-                if margin_par >= 0:
-                    work_margin = margin_par + abs(dia_par / 2)
-                else:
-                    work_margin = margin_par - abs(dia_par / 2)
-                geo = geo.buffer(work_margin)
+            for geom_struct in cutout_geom:
+                if cutout_obj.kind == 'gerber':
+                    if margin_par >= 0:
+                        geom_struct = (geom_struct.buffer(margin_par + abs(dia_par / 2))).exterior
+                    else:
+                        geom_struct_buff = geom_struct.buffer(-margin_par + abs(dia_par / 2))
+                        geom_struct = geom_struct_buff.interiors
 
-            solid_geo = self.app.cutout_tool.rect_cutout_handler(geo, dia_par, gaps_par, gapsize, margin_par, xmin, ymin, xmax, ymax)
+            if type_par == 'rect':
+                solid_geo = self.app.cutout_tool.rect_cutout_handler(geom_struct, dia_par, gaps_par, gapsize, margin_par, xmin, ymin, xmax, ymax)
+            else:
+                solid_geo, r_geo = self.app.cutout_tool.any_cutout_handler(geom_struct, dia_par, gaps_par, gapsize, margin_par)
 
             if not solid_geo:
                 self.app.log.debug("TclCommandCutout.geo_init_me() -> Empty solid geometry.")
-                app_obj.inform.emit('[ERROR] %s' % _("Failed."))
+                self.app.log.error('[ERROR] %s' % _("Failed."))
                 return "fail"
 
             try:
@@ -164,7 +183,7 @@ class TclCommandCutout(TclCommand):
             if ret == 'fail':
                 self.app.log.error("Could not create a cutout Geometry object." )
                 return "fail"
-            self.app.inform.emit("[success] Rectangular-form Cutout operation finished.")
+            self.app.log.info("[success] Cutout operation finished.")
         except Exception as e:
             self.app.log.error("Cutout operation failed: %s" % str(e))
             return "fail"
