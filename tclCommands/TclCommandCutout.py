@@ -1,16 +1,13 @@
+
 # from matplotlib.colors import LinearSegmentedColormap
 from tclCommands.TclCommand import TclCommand
 
 import collections
-import logging
 from copy import deepcopy
-import gettext
 
-from shapely.geometry import LineString, box
+from shapely.geometry import box
 from shapely.ops import linemerge
 from camlib import flatten_shapely_geometry
-
-log = logging.getLogger('base')
 
 
 class TclCommandCutout(TclCommand):
@@ -22,11 +19,11 @@ class TclCommandCutout(TclCommand):
 
     """
 
-    # List of all command aliases, to be able use old
+    # List of all command aliases, to be able to use old
     # names for backward compatibility (add_poly, add_polygon)
     aliases = ['cutout', 'geocutout']
 
-    description = '%s %s' % ("--", "Creates board cutout from an object (Gerber or Geometry).")
+    description = '%s %s' % ("--", "Creates board cutout from an outline object (Gerber or Geometry).")
 
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
@@ -90,8 +87,9 @@ class TclCommandCutout(TclCommand):
 
         if 'gaps' in args:
             if str(args['gaps']).lower() not in ["none", "tb", "lr", "2tb", "2lr", "4", "8"]:
-                self.raise_tcl_error(
-                    "Incorrect -gaps values. Can be only a string from: 'none', 'tb', 'lr', '2tb', '2lr', '4', and '8'.")
+                error_msg = "Incorrect -gaps values. " \
+                            "Can be only a string from: 'none', 'tb', 'lr', '2tb', '2lr', '4', and '8'."
+                self.raise_tcl_error(error_msg)
                 return "fail"
             gaps_par = str(args['gaps'])
         else:
@@ -109,11 +107,11 @@ class TclCommandCutout(TclCommand):
 
         if 'type' in args:
             if args['type'] not in ['rect', 'any']:
-                self.raise_tcl_error(_("Incorrect -type value. Can only an be: 'rect', 'any'. default: any"))
+                self.raise_tcl_error("Incorrect -type value. Can only an be: 'rect', 'any'. default: any")
                 return 'fail'
             type_par = args['type']
         else:
-            self.app.log.info(_("No type value specified. Using default: any."))
+            self.app.log.info("No type value specified. Using default: any.")
             type_par = 'any'
 
         try:
@@ -129,8 +127,8 @@ class TclCommandCutout(TclCommand):
 
             gapsize = gapsize_par + dia_par
 
+            xmin, ymin, xmax, ymax = cutout_obj.bounds()
             if type_par == 'rect':
-                xmin, ymin, xmax, ymax = cutout_obj.bounds()
                 cutout_geom = flatten_shapely_geometry(box(xmin, ymin, xmax, ymax))
             else:
                 cutout_geom = flatten_shapely_geometry(cutout_obj.solid_geometry)
@@ -143,14 +141,16 @@ class TclCommandCutout(TclCommand):
                         geom_struct_buff = geom_struct.buffer(-margin_par + abs(dia_par / 2))
                         geom_struct = geom_struct_buff.interiors
 
-            if type_par == 'rect':
-                solid_geo = self.app.cutout_tool.rect_cutout_handler(geom_struct, dia_par, gaps_par, gapsize, margin_par, xmin, ymin, xmax, ymax)
-            else:
-                solid_geo, r_geo = self.app.cutout_tool.any_cutout_handler(geom_struct, dia_par, gaps_par, gapsize, margin_par)
+                if type_par == 'rect':
+                    solid_geo = self.app.cutout_tool.rect_cutout_handler(
+                        geom_struct, dia_par, gaps_par, gapsize, margin_par, xmin, ymin, xmax, ymax)
+                else:
+                    solid_geo, r_geo = self.app.cutout_tool.any_cutout_handler(
+                        geom_struct, dia_par, gaps_par, gapsize, margin_par)
 
             if not solid_geo:
                 self.app.log.debug("TclCommandCutout.geo_init_me() -> Empty solid geometry.")
-                self.app.log.error('[ERROR] %s' % _("Failed."))
+                self.app.log.error('[ERROR] %s' % "Failed.")
                 return "fail"
 
             try:
@@ -182,7 +182,7 @@ class TclCommandCutout(TclCommand):
         try:
             ret = self.app.app_obj.new_object("geometry", outname, geo_init_me, plot=False)
             if ret == 'fail':
-                self.app.log.error("Could not create a cutout Geometry object." )
+                self.app.log.error("Could not create a cutout Geometry object.")
                 return "fail"
             self.app.log.info("[success] Cutout operation finished.")
         except Exception as e:

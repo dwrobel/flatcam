@@ -3563,6 +3563,16 @@ class App(QtCore.QObject):
                         'description': '',
                         'email': ''
                     },
+                    {
+                        'name': "Maftei Albert-Alexandru",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Emily Ellis",
+                        'description': '',
+                        'email': ''
+                    },
                 ]
 
                 self.prog_grid_lay = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 0, 1])
@@ -8350,10 +8360,14 @@ class App(QtCore.QObject):
         :return:            None
         """
         self.log.debug("Plot_all()")
+        obj_collection = self.collection.get_list()
+        if not obj_collection:
+            return
+
         if muted is not True:
             self.inform[str, bool].emit('%s...' % _("Redrawing all objects"), False)
 
-        for plot_obj in self.collection.get_list():
+        for plot_obj in obj_collection:
             if plot_obj.obj_options['plot'] is False:
                 continue
             def worker_task(obj):
