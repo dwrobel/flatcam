@@ -7,6 +7,18 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+7.04.2022
+
+- refactoring code in Distance Plugin and making sure that the measurements are done correctly - work in progress
+
+6.04.2022
+
+- some fixes to the Tcl commands contribution from Ali Khalil
+
+5.04.2022
+
+- fixed Distance plugin grid snap restore
+
 3.04.2022
 
 - in Cutout Plugin exposed the any_cutout_handler() method and made sure that the `gaps` parameter case does not matter

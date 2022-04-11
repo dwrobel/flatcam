@@ -29,7 +29,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
 
     # List of all command aliases, to be able use old
     # names for backward compatibility (add_poly, add_polygon)
-    aliases = ['geocutout', 'geoc']
+    aliases = ['geoc']
 
     description = '%s %s' % ("--", "Creates board cutout from an object (Gerber or Geometry) of any shape.")
 
@@ -59,8 +59,8 @@ class TclCommandGeoCutout(TclCommandSignaled):
             ('dia', 'Tool diameter.'),
             ('margin', 'Margin over bounds.'),
             ('gapsize', 'size of gap.'),
-            ('gaps', "type of gaps. Can be: 'tb' = top-bottom, 'lr' = left-right, '2tb' = 2top-2bottom, "
-                     "'2lr' = 2left-2right, '4' = 4 cuts, '8' = 8 cuts"),
+            ('gaps', "type of gaps. Can be: 'None' = no-gaps, 'TB' = top-bottom, 'LR' = left-right, '2TB' = 2top-2bottom, "
+                     "'2LR' = 2left-2right, '4' = 4 cuts, '8' = 8 cuts"),
             ('outname', 'Name of the resulting Geometry object.'),
         ]),
         'examples': ["      #isolate margin for example from Fritzing arduino shield or any svg etc\n" +
@@ -140,7 +140,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
             name = args['name']
         else:
             msg = "[WARNING] %s" % _("The name of the object for which cutout is done is missing. Add it and retry.")
-            self.app.inform.emit(msg)
+            self.app.log.warning(msg)
             return "fail"
 
         if 'margin' in args:
@@ -177,13 +177,14 @@ class TclCommandGeoCutout(TclCommandSignaled):
             return "fail"
 
         if 0 in {dia}:
-            self.app.inform.emit(
+            self.app.log.warning(
                 "[WARNING] %s" % _("Tool Diameter is zero value. Change it to a positive real number."))
             return "fail"
 
-        if gaps not in ['lr', 'tb', '2lr', '2tb', '4', '8', 4, 8]:
-            self.app.inform.emit(
-                "[WARNING] %s" % _("Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8."))
+        if str(gaps).lower() not in ['none', 'lr', 'tb', '2lr', '2tb', '4', '8']:
+            self.app.log.warning('[WARNING] %s' %
+                                 _("Gaps value can be only one of: 'none', 'lr', 'tb', '2lr', '2tb', 4 or 8.\n"
+                                   "Fill in a correct value and retry."))
             return "fail"
 
         # Get min and max data for each object as we just cut rectangles across X or Y
@@ -214,14 +215,14 @@ class TclCommandGeoCutout(TclCommandSignaled):
                 self.app.log.error("TclCommandGeoCutout.execute() --> %s" % str(exc))
                 return 'fail'
         else:
-            self.app.inform.emit("[ERROR] %s" % _("Cancelled. Object type is not supported."))
+            self.app.log.error("[ERROR] %s" % _("Cancelled. Object type is not supported."))
             return "fail"
 
         def geo_init(geo_obj, app_obj):
             geo_obj.multigeo = True
             geo = geo_to_cutout
 
-            if gaps_u == 8 or gaps_u == '2lr':
+            if gaps_u == 8 or gaps_u == '2LR':
                 geo = substract_rectangle_geo(geo,
                                               xmin - gapsize,               # botleft_x
                                               py - gapsize + lenghty / 4,   # botleft_y
@@ -233,7 +234,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
                                               xmax + gapsize,
                                               py + gapsize - lenghty / 4)
 
-            if gaps_u == 8 or gaps_u == '2tb':
+            if gaps_u == 8 or gaps_u == '2TB':
                 geo = substract_rectangle_geo(geo,
                                               px - gapsize + lenghtx / 4,
                                               ymin - gapsize,
@@ -245,14 +246,14 @@ class TclCommandGeoCutout(TclCommandSignaled):
                                               px + gapsize - lenghtx / 4,
                                               ymax + gapsize)
 
-            if gaps_u == 4 or gaps_u == 'lr':
+            if gaps_u == 4 or gaps_u == 'LR':
                 geo = substract_rectangle_geo(geo,
                                               xmin - gapsize,
                                               py - gapsize,
                                               xmax + gapsize,
                                               py + gapsize)
 
-            if gaps_u == 4 or gaps_u == 'tb':
+            if gaps_u == 4 or gaps_u == 'TB':
                 geo = substract_rectangle_geo(geo,
                                               px - gapsize,
                                               ymin - gapsize,
@@ -291,4 +292,4 @@ class TclCommandGeoCutout(TclCommandSignaled):
             self.app.log.error(msg)
             return "fail"
         else:
-            self.app.inform.emit("[success] %s" % _("Any-form Cutout operation finished."))
+            self.app.log.info("[success] %s" % _("Any-form Cutout operation finished."))

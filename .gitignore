@@ -3,3 +3,8 @@
 tests/tmp/
 build/
 /venv/
+
+# General for macOS
+.DS_Store
+.AppleDouble
+.LSOverride

@@ -37,9 +37,6 @@ class Distance(AppTool):
         # store here the first click and second click of the measurement process
         self.points = []
 
-        self.rel_point1 = None
-        self.rel_point2 = None
-
         self.active = False
         self.clicked_meas = None
         self.meas_line = None
@@ -87,8 +84,6 @@ class Distance(AppTool):
 
         if self.app.plugin_tab_locked is True:
             return
-
-        self.init_plugin()
 
         if toggle:
             # if the splitter is hidden, display it
@@ -149,11 +144,13 @@ class Distance(AppTool):
 
     def init_plugin(self):
         self.points[:] = []
-        self.rel_point1 = None
-        self.rel_point2 = None
         self.tool_done = False
         self.last_shape = None
         self.total_distance = 0.0
+
+        self.clicked_meas = 0
+        self.original_call_source = copy(self.app.call_source)
+        self.units = self.app.app_units.lower()
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Ctrl+M', **kwargs)
@@ -194,35 +191,25 @@ class Distance(AppTool):
         self.units = self.app.app_units.lower()
 
         self.app.command_active = "Distance"
+        self.tool_done = False
+        self.grid_status_memory = True if self.app.ui.grid_snap_btn.isChecked() else False
 
         self.ui.snap_center_cb.set_value(self.app.options['tools_dist_snap_center'])
         self.ui.big_cursor_cb.set_value(self.app.options['tools_dist_big_cursor'])
 
-        # # snap center works only for Gerber and Execellon Editor's
-        # if self.original_call_source == 'exc_editor' or self.original_call_source == 'grb_editor':
-        #     self.ui.snap_center_cb.show()
-        #     snap_center = self.app.options['tools_dist_snap_center']
-        #     self.on_snap_toggled(snap_center)
-        #
-        #     self.ui.snap_center_cb.toggled.connect(self.on_snap_toggled)
-        # else:
-        #     self.ui.snap_center_cb.hide()
-        #     try:
-        #         self.ui.snap_center_cb.toggled.disconnect(self.on_snap_toggled)
-        #     except (TypeError, AttributeError):
-        #         pass
-        self.ui.snap_center_cb.show()
         snap_center = self.app.options['tools_dist_snap_center']
         self.on_snap_toggled(snap_center)
 
+        try:
+            self.ui.snap_center_cb.toggled.disconnect()
+        except (AttributeError, TypeError):
+            pass
         self.ui.snap_center_cb.toggled.connect(self.on_snap_toggled)
 
         # this is a hack; seems that triggering the grid will make the visuals better
         # trigger it twice to return to the original state
         self.app.ui.grid_snap_btn.trigger()
         self.app.ui.grid_snap_btn.trigger()
-
-        self.grid_status_memory = True if self.app.ui.grid_snap_btn.isChecked() else False
 
         # initial view of the layout
         self.initial_view()
@@ -262,10 +249,7 @@ class Distance(AppTool):
         self.ui.measure_btn.setDisabled(True)
         self.ui.measure_btn.setText('%s...' % _("Working"))
 
-        self.clicked_meas = 0
-        self.original_call_source = copy(self.app.call_source)
-        self.units = self.app.app_units.lower()
-
+        self.init_plugin()
         self.ui_connect()
         self.set_tool_ui()
 
@@ -379,61 +363,8 @@ class Distance(AppTool):
             self.app.ui.grid_snap_btn.trigger()
 
         if self.tool_done is False:
+            self.tool_done = True
             self.app.inform.emit('%s' % _("Done."))
-
-    def on_mouse_click_release(self, event):
-        # mouse click releases will be accepted only if the left button is clicked
-        # this is necessary because right mouse click or middle mouse click
-        # are used for panning on the canvas
-        # log.debug("Distance Tool --> mouse click release")
-
-        snap_enabled = self.ui.snap_center_cb.get_value()
-        multipoint = self.ui.multipoint_cb.get_value()
-
-        if self.app.use_3d_engine:
-            event_pos = event.pos
-            right_button = 2
-            event_is_dragging = self.mouse_is_dragging
-        else:
-            event_pos = (event.xdata, event.ydata)
-            right_button = 3
-            event_is_dragging = self.app.plotcanvas.is_dragging
-
-        if event.button == 1:
-            pos_canvas = self.canvas.translate_coords(event_pos)
-
-            if snap_enabled is False:
-                # if GRID is active we need to get the snapped positions
-                if self.app.grid_status():
-                    pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
-                else:
-                    pos = pos_canvas[0], pos_canvas[1]
-            else:
-                pos = (pos_canvas[0], pos_canvas[1])
-                pos = self.snap_handler(pos)
-
-            self.points.append(pos)
-
-            # Reset here the relative coordinates so there is a new reference on the click position
-            if self.rel_point1 is None:
-                self.app.ui.rel_position_label.setText("<b>Dx</b>: %.*f&nbsp;&nbsp;  <b>Dy</b>: "
-                                                       "%.*f&nbsp;&nbsp;&nbsp;&nbsp;" %
-                                                       (self.decimals, 0.0, self.decimals, 0.0))
-                self.rel_point1 = pos
-            else:
-                self.rel_point2 = copy(self.rel_point1)
-                self.rel_point1 = pos
-
-            self.calculate_distance(pos=pos)
-        elif event.button == right_button and event_is_dragging is False:
-            if multipoint is False:
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
-            else:
-                # update end point
-                end_val = self.update_end_point(self.points[-1])
-                self.display_end(end_val)
-                self.app.inform.emit("[success] %s" % _("Done."))
-            self.on_exit()
 
     def calculate_distance(self, pos):
         multipoint = self.ui.multipoint_cb.get_value()
@@ -451,15 +382,6 @@ class Distance(AppTool):
                 dy = self.points[1][1] - self.points[0][1]
                 d = math.sqrt(dx ** 2 + dy ** 2)
                 self.ui.total_distance_entry.set_value('%.*f' % (self.decimals, abs(d)))
-
-                # self.app.inform.emit("{tx1}: {tx2} D(x) = {d_x} | D(y) = {d_y} | {tx3} = {d_z}".format(
-                #     tx1=_("MEASURING"),
-                #     tx2=_("Result"),
-                #     tx3=_("Distance"),
-                #     d_x='%*f' % (self.decimals, abs(dx)),
-                #     d_y='%*f' % (self.decimals, abs(dy)),
-                #     d_z='%*f' % (self.decimals, abs(d)))
-                # )
 
                 self.app.ui.rel_position_label.setText(
                     "<b>Dx</b>: {}&nbsp;&nbsp;  <b>Dy</b>: {}&nbsp;&nbsp;&nbsp;&nbsp;".format(
@@ -618,6 +540,85 @@ class Distance(AppTool):
             self.app.options['tools_dist_big_cursor'] = False
             self.app.on_cursor_type(val="small", control_cursor=True)
 
+    def update_position_info(self, pos_canvas):
+        big_cursor_state = self.ui.big_cursor_cb.get_value()
+        grid_snap_state = self.app.grid_status()
+
+        if big_cursor_state is False:
+            if grid_snap_state:
+                pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
+                # Update cursor
+                self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
+                                             symbol='++', edge_color=self.app.plotcanvas.cursor_color,
+                                             edge_width=self.app.options["global_cursor_width"],
+                                             size=self.app.options["global_cursor_size"])
+            else:
+                pos = (pos_canvas[0], pos_canvas[1])
+        else:
+            if grid_snap_state:
+                pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
+            else:
+                if self.app.app_cursor.enabled is False:
+                    self.app.app_cursor.enabled = True
+                pos = (pos_canvas[0], pos_canvas[1])
+            # Update cursor
+            self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
+                                         symbol='++', edge_color=self.app.plotcanvas.cursor_color,
+                                         edge_width=self.app.options["global_cursor_width"],
+                                         size=self.app.options["global_cursor_size"])
+
+        return pos
+
+    def on_mouse_click_release(self, event):
+        # mouse click releases will be accepted only if the left button is clicked
+        # this is necessary because right mouse click or middle mouse click
+        # are used for panning on the canvas
+        # log.debug("Distance Tool --> mouse click release")
+
+        snap_enabled = self.ui.snap_center_cb.get_value()
+        multipoint = self.ui.multipoint_cb.get_value()
+
+        if self.app.use_3d_engine:
+            event_pos = event.pos
+            right_button = 2
+            event_is_dragging = self.mouse_is_dragging
+        else:
+            event_pos = (event.xdata, event.ydata)
+            right_button = 3
+            event_is_dragging = self.app.plotcanvas.is_dragging
+
+        if event.button == 1:
+            pos_canvas = self.canvas.translate_coords(event_pos)
+
+            if snap_enabled is False:
+                # if GRID is active we need to get the snapped positions
+                if self.app.grid_status():
+                    pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
+                else:
+                    pos = pos_canvas[0], pos_canvas[1]
+            else:
+                pos = (pos_canvas[0], pos_canvas[1])
+                pos = self.snap_handler(pos)
+
+            self.points.append(pos)
+
+            # Reset here the relative coordinates so there is a new reference on the click position
+            if len(self.points) == 1:
+                self.app.ui.rel_position_label.setText("<b>Dx</b>: %.*f&nbsp;&nbsp;  <b>Dy</b>: "
+                                                       "%.*f&nbsp;&nbsp;&nbsp;&nbsp;" %
+                                                       (self.decimals, 0.0, self.decimals, 0.0))
+
+            self.calculate_distance(pos=pos)
+        elif event.button == right_button and event_is_dragging is False:
+            if multipoint is False:
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
+            else:
+                # update end point
+                end_val = self.update_end_point(self.points[-1])
+                self.display_end(end_val)
+                self.app.inform.emit("[success] %s" % _("Done."))
+            self.on_exit()
+
     def on_mouse_move(self, event):
         multipoint = self.ui.multipoint_cb.get_value()
 
@@ -633,55 +634,31 @@ class Distance(AppTool):
                 y = float(event_pos[1])
             except TypeError:
                 return
-
             pos_canvas = self.app.plotcanvas.translate_coords((x, y))
 
-            big_cursor_state = self.ui.big_cursor_cb.get_value()
-            grid_snap_state = self.app.grid_status()
-            if big_cursor_state is False:
-                if grid_snap_state:
-                    pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
-                    # Update cursor
-                    self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
-                                                 symbol='++', edge_color=self.app.plotcanvas.cursor_color,
-                                                 edge_width=self.app.options["global_cursor_width"],
-                                                 size=self.app.options["global_cursor_size"])
-                else:
-                    pos = (pos_canvas[0], pos_canvas[1])
-            else:
-                if grid_snap_state:
-                    pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
-                else:
-                    if self.app.app_cursor.enabled is False:
-                        self.app.app_cursor.enabled = True
-                    pos = (pos_canvas[0], pos_canvas[1])
-                # Update cursor
-                self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
-                                             symbol='++', edge_color=self.app.plotcanvas.cursor_color,
-                                             edge_width=self.app.options["global_cursor_width"],
-                                             size=self.app.options["global_cursor_size"])
+            # update position info
+            pos = self.update_position_info(pos_canvas)
 
-            self.app.ui.update_location_labels(dx=None, dy=None, x=pos[0], y=pos[1])
-            self.app.plotcanvas.on_update_text_hud('0.0', '0.0', pos[0], pos[1])
-
-            if self.rel_point1 is not None:
-                dx = pos[0] - float(self.rel_point1[0])
-                dy = pos[1] - float(self.rel_point1[1])
-            else:
-                dx = pos[0]
-                dy = pos[1]
-
-            # self.app.ui.rel_position_label.setText(
-            #     "<b>Dx</b>: {}&nbsp;&nbsp;  <b>Dy</b>: {}&nbsp;&nbsp;&nbsp;&nbsp;".format(
-            #         '%.*f' % (self.decimals, dx), '%.*f' % (self.decimals, dy)
-            #     )
-            # )
+            # ------------------------------------------------------------
+            # Update Status Bar location labels
+            # ------------------------------------------------------------
+            dx = pos[0]
+            dy = pos[1]
+            if len(self.points) == 1:
+                dx = pos[0] - float(self.points[0][0])
+                dy = pos[1] - float(self.points[0][1])
+            elif len(self.points) == 2:
+                dx = float(self.points[1][0]) - float(self.points[0][0])
+                dy = float(self.points[1][1]) - float(self.points[0][1])
             self.app.ui.update_location_labels(dx=dx, dy=dy, x=pos[0], y=pos[1])
+
+            # self.app.ui.update_location_labels(dx=None, dy=None, x=pos[0], y=pos[1])
+            self.app.plotcanvas.on_update_text_hud(dx, dy, pos[0], pos[1])
 
         except Exception as e:
             self.app.log.error("Distance.on_mouse_move() position --> %s" % str(e))
-            self.app.ui.position_label.setText("")
-            self.app.ui.rel_position_label.setText("")
+            self.app.ui.update_location_labels(dx=None, dy=None, x=None, y=None)
+            self.app.plotcanvas.on_update_text_hud('0.0', '0.0', '0.0', '0.0')
             return
 
         try:
