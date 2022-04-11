@@ -35,28 +35,25 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         par_frame.setLayout(grid0)
 
         # Theme selection
-        self.theme_label = FCLabel('%s:' % _('Theme'))
-        self.theme_label.setToolTip(
+        self.appearance_label = FCLabel('%s:' % _('Theme'))
+        self.appearance_label.setToolTip(
             _("Select a theme for the application.\n"
               "It will theme the plot area.")
         )
 
-        self.theme_radio = RadioSet([
-            {"label": _("Light"), "value": "white"},
-            {"label": _("Dark"), "value": "black"}
+        self.appearance_radio = RadioSet([
+            {"label": _("OS Dependent"), "value": "auto"},
+            {"label": _("Light"), "value": "light"},
+            {"label": _("Dark"), "value": "dark"}
         ], compact=True)
-
-        grid0.addWidget(self.theme_label, 0, 0)
-        grid0.addWidget(self.theme_radio, 0, 1)
-
-        # Enable Gray Icons
-        self.gray_icons_cb = FCCheckBox('%s' % _('Use Gray Icons'))
-        self.gray_icons_cb.setToolTip(
-            _("Check this box to use a set of icons with\n"
-              "a lighter (gray) color. To be used when a\n"
-              "full dark theme is applied.")
+        self.appearance_radio.setToolTip(
+            _("OS Dependent: Matches mode from OS\n"
+              "Light: Light mode\n"
+              "Dark: Dark mode")
         )
-        grid0.addWidget(self.gray_icons_cb, 2, 0, 1, 3)
+
+        grid0.addWidget(self.appearance_label, 0, 0)
+        grid0.addWidget(self.appearance_radio, 0, 1)
 
         # self.theme_button = FCButton(_("Apply Theme"))
         # self.theme_button.setToolTip(

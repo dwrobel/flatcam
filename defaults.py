@@ -112,8 +112,7 @@ class AppDefaults:
         "global_tpdf_rmargin": 20.0,
 
         # General GUI Preferences
-        "global_theme": 'white',
-        "global_gray_icons": False,
+        "global_appearance": 'auto',
 
         "global_layout": "compact",
         "global_hover_shape": False,
