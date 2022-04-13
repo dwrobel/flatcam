@@ -397,6 +397,13 @@ class Distance(AppTool):
             if not self.points:
                 self.add_utility_shape(pos)
             else:
+                # update utility geometry
+                # delete last shape and redd it correctly when using the snap and multipoint
+                self.delete_utility_shape(self.last_shape)
+                try:
+                    self.add_utility_shape(start_pos=self.points[-2], end_pos=self.points[-1])
+                except IndexError:
+                    pass
                 self.add_utility_shape(start_pos=self.points[-1], end_pos=pos)
 
             if len(self.points) == 1:
@@ -587,34 +594,34 @@ class Distance(AppTool):
             right_button = 3
             event_is_dragging = self.app.plotcanvas.is_dragging
 
-        if event.button == 1:
-            pos_canvas = self.canvas.translate_coords(event_pos)
-
-            if snap_enabled is False:
-                # if GRID is active we need to get the snapped positions
-                if self.app.grid_status():
-                    pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
-                else:
-                    pos = pos_canvas[0], pos_canvas[1]
+        pos_canvas = self.canvas.translate_coords(event_pos)
+        if snap_enabled is False:
+            # if GRID is active we need to get the snapped positions
+            if self.app.grid_status():
+                pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
             else:
-                pos = (pos_canvas[0], pos_canvas[1])
-                pos = self.snap_handler(pos)
+                pos = pos_canvas[0], pos_canvas[1]
+        else:
+            pos = self.snap_handler(pos=(pos_canvas[0], pos_canvas[1]))
 
-            self.points.append(pos)
-
+        if event.button == 1:
             # Reset here the relative coordinates so there is a new reference on the click position
             if len(self.points) == 1:
                 self.app.ui.rel_position_label.setText("<b>Dx</b>: %.*f&nbsp;&nbsp;  <b>Dy</b>: "
                                                        "%.*f&nbsp;&nbsp;&nbsp;&nbsp;" %
                                                        (self.decimals, 0.0, self.decimals, 0.0))
 
+            self.points.append(pos)
             self.calculate_distance(pos=pos)
         elif event.button == right_button and event_is_dragging is False:
             if multipoint is False:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             else:
                 # update end point
-                end_val = self.update_end_point(self.points[-1])
+                try:
+                    end_val = self.update_end_point(self.points[-1])
+                except IndexError:
+                    end_val = self.update_end_point((0.0, 0.0))
                 self.display_end(end_val)
                 self.app.inform.emit("[success] %s" % _("Done."))
             self.on_exit()
@@ -747,7 +754,6 @@ class Distance(AppTool):
             self.ui.total_distance_entry.set_value('%.*f' % (self.decimals, abs(val)))
 
     def add_utility_shape(self, start_pos, end_pos=None):
-
         # draw the new shape of the utility geometry
         if end_pos is None:
             meas_line = LineString([start_pos, self.points[0]])
