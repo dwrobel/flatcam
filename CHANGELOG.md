@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+14.04.2022
+
+- in Geometry Editor added a new feature. While drawing a 'Path' now the user can project a direction by moving the mouse cursor in a certain direction and after that by typing a number or an arithmetic simple expression, a line segment will be drawn in that direction with the specified length from the last point
+
 13.04.2022
 
 - fixed the display of lines in Distance Plugin when using 'snap to' together with 'multipoint'

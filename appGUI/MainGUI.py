@@ -3463,7 +3463,8 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.app.geo_editor.transform_tool.on_offy_key()
                     return
             # NO MODIFIER
-            elif modifiers == QtCore.Qt.KeyboardModifier.NoModifier:
+            elif modifiers == QtCore.Qt.KeyboardModifier.NoModifier or \
+                    modifiers == QtCore.Qt.KeyboardModifier.KeypadModifier:
                 # toggle display of Notebook area
                 if key == QtCore.Qt.Key.Key_QuoteLeft or key == '`':
                     self.on_toggle_notebook()
@@ -3481,6 +3482,9 @@ class MainGUI(QtWidgets.QMainWindow):
                             # automatically make the selection tool active after completing current action
                             self.app.geo_editor.select_tool('select')
                             return
+                        elif self.app.geo_editor.active_tool.name == 'path':
+                            if self.app.geo_editor.active_tool.interpolate_length != '':
+                                pass
                         else:
                             self.app.geo_editor.active_tool.click(
                                 self.app.geo_editor.snap(self.app.geo_editor.x, self.app.geo_editor.y))
@@ -3523,17 +3527,17 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.app.plotcanvas.zoom(self.app.defaults['global_zoom_ratio'],
                                              [self.app.geo_editor.snap_x, self.app.geo_editor.snap_y])
 
-                # Switch to Project Tab
-                if key == QtCore.Qt.Key.Key_1 or key == '1':
-                    self.on_select_tab('project')
-
-                # Switch to Selected Tab
-                if key == QtCore.Qt.Key.Key_2 or key == '2':
-                    self.on_select_tab('selected')
-
-                # Switch to Tool Tab
-                if key == QtCore.Qt.Key.Key_3 or key == '3':
-                    self.on_select_tab('tool')
+                # # Switch to Project Tab
+                # if key == QtCore.Qt.Key.Key_1 or key == '1':
+                #     self.on_select_tab('project')
+                #
+                # # Switch to Selected Tab
+                # if key == QtCore.Qt.Key.Key_2 or key == '2':
+                #     self.on_select_tab('selected')
+                #
+                # # Switch to Tool Tab
+                # if key == QtCore.Qt.Key.Key_3 or key == '3':
+                #     self.on_select_tab('tool')
 
                 # Grid Snap
                 if key == QtCore.Qt.Key.Key_G or key == 'G':

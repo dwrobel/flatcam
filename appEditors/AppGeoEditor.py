@@ -12,6 +12,7 @@
 # ##########################################################
 
 # import inspect
+import math
 
 from camlib import distance, arc, three_point_circle, Geometry, AppRTreeStorage, flatten_shapely_geometry
 from appGUI.GUIElements import *
@@ -856,7 +857,7 @@ class FCPolygon(FCShapeTool):
 
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
-        self.draw_app.app.inform.emit(_("Click on 1st corner ..."))
+        self.draw_app.app.inform.emit(_("Click on 1st point ..."))
 
     def click(self, point):
         try:
@@ -938,6 +939,8 @@ class FCPath(FCPolygon):
     def __init__(self, draw_app):
         FCPolygon.__init__(self, draw_app)
         self.draw_app = draw_app
+        self.interpolate_length = ''
+        self.name = 'path'
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -959,6 +962,7 @@ class FCPath(FCPolygon):
 
         self.draw_app.in_action = False
         self.complete = True
+        self.interpolate_length = ''
 
         self.draw_app.app.jump_signal.disconnect()
         self.geometry.data['type'] = _('Path')
@@ -984,10 +988,54 @@ class FCPath(FCPolygon):
                 self.draw_app.tool_shape.clear(update=False)
                 geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
                 self.draw_app.draw_utility_geometry(geo=geo)
-                return _("Backtracked one point ...")
+                if geo:
+                    return _("Backtracked one point ...")
+                else:
+                    return _("Click on 1st point ...")
+
+        if key in [str(i) for i in range(10)] + ['.', ',', '+', '-', '/', '*'] or \
+                key in [QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_1, QtCore.Qt.Key.Key_2,
+                        QtCore.Qt.Key.Key_3, QtCore.Qt.Key.Key_4, QtCore.Qt.Key.Key_5, QtCore.Qt.Key.Key_6,
+                        QtCore.Qt.Key.Key_7, QtCore.Qt.Key.Key_8, QtCore.Qt.Key.Key_9, QtCore.Qt.Key.Key_Minus,
+                        QtCore.Qt.Key.Key_Plus, QtCore.Qt.Key.Key_Comma, QtCore.Qt.Key.Key_Period,
+                        QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
+            self.interpolate_length += str(key.name)
+
+        if key == 'Enter' or key == QtCore.Qt.Key.Key_Return:
+            if self.interpolate_length != '':
+                target_length = self.interpolate_length.replace(',', '.')
+                try:
+                    target_length = eval(target_length)
+                except SyntaxError as err:
+                    ret = '%s: %s' % (str(err).capitalize(), self.interpolate_length)
+                    self.interpolate_length = ''
+                    return ret
+
+                first_pt = self.points[-1]
+                last_pt = self.draw_app.app.mouse
+
+                seg_length = math.sqrt((last_pt[0] - first_pt[0])**2 + (last_pt[1] - first_pt[1])**2)
+                try:
+                    new_x = first_pt[0] + (last_pt[0] - first_pt[0]) / seg_length * target_length
+                    new_y = first_pt[1] + (last_pt[1] - first_pt[1]) / seg_length * target_length
+                except ZeroDivisionError as err:
+                    self.points = []
+                    self.clean_up()
+                    return '%s %s' % (_("Failed."), str(err))
+
+                self.points.append((new_x, new_y))
+                self.draw_app.app.on_jump_to(custom_location=(new_x, new_y), fit_center=True)
+                if len(self.points) > 0:
+                    msg = '%s: %s. %s' % (
+                        _("Projected"), str(self.interpolate_length),
+                        _("Click on next Point or click right mouse button to complete ..."))
+                    self.draw_app.app.inform.emit(msg)
+                    self.interpolate_length = ''
+                    # return "Click on next point or hit ENTER to complete ..."
 
     def clean_up(self):
         self.draw_app.selected = []
+        self.interpolate_length = ''
         self.draw_app.plot_all()
 
         try:
@@ -3122,6 +3170,70 @@ class AppGeoEditor(QtCore.QObject):
             else:
                 self.app.log.debug("No active tool to respond to click!")
 
+    def on_canvas_click_release(self, event):
+        if self.app.use_3d_engine:
+            event_pos = event.pos
+            # event_is_dragging = event.is_dragging
+            right_button = 2
+        else:
+            event_pos = (event.xdata, event.ydata)
+            # event_is_dragging = self.app.plotcanvas.is_dragging
+            right_button = 3
+
+        pos_canvas = self.canvas.translate_coords(event_pos)
+
+        if self.app.grid_status():
+            pos = self.snap(pos_canvas[0], pos_canvas[1])
+        else:
+            pos = (pos_canvas[0], pos_canvas[1])
+
+        # if the released mouse button was RMB then test if it was a panning motion or not, if not it was a context
+        # canvas menu
+        try:
+            # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
+            # selection and then select a type of selection ("enclosing" or "touching")
+            if event.button == 1:  # left click
+                if self.app.selection_type is not None:
+                    self.draw_selection_area_handler(self.pos, pos, self.app.selection_type)
+                    self.app.selection_type = None
+                elif isinstance(self.active_tool, FCSelect):
+                    # Dispatch event to active_tool
+                    # msg = self.active_tool.click(self.snap(event.xdata, event.ydata))
+                    self.active_tool.click_release((self.pos[0], self.pos[1]))
+                    # self.app.inform.emit(msg)
+                    self.plot_all()
+            elif event.button == right_button:  # right click
+                if self.app.ui.popMenu.mouse_is_panning is False:
+                    if self.in_action is False:
+                        try:
+                            QtGui.QGuiApplication.restoreOverrideCursor()
+                        except Exception:
+                            pass
+
+                        if self.active_tool.complete is False and not isinstance(self.active_tool, FCSelect):
+                            self.active_tool.complete = True
+                            self.in_action = False
+                            self.delete_utility_geometry()
+                            self.app.inform.emit('[success] %s' % _("Done."))
+                            self.select_tool('select')
+                        else:
+                            self.app.cursor = QtGui.QCursor()
+                            self.app.populate_cmenu_grids()
+                            self.app.ui.popMenu.popup(self.app.cursor.pos())
+                    else:
+                        # if right click on canvas and the active tool need to be finished (like Path or Polygon)
+                        # right mouse click will finish the action
+                        if isinstance(self.active_tool, FCShapeTool):
+                            self.active_tool.click(self.snap(self.x, self.y))
+                            self.active_tool.make()
+                            if self.active_tool.complete:
+                                self.on_shape_complete()
+                                self.app.inform.emit('[success] %s' % _("Done."))
+                                self.select_tool(self.active_tool.name)
+        except Exception as e:
+            self.app.log.error("FLatCAMGeoEditor.on_canvas_click_release() --> Error: %s" % str(e))
+            return
+
     def on_canvas_move(self, event):
         """
         Called on 'mouse_move' event
@@ -3224,70 +3336,6 @@ class AppGeoEditor(QtCore.QObject):
             # Remove any previous utility shape
             self.tool_shape.clear(update=True)
             self.draw_utility_geometry(geo=geo)
-
-    def on_canvas_click_release(self, event):
-        if self.app.use_3d_engine:
-            event_pos = event.pos
-            # event_is_dragging = event.is_dragging
-            right_button = 2
-        else:
-            event_pos = (event.xdata, event.ydata)
-            # event_is_dragging = self.app.plotcanvas.is_dragging
-            right_button = 3
-
-        pos_canvas = self.canvas.translate_coords(event_pos)
-
-        if self.app.grid_status():
-            pos = self.snap(pos_canvas[0], pos_canvas[1])
-        else:
-            pos = (pos_canvas[0], pos_canvas[1])
-
-        # if the released mouse button was RMB then test if it was a panning motion or not, if not it was a context
-        # canvas menu
-        try:
-            # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
-            # selection and then select a type of selection ("enclosing" or "touching")
-            if event.button == 1:  # left click
-                if self.app.selection_type is not None:
-                    self.draw_selection_area_handler(self.pos, pos, self.app.selection_type)
-                    self.app.selection_type = None
-                elif isinstance(self.active_tool, FCSelect):
-                    # Dispatch event to active_tool
-                    # msg = self.active_tool.click(self.snap(event.xdata, event.ydata))
-                    self.active_tool.click_release((self.pos[0], self.pos[1]))
-                    # self.app.inform.emit(msg)
-                    self.plot_all()
-            elif event.button == right_button:  # right click
-                if self.app.ui.popMenu.mouse_is_panning is False:
-                    if self.in_action is False:
-                        try:
-                            QtGui.QGuiApplication.restoreOverrideCursor()
-                        except Exception:
-                            pass
-
-                        if self.active_tool.complete is False and not isinstance(self.active_tool, FCSelect):
-                            self.active_tool.complete = True
-                            self.in_action = False
-                            self.delete_utility_geometry()
-                            self.app.inform.emit('[success] %s' % _("Done."))
-                            self.select_tool('select')
-                        else:
-                            self.app.cursor = QtGui.QCursor()
-                            self.app.populate_cmenu_grids()
-                            self.app.ui.popMenu.popup(self.app.cursor.pos())
-                    else:
-                        # if right click on canvas and the active tool need to be finished (like Path or Polygon)
-                        # right mouse click will finish the action
-                        if isinstance(self.active_tool, FCShapeTool):
-                            self.active_tool.click(self.snap(self.x, self.y))
-                            self.active_tool.make()
-                            if self.active_tool.complete:
-                                self.on_shape_complete()
-                                self.app.inform.emit('[success] %s' % _("Done."))
-                                self.select_tool(self.active_tool.name)
-        except Exception as e:
-            self.app.log.error("FLatCAMGeoEditor.on_canvas_click_release() --> Error: %s" % str(e))
-            return
 
     def draw_selection_area_handler(self, start_pos, end_pos, sel_type):
         """
@@ -3405,6 +3453,8 @@ class AppGeoEditor(QtCore.QObject):
             self.tool_shape.add(
                 shape=geo.geo, color=(self.app.options["global_draw_color"]),
                 update=False, layer=0, tolerance=None)
+        except AttributeError:
+            pass
 
         self.tool_shape.redraw()
 
