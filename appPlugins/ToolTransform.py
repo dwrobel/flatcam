@@ -78,7 +78,7 @@ class ToolTransform(AppTool):
         AppTool.run(self)
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Object Transform"))
+        self.app.ui.notebook.setTabText(2, _("Transformation"))
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+T', **kwargs)
@@ -560,11 +560,11 @@ class ToolTransform(AppTool):
 
 class TransformUI:
     
-    pluginName = _("Object Transform")
+    pluginName = _("Transformation")
     rotateName = _("Rotate")
     skewName = _("Skew/Shear")
     scaleName = _("Scale")
-    flipName = _("Mirror (Flip)")
+    flipName = _("Mirror")
     offsetName = _("Offset")
     bufferName = _("Buffer")
 

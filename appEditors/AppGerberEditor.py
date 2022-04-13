@@ -6767,11 +6767,11 @@ class TransformEditorTool(AppTool):
     Inputs to specify how to paint the selected polygons.
     """
 
-    pluginName = _("Transform Tool")
+    pluginName = _("Transformation")
     rotateName = _("Rotate")
     skewName = _("Skew/Shear")
     scaleName = _("Scale")
-    flipName = _("Mirror (Flip)")
+    flipName = _("Mirror")
     offsetName = _("Offset")
     bufferName = _("Buffer")
 
@@ -7217,7 +7217,7 @@ class TransformEditorTool(AppTool):
         AppTool.run(self)
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Transform Tool"))
+        self.app.ui.notebook.setTabText(2, _("Transformation"))
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+T', **kwargs)

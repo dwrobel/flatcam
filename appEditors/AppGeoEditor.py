@@ -1141,7 +1141,11 @@ class FCExplode(FCShapeTool):
 
             if geo.geom_type == 'MultiLineString':
                 lines = [line for line in geo.geoms]
-
+            elif geo.geom_type == 'MultiPolygon':
+                lines = []
+                for poly in geo.geoms:
+                    lines.append(poly.exterior)
+                    lines += list(poly.interiors)
             elif geo.is_ring:
                 geo = Polygon(geo)
                 ext_coords = list(geo.exterior.coords)
@@ -3466,7 +3470,8 @@ class AppGeoEditor(QtCore.QObject):
             geometry = self.active_tool.geometry
 
         try:
-            for geo in geometry:
+            w_geo = geometry.geoms if isinstance(geometry, (MultiPolygon, MultiLineString)) else geometry
+            for geo in w_geo:
                 plot_elements += self.plot_shape(geometry=geo, color=color, linewidth=linewidth)
         # Non-iterable
         except TypeError:

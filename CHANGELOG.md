@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM Evo beta
 
 - fixed the display of lines in Distance Plugin when using 'snap to' together with 'multipoint'
 - in Geometry Editor - update (some reformatting and adding shape data)
+- in Geometry Editor - fixed the Explode tool to work on the result of adding Text geometry
+- all the Geometry Editor plugins are moved inside another folder and the UI's are moved into their own class
 
 7.04.2022
 

@@ -726,7 +726,7 @@ class MainGUI(QtWidgets.QMainWindow):
         )
         self.geo_transform_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/transform.png'),
-            '%s\t%s' % (_("Transform Tool"), _('Alt+R'))
+            '%s\t%s' % (_("Transformation"), _('Alt+R'))
         )
         self.geo_editor_menu.addSeparator()
         self.geo_cornersnap_menuitem = self.geo_editor_menu.addAction(
