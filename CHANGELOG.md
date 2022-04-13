@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM Evo beta
 13.04.2022
 
 - fixed the display of lines in Distance Plugin when using 'snap to' together with 'multipoint'
+- in Geometry Editor - update (some reformatting and adding shape data)
 
 7.04.2022
 

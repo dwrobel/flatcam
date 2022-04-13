@@ -1,33 +1,32 @@
-# ######################################################### ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # Author: Juan Pablo Caram (c)                             #
 # Date: 2/5/2014                                           #
 # MIT Licence                                              #
-# ######################################################### ##
+# ##########################################################
 
-# ###########################################################                                      #
+# ##########################################################
 # File Modified: Marius Adrian Stanciu (c)                 #
 # Date: 3/10/2019                                          #
-# ######################################################### ##
-
-from PyQt6 import QtGui, QtCore, QtWidgets
-from PyQt6.QtCore import Qt
+# ##########################################################
 
 # import inspect
 
 from camlib import distance, arc, three_point_circle, Geometry, AppRTreeStorage, flatten_shapely_geometry
-from appTool import AppTool
-from appGUI.GUIElements import OptionalInputSection, FCCheckBox, FCLabel, FCComboBox, FCTextAreaRich, \
-    FCDoubleSpinner, FCButton, FCInputDoubleSpinner, FCTree, NumericalEvalTupleEntry, FCEntry, FCTextEdit, \
-    VerticalScrollArea, GLay
-from appParsers.ParseFont import *
+from appGUI.GUIElements import *
+from appGUI.VisPyVisuals import ShapeCollection
+
+from appEditors.plugins.GeoBufferPlugin import BufferSelectionTool
+from appEditors.plugins.GeoPaintPlugin import PaintOptionsTool
+from appEditors.plugins.GeoTextPlugin import TextInputTool
+from appEditors.plugins.GeoTransformationPlugin import TransformEditorTool
 
 from vispy.geometry import Rect
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point
 from shapely.ops import unary_union, linemerge
-import shapely.affinity as affinity
+from shapely.affinity import translate, scale, skew, rotate
 from shapely.geometry.polygon import orient
 from shapely.geometry.base import BaseGeometry
 
@@ -48,1631 +47,6 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 log = logging.getLogger('base')
-
-
-class BufferSelectionTool(AppTool):
-    """
-    Simple input for buffer distance.
-    """
-
-    pluginName = _("Buffer Selection")
-
-    def __init__(self, app, draw_app):
-        AppTool.__init__(self, app)
-
-        self.draw_app = draw_app
-        self.decimals = app.decimals
-
-        # Title
-        title_label = FCLabel("%s" % ('Editor ' + self.pluginName))
-        title_label.setStyleSheet("""
-                        QLabel
-                        {
-                            font-size: 16px;
-                            font-weight: bold;
-                        }
-                        """)
-        self.layout.addWidget(title_label)
-
-        # this way I can hide/show the frame
-        self.buffer_tool_frame = QtWidgets.QFrame()
-        self.buffer_tool_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.buffer_tool_frame)
-        self.buffer_tools_box = QtWidgets.QVBoxLayout()
-        self.buffer_tools_box.setContentsMargins(0, 0, 0, 0)
-        self.buffer_tool_frame.setLayout(self.buffer_tools_box)
-
-        # Grid Layout
-        grid_buffer = GLay(v_spacing=5, h_spacing=3)
-        self.buffer_tools_box.addLayout(grid_buffer)
-
-        # Buffer distance
-        self.buffer_distance_entry = FCDoubleSpinner()
-        self.buffer_distance_entry.set_precision(self.decimals)
-        self.buffer_distance_entry.set_range(0.0000, 9910000.0000)
-        grid_buffer.addWidget(FCLabel('%s:' % _("Buffer distance")), 0, 0)
-        grid_buffer.addWidget(self.buffer_distance_entry, 0, 1)
-
-        self.buffer_corner_lbl = FCLabel('%s:' % _("Buffer corner"))
-        self.buffer_corner_lbl.setToolTip(
-            _("There are 3 types of corners:\n"
-              " - 'Round': the corner is rounded for exterior buffer.\n"
-              " - 'Square': the corner is met in a sharp angle for exterior buffer.\n"
-              " - 'Beveled': the corner is a line that directly connects the features meeting in the corner")
-        )
-        self.buffer_corner_cb = FCComboBox()
-        self.buffer_corner_cb.addItem(_("Round"))
-        self.buffer_corner_cb.addItem(_("Square"))
-        self.buffer_corner_cb.addItem(_("Beveled"))
-        grid_buffer.addWidget(self.buffer_corner_lbl, 2, 0)
-        grid_buffer.addWidget(self.buffer_corner_cb, 2, 1)
-
-        # Buttons
-        hlay = QtWidgets.QHBoxLayout()
-        grid_buffer.addLayout(hlay, 4, 0, 1, 2)
-
-        self.buffer_int_button = FCButton(_("Buffer Interior"))
-        hlay.addWidget(self.buffer_int_button)
-        self.buffer_ext_button = FCButton(_("Buffer Exterior"))
-        hlay.addWidget(self.buffer_ext_button)
-
-        hlay1 = QtWidgets.QHBoxLayout()
-        grid_buffer.addLayout(hlay1, 6, 0, 1, 2)
-
-        self.buffer_button = FCButton(_("Full Buffer"))
-        hlay1.addWidget(self.buffer_button)
-
-        self.layout.addStretch(1)
-
-        # Signals
-        self.buffer_button.clicked.connect(self.on_buffer)
-        self.buffer_int_button.clicked.connect(self.on_buffer_int)
-        self.buffer_ext_button.clicked.connect(self.on_buffer_ext)
-
-        # Init appGUI
-        self.buffer_distance_entry.set_value(0.01)
-
-    def run(self):
-        self.app.defaults.report_usage("Geo Editor ToolBuffer()")
-        AppTool.run(self)
-
-        # if the splitter us hidden, display it
-        if self.app.ui.splitter.sizes()[0] == 0:
-            self.app.ui.splitter.setSizes([1, 1])
-
-        # if the Tool Tab is hidden display it, else hide it but only if the objectName is the same
-        found_idx = None
-        for idx in range(self.app.ui.notebook.count()):
-            if self.app.ui.notebook.widget(idx).objectName() == "plugin_tab":
-                found_idx = idx
-                break
-        # show the Tab
-        if not found_idx:
-            try:
-                self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
-            except RuntimeError:
-                self.app.ui.plugin_tab = QtWidgets.QWidget()
-                self.app.ui.plugin_tab.setObjectName("plugin_tab")
-                self.app.ui.plugin_tab_layout = QtWidgets.QVBoxLayout(self.app.ui.plugin_tab)
-                self.app.ui.plugin_tab_layout.setContentsMargins(2, 2, 2, 2)
-
-                self.app.ui.plugin_scroll_area = VerticalScrollArea()
-                self.app.ui.plugin_tab_layout.addWidget(self.app.ui.plugin_scroll_area)
-                self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
-
-            # focus on Tool Tab
-            self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
-
-        # self.app.ui.notebook.callback_on_close = self.on_tab_close
-
-        self.app.ui.notebook.setTabText(2, _("Buffer Tool"))
-
-    def on_tab_close(self):
-        self.draw_app.select_tool("select")
-        self.app.ui.notebook.callback_on_close = lambda: None
-
-    def on_buffer(self):
-        try:
-            buffer_distance = float(self.buffer_distance_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                buffer_distance = float(self.buffer_distance_entry.get_value().replace(',', '.'))
-                self.buffer_distance_entry.set_value(buffer_distance)
-            except ValueError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Buffer distance value is missing or wrong format. Add it and retry."))
-                return
-        # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
-        # I populated the combobox such that the index coincide with the join styles value (which is really an INT)
-        join_style = self.buffer_corner_cb.currentIndex() + 1
-        self.draw_app.buffer(buffer_distance, join_style)
-
-    def on_buffer_int(self):
-        try:
-            buffer_distance = float(self.buffer_distance_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                buffer_distance = float(self.buffer_distance_entry.get_value().replace(',', '.'))
-                self.buffer_distance_entry.set_value(buffer_distance)
-            except ValueError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Buffer distance value is missing or wrong format. Add it and retry."))
-                return
-        # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
-        # I populated the combobox such that the index coincide with the join styles value (which is really an INT)
-        join_style = self.buffer_corner_cb.currentIndex() + 1
-        self.draw_app.buffer_int(buffer_distance, join_style)
-
-    def on_buffer_ext(self):
-        try:
-            buffer_distance = float(self.buffer_distance_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                buffer_distance = float(self.buffer_distance_entry.get_value().replace(',', '.'))
-                self.buffer_distance_entry.set_value(buffer_distance)
-            except ValueError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Buffer distance value is missing or wrong format. Add it and retry."))
-                return
-        # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
-        # I populated the combobox such that the index coincide with the join styles value (which is really an INT)
-        join_style = self.buffer_corner_cb.currentIndex() + 1
-        self.draw_app.buffer_ext(buffer_distance, join_style)
-
-    def hide_tool(self):
-        self.buffer_tool_frame.hide()
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
-
-
-class TextInputTool(AppTool):
-    """
-    Simple input for buffer distance.
-    """
-
-    pluginName = _("Text Input Tool")
-
-    def __init__(self, app, draw_app):
-        AppTool.__init__(self, app)
-
-        self.app = app
-        self.draw_app = draw_app
-        self.text_path = []
-        self.decimals = self.app.decimals
-
-        self.f_parse = ParseFont(self.app)
-        self.f_parse.get_fonts_by_types()
-
-        # this way I can hide/show the frame
-        self.text_tool_frame = QtWidgets.QFrame()
-        self.text_tool_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.text_tool_frame)
-        self.text_tools_box = QtWidgets.QVBoxLayout()
-        self.text_tools_box.setContentsMargins(0, 0, 0, 0)
-        self.text_tool_frame.setLayout(self.text_tools_box)
-
-        # Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                        QLabel
-                        {
-                            font-size: 16px;
-                            font-weight: bold;
-                        }
-                        """)
-        self.text_tools_box.addWidget(title_label)
-
-        # Grid Layout
-        self.grid_text = GLay(v_spacing=5, h_spacing=3)
-        self.text_tools_box.addLayout(self.grid_text)
-
-        # Font type
-        if sys.platform == "win32":
-            f_current = QtGui.QFont("Arial")
-        elif sys.platform == "linux":
-            f_current = QtGui.QFont("FreeMono")
-        else:
-            f_current = QtGui.QFont("Helvetica Neue")
-
-        self.font_name = f_current.family()
-
-        self.font_type_cb = QtWidgets.QFontComboBox(self)
-        self.font_type_cb.setCurrentFont(f_current)
-        self.grid_text.addWidget(FCLabel('%s:' % _("Font")), 0, 0)
-        self.grid_text.addWidget(self.font_type_cb, 0, 1)
-
-        # Flag variables to show if font is bold, italic, both or none (regular)
-        self.font_bold = False
-        self.font_italic = False
-
-        # # Create dictionaries with the filenames of the fonts
-        # # Key: Fontname
-        # # Value: Font File Name.ttf
-        #
-        # # regular fonts
-        # self.ff_names_regular ={}
-        # # bold fonts
-        # self.ff_names_bold = {}
-        # # italic fonts
-        # self.ff_names_italic = {}
-        # # bold and italic fonts
-        # self.ff_names_bi = {}
-        #
-        # if sys.platform == 'win32':
-        #     from winreg import ConnectRegistry, OpenKey, EnumValue, HKEY_LOCAL_MACHINE
-        #     registry = ConnectRegistry(None, HKEY_LOCAL_MACHINE)
-        #     font_key = OpenKey(registry, "SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts")
-        #     try:
-        #         i = 0
-        #         while 1:
-        #             name_font, value, type = EnumValue(font_key, i)
-        #             k = name_font.replace(" (TrueType)", '')
-        #             if 'Bold' in k and 'Italic' in k:
-        #                 k = k.replace(" Bold Italic", '')
-        #                 self.ff_names_bi.update({k: value})
-        #             elif 'Bold' in k:
-        #                 k = k.replace(" Bold", '')
-        #                 self.ff_names_bold.update({k: value})
-        #             elif 'Italic' in k:
-        #                 k = k.replace(" Italic", '')
-        #                 self.ff_names_italic.update({k: value})
-        #             else:
-        #                 self.ff_names_regular.update({k: value})
-        #             i += 1
-        #     except WindowsError:
-        #         pass
-
-        # Font size
-
-        hlay = QtWidgets.QHBoxLayout()
-
-        self.font_size_cb = FCComboBox(policy=False)
-        self.font_size_cb.setEditable(True)
-        self.font_size_cb.setMinimumContentsLength(3)
-        self.font_size_cb.setMaximumWidth(70)
-
-        font_sizes = ['6', '7', '8', '9', '10', '11', '12', '13', '14',
-                      '15', '16', '18', '20', '22', '24', '26', '28',
-                      '32', '36', '40', '44', '48', '54', '60', '66',
-                      '72', '80', '88', '96']
-
-        self.font_size_cb.addItems(font_sizes)
-        self.font_size_cb.setCurrentIndex(4)
-
-        hlay.addWidget(self.font_size_cb)
-        hlay.addStretch()
-
-        self.font_bold_tb = QtWidgets.QToolButton()
-        self.font_bold_tb.setCheckable(True)
-        self.font_bold_tb.setIcon(QtGui.QIcon(self.app.resource_location + '/bold32.png'))
-        hlay.addWidget(self.font_bold_tb)
-
-        self.font_italic_tb = QtWidgets.QToolButton()
-        self.font_italic_tb.setCheckable(True)
-        self.font_italic_tb.setIcon(QtGui.QIcon(self.app.resource_location + '/italic32.png'))
-        hlay.addWidget(self.font_italic_tb)
-
-        self.grid_text.addWidget(FCLabel('%s:' % _("Size")), 2, 0)
-        self.grid_text.addLayout(hlay, 2, 1)
-
-        # Text input
-        self.grid_text.addWidget(FCLabel('%s:' % _("Text")), 4, 0, 1, 2)
-
-        self.text_input_entry = FCTextAreaRich()
-        self.text_input_entry.setTabStopDistance(12)
-        self.text_input_entry.setMinimumHeight(200)
-        # self.text_input_entry.setMaximumHeight(150)
-        self.text_input_entry.setCurrentFont(f_current)
-        self.text_input_entry.setFontPointSize(10)
-        self.grid_text.addWidget(self.text_input_entry, 6, 0, 1, 2)
-
-        # Buttons
-        self.apply_button = FCButton(_("Apply"))
-        self.grid_text.addWidget(self.apply_button, 8, 0, 1, 2)
-
-        # self.layout.addStretch()
-
-        # Signals
-        self.apply_button.clicked.connect(self.on_apply_button)
-        self.font_type_cb.currentFontChanged.connect(self.font_family)
-        self.font_size_cb.activated.connect(self.font_size)
-        self.font_bold_tb.clicked.connect(self.on_bold_button)
-        self.font_italic_tb.clicked.connect(self.on_italic_button)
-
-    def run(self):
-        self.app.defaults.report_usage("Geo Editor TextInputTool()")
-        AppTool.run(self)
-
-        # if the splitter us hidden, display it
-        if self.app.ui.splitter.sizes()[0] == 0:
-            self.app.ui.splitter.setSizes([1, 1])
-
-        # if the Tool Tab is hidden display it, else hide it but only if the objectName is the same
-        found_idx = None
-        for idx in range(self.app.ui.notebook.count()):
-            if self.app.ui.notebook.widget(idx).objectName() == "plugin_tab":
-                found_idx = idx
-                break
-        # show the Tab
-        if not found_idx:
-            try:
-                self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
-            except RuntimeError:
-                self.app.ui.plugin_tab = QtWidgets.QWidget()
-                self.app.ui.plugin_tab.setObjectName("plugin_tab")
-                self.app.ui.plugin_tab_layout = QtWidgets.QVBoxLayout(self.app.ui.plugin_tab)
-                self.app.ui.plugin_tab_layout.setContentsMargins(2, 2, 2, 2)
-
-                self.app.ui.plugin_scroll_area = VerticalScrollArea()
-                self.app.ui.plugin_tab_layout.addWidget(self.app.ui.plugin_scroll_area)
-                self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
-            # focus on Tool Tab
-            self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
-
-        # self.app.ui.notebook.callback_on_close = self.on_tab_close
-
-        self.app.ui.notebook.setTabText(2, _("Text Tool"))
-
-    def on_tab_close(self):
-        self.draw_app.select_tool("select")
-        self.app.ui.notebook.callback_on_close = lambda: None
-
-    def on_apply_button(self):
-        font_to_geo_type = ""
-
-        if self.font_bold is True:
-            font_to_geo_type = 'bold'
-        elif self.font_italic is True:
-            font_to_geo_type = 'italic'
-        elif self.font_bold is True and self.font_italic is True:
-            font_to_geo_type = 'bi'
-        elif self.font_bold is False and self.font_italic is False:
-            font_to_geo_type = 'regular'
-
-        string_to_geo = self.text_input_entry.get_value()
-        font_to_geo_size = self.font_size_cb.get_value()
-
-        self.text_path = self.f_parse.font_to_geometry(char_string=string_to_geo, font_name=self.font_name,
-                                                       font_size=font_to_geo_size,
-                                                       font_type=font_to_geo_type,
-                                                       units=self.app.app_units.upper())
-
-    def font_family(self, font):
-        self.text_input_entry.selectAll()
-        font.setPointSize(float(self.font_size_cb.get_value()))
-        self.text_input_entry.setCurrentFont(font)
-        self.font_name = self.font_type_cb.currentFont().family()
-
-    def font_size(self):
-        self.text_input_entry.selectAll()
-        self.text_input_entry.setFontPointSize(float(self.font_size_cb.get_value()))
-
-    def on_bold_button(self):
-        if self.font_bold_tb.isChecked():
-            self.text_input_entry.selectAll()
-            self.text_input_entry.setFontWeight(QtGui.QFont.Bold)
-            self.font_bold = True
-        else:
-            self.text_input_entry.selectAll()
-            self.text_input_entry.setFontWeight(QtGui.QFont.Normal)
-            self.font_bold = False
-
-    def on_italic_button(self):
-        if self.font_italic_tb.isChecked():
-            self.text_input_entry.selectAll()
-            self.text_input_entry.setFontItalic(True)
-            self.font_italic = True
-        else:
-            self.text_input_entry.selectAll()
-            self.text_input_entry.setFontItalic(False)
-            self.font_italic = False
-
-    def hide_tool(self):
-        self.text_tool_frame.hide()
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
-        # self.app.ui.splitter.setSizes([0, 1])
-        self.app.ui.notebook.setTabText(2, _("Tool"))
-
-
-class PaintOptionsTool(AppTool):
-    """
-    Inputs to specify how to paint the selected polygons.
-    """
-
-    pluginName = _("Paint Tool")
-
-    def __init__(self, app, fcdraw):
-        AppTool.__init__(self, app)
-
-        self.app = app
-        self.fcdraw = fcdraw
-        self.decimals = self.app.decimals
-
-        # Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                        QLabel
-                        {
-                            font-size: 16px;
-                            font-weight: bold;
-                        }
-                        """)
-        self.layout.addWidget(title_label)
-
-        grid = GLay(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid)
-
-        # Tool dia
-        ptdlabel = FCLabel('%s:' % _('Tool Dia'))
-        ptdlabel.setToolTip(
-            _("Diameter of the tool to be used in the operation.")
-        )
-        grid.addWidget(ptdlabel, 0, 0)
-
-        self.painttooldia_entry = FCDoubleSpinner()
-        self.painttooldia_entry.set_range(-10000.0000, 10000.0000)
-        self.painttooldia_entry.set_precision(self.decimals)
-        grid.addWidget(self.painttooldia_entry, 0, 1)
-
-        # Overlap
-        ovlabel = FCLabel('%s:' % _('Overlap'))
-        ovlabel.setToolTip(
-            _("How much (percentage) of the tool width to overlap each tool pass.\n"
-              "Adjust the value starting with lower values\n"
-              "and increasing it if areas that should be processed are still \n"
-              "not processed.\n"
-              "Lower values = faster processing, faster execution on CNC.\n"
-              "Higher values = slow processing and slow execution on CNC\n"
-              "due of too many paths.")
-        )
-        self.paintoverlap_entry = FCDoubleSpinner(suffix='%')
-        self.paintoverlap_entry.set_range(0.0000, 99.9999)
-        self.paintoverlap_entry.set_precision(self.decimals)
-        self.paintoverlap_entry.setWrapping(True)
-        self.paintoverlap_entry.setSingleStep(1)
-
-        grid.addWidget(ovlabel, 1, 0)
-        grid.addWidget(self.paintoverlap_entry, 1, 1)
-
-        # Margin
-        marginlabel = FCLabel('%s:' % _('Margin'))
-        marginlabel.setToolTip(
-            _("Distance by which to avoid\n"
-              "the edges of the polygon to\n"
-              "be painted.")
-        )
-        self.paintmargin_entry = FCDoubleSpinner()
-        self.paintmargin_entry.set_range(-10000.0000, 10000.0000)
-        self.paintmargin_entry.set_precision(self.decimals)
-
-        grid.addWidget(marginlabel, 2, 0)
-        grid.addWidget(self.paintmargin_entry, 2, 1)
-
-        # Method
-        methodlabel = FCLabel('%s:' % _('Method'))
-        methodlabel.setToolTip(
-            _("Algorithm to paint the polygons:\n"
-              "- Standard: Fixed step inwards.\n"
-              "- Seed-based: Outwards from seed.\n"
-              "- Line-based: Parallel lines.")
-        )
-        # self.paintmethod_combo = RadioSet([
-        #     {"label": _("Standard"), "value": "standard"},
-        #     {"label": _("Seed-based"), "value": "seed"},
-        #     {"label": _("Straight lines"), "value": "lines"}
-        # ], orientation='vertical', compact=True)
-        self.paintmethod_combo = FCComboBox()
-        self.paintmethod_combo.addItems(
-            [_("Standard"), _("Seed"), _("Lines")]
-        )
-
-        grid.addWidget(methodlabel, 3, 0)
-        grid.addWidget(self.paintmethod_combo, 3, 1)
-
-        # Connect lines
-        pathconnectlabel = FCLabel('%s:' % _("Connect"))
-        pathconnectlabel.setToolTip(
-            _("Draw lines between resulting\n"
-              "segments to minimize tool lifts.")
-        )
-        self.pathconnect_cb = FCCheckBox()
-
-        grid.addWidget(pathconnectlabel, 4, 0)
-        grid.addWidget(self.pathconnect_cb, 4, 1)
-
-        contourlabel = FCLabel('%s:' % _("Contour"))
-        contourlabel.setToolTip(
-            _("Cut around the perimeter of the polygon\n"
-              "to trim rough edges.")
-        )
-        self.paintcontour_cb = FCCheckBox()
-
-        grid.addWidget(contourlabel, 5, 0)
-        grid.addWidget(self.paintcontour_cb, 5, 1)
-
-        # Buttons
-        hlay = QtWidgets.QHBoxLayout()
-        self.layout.addLayout(hlay)
-        self.paint_button = FCButton(_("Paint"))
-        hlay.addWidget(self.paint_button)
-
-        self.layout.addStretch()
-
-        # Signals
-        self.paint_button.clicked.connect(self.on_paint)
-
-        self.set_tool_ui()
-
-    def run(self):
-        self.app.defaults.report_usage("Geo Editor ToolPaint()")
-        AppTool.run(self)
-
-        # if the splitter us hidden, display it
-        if self.app.ui.splitter.sizes()[0] == 0:
-            self.app.ui.splitter.setSizes([1, 1])
-
-        # if the Tool Tab is hidden display it, else hide it but only if the objectName is the same
-        found_idx = None
-        for idx in range(self.app.ui.notebook.count()):
-            if self.app.ui.notebook.widget(idx).objectName() == "plugin_tab":
-                found_idx = idx
-                break
-        # show the Tab
-        if not found_idx:
-            try:
-                self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
-            except RuntimeError:
-                self.app.ui.plugin_tab = QtWidgets.QWidget()
-                self.app.ui.plugin_tab.setObjectName("plugin_tab")
-                self.app.ui.plugin_tab_layout = QtWidgets.QVBoxLayout(self.app.ui.plugin_tab)
-                self.app.ui.plugin_tab_layout.setContentsMargins(2, 2, 2, 2)
-
-                self.app.ui.plugin_scroll_area = VerticalScrollArea()
-                self.app.ui.plugin_tab_layout.addWidget(self.app.ui.plugin_scroll_area)
-                self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
-            # focus on Tool Tab
-            self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
-
-        # self.app.ui.notebook.callback_on_close = self.on_tab_close
-
-        self.app.ui.notebook.setTabText(2, _("Paint Tool"))
-
-    def on_tab_close(self):
-        self.fcdraw.select_tool("select")
-        self.app.ui.notebook.callback_on_close = lambda: None
-
-    def set_tool_ui(self):
-        # Init appGUI
-        if self.app.options["tools_paint_tooldia"]:
-            self.painttooldia_entry.set_value(self.app.options["tools_paint_tooldia"])
-        else:
-            self.painttooldia_entry.set_value(0.0)
-
-        if self.app.options["tools_paint_overlap"]:
-            self.paintoverlap_entry.set_value(self.app.options["tools_paint_overlap"])
-        else:
-            self.paintoverlap_entry.set_value(0.0)
-
-        if self.app.options["tools_paint_offset"]:
-            self.paintmargin_entry.set_value(self.app.options["tools_paint_offset"])
-        else:
-            self.paintmargin_entry.set_value(0.0)
-
-        if self.app.options["tools_paint_method"]:
-            self.paintmethod_combo.set_value(self.app.options["tools_paint_method"])
-        else:
-            self.paintmethod_combo.set_value(_("Seed"))
-
-        if self.app.options["tools_paint_connect"]:
-            self.pathconnect_cb.set_value(self.app.options["tools_paint_connect"])
-        else:
-            self.pathconnect_cb.set_value(False)
-
-        if self.app.options["tools_paint_contour"]:
-            self.paintcontour_cb.set_value(self.app.options["tools_paint_contour"])
-        else:
-            self.paintcontour_cb.set_value(False)
-
-    def on_paint(self):
-        if not self.fcdraw.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Cancelled."), _("No shape selected.")))
-            return
-
-        tooldia = self.painttooldia_entry.get_value()
-        overlap = self.paintoverlap_entry.get_value() / 100.0
-        margin = self.paintmargin_entry.get_value()
-
-        method = self.paintmethod_combo.get_value()
-        contour = self.paintcontour_cb.get_value()
-        connect = self.pathconnect_cb.get_value()
-
-        self.fcdraw.paint(tooldia, overlap, margin, connect=connect, contour=contour, method=method)
-        self.fcdraw.select_tool("select")
-        # self.app.ui.notebook.setTabText(2, _("Tools"))
-        # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
-        #
-        # self.app.ui.splitter.setSizes([0, 1])
-
-
-class TransformEditorTool(AppTool):
-    """
-    Inputs to specify how to paint the selected polygons.
-    """
-
-    pluginName = _("Transform Tool")
-    rotateName = _("Rotate")
-    skewName = _("Skew/Shear")
-    scaleName = _("Scale")
-    flipName = _("Mirror (Flip)")
-    offsetName = _("Offset")
-    bufferName = _("Buffer")
-
-    def __init__(self, app, draw_app):
-        AppTool.__init__(self, app)
-
-        self.app = app
-        self.draw_app = draw_app
-        self.decimals = self.app.decimals
-
-        # ## Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
-        self.layout.addWidget(title_label)
-        self.layout.addWidget(FCLabel(''))
-
-        # ## Layout
-        grid0 = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
-        self.layout.addLayout(grid0)
-
-        grid0.addWidget(FCLabel(''))
-
-        # Reference
-        ref_label = FCLabel('%s:' % _("Reference"))
-        ref_label.setToolTip(
-            _("The reference point for Rotate, Skew, Scale, Mirror.\n"
-              "Can be:\n"
-              "- Origin -> it is the 0, 0 point\n"
-              "- Selection -> the center of the bounding box of the selected objects\n"
-              "- Point -> a custom point defined by X,Y coordinates\n"
-              "- Min Selection -> the point (minx, miny) of the bounding box of the selection")
-        )
-        self.ref_combo = FCComboBox()
-        self.ref_items = [_("Origin"), _("Selection"), _("Point"), _("Minimum")]
-        self.ref_combo.addItems(self.ref_items)
-
-        grid0.addWidget(ref_label, 0, 0)
-        grid0.addWidget(self.ref_combo, 0, 1, 1, 2)
-
-        self.point_label = FCLabel('%s:' % _("Value"))
-        self.point_label.setToolTip(
-            _("A point of reference in format X,Y.")
-        )
-        self.point_entry = NumericalEvalTupleEntry()
-
-        grid0.addWidget(self.point_label, 1, 0)
-        grid0.addWidget(self.point_entry, 1, 1, 1, 2)
-
-        self.point_button = FCButton(_("Add"))
-        self.point_button.setToolTip(
-            _("Add point coordinates from clipboard.")
-        )
-        grid0.addWidget(self.point_button, 2, 0, 1, 3)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 5, 0, 1, 3)
-
-        # ## Rotate Title
-        rotate_title_label = FCLabel("<font size=3><b>%s</b></font>" % self.rotateName)
-        grid0.addWidget(rotate_title_label, 6, 0, 1, 3)
-
-        self.rotate_label = FCLabel('%s:' % _("Angle"))
-        self.rotate_label.setToolTip(
-            _("Angle, in degrees.\n"
-              "Float number between -360 and 359.\n"
-              "Positive numbers for CW motion.\n"
-              "Negative numbers for CCW motion.")
-        )
-
-        self.rotate_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.rotate_entry.set_precision(self.decimals)
-        self.rotate_entry.setSingleStep(45)
-        self.rotate_entry.setWrapping(True)
-        self.rotate_entry.set_range(-360, 360)
-
-        # self.rotate_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-
-        self.rotate_button = FCButton(_("Rotate"))
-        self.rotate_button.setToolTip(
-            _("Rotate the selected object(s).\n"
-              "The point of reference is the middle of\n"
-              "the bounding box for all selected objects.")
-        )
-        self.rotate_button.setMinimumWidth(90)
-
-        grid0.addWidget(self.rotate_label, 7, 0)
-        grid0.addWidget(self.rotate_entry, 7, 1)
-        grid0.addWidget(self.rotate_button, 7, 2)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 8, 0, 1, 3)
-
-        # ## Skew Title
-        skew_title_label = FCLabel("<font size=3><b>%s</b></font>" % self.skewName)
-        grid0.addWidget(skew_title_label, 9, 0, 1, 2)
-
-        self.skew_link_cb = FCCheckBox()
-        self.skew_link_cb.setText(_("Link"))
-        self.skew_link_cb.setToolTip(
-            _("Link the Y entry to X entry and copy its content.")
-        )
-
-        grid0.addWidget(self.skew_link_cb, 9, 2)
-
-        self.skewx_label = FCLabel('%s:' % _("X angle"))
-        self.skewx_label.setToolTip(
-            _("Angle for Skew action, in degrees.\n"
-              "Float number between -360 and 360.")
-        )
-        self.skewx_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        # self.skewx_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.skewx_entry.set_precision(self.decimals)
-        self.skewx_entry.set_range(-360, 360)
-
-        self.skewx_button = FCButton(_("Skew X"))
-        self.skewx_button.setToolTip(
-            _("Skew/shear the selected object(s).\n"
-              "The point of reference is the middle of\n"
-              "the bounding box for all selected objects."))
-        self.skewx_button.setMinimumWidth(90)
-
-        grid0.addWidget(self.skewx_label, 10, 0)
-        grid0.addWidget(self.skewx_entry, 10, 1)
-        grid0.addWidget(self.skewx_button, 10, 2)
-
-        self.skewy_label = FCLabel('%s:' % _("Y angle"))
-        self.skewy_label.setToolTip(
-            _("Angle for Skew action, in degrees.\n"
-              "Float number between -360 and 360.")
-        )
-        self.skewy_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        # self.skewy_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.skewy_entry.set_precision(self.decimals)
-        self.skewy_entry.set_range(-360, 360)
-
-        self.skewy_button = FCButton(_("Skew Y"))
-        self.skewy_button.setToolTip(
-            _("Skew/shear the selected object(s).\n"
-              "The point of reference is the middle of\n"
-              "the bounding box for all selected objects."))
-        self.skewy_button.setMinimumWidth(90)
-
-        grid0.addWidget(self.skewy_label, 12, 0)
-        grid0.addWidget(self.skewy_entry, 12, 1)
-        grid0.addWidget(self.skewy_button, 12, 2)
-
-        self.ois_sk = OptionalInputSection(self.skew_link_cb, [self.skewy_label, self.skewy_entry, self.skewy_button],
-                                           logic=False)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 14, 0, 1, 3)
-
-        # ## Scale Title
-        scale_title_label = FCLabel("<font size=3><b>%s</b></font>" % self.scaleName)
-        grid0.addWidget(scale_title_label, 15, 0, 1, 2)
-
-        self.scale_link_cb = FCCheckBox()
-        self.scale_link_cb.setText(_("Link"))
-        self.scale_link_cb.setToolTip(
-            _("Link the Y entry to X entry and copy its content.")
-        )
-
-        grid0.addWidget(self.scale_link_cb, 15, 2)
-
-        self.scalex_label = FCLabel('%s:' % _("X factor"))
-        self.scalex_label.setToolTip(
-            _("Factor for scaling on X axis.")
-        )
-        self.scalex_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        # self.scalex_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.scalex_entry.set_precision(self.decimals)
-        self.scalex_entry.setMinimum(-1e6)
-
-        self.scalex_button = FCButton(_("Scale X"))
-        self.scalex_button.setToolTip(
-            _("Scale the selected object(s).\n"
-              "The point of reference depends on \n"
-              "the Scale reference checkbox state."))
-        self.scalex_button.setMinimumWidth(90)
-
-        grid0.addWidget(self.scalex_label, 17, 0)
-        grid0.addWidget(self.scalex_entry, 17, 1)
-        grid0.addWidget(self.scalex_button, 17, 2)
-
-        self.scaley_label = FCLabel('%s:' % _("Y factor"))
-        self.scaley_label.setToolTip(
-            _("Factor for scaling on Y axis.")
-        )
-        self.scaley_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        # self.scaley_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.scaley_entry.set_precision(self.decimals)
-        self.scaley_entry.setMinimum(-1e6)
-
-        self.scaley_button = FCButton(_("Scale Y"))
-        self.scaley_button.setToolTip(
-            _("Scale the selected object(s).\n"
-              "The point of reference depends on \n"
-              "the Scale reference checkbox state."))
-        self.scaley_button.setMinimumWidth(90)
-
-        grid0.addWidget(self.scaley_label, 19, 0)
-        grid0.addWidget(self.scaley_entry, 19, 1)
-        grid0.addWidget(self.scaley_button, 19, 2)
-
-        self.ois_s = OptionalInputSection(self.scale_link_cb,
-                                          [
-                                              self.scaley_label,
-                                              self.scaley_entry,
-                                              self.scaley_button
-                                          ], logic=False)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 21, 0, 1, 3)
-
-        # ## Flip Title
-        flip_title_label = FCLabel("<font size=3><b>%s</b></font>" % self.flipName)
-        grid0.addWidget(flip_title_label, 23, 0, 1, 3)
-
-        self.flipx_button = FCButton(_("Flip on X"))
-        self.flipx_button.setToolTip(
-            _("Flip the selected object(s) over the X axis.")
-        )
-
-        self.flipy_button = FCButton(_("Flip on Y"))
-        self.flipy_button.setToolTip(
-            _("Flip the selected object(s) over the X axis.")
-        )
-
-        hlay0 = QtWidgets.QHBoxLayout()
-        grid0.addLayout(hlay0, 25, 0, 1, 3)
-
-        hlay0.addWidget(self.flipx_button)
-        hlay0.addWidget(self.flipy_button)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 27, 0, 1, 3)
-
-        # ## Offset Title
-        offset_title_label = FCLabel("<font size=3><b>%s</b></font>" % self.offsetName)
-        grid0.addWidget(offset_title_label, 29, 0, 1, 3)
-
-        self.offx_label = FCLabel('%s:' % _("X val"))
-        self.offx_label.setToolTip(
-            _("Distance to offset on X axis. In current units.")
-        )
-        self.offx_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        # self.offx_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.offx_entry.set_precision(self.decimals)
-        self.offx_entry.setMinimum(-1e6)
-
-        self.offx_button = FCButton(_("Offset X"))
-        self.offx_button.setToolTip(
-            _("Offset the selected object(s).\n"
-              "The point of reference is the middle of\n"
-              "the bounding box for all selected objects.\n"))
-        self.offx_button.setMinimumWidth(90)
-
-        grid0.addWidget(self.offx_label, 31, 0)
-        grid0.addWidget(self.offx_entry, 31, 1)
-        grid0.addWidget(self.offx_button, 31, 2)
-
-        self.offy_label = FCLabel('%s:' % _("Y val"))
-        self.offy_label.setToolTip(
-            _("Distance to offset on Y axis. In current units.")
-        )
-        self.offy_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        # self.offy_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.offy_entry.set_precision(self.decimals)
-        self.offy_entry.setMinimum(-1e6)
-
-        self.offy_button = FCButton(_("Offset Y"))
-        self.offy_button.setToolTip(
-            _("Offset the selected object(s).\n"
-              "The point of reference is the middle of\n"
-              "the bounding box for all selected objects.\n"))
-        self.offy_button.setMinimumWidth(90)
-
-        grid0.addWidget(self.offy_label, 32, 0)
-        grid0.addWidget(self.offy_entry, 32, 1)
-        grid0.addWidget(self.offy_button, 32, 2)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 34, 0, 1, 3)
-
-        # ## Buffer Title
-        buffer_title_label = FCLabel("<font size=3><b>%s</b></font>" % self.bufferName)
-        grid0.addWidget(buffer_title_label, 35, 0, 1, 2)
-
-        self.buffer_rounded_cb = FCCheckBox('%s' % _("Rounded"))
-        self.buffer_rounded_cb.setToolTip(
-            _("If checked then the buffer will surround the buffered shape,\n"
-              "every corner will be rounded.\n"
-              "If not checked then the buffer will follow the exact geometry\n"
-              "of the buffered shape.")
-        )
-
-        grid0.addWidget(self.buffer_rounded_cb, 35, 2)
-
-        self.buffer_label = FCLabel('%s:' % _("Distance"))
-        self.buffer_label.setToolTip(
-            _("A positive value will create the effect of dilation,\n"
-              "while a negative value will create the effect of erosion.\n"
-              "Each geometry element of the object will be increased\n"
-              "or decreased with the 'distance'.")
-        )
-
-        self.buffer_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.buffer_entry.set_precision(self.decimals)
-        self.buffer_entry.setSingleStep(0.1)
-        self.buffer_entry.setWrapping(True)
-        self.buffer_entry.set_range(-10000.0000, 10000.0000)
-
-        self.buffer_button = FCButton(_("Buffer D"))
-        self.buffer_button.setToolTip(
-            _("Create the buffer effect on each geometry,\n"
-              "element from the selected object, using the distance.")
-        )
-        self.buffer_button.setMinimumWidth(90)
-
-        grid0.addWidget(self.buffer_label, 37, 0)
-        grid0.addWidget(self.buffer_entry, 37, 1)
-        grid0.addWidget(self.buffer_button, 37, 2)
-
-        self.buffer_factor_label = FCLabel('%s:' % _("Value"))
-        self.buffer_factor_label.setToolTip(
-            _("A positive value will create the effect of dilation,\n"
-              "while a negative value will create the effect of erosion.\n"
-              "Each geometry element of the object will be increased\n"
-              "or decreased to fit the 'Value'. Value is a percentage\n"
-              "of the initial dimension.")
-        )
-
-        self.buffer_factor_entry = FCDoubleSpinner(callback=self.confirmation_message, suffix='%')
-        self.buffer_factor_entry.set_range(-100.0000, 1000.0000)
-        self.buffer_factor_entry.set_precision(self.decimals)
-        self.buffer_factor_entry.setWrapping(True)
-        self.buffer_factor_entry.setSingleStep(1)
-
-        self.buffer_factor_button = FCButton(_("Buffer F"))
-        self.buffer_factor_button.setToolTip(
-            _("Create the buffer effect on each geometry,\n"
-              "element from the selected object, using the factor.")
-        )
-        self.buffer_factor_button.setMinimumWidth(90)
-
-        grid0.addWidget(self.buffer_factor_label, 38, 0)
-        grid0.addWidget(self.buffer_factor_entry, 38, 1)
-        grid0.addWidget(self.buffer_factor_button, 38, 2)
-
-        grid0.addWidget(FCLabel(''), 42, 0, 1, 3)
-
-        self.layout.addStretch()
-
-        # Signals
-        self.ref_combo.currentIndexChanged.connect(self.on_reference_changed)
-        self.point_button.clicked.connect(self.on_add_coords)
-
-        self.rotate_button.clicked.connect(self.on_rotate)
-
-        self.skewx_button.clicked.connect(self.on_skewx)
-        self.skewy_button.clicked.connect(self.on_skewy)
-
-        self.scalex_button.clicked.connect(self.on_scalex)
-        self.scaley_button.clicked.connect(self.on_scaley)
-
-        self.offx_button.clicked.connect(self.on_offx)
-        self.offy_button.clicked.connect(self.on_offy)
-
-        self.flipx_button.clicked.connect(self.on_flipx)
-        self.flipy_button.clicked.connect(self.on_flipy)
-
-        self.buffer_button.clicked.connect(self.on_buffer_by_distance)
-        self.buffer_factor_button.clicked.connect(self.on_buffer_by_factor)
-
-        # self.rotate_entry.editingFinished.connect(self.on_rotate)
-        # self.skewx_entry.editingFinished.connect(self.on_skewx)
-        # self.skewy_entry.editingFinished.connect(self.on_skewy)
-        # self.scalex_entry.editingFinished.connect(self.on_scalex)
-        # self.scaley_entry.editingFinished.connect(self.on_scaley)
-        # self.offx_entry.editingFinished.connect(self.on_offx)
-        # self.offy_entry.editingFinished.connect(self.on_offy)
-
-        self.set_tool_ui()
-
-    def run(self, toggle=True):
-        self.app.defaults.report_usage("Geo Editor Transform Tool()")
-
-        # if the splitter us hidden, display it
-        if self.app.ui.splitter.sizes()[0] == 0:
-            self.app.ui.splitter.setSizes([1, 1])
-
-        # if the Tool Tab is hidden display it, else hide it but only if the objectName is the same
-        found_idx = None
-        for idx in range(self.app.ui.notebook.count()):
-            if self.app.ui.notebook.widget(idx).objectName() == "plugin_tab":
-                found_idx = idx
-                break
-        # show the Tab
-        if not found_idx:
-            try:
-                self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
-            except RuntimeError:
-                self.app.ui.plugin_tab = QtWidgets.QWidget()
-                self.app.ui.plugin_tab.setObjectName("plugin_tab")
-                self.app.ui.plugin_tab_layout = QtWidgets.QVBoxLayout(self.app.ui.plugin_tab)
-                self.app.ui.plugin_tab_layout.setContentsMargins(2, 2, 2, 2)
-
-                self.app.ui.plugin_scroll_area = VerticalScrollArea()
-                self.app.ui.plugin_tab_layout.addWidget(self.app.ui.plugin_scroll_area)
-                self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
-            # focus on Tool Tab
-            self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
-
-        # self.app.ui.notebook.callback_on_close = self.on_tab_close
-
-        if toggle:
-            try:
-                if self.app.ui.plugin_scroll_area.widget().objectName() == self.pluginName:
-                    self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
-                else:
-                    self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
-            except AttributeError:
-                pass
-
-        AppTool.run(self)
-        self.set_tool_ui()
-
-        self.app.ui.notebook.setTabText(2, _("Transform Tool"))
-
-    def on_tab_close(self):
-        self.draw_app.select_tool("select")
-        self.app.ui.notebook.callback_on_close = lambda: None
-
-    def install(self, icon=None, separator=None, **kwargs):
-        AppTool.install(self, icon, separator, shortcut='Alt+T', **kwargs)
-
-    def set_tool_ui(self):
-        # Initialize form
-        ref_val = self.app.options["tools_transform_reference"]
-        if ref_val == _("Object"):
-            ref_val = _("Selection")
-        self.ref_combo.set_value(ref_val)
-        self.point_entry.set_value(self.app.options["tools_transform_ref_point"])
-        self.rotate_entry.set_value(self.app.options["tools_transform_rotate"])
-
-        self.skewx_entry.set_value(self.app.options["tools_transform_skew_x"])
-        self.skewy_entry.set_value(self.app.options["tools_transform_skew_y"])
-        self.skew_link_cb.set_value(self.app.options["tools_transform_skew_link"])
-
-        self.scalex_entry.set_value(self.app.options["tools_transform_scale_x"])
-        self.scaley_entry.set_value(self.app.options["tools_transform_scale_y"])
-        self.scale_link_cb.set_value(self.app.options["tools_transform_scale_link"])
-
-        self.offx_entry.set_value(self.app.options["tools_transform_offset_x"])
-        self.offy_entry.set_value(self.app.options["tools_transform_offset_y"])
-
-        self.buffer_entry.set_value(self.app.options["tools_transform_buffer_dis"])
-        self.buffer_factor_entry.set_value(self.app.options["tools_transform_buffer_factor"])
-        self.buffer_rounded_cb.set_value(self.app.options["tools_transform_buffer_corner"])
-
-        # initial state is hidden
-        self.point_label.hide()
-        self.point_entry.hide()
-        self.point_button.hide()
-
-    def template(self):
-        if not self.draw_app.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Cancelled."), _("No shape selected.")))
-            return
-
-        self.draw_app.select_tool("select")
-        self.app.ui.notebook.setTabText(2, "Plugins")
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
-
-        self.app.ui.splitter.setSizes([0, 1])
-
-    def on_reference_changed(self, index):
-        if index == 0 or index == 1:  # "Origin" or "Selection" reference
-            self.point_label.hide()
-            self.point_entry.hide()
-            self.point_button.hide()
-
-        elif index == 2:  # "Point" reference
-            self.point_label.show()
-            self.point_entry.show()
-            self.point_button.show()
-
-    def on_calculate_reference(self, ref_index=None):
-        if ref_index:
-            ref_val = ref_index
-        else:
-            ref_val = self.ref_combo.currentIndex()
-
-        if ref_val == 0:  # "Origin" reference
-            return 0, 0
-        elif ref_val == 1:  # "Selection" reference
-            sel_list = self.draw_app.selected
-            if sel_list:
-                xmin, ymin, xmax, ymax = self.alt_bounds(sel_list)
-                px = (xmax + xmin) * 0.5
-                py = (ymax + ymin) * 0.5
-                return px, py
-            else:
-                self.app.inform.emit('[ERROR_NOTCL] %s' % _("No shape selected."))
-                return "fail"
-        elif ref_val == 2:  # "Point" reference
-            point_val = self.point_entry.get_value()
-            try:
-                px, py = eval('{}'.format(point_val))
-                return px, py
-            except Exception:
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Incorrect format for Point value. Needs format X,Y"))
-                return "fail"
-        else:
-            sel_list = self.draw_app.selected
-            if sel_list:
-                xmin, ymin, xmax, ymax = self.alt_bounds(sel_list)
-                if ref_val == 3:
-                    return xmin, ymin  # lower left corner
-                elif ref_val == 4:
-                    return xmax, ymin  # lower right corner
-                elif ref_val == 5:
-                    return xmax, ymax  # upper right corner
-                else:
-                    return xmin, ymax  # upper left corner
-            else:
-                self.app.inform.emit('[ERROR_NOTCL] %s' % _("No shape selected."))
-                return "fail"
-
-    def on_add_coords(self):
-        val = self.app.clipboard.text()
-        self.point_entry.set_value(val)
-
-    def on_rotate(self, signal=None, val=None, ref=None):
-        value = float(self.rotate_entry.get_value()) if val is None else val
-        if value == 0:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Rotate transformation can not be done for a value of 0."))
-            return
-        point = self.on_calculate_reference() if ref is None else self.on_calculate_reference(ref_index=ref)
-        if point == 'fail':
-            return
-        self.app.worker_task.emit({'fcn': self.on_rotate_action, 'params': [value, point]})
-
-    def on_flipx(self, signal=None, ref=None):
-        axis = 'Y'
-        point = self.on_calculate_reference() if ref is None else self.on_calculate_reference(ref_index=ref)
-        if point == 'fail':
-            return
-        self.app.worker_task.emit({'fcn': self.on_flip, 'params': [axis, point]})
-
-    def on_flipy(self, signal=None, ref=None):
-        axis = 'X'
-        point = self.on_calculate_reference() if ref is None else self.on_calculate_reference(ref_index=ref)
-        if point == 'fail':
-            return
-        self.app.worker_task.emit({'fcn': self.on_flip, 'params': [axis, point]})
-
-    def on_skewx(self, signal=None, val=None, ref=None):
-        xvalue = float(self.skewx_entry.get_value()) if val is None else val
-
-        if xvalue == 0:
-            return
-
-        if self.skew_link_cb.get_value():
-            yvalue = xvalue
-        else:
-            yvalue = 0
-
-        axis = 'X'
-        point = self.on_calculate_reference() if ref is None else self.on_calculate_reference(ref_index=ref)
-        if point == 'fail':
-            return
-
-        self.app.worker_task.emit({'fcn': self.on_skew, 'params': [axis, xvalue, yvalue, point]})
-
-    def on_skewy(self, signal=None, val=None, ref=None):
-        xvalue = 0
-        yvalue = float(self.skewy_entry.get_value()) if val is None else val
-
-        if yvalue == 0:
-            return
-
-        axis = 'Y'
-        point = self.on_calculate_reference() if ref is None else self.on_calculate_reference(ref_index=ref)
-        if point == 'fail':
-            return
-
-        self.app.worker_task.emit({'fcn': self.on_skew, 'params': [axis, xvalue, yvalue, point]})
-
-    def on_scalex(self, signal=None, val=None, ref=None):
-        xvalue = float(self.scalex_entry.get_value()) if val is None else val
-
-        if xvalue == 0 or xvalue == 1:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Scale transformation can not be done for a factor of 0 or 1."))
-            return
-
-        if self.scale_link_cb.get_value():
-            yvalue = xvalue
-        else:
-            yvalue = 1
-
-        axis = 'X'
-        point = self.on_calculate_reference() if ref is None else self.on_calculate_reference(ref_index=ref)
-        if point == 'fail':
-            return
-
-        self.app.worker_task.emit({'fcn': self.on_scale, 'params': [axis, xvalue, yvalue, point]})
-
-    def on_scaley(self, signal=None, val=None, ref=None):
-        xvalue = 1
-        yvalue = float(self.scaley_entry.get_value()) if val is None else val
-
-        if yvalue == 0 or yvalue == 1:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Scale transformation can not be done for a factor of 0 or 1."))
-            return
-
-        axis = 'Y'
-        point = self.on_calculate_reference() if ref is None else self.on_calculate_reference(ref_index=ref)
-        if point == 'fail':
-            return
-
-        self.app.worker_task.emit({'fcn': self.on_scale, 'params': [axis, xvalue, yvalue, point]})
-
-    def on_offx(self, signal=None, val=None):
-        value = float(self.offx_entry.get_value()) if val is None else val
-        if value == 0:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Offset transformation can not be done for a value of 0."))
-            return
-        axis = 'X'
-
-        self.app.worker_task.emit({'fcn': self.on_offset, 'params': [axis, value]})
-
-    def on_offy(self, signal=None, val=None):
-        value = float(self.offy_entry.get_value()) if val is None else val
-        if value == 0:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Offset transformation can not be done for a value of 0."))
-            return
-        axis = 'Y'
-
-        self.app.worker_task.emit({'fcn': self.on_offset, 'params': [axis, value]})
-
-    def on_buffer_by_distance(self):
-        value = self.buffer_entry.get_value()
-        join = 1 if self.buffer_rounded_cb.get_value() else 2
-
-        self.app.worker_task.emit({'fcn': self.on_buffer_action, 'params': [value, join]})
-
-    def on_buffer_by_factor(self):
-        value = 1 + (self.buffer_factor_entry.get_value() / 100.0)
-        join = 1 if self.buffer_rounded_cb.get_value() else 2
-
-        # tell the buffer method to use the factor
-        factor = True
-
-        self.app.worker_task.emit({'fcn': self.on_buffer_action, 'params': [value, join, factor]})
-
-    def on_rotate_action(self, val, point):
-        """
-        Rotate geometry
-
-        :param val:     Rotate with a known angle value, val
-        :param point:   Reference point for rotation: tuple
-        :return:
-        """
-
-        with self.app.proc_container.new('%s...' % _("Rotating")):
-            shape_list = self.draw_app.selected
-            px, py = point
-
-            if not shape_list:
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("No shape selected."))
-                return
-
-            try:
-                for sel_sha in shape_list:
-                    sel_sha.rotate(-val, point=(px, py))
-                    self.draw_app.plot_all()
-
-                self.app.inform.emit('[success] %s' % _("Done."))
-            except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
-                return
-
-    def on_flip(self, axis, point):
-        """
-        Mirror (flip) geometry
-
-        :param axis:    Mirror on a known axis given by the axis parameter
-        :param point:   Mirror reference point
-        :return:
-        """
-
-        shape_list = self.draw_app.selected
-
-        if not shape_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No shape selected."))
-            return
-
-        with self.app.proc_container.new('%s...' % _("Flipping")):
-            try:
-                px, py = point
-
-                # execute mirroring
-                for sha in shape_list:
-                    if axis == 'X':
-                        sha.mirror('X', (px, py))
-                        self.app.inform.emit('[success] %s...' % _('Flip on Y axis done'))
-                    elif axis == 'Y':
-                        sha.mirror('Y', (px, py))
-                        self.app.inform.emit('[success] %s' % _('Flip on X axis done'))
-                    self.draw_app.plot_all()
-
-            except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
-                return
-
-    def on_skew(self, axis, xval, yval, point):
-        """
-        Skew geometry
-
-        :param point:
-        :param axis:    Axis on which to deform, skew
-        :param xval:    Skew value on X axis
-        :param yval:    Skew value on Y axis
-        :return:
-        """
-
-        shape_list = self.draw_app.selected
-
-        if not shape_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No shape selected."))
-            return
-
-        with self.app.proc_container.new('%s...' % _("Skewing")):
-            try:
-                px, py = point
-                for sha in shape_list:
-                    sha.skew(xval, yval, point=(px, py))
-
-                    self.draw_app.plot_all()
-
-                if axis == 'X':
-                    self.app.inform.emit('[success] %s...' % _('Skew on the X axis done'))
-                else:
-                    self.app.inform.emit('[success] %s...' % _('Skew on the Y axis done'))
-
-            except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
-                return
-
-    def on_scale(self, axis, xfactor, yfactor, point=None):
-        """
-        Scale geometry
-
-        :param axis:        Axis on which to scale
-        :param xfactor:     Factor for scaling on X axis
-        :param yfactor:     Factor for scaling on Y axis
-        :param point:       Point of origin for scaling
-
-        :return:
-        """
-
-        shape_list = self.draw_app.selected
-
-        if not shape_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No shape selected."))
-            return
-
-        with self.app.proc_container.new('%s...' % _("Scaling")):
-            try:
-                px, py = point
-
-                for sha in shape_list:
-                    sha.scale(xfactor, yfactor, point=(px, py))
-                    self.draw_app.plot_all()
-
-                if str(axis) == 'X':
-                    self.app.inform.emit('[success] %s...' % _('Scale on the X axis done'))
-                else:
-                    self.app.inform.emit('[success] %s...' % _('Scale on the Y axis done'))
-            except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
-                return
-
-    def on_offset(self, axis, num):
-        """
-        Offset geometry
-
-        :param axis:        Axis on which to apply offset
-        :param num:         The translation factor
-
-        :return:
-        """
-        shape_list = self.draw_app.selected
-
-        if not shape_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No shape selected."))
-            return
-
-        with self.app.proc_container.new('%s...' % _("Offsetting")):
-            try:
-                for sha in shape_list:
-                    if axis == 'X':
-                        sha.offset((num, 0))
-                    elif axis == 'Y':
-                        sha.offset((0, num))
-                    self.draw_app.plot_all()
-
-                if axis == 'X':
-                    self.app.inform.emit('[success] %s %s' % (_('Offset on the X axis.'), _("Done.")))
-                else:
-                    self.app.inform.emit('[success] %s %s' % (_('Offset on the Y axis.'), _("Done.")))
-
-            except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
-                return
-
-    def on_buffer_action(self, value, join, factor=None):
-        shape_list = self.draw_app.selected
-
-        if not shape_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No shape selected."))
-            return
-        else:
-            with self.app.proc_container.new('%s...' % _("Buffering")):
-                try:
-                    for sel_obj in shape_list:
-                        sel_obj.buffer(value, join, factor)
-
-                        self.draw_app.plot_all()
-
-                    self.app.inform.emit('[success] %s...' % _('Buffer done'))
-
-                except Exception as e:
-                    self.app.log.error("TransformEditorTool.on_buffer_action() --> %s" % str(e))
-                    self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
-                    return
-
-    def on_rotate_key(self):
-        val_box = FCInputDoubleSpinner(title=_("Rotate ..."),
-                                       text='%s:' % _('Enter an Angle Value (degrees)'),
-                                       min=-359.9999, max=360.0000, decimals=self.decimals,
-                                       init_val=float(self.app.options['tools_transform_rotate']),
-                                       parent=self.app.ui)
-        val_box.set_icon(QtGui.QIcon(self.app.resource_location + '/rotate.png'))
-
-        val, ok = val_box.get_value()
-        if ok:
-            self.on_rotate(val=val, ref=1)
-            self.app.inform.emit('[success] %s...' % _("Rotate done"))
-            return
-        else:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Rotate cancelled"))
-
-    def on_offx_key(self):
-        units = self.app.app_units.lower()
-
-        val_box = FCInputDoubleSpinner(title=_("Offset on X axis ..."),
-                                       text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
-                                       min=-10000.0000, max=10000.0000, decimals=self.decimals,
-                                       init_val=float(self.app.options['tools_transform_offset_x']),
-                                       parent=self.app.ui)
-        val_box.set_icon(QtGui.QIcon(self.app.resource_location + '/offsetx32.png'))
-
-        val, ok = val_box.get_value()
-        if ok:
-            self.on_offx(val=val)
-            self.app.inform.emit('[success] %s %s' % (_('Offset on the X axis.'), _("Done.")))
-            return
-        else:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Offset X cancelled"))
-
-    def on_offy_key(self):
-        units = self.app.app_units.lower()
-
-        val_box = FCInputDoubleSpinner(title=_("Offset on Y axis ..."),
-                                       text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
-                                       min=-10000.0000, max=10000.0000, decimals=self.decimals,
-                                       init_val=float(self.app.options['tools_transform_offset_y']),
-                                       parent=self.app.ui)
-        val_box.set_icon(QtGui.QIcon(self.app.resource_location + '/offsety32.png'))
-
-        val, ok = val_box.get_value()
-        if ok:
-            self.on_offx(val=val)
-            self.app.inform.emit('[success] %s...' % _("Offset on Y axis done"))
-            return
-        else:
-            self.app.inform.emit('[success] %s...' % _("Offset on the Y axis canceled"))
-
-    def on_skewx_key(self):
-        val_box = FCInputDoubleSpinner(title=_("Skew on X axis ..."),
-                                       text='%s:' % _('Enter an Angle Value (degrees)'),
-                                       min=-359.9999, max=360.0000, decimals=self.decimals,
-                                       init_val=float(self.app.options['tools_transform_skew_x']),
-                                       parent=self.app.ui)
-        val_box.set_icon(QtGui.QIcon(self.app.resource_location + '/skewX.png'))
-
-        val, ok = val_box.get_value()
-        if ok:
-            self.on_skewx(val=val, ref=3)
-            self.app.inform.emit('[success] %s...' % _("Skew on X axis done"))
-            return
-        else:
-            self.app.inform.emit('[success] %s...' % _("Skew on X axis canceled"))
-
-    def on_skewy_key(self):
-        val_box = FCInputDoubleSpinner(title=_("Skew on Y axis ..."),
-                                       text='%s:' % _('Enter an Angle Value (degrees)'),
-                                       min=-359.9999, max=360.0000, decimals=self.decimals,
-                                       init_val=float(self.app.options['tools_transform_skew_y']),
-                                       parent=self.app.ui)
-        val_box.set_icon(QtGui.QIcon(self.app.resource_location + '/skewY.png'))
-
-        val, ok = val_box.get_value()
-        if ok:
-            self.on_skewx(val=val, ref=3)
-            self.app.inform.emit('[success] %s...' % _("Skew on Y axis done"))
-            return
-        else:
-            self.app.inform.emit('[success] %s...' % _("Skew on Y axis canceled"))
-
-    @staticmethod
-    def alt_bounds(shapelist):
-        """
-        Returns coordinates of rectangular bounds of a selection of shapes
-        """
-
-        def bounds_rec(lst):
-            minx = np.Inf
-            miny = np.Inf
-            maxx = -np.Inf
-            maxy = -np.Inf
-
-            try:
-                for shape in lst:
-                    minx_, miny_, maxx_, maxy_ = bounds_rec(shape)
-                    minx = min(minx, minx_)
-                    miny = min(miny, miny_)
-                    maxx = max(maxx, maxx_)
-                    maxy = max(maxy, maxy_)
-                return minx, miny, maxx, maxy
-            except TypeError:
-                # it's an object, return it's bounds
-                return lst.bounds()
-
-        return bounds_rec(shapelist)
 
 
 class DrawToolShape(object):
@@ -1697,7 +71,7 @@ class DrawToolShape(object):
 
         # Iterable: descend into each item.
         try:
-            if isinstance(o, (MultiPolygon,  MultiLineString)):
+            if isinstance(o, (MultiPolygon, MultiLineString)):
                 for subo in o.geoms:
                     pts += DrawToolShape.get_pts(subo)
             else:
@@ -1705,7 +79,7 @@ class DrawToolShape(object):
                     pts += DrawToolShape.get_pts(subo)
         # Non-iterable
         except TypeError:
-            if o is  None:
+            if o is None:
                 return
 
             # DrawToolShape: descend into .geo.
@@ -1733,6 +107,12 @@ class DrawToolShape(object):
         # Shapely type or list of such
         self.geo = geo
         self.utility = False
+        self.data = {
+            'name': _("Geo Elem"),
+            'type': _('Path'),  # 'Path', 'Arc', 'Rectangle', 'Polygon', 'Circle',
+            'origin': 'center',  # 'center', 'tl', 'tr', 'bl', 'br'
+            'bounds': self.bounds()  # xmin, ymin, xmax, ymax
+        }
 
     def get_all_points(self):
         return DrawToolShape.get_pts(self)
@@ -1788,7 +168,7 @@ class DrawToolShape(object):
                     new_obj.append(mirror_geom(g))
                 return new_obj
             else:
-                return affinity.scale(shape_el, xscale, yscale, origin=(px, py))
+                return scale(shape_el, xscale, yscale, origin=(px, py))
 
         try:
             self.geo = mirror_geom(self.geo)
@@ -1823,7 +203,7 @@ class DrawToolShape(object):
                     new_obj.append(rotate_geom(g))
                 return new_obj
             else:
-                return affinity.rotate(shape_el, angle, origin=(px, py))
+                return rotate(shape_el, angle, origin=(px, py))
 
         try:
             self.geo = rotate_geom(self.geo)
@@ -1855,7 +235,7 @@ class DrawToolShape(object):
                     new_obj.append(skew_geom(g))
                 return new_obj
             else:
-                return affinity.skew(shape_el, angle_x, angle_y, origin=(px, py))
+                return skew(shape_el, angle_x, angle_y, origin=(px, py))
 
         try:
             self.geo = skew_geom(self.geo)
@@ -1886,7 +266,7 @@ class DrawToolShape(object):
                     geoms.append(translate_recursion(local_geom))
                 return geoms
             else:
-                return affinity.translate(geom, xoff=dx, yoff=dy)
+                return translate(geom, xoff=dx, yoff=dy)
 
         try:
             self.geo = translate_recursion(self.geo)
@@ -1934,7 +314,7 @@ class DrawToolShape(object):
                     geoms.append(scale_recursion(local_geom))
                 return geoms
             else:
-                return affinity.scale(geom, xfactor, yfactor, origin=(px, py))
+                return scale(geom, xfactor, yfactor, origin=(px, py))
 
         try:
             self.geo = scale_recursion(self.geo)
@@ -1959,7 +339,7 @@ class DrawToolShape(object):
                 return geoms
             else:
                 if factor:
-                    return affinity.scale(geom, xfact=value, yfact=value, origin='center')
+                    return scale(geom, xfact=value, yfact=value, origin='center')
                 else:
                     return geom.buffer(value, resolution=32, join_style=join)
 
@@ -2127,6 +507,7 @@ class FCCircle(FCShapeTool):
 
         self.draw_app.app.jump_signal.disconnect()
 
+        self.geometry.data['type'] = _('Circle')
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def clean_up(self):
@@ -2367,6 +748,7 @@ class FCArc(FCShapeTool):
 
         self.draw_app.app.jump_signal.disconnect()
 
+        self.geometry.data['type'] = _('Arc')
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def clean_up(self):
@@ -2439,8 +821,9 @@ class FCRectangle(FCShapeTool):
         geo = LinearRing([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])])
 
         self.geometry = DrawToolShape(geo)
-        self.complete = True
+        self.geometry.data['type'] = _('Rectangle')
 
+        self.complete = True
         self.draw_app.app.jump_signal.disconnect()
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
@@ -2520,7 +903,7 @@ class FCPolygon(FCShapeTool):
         self.complete = True
 
         self.draw_app.app.jump_signal.disconnect()
-
+        self.geometry.data['type'] = _('Polygon')
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def on_key(self, key):
@@ -2578,7 +961,7 @@ class FCPath(FCPolygon):
         self.complete = True
 
         self.draw_app.app.jump_signal.disconnect()
-
+        self.geometry.data['type'] = _('Path')
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def utility_geometry(self, data=None):
@@ -2757,7 +1140,7 @@ class FCExplode(FCShapeTool):
             geo = shape.geo
 
             if geo.geom_type == 'MultiLineString':
-                lines = [line for line in geo]
+                lines = [line for line in geo.geoms]
 
             elif geo.is_ring:
                 geo = Polygon(geo)
@@ -2780,7 +1163,9 @@ class FCExplode(FCShapeTool):
 
         geo_list = []
         for line in lines:
-            geo_list.append(DrawToolShape(line))
+            line_geo = DrawToolShape(line)
+            line_geo.data['type'] = _('Path')
+            geo_list.append(line_geo)
 
         self.geometry = geo_list
         self.draw_app.on_shape_complete()
@@ -2857,7 +1242,7 @@ class FCMove(FCShapeTool):
             # Create new geometry
             dx = self.destination[0] - self.origin[0]
             dy = self.destination[1] - self.origin[1]
-            self.geometry = [DrawToolShape(affinity.translate(geom.geo, xoff=dx, yoff=dy))
+            self.geometry = [DrawToolShape(translate(geom.geo, xoff=dx, yoff=dy))
                              for geom in self.draw_app.get_selected()]
 
             # Delete old
@@ -2909,7 +1294,7 @@ class FCMove(FCShapeTool):
         if len(self.draw_app.get_selected()) <= self.sel_limit:
             try:
                 for geom in self.draw_app.get_selected():
-                    geo_list.append(affinity.translate(geom.geo, xoff=dx, yoff=dy))
+                    geo_list.append(translate(geom.geo, xoff=dx, yoff=dy))
             except AttributeError:
                 self.draw_app.select_tool('select')
                 self.draw_app.selected = []
@@ -2917,7 +1302,7 @@ class FCMove(FCShapeTool):
             return DrawToolUtilityShape(geo_list)
         else:
             try:
-                ss_el = affinity.translate(self.selection_shape, xoff=dx, yoff=dy)
+                ss_el = translate(self.selection_shape, xoff=dx, yoff=dy)
             except ValueError:
                 ss_el = None
             return DrawToolUtilityShape(ss_el)
@@ -2993,7 +1378,7 @@ class FCCopy(FCMove):
         # Create new geometry
         dx = self.destination[0] - self.origin[0]
         dy = self.destination[1] - self.origin[1]
-        self.geometry = [DrawToolShape(affinity.translate(geom.geo, xoff=dx, yoff=dy))
+        self.geometry = [DrawToolShape(translate(geom.geo, xoff=dx, yoff=dy))
                          for geom in self.draw_app.get_selected()]
         self.complete = True
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
@@ -3047,7 +1432,7 @@ class FCText(FCShapeTool):
 
         if self.text_gui.text_path:
             try:
-                self.geometry = DrawToolShape(affinity.translate(self.text_gui.text_path, xoff=dx, yoff=dy))
+                self.geometry = DrawToolShape(translate(self.text_gui.text_path, xoff=dx, yoff=dy))
             except Exception as e:
                 log.error("Font geometry is empty or incorrect: %s" % str(e))
                 self.draw_app.app.inform.emit('[ERROR] %s: %s' %
@@ -3083,7 +1468,7 @@ class FCText(FCShapeTool):
         dy = data[1] - self.origin[1]
 
         try:
-            return DrawToolUtilityShape(affinity.translate(self.text_gui.text_path, xoff=dx, yoff=dy))
+            return DrawToolUtilityShape(translate(self.text_gui.text_path, xoff=dx, yoff=dy))
         except Exception:
             return
 
@@ -3136,7 +1521,7 @@ class FCBuffer(FCShapeTool):
         join_style = self.buff_tool.buffer_corner_cb.currentIndex() + 1
         ret_val = self.draw_app.buffer(buffer_distance, join_style)
 
-        self.disactivate()
+        self.deactivate()
         if ret_val == 'fail':
             return
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
@@ -3162,7 +1547,7 @@ class FCBuffer(FCShapeTool):
         join_style = self.buff_tool.buffer_corner_cb.currentIndex() + 1
         ret_val = self.draw_app.buffer_int(buffer_distance, join_style)
 
-        self.disactivate()
+        self.deactivate()
         if ret_val == 'fail':
             return
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
@@ -3190,7 +1575,7 @@ class FCBuffer(FCShapeTool):
         # self.app.ui.notebook.setTabText(2, _("Tools"))
         # self.draw_app.app.ui.splitter.setSizes([0, 1])
 
-        self.disactivate()
+        self.deactivate()
         if ret_val == 'fail':
             return
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
@@ -3204,7 +1589,7 @@ class FCBuffer(FCShapeTool):
         self.buff_tool.buffer_int_button.clicked.connect(self.on_buffer_int)
         self.buff_tool.buffer_ext_button.clicked.connect(self.on_buffer_ext)
 
-    def disactivate(self):
+    def deactivate(self):
         self.buff_tool.buffer_button.clicked.disconnect()
         self.buff_tool.buffer_int_button.clicked.disconnect()
         self.buff_tool.buffer_ext_button.clicked.disconnect()
@@ -3335,7 +1720,7 @@ class FCEraser(FCShapeTool):
 
         try:
             for geom in self.draw_app.get_selected():
-                geo_list.append(affinity.translate(geom.geo, xoff=dx, yoff=dy))
+                geo_list.append(translate(geom.geo, xoff=dx, yoff=dy))
         except AttributeError:
             self.draw_app.select_tool('select')
             self.draw_app.selected = []
@@ -3931,17 +2316,13 @@ class AppGeoEditor(QtCore.QObject):
 
         for elem in self.storage.get_objects():
             geo_type = type(elem.geo)
-            el_type = None
-            if geo_type is LinearRing:
-                el_type = _('Ring')
-            elif geo_type is LineString:
-                el_type = _('Line')
-            elif geo_type is Polygon:
-                el_type = _('Polygon')
-            elif geo_type is MultiLineString:
+
+            if geo_type is MultiLineString:
                 el_type = _('Multi-Line')
             elif geo_type is MultiPolygon:
                 el_type = _('Multi-Polygon')
+            else:
+                el_type = elem.data['type']
 
             self.tw.addParentEditable(
                 self.geo_parent,
@@ -4031,7 +2412,9 @@ class AppGeoEditor(QtCore.QObject):
                     rect = Rect(xmin, ymin, xmax, ymax)
                     rect.left, rect.right = xmin, xmax
                     rect.bottom, rect.top = ymin, ymax
+
                     # Lock updates in other threads
+                    assert isinstance(self.shapes, ShapeCollection)
                     self.shapes.lock_updates()
 
                     # adjust the view camera to be slightly bigger than the bounds so the shape collection can be
@@ -4528,7 +2911,7 @@ class AppGeoEditor(QtCore.QObject):
         Adds a shape to the shape storage.
 
         :param shape:       Shape to be added.
-        :type shape:        DrawToolShape
+        :type shape:        DrawToolShape, list
         :param build_ui:    If to trigger a build of the UI
         :type build_ui:     bool
         :return:            None
@@ -4544,13 +2927,16 @@ class AppGeoEditor(QtCore.QObject):
         #     return
 
         try:
-            for subshape in shape:
+            w_geo = shape.geoms if isinstance(shape, (MultiPolygon, MultiLineString)) else shape
+            for subshape in w_geo:
                 self.add_shape(subshape)
             return
         except TypeError:
             pass
 
-        assert isinstance(shape, DrawToolShape), "Expected a DrawToolShape, got %s" % type(shape)
+        if not isinstance(shape, DrawToolShape):
+            shape = DrawToolShape(shape)
+        # assert isinstance(shape, DrawToolShape), "Expected a DrawToolShape, got %s" % type(shape)
         assert shape.geo is not None, "Shape object has empty geometry (None)"
         assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or not isinstance(shape.geo, list), \
             "Shape objects has empty geometry ([])"
@@ -4788,7 +3174,7 @@ class AppGeoEditor(QtCore.QObject):
         #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
         self.app.ui.update_location_labels(self.app.dx, self.app.dy, x, y)
 
-        units = self.app.app_units.lower()
+        # units = self.app.app_units.lower()
         # self.app.plotcanvas.text_hud.text = \
         #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
         #         self.app.dx, units, self.app.dy, units, x, units, y, units)
@@ -4970,9 +3356,10 @@ class AppGeoEditor(QtCore.QObject):
         # Add the new utility shape
         try:
             # this case is for the Font Parse
-            for el in list(geo.geo):
+            w_geo = list(geo.geo.geoms) if isinstance(geo.geo, (MultiPolygon, MultiLineString)) else list(geo.geo)
+            for el in w_geo:
                 if type(el) == MultiPolygon:
-                    for poly in el:
+                    for poly in el.geoms:
                         self.tool_shape.add(
                             shape=poly,
                             color=(self.app.options["global_draw_color"]),
@@ -4981,7 +3368,7 @@ class AppGeoEditor(QtCore.QObject):
                             tolerance=None
                         )
                 elif type(el) == MultiLineString:
-                    for linestring in el:
+                    for linestring in el.geoms:
                         self.tool_shape.add(
                             shape=linestring,
                             color=(self.app.options["global_draw_color"]),
@@ -5136,68 +3523,44 @@ class AppGeoEditor(QtCore.QObject):
     def on_shape_complete(self):
         self.app.log.debug("on_shape_complete()")
 
-        geom = []
+        geom_list = []
         try:
             for shape in self.active_tool.geometry:
-                geom.append(shape.geo)
+                geom_list.append(shape)
         except TypeError:
-            geom = [self.active_tool.geometry.geo]
+            geom_list = [self.active_tool.geometry]
 
         if self.app.options['geometry_editor_milling_type'] == 'cl':
-            # reverse the geometry coordinates direction to allow creation of Gcode for  climb milling
+            # reverse the geometry coordinates direction to allow creation of Gcode for climb milling
             try:
-                pl = []
-                for p in geom:
+                for shp in geom_list:
+                    p = shp.geo
                     if p is not None:
                         if isinstance(p, Polygon):
-                            pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
+                            shp.geo = Polygon(p.exterior.coords[::-1], p.interiors)
                         elif isinstance(p, LinearRing):
-                            pl.append(LinearRing(p.coords[::-1]))
+                            shp.geo = LinearRing(p.coords[::-1])
                         elif isinstance(p, LineString):
-                            pl.append(LineString(p.coords[::-1]))
+                            shp.geo = LineString(p.coords[::-1])
                         elif isinstance(p, MultiLineString):
+                            new_line = []
                             for line in p.geoms:
-                                pl.append(LineString(line.coords[::-1]))
+                                new_line.append(LineString(line.coords[::-1]))
+                            shp.geo = MultiLineString(new_line)
                         elif isinstance(p, MultiPolygon):
+                            new_poly = []
                             for poly in p.geoms:
-                                pl.append(Polygon(poly.exterior.coords[::-1], poly.interiors))
+                                new_poly.append(Polygon(poly.exterior.coords[::-1], poly.interiors))
+                            shp.geo = MultiPolygon(new_poly)
                         else:
                             self.app.log.debug("AppGeoEditor.on_shape_complete() Error --> Unexpected Geometry %s" %
                                                type(p))
-
-                try:
-                    geom = MultiPolygon(pl)
-                except TypeError:
-                    # this may happen if the geom elements are made out of LineStrings because you can't create a
-                    # MultiPolygon out of LineStrings
-                    pass
-            except TypeError:
-                if isinstance(geom, Polygon) and geom is not None:
-                    geom = [Polygon(geom.exterior.coords[::-1], geom.interiors)]
-                elif isinstance(geom, LinearRing) and geom is not None:
-                    geom = [LinearRing(geom.coords[::-1])]
-                elif isinstance(geom, LineString) and geom is not None:
-                    geom = [LineString(geom.coords[::-1])]
-                elif isinstance(geom, MultiLineString):
-                    geom = [LineString(line.coords[::-1]) for line in geom.geoms]
-                elif isinstance(geom, MultiPolygon):
-                    geom = [Polygon(poly.exterior.coords[::-1], poly.interiors) for poly in geom.geoms]
-                else:
-                    self.app.log.debug("AppGeoEditor.on_shape_complete() Error --> Unexpected Geometry %s" %
-                                       type(geom))
             except Exception as e:
                 self.app.log.error("AppGeoEditor.on_shape_complete() Error --> %s" % str(e))
                 return 'fail'
 
-        shape_list = []
-        try:
-            for geo in geom:
-                shape_list.append(DrawToolShape(geo))
-        except TypeError:
-            shape_list.append(DrawToolShape(geom))
-
         # Add shape
-        self.add_shape(shape_list)
+        self.add_shape(geom_list)
 
         # Remove any utility shapes
         self.delete_utility_geometry()
@@ -5268,7 +3631,8 @@ class AppGeoEditor(QtCore.QObject):
         if self.editor_options["grid_snap"]:
             if self.editor_options["global_gridx"] != 0:
                 try:
-                    snap_x_ = round(x / float(self.editor_options["global_gridx"])) * float(self.editor_options['global_gridx'])
+                    snap_x_ = round(
+                        x / float(self.editor_options["global_gridx"])) * float(self.editor_options['global_gridx'])
                 except TypeError:
                     snap_x_ = x
             else:
@@ -5279,7 +3643,8 @@ class AppGeoEditor(QtCore.QObject):
             if self.app.ui.grid_gap_link_cb.isChecked():
                 if self.editor_options["global_gridx"] != 0:
                     try:
-                        snap_y_ = round(y / float(self.editor_options["global_gridx"])) * float(self.editor_options['global_gridx'])
+                        snap_y_ = round(
+                            y / float(self.editor_options["global_gridx"])) * float(self.editor_options['global_gridx'])
                     except TypeError:
                         snap_y_ = y
                 else:
@@ -5287,7 +3652,8 @@ class AppGeoEditor(QtCore.QObject):
             else:
                 if self.editor_options["global_gridy"] != 0:
                     try:
-                        snap_y_ = round(y / float(self.editor_options["global_gridy"])) * float(self.editor_options['global_gridy'])
+                        snap_y_ = round(
+                            y / float(self.editor_options["global_gridy"])) * float(self.editor_options['global_gridy'])
                     except TypeError:
                         snap_y_ = y
                 else:
@@ -5685,317 +4051,6 @@ class AppGeoEditor(QtCore.QObject):
                     return
 
                 editor_self.delete_shape(target)
-                editor_self.plot_all()
-                editor_self.build_ui_sig.emit()
-                editor_self.app.inform.emit('[success] %s' % _("Done."))
-
-        self.app.worker_task.emit({'fcn': work_task, 'params': [self]})
-
-    def buffer(self, buf_distance, join_style):
-        def work_task(editor_self):
-            with editor_self.app.proc_container.new(_("Working...")):
-                selected = editor_self.get_selected()
-
-                if buf_distance < 0:
-                    msg = '[ERROR_NOTCL] %s' % _("Negative buffer value is not accepted. "
-                                                 "Use Buffer interior to generate an 'inside' shape")
-                    editor_self.app.inform.emit(msg)
-
-                    # deselect everything
-                    editor_self.selected = []
-                    editor_self.plot_all()
-                    return 'fail'
-
-                if len(selected) == 0:
-                    editor_self.app.inform.emit('[WARNING_NOTCL] %s' % _("Nothing selected."))
-                    return 'fail'
-
-                if not isinstance(buf_distance, float):
-                    editor_self.app.inform.emit('[WARNING_NOTCL] %s' % _("Invalid distance."))
-
-                    # deselect everything
-                    editor_self.selected = []
-                    editor_self.plot_all()
-                    return 'fail'
-
-                results = []
-                for t in selected:
-                    if not t.geo.is_empty and t.geo.is_valid:
-                        if t.geo.geom_type == 'Polygon':
-                            results.append(t.geo.exterior.buffer(
-                                buf_distance - 1e-10,
-                                resolution=int(int(editor_self.app.options["geometry_circle_steps"]) / 4),
-                                join_style=join_style)
-                            )
-                        elif t.geo.geom_type == 'MultiLineString':
-                            for line in t.geo:
-                                if line.is_ring:
-                                    b_geo = Polygon(line)
-                                results.append(b_geo.buffer(
-                                    buf_distance - 1e-10,
-                                    resolution=int(int(editor_self.app.options["geometry_circle_steps"]) / 4),
-                                    join_style=join_style).exterior
-                                               )
-                                results.append(b_geo.buffer(
-                                    -buf_distance + 1e-10,
-                                    resolution=int(int(editor_self.app.options["geometry_circle_steps"]) / 4),
-                                    join_style=join_style).exterior
-                                               )
-                        elif t.geo.geom_type in ['LineString', 'LinearRing']:
-                            if t.geo.is_ring:
-                                b_geo = Polygon(t.geo)
-                            results.append(b_geo.buffer(
-                                buf_distance - 1e-10,
-                                resolution=int(int(editor_self.app.options["geometry_circle_steps"]) / 4),
-                                join_style=join_style).exterior
-                                           )
-                            results.append(b_geo.buffer(
-                                -buf_distance + 1e-10,
-                                resolution=int(int(editor_self.app.options["geometry_circle_steps"]) / 4),
-                                join_style=join_style).exterior
-                                           )
-
-                if not results:
-                    editor_self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed, the result is empty."))
-                    # deselect everything
-                    editor_self.selected = []
-                    editor_self.plot_all()
-                    return 'fail'
-
-                for sha in results:
-                    editor_self.add_shape(DrawToolShape(sha))
-
-                editor_self.plot_all()
-                editor_self.build_ui_sig.emit()
-                editor_self.app.inform.emit('[success] %s' % _("Done."))
-
-        self.app.worker_task.emit({'fcn': work_task, 'params': [self]})
-
-    def buffer_int(self, buf_distance, join_style):
-        def work_task(editor_self):
-            with editor_self.app.proc_container.new(_("Working...")):
-                selected = editor_self.get_selected()
-
-                if buf_distance < 0:
-                    editor_self.app.inform.emit('[ERROR_NOTCL] %s' % _("Negative buffer value is not accepted."))
-                    # deselect everything
-                    editor_self.selected = []
-                    editor_self.plot_all()
-                    return 'fail'
-
-                if len(selected) == 0:
-                    editor_self.app.inform.emit('[WARNING_NOTCL] %s' % _("Nothing selected."))
-                    return 'fail'
-
-                if not isinstance(buf_distance, float):
-                    editor_self.app.inform.emit('[WARNING_NOTCL] %s' % _("Invalid distance."))
-                    # deselect everything
-                    editor_self.selected = []
-                    editor_self.plot_all()
-                    return 'fail'
-
-                results = []
-                for t in selected:
-                    if not t.geo.is_empty and t.geo.is_valid:
-                        if t.geo.geom_type == 'Polygon':
-                            results.append(t.geo.exterior.buffer(
-                                -buf_distance + 1e-10,
-                                resolution=int(int(editor_self.app.options["geometry_circle_steps"]) / 4),
-                                join_style=join_style).exterior
-                                           )
-                        elif t.geo.geom_type == 'MultiLineString':
-                            for line in t.geo:
-                                if line.is_ring:
-                                    b_geo = Polygon(line)
-                                results.append(b_geo.buffer(
-                                    -buf_distance + 1e-10,
-                                    resolution=int(int(editor_self.app.options["geometry_circle_steps"]) / 4),
-                                    join_style=join_style).exterior
-                                               )
-                        elif t.geo.geom_type in ['LineString', 'LinearRing']:
-                            if t.geo.is_ring:
-                                b_geo = Polygon(t.geo)
-                            results.append(b_geo.buffer(
-                                -buf_distance + 1e-10,
-                                resolution=int(int(editor_self.app.options["geometry_circle_steps"]) / 4),
-                                join_style=join_style).exterior
-                                           )
-
-                if not results:
-                    editor_self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed, the result is empty."))
-                    # deselect everything
-                    editor_self.selected = []
-                    editor_self.plot_all()
-                    return 'fail'
-
-                for sha in results:
-                    editor_self.add_shape(DrawToolShape(sha))
-
-                editor_self.plot_all()
-                editor_self.build_ui_sig.emit()
-                editor_self.app.inform.emit('[success] %s' % _("Done."))
-
-        self.app.worker_task.emit({'fcn': work_task, 'params': [self]})
-
-    def buffer_ext(self, buf_distance, join_style):
-        def work_task(editor_self):
-            with editor_self.app.proc_container.new(_("Working...")):
-                selected = editor_self.get_selected()
-
-                if buf_distance < 0:
-                    msg = '[ERROR_NOTCL] %s' % _("Negative buffer value is not accepted. "
-                                                 "Use Buffer interior to generate an 'inside' shape")
-                    editor_self.app.inform.emit(msg)
-                    # deselect everything
-                    editor_self.selected = []
-                    editor_self.plot_all()
-                    return
-
-                if len(selected) == 0:
-                    editor_self.app.inform.emit('[WARNING_NOTCL] %s' % _("Nothing selected."))
-                    return
-
-                if not isinstance(buf_distance, float):
-                    editor_self.app.inform.emit('[WARNING_NOTCL] %s' % _("Invalid distance."))
-                    # deselect everything
-                    editor_self.selected = []
-                    editor_self.plot_all()
-                    return
-
-                results = []
-                for t in selected:
-                    if not t.geo.is_empty and t.geo.is_valid:
-                        if t.geo.geom_type == 'Polygon':
-                            results.append(t.geo.exterior.buffer(
-                                buf_distance - 1e-10,
-                                resolution=int(int(editor_self.app.options["geometry_circle_steps"]) / 4),
-                                join_style=join_style).exterior
-                                           )
-                        elif t.geo.geom_type == 'MultiLineString':
-                            for line in t.geo:
-                                if line.is_ring:
-                                    b_geo = Polygon(line)
-                                results.append(b_geo.buffer(
-                                    buf_distance - 1e-10,
-                                    resolution=int(int(editor_self.app.options["geometry_circle_steps"]) / 4),
-                                    join_style=join_style).exterior
-                                               )
-                        elif t.geo.geom_type in ['LineString', 'LinearRing']:
-                            if t.geo.is_ring:
-                                b_geo = Polygon(t.geo)
-                            results.append(b_geo.buffer(
-                                buf_distance - 1e-10,
-                                resolution=int(int(editor_self.app.options["geometry_circle_steps"]) / 4),
-                                join_style=join_style).exterior
-                                           )
-
-                if not results:
-                    editor_self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed, the result is empty."))
-                    # deselect everything
-                    editor_self.selected = []
-                    editor_self.plot_all()
-                    return 'fail'
-
-                for sha in results:
-                    editor_self.add_shape(DrawToolShape(sha))
-
-                editor_self.plot_all()
-                editor_self.build_ui_sig.emit()
-                editor_self.app.inform.emit('[success] %s' % _("Done."))
-
-        self.app.worker_task.emit({'fcn': work_task, 'params': [self]})
-
-    def paint(self, tooldia, overlap, margin, connect, contour, method):
-        def work_task(editor_self):
-            with editor_self.app.proc_container.new(_("Working...")):
-                if overlap >= 100:
-                    editor_self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                                _("Could not do Paint. Overlap value has to be less than 100%%."))
-                    return
-
-                editor_self.paint_tooldia = tooldia
-                selected = editor_self.get_selected()
-
-                if len(selected) == 0:
-                    editor_self.app.inform.emit('[WARNING_NOTCL] %s' % _("Nothing selected."))
-                    return
-
-                for param in [tooldia, overlap, margin]:
-                    if not isinstance(param, float):
-                        param_name = [k for k, v in locals().items() if v is param][0]
-                        editor_self.app.inform.emit('[WARNING] %s: %s' % (_("Invalid value for"), str(param)))
-
-                results = []
-
-                def recurse(geometry, reset=True):
-                    """
-                    Creates a list of non-iterable linear geometry objects.
-                    Results are placed in self.flat_geometry
-
-                    :param geometry: Shapely type or list or list of list of such.
-                    :param reset: Clears the contents of self.flat_geometry.
-                    """
-
-                    if geometry is None:
-                        return
-
-                    if reset:
-                        self.flat_geo = []
-
-                    # If iterable, expand recursively.
-                    try:
-                        for geo_el in geometry:
-                            if geo_el is not None:
-                                recurse(geometry=geo_el, reset=False)
-
-                    # Not iterable, do the actual indexing and add.
-                    except TypeError:
-                        self.flat_geo.append(geometry)
-
-                    return self.flat_geo
-
-                for geo in selected:
-
-                    local_results = []
-                    for geo_obj in recurse(geo.geo):
-                        try:
-                            if type(geo_obj) == Polygon:
-                                poly_buf = geo_obj.buffer(-margin)
-                            else:
-                                poly_buf = Polygon(geo_obj).buffer(-margin)
-
-                            if method == _("Seed"):
-                                cp = Geometry.clear_polygon2(
-                                    editor_self, polygon_to_clear=poly_buf, tooldia=tooldia,
-                                    steps_per_circle=editor_self.app.options["geometry_circle_steps"],
-                                    overlap=overlap, contour=contour, connect=connect)
-                            elif method == _("Lines"):
-                                cp = Geometry.clear_polygon3(
-                                    editor_self, polygon=poly_buf, tooldia=tooldia,
-                                    steps_per_circle=editor_self.app.options["geometry_circle_steps"],
-                                    overlap=overlap, contour=contour, connect=connect)
-                            else:
-                                cp = Geometry.clear_polygon(
-                                    editor_self, polygon=poly_buf, tooldia=tooldia,
-                                    steps_per_circle=editor_self.app.options["geometry_circle_steps"],
-                                    overlap=overlap, contour=contour, connect=connect)
-
-                            if cp is not None:
-                                local_results += list(cp.get_objects())
-                        except Exception as e:
-                            editor_self.app.log.error("Could not Paint the polygons. %s" % str(e))
-                            editor_self.app.inform.emit(
-                                '[ERROR] %s\n%s' % (_("Could not do Paint. Try a different combination of parameters. "
-                                                      "Or a different method of Paint"), str(e))
-                            )
-                            return
-
-                        # add the result to the results list
-                        results.append(unary_union(local_results))
-
-                # This is a dirty patch:
-                for r in results:
-                    editor_self.add_shape(DrawToolShape(r))
                 editor_self.plot_all()
                 editor_self.build_ui_sig.emit()
                 editor_self.app.inform.emit('[success] %s' % _("Done."))
