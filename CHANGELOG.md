@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM Evo beta
 - in Geometry Editor - update (some reformatting and adding shape data)
 - in Geometry Editor - fixed the Explode tool to work on the result of adding Text geometry
 - all the Geometry Editor plugins are moved inside another folder and the UI's are moved into their own class
+- in Geometry Editor made sure that the MultiPolygon shapes (like those made by the Text Tool) will update the coordinates in the UI
 
 7.04.2022
 

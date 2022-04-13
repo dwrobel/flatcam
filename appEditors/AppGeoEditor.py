@@ -2376,12 +2376,25 @@ class AppGeoEditor(QtCore.QObject):
 
                 coords = ''
                 vertex_nr = 0
-                for idx, line in enumerate(last_sel_geo):
+                for idx, line in enumerate(last_sel_geo.geoms):
                     line_coords = list(line.coords)
                     vertex_nr += len(line_coords)
                     coords += 'Line %s\n' % str(idx)
                     coords += str(line_coords) + '\n'
+            elif last_sel_geo.geom_type == 'MultiPolygon':
+                length = 0.0
+                self.is_simple_entry.set_value('None')
+                self.is_ring_entry.set_value('None')
+                self.is_ccw_entry.set_value('None')
 
+                coords = ''
+                vertex_nr = 0
+                for idx, poly in enumerate(last_sel_geo.geoms):
+                    poly_coords = list(poly.exterior.coords) + [list(i.coords) for i in poly.interiors]
+                    vertex_nr += len(poly_coords)
+
+                    coords += 'Polygon %s\n' % str(idx)
+                    coords += str(poly_coords) + '\n'
             elif last_sel_geo.geom_type in ['LinearRing', 'LineString']:
                 length = last_sel_geo.length
                 coords = list(last_sel_geo.coords)
