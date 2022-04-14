@@ -1048,9 +1048,14 @@ class FCPath(FCPolygon):
                         QtCore.Qt.Key.Key_7, QtCore.Qt.Key.Key_8, QtCore.Qt.Key.Key_9, QtCore.Qt.Key.Key_Minus,
                         QtCore.Qt.Key.Key_Plus, QtCore.Qt.Key.Key_Comma, QtCore.Qt.Key.Key_Period,
                         QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
-            self.interpolate_length += str(key.name)
+            try:
+                # VisPy keys
+                self.interpolate_length += str(key.name)
+            except AttributeError:
+                # Qt keys
+                self.interpolate_length += chr(key)
 
-        if key == 'Enter' or key == QtCore.Qt.Key.Key_Return:
+        if key == 'Enter' or key == QtCore.Qt.Key.Key_Return or key == QtCore.Qt.Key.Key_Enter:
             if self.interpolate_length != '':
                 target_length = self.interpolate_length.replace(',', '.')
                 try:
