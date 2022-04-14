@@ -955,6 +955,8 @@ class FCPath(FCPolygon):
 
         self.path_tool = PathEditorTool(self.app, self.draw_app)
         self.path_tool.run()
+        self.new_segment = True
+
         self.app.ui.notebook.setTabText(2, _("Path"))
         if self.draw_app.app.ui.splitter.sizes()[0] == 0:
             self.draw_app.app.ui.splitter.setSizes([1, 1])
@@ -1056,14 +1058,16 @@ class FCPath(FCPolygon):
                         QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
             try:
                 # VisPy keys
-                if self.path_tool.length == 0:
+                if self.path_tool.length == 0 or self.new_segment is True:
                     self.path_tool.length = str(key.name)
+                    self.new_segment = False
                 else:
                     self.path_tool.length = str(self.path_tool.length) + str(key.name)
             except AttributeError:
                 # Qt keys
-                if self.path_tool.length == 0:
+                if self.path_tool.length == 0 or self.new_segment is True:
                     self.path_tool.length = chr(key)
+                    self.new_segment = False
                 else:
                     self.path_tool.length = str(self.path_tool.length) + chr(key)
 
@@ -1098,6 +1102,7 @@ class FCPath(FCPolygon):
 
                 if self.points[-1] != (new_x, new_y):
                     self.points.append((new_x, new_y))
+                    self.new_segment = True
                     self.draw_app.app.on_jump_to(custom_location=(new_x, new_y), fit_center=False)
                     if len(self.points) > 0:
                         msg = '%s: %s. %s' % (
