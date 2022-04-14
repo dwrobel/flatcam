@@ -22,6 +22,7 @@ from appEditors.plugins.GeoBufferPlugin import BufferSelectionTool
 from appEditors.plugins.GeoPaintPlugin import PaintOptionsTool
 from appEditors.plugins.GeoTextPlugin import TextInputTool
 from appEditors.plugins.GeoTransformationPlugin import TransformEditorTool
+from appEditors.plugins.GeoPathPlugin import PathEditorTool
 
 from vispy.geometry import Rect
 
@@ -939,8 +940,8 @@ class FCPath(FCPolygon):
     def __init__(self, draw_app):
         FCPolygon.__init__(self, draw_app)
         self.draw_app = draw_app
-        self.interpolate_length = ''
         self.name = 'path'
+        self.app = self.draw_app.app
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -951,6 +952,12 @@ class FCPath(FCPolygon):
 
         self.draw_app.app.plotcanvas.view.camera.zoom_callback = self.draw_cursor_data
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
+        self.path_tool = PathEditorTool(self.app, self.draw_app)
+        self.path_tool.run()
+        self.app.ui.notebook.setTabText(2, _("Path"))
+        if self.draw_app.app.ui.splitter.sizes()[0] == 0:
+            self.draw_app.app.ui.splitter.setSizes([1, 1])
 
     def make(self):
         self.geometry = DrawToolShape(LineString(self.points))
@@ -963,7 +970,6 @@ class FCPath(FCPolygon):
 
         self.draw_app.in_action = False
         self.complete = True
-        self.interpolate_length = ''
 
         self.draw_app.app.jump_signal.disconnect()
         self.geometry.data['type'] = _('Path')
@@ -1050,20 +1056,31 @@ class FCPath(FCPolygon):
                         QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
             try:
                 # VisPy keys
-                self.interpolate_length += str(key.name)
+                if self.path_tool.length == 0:
+                    self.path_tool.length = str(key.name)
+                else:
+                    self.path_tool.length = str(self.path_tool.length) + str(key.name)
             except AttributeError:
                 # Qt keys
-                self.interpolate_length += chr(key)
+                if self.path_tool.length == 0:
+                    self.path_tool.length = chr(key)
+                else:
+                    self.path_tool.length = str(self.path_tool.length) + chr(key)
 
         if key == 'Enter' or key == QtCore.Qt.Key.Key_Return or key == QtCore.Qt.Key.Key_Enter:
-            if self.interpolate_length != '':
-                target_length = self.interpolate_length.replace(',', '.')
-                try:
-                    target_length = eval(target_length)
-                except SyntaxError as err:
-                    ret = '%s: %s' % (str(err).capitalize(), self.interpolate_length)
-                    self.interpolate_length = ''
-                    return ret
+            if self.path_tool.length != 0:
+                # target_length = self.interpolate_length.replace(',', '.')
+                # try:
+                #     target_length = eval(target_length)
+                # except SyntaxError as err:
+                #     ret = '%s: %s' % (str(err).capitalize(), self.interpolate_length)
+                #     self.interpolate_length = ''
+                #     return ret
+
+                target_length = self.path_tool.length
+                if target_length is None:
+                    self.path_tool.length = 0.0
+                    return _("Failed.")
 
                 first_pt = self.points[-1]
                 last_pt = self.draw_app.app.mouse
@@ -1077,15 +1094,16 @@ class FCPath(FCPolygon):
                     self.clean_up()
                     return '%s %s' % (_("Failed."), str(err))
 
-                self.points.append((new_x, new_y))
-                self.draw_app.app.on_jump_to(custom_location=(new_x, new_y), fit_center=False)
-                if len(self.points) > 0:
-                    msg = '%s: %s. %s' % (
-                        _("Projected"), str(self.interpolate_length),
-                        _("Click on next Point or click right mouse button to complete ..."))
-                    self.draw_app.app.inform.emit(msg)
-                    self.interpolate_length = ''
-                    # return "Click on next point or hit ENTER to complete ..."
+                if self.points[-1] != (new_x, new_y):
+                    self.points.append((new_x, new_y))
+                    self.draw_app.app.on_jump_to(custom_location=(new_x, new_y), fit_center=False)
+                    if len(self.points) > 0:
+                        msg = '%s: %s. %s' % (
+                            _("Projected"), str(self.path_tool.length),
+                            _("Click on next Point or click right mouse button to complete ..."))
+                        self.draw_app.app.inform.emit(msg)
+                        # self.interpolate_length = ''
+                        # return "Click on next point or hit ENTER to complete ..."
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -1100,6 +1118,7 @@ class FCPath(FCPolygon):
             self.draw_app.app.jump_signal.disconnect()
         except (TypeError, AttributeError):
             pass
+        self.path_tool.on_tab_close()
 
 
 class FCSelect(DrawTool):
@@ -1120,6 +1139,12 @@ class FCSelect(DrawTool):
         # make sure that the cursor text from the FCPath is deleted
         if self.draw_app.app.plotcanvas.text_cursor.parent:
             self.draw_app.app.plotcanvas.text_cursor.parent = None
+
+        # make sure that the Tools tab is removed
+        try:
+            self.draw_app.app.ui.notebook.removeTab(2)
+        except Exception:
+            pass
 
     def click_release(self, point):
         """
@@ -1609,7 +1634,7 @@ class FCBuffer(FCShapeTool):
         self.origin = (0, 0)
         self.buff_tool = BufferSelectionTool(self.app, self.draw_app)
         self.buff_tool.run()
-        self.app.ui.notebook.setTabText(2, _("Buffer Tool"))
+        self.app.ui.notebook.setTabText(2, _("Buffer"))
         if self.draw_app.app.ui.splitter.sizes()[0] == 0:
             self.draw_app.app.ui.splitter.setSizes([1, 1])
         self.activate()
@@ -1620,19 +1645,19 @@ class FCBuffer(FCShapeTool):
             return
 
         try:
-            buffer_distance = float(self.buff_tool.buffer_distance_entry.get_value())
+            buffer_distance = float(self.buff_tool.ui.buffer_distance_entry.get_value())
         except ValueError:
             # try to convert comma to decimal point. if it's still not working error message and return
             try:
-                buffer_distance = float(self.buff_tool.buffer_distance_entry.get_value().replace(',', '.'))
-                self.buff_tool.buffer_distance_entry.set_value(buffer_distance)
+                buffer_distance = float(self.buff_tool.ui.buffer_distance_entry.get_value().replace(',', '.'))
+                self.buff_tool.ui.buffer_distance_entry.set_value(buffer_distance)
             except ValueError:
                 self.app.inform.emit('[WARNING_NOTCL] %s' %
                                      _("Buffer distance value is missing or wrong format. Add it and retry."))
                 return
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
-        join_style = self.buff_tool.buffer_corner_cb.currentIndex() + 1
+        join_style = self.buff_tool.ui.buffer_corner_cb.currentIndex() + 1
         ret_val = self.draw_app.buffer(buffer_distance, join_style)
 
         self.deactivate()
@@ -1646,19 +1671,19 @@ class FCBuffer(FCShapeTool):
             return
 
         try:
-            buffer_distance = float(self.buff_tool.buffer_distance_entry.get_value())
+            buffer_distance = float(self.buff_tool.ui.buffer_distance_entry.get_value())
         except ValueError:
             # try to convert comma to decimal point. if it's still not working error message and return
             try:
-                buffer_distance = float(self.buff_tool.buffer_distance_entry.get_value().replace(',', '.'))
-                self.buff_tool.buffer_distance_entry.set_value(buffer_distance)
+                buffer_distance = float(self.buff_tool.ui.buffer_distance_entry.get_value().replace(',', '.'))
+                self.buff_tool.ui.buffer_distance_entry.set_value(buffer_distance)
             except ValueError:
                 self.app.inform.emit('[WARNING_NOTCL] %s' %
                                      _("Buffer distance value is missing or wrong format. Add it and retry."))
                 return
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
-        join_style = self.buff_tool.buffer_corner_cb.currentIndex() + 1
+        join_style = self.buff_tool.ui.buffer_corner_cb.currentIndex() + 1
         ret_val = self.draw_app.buffer_int(buffer_distance, join_style)
 
         self.deactivate()
@@ -1672,19 +1697,19 @@ class FCBuffer(FCShapeTool):
             return
 
         try:
-            buffer_distance = float(self.buff_tool.buffer_distance_entry.get_value())
+            buffer_distance = float(self.buff_tool.ui.buffer_distance_entry.get_value())
         except ValueError:
             # try to convert comma to decimal point. if it's still not working error message and return
             try:
-                buffer_distance = float(self.buff_tool.buffer_distance_entry.get_value().replace(',', '.'))
-                self.buff_tool.buffer_distance_entry.set_value(buffer_distance)
+                buffer_distance = float(self.buff_tool.ui.buffer_distance_entry.get_value().replace(',', '.'))
+                self.buff_tool.ui.buffer_distance_entry.set_value(buffer_distance)
             except ValueError:
                 self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
                                               _("Buffer distance value is missing or wrong format. Add it and retry."))
                 return
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
-        join_style = self.buff_tool.buffer_corner_cb.currentIndex() + 1
+        join_style = self.buff_tool.ui.buffer_corner_cb.currentIndex() + 1
         ret_val = self.draw_app.buffer_ext(buffer_distance, join_style)
         # self.app.ui.notebook.setTabText(2, _("Tools"))
         # self.draw_app.app.ui.splitter.setSizes([0, 1])

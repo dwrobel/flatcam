@@ -3482,20 +3482,21 @@ class MainGUI(QtWidgets.QMainWindow):
                             # automatically make the selection tool active after completing current action
                             self.app.geo_editor.select_tool('select')
                             return
-                        elif self.app.geo_editor.active_tool.name == 'path':
-                            if self.app.geo_editor.active_tool.interpolate_length != '':
-                                pass
                         else:
-                            self.app.geo_editor.active_tool.click(
-                                self.app.geo_editor.snap(self.app.geo_editor.x, self.app.geo_editor.y))
+                            if self.app.geo_editor.active_tool.name == 'path' and \
+                                self.app.geo_editor.active_tool.path_tool.length != 0.0:
+                                pass
+                            else:
+                                self.app.geo_editor.active_tool.click(
+                                    self.app.geo_editor.snap(self.app.geo_editor.x, self.app.geo_editor.y))
 
-                            self.app.geo_editor.active_tool.make()
+                                self.app.geo_editor.active_tool.make()
 
-                            if self.app.geo_editor.active_tool.complete:
-                                self.app.geo_editor.on_shape_complete()
-                                self.app.inform.emit('[success] %s' % _("Done."))
-                            # automatically make the selection tool active after completing current action
-                            self.app.geo_editor.select_tool('select')
+                                if self.app.geo_editor.active_tool.complete:
+                                    self.app.geo_editor.on_shape_complete()
+                                    self.app.inform.emit('[success] %s' % _("Done."))
+                                # automatically make the selection tool active after completing current action
+                                self.app.geo_editor.select_tool('select')
 
                 # Abort the current action
                 if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':

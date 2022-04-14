@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM Evo beta
 - in Geometry Editor added a new feature. While drawing a 'Path' now the user can project a direction by moving the mouse cursor in a certain direction and after that by typing a number or an arithmetic simple expression, a line segment will be drawn in that direction with the specified length from the last point
 - in Geometry Editor for the Path tool but only when using the 3D engine graphic mode, the mouse cursor is followed by position data
 - in Geometry Editor for the Path tool fixed an issue with path projection when changing the grid size while the Path tool is active
+- in Geometry Editor, for Path tool, added UI that close on end of the Path tool action; it displays the projected length which now is kept for as long as it is wanted, allowing for path automation in case of repetitive lengths
 
 13.04.2022
 

@@ -61,7 +61,7 @@ class BufferSelectionTool(AppTool):
 
         # self.app.ui.notebook.callback_on_close = self.on_tab_close
 
-        self.app.ui.notebook.setTabText(2, _("Buffer Tool"))
+        self.app.ui.notebook.setTabText(2, _("Buffer"))
 
     def set_tool_ui(self):
         # Init appGUI
@@ -375,7 +375,7 @@ class BufferEditorUI:
         # Buffer distance
         self.buffer_distance_entry = FCDoubleSpinner()
         self.buffer_distance_entry.set_precision(self.decimals)
-        self.buffer_distance_entry.set_range(0.0000, 9910000.0000)
+        self.buffer_distance_entry.set_range(0.0000, 10000.0000)
         grid_buffer.addWidget(FCLabel('%s:' % _("Buffer distance")), 0, 0)
         grid_buffer.addWidget(self.buffer_distance_entry, 0, 1)
 
