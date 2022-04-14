@@ -15,7 +15,8 @@ CHANGELOG for FlatCAM Evo beta
 - in Geometry Editor, for Path tool, added UI that close on end of the Path tool action; it displays the projected length which now is kept for as long as it is wanted, allowing for path automation in case of repetitive lengths
 - solved a ZeroDivisionError exception in the Geometry Editor -> Path Tool
 - in Geometry Editor, for Path tool, added the ability to differentiate between creating a multidigit number for the projection and starting a new number (for a new segment)
-- 
+- added ability to control the color of the project items for the dark theme too
+
 13.04.2022
 
 - fixed the display of lines in Distance Plugin when using 'snap to' together with 'multipoint'

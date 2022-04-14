@@ -505,8 +505,16 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 return index.internalPointer().data(index.column())
 
         if role == Qt.ItemDataRole.ForegroundRole:
-            color = QColor(self.app.options['global_proj_item_color'][:-2])
-            color_disabled = QColor(self.app.options['global_proj_item_dis_color'][:-2])
+            theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+            theme = theme_settings.value('theme', type=str)
+
+            if theme in ['black', 'dark']:
+                color = QColor(self.app.options['global_proj_item_color_dark'][:-2])
+                color_disabled = QColor(self.app.options['global_proj_item_dis_color_dark'][:-2])
+            else:
+                color = QColor(self.app.options['global_proj_item_color_light'][:-2])
+                color_disabled = QColor(self.app.options['global_proj_item_dis_color_light'][:-2])
+
             obj = index.internalPointer().obj
             if obj:
                 return QtGui.QBrush(color) if obj.obj_options["plot"] else QtGui.QBrush(color_disabled)
