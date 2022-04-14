@@ -1086,13 +1086,15 @@ class FCPath(FCPolygon):
                 last_pt = self.draw_app.app.mouse
 
                 seg_length = math.sqrt((last_pt[0] - first_pt[0])**2 + (last_pt[1] - first_pt[1])**2)
+                if seg_length == 0.0:
+                    return
                 try:
                     new_x = first_pt[0] + (last_pt[0] - first_pt[0]) / seg_length * target_length
                     new_y = first_pt[1] + (last_pt[1] - first_pt[1]) / seg_length * target_length
                 except ZeroDivisionError as err:
                     self.points = []
                     self.clean_up()
-                    return '%s %s' % (_("Failed."), str(err))
+                    return '[ERROR_NOTCL] %s %s' % (_("Failed."), str(err).capitalize())
 
                 if self.points[-1] != (new_x, new_y):
                     self.points.append((new_x, new_y))
