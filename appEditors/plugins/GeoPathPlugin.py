@@ -11,13 +11,14 @@ class PathEditorTool(AppTool):
     Simple input for buffer distance.
     """
 
-    def __init__(self, app, draw_app):
+    def __init__(self, app, draw_app, plugin_name):
         AppTool.__init__(self, app)
 
         self.draw_app = draw_app
         self.decimals = app.decimals
+        self.plugin_name = plugin_name
 
-        self.ui = PathEditorUI(layout=self.layout, path_class=self)
+        self.ui = PathEditorUI(layout=self.layout, path_class=self, plugin_name=plugin_name)
 
         self.connect_signals_at_init()
         self.set_tool_ui()
@@ -66,7 +67,7 @@ class PathEditorTool(AppTool):
 
         # self.app.ui.notebook.callback_on_close = self.on_tab_close
 
-        self.app.ui.notebook.setTabText(2, _("Path"))
+        self.app.ui.notebook.setTabText(2, self.plugin_name)
 
     def set_tool_ui(self):
         # Init appGUI
@@ -96,9 +97,9 @@ class PathEditorTool(AppTool):
 
 
 class PathEditorUI:
-    pluginName = _("Path")
 
-    def __init__(self, layout, path_class):
+    def __init__(self, layout, path_class, plugin_name):
+        self.pluginName = plugin_name
         self.path_class = path_class
         self.decimals = self.path_class.app.decimals
         self.layout = layout
@@ -128,6 +129,9 @@ class PathEditorUI:
 
         # Project distance
         self.project_line_lbl = FCLabel('%s:' % _("Length"))
+        self.project_line_lbl.setToolTip(
+            _("Length of the current segment.")
+        )
         self.project_line_entry = NumericalEvalEntry(border_color='#0069A9')
         grid_path.addWidget(self.project_line_lbl, 0, 0)
         grid_path.addWidget(self.project_line_entry, 0, 1)

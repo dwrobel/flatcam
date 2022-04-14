@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM Evo beta
 - solved a ZeroDivisionError exception in the Geometry Editor -> Path Tool
 - in Geometry Editor, for Path tool, added the ability to differentiate between creating a multidigit number for the projection and starting a new number (for a new segment)
 - added ability to control the color of the project items for the dark theme too
+- in Geometry Editor, for the Polygon Tool added the UI, the length projection and the cursor data, just like for the Path Tool
 
 13.04.2022
 

@@ -354,7 +354,7 @@ class DrawToolShape(object):
 class DrawToolUtilityShape(DrawToolShape):
     """
     Utility shapes are temporary geometry in the editor
-    to assist in the creation of shapes. For example it
+    to assist in the creation of shapes. For example, it
     will show the outline of a rectangle from the first
     point to the current mouse pointer before the second
     point is clicked and the final geometry is created.
@@ -848,6 +848,8 @@ class FCPolygon(FCShapeTool):
         DrawTool.__init__(self, draw_app)
         self.name = 'polygon'
         self.draw_app = draw_app
+        self.app = self.draw_app.app
+        self.plugin_name = _("Polygon")
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -856,7 +858,228 @@ class FCPolygon(FCShapeTool):
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
+        if self.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = self.draw_cursor_data
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
+        self.polygon_tool = PathEditorTool(self.app, self.draw_app, plugin_name=self.plugin_name)
+        self.polygon_tool.run()
+        self.new_segment = True
+
+        self.app.ui.notebook.setTabText(2, self.plugin_name)
+        if self.draw_app.app.ui.splitter.sizes()[0] == 0:
+            self.draw_app.app.ui.splitter.setSizes([1, 1])
+
+        self.draw_app.app.inform.emit(_("Click on 1st corner ..."))
+
+    def click(self, point):
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
+        self.draw_app.in_action = True
+        if point != self.points[-1:]:
+            self.points.append(point)
+
+        if len(self.points) > 0:
+            self.draw_app.app.inform.emit(_("Click on next Point or click right mouse button to complete ..."))
+            return "Click on next point or hit ENTER to complete ..."
+
+        return ""
+
+    def make(self):
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except Exception:
+            pass
+
+        if self.points[-1] == self.points[-2]:
+            self.points.pop(-1)
+
+        # self.geometry = LinearRing(self.points)
+        self.geometry = DrawToolShape(LinearRing(self.points))
+        self.draw_app.in_action = False
+        self.complete = True
+
+        self.draw_app.app.jump_signal.disconnect()
+        self.geometry.data['type'] = self.plugin_name
+        self.draw_cursor_data(delete=True)
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
+
+    def utility_geometry(self, data=None):
+        if len(self.points) == 1:
+            temp_points = [x for x in self.points]
+            temp_points.append(data)
+            return DrawToolUtilityShape(LineString(temp_points))
+        elif len(self.points) > 1:
+            temp_points = [x for x in self.points]
+            temp_points.append(data)
+            return DrawToolUtilityShape(LinearRing(temp_points))
+        else:
+            return None
+
+    def draw_cursor_data(self, pos=None, delete=False):
+        if pos is None:
+            pos = self.draw_app.snap_x, self.draw_app.snap_y
+
+        if delete:
+            if self.draw_app.app.use_3d_engine:
+                self.draw_app.app.plotcanvas.text_cursor.parent = None
+                self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+            return
+
+        # font size
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("hud_font_size"):
+            fsize = qsettings.value('hud_font_size', type=int)
+        else:
+            fsize = 8
+
+        x = pos[0]
+        y = pos[1]
+        try:
+            length = abs(np.sqrt((pos[0] - self.points[-1][0]) ** 2 + (pos[1] - self.points[-1][1]) ** 2))
+        except IndexError:
+            length = self.draw_app.app.dec_format(0.0, self.draw_app.app.decimals)
+        units = self.draw_app.app.app_units.lower()
+
+        x_dec = str(self.draw_app.app.dec_format(x, self.draw_app.app.decimals)) if x else '0.0'
+        y_dec = str(self.draw_app.app.dec_format(y, self.draw_app.app.decimals)) if y else '0.0'
+        length_dec = str(self.draw_app.app.dec_format(length, self.draw_app.app.decimals)) if length else '0.0'
+
+        l1_txt = 'X:   %s [%s]' % (x_dec, units)
+        l2_txt = 'Y:   %s [%s]' % (y_dec, units)
+        l3_txt = 'L:   %s [%s]' % (length_dec, units)
+        cursor_text = '%s\n%s\n\n%s' % (l1_txt, l2_txt, l3_txt)
+
+        if self.draw_app.app.use_3d_engine:
+            new_pos = self.draw_app.app.plotcanvas.translate_coords_2((x, y))
+            x, y, __, ___ = self.draw_app.app.plotcanvas.translate_coords((new_pos[0]+30, new_pos[1]))
+
+            # text
+            self.draw_app.app.plotcanvas.text_cursor.font_size = fsize
+            self.draw_app.app.plotcanvas.text_cursor.text = cursor_text
+            self.draw_app.app.plotcanvas.text_cursor.pos = x, y
+            self.draw_app.app.plotcanvas.text_cursor.anchors = 'left', 'top'
+
+            if self.draw_app.app.plotcanvas.text_cursor.parent is None:
+                self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
+
+    def on_key(self, key):
+        # Jump to coords
+        if key == QtCore.Qt.Key.Key_J or key == 'J':
+            self.draw_app.app.on_jump_to()
+
+        if key == 'Backspace' or key == QtCore.Qt.Key.Key_Backspace:
+            if len(self.points) > 0:
+                self.points = self.points[0:-1]
+                # Remove any previous utility shape
+                self.draw_app.tool_shape.clear(update=False)
+                geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+                self.draw_app.draw_utility_geometry(geo=geo)
+                if geo:
+                    return _("Backtracked one point ...")
+                else:
+                    self.draw_app.app.inform.emit(_("Click on 1st corner ..."))
+
+        if key in [str(i) for i in range(10)] + ['.', ',', '+', '-', '/', '*'] or \
+                key in [QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_1, QtCore.Qt.Key.Key_2,
+                        QtCore.Qt.Key.Key_3, QtCore.Qt.Key.Key_4, QtCore.Qt.Key.Key_5, QtCore.Qt.Key.Key_6,
+                        QtCore.Qt.Key.Key_7, QtCore.Qt.Key.Key_8, QtCore.Qt.Key.Key_9, QtCore.Qt.Key.Key_Minus,
+                        QtCore.Qt.Key.Key_Plus, QtCore.Qt.Key.Key_Comma, QtCore.Qt.Key.Key_Period,
+                        QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
+            try:
+                # VisPy keys
+                if self.polygon_tool.length == 0 or self.new_segment is True:
+                    self.polygon_tool.length = str(key.name)
+                    self.new_segment = False
+                else:
+                    self.polygon_tool.length = str(self.polygon_tool.length) + str(key.name)
+            except AttributeError:
+                # Qt keys
+                if self.polygon_tool.length == 0 or self.new_segment is True:
+                    self.polygon_tool.length = chr(key)
+                    self.new_segment = False
+                else:
+                    self.polygon_tool.length = str(self.polygon_tool.length) + chr(key)
+
+        if key == 'Enter' or key == QtCore.Qt.Key.Key_Return or key == QtCore.Qt.Key.Key_Enter:
+            if self.polygon_tool.length != 0:
+                target_length = self.polygon_tool.length
+                if target_length is None:
+                    self.polygon_tool.length = 0.0
+                    return _("Failed.")
+
+                first_pt = self.points[-1]
+                last_pt = self.draw_app.app.mouse
+
+                seg_length = math.sqrt((last_pt[0] - first_pt[0])**2 + (last_pt[1] - first_pt[1])**2)
+                if seg_length == 0.0:
+                    return
+                try:
+                    new_x = first_pt[0] + (last_pt[0] - first_pt[0]) / seg_length * target_length
+                    new_y = first_pt[1] + (last_pt[1] - first_pt[1]) / seg_length * target_length
+                except ZeroDivisionError as err:
+                    self.points = []
+                    self.clean_up()
+                    return '[ERROR_NOTCL] %s %s' % (_("Failed."), str(err).capitalize())
+
+                if self.points[-1] != (new_x, new_y):
+                    self.points.append((new_x, new_y))
+                    self.new_segment = True
+                    self.draw_app.app.on_jump_to(custom_location=(new_x, new_y), fit_center=False)
+                    if len(self.points) > 0:
+                        msg = '%s: %s. %s' % (
+                            _("Projected"), str(self.polygon_tool.length),
+                            _("Click on next Point or click right mouse button to complete ..."))
+                        self.draw_app.app.inform.emit(msg)
+
+    def clean_up(self):
+        self.draw_app.selected = []
+        self.draw_app.plot_all()
+
+        if self.draw_app.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.text_cursor.parent = None
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.polygon_tool.on_tab_close()
+
+
+class FCPath(FCShapeTool):
+    """
+    Resulting type: LineString
+    """
+
+    def __init__(self, draw_app):
+        FCShapeTool.__init__(self, draw_app)
+        self.draw_app = draw_app
+        self.name = 'path'
+        self.app = self.draw_app.app
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except Exception:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_path5.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
+
+        if self.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = self.draw_cursor_data
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
+        self.path_tool = PathEditorTool(self.app, self.draw_app, plugin_name=_("Path"))
+        self.path_tool.run()
+        self.new_segment = True
+
+        self.app.ui.notebook.setTabText(2, _("Path"))
+        if self.draw_app.app.ui.splitter.sizes()[0] == 0:
+            self.draw_app.app.ui.splitter.setSizes([1, 1])
 
         self.draw_app.app.inform.emit(_("Click on 1st point ..."))
 
@@ -876,90 +1099,6 @@ class FCPolygon(FCShapeTool):
             return "Click on next point or hit ENTER to complete ..."
 
         return ""
-
-    def utility_geometry(self, data=None):
-        if len(self.points) == 1:
-            temp_points = [x for x in self.points]
-            temp_points.append(data)
-            return DrawToolUtilityShape(LineString(temp_points))
-
-        if len(self.points) > 1:
-            temp_points = [x for x in self.points]
-            temp_points.append(data)
-            return DrawToolUtilityShape(LinearRing(temp_points))
-
-        return None
-
-    def make(self):
-        try:
-            QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception:
-            pass
-
-        if self.points[-1] == self.points[-2]:
-            self.points.pop(-1)
-
-        # self.geometry = LinearRing(self.points)
-        self.geometry = DrawToolShape(LinearRing(self.points))
-        self.draw_app.in_action = False
-        self.complete = True
-
-        self.draw_app.app.jump_signal.disconnect()
-        self.geometry.data['type'] = _('Polygon')
-        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
-
-    def on_key(self, key):
-        # Jump to coords
-        if key == QtCore.Qt.Key.Key_J or key == 'J':
-            self.draw_app.app.on_jump_to()
-
-        if key == 'Backspace' or key == QtCore.Qt.Key.Key_Backspace:
-            if len(self.points) > 0:
-                self.points = self.points[0:-1]
-                # Remove any previous utility shape
-                self.draw_app.tool_shape.clear(update=False)
-                geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
-                self.draw_app.draw_utility_geometry(geo=geo)
-                return _("Backtracked one point ...")
-
-    def clean_up(self):
-        self.draw_app.selected = []
-        self.draw_app.plot_all()
-
-        try:
-            self.draw_app.app.jump_signal.disconnect()
-        except (TypeError, AttributeError):
-            pass
-
-
-class FCPath(FCPolygon):
-    """
-    Resulting type: LineString
-    """
-
-    def __init__(self, draw_app):
-        FCPolygon.__init__(self, draw_app)
-        self.draw_app = draw_app
-        self.name = 'path'
-        self.app = self.draw_app.app
-
-        try:
-            QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception:
-            pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_path5.png'))
-        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
-
-        self.draw_app.app.plotcanvas.view.camera.zoom_callback = self.draw_cursor_data
-        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
-
-        self.path_tool = PathEditorTool(self.app, self.draw_app)
-        self.path_tool.run()
-        self.new_segment = True
-
-        self.app.ui.notebook.setTabText(2, _("Path"))
-        if self.draw_app.app.ui.splitter.sizes()[0] == 0:
-            self.draw_app.app.ui.splitter.setSizes([1, 1])
 
     def make(self):
         self.geometry = DrawToolShape(LineString(self.points))
@@ -1114,7 +1253,6 @@ class FCPath(FCPolygon):
 
     def clean_up(self):
         self.draw_app.selected = []
-        self.interpolate_length = ''
         self.draw_app.plot_all()
 
         if self.draw_app.app.use_3d_engine:
@@ -3413,7 +3551,7 @@ class AppGeoEditor(QtCore.QObject):
             pass
         else:
             self.update_utility_geometry(data=(x, y))
-            if self.active_tool.name == 'path':
+            if self.active_tool.name in ['path', 'polygon']:
                 self.active_tool.draw_cursor_data(pos=(x, y))
 
         # ### Selection area on canvas section ###

@@ -3486,6 +3486,9 @@ class MainGUI(QtWidgets.QMainWindow):
                             if self.app.geo_editor.active_tool.name == 'path' and \
                                 self.app.geo_editor.active_tool.path_tool.length != 0.0:
                                 pass
+                            elif self.app.geo_editor.active_tool.name == 'polygon' and \
+                                self.app.geo_editor.active_tool.polygon_tool.length != 0.0:
+                                pass
                             else:
                                 self.app.geo_editor.active_tool.click(
                                     self.app.geo_editor.snap(self.app.geo_editor.x, self.app.geo_editor.y))
