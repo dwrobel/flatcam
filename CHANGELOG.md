@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM Evo beta
 
 - in Geometry Editor moved the simplification feature in its own Editor Tool (plugin)
 - in Geometry Editor the default draw color is now black
+- in Geometry Editor, the Rectangle Editor Tool allows creation of rectangles with the mouse but projecting the length and width dimensions by typing a number (the choice of setting the length or width is based on the direction of the mouse move after setting the first point)
+- in Geometry Editor, the Rectangle Editor Tool has now Ui which allows adding a rectangle by parameters
 
 14.04.2022
 

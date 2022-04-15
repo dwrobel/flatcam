@@ -24,6 +24,7 @@ from appEditors.plugins.GeoTextPlugin import TextInputTool
 from appEditors.plugins.GeoTransformationPlugin import TransformEditorTool
 from appEditors.plugins.GeoPathPlugin import PathEditorTool
 from appEditors.plugins.GeoSimplificationPlugin import SimplificationTool
+from appEditors.plugins.GeoRectanglePlugin import RectangleEditorTool
 
 from vispy.geometry import Rect
 
@@ -773,6 +774,8 @@ class FCRectangle(FCShapeTool):
         DrawTool.__init__(self, draw_app)
         self.name = 'rectangle'
         self.draw_app = draw_app
+        self.app = self.draw_app.app
+        self.plugin_name = _("Rectangle")
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -780,6 +783,9 @@ class FCRectangle(FCShapeTool):
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
+
+        self.rect_tool = RectangleEditorTool(self.app, self.draw_app, plugin_name=self.plugin_name)
+        self.rect_tool.run()
 
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
@@ -827,12 +833,86 @@ class FCRectangle(FCShapeTool):
         self.geometry.data['type'] = _('Rectangle')
 
         self.complete = True
-        self.draw_app.app.jump_signal.disconnect()
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
+
+    def on_key(self, key):
+        # Jump to coords
+        if key == QtCore.Qt.Key.Key_J or key == 'J':
+            self.draw_app.app.on_jump_to()
+
+        if key in [str(i) for i in range(10)] + ['.', ',', '+', '-', '/', '*'] or \
+                key in [QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_1, QtCore.Qt.Key.Key_2,
+                        QtCore.Qt.Key.Key_3, QtCore.Qt.Key.Key_4, QtCore.Qt.Key.Key_5, QtCore.Qt.Key.Key_6,
+                        QtCore.Qt.Key.Key_7, QtCore.Qt.Key.Key_8, QtCore.Qt.Key.Key_9, QtCore.Qt.Key.Key_Minus,
+                        QtCore.Qt.Key.Key_Plus, QtCore.Qt.Key.Key_Comma, QtCore.Qt.Key.Key_Period,
+                        QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
+
+            if self.draw_app.app.mouse[0] != self.points[-1][0]:
+                try:
+                    # VisPy keys
+                    if self.rect_tool.length == 0:
+                        self.rect_tool.length = str(key.name)
+                    else:
+                        self.rect_tool.length = str(self.rect_tool.length) + str(key.name)
+                except AttributeError:
+                    # Qt keys
+                    if self.rect_tool.length == 0:
+                        self.rect_tool.length = chr(key)
+                    else:
+                        self.rect_tool.length = str(self.rect_tool.length) + chr(key)
+            if self.draw_app.app.mouse[1] != self.points[-1][1]:
+                try:
+                    # VisPy keys
+                    if self.rect_tool.width == 0:
+                        self.rect_tool.width = str(key.name)
+                    else:
+                        self.rect_tool.width = str(self.rect_tool.width) + str(key.name)
+                except AttributeError:
+                    # Qt keys
+                    if self.rect_tool.width == 0:
+                        self.rect_tool.length = chr(key)
+                    else:
+                        self.rect_tool.length = str(self.rect_tool.width) + chr(key)
+
+        if key == 'Enter' or key == QtCore.Qt.Key.Key_Return or key == QtCore.Qt.Key.Key_Enter:
+            new_x, new_y = self.points[-1][0], self.points[-1][1]
+
+            if self.rect_tool.length != 0:
+                target_length = self.rect_tool.length
+                if target_length is None:
+                    self.rect_tool.length = 0.0
+                    return _("Failed.")
+
+                new_x = self.points[-1][0] + target_length
+
+            if self.rect_tool.width != 0:
+                target_width = self.rect_tool.width
+                if target_width is None:
+                    self.rect_tool.width = 0.0
+                    return _("Failed.")
+
+                new_y = self.points[-1][1] + target_width
+
+            if self.points[-1] != (new_x, new_y):
+                self.draw_app.app.on_jump_to(custom_location=(new_x, new_y), fit_center=False)
+
+            if len(self.points) > 0:
+                msg = '%s: (%s, %s). %s' % (
+                    _("Projected"), str(self.rect_tool.length), str(self.rect_tool.width),
+                    _("Click to complete ..."))
+                self.draw_app.app.inform.emit(msg)
 
     def clean_up(self):
         self.draw_app.selected = []
         self.draw_app.plot_all()
+
+        if self.draw_app.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.text_cursor.parent = None
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
 
         try:
             self.draw_app.app.jump_signal.disconnect()
@@ -3332,6 +3412,10 @@ class AppGeoEditor(QtCore.QObject):
         if event.button == 1:
             self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
+
+            # update mouse position with the clicked position
+            self.snap_x = self.pos[0]
+            self.snap_y = self.pos[1]
 
             modifiers = QtWidgets.QApplication.keyboardModifiers()
             # If the SHIFT key is pressed when LMB is clicked then the coordinates are copied to clipboard

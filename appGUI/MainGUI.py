@@ -3497,6 +3497,10 @@ class MainGUI(QtWidgets.QMainWindow):
                             elif self.app.geo_editor.active_tool.name == 'polygon' and \
                                 self.app.geo_editor.active_tool.polygon_tool.length != 0.0:
                                 pass
+                            elif self.app.geo_editor.active_tool.name == 'rectangle' and \
+                                self.app.geo_editor.active_tool.rect_tool.length != 0.0 and \
+                                    self.app.geo_editor.active_tool.rect_tool.width != 0.0:
+                                pass
                             else:
                                 self.app.geo_editor.active_tool.click(
                                     self.app.geo_editor.snap(self.app.geo_editor.x, self.app.geo_editor.y))
