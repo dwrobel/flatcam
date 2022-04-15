@@ -718,11 +718,15 @@ class MainGUI(QtWidgets.QMainWindow):
             '%s\t%s' % (_("Move"), _('M')))
         self.geo_buffer_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/buffer16.png'),
-            '%s\t%s' % (_("Buffer Tool"), _('B'))
+            '%s\t%s' % (_("Buffer"), _('B'))
+        )
+        self.geo_simplification_menuitem = self.geo_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/simplify32.png'),
+            '%s\t%s' % (_("Simplification"), '')
         )
         self.geo_paint_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/paint20_1.png'),
-            '%s\t%s' % (_("Paint Tool"), _('I'))
+            '%s\t%s' % (_("Paint"), _('I'))
         )
         self.geo_transform_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/transform.png'),
@@ -1219,6 +1223,8 @@ class MainGUI(QtWidgets.QMainWindow):
         self.geo_edit_toolbar.addSeparator()
         self.geo_add_text_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/text32.png'), _('Add Text'))
+        self.geo_add_simplification_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/simplify32.png'), _('Simplify'))
         self.geo_add_buffer_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'), _('Add Buffer'))
         self.geo_add_paint_btn = self.geo_edit_toolbar.addAction(
@@ -1779,6 +1785,8 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.draw_text = self.g_editor_cmenu.addAction(
             QtGui.QIcon(self.app.resource_location + '/text32.png'), _("Text"))
+        self.draw_simplification = self.g_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/simplify32.png'), _("Simplification"))
         self.draw_buffer = self.g_editor_cmenu.addAction(
             QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'), _("Buffer"))
         self.draw_paint = self.g_editor_cmenu.addAction(

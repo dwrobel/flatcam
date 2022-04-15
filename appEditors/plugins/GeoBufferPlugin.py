@@ -338,7 +338,7 @@ class BufferSelectionTool(AppTool):
 
     def hide_tool(self):
         self.ui.buffer_tool_frame.hide()
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
 
 class BufferEditorUI:

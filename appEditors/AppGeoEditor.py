@@ -23,6 +23,7 @@ from appEditors.plugins.GeoPaintPlugin import PaintOptionsTool
 from appEditors.plugins.GeoTextPlugin import TextInputTool
 from appEditors.plugins.GeoTransformationPlugin import TransformEditorTool
 from appEditors.plugins.GeoPathPlugin import PathEditorTool
+from appEditors.plugins.GeoSimplificationPlugin import SimplificationTool
 
 from vispy.geometry import Rect
 
@@ -1294,7 +1295,7 @@ class FCSelect(DrawTool):
     def click_release(self, point):
         """
 
-        :param point:   The point for which to find the neasrest shape
+        :param point:   The point for which to find the nearest shape
         :return:
         """
 
@@ -1350,7 +1351,7 @@ class FCSelect(DrawTool):
 
                 if mod_key == self.draw_app.app.options["global_mselect_key"]:
                     # if modifier key is pressed then we add to the selected list the current shape but if it's already
-                    # in the selected list, we removed it. Therefore first click selects, second deselects.
+                    # in the selected list, we removed it. Therefore, first click selects, second deselects.
                     if obj_to_add in self.draw_app.selected:
                         self.draw_app.selected.remove(obj_to_add)
                     else:
@@ -1620,7 +1621,7 @@ class FCMove(FCShapeTool):
                 key_modifier = QtWidgets.QApplication.keyboardModifiers()
                 if self.draw_app.app.options["global_mselect_key"] == 'Control':
                     # if CONTROL key is pressed then we add to the selected list the current shape but if it's
-                    # already in the selected list, we removed it. Therefore first click selects, second deselects.
+                    # already in the selected list, we removed it. Therefore, first click selects, second deselects.
                     if key_modifier == Qt.KeyboardModifier.ControlModifier:
                         if obj_to_add in self.draw_app.selected:
                             self.draw_app.selected.remove(obj_to_add)
@@ -1883,20 +1884,43 @@ class FCBuffer(FCShapeTool):
         self.buff_tool.ui.buffer_ext_button.clicked.connect(self.buff_tool.on_buffer_ext)
         self.complete = True
         self.draw_app.select_tool("select")
-        # self.buff_tool.hide_tool()
-        try:
-            self.draw_app.app.jump_signal.disconnect()
-        except (TypeError, AttributeError):
-            pass
 
     def clean_up(self):
         self.draw_app.selected = []
         self.draw_app.plot_all()
 
-        try:
-            self.draw_app.app.jump_signal.disconnect()
-        except (TypeError, AttributeError):
-            pass
+
+class FCSimplification(FCShapeTool):
+    def __init__(self, draw_app):
+        FCShapeTool.__init__(self, draw_app)
+        self.name = 'simplify'
+
+        self.draw_app = draw_app
+        self.app = draw_app.app
+        self.storage = self.draw_app.storage
+
+        self.draw_app.app.inform.emit(_("Simplify geometry ..."))
+        self.origin = (0, 0)
+        self.simp_tool = SimplificationTool(self.app, self.draw_app)
+        self.simp_tool.run()
+
+        if self.draw_app.app.ui.splitter.sizes()[0] == 0:
+            self.draw_app.app.ui.splitter.setSizes([1, 1])
+
+    def click(self, point):
+        for ____ in self.storage.get_objects():
+            try:
+                __, closest_shape = self.storage.nearest(point)
+                self.draw_app.selected.append(closest_shape)
+            except StopIteration:
+                return ""
+
+        last_sel_geo = self.draw_app.selected[-1].geo
+        self.simp_tool.calculate_coords_vertex(last_sel_geo)
+
+    def clean_up(self):
+        self.draw_app.selected = []
+        self.draw_app.plot_all()
 
 
 class FCEraser(FCShapeTool):
@@ -1943,7 +1967,7 @@ class FCEraser(FCShapeTool):
                     return ""
 
         if len(self.draw_app.get_selected()) == 0:
-            return "Nothing to ersase."
+            return _("Nothing to erase.")
         else:
             self.draw_app.app.inform.emit(_("Click to pick-up the erase shape..."))
 
@@ -2259,47 +2283,6 @@ class AppGeoEditor(QtCore.QObject):
         grid0.addWidget(vertex_lbl, 26, 0)
         grid0.addWidget(self.geo_vertex_entry, 26, 1, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 28, 0, 1, 3)
-
-        # Simplification Title
-        simplif_lbl = FCLabel('<b>%s</b>:' % _("Simplification"))
-        simplif_lbl.setToolTip(
-            _("Simplify a geometry by reducing its vertex points number.")
-        )
-        grid0.addWidget(simplif_lbl, 30, 0, 1, 3)
-
-        # Simplification Tolerance
-        simplification_tol_lbl = FCLabel('<b>%s</b>:' % _("Tolerance"))
-        simplification_tol_lbl.setToolTip(
-            _("All points in the simplified object will be\n"
-              "within the tolerance distance of the original geometry.")
-        )
-        self.geo_tol_entry = FCDoubleSpinner()
-        self.geo_tol_entry.set_precision(self.decimals)
-        self.geo_tol_entry.setSingleStep(10 ** -self.decimals)
-        self.geo_tol_entry.set_range(0.0000, 10000.0000)
-
-        grid0.addWidget(simplification_tol_lbl, 32, 0)
-        grid0.addWidget(self.geo_tol_entry, 32, 1, 1, 2)
-
-        # Simplification button
-        self.simplification_btn = FCButton(_("Simplify"))
-        self.simplification_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/simplify32.png'))
-        self.simplification_btn.setToolTip(
-            _("Simplify a geometry element by reducing its vertex points number.")
-        )
-        self.simplification_btn.setStyleSheet("""
-                                              QPushButton
-                                              {
-                                                  font-weight: bold;
-                                              }
-                                              """)
-
-        grid0.addWidget(self.simplification_btn, 34, 0, 1, 3)
-
         layout.addStretch()
 
         # Editor
@@ -2350,7 +2333,7 @@ class AppGeoEditor(QtCore.QObject):
         # this var will store the state of the toolbar before starting the editor
         self.toolbar_old_state = False
 
-        self.key = None  # Currently pressed key
+        self.key = None  # Currently, pressed key
         self.geo_key_modifiers = None
         self.x = None  # Current mouse cursor pos
         self.y = None
@@ -2430,8 +2413,9 @@ class AppGeoEditor(QtCore.QObject):
         self.app.ui.geo_add_polygon_menuitem.triggered.connect(lambda: self.select_tool('polygon'))
         self.app.ui.geo_add_path_menuitem.triggered.connect(lambda: self.select_tool('path'))
         self.app.ui.geo_add_text_menuitem.triggered.connect(lambda: self.select_tool('text'))
-        self.app.ui.geo_paint_menuitem.triggered.connect(self.on_paint_tool)
-        self.app.ui.geo_buffer_menuitem.triggered.connect(self.on_buffer_tool)
+        self.app.ui.geo_paint_menuitem.triggered.connect(lambda: self.select_tool("paint"))
+        self.app.ui.geo_buffer_menuitem.triggered.connect(lambda: self.select_tool("buffer"))
+        self.app.ui.geo_simplification_menuitem.triggered.connect(lambda: self.select_tool("simplification"))
         self.app.ui.geo_transform_menuitem.triggered.connect(self.transform_tool.run)
 
         self.app.ui.geo_delete_menuitem.triggered.connect(self.on_delete_btn)
@@ -2456,7 +2440,6 @@ class AppGeoEditor(QtCore.QObject):
 
         self.transform_complete.connect(self.on_transform_complete)
 
-        self.simplification_btn.clicked.connect(self.on_simplification_click)
         self.change_orientation_btn.clicked.connect(self.on_change_orientation)
 
         self.tw.customContextMenuRequested.connect(self.on_menu_request)
@@ -2486,6 +2469,7 @@ class AppGeoEditor(QtCore.QObject):
             "polygon": {"button": self.app.ui.geo_add_polygon_btn, "constructor": FCPolygon},
             "text": {"button": self.app.ui.geo_add_text_btn, "constructor": FCText},
             "buffer": {"button": self.app.ui.geo_add_buffer_btn, "constructor": FCBuffer},
+            "simplification": {"button": self.app.ui.geo_add_simplification_btn, "constructor": FCSimplification},
             "paint": {"button": self.app.ui.geo_add_paint_btn, "constructor": FCPaint},
             "eraser": {"button": self.app.ui.geo_eraser_btn, "constructor": FCEraser},
             "move": {"button": self.app.ui.geo_move_btn, "constructor": FCMove},
@@ -2575,7 +2559,6 @@ class AppGeoEditor(QtCore.QObject):
         self.is_empty_entry.set_value('None')
         self.is_valid_entry.set_value('None')
         self.geo_vertex_entry.set_value(0.0)
-        self.geo_tol_entry.set_value(0.01 if self.units == 'MM' else 0.0004)
         self.geo_zoom.set_value(False)
 
         # Show/Hide Advanced Options
@@ -2791,39 +2774,6 @@ class AppGeoEditor(QtCore.QObject):
 
             # Context Menu section
             # self.tw.setupContextMenu()
-
-    def on_simplification_click(self):
-        self.app.log.debug("AppGeoEditor.on_simplification_click()")
-
-        selected_shapes = []
-        selected_shapes_geos = []
-        tol = self.geo_tol_entry.get_value()
-
-        selected_tree_items = self.tw.selectedItems()
-
-        def task_job():
-            with self.app.proc_container.new('%s...' % _("Simplify")):
-                self.interdict_selection = True
-                for sel in selected_tree_items:
-                    for obj_shape in self.storage.get_objects():
-                        try:
-                            if id(obj_shape) == int(sel.text(0)):
-                                selected_shapes.append(obj_shape)
-                                selected_shapes_geos.append(obj_shape.geo.simplify(tolerance=tol))
-                        except ValueError:
-                            pass
-
-                for shape in selected_shapes:
-                    self.delete_shape(shape=shape)
-
-                for geo in selected_shapes_geos:
-                    self.add_shape(DrawToolShape(geo), build_ui=False)
-
-                self.plot_all()
-                self.interdict_selection = False
-                self.build_ui_sig.emit()
-
-        self.app.worker_task.emit({'fcn': task_job, 'params': []})
 
     def on_change_orientation(self):
         self.app.log.debug("AppGeoEditor.on_change_orientation()")
@@ -3073,6 +3023,7 @@ class AppGeoEditor(QtCore.QObject):
         self.app.ui.draw_arc.triggered.connect(lambda: self.select_tool('arc'))
 
         self.app.ui.draw_text.triggered.connect(lambda: self.select_tool('text'))
+        self.app.ui.draw_simplification.triggered.connect(lambda: self.select_tool('simplification'))
         self.app.ui.draw_buffer.triggered.connect(lambda: self.select_tool('buffer'))
         self.app.ui.draw_paint.triggered.connect(lambda: self.select_tool('paint'))
         self.app.ui.draw_eraser.triggered.connect(lambda: self.select_tool('eraser'))
@@ -3163,6 +3114,11 @@ class AppGeoEditor(QtCore.QObject):
 
         try:
             self.app.ui.draw_text.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.draw_simplification.triggered.disconnect()
         except (TypeError, AttributeError):
             pass
 
@@ -3307,14 +3263,6 @@ class AppGeoEditor(QtCore.QObject):
         # self.storage = AppGeoEditor.make_storage()
         self.plot_all()
 
-    def on_buffer_tool(self):
-        buff_tool = BufferSelectionTool(self.app, self)
-        buff_tool.run()
-
-    def on_paint_tool(self):
-        paint_tool = PaintOptionsTool(self.app, self)
-        paint_tool.run()
-
     def on_tool_select(self, tool):
         """
         Behavior of the toolbar. Tool initialization.
@@ -3408,10 +3356,6 @@ class AppGeoEditor(QtCore.QObject):
                         self.select_tool("select")
                     else:
                         self.select_tool(self.active_tool.name)
-
-                # if isinstance(self.active_tool, FCSelect):
-                #     # self.app.log.debug("plot_allting after click.")
-                #     self.plot_all()
             else:
                 self.app.log.debug("No active tool to respond to click!")
 
@@ -3771,10 +3715,10 @@ class AppGeoEditor(QtCore.QObject):
         Plots a geometric object or list of objects without rendering. Plotted objects
         are returned as a list. This allows for efficient/animated rendering.
 
-        :param geometry: Geometry to be plotted (Any Shapely.geom kind or list of such)
-        :param color: Shape color
-        :param linewidth: Width of lines in # of pixels.
-        :return: List of plotted elements.
+        :param geometry:    Geometry to be plotted (Any Shapely.geom kind or list of such)
+        :param color:       Shape color
+        :param linewidth:   Width of lines in # of pixels.
+        :return:            List of plotted elements.
         """
         plot_elements = []
         if geometry is None:
