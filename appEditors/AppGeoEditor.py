@@ -1577,13 +1577,13 @@ class FCMove(FCShapeTool):
         FCShapeTool.__init__(self, draw_app)
         self.name = 'move'
         self.draw_app = draw_app
+        self.app = self.draw_app.app
+        self.storage = self.draw_app.storage
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception:
             pass
-
-        self.storage = self.draw_app.storage
 
         self.origin = None
         self.destination = None
@@ -1591,10 +1591,23 @@ class FCMove(FCShapeTool):
         self.selection_shape = self.selection_bbox()
 
         if len(self.draw_app.get_selected()) == 0:
-            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' % _("No shape selected."))
-            return
+            self.has_selection = False
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s %s' %
+                                          (_("No shape selected."), _("Select some shapes or cancel.")))
         else:
+            self.has_selection = True
             self.draw_app.app.inform.emit(_("Click on reference location ..."))
+
+        if self.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = self.draw_cursor_data
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
+        self.move_tool = PathEditorTool(self.app, self.draw_app, plugin_name=_("Move"))
+        self.move_tool.run()
+
+        self.app.ui.notebook.setTabText(2, _("Move"))
+        if self.draw_app.app.ui.splitter.sizes()[0] == 0:
+            self.draw_app.app.ui.splitter.setSizes([1, 1])
 
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
@@ -1609,15 +1622,34 @@ class FCMove(FCShapeTool):
             pass
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
-        if len(self.draw_app.get_selected()) == 0:
+        if self.has_selection is False:
             # self.complete = True
             # self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Move cancelled. No shape selected."))
-            self.select_shapes(point)
+            # self.select_shapes(point)
+            # deselect all shapes
+            self.draw_app.selected = []
+            for ____ in self.storage.get_objects():
+                try:
+                    __, closest_shape = self.storage.nearest(point)
+                    # select closes shape
+                    self.draw_app.selected.append(closest_shape)
+                except StopIteration:
+                    return ""
+
+            if not self.draw_app.selected:
+                self.draw_app.app.inform.emit('[WARNING_NOTCL] %s %s' %
+                                              (_("No shape selected."), _("Select some shapes or cancel.")))
+                return
+
+            self.has_selection = True
             self.draw_app.plot_all()
+            self.selection_shape = self.selection_bbox()
+            # self.draw_app.plot_all()
             self.draw_app.app.inform.emit(_("Click on reference location ..."))
             return
 
         if self.origin is None:
+            self.points.append(point)
             self.set_origin(point)
             self.selection_shape = self.selection_bbox()
             return "Click on final location."
@@ -1633,12 +1665,14 @@ class FCMove(FCShapeTool):
             # Create new geometry
             dx = self.destination[0] - self.origin[0]
             dy = self.destination[1] - self.origin[1]
-            self.geometry = [DrawToolShape(translate(geom.geo, xoff=dx, yoff=dy))
+            self.geometry = [DrawToolShape(translate(deepcopy(geom.geo), xoff=dx, yoff=dy))
                              for geom in self.draw_app.get_selected()]
 
             # Delete old
             self.draw_app.delete_selected()
             self.complete = True
+            self.origin = None
+            self.draw_cursor_data(delete=True)
             self.draw_app.app.inform.emit('[success] %s' % _("Done."))
             try:
                 self.draw_app.app.jump_signal.disconnect()
@@ -1750,20 +1784,129 @@ class FCMove(FCShapeTool):
             log.error("[ERROR] Something went bad. %s" % str(e))
             raise
 
+    def draw_cursor_data(self, pos=None, delete=False):
+        if pos is None:
+            pos = self.draw_app.snap_x, self.draw_app.snap_y
+
+        if delete:
+            if self.draw_app.app.use_3d_engine:
+                self.draw_app.app.plotcanvas.text_cursor.parent = None
+                self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+            return
+
+        # font size
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("hud_font_size"):
+            fsize = qsettings.value('hud_font_size', type=int)
+        else:
+            fsize = 8
+
+        x = pos[0]
+        y = pos[1]
+        try:
+            length = abs(np.sqrt((pos[0] - self.points[-1][0]) ** 2 + (pos[1] - self.points[-1][1]) ** 2))
+        except IndexError:
+            length = self.draw_app.app.dec_format(0.0, self.draw_app.app.decimals)
+        units = self.draw_app.app.app_units.lower()
+
+        x_dec = str(self.draw_app.app.dec_format(x, self.draw_app.app.decimals)) if x else '0.0'
+        y_dec = str(self.draw_app.app.dec_format(y, self.draw_app.app.decimals)) if y else '0.0'
+        length_dec = str(self.draw_app.app.dec_format(length, self.draw_app.app.decimals)) if length else '0.0'
+
+        l1_txt = 'X:   %s [%s]' % (x_dec, units)
+        l2_txt = 'Y:   %s [%s]' % (y_dec, units)
+        l3_txt = 'L:   %s [%s]' % (length_dec, units)
+        cursor_text = '%s\n%s\n\n%s' % (l1_txt, l2_txt, l3_txt)
+
+        if self.draw_app.app.use_3d_engine:
+            new_pos = self.draw_app.app.plotcanvas.translate_coords_2((x, y))
+            x, y, __, ___ = self.draw_app.app.plotcanvas.translate_coords((new_pos[0]+30, new_pos[1]))
+
+            # text
+            self.draw_app.app.plotcanvas.text_cursor.font_size = fsize
+            self.draw_app.app.plotcanvas.text_cursor.text = cursor_text
+            self.draw_app.app.plotcanvas.text_cursor.pos = x, y
+            self.draw_app.app.plotcanvas.text_cursor.anchors = 'left', 'top'
+
+            if self.draw_app.app.plotcanvas.text_cursor.parent is None:
+                self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
+
+    def on_key(self, key):
+        # Jump to coords
+        if key == QtCore.Qt.Key.Key_J or key == 'J':
+            self.draw_app.app.on_jump_to()
+
+        if key in [str(i) for i in range(10)] + ['.', ',', '+', '-', '/', '*'] or \
+                key in [QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_1, QtCore.Qt.Key.Key_2,
+                        QtCore.Qt.Key.Key_3, QtCore.Qt.Key.Key_4, QtCore.Qt.Key.Key_5, QtCore.Qt.Key.Key_6,
+                        QtCore.Qt.Key.Key_7, QtCore.Qt.Key.Key_8, QtCore.Qt.Key.Key_9, QtCore.Qt.Key.Key_Minus,
+                        QtCore.Qt.Key.Key_Plus, QtCore.Qt.Key.Key_Comma, QtCore.Qt.Key.Key_Period,
+                        QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
+            try:
+                # VisPy keys
+                if self.move_tool.length == 0:
+                    self.move_tool.length = str(key.name)
+                else:
+                    self.move_tool.length = str(self.move_tool.length) + str(key.name)
+            except AttributeError:
+                # Qt keys
+                if self.move_tool.length == 0:
+                    self.move_tool.length = chr(key)
+                else:
+                    self.move_tool.length = str(self.move_tool.length) + chr(key)
+
+        if key == 'Enter' or key == QtCore.Qt.Key.Key_Return or key == QtCore.Qt.Key.Key_Enter:
+            if self.move_tool.length != 0:
+                target_length = self.move_tool.length
+                if target_length is None:
+                    self.move_tool.length = 0.0
+                    return _("Failed.")
+
+                first_pt = self.points[-1]
+                last_pt = self.draw_app.app.mouse
+
+                seg_length = math.sqrt((last_pt[0] - first_pt[0])**2 + (last_pt[1] - first_pt[1])**2)
+                if seg_length == 0.0:
+                    return
+                try:
+                    new_x = first_pt[0] + (last_pt[0] - first_pt[0]) / seg_length * target_length
+                    new_y = first_pt[1] + (last_pt[1] - first_pt[1]) / seg_length * target_length
+                except ZeroDivisionError as err:
+                    self.points = []
+                    self.clean_up()
+                    return '[ERROR_NOTCL] %s %s' % (_("Failed."), str(err).capitalize())
+
+                if self.points[-1] != (new_x, new_y):
+                    self.points.append((new_x, new_y))
+                    self.draw_app.app.on_jump_to(custom_location=(new_x, new_y), fit_center=False)
+                    self.destination = (new_x, new_y)
+                    self.make()
+                    self.draw_app.on_shape_complete()
+                    self.draw_app.select_tool("select")
+                    return "Done."
+
     def clean_up(self):
         self.draw_app.selected = []
         self.draw_app.plot_all()
+
+        if self.draw_app.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.text_cursor.parent = None
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
 
         try:
             self.draw_app.app.jump_signal.disconnect()
         except (TypeError, AttributeError):
             pass
+        self.move_tool.on_tab_close()
 
 
 class FCCopy(FCMove):
     def __init__(self, draw_app):
         FCMove.__init__(self, draw_app)
         self.name = 'copy'
+        self.move_tool = PathEditorTool(self.app, self.draw_app, plugin_name=_("Copy"))
+        self.move_tool.run()
+        self.app.ui.notebook.setTabText(2, _("Copy"))
 
     def make(self):
         # Create new geometry
@@ -1772,6 +1915,8 @@ class FCCopy(FCMove):
         self.geometry = [DrawToolShape(translate(geom.geo, xoff=dx, yoff=dy))
                          for geom in self.draw_app.get_selected()]
         self.complete = True
+        self.origin = None
+        self.draw_cursor_data(delete=True)
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         try:
             self.draw_app.app.jump_signal.disconnect()
@@ -1782,10 +1927,15 @@ class FCCopy(FCMove):
         self.draw_app.selected = []
         self.draw_app.plot_all()
 
+        if self.draw_app.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.text_cursor.parent = None
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+
         try:
             self.draw_app.app.jump_signal.disconnect()
         except (TypeError, AttributeError):
             pass
+        self.move_tool.on_tab_close()
 
 
 class FCText(FCShapeTool):
@@ -3621,8 +3771,12 @@ class AppGeoEditor(QtCore.QObject):
             pass
         else:
             self.update_utility_geometry(data=(x, y))
-            if self.active_tool.name in ['path', 'polygon']:
-                self.active_tool.draw_cursor_data(pos=(x, y))
+            if self.active_tool.name in ['path', 'polygon', 'move', 'circle', 'arc', 'rectangle', 'copy']:
+                try:
+                    self.active_tool.draw_cursor_data(pos=(x, y))
+                except AttributeError:
+                    # this can happen if the method is not implemented yet for the active_tool
+                    pass
 
         # ### Selection area on canvas section ###
         dx = pos[0] - self.pos[0]

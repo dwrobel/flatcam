@@ -130,7 +130,7 @@ class PathEditorUI:
         # Project distance
         self.project_line_lbl = FCLabel('%s:' % _("Length"))
         self.project_line_lbl.setToolTip(
-            _("Length of the current segment.")
+            _("Length of the current segment/move.")
         )
         self.project_line_entry = NumericalEvalEntry(border_color='#0069A9')
         grid_path.addWidget(self.project_line_lbl, 0, 0)

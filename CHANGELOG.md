@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM Evo beta
 
 - in Geometry Editor, in the Simplification Tool made sure that the selected shape is highlighted
 - in Geometry Editor, in Rectangle Tool added a modification mode where a selected shape (using the SHIFT + click combo) while the tool is active, can be modified
+- in Geometry Editor, in Move Tool and Copy Tool added UI's, move projection and cursor data. Also now require acquiring reference point before the action
 
 15.04.2022
 

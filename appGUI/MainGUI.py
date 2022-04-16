@@ -3501,6 +3501,10 @@ class MainGUI(QtWidgets.QMainWindow):
                                 self.app.geo_editor.active_tool.rect_tool.length != 0.0 and \
                                     self.app.geo_editor.active_tool.rect_tool.width != 0.0:
                                 pass
+                            elif self.app.geo_editor.active_tool.name in ['move', 'copy'] and \
+                                self.app.geo_editor.active_tool.move_tool.length != 0.0 and \
+                                    self.app.geo_editor.active_tool.move_tool.width != 0.0:
+                                pass
                             else:
                                 self.app.geo_editor.active_tool.click(
                                     self.app.geo_editor.snap(self.app.geo_editor.x, self.app.geo_editor.y))
@@ -3589,7 +3593,8 @@ class MainGUI(QtWidgets.QMainWindow):
 
                     # Copy
                     if key == QtCore.Qt.Key.Key_C or key == 'C':
-                        self.app.geo_editor.on_copy_click()
+                        self.app.geo_editor.select_tool('copy')
+                        # self.app.geo_editor.on_copy_click()
 
                     # Substract Tool
                     if key == QtCore.Qt.Key.Key_E or key == 'E':
@@ -3621,7 +3626,8 @@ class MainGUI(QtWidgets.QMainWindow):
 
                     # Move
                     if key == QtCore.Qt.Key.Key_M or key == 'M':
-                        self.app.geo_editor.on_move_click()
+                        self.app.geo_editor.select_tool('move')
+                        # self.app.geo_editor.on_move_click()
 
                     # Polygon Tool
                     if key == QtCore.Qt.Key.Key_N or key == 'N':
