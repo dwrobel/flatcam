@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM Evo beta
 - in Geometry Editor, in Rectangle Tool added a modification mode where a selected shape (using the SHIFT + click combo) while the tool is active, can be modified
 - in Geometry Editor, in Move Tool and Copy Tool added UI's, move projection and cursor data. Also now require acquiring reference point before the action
 - in Geometry Editor, in Rectangle Tool added cursor data
+- in Geometry Editor, in Circle Tool added UI, cursor data, radius projection and ability to add ellipses
 
 15.04.2022
 

@@ -18,13 +18,14 @@ from camlib import distance, arc, three_point_circle, Geometry, AppRTreeStorage,
 from appGUI.GUIElements import *
 from appGUI.VisPyVisuals import ShapeCollection
 
-from appEditors.plugins.GeoBufferPlugin import BufferSelectionTool
-from appEditors.plugins.GeoPaintPlugin import PaintOptionsTool
-from appEditors.plugins.GeoTextPlugin import TextInputTool
-from appEditors.plugins.GeoTransformationPlugin import TransformEditorTool
-from appEditors.plugins.GeoPathPlugin import PathEditorTool
-from appEditors.plugins.GeoSimplificationPlugin import SimplificationTool
-from appEditors.plugins.GeoRectanglePlugin import RectangleEditorTool
+from appEditors.geo_plugins.GeoBufferPlugin import BufferSelectionTool
+from appEditors.geo_plugins.GeoPaintPlugin import PaintOptionsTool
+from appEditors.geo_plugins.GeoTextPlugin import TextInputTool
+from appEditors.geo_plugins.GeoTransformationPlugin import TransformEditorTool
+from appEditors.geo_plugins.GeoPathPlugin import PathEditorTool
+from appEditors.geo_plugins.GeoSimplificationPlugin import SimplificationTool
+from appEditors.geo_plugins.GeoRectanglePlugin import RectangleEditorTool
+from appEditors.geo_plugins.GeoCirclePlugin import CircleEditorTool
 
 from vispy.geometry import Rect
 
@@ -455,6 +456,9 @@ class FCCircle(FCShapeTool):
         self.name = 'circle'
 
         self.draw_app = draw_app
+        self.app = self.draw_app.app
+        self.plugin_name = _("Circle")
+        self.storage = self.draw_app.storage
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -462,6 +466,13 @@ class FCCircle(FCShapeTool):
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_circle_geo.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
+
+        if self.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = self.draw_cursor_data
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
+        self.circle_tool = CircleEditorTool(self.app, self.draw_app, plugin_name=self.plugin_name)
+        self.circle_tool.run()
 
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
@@ -475,7 +486,36 @@ class FCCircle(FCShapeTool):
             pass
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
+        modifiers = QtWidgets.QApplication.keyboardModifiers()
+        if modifiers == QtCore.Qt.KeyboardModifier.ShiftModifier:
+            # deselect all shapes
+            self.draw_app.selected = []
+            for ____ in self.storage.get_objects():
+                try:
+                    __, closest_shape = self.storage.nearest(point)
+                    # select closes shape
+                    self.draw_app.selected.append(closest_shape)
+                except StopIteration:
+                    return ""
+
+            if self.draw_app.selected:
+                self.draw_app.plot_all()
+                self.circle_tool.mode = 'change'
+                sel_shape_geo = self.draw_app.selected[-1].geo
+                geo_bounds = sel_shape_geo.bounds
+                # assuming that the default setting for anchor is center
+                origin_x_sel_geo = geo_bounds[0] + ((geo_bounds[2] - geo_bounds[0]) / 2)
+                self.circle_tool.ui.x_entry.set_value(origin_x_sel_geo)
+                origin_y_sel_geo = geo_bounds[1] + ((geo_bounds[3] - geo_bounds[1]) / 2)
+                self.circle_tool.ui.y_entry.set_value(origin_y_sel_geo)
+                self.draw_app.app.inform.emit(
+                    _("Click on Center point to add a new circle or Apply to change the selection."))
+            return
+
+        self.circle_tool.mode = 'add'
         self.points.append(point)
+        self.circle_tool.ui.x_entry.set_value(point[0])
+        self.circle_tool.ui.y_entry.set_value(point[1])
 
         if len(self.points) == 1:
             self.draw_app.app.inform.emit(_("Click on Perimeter point to complete ..."))
@@ -496,6 +536,117 @@ class FCCircle(FCShapeTool):
 
         return None
 
+    def draw_cursor_data(self, pos=None, delete=False):
+        if pos is None:
+            pos = self.draw_app.snap_x, self.draw_app.snap_y
+
+        if delete:
+            if self.draw_app.app.use_3d_engine:
+                self.draw_app.app.plotcanvas.text_cursor.parent = None
+                self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+            return
+
+        # font size
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("hud_font_size"):
+            fsize = qsettings.value('hud_font_size', type=int)
+        else:
+            fsize = 8
+
+        x = pos[0]
+        y = pos[1]
+        try:
+            length = abs(np.sqrt((pos[0] - self.points[-1][0]) ** 2 + (pos[1] - self.points[-1][1]) ** 2))
+        except IndexError:
+            length = self.draw_app.app.dec_format(0.0, self.draw_app.app.decimals)
+        units = self.draw_app.app.app_units.lower()
+
+        x_dec = str(self.draw_app.app.dec_format(x, self.draw_app.app.decimals)) if x else '0.0'
+        y_dec = str(self.draw_app.app.dec_format(y, self.draw_app.app.decimals)) if y else '0.0'
+        length_dec = str(self.draw_app.app.dec_format(length, self.draw_app.app.decimals)) if length else '0.0'
+
+        l1_txt = 'X:   %s [%s]' % (x_dec, units)
+        l2_txt = 'Y:   %s [%s]' % (y_dec, units)
+        l3_txt = 'L:   %s [%s]' % (length_dec, units)
+        cursor_text = '%s\n%s\n\n%s' % (l1_txt, l2_txt, l3_txt)
+
+        if self.draw_app.app.use_3d_engine:
+            new_pos = self.draw_app.app.plotcanvas.translate_coords_2((x, y))
+            x, y, __, ___ = self.draw_app.app.plotcanvas.translate_coords((new_pos[0]+30, new_pos[1]))
+
+            # text
+            self.draw_app.app.plotcanvas.text_cursor.font_size = fsize
+            self.draw_app.app.plotcanvas.text_cursor.text = cursor_text
+            self.draw_app.app.plotcanvas.text_cursor.pos = x, y
+            self.draw_app.app.plotcanvas.text_cursor.anchors = 'left', 'top'
+
+            if self.draw_app.app.plotcanvas.text_cursor.parent is None:
+                self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
+
+    def on_key(self, key):
+        # Jump to coords
+        if key == QtCore.Qt.Key.Key_J or key == 'J':
+            self.draw_app.app.on_jump_to()
+
+        if key in [str(i) for i in range(10)] + ['.', ',', '+', '-', '/', '*'] or \
+                key in [QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_1, QtCore.Qt.Key.Key_2,
+                        QtCore.Qt.Key.Key_3, QtCore.Qt.Key.Key_4, QtCore.Qt.Key.Key_5, QtCore.Qt.Key.Key_6,
+                        QtCore.Qt.Key.Key_7, QtCore.Qt.Key.Key_8, QtCore.Qt.Key.Key_9, QtCore.Qt.Key.Key_Minus,
+                        QtCore.Qt.Key.Key_Plus, QtCore.Qt.Key.Key_Comma, QtCore.Qt.Key.Key_Period,
+                        QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
+
+            if self.draw_app.app.mouse[0] != self.points[-1][0] or (
+                    self.draw_app.app.mouse[1] != self.points[-1][1] and
+                    self.circle_tool.ui.radius_link_btn.isChecked()):
+                try:
+                    # VisPy keys
+                    if self.circle_tool.radius_x == 0.0:
+                        self.circle_tool.radius_x = str(key.name)
+                    else:
+                        self.circle_tool.radius_x = str(self.circle_tool.radius_x) + str(key.name)
+                except AttributeError:
+                    # Qt keys
+                    if self.circle_tool.radius_x == 0.0:
+                        self.circle_tool.radius_x = chr(key)
+                    else:
+                        self.circle_tool.radius_x = str(self.circle_tool.radius_x) + chr(key)
+
+            if self.draw_app.app.mouse[1] != self.points[-1][1] or (
+                    self.draw_app.app.mouse[0] != self.points[-1][0] and
+                    self.circle_tool.ui.radius_link_btn.isChecked()):
+                try:
+                    # VisPy keys
+                    if self.circle_tool.radius_y == 0.0:
+                        self.circle_tool.radius_y = str(key.name)
+                    else:
+                        self.circle_tool.radius_y = str(self.circle_tool.radius_y) + str(key.name)
+                except AttributeError:
+                    # Qt keys
+                    if self.circle_tool.radius_y == 0.0:
+                        self.circle_tool.radius_y = chr(key)
+                    else:
+                        self.circle_tool.radius_y = str(self.circle_tool.radius_y) + chr(key)
+
+        if key == 'Enter' or key == QtCore.Qt.Key.Key_Return or key == QtCore.Qt.Key.Key_Enter:
+            new_radius_x, new_radius_y = self.circle_tool.radius_x, self.circle_tool.radius_y
+
+            if self.circle_tool.ui.radius_link_btn.isChecked():
+                if self.circle_tool.radius_x == 0:
+                    return _("Failed.")
+            else:
+                if self.circle_tool.radius_x == 0 or self.circle_tool.radius_y == 0:
+                    return _("Failed.")
+
+            new_pt = (
+                new_radius_x + self.circle_tool.ui.x_entry.get_value(),
+                self.circle_tool.ui.y_entry.get_value()
+            )
+            self.points.append(new_pt)
+            self.make()
+            self.draw_app.on_shape_complete()
+            self.draw_app.select_tool("select")
+            return "Done."
+
     def make(self):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -506,17 +657,27 @@ class FCCircle(FCShapeTool):
         p2 = self.points[1]
         radius = distance(p1, p2)
         circle_shape = Point(p1).buffer(radius, int(self.steps_per_circ / 4)).exterior
+
         self.geometry = DrawToolShape(circle_shape)
-        self.complete = True
-
-        self.draw_app.app.jump_signal.disconnect()
-
         self.geometry.data['type'] = _('Circle')
+
+        self.complete = True
+        self.draw_cursor_data(delete=True)
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def clean_up(self):
         self.draw_app.selected = []
         self.draw_app.plot_all()
+
+        if self.draw_app.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.text_cursor.parent = None
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
 
         try:
             self.draw_app.app.jump_signal.disconnect()
@@ -953,9 +1114,9 @@ class FCRectangle(FCShapeTool):
                 except AttributeError:
                     # Qt keys
                     if self.rect_tool.width == 0:
-                        self.rect_tool.length = chr(key)
+                        self.rect_tool.width = chr(key)
                     else:
-                        self.rect_tool.length = str(self.rect_tool.width) + chr(key)
+                        self.rect_tool.width = str(self.rect_tool.width) + chr(key)
 
         if key == 'Enter' or key == QtCore.Qt.Key.Key_Return or key == QtCore.Qt.Key.Key_Enter:
             new_x, new_y = self.points[-1][0], self.points[-1][1]
