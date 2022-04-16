@@ -26,6 +26,7 @@ from appEditors.geo_plugins.GeoPathPlugin import PathEditorTool
 from appEditors.geo_plugins.GeoSimplificationPlugin import SimplificationTool
 from appEditors.geo_plugins.GeoRectanglePlugin import RectangleEditorTool
 from appEditors.geo_plugins.GeoCirclePlugin import CircleEditorTool
+from appEditors.geo_plugins.GeoCopyPlugin import CopyEditorTool
 
 from vispy.geometry import Rect
 
@@ -2118,7 +2119,7 @@ class FCCopy(FCMove):
     def __init__(self, draw_app):
         FCMove.__init__(self, draw_app)
         self.name = 'copy'
-        self.move_tool = PathEditorTool(self.app, self.draw_app, plugin_name=_("Copy"))
+        self.move_tool = CopyEditorTool(self.app, self.draw_app, plugin_name=_("Copy"))
         self.move_tool.run()
         self.app.ui.notebook.setTabText(2, _("Copy"))
 

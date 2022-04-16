@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM Evo beta
 - in Geometry Editor, in Move Tool and Copy Tool added UI's, move projection and cursor data. Also now require acquiring reference point before the action
 - in Geometry Editor, in Rectangle Tool added cursor data
 - in Geometry Editor, in Circle Tool added UI, cursor data, radius projection and ability to add ellipses
+- in Geometry Editor, in Copy Tool remade the UI and started to add the support for copy-as-array (work in progress)
 
 15.04.2022
 
