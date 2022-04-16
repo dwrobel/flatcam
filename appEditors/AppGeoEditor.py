@@ -776,6 +776,7 @@ class FCRectangle(FCShapeTool):
         self.draw_app = draw_app
         self.app = self.draw_app.app
         self.plugin_name = _("Rectangle")
+        self.storage = self.draw_app.storage
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -798,12 +799,37 @@ class FCRectangle(FCShapeTool):
             pass
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
-        self.points.append(point)
+        modifiers = QtWidgets.QApplication.keyboardModifiers()
+        if modifiers == QtCore.Qt.KeyboardModifier.ShiftModifier:
+            # deselect all shapes
+            self.draw_app.selected = []
+            for ____ in self.storage.get_objects():
+                try:
+                    __, closest_shape = self.storage.nearest(point)
+                    # select closes shape
+                    self.draw_app.selected.append(closest_shape)
+                except StopIteration:
+                    return ""
 
+            if self.draw_app.selected:
+                self.draw_app.plot_all()
+                self.rect_tool.mode = 'change'
+                sel_shape_geo = self.draw_app.selected[-1].geo
+                geo_bounds = sel_shape_geo.bounds
+                # assuming that the default setting for anchor is center
+                origin_x_sel_geo = geo_bounds[0] + ((geo_bounds[2] - geo_bounds[0]) / 2)
+                self.rect_tool.ui.x_entry.set_value(origin_x_sel_geo)
+                origin_y_sel_geo = geo_bounds[1] + ((geo_bounds[3] - geo_bounds[1]) / 2)
+                self.rect_tool.ui.y_entry.set_value(origin_y_sel_geo)
+                self.draw_app.app.inform.emit(
+                    _("Click on 1st corner to add a new rectangle or Apply to change the selection."))
+            return
+
+        self.rect_tool.mode = 'add'
+        self.points.append(point)
         if len(self.points) == 1:
             self.draw_app.app.inform.emit(_("Click on opposite corner to complete ..."))
             return "Click on opposite corner to complete ..."
-
         if len(self.points) == 2:
             self.make()
             return "Done."
@@ -1994,6 +2020,7 @@ class FCSimplification(FCShapeTool):
                 self.draw_app.selected.append(closest_shape)
             except StopIteration:
                 return ""
+        self.draw_app.plot_all()
 
         last_sel_geo = self.draw_app.selected[-1].geo
         self.simp_tool.calculate_coords_vertex(last_sel_geo)
@@ -3262,6 +3289,7 @@ class AppGeoEditor(QtCore.QObject):
         :type build_ui:     bool
         :return:            None
         """
+        ret = []
 
         if shape is None:
             return
@@ -3275,13 +3303,16 @@ class AppGeoEditor(QtCore.QObject):
         try:
             w_geo = shape.geoms if isinstance(shape, (MultiPolygon, MultiLineString)) else shape
             for subshape in w_geo:
-                self.add_shape(subshape)
+                ret_shape = self.add_shape(subshape)
+                ret.append(ret_shape)
             return
         except TypeError:
             pass
 
         if not isinstance(shape, DrawToolShape):
             shape = DrawToolShape(shape)
+            ret.append(shape)
+
         # assert isinstance(shape, DrawToolShape), "Expected a DrawToolShape, got %s" % type(shape)
         assert shape.geo is not None, "Shape object has empty geometry (None)"
         assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or not isinstance(shape.geo, list), \
@@ -3298,6 +3329,8 @@ class AppGeoEditor(QtCore.QObject):
                     self.app.inform_shell.emit('%s\n%s' % (_("Error on inserting shapes into storage."), str(err)))
                 if build_ui is True:
                     self.build_ui_sig.emit()  # Build UI
+
+        return ret
 
     def delete_utility_geometry(self):
         """
@@ -3420,11 +3453,12 @@ class AppGeoEditor(QtCore.QObject):
             modifiers = QtWidgets.QApplication.keyboardModifiers()
             # If the SHIFT key is pressed when LMB is clicked then the coordinates are copied to clipboard
             if modifiers == QtCore.Qt.KeyboardModifier.ShiftModifier:
-                self.app.clipboard.setText(
-                    self.app.options["global_point_clipboard_format"] %
-                    (self.decimals, self.pos[0], self.decimals, self.pos[1])
-                )
-                return
+                if self.active_tool is not None and self.active_tool.name != 'rectangle':
+                    self.app.clipboard.setText(
+                        self.app.options["global_point_clipboard_format"] %
+                        (self.decimals, self.pos[0], self.decimals, self.pos[1])
+                    )
+                    return
 
             # Selection with left mouse button
             if self.active_tool is not None:
@@ -3736,15 +3770,15 @@ class AppGeoEditor(QtCore.QObject):
 
     def on_delete_btn(self):
         self.delete_selected()
-        self.plot_all()
+        # self.plot_all()
 
     def delete_selected(self):
         tempref = [s for s in self.selected]
         for shape in tempref:
             self.delete_shape(shape)
-        self.plot_all()
         self.selected = []
         self.build_ui()
+        self.plot_all()
 
     def delete_shape(self, shape):
 

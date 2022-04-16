@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+16.04.2022
+
+- in Geometry Editor, in the Simplification Tool made sure that the selected shape is highlighted
+- in Geometry Editor, in Rectangle Tool added a modification mode where a selected shape (using the SHIFT + click combo) while the tool is active, can be modified
+
 15.04.2022
 
 - in Geometry Editor moved the simplification feature in its own Editor Tool (plugin)

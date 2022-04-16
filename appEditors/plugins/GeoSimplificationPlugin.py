@@ -101,7 +101,7 @@ class SimplificationTool(AppTool):
                     selected_shapes_geos.append(obj_shape.geo.simplify(tolerance=tol))
 
                 if not selected_shapes:
-                    self.app.inform.emit('[WARNING_NOTCL] %s' % _("Failed."))
+                    self.app.inform.emit('%s' % _("Failed."))
                     return
 
                 for shape in selected_shapes:
@@ -114,6 +114,8 @@ class SimplificationTool(AppTool):
 
                 last_sel_geo = selected_shapes_geos[-1]
                 self.calculate_coords_vertex(last_sel_geo)
+
+                self.app.inform.emit('%s' % _("Done."))
 
                 self.draw_app.plot_all()
                 self.draw_app.interdict_selection = False

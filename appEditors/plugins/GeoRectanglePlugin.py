@@ -16,6 +16,7 @@ class RectangleEditorTool(AppTool):
 
         self.draw_app = draw_app
         self.decimals = app.decimals
+        self._mode = 'add'
 
         self.ui = RectangleEditorUI(layout=self.layout, rect_class=self)
         self.ui.pluginName = plugin_name
@@ -25,7 +26,7 @@ class RectangleEditorTool(AppTool):
 
     def connect_signals_at_init(self):
         # Signals
-        self.ui.add_button.clicked.connect(self.on_add)
+        self.ui.add_button.clicked.connect(self.on_execute)
 
     def run(self):
         self.app.defaults.report_usage("Geo Editor RectangleTool()")
@@ -78,8 +79,17 @@ class RectangleEditorTool(AppTool):
         self.draw_app.select_tool("select")
         self.app.ui.notebook.callback_on_close = lambda: None
 
+    def on_execute(self):
+        if self.mode == 'add':
+            self.app.log.info("RectangleEditorTool.on_add() -> adding a Rectangle shape")
+            self.on_add()
+        else:
+            self.app.log.info("RectangleEditorTool.on_add() -> modifying a Rectangle shape")
+            self.draw_app.delete_selected()
+            self.on_add()
+            self.draw_app.app.inform.emit(_("Click on 1st corner ..."))
+
     def on_add(self):
-        self.app.log.info("RecrangleEditorTool.on_add() -> adding a Rectangle shape")
         origin = self.ui.anchor_radio.get_value()
         origin_x = self.ui.x_entry.get_value()
         origin_y = self.ui.y_entry.get_value()
@@ -130,11 +140,29 @@ class RectangleEditorTool(AppTool):
         else:   # 's' - square
             geo = box(minx, miny, maxx, maxy).exterior
 
-        self.draw_app.add_shape(geo)
+        added_shapes = self.draw_app.add_shape(geo)
+        for added_shape in added_shapes:
+            added_shape.data['type'] = _("Rectangle")
         self.draw_app.plot_all()
 
     def on_clear(self):
         self.set_tool_ui()
+
+    @property
+    def mode(self):
+        return self._mode
+
+    @mode.setter
+    def mode(self, val):
+        self._mode = val
+        if self._mode == 'add':
+            # remove selections when adding a new rectangle
+            self.draw_app.selected = []
+            self.ui.add_button.set_value(_("Add"))
+            self.ui.add_button.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
+        else:
+            self.ui.add_button.set_value(_("Apply"))
+            self.ui.add_button.setIcon(QtGui.QIcon(self.app.resource_location + '/apply32.png'))
 
     @property
     def length(self):
@@ -266,10 +294,18 @@ class RectangleEditorUI:
 
         # Buttons
         self.add_button = FCButton(_("Add"))
+        self.add_button.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
         grid0.addWidget(self.add_button, 18, 0, 1, 2)
 
         self.layout.addStretch(1)
 
+        # Note
+        self.note_lbl = FCLabel('<b>%s</b>' % _("Note"))
+        self.layout.addWidget(self.note_lbl)
+        self.note_description_lbl = FCLabel('%s' % _("Shift + click to select a shape for modification."))
+        self.layout.addWidget(self.note_description_lbl)
+
+        # Signals
         self.corner_radio.activated_custom.connect(self.on_corner_changed)
 
     def on_corner_changed(self, val):
