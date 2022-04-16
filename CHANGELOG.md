@@ -10,6 +10,8 @@ CHANGELOG for FlatCAM Evo beta
 17.04.2022
 
 - in Geometry Editor, in Copy Tool - work in progress (adding utility geometry for the array mode)
+- in Geometry Editor, in Copy Tool - linear array utility geometry is working
+
 
 16.04.2022
 
