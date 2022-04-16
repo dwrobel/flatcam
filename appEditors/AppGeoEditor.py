@@ -2115,13 +2115,93 @@ class FCMove(FCShapeTool):
         self.move_tool.on_tab_close()
 
 
-class FCCopy(FCMove):
+class FCCopy(FCShapeTool):
     def __init__(self, draw_app):
-        FCMove.__init__(self, draw_app)
+        FCShapeTool.__init__(self, draw_app)
         self.name = 'copy'
-        self.move_tool = CopyEditorTool(self.app, self.draw_app, plugin_name=_("Copy"))
-        self.move_tool.run()
+        self.draw_app = draw_app
+        self.app = self.draw_app.app
+        self.storage = self.draw_app.storage
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except Exception:
+            pass
+
+        self.origin = None
+        self.destination = None
+        self.sel_limit = self.draw_app.app.options["geometry_editor_sel_limit"]
+        self.selection_shape = self.selection_bbox()
+
+        if len(self.draw_app.get_selected()) == 0:
+            self.has_selection = False
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s %s' %
+                                          (_("No shape selected."), _("Select some shapes or cancel.")))
+        else:
+            self.has_selection = True
+            self.draw_app.app.inform.emit(_("Click on reference location ..."))
+
+        if self.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = self.draw_cursor_data
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
+        self.copy_tool = CopyEditorTool(self.app, self.draw_app, plugin_name=_("Copy"))
+        self.copy_tool.run()
+
         self.app.ui.notebook.setTabText(2, _("Copy"))
+        if self.draw_app.app.ui.splitter.sizes()[0] == 0:
+            self.draw_app.app.ui.splitter.setSizes([1, 1])
+
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
+    def set_origin(self, origin):
+        self.draw_app.app.inform.emit(_("Click on destination point ..."))
+        self.origin = origin
+
+    def click(self, point):
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
+        if self.has_selection is False:
+            # self.complete = True
+            # self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Move cancelled. No shape selected."))
+            # self.select_shapes(point)
+            # deselect all shapes
+            self.draw_app.selected = []
+            for ____ in self.storage.get_objects():
+                try:
+                    __, closest_shape = self.storage.nearest(point)
+                    # select closes shape
+                    self.draw_app.selected.append(closest_shape)
+                except StopIteration:
+                    return ""
+
+            if not self.draw_app.selected:
+                self.draw_app.app.inform.emit('[WARNING_NOTCL] %s %s' %
+                                              (_("No shape selected."), _("Select some shapes or cancel.")))
+                return
+
+            self.has_selection = True
+            self.draw_app.plot_all()
+            self.selection_shape = self.selection_bbox()
+            # self.draw_app.plot_all()
+            self.draw_app.app.inform.emit(_("Click on reference location ..."))
+            return
+
+        if self.origin is None:
+            self.points.append(point)
+            self.set_origin(point)
+            self.selection_shape = self.selection_bbox()
+            return "Click on final location."
+        else:
+            self.destination = point
+            self.make()
+            # self.draw_app.app.worker_task.emit(({'fcn': self.make,
+            #                                      'params': []}))
+            return "Done."
 
     def make(self):
         # Create new geometry
@@ -2138,6 +2218,334 @@ class FCCopy(FCMove):
         except (TypeError, AttributeError):
             pass
 
+    def selection_bbox(self):
+        geo_list = []
+        for select_shape in self.draw_app.get_selected():
+            geometric_data = select_shape.geo
+            try:
+                for g in geometric_data:
+                    geo_list.append(g)
+            except TypeError:
+                geo_list.append(geometric_data)
+
+        xmin, ymin, xmax, ymax = get_shapely_list_bounds(geo_list)
+
+        pt1 = (xmin, ymin)
+        pt2 = (xmax, ymin)
+        pt3 = (xmax, ymax)
+        pt4 = (xmin, ymax)
+
+        return Polygon([pt1, pt2, pt3, pt4])
+
+    def utility_geometry(self, data=None):
+        """
+        Temporary geometry on screen while using this tool.
+
+        :param data:
+        :return:
+        """
+
+        if self.origin is None:
+            return None
+
+        if len(self.draw_app.get_selected()) == 0:
+            return None
+
+        dx = data[0] - self.origin[0]
+        dy = data[1] - self.origin[1]
+
+        if len(self.draw_app.get_selected()) <= self.sel_limit:
+            copy_mode = self.copy_tool.ui.mode_radio.get_value()
+            if copy_mode == 'n':
+                try:
+                    geo_list = [translate(geom.geo, xoff=dx, yoff=dy) for geom in self.draw_app.get_selected()]
+                except AttributeError:
+                    self.draw_app.select_tool('select')
+                    self.draw_app.selected = []
+                    return
+                return DrawToolUtilityShape(geo_list)
+            else:
+                return self.array_util_geometry(data)
+        else:
+            try:
+                ss_el = translate(self.selection_shape, xoff=dx, yoff=dy)
+            except ValueError:
+                ss_el = None
+            return DrawToolUtilityShape(ss_el)
+
+    def array_util_geometry(self, pos, static=None):
+        axis = self.draw_app.ui.axis_radio.get_value()
+        direction = self.draw_app.ui.array_dir_radio.get_value()
+        array_type = self.draw_app.ui.array_type_radio.get_value()
+        try:
+            array_size = int(self.copy_tool.ui.array_size_entry.get_value())
+            try:
+                pitch = float(self.copy_tool.ui.pitch_entry.get_value())
+                linear_angle = float(self.copy_tool.ui.linear_angle_spinner.get_value())
+                angle = float(self.copy_tool.ui.angle_entry.get_value())
+            except TypeError:
+                self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
+                                              _("The value is not Float. Check for comma instead of dot separator."))
+                return
+        except Exception as e:
+            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s. %s' %
+                                          (_("The value is mistyped. Check the value"), str(e)))
+            return
+
+        if array_type == 'linear':  # 'Linear'
+            if pos[0] is None and pos[1] is None:
+                dx = self.draw_app.x
+                dy = self.draw_app.y
+            else:
+                dx = pos[0]
+                dy = pos[1]
+
+            geo_list = []
+            self.points = [dx, dy]
+
+            for item in range(array_size):
+                if axis == 'X':
+                    new_pos = ((dx + (pitch * item)), dy)
+                elif axis == 'Y':
+                    new_pos = (dx, (dy + (pitch * item)))
+                else:   # 'A'
+                    x_adj = pitch * math.cos(math.radians(linear_angle))
+                    y_adj = pitch * math.sin(math.radians(linear_angle))
+                    new_pos = ((dx + (x_adj * item)), (dy + (y_adj * item)))
+
+                for g in self.draw_app.get_selected():
+                    if static is None or static is False:
+                        geo_list.append(translate(g.geo, xoff=(dx - self.last_dx), yoff=(dy - self.last_dy)))
+                    else:
+                        geo_list.append(g.geo)
+
+            self.last_dx = dx
+            self.last_dy = dy
+            return DrawToolUtilityShape(geo_list)
+        elif array_type== 'circular':  # 'Circular'
+            if pos[0] is None and pos[1] is None:
+                cdx = self.draw_app.x
+                cdy = self.draw_app.y
+            else:
+                cdx = pos[0]
+                cdy = pos[1]
+
+            utility_list = []
+
+            try:
+                radius = distance((cdx, cdy), self.origin)
+            except Exception:
+                radius = 0
+
+            if radius == 0:
+                self.draw_app.delete_utility_geometry()
+
+            if len(self.points) >= 1 and radius > 0:
+                try:
+                    if cdx < self.origin[0]:
+                        radius = -radius
+
+                    # draw the temp geometry
+                    initial_angle = math.asin((cdy - self.origin[1]) / radius)
+
+                    temp_circular_geo = self.circular_util_shape(radius, initial_angle)
+
+                    # draw the line
+                    temp_points = [x for x in self.points]
+                    temp_points.append([cdx, cdy])
+                    temp_line = LineString(temp_points)
+
+                    for geo_shape in temp_circular_geo:
+                        utility_list.append(geo_shape.geo)
+                    utility_list.append(temp_line)
+
+                    return DrawToolUtilityShape(utility_list)
+                except Exception as e:
+                    log.error("DrillArray.utility_geometry -- circular -> %s" % str(e))
+
+    def circular_util_shape(self, radius, angle):
+        direction = self.draw_app.ui.drill_array_dir_radio.get_value()
+        if angle is None:
+            angle = self.draw_app.ui.drill_angle_entry.get_value()
+        array_size = int(self.copy_tool.ui.array_size_entry.get_value())
+
+        circular_geo = []
+        if direction == 'CW':
+            for i in range(array_size):
+                angle_radians = math.radians(angle * i)
+                x = self.origin[0] + radius * math.cos(-angle_radians + angle)
+                y = self.origin[1] + radius * math.sin(-angle_radians + angle)
+
+                geo_sol = self.util_shape((x, y))
+                # geo_sol = affinity.rotate(geo_sol, angle=(math.pi - angle_radians), use_radians=True)
+
+                circular_geo.append(DrawToolShape(geo_sol))
+        else:
+            for i in range(array_size):
+                angle_radians = math.radians(angle * i)
+                x = self.origin[0] + radius * math.cos(angle_radians + angle)
+                y = self.origin[1] + radius * math.sin(angle_radians + angle)
+
+                geo_sol = self.util_shape((x, y))
+                # geo_sol = affinity.rotate(geo_sol, angle=(angle_radians - math.pi), use_radians=True)
+
+                circular_geo.append(DrawToolShape(geo_sol))
+
+        return circular_geo
+
+    def select_shapes(self, pos):
+        # list where we store the overlapped shapes under our mouse left click position
+        over_shape_list = []
+
+        try:
+            _, closest_shape = self.storage.nearest(pos)
+        except StopIteration:
+            return ""
+
+        over_shape_list.append(closest_shape)
+
+        try:
+            # if there is no shape under our click then deselect all shapes
+            # it will not work for 3rd method of click selection
+            if not over_shape_list:
+                self.draw_app.selected = []
+                self.draw_app.draw_shape_idx = -1
+            else:
+                # if there are shapes under our click then advance through the list of them, one at the time in a
+                # circular way
+                self.draw_app.draw_shape_idx = (AppGeoEditor.draw_shape_idx + 1) % len(over_shape_list)
+                try:
+                    obj_to_add = over_shape_list[int(AppGeoEditor.draw_shape_idx)]
+                except IndexError:
+                    return
+
+                key_modifier = QtWidgets.QApplication.keyboardModifiers()
+                if self.draw_app.app.options["global_mselect_key"] == 'Control':
+                    # if CONTROL key is pressed then we add to the selected list the current shape but if it's
+                    # already in the selected list, we removed it. Therefore, first click selects, second deselects.
+                    if key_modifier == Qt.KeyboardModifier.ControlModifier:
+                        if obj_to_add in self.draw_app.selected:
+                            self.draw_app.selected.remove(obj_to_add)
+                        else:
+                            self.draw_app.selected.append(obj_to_add)
+                    else:
+                        self.draw_app.selected = []
+                        self.draw_app.selected.append(obj_to_add)
+                else:
+                    if key_modifier == Qt.KeyboardModifier.ShiftModifier:
+                        if obj_to_add in self.draw_app.selected:
+                            self.draw_app.selected.remove(obj_to_add)
+                        else:
+                            self.draw_app.selected.append(obj_to_add)
+                    else:
+                        self.draw_app.selected = []
+                        self.draw_app.selected.append(obj_to_add)
+
+        except Exception as e:
+            log.error("[ERROR] Something went bad. %s" % str(e))
+            raise
+
+    def draw_cursor_data(self, pos=None, delete=False):
+        if pos is None:
+            pos = self.draw_app.snap_x, self.draw_app.snap_y
+
+        if delete:
+            if self.draw_app.app.use_3d_engine:
+                self.draw_app.app.plotcanvas.text_cursor.parent = None
+                self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+            return
+
+        # font size
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("hud_font_size"):
+            fsize = qsettings.value('hud_font_size', type=int)
+        else:
+            fsize = 8
+
+        x = pos[0]
+        y = pos[1]
+        try:
+            length = abs(np.sqrt((pos[0] - self.points[-1][0]) ** 2 + (pos[1] - self.points[-1][1]) ** 2))
+        except IndexError:
+            length = self.draw_app.app.dec_format(0.0, self.draw_app.app.decimals)
+        units = self.draw_app.app.app_units.lower()
+
+        x_dec = str(self.draw_app.app.dec_format(x, self.draw_app.app.decimals)) if x else '0.0'
+        y_dec = str(self.draw_app.app.dec_format(y, self.draw_app.app.decimals)) if y else '0.0'
+        length_dec = str(self.draw_app.app.dec_format(length, self.draw_app.app.decimals)) if length else '0.0'
+
+        l1_txt = 'X:   %s [%s]' % (x_dec, units)
+        l2_txt = 'Y:   %s [%s]' % (y_dec, units)
+        l3_txt = 'L:   %s [%s]' % (length_dec, units)
+        cursor_text = '%s\n%s\n\n%s' % (l1_txt, l2_txt, l3_txt)
+
+        if self.draw_app.app.use_3d_engine:
+            new_pos = self.draw_app.app.plotcanvas.translate_coords_2((x, y))
+            x, y, __, ___ = self.draw_app.app.plotcanvas.translate_coords((new_pos[0]+30, new_pos[1]))
+
+            # text
+            self.draw_app.app.plotcanvas.text_cursor.font_size = fsize
+            self.draw_app.app.plotcanvas.text_cursor.text = cursor_text
+            self.draw_app.app.plotcanvas.text_cursor.pos = x, y
+            self.draw_app.app.plotcanvas.text_cursor.anchors = 'left', 'top'
+
+            if self.draw_app.app.plotcanvas.text_cursor.parent is None:
+                self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
+
+    def on_key(self, key):
+        # Jump to coords
+        if key == QtCore.Qt.Key.Key_J or key == 'J':
+            self.draw_app.app.on_jump_to()
+
+        if key in [str(i) for i in range(10)] + ['.', ',', '+', '-', '/', '*'] or \
+                key in [QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_1, QtCore.Qt.Key.Key_2,
+                        QtCore.Qt.Key.Key_3, QtCore.Qt.Key.Key_4, QtCore.Qt.Key.Key_5, QtCore.Qt.Key.Key_6,
+                        QtCore.Qt.Key.Key_7, QtCore.Qt.Key.Key_8, QtCore.Qt.Key.Key_9, QtCore.Qt.Key.Key_Minus,
+                        QtCore.Qt.Key.Key_Plus, QtCore.Qt.Key.Key_Comma, QtCore.Qt.Key.Key_Period,
+                        QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
+            try:
+                # VisPy keys
+                if self.copy_tool.length == 0:
+                    self.copy_tool.length = str(key.name)
+                else:
+                    self.copy_tool.length = str(self.copy_tool.length) + str(key.name)
+            except AttributeError:
+                # Qt keys
+                if self.copy_tool.length == 0:
+                    self.copy_tool.length = chr(key)
+                else:
+                    self.copy_tool.length = str(self.copy_tool.length) + chr(key)
+
+        if key == 'Enter' or key == QtCore.Qt.Key.Key_Return or key == QtCore.Qt.Key.Key_Enter:
+            if self.copy_tool.length != 0:
+                target_length = self.copy_tool.length
+                if target_length is None:
+                    self.copy_tool.length = 0.0
+                    return _("Failed.")
+
+                first_pt = self.points[-1]
+                last_pt = self.draw_app.app.mouse
+
+                seg_length = math.sqrt((last_pt[0] - first_pt[0])**2 + (last_pt[1] - first_pt[1])**2)
+                if seg_length == 0.0:
+                    return
+                try:
+                    new_x = first_pt[0] + (last_pt[0] - first_pt[0]) / seg_length * target_length
+                    new_y = first_pt[1] + (last_pt[1] - first_pt[1]) / seg_length * target_length
+                except ZeroDivisionError as err:
+                    self.points = []
+                    self.clean_up()
+                    return '[ERROR_NOTCL] %s %s' % (_("Failed."), str(err).capitalize())
+
+                if self.points[-1] != (new_x, new_y):
+                    self.points.append((new_x, new_y))
+                    self.draw_app.app.on_jump_to(custom_location=(new_x, new_y), fit_center=False)
+                    self.destination = (new_x, new_y)
+                    self.make()
+                    self.draw_app.on_shape_complete()
+                    self.draw_app.select_tool("select")
+                    return "Done."
+
     def clean_up(self):
         self.draw_app.selected = []
         self.draw_app.plot_all()
@@ -2150,7 +2558,7 @@ class FCCopy(FCMove):
             self.draw_app.app.jump_signal.disconnect()
         except (TypeError, AttributeError):
             pass
-        self.move_tool.on_tab_close()
+        self.copy_tool.on_tab_close()
 
 
 class FCText(FCShapeTool):
