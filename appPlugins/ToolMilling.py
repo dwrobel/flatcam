@@ -3944,7 +3944,7 @@ class MillingUI:
         # #############################################################################################################
         # Source Object for Milling Frame
         # #############################################################################################################
-        self.obj_combo_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.obj_combo_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('darkorange'), _("Source Object")))
         self.obj_combo_label.setToolTip(
             _("Source object for milling operation.")
         )
@@ -3996,7 +3996,7 @@ class MillingUI:
         tool_title_grid = GLay(v_spacing=5, h_spacing=3)
         self.tools_box.addLayout(tool_title_grid)
 
-        self.tools_table_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Tools Table'))
+        self.tools_table_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _('Tools Table')))
         self.tools_table_label.setToolTip(
             _("Tools in the object used for milling.")
         )
@@ -4760,7 +4760,7 @@ class MillingUI:
         # COMMON PARAMETERS
         # #############################################################################################################
         # General Parameters
-        self.gen_param_label = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Common Parameters"))
+        self.gen_param_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('indigo'), _("Common Parameters")))
         self.gen_param_label.setToolTip(
             _("Parameters that are common for all tools.")
         )

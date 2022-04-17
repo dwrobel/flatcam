@@ -12,6 +12,10 @@ CHANGELOG for FlatCAM Evo beta
 - in Geometry Editor, in Copy Tool - work in progress (adding utility geometry for the array mode)
 - in Geometry Editor, in Copy Tool - linear array utility geometry is working
 - in Geometry Editor, COpy Tool, finished the copy-as-array feature except the 2D array type which was not implemented yet
+- Added new python module dependency for `darkdetect` which is used to detec the operating system appearance
+- Updated code application wide to set theme based on OS appearance at launch
+- Added option to have dark canvas in Light mode
+- Added combination of colors to be used for labels in the Preferences tab. The existing colors have been retained for Light mode and alternative colors added that work better in Dark mode
 
 16.04.2022
 
@@ -7464,4 +7468,3 @@ Previously added features by Dennis
 - Groups in Project view.
 - Pan view by dragging in visualizer window with pressed MMB.
 - OpenGL-based visualizer.
-

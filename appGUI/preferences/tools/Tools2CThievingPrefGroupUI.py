@@ -25,7 +25,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Parameters Frame
         # #############################################################################################################
-        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Parameters'))
+        self.param_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _('Parameters')))
         self.param_label.setToolTip(
             _("A tool to generate a Copper Thieving that can be added\n"
               "to a selected Gerber file.")
@@ -259,7 +259,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Robber Bar Parameters Frame
         # #############################################################################################################
-        self.robber_bar_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _('Robber Bar Parameters'))
+        self.robber_bar_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('brown'), _('Robber Bar Parameters')))
         self.robber_bar_label.setToolTip(
             _("Parameters used for the robber bar.\n"
               "Robber bar = copper border to help in pattern hole plating.")
@@ -302,7 +302,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # RPattern Plating Mask Parameters Frame
         # #############################################################################################################
-        self.patern_mask_label = FCLabel('<span style="color:purple;"><b>%s</b></span>' % _('Pattern Plating Mask'))
+        self.patern_mask_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('purple'), _('Pattern Plating Mask')))
         self.patern_mask_label.setToolTip(
             _("Generate a mask for pattern plating.")
         )

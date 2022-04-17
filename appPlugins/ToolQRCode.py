@@ -758,7 +758,7 @@ class QRcodeUI:
         self.grb_object_combo.is_last = True
         self.grb_object_combo.obj_type = "Gerber"
 
-        self.grbobj_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.grbobj_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('darkorange'), _("Source Object")))
         self.grbobj_label.setToolTip(
             _("Gerber Object to which the QRCode will be added.")
         )
@@ -770,7 +770,7 @@ class QRcodeUI:
         # QrCode Text Frame
         # #############################################################################################################
         # Text box
-        self.text_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _("QRCode Data"))
+        self.text_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('red'), _("QRCode Data")))
         self.text_label.setToolTip(
             _("QRCode Data. Alphanumeric text to be encoded in the QRCode.")
         )
@@ -798,7 +798,7 @@ class QRcodeUI:
         # #############################################################################################################
         # Parameters Frame
         # #############################################################################################################
-        self.qrcode_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Parameters'))
+        self.qrcode_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _('Parameters')))
         self.qrcode_label.setToolTip(
             _("The parameters used to shape the QRCode.")
         )
@@ -910,7 +910,7 @@ class QRcodeUI:
         # Export Frame
         # #############################################################################################################
         # Export QRCode
-        self.export_label = FCLabel('<span style="color:darkgreen;"><b>%s</b></span>' % _("Export QRCode"))
+        self.export_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('darkgreen'), _("Export QRCode")))
         self.export_label.setToolTip(
             _("Show a set of controls allowing to export the QRCode\n"
               "to a SVG file or an PNG file.")

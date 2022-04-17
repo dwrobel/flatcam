@@ -22,7 +22,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.options = app.options
 
         # ## Clear non-copper regions
-        self.iso_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.iso_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _("Parameters")))
         self.iso_label.setToolTip(
             _("Create a Geometry object with\n"
               "toolpaths to cut around polygons.")
@@ -135,7 +135,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         # Tool Frame
         # #############################################################################################################
         # ### Tools ## ##
-        self.tools_table_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Tool Parameters"))
+        self.tools_table_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _("Tool Parameters")))
         self.layout.addWidget(self.tools_table_label)
 
         tt_frame = FCFrame()
@@ -245,7 +245,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # General Parameters Frame
         # #############################################################################################################
-        self.gen_param_label = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Common Parameters"))
+        self.gen_param_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('indigo'), _("Common Parameters")))
         self.gen_param_label.setToolTip(
             _("Parameters that are common for all tools.")
         )

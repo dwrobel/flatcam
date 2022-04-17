@@ -39,9 +39,14 @@ class VisPyCanvas(scene.SceneCanvas):
         if settings.contains("theme"):
             theme = settings.value('theme', type=str)
         else:
-            theme = 'white'
+            theme = 'light'
 
-        if theme == 'white':
+        if settings.contains("dark_canvas"):
+            dark_canvas = settings.value('dark_canvas', type=bool)
+        else:
+            dark_canvas = True
+
+        if theme == 'light' and not dark_canvas:
             theme_color = Color('#FFFFFF')
             tick_color = Color('#000000')
             back_color = str(QPalette().color(QPalette.ColorRole.Window).name())
@@ -97,10 +102,15 @@ class VisPyCanvas(scene.SceneCanvas):
         if settings.contains("theme"):
             theme = settings.value('theme', type=str)
         else:
-            theme = 'white'
+            theme = 'light'
+
+        if settings.contains("dark_canvas"):
+            dark_canvas = settings.value('dark_canvas', type=bool)
+        else:
+            dark_canvas = True
 
         self.view = view
-        if theme == 'white':
+        if theme == 'light' and not dark_canvas:
             self.grid = scene.GridLines(parent=self.view.scene, color='dimgray')
         else:
             self.grid = scene.GridLines(parent=self.view.scene, color='#dededeff')

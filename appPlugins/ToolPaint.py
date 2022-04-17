@@ -2946,7 +2946,7 @@ class PaintUI:
         # #############################################################################################################
         # Source Object for Paint Frame
         # #############################################################################################################
-        self.obj_combo_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.obj_combo_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('darkorange'), _("Source Object")))
         self.obj_combo_label.setToolTip(
             _("Source object for milling operation.")
         )
@@ -2996,7 +2996,7 @@ class PaintUI:
         # Tool Table Frame
         # #############################################################################################################
         # ### Tools ## ##
-        self.tools_table_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Tools Table'))
+        self.tools_table_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _('Tools Table')))
         self.tools_table_label.setToolTip(
             _("Tools pool from which the algorithm\n"
               "will pick the ones used for painting.")
@@ -3243,7 +3243,7 @@ class PaintUI:
         # General Parameters Frame
         # #############################################################################################################
         # General Parameters
-        self.gen_param_label = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Common Parameters"))
+        self.gen_param_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('indigo'), _("Common Parameters")))
         self.gen_param_label.setToolTip(_("Parameters that are common for all tools."))
         self.tools_box.addWidget(self.gen_param_label)
 

@@ -1277,7 +1277,7 @@ class ThievingUI:
         # #############################################################################################################
         # Source Object  Frame
         # #############################################################################################################
-        self.grbobj_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.grbobj_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('darkorange'), _("Source Object")))
         self.grbobj_label.setToolTip(_("Gerber Object to which will be added a copper thieving."))
         self.tools_box.addWidget(self.grbobj_label)
 
@@ -1666,7 +1666,7 @@ class ThievingUI:
         )
         self.tools_box.addWidget(self.patern_mask_label)
 
-        self.sm_obj_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.sm_obj_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('darkorange'), _("Source Object")))
         self.sm_obj_label.setToolTip(
             _("Gerber Object with the soldermask.\n"
               "It will be used as a base for\n"

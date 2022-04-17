@@ -444,7 +444,7 @@ class ObjectDistanceUI:
         # #############################################################################################################
         # Parameters Frame
         # #############################################################################################################
-        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Parameters'))
+        self.param_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _('Parameters')))
         self.param_label.setToolTip(
             _("Parameters used for this tool.")
         )
@@ -473,7 +473,7 @@ class ObjectDistanceUI:
         # #############################################################################################################
         # Coordinates Frame
         # #############################################################################################################
-        self.coords_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Coordinates'))
+        self.coords_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _('Coordinates')))
         self.layout.addWidget(self.coords_label)
 
         coords_frame = FCFrame()
@@ -516,7 +516,7 @@ class ObjectDistanceUI:
         # #############################################################################################################
         # Coordinates Frame
         # #############################################################################################################
-        self.res_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _('Results'))
+        self.res_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('red'), _('Results')))
         self.layout.addWidget(self.res_label)
 
         res_frame = FCFrame()

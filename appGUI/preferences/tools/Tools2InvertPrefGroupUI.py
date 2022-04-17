@@ -24,7 +24,7 @@ class Tools2InvertPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # PARAMETERS Frame
         # #############################################################################################################
-        self.sublabel = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.sublabel = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _("Parameters")))
         self.sublabel.setToolTip(
             _("A tool to invert Gerber geometry from positive to negative\n"
               "and in revers.")
@@ -54,7 +54,7 @@ class Tools2InvertPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Line Join Frame
         # #############################################################################################################
-        self.join_label = FCLabel('<span style="color:tomato;"><b>%s</b></span>' % _("Lines Join Style"))
+        self.join_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('tomato'), _("Lines Join Style")))
         self.join_label.setToolTip(
             _("The way that the lines in the object outline will be joined.\n"
               "Can be:\n"

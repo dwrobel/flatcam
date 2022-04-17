@@ -764,15 +764,20 @@ class Distance(AppTool):
         if settings.contains("theme"):
             theme = settings.value('theme', type=str)
         else:
-            theme = 'white'
+            theme = 'light'
+
+        if settings.contains("dark_canvas"):
+            dark_canvas = settings.value('dark_canvas', type=bool)
+        else:
+            dark_canvas = True
 
         if self.app.use_3d_engine:
-            if theme == 'white':
+            if theme == 'light' and not dark_canvas:
                 color = '#000000FF'
             else:
                 color = '#FFFFFFFF'
         else:
-            if theme == 'white':
+            if theme == 'light' and not dark_canvas:
                 color = '#000000'
             else:
                 color = '#FFFFFF'
@@ -817,7 +822,7 @@ class DistanceUI:
         # #############################################################################################################
         # Parameters Frame
         # #############################################################################################################
-        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Parameters'))
+        self.param_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _('Parameters')))
         self.layout.addWidget(self.param_label)
 
         self.par_frame = FCFrame()
@@ -848,7 +853,7 @@ class DistanceUI:
         # #############################################################################################################
         # Coordinates Frame
         # #############################################################################################################
-        self.coords_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Coordinates'))
+        self.coords_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _('Coordinates')))
         self.layout.addWidget(self.coords_label)
 
         coords_frame = FCFrame()
@@ -891,7 +896,7 @@ class DistanceUI:
         # #############################################################################################################
         # Coordinates Frame
         # #############################################################################################################
-        self.res_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _('Results'))
+        self.res_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('red'), _('Results')))
         self.layout.addWidget(self.res_label)
 
         res_frame = FCFrame()

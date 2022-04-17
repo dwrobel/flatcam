@@ -28,7 +28,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Grid0 Frame
         # #############################################################################################################
-        self.unitslabel = FCLabel('<span style="color:red;"><b>%s</b></span>' % _('Units'))
+        self.unitslabel = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('red'), _('Units')))
         self.unitslabel.setToolTip(_("The default value for the application units.\n"
                                      "Whatever is selected here is set every time\n"
                                      "the application is started."))
@@ -76,7 +76,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.precision_inch_label, 4, 0)
         grid0.addWidget(self.precision_inch_entry, 4, 1)
 
-        self.par_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.par_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _("Parameters")))
         self.layout.addWidget(self.par_label)
 
         # #############################################################################################################
@@ -166,7 +166,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Grid0 Frame
         # #############################################################################################################
-        self.app_level_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _('Application Level'))
+        self.app_level_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('red'), _('Application Level')))
         self.app_level_label.setToolTip(_("Choose the default level of usage for FlatCAM.\n"
                                           "BASIC level -> reduced functionality, best for beginner's.\n"
                                           "ADVANCED level -> full functionality.\n\n"
@@ -189,7 +189,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # Grid3 Frame
         # #############################################################################################################
         # Languages for FlatCAM
-        self.languagelabel = FCLabel('<span style="color:DarkCyan;"><b>%s</b></span>' % _('Languages'))
+        self.languagelabel = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('DarkCyan'), _('Languages')))
         self.languagelabel.setToolTip(_("Set the language used throughout FlatCAM."))
         self.layout.addWidget(self.languagelabel)
 
@@ -213,7 +213,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # ----------- APPLICATION STARTUP SETTINGS ------------------
         # -----------------------------------------------------------
 
-        self.startup_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Startup Settings'))
+        self.startup_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _('Startup Settings')))
         self.layout.addWidget(self.startup_label)
 
         # #############################################################################################################
@@ -284,7 +284,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.ois_version_check = OptionalInputSection(self.version_check_cb, [self.send_stats_cb])
 
         # Save Settings
-        self.save_label = FCLabel('<span style="color:purple;"><b>%s</b></span>' % _("Save Settings"))
+        self.save_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('purple'), _("Save Settings")))
         self.layout.addWidget(self.save_label)
 
         # #############################################################################################################
@@ -346,7 +346,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
         # self.as_ois = OptionalInputSection(self.autosave_cb, [self.autosave_label, self.autosave_entry], True)
 
-        self.pdf_param_label = FCLabel('<span style="color:orange;"><b>%s</b></span>' % _("Text to PDF parameters"))
+        self.pdf_param_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('orange'), _("Text to PDF parameters")))
         self.pdf_param_label.setToolTip(
             _("Used when saving text in Code Editor or in FlatCAM Document objects.")
         )

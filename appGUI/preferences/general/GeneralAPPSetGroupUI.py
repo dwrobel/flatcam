@@ -26,9 +26,9 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         if theme_settings.contains("theme"):
             theme = theme_settings.value('theme', type=str)
         else:
-            theme = 'white'
+            theme = 'light'
 
-        if theme == 'white':
+        if theme == 'light':
             self.resource_loc = 'assets/resources'
         else:
             self.resource_loc = 'assets/resources'
@@ -37,7 +37,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         # Grid Settings Frame
         # #############################################################################################################
         # GRID Settings
-        self.grid_label = FCLabel('<span style="color:magenta;"><b>%s</b></span>' % _('Grid Settings'))
+        self.grid_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('magenta'), _('Grid Settings')))
         self.layout.addWidget(self.grid_label)
 
         grids_frame = FCFrame()
@@ -90,7 +90,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         # Workspace Frame
         # #############################################################################################################
         # Workspace
-        self.workspace_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _('Workspace Settings'))
+        self.workspace_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('brown'), _('Workspace Settings')))
         self.layout.addWidget(self.workspace_label)
 
         wk_frame = FCFrame()
@@ -191,7 +191,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         # Font Frame
         # #############################################################################################################
         # Font Size
-        self.font_size_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Font Size'))
+        self.font_size_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _('Font Size')))
         self.layout.addWidget(self.font_size_label)
 
         fnt_frame = FCFrame()
@@ -283,7 +283,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         # Axis Frame
         # #############################################################################################################
         # Axis Size
-        self.axis_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _('Axis'))
+        self.axis_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('brown'), _('Axis')))
         self.layout.addWidget(self.axis_label)
 
         ax_frame = FCFrame()
@@ -305,7 +305,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Mouse Frame
         # #############################################################################################################
-        self.mouse_lbl = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _('Mouse Settings'))
+        self.mouse_lbl = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('darkorange'), _('Mouse Settings')))
         self.layout.addWidget(self.mouse_lbl)
 
         m_frame = FCFrame()
@@ -408,7 +408,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Parameters Frame
         # #############################################################################################################
-        self.par_label = FCLabel('<b><font color="blue">%s</font></b>' % _('Parameters'))
+        self.par_label = FCLabel('<b><font color="%s">%s</font></b>' % (self.app.theme_safe_color('blue'), _('Parameters')))
         self.layout.addWidget(self.par_label)
 
         par_frame = FCFrame()
@@ -496,9 +496,14 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
             if theme_settings.contains("theme"):
                 theme = theme_settings.value('theme', type=str)
             else:
-                theme = 'white'
+                theme = 'light'
 
-            if theme == 'white':
+            if theme_settings.contains("dark_canvas"):
+                dark_canvas = theme_settings.value('dark_canvas', type=bool)
+            else:
+                dark_canvas = True
+
+            if theme == 'light' and not dark_canvas:
                 self.app.cursor_color_3D = 'black'
             else:
                 self.app.cursor_color_3D = 'gray'

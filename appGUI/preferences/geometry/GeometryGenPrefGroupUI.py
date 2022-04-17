@@ -26,7 +26,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Plot Frame
         # #############################################################################################################
-        self.plot_options_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Plot Options"))
+        self.plot_options_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _("Plot Options")))
         self.layout.addWidget(self.plot_options_label)
 
         plot_frame = FCFrame()
@@ -69,7 +69,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Optimization Frame
         # #############################################################################################################
-        self.opt_label = FCLabel('<span style="color:teal;"><b>%s</b></span>' % _("Path Optimization"))
+        self.opt_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('teal'), _("Path Optimization")))
         self.layout.addWidget(self.opt_label)
 
         opt_frame = FCFrame()
@@ -119,7 +119,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Fuse Frame
         # #############################################################################################################
-        self.join_geo_label = FCLabel('<span style="color:magenta;"><b>%s</b></span>' % _('Join Option'))
+        self.join_geo_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('magenta'), _('Join Option')))
         self.layout.addWidget(self.join_geo_label)
 
         fuse_frame = FCFrame()
@@ -138,7 +138,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Object Color Frame
         # #############################################################################################################
-        self.gerber_color_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _('Object Color'))
+        self.gerber_color_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('darkorange'), _('Object Color')))
         self.layout.addWidget(self.gerber_color_label)
 
         obj_frame = FCFrame()

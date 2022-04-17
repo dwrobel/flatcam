@@ -23,7 +23,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # PARAMETERS Frame
         # #############################################################################################################
-        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.param_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _("Parameters")))
         self.param_label.setToolTip(
             _("A list of Excellon Editor parameters.")
         )
@@ -79,7 +79,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Linear Array Frame
         # #############################################################################################################
-        self.drill_array_linear_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _('Linear Drill Array'))
+        self.drill_array_linear_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('brown'), _('Linear Drill Array')))
         self.layout.addWidget(self.drill_array_linear_label)
 
         lin_frame = FCFrame()
@@ -134,7 +134,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Circular Array Frame
         # #############################################################################################################
-        self.drill_array_circ_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Circular Drill Array'))
+        self.drill_array_circ_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _('Circular Drill Array')))
         self.layout.addWidget(self.drill_array_circ_label)
 
         circ_frame = FCFrame()
@@ -173,7 +173,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Slots Frame
         # #############################################################################################################
-        self.drill_array_circ_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _('Slots'))
+        self.drill_array_circ_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('darkorange'), _('Slots')))
         self.layout.addWidget(self.drill_array_circ_label)
 
         slots_frame = FCFrame()
@@ -236,7 +236,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Slots Array Frame
         # #############################################################################################################
-        self.slot_array_linear_label = FCLabel('<span style="color:magenta;"><b>%s</b></span>' % _('Linear Slot Array'))
+        self.slot_array_linear_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('magenta'), _('Linear Slot Array')))
         self.layout.addWidget(self.slot_array_linear_label)
 
         slot_array_frame = FCFrame()
@@ -306,7 +306,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Circular Slot Array Frame
         # #############################################################################################################
-        self.slot_array_circ_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Circular Slot Array'))
+        self.slot_array_circ_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _('Circular Slot Array')))
         self.layout.addWidget(self.slot_array_circ_label)
 
         circ_slot_frame = FCFrame()

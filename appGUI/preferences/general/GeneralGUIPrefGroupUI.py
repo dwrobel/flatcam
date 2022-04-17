@@ -22,7 +22,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.decimals = app.decimals
         self.options = app.options
 
-        self.param_lbl = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.param_lbl = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _("Parameters")))
         self.layout.addWidget(self.param_lbl)
 
         # #############################################################################################################
@@ -35,7 +35,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         par_frame.setLayout(grid0)
 
         # Theme selection
-        self.appearance_label = FCLabel('%s:' % _('Theme'))
+        self.appearance_label = FCLabel('<b>%s</b>' % _('Theme'))
         self.appearance_label.setToolTip(
             _("Select a theme for the application.\n"
               "It will theme the plot area.")
@@ -52,8 +52,16 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
               "Dark: Dark mode")
         )
 
-        grid0.addWidget(self.appearance_label, 0, 0)
-        grid0.addWidget(self.appearance_radio, 0, 1)
+        # Dark Canvas
+        self.dark_canvas_cb = FCCheckBox('%s' % _('Always use dark canvas'))
+        self.dark_canvas_cb.setToolTip(
+            _("Check this box to always use Dark canvas\n"
+              "even if Light theme is selected.")
+        )
+
+        grid0.addWidget(self.appearance_label, 0, 0, 1, 2)
+        grid0.addWidget(self.appearance_radio, 1, 0, 1, 3)
+        grid0.addWidget(self.dark_canvas_cb, 2, 0, 1, 3)
 
         # self.theme_button = FCButton(_("Apply Theme"))
         # self.theme_button.setToolTip(
@@ -143,7 +151,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Grid1 Frame
         # #############################################################################################################
-        self.color_lbl = FCLabel('<span style="color:teal;"><b>%s</b></span>' % _("Colors"))
+        self.color_lbl = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('teal'), _("Colors")))
         self.layout.addWidget(self.color_lbl)
 
         color_frame = FCFrame()
@@ -295,6 +303,11 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
 
         grid1.addWidget(self.proj_color_dis_l_label, 32, 0)
         grid1.addWidget(self.proj_color_dis_light_entry, 32, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        grid1.addWidget(separator_line, 33, 0, 1, 2)
 
         # Dark Theme
         self.proj_settings_d_label = FCLabel('<b>%s</b> - %s' % (_('Project Items Color'), _("Dark")))

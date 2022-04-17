@@ -24,7 +24,7 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # V-Shape Tool Frame
         # #############################################################################################################
-        self.vshape_tool_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("V-Shape Tool Calculator"))
+        self.vshape_tool_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _("V-Shape Tool Calculator")))
         self.vshape_tool_label.setToolTip(
             _("Calculate the tool diameter for a given V-shape tool,\n"
               "having the tip diameter, tip angle and\n"
@@ -83,7 +83,7 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Electroplating Frame
         # #############################################################################################################
-        self.plate_title_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _("ElectroPlating Calculator"))
+        self.plate_title_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('brown'), _("ElectroPlating Calculator")))
         self.plate_title_label.setToolTip(
             _("This calculator is useful for those who plate the via/pad/drill holes,\n"
               "using a method like graphite ink or calcium hypophosphite ink or palladium chloride.")

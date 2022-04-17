@@ -2027,7 +2027,7 @@ class PunchUI:
         # #############################################################################################################
         # Source Object Frame
         # #############################################################################################################
-        self.obj_combo_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.obj_combo_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('darkorange'), _("Source Object")))
         self.obj_combo_label.setToolTip('%s.' % _("Gerber into which to punch holes"))
         self.tools_box.addWidget(self.obj_combo_label)
 
@@ -2044,7 +2044,7 @@ class PunchUI:
 
         grid0.addWidget(self.gerber_object_combo, 0, 0, 1, 2)
 
-        self.padt_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Processed Pads Type"))
+        self.padt_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _("Processed Pads Type")))
         self.padt_label.setToolTip(
             _("The type of pads shape to be processed.\n"
               "If the PCB has many SMD pads with rectangular pads,\n"
@@ -2140,7 +2140,7 @@ class PunchUI:
         # #############################################################################################################
         # Method Frame
         # #############################################################################################################
-        self.method_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _("Method"))
+        self.method_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('red'), _("Method")))
         self.method_label.setToolTip(
             _("The punch hole source can be:\n"
               "- Excellon Object-> the Excellon object drills center will serve as reference.\n"
@@ -2317,7 +2317,7 @@ class PunchUI:
         # Selection Frame
         # #############################################################################################################
         # Selection
-        self.sel_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Selection"))
+        self.sel_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _("Selection")))
         self.tools_box.addWidget(self.sel_label)
 
         self.s_frame = FCFrame()

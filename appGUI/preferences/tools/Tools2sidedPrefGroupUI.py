@@ -22,7 +22,7 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         self.options = app.options
 
         # ## Board cuttout
-        self.dblsided_label = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("PCB Alignment"))
+        self.dblsided_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('indigo'), _("PCB Alignment")))
         self.dblsided_label.setToolTip(
             _("A tool to help in creating a double sided\n"
               "PCB using alignment holes.")
@@ -89,7 +89,7 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         # Mirror Frame
         # #############################################################################################################
         # ### Tools ## ##
-        self.mirror_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _("Mirror Operation"))
+        self.mirror_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('red'), _("Mirror Operation")))
         self.layout.addWidget(self.mirror_label)
 
         mirror_frame = FCFrame()

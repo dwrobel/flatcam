@@ -526,7 +526,7 @@ class CalcUI:
         # #####################
 
         # ## Title of the Units Calculator
-        units_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % self.unitsName)
+        units_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), self.unitsName))
         self.layout.addWidget(units_label)
 
         units_frame = FCFrame()
@@ -588,7 +588,7 @@ class CalcUI:
         # ################################ V-shape Tool Calculator ####################################################
         # #############################################################################################################
         # ## Title of the V-shape Tools Calculator
-        v_shape_title_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % self.v_shapeName)
+        v_shape_title_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), self.v_shapeName))
         self.layout.addWidget(v_shape_title_label)
 
         v_frame = FCFrame()
@@ -662,7 +662,7 @@ class CalcUI:
         # ############################## ElectroPlating Tool Calculator ###############################################
         # #############################################################################################################
         # ## Title of the ElectroPlating Tools Calculator
-        tin_title_label = FCLabel('<span style="color:purple;"><b>%s</b></span>' % self.eplateName)
+        tin_title_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('purple'), self.eplateName))
         tin_title_label.setToolTip(
             _("This calculator is useful for those who plate the via/pad/drill holes,\n"
               "using a method like graphite ink or calcium hypophosphite ink or palladium chloride.")
@@ -848,7 +848,7 @@ class CalcUI:
         # ############################## Tinning Calculator ###############################################
         # #############################################################################################################
         # ## Title of the Tinning Calculator
-        tin_title_label = FCLabel('<span style="color:orange;"><b>%s</b></span>' % self.tinningName)
+        tin_title_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('orange'), self.tinningName))
         tin_title_label.setToolTip(
             _("Calculator for chemical quantities\n"
               "required for tinning PCB's.")
@@ -1011,7 +1011,7 @@ class CalcUI:
         grid_tin.addWidget(separator_line, 26, 0, 1, 2)
 
         # Volume
-        self.vol_lbl = FCLabel('<span style="color:red;">%s:</span>' % _("Volume"))
+        self.vol_lbl = FCLabel('<span style="color:%s;">%s:</span>' % (self.app.theme_safe_color('red'), _("Volume")))
         self.vol_lbl.setToolTip(_('Desired volume of tinning solution.'))
         self.vol_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.vol_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,

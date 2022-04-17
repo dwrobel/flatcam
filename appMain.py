@@ -268,6 +268,24 @@ class App(QtCore.QObject):
     # used when loading a project and restoring objects
     restore_project_objects_sig = pyqtSignal(object, str, bool, bool)
 
+    # Mapping of colors used for text on Light theme to
+    # similar colors safe for use on Dark theme
+    # 'input_color': (light_color, dark_color),
+    theme_safe_colors = {
+        "blue": "#1F80FF",
+        "brown": "#CC9966",
+        "darkgreen": "#008015",
+        "darkorange": "darkorange",
+        "green": "#00CC22",
+        "indigo": "#9457EB",
+        "magenta": "magenta",
+        "orange": "orange",
+        "purple": "#B284BE",
+        "red": "salmon",
+        "teal": "teal",
+        "tomato": "tomato",
+    }
+
     def __init__(self, qapp, user_defaults=True):
         """
         Starts the application.
@@ -615,14 +633,14 @@ class App(QtCore.QObject):
         # Set global_theme based on appearance
         if self.options["global_appearance"] == 'auto':
             if darkdetect.isDark():
-                theme = 'black'
+                theme = 'dark'
             else:
-                theme = 'white'
+                theme = 'light'
         else:
             if self.options["global_appearance"] == 'dark':
-                theme = 'black'
+                theme = 'dark'
             else:
-                theme = 'white'
+                theme = 'light'
 
         self.options["global_theme"] = theme
 
@@ -634,7 +652,7 @@ class App(QtCore.QObject):
         else:
             self.decimals = int(self.options['decimals_inch'])
 
-        if self.options["global_theme"] == 'white':
+        if self.options["global_theme"] == 'light':
             self.resource_location = 'assets/resources'
             self.qapp.setStyleSheet(qdarktheme.load_stylesheet('light'))
         else:
@@ -1033,12 +1051,14 @@ class App(QtCore.QObject):
         self.FC_dark_blue = '#0000ffbf'
 
         theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        theme_settings.setValue("appearance", self.options["global_appearance"])
         theme_settings.setValue("theme", self.options["global_theme"])
+        theme_settings.setValue("dark_canvas", self.options["global_dark_canvas"])
 
         if self.options["global_cursor_color_enabled"]:
             self.cursor_color_3D = self.options["global_cursor_color"]
         else:
-            if theme == 'white':
+            if theme == 'light' and not self.options["global_dark_canvas"]:
                 self.cursor_color_3D = 'black'
             else:
                 self.cursor_color_3D = 'gray'
@@ -1891,132 +1911,146 @@ class App(QtCore.QObject):
             self.shell = FCShell(app=self, version=self.version)
             self.log.debug("TCL was re-instantiated. TCL variables are reset.")
 
+        # The menu bar theming differs between operating systems
+        # Windows menu theme is controlled by the application
+        # MacOS menu theme is controlled by OS
+        if sys.platform == 'win32':
+            if self.options["global_theme"] == 'light':
+                menu_resource_location = 'assets/resources'
+            else:
+                menu_resource_location = 'assets/resources/dark_resources'
+        else:
+            if darkdetect.isLight():
+                menu_resource_location = 'assets/resources'
+            else:
+                menu_resource_location = 'assets/resources/dark_resources'
+
         self.distance_tool = Distance(self)
-        self.distance_tool.install(icon=QtGui.QIcon(self.resource_location + '/distance16.png'), pos=self.ui.menuedit,
+        self.distance_tool.install(icon=QtGui.QIcon(menu_resource_location + '/distance16.png'), pos=self.ui.menuedit,
                                    before=self.ui.menuedit_numeric_move,
                                    separator=False)
 
         self.distance_min_tool = ObjectDistance(self)
-        self.distance_min_tool.install(icon=QtGui.QIcon(self.resource_location + '/distance_min16.png'),
+        self.distance_min_tool.install(icon=QtGui.QIcon(menu_resource_location + '/distance_min16.png'),
                                        pos=self.ui.menuedit,
                                        before=self.ui.menuedit_numeric_move,
                                        separator=True)
 
         self.dblsidedtool = DblSidedTool(self)
-        self.dblsidedtool.install(icon=QtGui.QIcon(self.resource_location + '/doubleside16.png'), separator=False)
+        self.dblsidedtool.install(icon=QtGui.QIcon(menu_resource_location + '/doubleside16.png'), separator=False)
 
         self.cal_exc_tool = ToolCalibration(self)
-        self.cal_exc_tool.install(icon=QtGui.QIcon(self.resource_location + '/calibrate_16.png'),
+        self.cal_exc_tool.install(icon=QtGui.QIcon(menu_resource_location + '/calibrate_16.png'),
                                   pos=self.ui.menu_plugins,
                                   before=self.dblsidedtool.menuAction,
                                   separator=False)
 
         self.align_objects_tool = AlignObjects(self)
-        self.align_objects_tool.install(icon=QtGui.QIcon(self.resource_location + '/align16.png'), separator=False)
+        self.align_objects_tool.install(icon=QtGui.QIcon(menu_resource_location + '/align16.png'), separator=False)
 
         self.extract_tool = ToolExtract(self)
-        self.extract_tool.install(icon=QtGui.QIcon(self.resource_location + '/extract32.png'), separator=True)
+        self.extract_tool.install(icon=QtGui.QIcon(menu_resource_location + '/extract32.png'), separator=True)
 
         self.panelize_tool = Panelize(self)
-        self.panelize_tool.install(icon=QtGui.QIcon(self.resource_location + '/panelize16.png'))
+        self.panelize_tool.install(icon=QtGui.QIcon(menu_resource_location + '/panelize16.png'))
 
         self.film_tool = Film(self)
-        self.film_tool.install(icon=QtGui.QIcon(self.resource_location + '/film32.png'))
+        self.film_tool.install(icon=QtGui.QIcon(menu_resource_location + '/film32.png'))
 
         self.paste_tool = SolderPaste(self)
-        self.paste_tool.install(icon=QtGui.QIcon(self.resource_location + '/solderpastebis32.png'))
+        self.paste_tool.install(icon=QtGui.QIcon(menu_resource_location + '/solderpastebis32.png'))
 
         self.calculator_tool = ToolCalculator(self)
-        self.calculator_tool.install(icon=QtGui.QIcon(self.resource_location + '/calculator16.png'), separator=True)
+        self.calculator_tool.install(icon=QtGui.QIcon(menu_resource_location + '/calculator16.png'), separator=True)
 
         self.sub_tool = ToolSub(self)
-        self.sub_tool.install(icon=QtGui.QIcon(self.resource_location + '/sub32.png'),
+        self.sub_tool.install(icon=QtGui.QIcon(menu_resource_location + '/sub32.png'),
                               pos=self.ui.menu_plugins, separator=True)
 
         self.rules_tool = RulesCheck(self)
-        self.rules_tool.install(icon=QtGui.QIcon(self.resource_location + '/rules32.png'),
+        self.rules_tool.install(icon=QtGui.QIcon(menu_resource_location + '/rules32.png'),
                                 pos=self.ui.menu_plugins, separator=False)
 
         self.optimal_tool = ToolOptimal(self)
-        self.optimal_tool.install(icon=QtGui.QIcon(self.resource_location + '/open_excellon32.png'),
+        self.optimal_tool.install(icon=QtGui.QIcon(menu_resource_location + '/open_excellon32.png'),
                                   pos=self.ui.menu_plugins, separator=True)
 
         self.move_tool = ToolMove(self)
-        self.move_tool.install(icon=QtGui.QIcon(self.resource_location + '/move16.png'), pos=self.ui.menuedit,
+        self.move_tool.install(icon=QtGui.QIcon(menu_resource_location + '/move16.png'), pos=self.ui.menuedit,
                                before=self.ui.menuedit_numeric_move, separator=True)
 
         self.cutout_tool = CutOut(self)
-        self.cutout_tool.install(icon=QtGui.QIcon(self.resource_location + '/cut32.png'), pos=self.ui.menu_plugins,
+        self.cutout_tool.install(icon=QtGui.QIcon(menu_resource_location + '/cut32.png'), pos=self.ui.menu_plugins,
                                  before=self.sub_tool.menuAction)
 
         self.ncclear_tool = NonCopperClear(self)
-        self.ncclear_tool.install(icon=QtGui.QIcon(self.resource_location + '/ncc32.png'), pos=self.ui.menu_plugins,
+        self.ncclear_tool.install(icon=QtGui.QIcon(menu_resource_location + '/ncc32.png'), pos=self.ui.menu_plugins,
                                   before=self.sub_tool.menuAction, separator=True)
 
         self.paint_tool = ToolPaint(self)
-        self.paint_tool.install(icon=QtGui.QIcon(self.resource_location + '/paint20_1.png'), pos=self.ui.menu_plugins,
+        self.paint_tool.install(icon=QtGui.QIcon(menu_resource_location + '/paint20_1.png'), pos=self.ui.menu_plugins,
                                 before=self.sub_tool.menuAction, separator=True)
 
         self.isolation_tool = ToolIsolation(self)
-        self.isolation_tool.install(icon=QtGui.QIcon(self.resource_location + '/iso_16.png'), pos=self.ui.menu_plugins,
+        self.isolation_tool.install(icon=QtGui.QIcon(menu_resource_location + '/iso_16.png'), pos=self.ui.menu_plugins,
                                     before=self.sub_tool.menuAction, separator=True)
 
         self.follow_tool = ToolFollow(self)
-        self.follow_tool.install(icon=QtGui.QIcon(self.resource_location + '/follow32.png'), pos=self.ui.menu_plugins,
+        self.follow_tool.install(icon=QtGui.QIcon(menu_resource_location + '/follow32.png'), pos=self.ui.menu_plugins,
                                  before=self.sub_tool.menuAction, separator=True)
 
         self.drilling_tool = ToolDrilling(self)
-        self.drilling_tool.install(icon=QtGui.QIcon(self.resource_location + '/extract_drill32.png'),
+        self.drilling_tool.install(icon=QtGui.QIcon(menu_resource_location + '/extract_drill32.png'),
                                    pos=self.ui.menu_plugins, before=self.sub_tool.menuAction, separator=True)
         self.milling_tool = ToolMilling(self)
-        self.milling_tool.install(icon=QtGui.QIcon(self.resource_location + '/milling_tool32.png'),
+        self.milling_tool.install(icon=QtGui.QIcon(menu_resource_location + '/milling_tool32.png'),
                                   pos=self.ui.menu_plugins, before=self.sub_tool.menuAction, separator=True)
 
         self.levelling_tool = ToolLevelling(self)
-        self.levelling_tool.install(icon=QtGui.QIcon(self.resource_location + '/level32.png'),
+        self.levelling_tool.install(icon=QtGui.QIcon(menu_resource_location + '/level32.png'),
                                     pos=self.ui.menuoptions_experimental, separator=True)
 
         self.copper_thieving_tool = ToolCopperThieving(self)
-        self.copper_thieving_tool.install(icon=QtGui.QIcon(self.resource_location + '/copperfill32.png'),
+        self.copper_thieving_tool.install(icon=QtGui.QIcon(menu_resource_location + '/copperfill32.png'),
                                           pos=self.ui.menu_plugins)
 
         self.fiducial_tool = ToolFiducials(self)
-        self.fiducial_tool.install(icon=QtGui.QIcon(self.resource_location + '/fiducials_32.png'),
+        self.fiducial_tool.install(icon=QtGui.QIcon(menu_resource_location + '/fiducials_32.png'),
                                    pos=self.ui.menu_plugins)
 
         self.qrcode_tool = QRCode(self)
-        self.qrcode_tool.install(icon=QtGui.QIcon(self.resource_location + '/qrcode32.png'),
+        self.qrcode_tool.install(icon=QtGui.QIcon(menu_resource_location + '/qrcode32.png'),
                                  pos=self.ui.menu_plugins)
 
         self.punch_tool = ToolPunchGerber(self)
-        self.punch_tool.install(icon=QtGui.QIcon(self.resource_location + '/punch32.png'), pos=self.ui.menu_plugins)
+        self.punch_tool.install(icon=QtGui.QIcon(menu_resource_location + '/punch32.png'), pos=self.ui.menu_plugins)
 
         self.invert_tool = ToolInvertGerber(self)
-        self.invert_tool.install(icon=QtGui.QIcon(self.resource_location + '/invert32.png'), pos=self.ui.menu_plugins)
+        self.invert_tool.install(icon=QtGui.QIcon(menu_resource_location + '/invert32.png'), pos=self.ui.menu_plugins)
 
         self.markers_tool = ToolMarkers(self)
-        self.markers_tool.install(icon=QtGui.QIcon(self.resource_location + '/corners_32.png'),
+        self.markers_tool.install(icon=QtGui.QIcon(menu_resource_location + '/corners_32.png'),
                                   pos=self.ui.menu_plugins)
 
         self.etch_tool = ToolEtchCompensation(self)
-        self.etch_tool.install(icon=QtGui.QIcon(self.resource_location + '/etch_32.png'), pos=self.ui.menu_plugins)
+        self.etch_tool.install(icon=QtGui.QIcon(menu_resource_location + '/etch_32.png'), pos=self.ui.menu_plugins)
 
         self.transform_tool = ToolTransform(self)
-        self.transform_tool.install(icon=QtGui.QIcon(self.resource_location + '/transform.png'),
+        self.transform_tool.install(icon=QtGui.QIcon(menu_resource_location + '/transform.png'),
                                     pos=self.ui.menuoptions, separator=True)
 
         self.report_tool = ObjectReport(self)
-        self.report_tool.install(icon=QtGui.QIcon(self.resource_location + '/properties32.png'),
+        self.report_tool.install(icon=QtGui.QIcon(menu_resource_location + '/properties32.png'),
                                  pos=self.ui.menuoptions)
 
         self.pdf_tool = ToolPDF(self)
-        self.pdf_tool.install(icon=QtGui.QIcon(self.resource_location + '/pdf32.png'),
+        self.pdf_tool.install(icon=QtGui.QIcon(menu_resource_location + '/pdf32.png'),
                               pos=self.ui.menufileimport,
                               separator=True)
 
         try:
             self.image_tool = ToolImage(self)
-            self.image_tool.install(icon=QtGui.QIcon(self.resource_location + '/image32.png'),
+            self.image_tool.install(icon=QtGui.QIcon(menu_resource_location + '/image32.png'),
                                     pos=self.ui.menufileimport,
                                     separator=True)
         except Exception as im_err:
@@ -2024,7 +2058,7 @@ class App(QtCore.QObject):
             self.image_tool = lambda x: None
 
         self.pcb_wizard_tool = PcbWizard(self)
-        self.pcb_wizard_tool.install(icon=QtGui.QIcon(self.resource_location + '/drill32.png'),
+        self.pcb_wizard_tool.install(icon=QtGui.QIcon(menu_resource_location + '/drill32.png'),
                                      pos=self.ui.menufileimport)
 
         # create a list of plugins references
@@ -3687,7 +3721,7 @@ class App(QtCore.QObject):
                 line = 1
                 for i in translators:
                     self.translator_grid_lay.addWidget(
-                        FCLabel('<span style="color:blue">%s</span>' % i['language']), line, 0)
+                        FCLabel('<span style="color:%s">%s</span>' % (self.app.theme_safe_color('blue'), i['language']), line, 0))
                     for author in range(len(i['authors'])):
                         auth_widget = FCLabel('%s' % i['authors'][author][0])
                         email_widget = FCLabel('%s' % i['authors'][author][1])
@@ -8634,7 +8668,7 @@ class App(QtCore.QObject):
         root = d_properties_tw.invisibleRootItem()
         font = QtGui.QFont()
         font.setBold(True)
-        p_color = QtGui.QColor("#000000") if self.options['global_theme'] == 'white' else QtGui.QColor("#FFFFFF")
+        p_color = QtGui.QColor("#000000") if self.options['global_theme'] == 'light' else QtGui.QColor("#FFFFFF")
 
         # main Items categories
         general_cat = d_properties_tw.addParent(root, _('General'), expanded=True, color=p_color, font=font)
@@ -9439,6 +9473,23 @@ class App(QtCore.QObject):
 
         return float('%.*f' % (dec_nr, float(val)))
 
+    def theme_safe_color(self, color):
+        """
+        Some colors do not work well with light or dark backgrounds making them unreadable in the wrong
+        theme. For an approved color value this will return a similar color better suited for the current theme.
+
+        :param color: color to be replaced
+        :return: similar color better suited for dark or light theme
+        """
+
+        if color in self.theme_safe_colors:
+            if self.options['global_theme'] == 'light':
+                return color
+            else:
+                return self.theme_safe_colors[color]
+        else:
+            # Arbitratily selected fail-safe color
+            return 'green'
 
 class ArgsThread(QtCore.QObject):
     open_signal = pyqtSignal(list)

@@ -1267,7 +1267,7 @@ class FilmUI:
         # #############################################################################################################
         # Source Object Frame
         # #############################################################################################################
-        self.obj_combo_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.obj_combo_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('darkorange'), _("Source Object")))
         self.obj_combo_label.setToolTip(
             _("Excellon object for drilling/milling operation.")
         )
@@ -1332,7 +1332,7 @@ class FilmUI:
         # #############################################################################################################
         # Adjustments Frame
         # #############################################################################################################
-        self.film_adj_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Adjustments"))
+        self.film_adj_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _("Adjustments")))
         self.film_adj_label.setToolTip(
             _("Compensate print distortions.")
         )
@@ -1350,11 +1350,6 @@ class FilmUI:
         self.film_scale_cb.setToolTip(
             _("A value greater than 1 will compact the film\n"
               "while a value less than 1 will jolt it.")
-        )
-        self.film_scale_cb.setStyleSheet(
-            """
-            QCheckBox {font-weight: bold; color: black}
-            """
         )
         adj_grid.addWidget(self.film_scale_cb, 2, 0, 1, 2)
 
@@ -1426,11 +1421,6 @@ class FilmUI:
             _("Positive values will skew to the right\n"
               "while negative values will skew to the left.")
         )
-        self.film_skew_cb.setStyleSheet(
-            """
-            QCheckBox {font-weight: bold; color: black}
-            """
-        )
         adj_grid.addWidget(self.film_skew_cb, 14, 0, 1, 2)
 
         # Skew Type
@@ -1501,11 +1491,6 @@ class FilmUI:
         self.film_mirror_cb.setToolTip(
             _("Mirror the film geometry on the selected axis or on both.")
         )
-        self.film_mirror_cb.setStyleSheet(
-            """
-            QCheckBox {font-weight: bold; color: black}
-            """
-        )
         adj_grid.addWidget(self.film_mirror_cb, 26, 0, 1, 2)
 
         self.film_mirror_axis = RadioSet([{'label': _('X'), 'value': 'x'},
@@ -1529,7 +1514,7 @@ class FilmUI:
         # #############################################################################################################
         # Parameters Frame
         # #############################################################################################################
-        self.film_param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.film_param_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _("Parameters")))
         self.tools_box.addWidget(self.film_param_label)
 
         par_frame = FCFrame()
@@ -1669,7 +1654,7 @@ class FilmUI:
         # #############################################################################################################
         # Export Frame
         # #############################################################################################################
-        self.export_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _('Export'))
+        self.export_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('red'), _('Export')))
         self.tools_box.addWidget(self.export_label)
 
         exp_frame = FCFrame()
