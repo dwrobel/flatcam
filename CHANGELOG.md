@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM Evo beta
 18.04.2022
 
 - in Geometry Editor, in Copy Tool added the 2D copy-as-array feature therefore finishing this editor plugin upgrade
+- updated the FCLabel widget
 
 17.04.2022
 

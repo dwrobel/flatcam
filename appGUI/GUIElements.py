@@ -2970,8 +2970,35 @@ class FCLabel(QtWidgets.QLabel):
     right_clicked = QtCore.pyqtSignal(bool)
     middle_clicked = QtCore.pyqtSignal(bool)
 
-    def __init__(self, parent=None):
+    def __init__(self, title, color=None, color_callback=None, bold=None, parent=None):
+        """
+
+        :param title:           the label's text
+        :type title:            str
+        :param color:           text color
+        :type color:            str
+        :param color_callback:  function to alter the color
+        :type color_callback:   function
+        :param bold:            the text weight
+        :type bold:             bool
+        :param parent:          parent of this widget
+        :type parent:           QtWidgets.QWidget | None
+        """
+
         super(FCLabel, self).__init__(parent)
+
+        if color and color_callback:
+            color = color_callback(color)
+
+        if isinstance(title, str):
+            if color and not bold:
+                self.setText('<span style="color:%s;">%s</span>' % (str(color), title))
+            elif not color and bold:
+                self.setText('<b>%s</b>' % title)
+            elif color and bold:
+                self.setText('<span style="color:%s;"><b>%s</b></span>' % (str(color), title))
+            else:
+                self.setText(title)
 
         # for the usage of this label as a clickable label, to know that current state
         self.clicked_state = False
@@ -5380,7 +5407,7 @@ class FlatCAMActivityView(QtWidgets.QWidget):
         self.movie_path = movie
         self.icon_path = icon
 
-        self.icon = FCLabel(self)
+        self.icon = FCLabel(parent=self)
         self.icon.setGeometry(0, 0, 16, 12)
         self.movie = QtGui.QMovie(self.movie_path)
 
