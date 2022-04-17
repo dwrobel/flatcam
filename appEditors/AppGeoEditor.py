@@ -2133,6 +2133,9 @@ class FCCopy(FCShapeTool):
         self.sel_limit = self.draw_app.app.options["geometry_editor_sel_limit"]
         self.selection_shape = self.selection_bbox()
 
+        # store here the utility geometry, so we can use it on the last step
+        self.util_geo = None
+
         if len(self.draw_app.get_selected()) == 0:
             self.has_selection = False
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s %s' %
@@ -2205,10 +2208,12 @@ class FCCopy(FCShapeTool):
 
     def make(self):
         # Create new geometry
-        dx = self.destination[0] - self.origin[0]
-        dy = self.destination[1] - self.origin[1]
-        self.geometry = [DrawToolShape(translate(geom.geo, xoff=dx, yoff=dy))
-                         for geom in self.draw_app.get_selected()]
+        # when doing circular array we remove the last geometry item in the list because it is the temp_line
+        if self.copy_tool.ui.mode_radio.get_value() == 'a' and \
+                self.copy_tool.ui.array_type_radio.get_value() == 'circular':
+            del self.util_geo.geo[-1]
+        self.geometry = [DrawToolShape(deepcopy(shp)) for shp in self.util_geo.geo]
+
         self.complete = True
         self.origin = None
         self.draw_cursor_data(delete=True)
@@ -2263,15 +2268,17 @@ class FCCopy(FCShapeTool):
                     self.draw_app.select_tool('select')
                     self.draw_app.selected = []
                     return
-                return DrawToolUtilityShape(geo_list)
+                self.util_geo = DrawToolUtilityShape(geo_list)
             else:
-                return self.array_util_geometry((dx, dy))
+                self.util_geo = self.array_util_geometry((dx, dy))
         else:
             try:
                 ss_el = translate(self.selection_shape, xoff=dx, yoff=dy)
             except ValueError:
                 ss_el = None
-            return DrawToolUtilityShape(ss_el)
+            self.util_geo = DrawToolUtilityShape(ss_el)
+
+        return self.util_geo
 
     def array_util_geometry(self, pos, static=None):
         axis = self.copy_tool.ui.axis_radio.get_value()                  # X, Y or A
@@ -2308,7 +2315,9 @@ class FCCopy(FCShapeTool):
                         geo_list.append(g.geo)
 
             return DrawToolUtilityShape(geo_list)
-        elif array_type== 'circular':  # 'Circular'
+        elif array_type == '2D':
+            pass
+        elif array_type == 'circular':  # 'Circular'
             if pos[0] is None and pos[1] is None:
                 cdx = self.draw_app.x
                 cdy = self.draw_app.y
@@ -2335,9 +2344,6 @@ class FCCopy(FCShapeTool):
                     initial_angle = math.asin((cdy - self.origin[1]) / radius)
                     temp_circular_geo = self.circular_util_shape(radius, initial_angle)
 
-                    # draw the line
-                    # temp_points = [x for x in self.points]
-                    # temp_points.append((cdx, cdy))
                     temp_points = [
                         (self.origin[0], self.origin[1]),
                         (self.origin[0]+pos[0], self.origin[1]+pos[1])
@@ -2352,35 +2358,26 @@ class FCCopy(FCShapeTool):
                 except Exception as e:
                     log.error("DrillArray.utility_geometry -- circular -> %s" % str(e))
 
-    def circular_util_shape(self, radius, angle):
+    def circular_util_shape(self, radius, ini_angle):
         direction = self.copy_tool.ui.array_dir_radio.get_value()      # CW or CCW
-        if angle is None:
-            angle = self.copy_tool.ui.angle_entry.get_value()
+        angle = self.copy_tool.ui.angle_entry.get_value()
         array_size = int(self.copy_tool.ui.array_size_entry.get_value())
 
         circular_geo = []
-        if direction == 'CW':
-            for i in range(array_size):
-                angle_radians = math.radians(angle * i)
-                x = self.origin[0] + radius * math.cos(-angle_radians + angle)
-                y = self.origin[1] + radius * math.sin(-angle_radians + angle)
+        for i in range(array_size):
+            angle_radians = math.radians(angle * i)
+            if direction == 'CW':
+                x = radius * math.cos(-angle_radians + ini_angle)
+                y = radius * math.sin(-angle_radians + ini_angle)
+            else:
+                x = radius * math.cos(angle_radians + ini_angle)
+                y = radius * math.sin(angle_radians + ini_angle)
 
-                for shape in self.draw_app.get_selected():
-                    geo_sol = translate(shape.geo, x, y)
-                    # geo_sol = affinity.rotate(geo_sol, angle=(math.pi - angle_radians), use_radians=True)
+            for shape in self.draw_app.get_selected():
+                geo_sol = translate(shape.geo, x, y)
+                # geo_sol = affinity.rotate(geo_sol, angle=(math.pi - angle_radians), use_radians=True)
 
-                    circular_geo.append(DrawToolShape(geo_sol))
-        else:
-            for i in range(array_size):
-                angle_radians = math.radians(angle * i)
-                x = self.origin[0] + radius * math.cos(angle_radians + angle)
-                y = self.origin[1] + radius * math.sin(angle_radians + angle)
-
-                for shape in self.draw_app.get_selected():
-                    geo_sol = translate(shape.geo, x, y)
-                    # geo_sol = affinity.rotate(geo_sol, angle=(angle_radians - math.pi), use_radians=True)
-
-                    circular_geo.append(DrawToolShape(geo_sol))
+                circular_geo.append(DrawToolShape(geo_sol))
 
         return circular_geo
 
@@ -4706,6 +4703,7 @@ class AppGeoEditor(QtCore.QObject):
                 return 'fail'
 
         # Add shape
+
         self.add_shape(geom_list)
 
         # Remove any utility shapes
