@@ -2281,82 +2281,157 @@ class FCCopy(FCShapeTool):
         return self.util_geo
 
     def array_util_geometry(self, pos, static=None):
-        axis = self.copy_tool.ui.axis_radio.get_value()                  # X, Y or A
         array_type = self.copy_tool.ui.array_type_radio.get_value()      # 'linear', '2D', 'circular'
-        array_size = int(self.copy_tool.ui.array_size_entry.get_value())
-        pitch = float(self.copy_tool.ui.pitch_entry.get_value())
-        linear_angle = float(self.copy_tool.ui.linear_angle_spinner.get_value())
 
         if array_type == 'linear':  # 'Linear'
-            if pos[0] is None and pos[1] is None:
-                dx = self.draw_app.x
-                dy = self.draw_app.y
-            else:
-                dx = pos[0]
-                dy = pos[1]
-
-            geo_list = []
-            self.points = [(dx, dy)]
-
-            for item in range(array_size):
-                if axis == 'X':
-                    new_pos = ((dx + (pitch * item)), dy)
-                elif axis == 'Y':
-                    new_pos = (dx, (dy + (pitch * item)))
-                else:   # 'A'
-                    x_adj = pitch * math.cos(math.radians(linear_angle))
-                    y_adj = pitch * math.sin(math.radians(linear_angle))
-                    new_pos = ((dx + (x_adj * item)), (dy + (y_adj * item)))
-
-                for g in self.draw_app.get_selected():
-                    if static is None or static is False:
-                        geo_list.append(translate(g.geo, xoff=new_pos[0], yoff=new_pos[1]))
-                    else:
-                        geo_list.append(g.geo)
-
-            return DrawToolUtilityShape(geo_list)
+            return self.linear_geo(pos, static)
         elif array_type == '2D':
-            pass
+            return self.dd_geo(pos)
         elif array_type == 'circular':  # 'Circular'
-            if pos[0] is None and pos[1] is None:
-                cdx = self.draw_app.x
-                cdy = self.draw_app.y
+            return self.circular_geo(pos)
+
+    def linear_geo(self, pos, static):
+        axis = self.copy_tool.ui.axis_radio.get_value()  # X, Y or A
+        pitch = float(self.copy_tool.ui.pitch_entry.get_value())
+        linear_angle = float(self.copy_tool.ui.linear_angle_spinner.get_value())
+        array_size = int(self.copy_tool.ui.array_size_entry.get_value())
+
+        if pos[0] is None and pos[1] is None:
+            dx = self.draw_app.x
+            dy = self.draw_app.y
+        else:
+            dx = pos[0]
+            dy = pos[1]
+
+        geo_list = []
+        self.points = [(dx, dy)]
+
+        for item in range(array_size):
+            if axis == 'X':
+                new_pos = ((dx + (pitch * item)), dy)
+            elif axis == 'Y':
+                new_pos = (dx, (dy + (pitch * item)))
+            else:  # 'A'
+                x_adj = pitch * math.cos(math.radians(linear_angle))
+                y_adj = pitch * math.sin(math.radians(linear_angle))
+                new_pos = ((dx + (x_adj * item)), (dy + (y_adj * item)))
+
+            for g in self.draw_app.get_selected():
+                if static is None or static is False:
+                    geo_list.append(translate(g.geo, xoff=new_pos[0], yoff=new_pos[1]))
+                else:
+                    geo_list.append(g.geo)
+
+        return DrawToolUtilityShape(geo_list)
+
+    def dd_geo(self, pos):
+        trans_geo = []
+        array_2d_type = self.copy_tool.ui.placement_radio.get_value()
+
+        rows = self.copy_tool.ui.rows.get_value()
+        columns = self.copy_tool.ui.columns.get_value()
+
+        spacing_rows = self.copy_tool.ui.spacing_rows.get_value()
+        spacing_columns = self.copy_tool.ui.spacing_columns.get_value()
+
+        off_x = self.copy_tool.ui.offsetx_entry.get_value()
+        off_y = self.copy_tool.ui.offsety_entry.get_value()
+
+        geo_source = [s.geo for s in self.draw_app.get_selected()]
+
+        def geo_bounds(geo: (BaseGeometry, list)):
+            minx = np.Inf
+            miny = np.Inf
+            maxx = -np.Inf
+            maxy = -np.Inf
+
+            if type(geo) == list:
+                for shp in geo:
+                    minx_, miny_, maxx_, maxy_ = geo_bounds(shp)
+                    minx = min(minx, minx_)
+                    miny = min(miny, miny_)
+                    maxx = max(maxx, maxx_)
+                    maxy = max(maxy, maxy_)
+                return minx, miny, maxx, maxy
             else:
-                cdx = pos[0] + self.origin[0]
-                cdy = pos[1] + self.origin[1]
+                # it's an object, return its bounds
+                return geo.bounds
 
-            utility_list = []
+        xmin, ymin, xmax, ymax = geo_bounds(geo_source)
 
+        currentx = pos[0]
+        currenty = pos[1]
+
+        def translate_recursion(geom):
+            if type(geom) == list:
+                geoms = []
+                for local_geom in geom:
+                    res_geo = translate_recursion(local_geom)
+                    try:
+                        geoms += res_geo
+                    except TypeError:
+                        geoms.append(res_geo)
+                return geoms
+            else:
+                return translate(geom, xoff=currentx, yoff=currenty)
+
+        for row in range(rows):
+            currentx = pos[0]
+
+            for col in range(columns):
+                trans_geo += translate_recursion(geo_source)
+                if array_2d_type == 's':  # 'spacing'
+                    currentx += (xmax - xmin + spacing_columns)
+                else:   # 'offset'
+                    currentx = pos[0] + off_x * (col + 1)    # because 'col' starts from 0 we increment by 1
+
+            if array_2d_type == 's':  # 'spacing'
+                currenty += (ymax - ymin + spacing_rows)
+            else:   # 'offset;
+                currenty = pos[1] + off_y * (row + 1)    # because 'row' starts from 0 we increment by 1
+
+        return DrawToolUtilityShape(trans_geo)
+
+    def circular_geo(self, pos):
+        if pos[0] is None and pos[1] is None:
+            cdx = self.draw_app.x
+            cdy = self.draw_app.y
+        else:
+            cdx = pos[0] + self.origin[0]
+            cdy = pos[1] + self.origin[1]
+
+        utility_list = []
+
+        try:
+            radius = distance((cdx, cdy), self.origin)
+        except Exception:
+            radius = 0
+
+        if radius == 0:
+            self.draw_app.delete_utility_geometry()
+
+        if len(self.points) >= 1 and radius > 0:
             try:
-                radius = distance((cdx, cdy), self.origin)
-            except Exception:
-                radius = 0
+                if cdx < self.origin[0]:
+                    radius = -radius
 
-            if radius == 0:
-                self.draw_app.delete_utility_geometry()
+                # draw the temp geometry
+                initial_angle = math.asin((cdy - self.origin[1]) / radius)
+                temp_circular_geo = self.circular_util_shape(radius, initial_angle)
 
-            if len(self.points) >= 1 and radius > 0:
-                try:
-                    if cdx < self.origin[0]:
-                        radius = -radius
+                temp_points = [
+                    (self.origin[0], self.origin[1]),
+                    (self.origin[0] + pos[0], self.origin[1] + pos[1])
+                ]
+                temp_line = LineString(temp_points)
 
-                    # draw the temp geometry
-                    initial_angle = math.asin((cdy - self.origin[1]) / radius)
-                    temp_circular_geo = self.circular_util_shape(radius, initial_angle)
+                for geo_shape in temp_circular_geo:
+                    utility_list.append(geo_shape.geo)
+                utility_list.append(temp_line)
 
-                    temp_points = [
-                        (self.origin[0], self.origin[1]),
-                        (self.origin[0]+pos[0], self.origin[1]+pos[1])
-                    ]
-                    temp_line = LineString(temp_points)
-
-                    for geo_shape in temp_circular_geo:
-                        utility_list.append(geo_shape.geo)
-                    utility_list.append(temp_line)
-
-                    return DrawToolUtilityShape(utility_list)
-                except Exception as e:
-                    log.error("DrillArray.utility_geometry -- circular -> %s" % str(e))
+                return DrawToolUtilityShape(utility_list)
+            except Exception as e:
+                log.error("DrillArray.utility_geometry -- circular -> %s" % str(e))
 
     def circular_util_shape(self, radius, ini_angle):
         direction = self.copy_tool.ui.array_dir_radio.get_value()      # CW or CCW

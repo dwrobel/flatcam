@@ -82,6 +82,14 @@ class CopyEditorTool(AppTool):
         self.ui.array_dir_radio.set_value('CW')
 
         self.ui.placement_radio.set_value('s')
+        self.ui.on_placement_radio(self.ui.placement_radio.get_value())
+
+        self.ui.spacing_rows.set_value(0)
+        self.ui.spacing_columns.set_value(0)
+        self.ui.rows.set_value(1)
+        self.ui.columns.set_value(1)
+        self.ui.offsetx_entry.set_value(0)
+        self.ui.offsety_entry.set_value(0)
 
     def on_tab_close(self):
         self.disconnect_signals()
@@ -158,10 +166,10 @@ class CopyEditorUI:
         # Type of Array
         self.mode_label = FCLabel('<b>%s:</b>' % _("Mode"))
         self.mode_label.setToolTip(
-            _("Normal copy or special (array of copies)")
+            _("Single copy or special (array of copies)")
         )
         self.mode_radio = RadioSet([
-            {'label': _('Normal'), 'value': 'n'},
+            {'label': _('Single'), 'value': 'n'},
             {'label': _('Array'), 'value': 'a'}
         ])
 
@@ -185,7 +193,7 @@ class CopyEditorUI:
         self.array_size_label.setToolTip(_("Specify how many items to be in the array."))
 
         self.array_size_entry = FCSpinner(policy=False)
-        self.array_size_entry.set_range(1, 10000)
+        self.array_size_entry.set_range(1, 100000)
 
         self.array_grid.addWidget(self.array_size_label, 2, 0)
         self.array_grid.addWidget(self.array_size_entry, 2, 1)
@@ -282,11 +290,11 @@ class CopyEditorUI:
         self.two_dim_array_frame.setLayout(self.dd_grid)
 
         # 2D placement
-        self.place_label = FCLabel('%s:' % _('Direction'))
+        self.place_label = FCLabel('%s:' % _('Placement'))
         self.place_label.setToolTip(
             _("Placement of array items:\n"
-              "- 'Spacing' - define space between rows and columns \n"
-              "- 'Offset' - each row (and column) will be placed at a multiple of a value, from origin")
+              "'Spacing' - define space between rows and columns \n"
+              "'Offset' - each row (and column) will be placed at a multiple of a value, from origin")
         )
 
         self.placement_radio = RadioSet([
@@ -296,6 +304,102 @@ class CopyEditorUI:
 
         self.dd_grid.addWidget(self.place_label, 0, 0)
         self.dd_grid.addWidget(self.placement_radio, 0, 1)
+
+        # Rows
+        self.rows = FCSpinner(callback=self.confirmation_message_int)
+        self.rows.set_range(0, 10000)
+
+        self.rows_label = FCLabel('%s:' % _("Rows"))
+        self.rows_label.setToolTip(
+            _("Number of rows")
+        )
+        self.dd_grid.addWidget(self.rows_label, 2, 0)
+        self.dd_grid.addWidget(self.rows, 2, 1)
+
+        # Columns
+        self.columns = FCSpinner(callback=self.confirmation_message_int)
+        self.columns.set_range(0, 10000)
+
+        self.columns_label = FCLabel('%s:' % _("Columns"))
+        self.columns_label.setToolTip(
+            _("Number of columns")
+        )
+        self.dd_grid.addWidget(self.columns_label, 4, 0)
+        self.dd_grid.addWidget(self.columns, 4, 1)
+
+        # ------------------------------------------------
+        # ##############  Spacing Frame  #################
+        # ------------------------------------------------
+        self.spacing_frame = QtWidgets.QFrame()
+        self.spacing_frame.setContentsMargins(0, 0, 0, 0)
+        self.dd_grid.addWidget(self.spacing_frame, 6, 0, 1, 2)
+
+        self.s_grid = GLay(v_spacing=5, h_spacing=3)
+        self.s_grid.setContentsMargins(0, 0, 0, 0)
+        self.spacing_frame.setLayout(self.s_grid)
+
+        # Spacing Rows
+        self.spacing_rows = FCDoubleSpinner(callback=self.confirmation_message)
+        self.spacing_rows.set_range(0, 9999)
+        self.spacing_rows.set_precision(4)
+
+        self.spacing_rows_label = FCLabel('%s:' % _("Spacing rows"))
+        self.spacing_rows_label.setToolTip(
+            _("Spacing between rows.\n"
+              "In current units.")
+        )
+        self.s_grid.addWidget(self.spacing_rows_label, 0, 0)
+        self.s_grid.addWidget(self.spacing_rows, 0, 1)
+
+        # Spacing Columns
+        self.spacing_columns = FCDoubleSpinner(callback=self.confirmation_message)
+        self.spacing_columns.set_range(0, 9999)
+        self.spacing_columns.set_precision(4)
+
+        self.spacing_columns_label = FCLabel('%s:' % _("Spacing cols"))
+        self.spacing_columns_label.setToolTip(
+            _("Spacing between columns.\n"
+              "In current units.")
+        )
+        self.s_grid.addWidget(self.spacing_columns_label, 2, 0)
+        self.s_grid.addWidget(self.spacing_columns, 2, 1)
+
+        # ------------------------------------------------
+        # ##############  Offset Frame  ##################
+        # ------------------------------------------------
+        self.offset_frame = QtWidgets.QFrame()
+        self.offset_frame.setContentsMargins(0, 0, 0, 0)
+        self.dd_grid.addWidget(self.offset_frame, 8, 0, 1, 2)
+
+        self.o_grid = GLay(v_spacing=5, h_spacing=3)
+        self.o_grid.setContentsMargins(0, 0, 0, 0)
+        self.offset_frame.setLayout(self.o_grid)
+
+        # Offset X Value
+        self.offsetx_label = FCLabel('%s X:' % _("Offset"))
+        self.offsetx_label.setToolTip(
+            _("'Offset' - each row (and column) will be placed at a multiple of a value, from origin")
+        )
+
+        self.offsetx_entry = FCDoubleSpinner(policy=False)
+        self.offsetx_entry.set_precision(self.decimals)
+        self.offsetx_entry.set_range(0.0000, 10000.0000)
+
+        self.o_grid.addWidget(self.offsetx_label, 0, 0)
+        self.o_grid.addWidget(self.offsetx_entry, 0, 1)
+
+        # Offset Y Value
+        self.offsety_label = FCLabel('%s Y:' % _("Offset"))
+        self.offsety_label.setToolTip(
+            _("'Offset' - each row (and column) will be placed at a multiple of a value, from origin")
+        )
+
+        self.offsety_entry = FCDoubleSpinner(policy=False)
+        self.offsety_entry.set_precision(self.decimals)
+        self.offsety_entry.set_range(0.0000, 10000.0000)
+
+        self.o_grid.addWidget(self.offsety_label, 2, 0)
+        self.o_grid.addWidget(self.offsety_entry, 2, 1)
 
         # #############################################################################################################
         # ############################ CIRCULAR Array #################################################################
@@ -339,7 +443,7 @@ class CopyEditorUI:
         self.layout.addWidget(self.add_button)
 
         GLay.set_common_column_size([
-            grid0, self.array_grid, self.lin_grid, self.dd_grid, self.circ_grid
+            grid0, self.array_grid, self.lin_grid, self.dd_grid, self.circ_grid, self.s_grid, self.o_grid
         ], 0)
 
         self.layout.addStretch(1)
@@ -348,6 +452,24 @@ class CopyEditorUI:
         self.mode_radio.activated_custom.connect(self.on_copy_mode)
         self.array_type_radio.activated_custom.connect(self.on_array_type_radio)
         self.axis_radio.activated_custom.connect(self.on_linear_angle_radio)
+        self.placement_radio.activated_custom.connect(self.on_placement_radio)
+
+    def confirmation_message(self, accepted, minval, maxval):
+        if accepted is False:
+            self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%.*f, %.*f]' % (_("Edited value is out of range"),
+                                                                                  self.decimals,
+                                                                                  minval,
+                                                                                  self.decimals,
+                                                                                  maxval), False)
+        else:
+            self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)
+
+    def confirmation_message_int(self, accepted, minval, maxval):
+        if accepted is False:
+            self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%d, %d]' %
+                                            (_("Edited value is out of range"), minval, maxval), False)
+        else:
+            self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)
 
     def on_copy_mode(self, val):
         if val == 'n':
@@ -357,21 +479,58 @@ class CopyEditorUI:
             self.array_frame.show()
 
     def on_array_type_radio(self, val):
-        if val == 'linear':
-            self.array_circular_frame.hide()
-            self.array_linear_frame.show()
-            self.two_dim_array_frame.hide()
-            self.app.inform.emit(_("Click to place ..."))
-        elif val == '2D':
+        if val == '2D':
             self.array_circular_frame.hide()
             self.array_linear_frame.hide()
             self.two_dim_array_frame.show()
+            if self.placement_radio.get_value() == 's':
+                self.spacing_frame.show()
+                self.offset_frame.hide()
+            else:
+                self.spacing_frame.hide()
+                self.offset_frame.show()
+
+            self.array_size_entry.setDisabled(True)
+            self.on_rows_cols_value_changed()
+
+            self.rows.valueChanged.connect(self.on_rows_cols_value_changed)
+            self.columns.valueChanged.connect(self.on_rows_cols_value_changed)
+
             self.app.inform.emit(_("Click to place ..."))
         else:
-            self.array_circular_frame.show()
-            self.array_linear_frame.hide()
-            self.two_dim_array_frame.hide()
-            self.app.inform.emit(_("Click on the circular array Center position"))
+            if val == 'linear':
+                self.array_circular_frame.hide()
+                self.array_linear_frame.show()
+                self.two_dim_array_frame.hide()
+                self.spacing_frame.hide()
+                self.offset_frame.hide()
+
+                self.app.inform.emit(_("Click to place ..."))
+            else:   # 'circular'
+                self.array_circular_frame.show()
+                self.array_linear_frame.hide()
+                self.two_dim_array_frame.hide()
+                self.spacing_frame.hide()
+                self.offset_frame.hide()
+
+                self.app.inform.emit(_("Click on the circular array Center position"))
+
+            self.array_size_entry.setDisabled(False)
+            try:
+                self.rows.valueChanged.disconnect()
+            except (TypeError, AttributeError):
+                pass
+
+            try:
+                self.columns.valueChanged.disconnect()
+            except (TypeError, AttributeError):
+                pass
+
+    def on_rows_cols_value_changed(self):
+        new_size = self.rows.get_value() * self.columns.get_value()
+        if new_size == 0:
+            new_size = 1
+        self.array_size_entry.set_value(new_size)
 
     def on_linear_angle_radio(self, val):
         if val == 'A':
@@ -380,3 +539,11 @@ class CopyEditorUI:
         else:
             self.linear_angle_spinner.hide()
             self.linear_angle_label.hide()
+
+    def on_placement_radio(self, val):
+        if val == 's':
+            self.spacing_frame.show()
+            self.offset_frame.hide()
+        else:
+            self.spacing_frame.hide()
+            self.offset_frame.show()

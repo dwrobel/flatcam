@@ -1287,7 +1287,7 @@ class PanelizeUI:
 
         self.spacing_columns_label = FCLabel('%s:' % _("Spacing cols"))
         self.spacing_columns_label.setToolTip(
-            _("Spacing between columns of the desired panel.\n"
+            _("Spacing between columns.\n"
               "In current units.")
         )
         grid2.addWidget(self.spacing_columns_label, 0, 0)
@@ -1300,7 +1300,7 @@ class PanelizeUI:
 
         self.spacing_rows_label = FCLabel('%s:' % _("Spacing rows"))
         self.spacing_rows_label.setToolTip(
-            _("Spacing between rows of the desired panel.\n"
+            _("Spacing between rows.\n"
               "In current units.")
         )
         grid2.addWidget(self.spacing_rows_label, 2, 0)
@@ -1312,7 +1312,7 @@ class PanelizeUI:
 
         self.columns_label = FCLabel('%s:' % _("Columns"))
         self.columns_label.setToolTip(
-            _("Number of columns of the desired panel")
+            _("Number of columns")
         )
         grid2.addWidget(self.columns_label, 4, 0)
         grid2.addWidget(self.columns, 4, 1)
@@ -1323,7 +1323,7 @@ class PanelizeUI:
 
         self.rows_label = FCLabel('%s:' % _("Rows"))
         self.rows_label.setToolTip(
-            _("Number of rows of the desired panel")
+            _("Number of rows")
         )
         grid2.addWidget(self.rows_label, 6, 0)
         grid2.addWidget(self.rows, 6, 1)

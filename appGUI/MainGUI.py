@@ -3505,9 +3505,13 @@ class MainGUI(QtWidgets.QMainWindow):
                                 self.app.geo_editor.active_tool.rect_tool.length != 0.0 and \
                                     self.app.geo_editor.active_tool.rect_tool.width != 0.0:
                                 pass
-                            elif self.app.geo_editor.active_tool.name in ['move', 'copy'] and \
+                            elif self.app.geo_editor.active_tool.name == 'move' and \
                                 self.app.geo_editor.active_tool.move_tool.length != 0.0 and \
                                     self.app.geo_editor.active_tool.move_tool.width != 0.0:
+                                pass
+                            elif self.app.geo_editor.active_tool.name == 'copy' and \
+                                self.app.geo_editor.active_tool.copy_tool.length != 0.0 and \
+                                    self.app.geo_editor.active_tool.copy_tool.width != 0.0:
                                 pass
                             else:
                                 self.app.geo_editor.active_tool.click(
