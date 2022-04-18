@@ -82,7 +82,7 @@ class MainGUI(QtWidgets.QMainWindow):
         """
 
         if color in self.theme_safe_colors:
-            if self.app.options['global_theme'] == 'light':
+            if self.app.options['global_theme'] in ['default', 'light']:
                 return color
             else:
                 return self.theme_safe_colors[color]

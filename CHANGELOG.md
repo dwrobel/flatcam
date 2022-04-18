@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM Evo beta
 
 - fixed and prettified the 'Light' theme
 - some more fixes for the 'Light' theme
+- made sure that the 'default' theme gets the 'stronger' colors
 
 18.04.2022
 
