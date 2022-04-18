@@ -1897,7 +1897,10 @@ class FCMove(FCShapeTool):
     def selection_bbox(self):
         geo_list = []
         for select_shape in self.draw_app.get_selected():
-            geometric_data = select_shape.geo
+            if select_shape:
+                geometric_data = select_shape.geo
+            else:
+                continue
             try:
                 w_geo = geometric_data.geoms if \
                     isinstance(geometric_data, (MultiPolygon, MultiLineString)) else geometric_data
