@@ -66,19 +66,19 @@ class PlotCanvas3d(QtCore.QObject, scene.SceneCanvas):
         if settings.contains("theme"):
             theme = settings.value('theme', type=str)
         else:
-            theme = 'light'
+            theme = 'default'
 
         if settings.contains("dark_canvas"):
             dark_canvas = settings.value('dark_canvas', type=bool)
         else:
-            dark_canvas = True
+            dark_canvas = False
 
         if settings.contains("axis_font_size"):
             a_fsize = settings.value('axis_font_size', type=int)
         else:
             a_fsize = 8
 
-        if theme == 'light' and not dark_canvas:
+        if (theme == 'default' or theme == 'light') and not dark_canvas:
             theme_color = Color('#FFFFFF')
             tick_color = Color('#000000')
             back_color = str(QPalette().color(QPalette.ColorRole.Window).name())

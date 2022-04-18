@@ -764,20 +764,20 @@ class Distance(AppTool):
         if settings.contains("theme"):
             theme = settings.value('theme', type=str)
         else:
-            theme = 'light'
+            theme = 'default'
 
         if settings.contains("dark_canvas"):
             dark_canvas = settings.value('dark_canvas', type=bool)
         else:
-            dark_canvas = True
+            dark_canvas = False
 
         if self.app.use_3d_engine:
-            if theme == 'light' and not dark_canvas:
+            if (theme == 'default' or theme == 'light') and not dark_canvas:
                 color = '#000000FF'
             else:
                 color = '#FFFFFFFF'
         else:
-            if theme == 'light' and not dark_canvas:
+            if (theme == 'default' or theme == 'light') and not dark_canvas:
                 color = '#000000'
             else:
                 color = '#FFFFFF'

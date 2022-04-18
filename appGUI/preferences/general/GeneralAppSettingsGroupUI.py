@@ -292,14 +292,14 @@ class GeneralAppSettingsGroupUI(OptionsGroupUI2):
             if theme_settings.contains("theme"):
                 theme = theme_settings.value('theme', type=str)
             else:
-                theme = 'light'
+                theme = 'default'
 
             if theme_settings.contains("dark_canvas"):
                 dark_canvas = theme_settings.value('dark_canvas', type=bool)
             else:
-                dark_canvas = True
+                dark_canvas = False
 
-            if theme == 'light' and not dark_canvas:
+            if (theme == 'default' or theme == 'light') and not dark_canvas:
                 self.app.cursor_color_3D = 'black'
             else:
                 self.app.cursor_color_3D = 'gray'

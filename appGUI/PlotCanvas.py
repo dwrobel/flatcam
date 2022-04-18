@@ -54,14 +54,14 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         if settings.contains("theme"):
             theme = settings.value('theme', type=str)
         else:
-            theme = 'light'
+            theme = 'default'
 
         if settings.contains("dark_canvas"):
             dark_canvas = settings.value('dark_canvas', type=bool)
         else:
-            dark_canvas = True
+            dark_canvas = False
 
-        if theme == 'light' and not dark_canvas:
+        if (theme == 'default' or theme == 'light') and not dark_canvas:
             self.line_color = (0.3, 0.0, 0.0, 1.0)
             # self.rect_hud_color = Color('#0000FF10')
             self.rect_hud_color = Color('#80808040')
@@ -389,14 +389,14 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         if settings.contains("theme"):
             theme = settings.value('theme', type=str)
         else:
-            theme = 'light'
+            theme = 'default'
 
         if settings.contains("dark_canvas"):
             dark_canvas = settings.value('dark_canvas', type=bool)
         else:
-            dark_canvas = True
+            dark_canvas = False
 
-        if theme == 'light' and not dark_canvas:
+        if (theme == 'default' or theme == 'light') and not dark_canvas:
             color = 'dimgray'
         else:
             color = '#dededeff'

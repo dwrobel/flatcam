@@ -496,7 +496,7 @@ class CopyEditorUI:
             self.rows.valueChanged.connect(self.on_rows_cols_value_changed)
             self.columns.valueChanged.connect(self.on_rows_cols_value_changed)
 
-            self.app.inform.emit(_("Click to place ..."))
+            self.app.inform.emit(_("Click on reference location ..."))
         else:
             if val == 'linear':
                 self.array_circular_frame.hide()
@@ -505,7 +505,7 @@ class CopyEditorUI:
                 self.spacing_frame.hide()
                 self.offset_frame.hide()
 
-                self.app.inform.emit(_("Click to place ..."))
+                self.app.inform.emit(_("Click on reference location ..."))
             else:   # 'circular'
                 self.array_circular_frame.show()
                 self.array_linear_frame.hide()

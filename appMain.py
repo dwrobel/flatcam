@@ -619,7 +619,9 @@ class App(QtCore.QObject):
             else:
                 theme = 'light'
         else:
-            if self.options["global_appearance"] == 'dark':
+            if self.options["global_appearance"] == 'default':
+                theme = 'default'
+            elif self.options["global_appearance"] == 'dark':
                 theme = 'dark'
             else:
                 theme = 'light'
@@ -634,7 +636,9 @@ class App(QtCore.QObject):
         else:
             self.decimals = int(self.options['decimals_inch'])
 
-        if self.options["global_theme"] == 'light':
+        if self.options["global_theme"] == 'default':
+            self.resource_location = 'assets/resources'
+        elif self.options["global_theme"] == 'light':
             self.resource_location = 'assets/resources'
             self.qapp.setStyleSheet(qdarktheme.load_stylesheet('light'))
         else:
@@ -1040,12 +1044,12 @@ class App(QtCore.QObject):
         if self.options["global_cursor_color_enabled"]:
             self.cursor_color_3D = self.options["global_cursor_color"]
         else:
-            if theme == 'light' and not self.options["global_dark_canvas"]:
+            if (theme == 'light' or theme == 'default') and not self.options["global_dark_canvas"]:
                 self.cursor_color_3D = 'black'
             else:
                 self.cursor_color_3D = 'gray'
 
-        # update the options dict with the setting in QSetting
+        # update the 'options' dict with the setting in QSetting
         self.options['global_theme'] = theme
 
         # ########################

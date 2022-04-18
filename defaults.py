@@ -112,8 +112,9 @@ class AppDefaults:
         "global_tpdf_rmargin": 20.0,
 
         # General GUI Preferences
-        "global_appearance": 'auto',
-        "global_dark_canvas": True,
+        "global_appearance": 'default',
+        "global_dark_canvas": False,
+        "global_theme": 'default',
 
         "global_layout": "compact",
         "global_hover_shape": False,

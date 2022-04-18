@@ -42,21 +42,24 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         )
 
         self.appearance_radio = RadioSet([
-            {"label": _("OS Dependent"), "value": "auto"},
+            {"label": _("Default"), "value": "default"},
+            {"label": _("Auto"), "value": "auto"},
             {"label": _("Light"), "value": "light"},
             {"label": _("Dark"), "value": "dark"}
         ], compact=True)
         self.appearance_radio.setToolTip(
-            _("OS Dependent: Matches mode from OS\n"
+            _("The theme can be:\n"
+              "Default: Default theme\n"
+              "Auto: Matches mode from OS\n"
               "Light: Light mode\n"
               "Dark: Dark mode")
         )
 
         # Dark Canvas
-        self.dark_canvas_cb = FCCheckBox('%s' % _('Always use dark canvas'))
+        self.dark_canvas_cb = FCCheckBox('%s' % _('Dark Canvas'))
         self.dark_canvas_cb.setToolTip(
-            _("Check this box to always use Dark canvas\n"
-              "even if Light theme is selected.")
+            _("Check this box to force the use of dark canvas\n"
+              "even if a dark theme is not selected.")
         )
 
         grid0.addWidget(self.appearance_label, 0, 0, 1, 2)

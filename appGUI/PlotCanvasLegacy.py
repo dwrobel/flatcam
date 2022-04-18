@@ -86,14 +86,14 @@ class CanvasCache(QtCore.QObject):
         if settings.contains("theme"):
             theme = settings.value('theme', type=str)
         else:
-            theme = 'light'
+            theme = 'default'
 
         if settings.contains("dark_canvas"):
             dark_canvas = settings.value('dark_canvas', type=bool)
         else:
-            dark_canvas = True
+            dark_canvas = False
 
-        if theme == 'light' and not dark_canvas:
+        if (theme == 'default' or theme == 'light') and not dark_canvas:
             self.axes.set_facecolor('#FFFFFF')
         else:
             self.axes.set_facecolor('#000000')
@@ -165,7 +165,7 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         self.app = app
 
-        if self.app.options['global_theme'] == 'light':
+        if self.app.options['global_theme'] in ['default', 'light']:
             theme_color = '#FFFFFF'
             tick_color = '#000000'
             self.rect_hud_color = '#0000FF10'
@@ -457,7 +457,7 @@ class PlotCanvasLegacy(QtCore.QObject):
             super().__init__()
 
             self.p = plotcanvas
-            units = self.p.app.app_units
+            # units = self.p.app.app_units
             # self._text = 'Dx:    %s [%s]\nDy:    %s [%s]\n\nX:      %s [%s]\nY:      %s [%s]' % \
             #              ('0.0000', units, '0.0000', units, '0.0000', units, '0.0000', units)
             self.on_update_text_hud()
