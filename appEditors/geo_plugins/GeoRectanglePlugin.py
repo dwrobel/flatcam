@@ -220,7 +220,7 @@ class RectangleEditorUI:
         self.rect_tool_box.addLayout(grid0)
 
         # Anchor
-        self.anchor_lbl = FCLabel('<b>%s:</b>' % _("Anchor"))
+        self.anchor_lbl = FCLabel('%s:' % _("Anchor"), bold=True)
         choices = [
             {"label": _("T Left"), "value": "tl"},
             {"label": _("T Right"), "value": "tr"},
@@ -233,7 +233,7 @@ class RectangleEditorUI:
         grid0.addWidget(self.anchor_radio, 0, 1)
 
         # Position
-        self.pos_lbl = FCLabel('<b>%s</b>' % _("Position"))
+        self.pos_lbl = FCLabel('%s' % _("Position"), bold=True)
         grid0.addWidget(self.pos_lbl, 2, 0, 1, 2)
 
         # X Pos
@@ -277,7 +277,7 @@ class RectangleEditorUI:
         grid0.addWidget(self.radius_entry, 10, 1)
 
         # Size
-        self.size_lbl = FCLabel('<b>%s</b>' % _("Size"))
+        self.size_lbl = FCLabel('%s' % _("Size"), bold=True)
         grid0.addWidget(self.size_lbl, 12, 0, 1, 2)
 
         # Length
@@ -300,7 +300,7 @@ class RectangleEditorUI:
         self.layout.addStretch(1)
 
         # Note
-        self.note_lbl = FCLabel('<b>%s</b>' % _("Note"))
+        self.note_lbl = FCLabel('%s' % _("Note"), bold=True)
         self.layout.addWidget(self.note_lbl)
         self.note_description_lbl = FCLabel('%s' % _("Shift + click to select a shape for modification."))
         self.layout.addWidget(self.note_description_lbl)

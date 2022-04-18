@@ -1344,7 +1344,7 @@ class PanelizeUI:
         # Type of resulting Panel object
         self.panel_type_radio = RadioSet([{'label': _('Gerber'), 'value': 'gerber'},
                                           {'label': _('Geo'), 'value': 'geometry'}])
-        self.panel_type_label = FCLabel("<b>%s:</b>" % _("Panel Type"))
+        self.panel_type_label = FCLabel('%s:' % _("Panel Type"), bold=True)
         self.panel_type_label.setToolTip(
             _("Choose the type of object for the panel object:\n"
               "- Gerber\n"

@@ -41,6 +41,8 @@ import gettext
 import appTranslation as fcTranslate
 import builtins
 
+import darkdetect
+
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
@@ -52,8 +54,40 @@ class MainGUI(QtWidgets.QMainWindow):
     final_save = QtCore.pyqtSignal(name='saveBeforeExit')
     # screenChanged = QtCore.pyqtSignal(QtGui.QScreen, QtGui.QScreen)
 
+    # Mapping of colors used for text on Light theme to
+    # similar colors safe for use on Dark theme
+    # 'input_color': (light_color, dark_color),
+    theme_safe_colors = {
+        "blue": "#1F80FF",
+        "brown": "#CC9966",
+        "darkgreen": "#008015",
+        "darkorange": "darkorange",
+        "green": "#00CC22",
+        "indigo": "#9457EB",
+        "magenta": "magenta",
+        "orange": "orange",
+        "purple": "#B284BE",
+        "red": "salmon",
+        "teal": "teal",
+        "tomato": "tomato",
+    }
+
     def theme_safe_color(self, color):
-        return color
+        """
+        Some colors do not work well with light or dark backgrounds making them unreadable in the wrong
+        theme. For an approved color value this will return a similar color better suited for the current theme.
+
+        :param color: color to be replaced
+        :return: similar color better suited for dark or light theme
+        """
+
+        if color in self.theme_safe_colors:
+            if self.app.options['global_theme'] == 'light':
+                return color
+            else:
+                return self.theme_safe_colors[color]
+        else:
+            return color
 
     # https://www.w3.org/TR/SVG11/types.html#ColorKeywords
     def __init__(self, app):
@@ -2360,7 +2394,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.app.log.debug("Clearing the settings in QSettings. GUI settings cleared.")
 
         theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
-        theme_settings.setValue('theme', 'white')
+        theme_settings.setValue('theme', 'light')
 
         del theme_settings
 

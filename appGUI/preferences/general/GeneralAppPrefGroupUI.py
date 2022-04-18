@@ -89,7 +89,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid1_frame.setLayout(grid1)
 
         # Graphic Engine for FlatCAM
-        self.ge_label = FCLabel('<b>%s:</b>' % _('Graphic Engine'))
+        self.ge_label = FCLabel('%s:' % _('Graphic Engine'), bold=True)
         self.ge_label.setToolTip(_("Choose what graphic engine to use in FlatCAM.\n"
                                    "Legacy(2D) -> reduced functionality, slow performance but enhanced compatibility.\n"
                                    "OpenGL(3D) -> full functionality, high performance\n"

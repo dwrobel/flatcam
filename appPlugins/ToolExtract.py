@@ -1186,7 +1186,7 @@ class ExtractUI:
         self.ring_box.addLayout(ring_grid)
 
         # Annular Ring value
-        self.ring_label = FCLabel('<b>%s</b>' % _("Fixed Annular Ring"))
+        self.ring_label = FCLabel('%s' % _("Fixed Annular Ring"), bold=True)
         self.ring_label.setToolTip(
             _("The size of annular ring.\n"
               "The copper sliver between the hole exterior\n"
@@ -1271,7 +1271,7 @@ class ExtractUI:
         self.fix_frame.setLayout(fixed_grid)
 
         # Fixed Diameter
-        self.fixed_label = FCLabel('<b>%s</b>' % _("Fixed Diameter"))
+        self.fixed_label = FCLabel('%s' % _("Fixed Diameter"), bold=True)
         fixed_grid.addWidget(self.fixed_label, 2, 0, 1, 2)
 
         # Diameter value
@@ -1299,7 +1299,7 @@ class ExtractUI:
         self.prop_frame.setLayout(prop_grid)
 
         # Proportional Diameter
-        self.prop_label = FCLabel('<b>%s</b>' % _("Proportional Diameter"))
+        self.prop_label = FCLabel('%s' % _("Proportional Diameter"), bold=True)
         prop_grid.addWidget(self.prop_label, 0, 0, 1, 2)
 
         # Diameter value

@@ -196,7 +196,7 @@ class SimplificationEditorUI:
         self.simp_tools_box.addLayout(grid0)
 
         # Coordinates
-        coords_lbl = FCLabel('<b>%s</b>:' % _("Coordinates"))
+        coords_lbl = FCLabel('%s' % _("Coordinates"), bold=True)
         coords_lbl.setToolTip(
             _("The coordinates of the selected geometry element.")
         )
@@ -209,7 +209,7 @@ class SimplificationEditorUI:
         grid0.addWidget(self.geo_coords_entry, 24, 0, 1, 3)
 
         # Vertex Points Number
-        vertex_lbl = FCLabel('<b>%s</b>:' % _("Vertex Points"))
+        vertex_lbl = FCLabel('%s' % _("Vertex Points"), bold=True)
         vertex_lbl.setToolTip(
             _("The number of vertex points in the selected geometry element.")
         )
@@ -225,14 +225,14 @@ class SimplificationEditorUI:
         grid0.addWidget(separator_line, 28, 0, 1, 3)
 
         # Simplification Title
-        simplif_lbl = FCLabel('<b>%s</b>:' % _("Simplification"))
+        simplif_lbl = FCLabel('%s' % _("Simplification"), bold=True)
         simplif_lbl.setToolTip(
             _("Simplify a geometry by reducing its vertex points number.")
         )
         grid0.addWidget(simplif_lbl, 30, 0, 1, 3)
 
         # Simplification Tolerance
-        simplification_tol_lbl = FCLabel('<b>%s</b>:' % _("Tolerance"))
+        simplification_tol_lbl = FCLabel('%s' % _("Tolerance"), bold=True)
         simplification_tol_lbl.setToolTip(
             _("All points in the simplified object will be\n"
               "within the tolerance distance of the original geometry.")

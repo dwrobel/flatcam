@@ -1268,7 +1268,7 @@ class SolderUI:
             _("Tool Diameter. Its value\n"
               "is the width of the solder paste dispensed."))
 
-        self.addtool_entry_lbl = FCLabel('<b>%s:</b>' % _('New Tool'))
+        self.addtool_entry_lbl = FCLabel('%s:' % _('New Tool'), bold=True)
         self.addtool_entry_lbl.setToolTip(
             _("Diameter for the new tool to add in the Tool Table")
         )

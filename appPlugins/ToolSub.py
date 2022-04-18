@@ -901,7 +901,7 @@ class SubUI:
         geo_grid = GLay(v_spacing=5, h_spacing=3)
         geo_frame.setLayout(geo_grid)
 
-        self.geo_title = FCLabel("<b>%s</b>" % _("GEOMETRY"))
+        self.geo_title = FCLabel('%s' % _("GEOMETRY"), bold=True)
         self.tools_box.addWidget(self.geo_title)
 
         # Target Geometry Object

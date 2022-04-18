@@ -1449,7 +1449,7 @@ class ThievingUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         dots_grid.addWidget(separator_line, 0, 0, 1, 2)
 
-        self.dots_label = FCLabel('<b>%s</b>:' % _("Dots Grid Parameters"))
+        self.dots_label = FCLabel('%s' % _("Dots Grid Parameters"), bold=True)
         dots_grid.addWidget(self.dots_label, 2, 0, 1, 2)
 
         # Dot diameter #
@@ -1495,7 +1495,7 @@ class ThievingUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         squares_grid.addWidget(separator_line, 0, 0, 1, 2)
 
-        self.squares_label = FCLabel('<b>%s</b>:' % _("Squares Grid Parameters"))
+        self.squares_label = FCLabel('%s' % _("Squares Grid Parameters"), bold=True)
         squares_grid.addWidget(self.squares_label, 2, 0, 1, 2)
 
         # Square Size #
@@ -1541,7 +1541,7 @@ class ThievingUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         lines_grid.addWidget(separator_line, 0, 0, 1, 2)
 
-        self.lines_label = FCLabel('<b>%s</b>:' % _("Lines Grid Parameters"))
+        self.lines_label = FCLabel('%s' % _("Lines Grid Parameters"), bold=True)
         lines_grid.addWidget(self.lines_label, 2, 0, 1, 2)
 
         # Line Size #

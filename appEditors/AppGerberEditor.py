@@ -6174,7 +6174,7 @@ class AppGerberEditorUI:
         # #############################################################################################################
         # #################################### Gerber Apertures Table #################################################
         # #############################################################################################################
-        self.apertures_table_label = FCLabel('<b>%s:</b>' % _('Apertures'))
+        self.apertures_table_label = FCLabel('%s:' % _('Apertures'), bold=True)
         self.apertures_table_label.setToolTip(
             _("Apertures Table for the Gerber Object.")
         )
@@ -6225,7 +6225,7 @@ class AppGerberEditorUI:
         self.apertures_box.addLayout(grid1)
 
         # Title
-        apadd_del_lbl = FCLabel('<b>%s:</b>' % _('Add/Delete Aperture'))
+        apadd_del_lbl = FCLabel('%s:' % _('Add/Delete Aperture'), bold=True)
         apadd_del_lbl.setToolTip(
             _("Add/Delete an aperture in the aperture table")
         )
@@ -6334,7 +6334,7 @@ class AppGerberEditorUI:
         self.shape_grid.addWidget(separator_line, 2, 0, 1, 3)
 
         # Parameters Title
-        param_title = FCLabel('<b>%s</b>' % _("Parameters"))
+        param_title = FCLabel('%s' % _("Parameters"), bold=True)
         param_title.setToolTip(
             _("Geometry parameters.")
         )
@@ -6343,7 +6343,7 @@ class AppGerberEditorUI:
         p_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 0, 0, 1, 0])
 
         # Is Valid
-        valid_lbl = FCLabel('<b>%s</b>:' % _("Valid"))
+        valid_lbl = FCLabel('%s' % _("Valid"), bold=True)
         valid_lbl.setToolTip(
             _("Show if the selected polygon is valid.")
         )
@@ -6352,7 +6352,7 @@ class AppGerberEditorUI:
         p_grid.addWidget(self.is_valid_entry, 0, 1)
 
         # Area
-        area_lbl = FCLabel('<b>%s</b>:' % _("Area"))
+        area_lbl = FCLabel('%s' % _("Area"), bold=True)
         area_lbl.setToolTip(
             _("Show the area of the selected polygon.")
         )
@@ -6397,7 +6397,7 @@ class AppGerberEditorUI:
         self.shape_grid.addWidget(separator_line, 12, 0, 1, 3)
 
         # Simplification Title
-        simplif_lbl = FCLabel('<b>%s</b>:' % _("Simplification"))
+        simplif_lbl = FCLabel('%s' % _("Simplification"), bold=True)
         simplif_lbl.setToolTip(
             _("Simplify a geometry by reducing its vertex points number.")
         )
@@ -6445,7 +6445,7 @@ class AppGerberEditorUI:
         self.buffer_tool_frame.hide()
 
         # Title
-        buf_title_lbl = FCLabel('<b>%s:</b>' % _('Buffer Aperture'))
+        buf_title_lbl = FCLabel('%s:' % _('Buffer Aperture'), bold=True)
         buf_title_lbl.setToolTip(
             _("Buffer a aperture in the aperture list")
         )
@@ -6503,7 +6503,7 @@ class AppGerberEditorUI:
         self.scale_tool_frame.hide()
 
         # Title
-        scale_title_lbl = FCLabel('<b>%s:</b>' % _('Scale Aperture'))
+        scale_title_lbl = FCLabel('%s:' % _('Scale Aperture'), bold=True)
         scale_title_lbl.setToolTip(
             _("Scale a aperture in the aperture list")
         )
@@ -6552,7 +6552,7 @@ class AppGerberEditorUI:
         self.ma_tools_box.addWidget(separator_line)
 
         # Title
-        ma_title_lbl = FCLabel('<b>%s:</b>' % _('Mark polygons'))
+        ma_title_lbl = FCLabel('%s:' % _('Mark polygons'), bold=True)
         ma_title_lbl.setToolTip(
             _("Mark the polygon areas.")
         )
@@ -6632,7 +6632,7 @@ class AppGerberEditorUI:
         self.array_box.addLayout(array_grid)
 
         # Title
-        self.padarray_label = FCLabel('<b>%s</b>' % _("Add Pad Array"))
+        self.padarray_label = FCLabel('%s' % _("Add Pad Array"), bold=True)
         self.padarray_label.setToolTip(
             _("Add an array of pads (linear or circular array)")
         )

@@ -44,11 +44,6 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
             _("A value greater than 1 will compact the film\n"
               "while a value less than 1 will jolt it.")
         )
-        self.film_scale_cb.setStyleSheet(
-            """
-            QCheckBox {font-weight: bold; color: black}
-            """
-        )
         adj_grid.addWidget(self.film_scale_cb, 2, 0, 1, 2)
 
         # SCALE FRAME
@@ -109,11 +104,6 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
             _("Positive values will skew to the right\n"
               "while negative values will skew to the left.")
         )
-        self.film_skew_cb.setStyleSheet(
-            """
-            QCheckBox {font-weight: bold; color: black}
-            """
-        )
         adj_grid.addWidget(self.film_skew_cb, 8, 0, 1, 2)
 
         # SKEW FRAME
@@ -170,11 +160,6 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.film_mirror_cb = FCCheckBox('%s' % _("Mirror"))
         self.film_mirror_cb.setToolTip(
             _("Mirror the film geometry on the selected axis or on both.")
-        )
-        self.film_mirror_cb.setStyleSheet(
-            """
-            QCheckBox {font-weight: bold; color: black}
-            """
         )
         adj_grid.addWidget(self.film_mirror_cb, 12, 0, 1, 2)
 
