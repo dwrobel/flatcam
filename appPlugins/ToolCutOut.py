@@ -2255,7 +2255,7 @@ class CutoutUI:
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
-        self.object_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.object_label = FCLabel('%s' % _("Source Object"), color='darkorange', bold=True)
         self.object_label.setToolTip('%s.' % _("Object to be cutout"))
         self.tools_box.addWidget(self.object_label)
 
@@ -2309,7 +2309,7 @@ class CutoutUI:
 
         obj_grid.addWidget(self.obj_combo, 6, 0, 1, 2)
 
-        self.tool_sel_label = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _('Cutout Tool'))
+        self.tool_sel_label = FCLabel('%s' % _("Cutout Tool"), color='indigo', bold=True)
         self.tools_box.addWidget(self.tool_sel_label)
 
         # #############################################################################################################
@@ -2367,7 +2367,7 @@ class CutoutUI:
         # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         # obj_grid.addWidget(separator_line, 18, 0, 1, 2)
 
-        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Tool Parameters"))
+        self.param_label = FCLabel('%s' % _("Tool Parameters"), color='blue', bold=True)
         self.tools_box.addWidget(self.param_label)
 
         # #############################################################################################################
@@ -2446,7 +2446,7 @@ class CutoutUI:
         param_grid.addWidget(self.margin_label, 6, 0)
         param_grid.addWidget(self.margin, 6, 1)
 
-        self.gaps_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Gaps"))
+        self.gaps_label = FCLabel('%s' % _("Gaps"), color='green', bold=True)
         self.tools_box.addWidget(self.gaps_label)
 
         # #############################################################################################################
@@ -2694,7 +2694,7 @@ class CutoutUI:
         # obj_grid.addWidget(FCLabel(""), 62, 0, 1, 2)
 
         # Cut by Drilling Title
-        self.title_drillcut_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _('Cut by Drilling'))
+        self.title_drillcut_label = FCLabel('%s' % _("Cut by Drilling"), color='red', bold=True)
         self.title_drillcut_label.setToolTip(_("Create a series of drill holes following a geometry line."))
         self.tools_box.addWidget(self.title_drillcut_label)
 

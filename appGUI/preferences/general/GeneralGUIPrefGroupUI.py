@@ -22,7 +22,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.decimals = app.decimals
         self.options = app.options
 
-        self.param_lbl = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.param_lbl = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.layout.addWidget(self.param_lbl)
 
         # #############################################################################################################
@@ -146,7 +146,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Grid1 Frame
         # #############################################################################################################
-        self.color_lbl = FCLabel('<span style="color:teal;"><b>%s</b></span>' % _("Colors"))
+        self.color_lbl = FCLabel('%s' % _("Colors"), color='teal', bold=True)
         self.layout.addWidget(self.color_lbl)
 
         color_frame = FCFrame()

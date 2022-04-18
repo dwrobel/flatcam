@@ -89,7 +89,7 @@ class ObjectUI(QtWidgets.QWidget):
             # #############################################################################################################
             # Transformations Frame
             # #############################################################################################################
-            self.transform_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Transformations'))
+            self.transform_label = FCLabel(_("Transformations"), color='blue', bold=True)
             self.transform_label.setToolTip(
                 _("Geometrical transformations of the current object.")
             )
@@ -182,7 +182,7 @@ class GerberObjectUI(ObjectUI):
 
         ObjectUI.__init__(self, title=_('Gerber Object'), parent=parent, app=self.app)
 
-        self.general_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("General Information"))
+        self.general_label = FCLabel(_("General Information"), color='darkorange', bold=True)
         self.general_label.setToolTip(_("General data about the object."))
         self.custom_box.addWidget(self.general_label)
 
@@ -284,7 +284,7 @@ class GerberObjectUI(ObjectUI):
         # #############################################################################################################
         # Gerber Tool Table Frame
         # #############################################################################################################
-        self.tools_table_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Tools Table'))
+        self.tools_table_label = FCLabel(_("Tools Table"), color='green', bold=True)
         self.tools_table_label.setToolTip(_("Tools/apertures in the loaded object."))
         self.custom_box.addWidget(self.tools_table_label)
 
@@ -371,7 +371,7 @@ class GerberObjectUI(ObjectUI):
         # #############################################################################################################
         # PLUGINS Frame
         # #############################################################################################################
-        self.tool_lbl = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Plugins"))
+        self.tool_lbl = FCLabel(_("Plugins"), color='indigo', bold=True)
         self.custom_box.addWidget(self.tool_lbl)
 
         plugins_frame = FCFrame()
@@ -601,7 +601,7 @@ class ExcellonObjectUI(ObjectUI):
                           parent=parent,
                           app=self.app)
 
-        self.general_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("General Information"))
+        self.general_label = FCLabel(_("General Information"), color='darkorange', bold=True)
         self.general_label.setToolTip(_("General data about the object."))
         self.custom_box.addWidget(self.general_label)
 
@@ -691,7 +691,7 @@ class ExcellonObjectUI(ObjectUI):
         # #############################################################################################################
         # Excellon Tool Table Frame
         # #############################################################################################################
-        self.tools_table_label = FCLabel('<span style="color:green;"><b>%s: </b></span>' % _('Tools Table'))
+        self.tools_table_label = FCLabel('%s: ' % _("Tools Table"), color='green', bold=True)
         self.tools_table_label.setToolTip(_("Tools/apertures in the loaded object."))
         self.custom_box.addWidget(self.tools_table_label)
 
@@ -777,7 +777,7 @@ class ExcellonObjectUI(ObjectUI):
         # #############################################################################################################
         # Plugins Frame
         # #############################################################################################################
-        self.tool_lbl = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Plugins"))
+        self.tool_lbl = FCLabel('%s' % _("Plugins"), color='indigo', bold=True)
         self.custom_box.addWidget(self.tool_lbl)
 
         plugins_frame = FCFrame()
@@ -938,7 +938,7 @@ class GeometryObjectUI(ObjectUI):
             icon_file=self.resource_loc + '/geometry32.png', parent=parent,  app=self.app
         )
 
-        self.general_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("General Information"))
+        self.general_label = FCLabel('%s' % _("General Information"), color='darkorange', bold=True)
         self.general_label.setToolTip(_("General data about the object."))
         self.custom_box.addWidget(self.general_label)
 
@@ -1021,7 +1021,7 @@ class GeometryObjectUI(ObjectUI):
         # #############################################################################################################
         # Gerber Tool Table Frame
         # #############################################################################################################
-        self.tools_table_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Tools Table'))
+        self.tools_table_label = FCLabel('%s' % _("Tools Table"), color='green', bold=True)
         self.tools_table_label.setToolTip(_("Tools/apertures in the loaded object."))
         self.custom_box.addWidget(self.tools_table_label)
 
@@ -1103,7 +1103,7 @@ class GeometryObjectUI(ObjectUI):
         # #############################################################################################################
         # PLUGINS Frame
         # #############################################################################################################
-        self.tools_label = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _('Plugins'))
+        self.tools_label = FCLabel('%s' % _("Plugins"), color='indigo', bold=True)
         self.custom_box.addWidget(self.tools_label)
 
         plugins_frame = FCFrame()
@@ -1280,7 +1280,7 @@ class CNCObjectUI(ObjectUI):
 
         # for i in range(0, self.common_grid.count()):
         #     self.common_grid.itemAt(i).widget().hide()
-        self.general_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("General Information"))
+        self.general_label = FCLabel('%s' % _("General Information"), color='darkorange', bold=True)
         self.general_label.setToolTip(_("General data about the object."))
         self.custom_box.addWidget(self.general_label)
 
@@ -1369,7 +1369,7 @@ class CNCObjectUI(ObjectUI):
         # #############################################################################################################
         # COMMON PARAMETERS Frame
         # #############################################################################################################
-        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.param_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.custom_box.addWidget(self.param_label)
 
         self.gp_frame = FCFrame()
@@ -1441,7 +1441,7 @@ class CNCObjectUI(ObjectUI):
         # #############################################################################################################
         # CNC Tool Table Frame
         # #############################################################################################################
-        self.tools_table_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Tools Table'))
+        self.tools_table_label = FCLabel('%s' % _("Tools Table"), color='green', bold=True)
         self.tools_table_label.setToolTip(_("Tools/apertures in the loaded object."))
         self.custom_box.addWidget(self.tools_table_label)
 
@@ -1517,7 +1517,7 @@ class CNCObjectUI(ObjectUI):
         # #############################################################################################################
         # ######################   PLUGINS   ##########################################################################
         # #############################################################################################################
-        self.tool_lbl = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Plugins"))
+        self.tool_lbl = FCLabel('%s' % _("Plugins"), color='indigo', bold=True)
         self.custom_box.addWidget(self.tool_lbl)
 
         # Levelling Tool - will process the generated GCode using a Height Map generating levelled GCode

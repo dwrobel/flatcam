@@ -2970,7 +2970,7 @@ class FCLabel(QtWidgets.QLabel):
     right_clicked = QtCore.pyqtSignal(bool)
     middle_clicked = QtCore.pyqtSignal(bool)
 
-    def __init__(self, title, color=None, color_callback=None, bold=None, parent=None):
+    def __init__(self, title=None, color=None, color_callback=None, bold=None, parent=None):
         """
 
         :param title:           the label's text

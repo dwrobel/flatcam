@@ -24,7 +24,7 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Parameters Frame
         # #############################################################################################################
-        self.qrlabel = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.qrlabel = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.qrlabel.setToolTip(
             _("A tool to create a QRCode that can be inserted\n"
               "into a selected Gerber file, or it can be exported as a file.")

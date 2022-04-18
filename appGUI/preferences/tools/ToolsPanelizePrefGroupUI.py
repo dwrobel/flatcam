@@ -24,7 +24,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # PARAMETERS Frame
         # #############################################################################################################
-        self.panelize_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.panelize_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.panelize_label.setToolTip(
             _("Create an object that contains an array of (x, y) elements,\n"
               "each element is a copy of the source object spaced\n"

@@ -25,7 +25,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Adjustments Frame
         # #############################################################################################################
-        self.film_adj_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _("Adjustments"))
+        self.film_adj_label = FCLabel('%s' % _("Adjustments"), color='brown', bold=True)
         self.film_adj_label.setToolTip(
             _("Compensate print distortions.")
         )
@@ -195,7 +195,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Parameters Frame
         # #############################################################################################################
-        self.film_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.film_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.film_label.setToolTip(
             _("Create a PCB film from a Gerber or Geometry object.\n"
               "The file is saved in SVG format.")

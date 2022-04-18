@@ -200,7 +200,7 @@ class ToolsDB2UI:
         self.description_vlay.addStretch()
 
         # Tool Name
-        self.name_label = FCLabel('<span style="color:red;"><b>%s:</b></span>' % _('Name'))
+        self.name_label = FCLabel(_("Name"), color='red', bold=True)
         self.name_label.setToolTip(
             _("Tool name.\n"
               "This is not used in the app, it's function\n"

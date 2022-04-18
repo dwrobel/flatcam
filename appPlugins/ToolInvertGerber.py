@@ -220,7 +220,7 @@ class InvertUI:
         # #############################################################################################################
         # Source Object Frame
         # #############################################################################################################
-        self.gerber_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.gerber_label = FCLabel('%s' % _("Source Object"), color='darkorange', bold=True)
         self.gerber_label.setToolTip(_("Gerber object that will be inverted."))
         self.tools_box.addWidget(self.gerber_label)
 
@@ -241,7 +241,7 @@ class InvertUI:
         # #############################################################################################################
         # COMMON PARAMETERS Frame
         # #############################################################################################################
-        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.param_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.param_label.setToolTip('%s.' % _("Parameters for this tool"))
         self.tools_box.addWidget(self.param_label)
 

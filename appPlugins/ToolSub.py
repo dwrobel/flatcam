@@ -807,7 +807,7 @@ class SubUI:
         # #############################################################################################################
         # COMMON PARAMETERS Frame
         # #############################################################################################################
-        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.param_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.param_label.setToolTip(_("Parameters that are common for all tools."))
         self.tools_box.addWidget(self.param_label)
 
@@ -827,7 +827,7 @@ class SubUI:
         # #############################################################################################################
         # Gerber Subtraction Frame
         # #############################################################################################################
-        self.grb_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Gerber"))
+        self.grb_label = FCLabel('%s' % _("Gerber"), color='green', bold=True)
         self.tools_box.addWidget(self.grb_label)
 
         grb_frame = FCFrame()
@@ -892,7 +892,7 @@ class SubUI:
         # #############################################################################################################
         # Geometry Subtraction Frame
         # #############################################################################################################
-        self.geo_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _("Geometry"))
+        self.geo_label = FCLabel('%s' % _("Geometry"), color='red', bold=True)
         self.tools_box.addWidget(self.geo_label)
 
         geo_frame = FCFrame()

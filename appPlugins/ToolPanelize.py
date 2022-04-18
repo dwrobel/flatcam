@@ -1160,7 +1160,7 @@ class PanelizeUI:
         # #############################################################################################################
         # Source Object Frame
         # #############################################################################################################
-        self.object_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.object_label = FCLabel('%s' % _("Source Object"), color='darkorange', bold=True)
         self.object_label.setToolTip(
             _("Specify the type of object to be panelized\n"
               "It can be of type: Gerber, Excellon or Geometry.\n"
@@ -1205,7 +1205,7 @@ class PanelizeUI:
         # Reference Object Frame
         # #############################################################################################################
         # Type of box Panel object
-        self.box_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Reference"))
+        self.box_label = FCLabel('%s' % _("Reference"), color='green', bold=True)
         self.box_label.setToolTip(
             _("Choose the reference for panelization:\n"
               "- Object = the bounding box of a different object\n"
@@ -1263,7 +1263,7 @@ class PanelizeUI:
         # #############################################################################################################
         # Panel Data Frame
         # #############################################################################################################
-        panel_data_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _("Panel Data"))
+        panel_data_label = FCLabel('%s' % _("Panel Data"), color='red', bold=True)
         panel_data_label.setToolTip(
             _("This informations will shape the resulting panel.\n"
               "The number of rows and columns will set how many\n"
@@ -1331,7 +1331,7 @@ class PanelizeUI:
         # #############################################################################################################
         # COMMON PARAMETERS Frame
         # #############################################################################################################
-        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.param_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.param_label.setToolTip(_("Parameters that are common for all tools."))
         self.tools_box.addWidget(self.param_label)
 

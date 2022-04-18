@@ -1011,7 +1011,7 @@ class ExtractUI:
         # #############################################################################################################
         # Source Object
         # #############################################################################################################
-        self.grb_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.grb_label = FCLabel('%s' % _("Source Object"), color='darkorange', bold=True)
         self.grb_label.setToolTip('%s.' % _("Gerber object from which to extract drill holes or soldermask."))
         self.tools_box.addWidget(self.grb_label)
 
@@ -1027,7 +1027,7 @@ class ExtractUI:
         # #############################################################################################################
         # Processed Pads Frame
         # #############################################################################################################
-        self.padt_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Processed Pads Type"))
+        self.padt_label = FCLabel('%s' % _("Processed Pads Type"), color='green', bold=True)
         self.padt_label.setToolTip(
             _("The type of pads shape to be processed.\n"
               "If the PCB has many SMD pads with rectangular pads,\n"
@@ -1132,7 +1132,7 @@ class ExtractUI:
         # #############################################################################################################
         # Extract Drills Frame
         # #############################################################################################################
-        self.extract_drills_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _("Extract Drills"))
+        self.extract_drills_label = FCLabel('%s' % _("Extract Drills"), color='brown', bold=True)
         self.extract_drills_label.setToolTip(
             _("Extract an Excellon object from the Gerber pads."))
         self.tools_box.addWidget(self.extract_drills_label)
@@ -1337,7 +1337,7 @@ class ExtractUI:
         # Extract SolderMask Frame
         # #############################################################################################################
         # EXTRACT SOLDERMASK
-        self.extract_sm_label = FCLabel('<span style="color:purple;"><b>%s</b></span>' % _("Extract Soldermask"))
+        self.extract_sm_label = FCLabel('%s' % _("Extract Soldermask"), color='purple', bold=True)
         self.extract_sm_label.setToolTip(
             _("Extract soldermask from a given Gerber file."))
         self.tools_box.addWidget(self.extract_sm_label)
@@ -1382,7 +1382,7 @@ class ExtractUI:
         # Extract CutOut Frame
         # #############################################################################################################
         # EXTRACT CUTOUT
-        self.extract_cut_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Extract Cutout"))
+        self.extract_cut_label = FCLabel('%s' % _("Extract Cutout"), color='blue', bold=True)
         self.extract_cut_label.setToolTip(
             _("Extract a cutout from a given Gerber file."))
         self.tools_box.addWidget(self.extract_cut_label)

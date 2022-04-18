@@ -1215,7 +1215,7 @@ class SolderUI:
         # #############################################################################################################
         # Source Object
         # #############################################################################################################
-        self.object_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.object_label = FCLabel('%s' % _("Source Object"), color='darkorange', bold=True)
         self.object_label.setToolTip(_("Gerber Solderpaste object."))
         self.tools_box.addWidget(self.object_label)
 
@@ -1235,7 +1235,7 @@ class SolderUI:
         # #############################################################################################################
         # Tool Table Frame
         # #############################################################################################################
-        self.tools_table_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Tools Table'))
+        self.tools_table_label = FCLabel('%s' % _("Tools Table"), color='green', bold=True)
         self.tools_table_label.setToolTip(
             _("Tools pool from which the algorithm\n"
               "will pick the ones used for dispensing solder paste.")
@@ -1304,7 +1304,7 @@ class SolderUI:
         # #############################################################################################################
         # Parameters Frame
         # #############################################################################################################
-        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Parameters'))
+        self.param_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.param_label.setToolTip(
             _("Parameters used for this tool.")
         )
@@ -1333,7 +1333,7 @@ class SolderUI:
         # #############################################################################################################
         # Dispense Frame
         # #############################################################################################################
-        self.disp_lbl = FCLabel('<span style="color:tomato;"><b>%s</b></span>' % _('Dispense'))
+        self.disp_lbl = FCLabel('%s' % _("Dispense"), color='tomato', bold=True)
         self.tools_box.addWidget(self.disp_lbl)
 
         disp_frame = FCFrame()
@@ -1384,7 +1384,7 @@ class SolderUI:
         # #############################################################################################################
         # Toolchange Frame
         # #############################################################################################################
-        self.toolchnage_lbl = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Tool change"))
+        self.toolchnage_lbl = FCLabel('%s' % _("Tool change"), color='indigo', bold=True)
         self.tools_box.addWidget(self.toolchnage_lbl)
 
         tc_frame = FCFrame()
@@ -1419,7 +1419,7 @@ class SolderUI:
         # #############################################################################################################
         # Feedrate Frame
         # #############################################################################################################
-        fr_lbl = FCLabel('<span style="color:red;"><b>%s</b></span>' % _("Feedrate"))
+        fr_lbl = FCLabel('%s' % _("Feedrate"), color='red', bold=True)
         self.tools_box.addWidget(fr_lbl)
 
         fr_frame = FCFrame()
@@ -1472,7 +1472,7 @@ class SolderUI:
         # #############################################################################################################
         # Spindle Forward Frame
         # #############################################################################################################
-        sp_fw_lbl = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Forward"))
+        sp_fw_lbl = FCLabel('%s' % _("Forward"), color='blue', bold=True)
         self.tools_box.addWidget(sp_fw_lbl)
 
         sp_fw_frame = FCFrame()
@@ -1510,7 +1510,7 @@ class SolderUI:
         # #############################################################################################################
         # Spindle Reverse Frame
         # #############################################################################################################
-        sp_rev_lbl = FCLabel('<span style="color:teal;"><b>%s</b></span>' % _("Reverse"))
+        sp_rev_lbl = FCLabel('%s' % _("Reverse"), color='teal', bold=True)
         self.tools_box.addWidget(sp_rev_lbl)
 
         sp_rev_frame = FCFrame()
@@ -1566,7 +1566,7 @@ class SolderUI:
         # #############################################################################################################
         # Geometry Frame
         # #############################################################################################################
-        geo_lbl = FCLabel('<span style="color:red;"><b>%s</b></span>' % _("Geometry"))
+        geo_lbl = FCLabel('%s' % _("Geometry"), color='red', bold=True)
         self.tools_box.addWidget(geo_lbl)
 
         geo_frame = FCFrame()
@@ -1607,7 +1607,7 @@ class SolderUI:
         # #############################################################################################################
         # CNCJob Frame
         # #############################################################################################################
-        cnc_lbl = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _("CNCJob"))
+        cnc_lbl = FCLabel('%s' % _("CNCJob"), color='brown', bold=True)
         self.tools_box.addWidget(cnc_lbl)
 
         cnc_frame = FCFrame()
