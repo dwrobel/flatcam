@@ -33,7 +33,7 @@ class AutoCompletePrefGroupUI(OptionsGroupUI):
         hlay0.addWidget(self.del_all_btn)
 
         # ## Gerber associations
-        self.grb_list_label = FCLabel("<b>%s:</b>" % _("Keywords list"))
+        self.grb_list_label = FCLabel('%s:' % _("Keywords list"), bold=True)
         self.grb_list_label.setToolTip(
             _("List of keywords used by\n"
               "the autocompleter in FlatCAM.\n"

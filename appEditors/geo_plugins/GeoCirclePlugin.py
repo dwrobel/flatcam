@@ -187,7 +187,7 @@ class CircleEditorUI:
         self.circle_tool_box.addLayout(grid0)
 
         # Position
-        self.pos_lbl = FCLabel('<b>%s</b>' % _("Position"))
+        self.pos_lbl = FCLabel('%s' % _("Position"), bold=True)
         grid0.addWidget(self.pos_lbl, 0, 0, 1, 3)
 
         # X Pos
@@ -246,7 +246,7 @@ class CircleEditorUI:
         self.layout.addStretch(1)
 
         # Note
-        self.note_lbl = FCLabel('<b>%s</b>' % _("Note"))
+        self.note_lbl = FCLabel('%s' % _("Note"), bold=True)
         self.layout.addWidget(self.note_lbl)
         self.note_description_lbl = FCLabel('%s' % _("Shift + click to select a shape for modification."))
         self.layout.addWidget(self.note_description_lbl)

@@ -39,7 +39,7 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         param_frame.setLayout(param_grid)
 
         # Nozzle Tool Diameters
-        nozzletdlabel = FCLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
+        nozzletdlabel = FCLabel('%s:' % _('Tools Dia'), color='green', bold=True)
         nozzletdlabel.setToolTip(
             _("Diameters of the tools, separated by comma.\n"
               "The value of the diameter has to use the dot decimals separator.\n"
@@ -51,7 +51,7 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         param_grid.addWidget(self.nozzle_tool_dia_entry, 0, 1)
 
         # New Nozzle Tool Dia
-        self.addtool_entry_lbl = FCLabel('<b>%s:</b>' % _('New Nozzle Dia'))
+        self.addtool_entry_lbl = FCLabel('%s:' % _('New Nozzle Dia'), bold=True)
         self.addtool_entry_lbl.setToolTip(
             _("Diameter for the new tool to add in the Tool Table")
         )

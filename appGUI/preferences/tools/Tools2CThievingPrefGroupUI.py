@@ -142,7 +142,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # DOTS Grid Parameters Frame
         # #############################################################################################################
-        self.dots_label = FCLabel('<b>%s</b>:' % _("Dots Grid Parameters"))
+        self.dots_label = FCLabel('%s' % _("Dots Grid Parameters"), bold=True)
         self.layout.addWidget(self.dots_label)
 
         dots_frame = FCFrame()
@@ -181,7 +181,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Squares Grid Parameters Frame
         # #############################################################################################################
-        self.squares_label = FCLabel('<b>%s</b>:' % _("Squares Grid Parameters"))
+        self.squares_label = FCLabel('%s' % _("Squares Grid Parameters"), bold=True)
         self.layout.addWidget(self.squares_label)
 
         square_frame = FCFrame()
@@ -220,7 +220,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Lines Grid Parameters Frame
         # #############################################################################################################
-        self.lines_label = FCLabel('<b>%s</b>:' % _("Lines Grid Parameters"))
+        self.lines_label = FCLabel('%s' % _("Lines Grid Parameters"), bold=True)
         self.layout.addWidget(self.lines_label)
 
         line_frame = FCFrame()

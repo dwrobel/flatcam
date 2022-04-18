@@ -93,12 +93,12 @@ def on_language_apply_click(app, restart=False):
     if theme_settings.contains("theme"):
         theme = theme_settings.value('theme', type=str)
     else:
-        theme = 'white'
+        theme = 'light'
 
-    if theme == 'white':
+    if theme == 'light':
         resource_loc = 'assets/resources'
     else:
-        resource_loc = 'assets/resources'
+        resource_loc = 'assets/resources/dark_resources'
 
     # do nothing if trying to apply the language that is the current language (already applied).
     settings = QSettings("Open Source", "FlatCAM")
@@ -190,12 +190,12 @@ def restart_program(app, ask=None):
     if theme_settings.contains("theme"):
         theme = theme_settings.value('theme', type=str)
     else:
-        theme = 'white'
+        theme = 'light'
 
-    if theme == 'white':
+    if theme == 'light':
         resource_loc = 'assets/resources'
     else:
-        resource_loc = 'assets/resources'
+        resource_loc = 'assets/resources/dark_resources'
 
     # try to quit the Socket opened by ArgsThread class
     try:

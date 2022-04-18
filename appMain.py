@@ -108,6 +108,8 @@ import gettext
 import appTranslation as fcTranslate
 import builtins
 
+import darkdetect
+
 if sys.platform == 'win32':
     import winreg
 
@@ -610,6 +612,20 @@ class App(QtCore.QObject):
 
         # self.preferencesUiManager.show_preferences_gui()
 
+        # Set global_theme based on appearance
+        if self.options["global_appearance"] == 'auto':
+            if darkdetect.isDark():
+                theme = 'dark'
+            else:
+                theme = 'light'
+        else:
+            if self.options["global_appearance"] == 'dark':
+                theme = 'dark'
+            else:
+                theme = 'light'
+
+        self.options["global_theme"] = theme
+
         self.app_units = self.options["units"]
         self.default_units = self.defaults["units"]
 
@@ -618,16 +634,12 @@ class App(QtCore.QObject):
         else:
             self.decimals = int(self.options['decimals_inch'])
 
-        if self.options["global_gray_icons"] is False:
+        if self.options["global_theme"] == 'light':
             self.resource_location = 'assets/resources'
+            self.qapp.setStyleSheet(qdarktheme.load_stylesheet('light'))
         else:
             self.resource_location = 'assets/resources/dark_resources'
-
-        # #############################################################################################################
-        # ######################################### DARK THEME ########################################################
-        # #############################################################################################################
-        if self.options["global_gray_icons"] is True:
-            qdarksheet.STYLE_SHEET = style_sheet.D_STYLE_SHEET      # patching so I can do my own changes to the theme
+            qdarksheet.STYLE_SHEET = style_sheet.D_STYLE_SHEET
             self.qapp.setStyleSheet(qdarktheme.load_stylesheet())
 
         # ###########################################################################################################
@@ -1021,15 +1033,14 @@ class App(QtCore.QObject):
         self.FC_dark_blue = '#0000ffbf'
 
         theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
-        if theme_settings.contains("theme"):
-            theme = theme_settings.value('theme', type=str)
-        else:
-            theme = 'white'
+        theme_settings.setValue("appearance", self.options["global_appearance"])
+        theme_settings.setValue("theme", self.options["global_theme"])
+        theme_settings.setValue("dark_canvas", self.options["global_dark_canvas"])
 
         if self.options["global_cursor_color_enabled"]:
             self.cursor_color_3D = self.options["global_cursor_color"]
         else:
-            if theme == 'white':
+            if theme == 'light' and not self.options["global_dark_canvas"]:
                 self.cursor_color_3D = 'black'
             else:
                 self.cursor_color_3D = 'gray'
@@ -8624,7 +8635,7 @@ class App(QtCore.QObject):
         root = d_properties_tw.invisibleRootItem()
         font = QtGui.QFont()
         font.setBold(True)
-        p_color = QtGui.QColor("#000000") if self.options['global_gray_icons'] is False else QtGui.QColor("#FFFFFF")
+        p_color = QtGui.QColor("#000000") if self.options['global_theme'] == 'light' else QtGui.QColor("#FFFFFF")
 
         # main Items categories
         general_cat = d_properties_tw.addParent(root, _('General'), expanded=True, color=p_color, font=font)
@@ -9428,6 +9439,7 @@ class App(QtCore.QObject):
         dec_nr = dec if dec is not None else self.decimals
 
         return float('%.*f' % (dec_nr, float(val)))
+
 
 
 class ArgsThread(QtCore.QObject):

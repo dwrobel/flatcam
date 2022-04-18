@@ -40,7 +40,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         par_frame.setLayout(par_grid)
 
         # Tools Diameters
-        ncctdlabel = FCLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
+        ncctdlabel = FCLabel('%s:' % _('Tools Dia'), color='green', bold=True)
         ncctdlabel.setToolTip(
             _("Diameters of the tools, separated by comma.\n"
               "The value of the diameter has to use the dot decimals separator.\n"

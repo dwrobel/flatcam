@@ -164,7 +164,7 @@ class CopyEditorUI:
         grid0.addWidget(separator_line, 4, 0, 1, 2)
 
         # Type of Array
-        self.mode_label = FCLabel('<b>%s:</b>' % _("Mode"))
+        self.mode_label = FCLabel('%s:' % _("Mode"), bold=True)
         self.mode_label.setToolTip(
             _("Single copy or special (array of copies)")
         )

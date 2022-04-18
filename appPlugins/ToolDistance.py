@@ -764,15 +764,20 @@ class Distance(AppTool):
         if settings.contains("theme"):
             theme = settings.value('theme', type=str)
         else:
-            theme = 'white'
+            theme = 'light'
+
+        if settings.contains("dark_canvas"):
+            dark_canvas = settings.value('dark_canvas', type=bool)
+        else:
+            dark_canvas = True
 
         if self.app.use_3d_engine:
-            if theme == 'white':
+            if theme == 'light' and not dark_canvas:
                 color = '#000000FF'
             else:
                 color = '#FFFFFFFF'
         else:
-            if theme == 'white':
+            if theme == 'light' and not dark_canvas:
                 color = '#000000'
             else:
                 color = '#FFFFFF'
@@ -958,7 +963,7 @@ class DistanceUI:
         res_grid.addWidget(separator_line, 8, 0, 1, 3)
 
         # Distance
-        self.total_distance_label = FCLabel("<b>%s:</b>" % _('DISTANCE'))
+        self.total_distance_label = FCLabel('%s:' % _('DISTANCE'), bold=True)
         self.total_distance_label.setToolTip(_("This is the point to point Euclidian distance."))
 
         self.total_distance_entry = FCEntry()

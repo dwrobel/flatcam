@@ -4054,7 +4054,7 @@ class AppExcEditorUI:
         self.name_box.addWidget(self.name_entry)
 
         # Tools Drills Table Title
-        self.tools_table_label = FCLabel("<b>%s</b>" % _('Tools Table'))
+        self.tools_table_label = FCLabel('%s' % _('Tools Table'), bold=True)
         self.tools_table_label.setToolTip(
             _("Tools in this Excellon object\n"
               "when are used for drilling.")
@@ -4091,7 +4091,7 @@ class AppExcEditorUI:
         self.ui_vertical_lay.addWidget(separator_line)
 
         # Add a new Tool
-        self.addtool_label = FCLabel('<b>%s</b>' % _('Add/Delete Tool'))
+        self.addtool_label = FCLabel('%s' % _('Add/Delete Tool'), bold=True)
         self.addtool_label.setToolTip(
             _("Add/Delete a tool to the tool list\n"
               "for this Excellon object.")
@@ -4157,7 +4157,7 @@ class AppExcEditorUI:
         self.resize_grid.setContentsMargins(0, 0, 0, 0)
         self.resize_frame.setLayout(self.resize_grid)
 
-        self.drillresize_label = FCLabel('<b>%s</b>' % _("Resize Tool"))
+        self.drillresize_label = FCLabel('%s' % _("Resize Tool"), bold=True)
         self.drillresize_label.setToolTip(
             _("Resize a drill or a selection of drills.")
         )
@@ -4212,7 +4212,7 @@ class AppExcEditorUI:
         self.array_frame.setLayout(self.array_grid)
 
         # Type of Drill Array
-        self.drill_array_label = FCLabel('<b>%s</b>' % _("Add Drill Array"))
+        self.drill_array_label = FCLabel('%s' % _("Add Drill Array"), bold=True)
         self.drill_array_label.setToolTip(
             _("Add an array of drills (linear or circular array)")
         )
@@ -4352,7 +4352,7 @@ class AppExcEditorUI:
         self.slot_frame.setLayout(self.slot_grid)
 
         # Slot Tile Label
-        self.slot_label = FCLabel('<b>%s</b>' % _("Slot Parameters"))
+        self.slot_label = FCLabel('%s' % _("Slot Parameters"), bold=True)
         self.slot_label.setToolTip(
             _("Parameters for adding a slot (hole with oval shape)\n"
               "either single or as an part of an array.")
@@ -4424,7 +4424,7 @@ class AppExcEditorUI:
         self.slot_array_frame.setLayout(self.slot_array_grid)
 
         # Slot Array Title
-        self.slot_array_label = FCLabel('<b>%s</b>' % _("Slot Array Parameters"))
+        self.slot_array_label = FCLabel('%s' % _("Slot Array Parameters"), bold=True)
         self.slot_array_label.setToolTip(
             _("Parameters for the array of slots (linear or circular array)")
         )

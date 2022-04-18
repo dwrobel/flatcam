@@ -73,8 +73,8 @@ class PreferencesUIManager(QtCore.QObject):
             "global_tpdf_rmargin": self.ui.general_pref_form.general_app_group.rmargin_entry,
 
             # General GUI Preferences
-            "global_theme": self.ui.general_pref_form.general_gui_group.theme_radio,
-            "global_gray_icons": self.ui.general_pref_form.general_gui_group.gray_icons_cb,
+            "global_appearance": self.ui.general_pref_form.general_gui_group.appearance_radio,
+            "global_dark_canvas": self.ui.general_pref_form.general_gui_group.dark_canvas_cb,
             "global_layout": self.ui.general_pref_form.general_gui_group.layout_combo,
             "global_hover_shape": self.ui.general_pref_form.general_gui_group.hover_cb,
             "global_selection_shape": self.ui.general_pref_form.general_gui_group.selection_cb,
@@ -1064,20 +1064,26 @@ class PreferencesUIManager(QtCore.QObject):
         # make sure we update the self.current_defaults dict used to undo changes to self.defaults
         self.defaults.current_defaults.update(self.defaults)
 
-        # deal with theme change
-        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
-        if theme_settings.contains("theme"):
-            theme = theme_settings.value('theme', type=str)
+        # deal with appearance change
+        appearance_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        if appearance_settings.contains("appearance"):
+            appearance = appearance_settings.value('appearance', type=str)
         else:
-            theme = 'white'
+            appearance = None
+
+        if appearance_settings.contains("dark_canvas"):
+            dark_canvas = appearance_settings.value('dark_canvas', type=bool)
+        else:
+            dark_canvas = None
 
         should_restart = False
-        theme_new_val = self.ui.general_pref_form.general_gui_group.theme_radio.get_value()
+        appearance_new_val = self.ui.general_pref_form.general_gui_group.appearance_radio.get_value()
+        dark_canvas_new_val = self.ui.general_pref_form.general_gui_group.dark_canvas_cb.get_value()
 
         ge = self.defaults["global_graphic_engine"]
         ge_val = self.ui.general_pref_form.general_app_group.ge_radio.get_value()
 
-        if theme_new_val != theme or ge != ge_val:
+        if appearance_new_val != appearance or ge != ge_val or dark_canvas_new_val != dark_canvas:
             msgbox = FCMessageBox(parent=self.ui)
             title = _("Application will restart")
             txt = _("Are you sure you want to continue?")
@@ -1094,17 +1100,24 @@ class PreferencesUIManager(QtCore.QObject):
             msgbox.exec()
             response = msgbox.clickedButton()
 
-            if theme_new_val != theme:
+            if appearance_new_val != appearance:
                 if response == bt_yes:
-                    theme_settings.setValue('theme', theme_new_val)
-
-                    # This will write the setting to the platform specific storage.
-                    del theme_settings
-
+                    appearance_settings.setValue('appearance', appearance_new_val)
                     should_restart = True
                 else:
-                    self.ui.general_pref_form.general_gui_group.theme_radio.set_value(theme)
-            else:
+                    self.ui.general_pref_form.general_gui_group.appearance_radio.set_value(appearance)
+
+            if dark_canvas_new_val != dark_canvas:
+                if response == bt_yes:
+                    appearance_settings.setValue('dark_canvas', dark_canvas_new_val)
+                    should_restart = True
+                else:
+                    self.ui.general_pref_form.general_gui_group.dark_canvas_cb.set_value(dark_canvas)
+
+            # This will write the setting to the platform specific storage.
+            del appearance_settings
+
+            if ge != ge_val:
                 if response == bt_yes:
                     self.defaults["global_graphic_engine"] = ge_val
                     should_restart = True

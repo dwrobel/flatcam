@@ -7472,4 +7472,3 @@ Previously added features by Dennis
 - Groups in Project view.
 - Pan view by dragging in visualizer window with pressed MMB.
 - OpenGL-based visualizer.
-

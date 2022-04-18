@@ -34,7 +34,7 @@ class FAGcoPrefGroupUI(OptionsGroupUI):
         hlay0.addWidget(self.del_all_btn)
 
         # ## G-Code associations
-        self.gco_list_label = FCLabel("<b>%s:</b>" % _("Extensions list"))
+        self.gco_list_label = FCLabel('%s:' % _("Extensions list"), bold=True)
         self.gco_list_label.setToolTip(
             _("List of file extensions to be\n"
               "associated with FlatCAM.")

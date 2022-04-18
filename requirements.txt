@@ -44,3 +44,6 @@ pyqtdarktheme
 
 gdal
 rasterio
+
+# To detect OS dark mode
+darkdetect

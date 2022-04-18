@@ -2173,7 +2173,7 @@ class PunchUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid1.addWidget(separator_line, 2, 0, 1, 2)
 
-        self.exc_label = FCLabel('<b>%s</b>' % _("Excellon"))
+        self.exc_label = FCLabel('%s' % _("Excellon"), bold=True)
         self.exc_label.setToolTip(
             _("Remove the geometry of Excellon from the Gerber to create the holes in pads.")
         )
@@ -2188,7 +2188,7 @@ class PunchUI:
         grid1.addWidget(self.exc_combo, 6, 0, 1, 2)
 
         # Fixed Dia
-        self.fixed_label = FCLabel('<b>%s</b>' % _("Fixed Diameter"))
+        self.fixed_label = FCLabel('%s' % _("Fixed Diameter"), bold=True)
         grid1.addWidget(self.fixed_label, 8, 0, 1, 2)
 
         # Diameter value
@@ -2216,7 +2216,7 @@ class PunchUI:
         self.ring_frame.setLayout(self.ring_box)
 
         # Annular Ring value
-        self.ring_label = FCLabel('<b>%s</b>' % _("Fixed Annular Ring"))
+        self.ring_label = FCLabel('%s' % _("Fixed Annular Ring"), bold=True)
         self.ring_label.setToolTip(
             _("The size of annular ring.\n"
               "The copper sliver between the hole exterior\n"
@@ -2295,7 +2295,7 @@ class PunchUI:
         # #############################################################################################################
 
         # Proportional value
-        self.prop_label = FCLabel('<b>%s</b>' % _("Proportional Diameter"))
+        self.prop_label = FCLabel('%s' % _("Proportional Diameter"), bold=True)
         grid1.addWidget(self.prop_label, 14, 0, 1, 2)
 
         # Diameter value
