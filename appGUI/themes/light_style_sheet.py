@@ -715,7 +715,8 @@ QToolBox::tab:selected:disabled {
 QAbstractScrollArea {
     selection-background-color: #4ca6e5;
     selection-color: #4d5157;
-    margin: 1px;
+    margin: 0px;
+    padding: 0px, 0px, 0px, 0px;
 }
 QAbstractScrollArea:disabled {
     selection-background-color: #0081db;
@@ -776,7 +777,7 @@ QAbstractItemView QAbstractSpinBox,
 QAbstractItemView QComboBox,
 QAbstractItemView QAbstractButton {
     padding: 0;
-    margin: 1px;
+    margin: 0px;
 }
 QTreeView::branch {
     border-image: url(${path}/themes/light/svg/vertical_line__guides-stroke-inactive.svg) 0;
@@ -833,7 +834,7 @@ QHeaderView {
 QHeaderView::section {
     background: #dadce0;
     text-align: left;
-    padding: 0 4px;
+    padding: 0 0px;
     border: none;
 }
 QHeaderView::section:horizontal:on,
