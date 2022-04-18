@@ -3041,7 +3041,7 @@ class PaintUI:
               "L = laser"))
 
         # Tool Order
-        self.order_label = FCLabel('<b>%s:</b>' % _('Tool order'))
+        self.order_label = FCLabel('%s:' % _('Tool order'), bold=True)
         self.order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
                                       "'Default' --> means that the used order is the one in the tool table\n"
                                       "'Forward' --> means that the tools will be ordered from small to big\n"
@@ -3071,7 +3071,7 @@ class PaintUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         new_tool_grid.addWidget(separator_line, 0, 0, 1, 2)
 
-        self.tool_sel_label = FCLabel('<b>%s</b>' % _('Add from DB'))
+        self.tool_sel_label = FCLabel('%s' % _('Add from DB'), bold=True)
         new_tool_grid.addWidget(self.tool_sel_label, 2, 0, 1, 2)
 
         # ### Tool Diameter ####

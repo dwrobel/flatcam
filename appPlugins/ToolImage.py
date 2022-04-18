@@ -346,7 +346,7 @@ class ImageUI:
         # Type of image interpretation
         self.image_type = RadioSet([{'label': 'B/W', 'value': 'black'},
                                     {'label': 'Color', 'value': 'color'}])
-        self.image_type_label = FCLabel("<b>%s:</b>" % _('Image type'))
+        self.image_type_label = FCLabel('%s:' % _('Image type'), bold=True)
         self.image_type_label.setToolTip(
             _("Choose a method for the image interpretation.\n"
               "B/W means a black & white image. Color means a colored image.")

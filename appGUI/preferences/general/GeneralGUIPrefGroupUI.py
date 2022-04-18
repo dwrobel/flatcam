@@ -35,7 +35,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         par_frame.setLayout(grid0)
 
         # Theme selection
-        self.appearance_label = FCLabel('<b>%s</b>' % _('Theme'))
+        self.appearance_label = FCLabel('%s' % _('Theme'), bold=True)
         self.appearance_label.setToolTip(
             _("Select a theme for the application.\n"
               "It will theme the plot area.")
@@ -161,7 +161,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         color_frame.setLayout(grid1)
 
         # Plot Selection (left - right) Color
-        self.sel_lr_label = FCLabel('<b>%s</b>' % _('Left-Right Selection Color'))
+        self.sel_lr_label = FCLabel('%s' % _('Left-Right Selection Color'), bold=True)
         grid1.addWidget(self.sel_lr_label, 0, 0, 1, 2)
 
         self.sl_color_label = FCLabel('%s:' % _('Outline'))
@@ -201,7 +201,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(separator_line, 8, 0, 1, 2)
 
         # Plot Selection (left - right) Color
-        self.sel_rl_label = FCLabel('<b>%s</b>' % _('Right-Left Selection Color'))
+        self.sel_rl_label = FCLabel('%s' % _('Right-Left Selection Color'), bold=True)
         grid1.addWidget(self.sel_rl_label, 10, 0, 1, 2)
 
         # Plot Selection (right - left) Line Color
@@ -246,7 +246,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # ----------------------- Editor Color -----------------------------
         # ------------------------------------------------------------------
 
-        self.editor_color_label = FCLabel('<b>%s</b>' % _('Editor Color'))
+        self.editor_color_label = FCLabel('%s' % _('Editor Color'), bold=True)
         grid1.addWidget(self.editor_color_label, 20, 0, 1, 2)
 
         # Editor Draw Color
@@ -278,7 +278,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # ----------------------- Project Settings -----------------------------
         # ------------------------------------------------------------------
         # Light Theme
-        self.proj_settings_l_label = FCLabel('<b>%s</b> - %s' % (_('Project Items Color'), _("Light")))
+        self.proj_settings_l_label = FCLabel('%s' % _("Light"), bold=True)
         grid1.addWidget(self.proj_settings_l_label, 28, 0, 1, 2)
 
         # Project Tab items color
@@ -310,7 +310,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(separator_line, 33, 0, 1, 2)
 
         # Dark Theme
-        self.proj_settings_d_label = FCLabel('<b>%s</b> - %s' % (_('Project Items Color'), _("Dark")))
+        self.proj_settings_d_label = FCLabel('%s' % _("Dark"), bold=True)
         grid1.addWidget(self.proj_settings_d_label, 34, 0, 1, 2)
 
         # Project Tab items color

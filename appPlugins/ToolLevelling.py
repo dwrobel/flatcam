@@ -1794,7 +1794,7 @@ class LevelUI:
         grid0 = GLay(v_spacing=5, h_spacing=3)
         self.al_box.addLayout(grid0)
 
-        self.al_title = FCLabel('<b>%s</b>' % _("Probe Points Table"))
+        self.al_title = FCLabel('%s' % _("Probe Points Table"), bold=True)
         self.al_title.setToolTip(_("Generate GCode that will obtain the height map"))
 
         self.show_al_table = FCCheckBox(_("Show"))
@@ -1894,7 +1894,7 @@ class LevelUI:
         param_grid.addWidget(separator_line, 6, 0, 1, 2)
 
         # AUTOLEVELL MODE
-        al_mode_lbl = FCLabel('<b>%s</b>:' % _("Mode"))
+        al_mode_lbl = FCLabel('%s' % _("Mode"), bold=True)
         al_mode_lbl.setToolTip(_("Choose a mode for height map generation.\n"
                                  "- Manual: will pick a selection of probe points by clicking on canvas\n"
                                  "- Grid: will automatically generate a grid of probe points"))

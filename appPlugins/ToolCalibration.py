@@ -767,7 +767,7 @@ class CalibrationUI:
         grid_lay = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
         self.layout.addLayout(grid_lay)
 
-        self.gcode_title_label = FCLabel('<b>%s:</b>' % _('Parameters'))
+        self.gcode_title_label = FCLabel('%s:' % _('Parameters'), bold=True)
         self.gcode_title_label.setToolTip(
             _("Parameters used when creating the GCode in this tool.")
         )
@@ -873,7 +873,7 @@ class CalibrationUI:
 
         grid_lay.addWidget(FCLabel(''), 9, 0, 1, 3)
 
-        step_1 = FCLabel('<b>%s</b>' % _("STEP 1: Acquire Calibration Points"))
+        step_1 = FCLabel('%s' % _("STEP 1: Acquire Calibration Points"), bold=True)
         step_1.setToolTip(
             _("Pick four points by clicking on canvas.\n"
               "Those four points should be in the four\n"
@@ -881,7 +881,7 @@ class CalibrationUI:
         )
         grid_lay.addWidget(step_1, 10, 0, 1, 3)
 
-        self.cal_source_lbl = FCLabel("<b>%s:</b>" % _("Source Type"))
+        self.cal_source_lbl = FCLabel('%s:' % _("Source Type"), bold=True)
         self.cal_source_lbl.setToolTip(_("The source of calibration points.\n"
                                          "It can be:\n"
                                          "- Object -> click a hole geo for Excellon or a pad for Gerber\n"
@@ -918,7 +918,7 @@ class CalibrationUI:
         grid_lay.addWidget(self.object_label, 13, 0, 1, 3)
         grid_lay.addWidget(self.object_combo, 14, 0, 1, 3)
 
-        self.points_table_label = FCLabel('<b>%s</b>' % _('Calibration Points'))
+        self.points_table_label = FCLabel('%s' % _('Calibration Points'), bold=True)
         self.points_table_label.setToolTip(
             _("Contain the expected calibration points and the\n"
               "ones measured.")
@@ -1090,7 +1090,7 @@ class CalibrationUI:
         grid_lay.addWidget(FCLabel(''), 19, 0)
 
         # STEP 2 #
-        step_2 = FCLabel('<b>%s</b>' % _("STEP 2: Verification GCode"))
+        step_2 = FCLabel('%s' % _("STEP 2: Verification GCode"), bold=True)
         step_2.setToolTip(
             _("Generate GCode file to locate and align the PCB by using\n"
               "the four points acquired above.\n"
@@ -1129,7 +1129,7 @@ class CalibrationUI:
         grid_lay.addWidget(FCLabel(''), 23, 0, 1, 3)
 
         # STEP 3 #
-        step_3 = FCLabel('<b>%s</b>' % _("STEP 3: Adjustments"))
+        step_3 = FCLabel('%s' % _("STEP 3: Adjustments"), bold=True)
         step_3.setToolTip(
             _("Calculate Scale and Skew factors based on the differences (delta)\n"
               "found when checking the PCB pattern. The differences must be filled\n"
@@ -1160,7 +1160,7 @@ class CalibrationUI:
         grid_lay.addWidget(FCLabel(''), 27, 0, 1, 3)
 
         # STEP 4 #
-        step_4 = FCLabel('<b>%s</b>' % _("STEP 4: Adjusted GCode"))
+        step_4 = FCLabel('%s' % _("STEP 4: Adjusted GCode"), bold=True)
         step_4.setToolTip(
             _("Generate verification GCode file adjusted with\n"
               "the factors above.")
@@ -1241,7 +1241,7 @@ class CalibrationUI:
                                       """)
         grid_lay.addWidget(self.skew_button, 34, 0, 1, 3)
 
-        # final_factors_lbl = FCLabel('<b>%s</b>' % _("Final Factors"))
+        # final_factors_lbl = FCLabel('%s' % _("Final Factors"), bold=True)
         # final_factors_lbl.setToolTip(
         #     _("Generate verification GCode file adjusted with\n"
         #       "the factors above.")
@@ -1323,7 +1323,7 @@ class CalibrationUI:
         grid_lay.addWidget(FCLabel(''), 44, 0, 1, 3)
 
         # STEP 5 #
-        step_5 = FCLabel('<b>%s</b>' % _("STEP 5: Calibrate FlatCAM Objects"))
+        step_5 = FCLabel('%s' % _("STEP 5: Calibrate FlatCAM Objects"), bold=True)
         step_5.setToolTip(
             _("Adjust the FlatCAM objects\n"
               "with the factors determined and verified above.")

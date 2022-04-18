@@ -4184,7 +4184,7 @@ class MillingUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         new_tool_grid.addWidget(separator_line, 0, 0, 1, 2)
 
-        self.tool_sel_label = FCLabel('<b>%s</b>' % _("Add from DB"))
+        self.tool_sel_label = FCLabel('%s' % _("Add from DB"), bold=True)
         new_tool_grid.addWidget(self.tool_sel_label, 2, 0, 1, 2)
 
         self.addtool_entry_lbl = FCLabel('%s:' % _('Tool Dia'))

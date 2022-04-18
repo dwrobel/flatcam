@@ -39,7 +39,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         par_frame.setLayout(par_grid)
 
         # Tool Dias
-        isotdlabel = FCLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
+        isotdlabel = FCLabel('%s:' % _('Tools Dia'), color='green', bold=True)
         isotdlabel.setToolTip(
             _("Diameters of the tools, separated by comma.\n"
               "The value of the diameter has to use the dot decimals separator.\n"

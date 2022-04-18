@@ -503,7 +503,7 @@ class AlignUI:
         par_frame.setLayout(grid2)
 
         # Alignment Type
-        self.a_type_lbl = FCLabel('<b>%s:</b>' % _("Alignment Type"))
+        self.a_type_lbl = FCLabel('%s:' % _("Alignment Type"), bold=True)
         self.a_type_lbl.setToolTip(
             _("The type of alignment can be:\n"
               "- Single Point -> it require a single point of sync, the action will be a translation\n"

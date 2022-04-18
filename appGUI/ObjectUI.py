@@ -197,7 +197,7 @@ class GerberObjectUI(ObjectUI):
         plot_grid.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         gen_frame.setLayout(plot_grid)
 
-        self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))
+        self.plot_options_label = FCLabel('%s:' % _("Plot Options"), bold=True)
 
         plot_grid.addWidget(self.plot_options_label, 0, 0)
 
@@ -219,7 +219,7 @@ class GerberObjectUI(ObjectUI):
         self.name_hlay = QtWidgets.QHBoxLayout()
         plot_grid.addLayout(self.name_hlay, 1, 0, 1, 3)
 
-        name_label = FCLabel("<b>%s:</b>" % _("Name"))
+        name_label = FCLabel('%s:' % _("Name"), bold=True)
         self.name_entry = FCEntry()
         self.name_entry.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.name_hlay.addWidget(name_label)
@@ -482,7 +482,7 @@ class GerberObjectUI(ObjectUI):
         # Non-Copper Regions Frame
         # #############################################################################################################
         # ## Non-copper regions
-        self.noncopper_label = FCLabel("<b>%s</b>" % _("Non-copper regions"))
+        self.noncopper_label = FCLabel('%s' % _("Non-copper regions"), bold=True)
         self.noncopper_label.setToolTip(
             _("Create polygons covering the\n"
               "areas without copper on the PCB.\n"
@@ -530,7 +530,7 @@ class GerberObjectUI(ObjectUI):
         # Bounding Box Frame
         # #############################################################################################################
         # ## Bounding box
-        self.boundingbox_label = FCLabel('<b>%s</b>' % _('Bounding Box'))
+        self.boundingbox_label = FCLabel('%s' % _('Bounding Box'), bold=True)
         self.boundingbox_label.setToolTip(
             _("Create a geometry surrounding the Gerber object.\n"
               "Square shape.")
@@ -617,7 +617,7 @@ class ExcellonObjectUI(ObjectUI):
         gen_frame.setLayout(plot_grid)
 
         # Plot options
-        self.plot_options_label = FCLabel("<b>%s: </b>" % _("Plot Options"))
+        self.plot_options_label = FCLabel('%s: ' % _("Plot Options"), bold=True)
 
         # Solid CB
         self.solid_cb = FCCheckBox(label=_('Solid'))
@@ -638,7 +638,7 @@ class ExcellonObjectUI(ObjectUI):
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
 
-        name_label = FCLabel("<b>%s: </b>" % _("Name"))
+        name_label = FCLabel('%s: ' % _("Name"), bold=True)
         self.name_entry = FCEntry()
         self.name_entry.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.name_hlay.addWidget(name_label)
@@ -844,7 +844,7 @@ class ExcellonObjectUI(ObjectUI):
         # #############################################################################################################
         # Milling Drill Holes Frame
         # #############################################################################################################
-        self.mill_hole_label = FCLabel('<b>%s</b>' % _('Milling Geometry'))
+        self.mill_hole_label = FCLabel('%s' % _('Milling Geometry'), bold=True)
         self.mill_hole_label.setToolTip(
             _("Create Geometry for milling holes.\n"
               "Select from the Tools Table above the hole dias to be\n"
@@ -953,7 +953,7 @@ class GeometryObjectUI(ObjectUI):
         plot_grid.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         gen_frame.setLayout(plot_grid)
 
-        self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))
+        self.plot_options_label = FCLabel('%s:' % _("Plot Options"), bold=True)
         self.plot_options_label.setMinimumWidth(90)
 
         plot_grid.addWidget(self.plot_options_label, 0, 0)
@@ -970,7 +970,7 @@ class GeometryObjectUI(ObjectUI):
         self.name_hlay = QtWidgets.QHBoxLayout()
         plot_grid.addLayout(self.name_hlay, 2, 0, 1, 3)
 
-        name_label = FCLabel("<b>%s:</b>" % _("Name"))
+        name_label = FCLabel('%s:' % _("Name"), bold=True)
         self.name_entry = FCEntry()
         self.name_entry.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.name_hlay.addWidget(name_label)
@@ -1033,7 +1033,7 @@ class GeometryObjectUI(ObjectUI):
         self.tt_frame.setLayout(tt_grid)
 
         # ### Tools ####
-        self.tools_table_label = FCLabel('<b>%s:</b>' % _('Tools Table'))
+        self.tools_table_label = FCLabel('%s:' % _('Tools Table'), bold=True)
         self.tools_table_label.setToolTip(
             _("Tools in this Geometry object used for cutting.\n"
               "The 'Offset' entry will set an offset for the cut.\n"
@@ -1182,7 +1182,7 @@ class GeometryObjectUI(ObjectUI):
         # Simplification Frame
         # #############################################################################################################
         # Simplification Title
-        simplif_lbl = FCLabel('<b>%s</b>:' % _("Simplification"))
+        simplif_lbl = FCLabel('%s' % _("Simplification"), bold=True)
         simplif_lbl.setToolTip(
             _("Simplify a geometry by reducing its vertex points number.")
         )
@@ -1296,7 +1296,7 @@ class CNCObjectUI(ObjectUI):
         gen_frame.setLayout(grid0)
 
         # Plot Options
-        self.cncplot_method_label = FCLabel("<b>%s: </b>" % _("Plot Options"))
+        self.cncplot_method_label = FCLabel('%s: ' % _("Plot Options"), bold=True)
         self.cncplot_method_label.setToolTip(
             _(
                 "This selects the kind of geometries on the canvas to plot.\n"
@@ -1319,7 +1319,7 @@ class CNCObjectUI(ObjectUI):
         grid0.addLayout(self.name_hlay, 2, 0, 1, 3)
 
         # ## Object name
-        name_label = FCLabel("<b>%s: </b>" % _("Name"))
+        name_label = FCLabel('%s: ' % _("Name"), bold=True)
         self.name_entry = FCEntry()
         self.name_entry.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
 
@@ -1387,7 +1387,7 @@ class CNCObjectUI(ObjectUI):
         grid_par.addWidget(self.estimated_frame, 4, 0, 1, 3)
 
         # Travelled Distance
-        self.t_distance_label = FCLabel("<b>%s:</b>" % _("Travelled distance"))
+        self.t_distance_label = FCLabel('%s:' % _("Travelled distance"), bold=True)
         self.t_distance_label.setToolTip(
             _("This is the total travelled distance on X-Y plane.\n"
               "In current units.")
@@ -1400,7 +1400,7 @@ class CNCObjectUI(ObjectUI):
         estimated_grid.addWidget(self.units_label, 0, 2)
 
         # Estimated Time
-        self.t_time_label = FCLabel("<b>%s:</b>" % _("Estimated time"))
+        self.t_time_label = FCLabel('%s:' % _("Estimated time"), bold=True)
         self.t_time_label.setToolTip(
             _("This is the estimated time to do the routing/drilling,\n"
               "without the time spent in ToolChange events.")
@@ -1456,7 +1456,7 @@ class CNCObjectUI(ObjectUI):
         grid1.addLayout(hlay, 0, 0, 1, 2)
 
         # CNC Tools Table for plot
-        self.cnc_tools_table_label = FCLabel('<b>%s</b>' % _('CNC Tools Table'))
+        self.cnc_tools_table_label = FCLabel('%s' % _('CNC Tools Table'), bold=True)
         self.cnc_tools_table_label.setToolTip(
             _(
                 "Tools in this CNCJob object used for cutting.\n"
@@ -1602,7 +1602,7 @@ class ScriptObjectUI(ObjectUI):
         self.name_hlay = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(self.name_hlay)
 
-        name_label = FCLabel("<b>%s:</b>" % _("Name"))
+        name_label = FCLabel('%s:' % _("Name"), bold=True)
         self.name_entry = FCEntry()
         self.name_entry.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.name_hlay.addWidget(name_label)
@@ -1669,7 +1669,7 @@ class DocumentObjectUI(ObjectUI):
         self.name_hlay = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(self.name_hlay)
 
-        name_label = FCLabel("<b>%s:</b>" % _("Name"))
+        name_label = FCLabel('%s:' % _("Name"), bold=True)
         self.name_entry = FCEntry()
         self.name_entry.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.name_hlay.addWidget(name_label)

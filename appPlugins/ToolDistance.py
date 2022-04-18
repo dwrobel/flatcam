@@ -963,7 +963,7 @@ class DistanceUI:
         res_grid.addWidget(separator_line, 8, 0, 1, 3)
 
         # Distance
-        self.total_distance_label = FCLabel("<b>%s:</b>" % _('DISTANCE'))
+        self.total_distance_label = FCLabel('%s:' % _('DISTANCE'), bold=True)
         self.total_distance_label.setToolTip(_("This is the point to point Euclidian distance."))
 
         self.total_distance_entry = FCEntry()

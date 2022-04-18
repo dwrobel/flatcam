@@ -408,7 +408,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Parameters Frame
         # #############################################################################################################
-        self.par_label = FCLabel('<b><font color="%s">%s</font></b>' % (self.app.theme_safe_color('blue'), _('Parameters')))
+        self.par_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.layout.addWidget(self.par_label)
 
         par_frame = FCFrame()
