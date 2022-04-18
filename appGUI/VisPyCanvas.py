@@ -141,6 +141,8 @@ class Camera(scene.PanZoomCamera):
         # Default mouse button for panning is RMB
         self.pan_button_setting = "2"
 
+        self.zoom_callback = lambda *args: None
+
     def zoom(self, factor, center=None):
         center = center if (center is not None) else self.center
         super(Camera, self).zoom(factor, center)
@@ -183,6 +185,9 @@ class Camera(scene.PanZoomCamera):
                 center = self._scene_transform.imap(event.pos)
                 scale = (1 + self.zoom_factor) ** (-event.delta[1] * 30)
                 self.limited_zoom(scale, center)
+
+            if self.zoom_callback:
+                self.zoom_callback()
             event.handled = True
 
         elif event.type == 'mouse_move':

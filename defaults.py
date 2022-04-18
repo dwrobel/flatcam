@@ -123,10 +123,15 @@ class AppDefaults:
         "global_sel_line": '#0000ffbf',
         "global_alt_sel_fill": '#BBF268BF',
         "global_alt_sel_line": '#006E20BF',
-        "global_draw_color": '#FF000080',
+        "global_draw_color": '#00000080',
         "global_sel_draw_color": '#0000FF80',
-        "global_proj_item_color": '#000000FF',
-        "global_proj_item_dis_color": '#b7b7cbFF',
+
+        # Project Items colors
+        "global_proj_item_color_light": '#000000FF',
+        "global_proj_item_dis_color_light": '#b7b7cbFF',
+        "global_proj_item_color_dark": '#4385C8FF',
+        "global_proj_item_dis_color_dark": '#61616CFF',
+
         "global_project_autohide": True,
 
         # General App Settings

@@ -22,7 +22,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.decimals = app.decimals
         self.options = app.options
 
-        self.param_lbl = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.param_lbl = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.layout.addWidget(self.param_lbl)
 
         # #############################################################################################################
@@ -146,7 +146,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Grid1 Frame
         # #############################################################################################################
-        self.color_lbl = FCLabel('<span style="color:teal;"><b>%s</b></span>' % _("Colors"))
+        self.color_lbl = FCLabel('%s' % _("Colors"), color='teal', bold=True)
         self.layout.addWidget(self.color_lbl)
 
         color_frame = FCFrame()
@@ -272,29 +272,59 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # ------------------------------------------------------------------
         # ----------------------- Project Settings -----------------------------
         # ------------------------------------------------------------------
-
-        self.proj_settings_label = FCLabel('<b>%s</b>' % _('Project Items Color'))
-        grid1.addWidget(self.proj_settings_label, 28, 0, 1, 2)
+        # Light Theme
+        self.proj_settings_l_label = FCLabel('<b>%s</b> - %s' % (_('Project Items Color'), _("Light")))
+        grid1.addWidget(self.proj_settings_l_label, 28, 0, 1, 2)
 
         # Project Tab items color
-        self.proj_color_label = FCLabel('%s:' % _('Enabled'))
-        self.proj_color_label.setToolTip(
-            _("Set the color of the items in Project Tab Tree.")
+        self.proj_color_l_label = FCLabel('%s:' % _('Enabled'))
+        self.proj_color_l_label.setToolTip(
+            '%s %s' % (_("Set the color of the items in Project Tab Tree."), _("Light Theme."))
         )
-        self.proj_color_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
+        self.proj_color_light_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
 
-        grid1.addWidget(self.proj_color_label, 30, 0)
-        grid1.addWidget(self.proj_color_entry, 30, 1)
+        grid1.addWidget(self.proj_color_l_label, 30, 0)
+        grid1.addWidget(self.proj_color_light_entry, 30, 1)
 
-        self.proj_color_dis_label = FCLabel('%s:' % _('Disabled'))
-        self.proj_color_dis_label.setToolTip(
-            _("Set the color of the items in Project Tab Tree,\n"
-              "for the case when the items are disabled.")
+        self.proj_color_dis_l_label = FCLabel('%s:' % _('Disabled'))
+        self.proj_color_dis_l_label.setToolTip(
+            '%s %s' % (
+                _("Set the color of the items in Project Tab Tree,\n"
+                  "for the case when the items are disabled."),
+                _("Light Theme."))
         )
-        self.proj_color_dis_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
+        self.proj_color_dis_light_entry = FCColorEntry(icon=QtGui.QIcon(
+            self.app.resource_location + '/set_colors64.png'))
 
-        grid1.addWidget(self.proj_color_dis_label, 32, 0)
-        grid1.addWidget(self.proj_color_dis_entry, 32, 1)
+        grid1.addWidget(self.proj_color_dis_l_label, 32, 0)
+        grid1.addWidget(self.proj_color_dis_light_entry, 32, 1)
+
+        # Dark Theme
+        self.proj_settings_d_label = FCLabel('<b>%s</b> - %s' % (_('Project Items Color'), _("Dark")))
+        grid1.addWidget(self.proj_settings_d_label, 34, 0, 1, 2)
+
+        # Project Tab items color
+        self.proj_color_d_label = FCLabel('%s:' % _('Enabled'))
+        self.proj_color_d_label.setToolTip(
+            '%s %s' % (_("Set the color of the items in Project Tab Tree."), _("Dark Theme."))
+        )
+        self.proj_color_dark_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
+
+        grid1.addWidget(self.proj_color_d_label, 36, 0)
+        grid1.addWidget(self.proj_color_dark_entry, 36, 1)
+
+        self.proj_color_dis_d_label = FCLabel('%s:' % _('Disabled'))
+        self.proj_color_dis_d_label.setToolTip(
+            '%s %s' % (
+                _("Set the color of the items in Project Tab Tree,\n"
+                  "for the case when the items are disabled."),
+                _("Dark Theme."))
+        )
+        self.proj_color_dis_dark_entry = FCColorEntry(icon=QtGui.QIcon(
+            self.app.resource_location + '/set_colors64.png'))
+
+        grid1.addWidget(self.proj_color_dis_d_label, 38, 0)
+        grid1.addWidget(self.proj_color_dis_dark_entry, 38, 1)
 
         GLay.set_common_column_size([grid0, grid1], 0)
 
@@ -330,8 +360,11 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.draw_color_entry.editingFinished.connect(self.on_draw_color_entry)
         self.sel_draw_color_entry.editingFinished.connect(self.on_sel_draw_color_entry)
 
-        self.proj_color_entry.editingFinished.connect(self.on_proj_color_entry)
-        self.proj_color_dis_entry.editingFinished.connect(self.on_proj_color_dis_entry)
+        self.proj_color_light_entry.editingFinished.connect(self.on_proj_color_light_entry)
+        self.proj_color_dis_light_entry.editingFinished.connect(self.on_proj_color_dis_light_entry)
+
+        self.proj_color_dark_entry.editingFinished.connect(self.on_proj_color_dark_entry)
+        self.proj_color_dis_dark_entry.editingFinished.connect(self.on_proj_color_dis_dark_entry)
 
         self.layout_combo.activated.connect(self.app.on_layout)
 
@@ -400,8 +433,14 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
     def on_sel_draw_color_entry(self):
         self.app.options['global_sel_draw_color'] = self.sel_draw_color_entry.get_value()
 
-    def on_proj_color_entry(self):
-        self.app.options['global_proj_item_color'] = self.proj_color_entry.get_value()
+    def on_proj_color_light_entry(self):
+        self.app.options['global_proj_item_color_light'] = self.proj_color_light_entry.get_value()
 
-    def on_proj_color_dis_entry(self):
-        self.app.options['global_proj_item_dis_color'] = self.proj_color_dis_entry.get_value()
+    def on_proj_color_dis_light_entry(self):
+        self.app.options['global_proj_item_dis_color_light'] = self.proj_color_dis_light_entry.get_value()
+
+    def on_proj_color_dark_entry(self):
+        self.app.options['global_proj_item_color_dark'] = self.proj_color_dark_entry.get_value()
+
+    def on_proj_color_dis_dark_entry(self):
+        self.app.options['global_proj_item_dis_color_dark'] = self.proj_color_dis_dark_entry.get_value()

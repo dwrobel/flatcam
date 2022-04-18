@@ -1277,7 +1277,7 @@ class ThievingUI:
         # #############################################################################################################
         # Source Object  Frame
         # #############################################################################################################
-        self.grbobj_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.grbobj_label = FCLabel('%s' % _("Source Object"), color='darkorange', bold=True)
         self.grbobj_label.setToolTip(_("Gerber Object to which will be added a copper thieving."))
         self.tools_box.addWidget(self.grbobj_label)
 
@@ -1296,8 +1296,7 @@ class ThievingUI:
         # #############################################################################################################
         # Thieving Parameters Frame
         # #############################################################################################################
-        self.copper_fill_label = FCLabel('<span style="color:blue;"><b>%s %s</b></span>' %
-                                         (_('Thieving'), _("Parameters")))
+        self.copper_fill_label = FCLabel('%s %s' % (_("Thieving"), _("Parameters")), color='blue', bold=True)
         self.copper_fill_label.setToolTip(_("Parameters used for this tool."))
         self.tools_box.addWidget(self.copper_fill_label)
 
@@ -1591,8 +1590,7 @@ class ThievingUI:
         # #############################################################################################################
         # ## Robber Bar Parameters
         # #############################################################################################################
-        self.robber_bar_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' %
-                                        _('Robber Bar Parameters'))
+        self.robber_bar_label = FCLabel('%s' % _("Robber Bar Parameters"), color='brown', bold=True)
         self.robber_bar_label.setToolTip(
             _("Parameters used for the robber bar.\n"
               "Robber bar = copper border to help in pattern hole plating.")
@@ -1659,14 +1657,13 @@ class ThievingUI:
         # #############################################################################################################
         # Pattern plating Frame
         # #############################################################################################################
-        self.patern_mask_label = FCLabel('<span style="color:purple;"><b>%s</b></span>' %
-                                         _('Pattern Plating Mask'))
+        self.patern_mask_label = FCLabel('%s' % _("Pattern Plating Mask"), color='purple', bold=True)
         self.patern_mask_label.setToolTip(
             _("Generate a mask for pattern plating.")
         )
         self.tools_box.addWidget(self.patern_mask_label)
 
-        self.sm_obj_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.sm_obj_label = FCLabel('%s' % _("Source Object"), color='darkorange', bold=True)
         self.sm_obj_label.setToolTip(
             _("Gerber Object with the soldermask.\n"
               "It will be used as a base for\n"

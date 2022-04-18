@@ -24,7 +24,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # PARAMETERS Frame
         # #############################################################################################################
-        self.panelize_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.panelize_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.panelize_label.setToolTip(
             _("Create an object that contains an array of (x, y) elements,\n"
               "each element is a copy of the source object spaced\n"
@@ -46,7 +46,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
 
         self.spacing_columns_label = FCLabel('%s:' % _("Spacing cols"))
         self.spacing_columns_label.setToolTip(
-            _("Spacing between columns of the desired panel.\n"
+            _("Spacing between columns.\n"
               "In current units.")
         )
         param_grid.addWidget(self.spacing_columns_label, 0, 0)
@@ -60,7 +60,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
 
         self.spacing_rows_label = FCLabel('%s:' % _("Spacing rows"))
         self.spacing_rows_label.setToolTip(
-            _("Spacing between rows of the desired panel.\n"
+            _("Spacing between rows.\n"
               "In current units.")
         )
         param_grid.addWidget(self.spacing_rows_label, 2, 0)
@@ -73,7 +73,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
 
         self.columns_label = FCLabel('%s:' % _("Columns"))
         self.columns_label.setToolTip(
-            _("Number of columns of the desired panel")
+            _("Number of columns")
         )
         param_grid.addWidget(self.columns_label, 4, 0)
         param_grid.addWidget(self.pcolumns, 4, 1)
@@ -85,7 +85,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
 
         self.rows_label = FCLabel('%s:' % _("Rows"))
         self.rows_label.setToolTip(
-            _("Number of rows of the desired panel")
+            _("Number of rows")
         )
         param_grid.addWidget(self.rows_label, 6, 0)
         param_grid.addWidget(self.prows, 6, 1)

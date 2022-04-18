@@ -78,7 +78,7 @@ class ToolTransform(AppTool):
         AppTool.run(self)
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Object Transform"))
+        self.app.ui.notebook.setTabText(2, _("Transformation"))
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+T', **kwargs)
@@ -560,11 +560,11 @@ class ToolTransform(AppTool):
 
 class TransformUI:
     
-    pluginName = _("Object Transform")
+    pluginName = _("Transformation")
     rotateName = _("Rotate")
     skewName = _("Skew/Shear")
     scaleName = _("Scale")
-    flipName = _("Mirror (Flip)")
+    flipName = _("Mirror")
     offsetName = _("Offset")
     bufferName = _("Buffer")
 
@@ -590,7 +590,7 @@ class TransformUI:
         # #############################################################################################################
         # PARAMETERS
         # #############################################################################################################
-        self.transform_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.transform_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.layout.addWidget(self.transform_label)
 
         # #############################################################################################################
@@ -671,7 +671,7 @@ class TransformUI:
         # #############################################################################################################
         # Rotate Frame
         # #############################################################################################################
-        rotate_title_lbl = FCLabel('<span style="color:tomato;"><b>%s</b></span>' % _("Rotate"))
+        rotate_title_lbl = FCLabel('%s' % _("Rotate"), color='tomato', bold=True)
         self.layout.addWidget(rotate_title_lbl)
 
         rot_frame = FCFrame()
@@ -714,7 +714,7 @@ class TransformUI:
         s_t_lay = QtWidgets.QHBoxLayout()
         self.layout.addLayout(s_t_lay)
 
-        skew_title_lbl = FCLabel('<span style="color:teal;"><b>%s</b></span>' % _("Skew"))
+        skew_title_lbl = FCLabel('%s' % _("Skew"), color='teal', bold=True)
         s_t_lay.addWidget(skew_title_lbl)
 
         s_t_lay.addStretch()
@@ -785,7 +785,7 @@ class TransformUI:
         sc_t_lay = QtWidgets.QHBoxLayout()
         self.layout.addLayout(sc_t_lay)
 
-        scale_title_lbl = FCLabel('<span style="color:magenta;"><b>%s</b></span>' % _("Scale"))
+        scale_title_lbl = FCLabel('%s' % _("Scale"), color='magenta', bold=True)
         sc_t_lay.addWidget(scale_title_lbl)
 
         sc_t_lay.addStretch()
@@ -853,7 +853,7 @@ class TransformUI:
         # #############################################################################################################
         # Mirror Frame
         # #############################################################################################################
-        flip_title_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % self.flipName)
+        flip_title_label = FCLabel('%s' % self.flipName, color='brown', bold=True)
         self.layout.addWidget(flip_title_label)
 
         mirror_frame = FCFrame()
@@ -881,7 +881,7 @@ class TransformUI:
         # #############################################################################################################
         # Offset Frame
         # #############################################################################################################
-        offset_title_lbl = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Offset"))
+        offset_title_lbl = FCLabel('%s' % _("Offset"), color='green', bold=True)
         self.layout.addWidget(offset_title_lbl)
 
         off_frame = FCFrame()
@@ -936,7 +936,7 @@ class TransformUI:
         b_t_lay = QtWidgets.QHBoxLayout()
         self.layout.addLayout(b_t_lay)
 
-        buffer_title_lbl = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Buffer"))
+        buffer_title_lbl = FCLabel('%s' % _("Buffer"), color='indigo', bold=True)
         b_t_lay.addWidget(buffer_title_lbl)
 
         b_t_lay.addStretch()

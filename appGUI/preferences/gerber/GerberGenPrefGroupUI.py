@@ -25,7 +25,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         self.options = app.options
 
         # ## Plot options
-        self.plot_options_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Plot Options"))
+        self.plot_options_label = FCLabel('%s' % _("Plot Options"), color='blue', bold=True)
         self.layout.addWidget(self.plot_options_label)
 
         # #############################################################################################################
@@ -77,7 +77,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
 
         # Default format for Gerber
-        self.gerber_default_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Default Values'))
+        self.gerber_default_label = FCLabel('%s' % _("Default Values"), color='green', bold=True)
         self.gerber_default_label.setToolTip(
             _("Those values will be used as fallback values\n"
               "in case that they are not found in the Gerber file.")
@@ -134,7 +134,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Parameters Frame
         # #############################################################################################################
-        self.param_label = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _('Parameters'))
+        self.param_label = FCLabel('%s' % _("Parameters"), color='indigo', bold=True)
         self.layout.addWidget(self.param_label)
 
         par_frame = FCFrame()
@@ -173,7 +173,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         # Layers Frame
         # #############################################################################################################
         # Layers label
-        self.layers_label = FCLabel('<span style="color:magenta;"><b>%s</b></span>' % _('Layers'))
+        self.layers_label = FCLabel('%s' % _("Layers"), color='magenta', bold=True)
         self.layout.addWidget(self.layers_label)
 
         layers_frame = FCFrame()
@@ -220,7 +220,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         # Object Frame
         # #############################################################################################################
         # Gerber Object Color
-        self.gerber_color_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _('Object Color'))
+        self.gerber_color_label = FCLabel('%s' % _("Object Color"), color='darkorange', bold=True)
         self.layout.addWidget(self.gerber_color_label)
 
         obj_frame = FCFrame()

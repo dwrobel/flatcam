@@ -25,7 +25,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         # ------------------------------
         # ## Paint area
         # ------------------------------
-        self.paint_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Parameters'))
+        self.paint_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.paint_label.setToolTip(
             _("Creates tool paths to cover the\n"
               "whole area of a polygon.")
@@ -138,7 +138,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         # Tool Frame
         # #############################################################################################################
         # ### Tools ## ##
-        self.tools_table_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Tool Parameters"))
+        self.tools_table_label = FCLabel('%s' % _("Tool Parameters"), color='green', bold=True)
         self.layout.addWidget(self.tools_table_label)
 
         tt_frame = FCFrame()
@@ -228,7 +228,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # General Parameters Frame
         # #############################################################################################################
-        self.gen_param_label = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Common Parameters"))
+        self.gen_param_label = FCLabel('%s' % _("Common Parameters"), color='indigo', bold=True)
         self.gen_param_label.setToolTip(
             _("Parameters that are common for all tools.")
         )

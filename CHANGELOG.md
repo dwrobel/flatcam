@@ -7,6 +7,56 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+18.04.2022
+
+- in Geometry Editor, in Copy Tool added the 2D copy-as-array feature therefore finishing this editor plugin upgrade
+- updated the FCLabel widget
+- replaced all the FCLabel widgets that have color HTML with the new FCLabel widget that uses parameters for 'color' and weight
+- minor changes
+- added a way to allow patching FCLabel widget colors for certain cases without having to pass them each instance 
+
+17.04.2022
+
+- in Geometry Editor, in Copy Tool - work in progress (adding utility geometry for the array mode)
+- in Geometry Editor, in Copy Tool - linear array utility geometry is working
+- in Geometry Editor, Copy Tool, finished the copy-as-array feature except the 2D array type which was not implemented yet
+
+16.04.2022
+
+- in Geometry Editor, in the Simplification Tool made sure that the selected shape is highlighted
+- in Geometry Editor, in Rectangle Tool added a modification mode where a selected shape (using the SHIFT + click combo) while the tool is active, can be modified
+- in Geometry Editor, in Move Tool and Copy Tool added UI's, move projection and cursor data. Also now require acquiring reference point before the action
+- in Geometry Editor, in Rectangle Tool added cursor data
+- in Geometry Editor, in Circle Tool added UI, cursor data, radius projection and ability to add ellipses
+- in Geometry Editor, in Copy Tool remade the UI and started to add the support for copy-as-array (work in progress)
+
+15.04.2022
+
+- in Geometry Editor moved the simplification feature in its own Editor Tool (plugin)
+- in Geometry Editor the default draw color is now black
+- in Geometry Editor, the Rectangle Editor Tool allows creation of rectangles with the mouse but projecting the length and width dimensions by typing a number (the choice of setting the length or width is based on the direction of the mouse move after setting the first point)
+- in Geometry Editor, the Rectangle Editor Tool has now Ui which allows adding a rectangle by parameters
+
+14.04.2022
+
+- in Geometry Editor added a new feature. While drawing a 'Path' now the user can project a direction by moving the mouse cursor in a certain direction and after that by typing a number or an arithmetic simple expression, a line segment will be drawn in that direction with the specified length from the last point
+- in Geometry Editor for the Path tool but only when using the 3D engine graphic mode, the mouse cursor is followed by position data
+- in Geometry Editor for the Path tool fixed an issue with path projection when changing the grid size while the Path tool is active
+- in Geometry Editor, for Path tool, added UI that close on end of the Path tool action; it displays the projected length which now is kept for as long as it is wanted, allowing for path automation in case of repetitive lengths
+- solved a ZeroDivisionError exception in the Geometry Editor -> Path Tool
+- in Geometry Editor, for Path tool, added the ability to differentiate between creating a multidigit number for the projection and starting a new number (for a new segment)
+- added ability to control the color of the project items for the dark theme too
+- in Geometry Editor, for the Polygon Tool added the UI, the length projection and the cursor data, just like for the Path Tool
+- made sure that some menu entries in the canvas popup menu are hidden when entering into an Editor and restored on exit
+
+13.04.2022
+
+- fixed the display of lines in Distance Plugin when using 'snap to' together with 'multipoint'
+- in Geometry Editor - update (some reformatting and adding shape data)
+- in Geometry Editor - fixed the Explode tool to work on the result of adding Text geometry
+- all the Geometry Editor plugins are moved inside another folder and the UI's are moved into their own class
+- in Geometry Editor made sure that the MultiPolygon shapes (like those made by the Text Tool) will update the coordinates in the UI
+
 7.04.2022
 
 - refactoring code in Distance Plugin and making sure that the measurements are done correctly - work in progress

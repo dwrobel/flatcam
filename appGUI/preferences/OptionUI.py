@@ -275,7 +275,7 @@ class HeadingOptionUI(OptionUI):
         self.color = color if color else ""
 
     def build_heading_widget(self):
-        heading = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (str(self.color), _(self.label_text)))
+        heading = FCLabel('%s' % _(self.label_text), color=str(self.color), bold=True)
         heading.setToolTip(_(self.label_tooltip))
         return heading
 

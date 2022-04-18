@@ -4358,6 +4358,10 @@ class AppGerberEditor(QtCore.QObject):
         self.app.ui.popmenu_edit.setVisible(False)
         self.app.ui.popmenu_save.setVisible(True)
 
+        self.app.ui.pop_menucolor.menuAction().setVisible(False)
+        self.app.ui.popmenu_numeric_move.setVisible(False)
+        self.app.ui.popmenu_move2origin.setVisible(False)
+
         self.app.ui.popmenu_disable.setVisible(False)
         self.app.ui.cmenu_newmenu.menuAction().setVisible(False)
         self.app.ui.popmenu_properties.setVisible(False)
@@ -4409,6 +4413,10 @@ class AppGerberEditor(QtCore.QObject):
         self.app.ui.g_editor_cmenu.menuAction().setVisible(False)
         self.app.ui.e_editor_cmenu.menuAction().setVisible(False)
         self.app.ui.grb_editor_cmenu.menuAction().setVisible(False)
+
+        self.app.ui.pop_menucolor.menuAction().setVisible(True)
+        self.app.ui.popmenu_numeric_move.setVisible(True)
+        self.app.ui.popmenu_move2origin.setVisible(True)
 
         # Show original geometry
         if self.gerber_obj:
@@ -6767,11 +6775,11 @@ class TransformEditorTool(AppTool):
     Inputs to specify how to paint the selected polygons.
     """
 
-    pluginName = _("Transform Tool")
+    pluginName = _("Transformation")
     rotateName = _("Rotate")
     skewName = _("Skew/Shear")
     scaleName = _("Scale")
-    flipName = _("Mirror (Flip)")
+    flipName = _("Mirror")
     offsetName = _("Offset")
     bufferName = _("Buffer")
 
@@ -7217,7 +7225,7 @@ class TransformEditorTool(AppTool):
         AppTool.run(self)
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Transform Tool"))
+        self.app.ui.notebook.setTabText(2, _("Transformation"))
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+T', **kwargs)

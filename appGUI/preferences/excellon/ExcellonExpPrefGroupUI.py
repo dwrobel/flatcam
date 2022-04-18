@@ -23,7 +23,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Export Frame
         # #############################################################################################################
-        self.export_options_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _("Export Options"))
+        self.export_options_label = FCLabel('%s' % _("Export Options"), color='brown', bold=True)
         self.export_options_label.setToolTip(
             _("The parameters set here are used in the file exported\n"
               "when using the File -> Export -> Export Excellon menu entry.")

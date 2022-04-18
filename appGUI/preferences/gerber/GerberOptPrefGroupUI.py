@@ -25,7 +25,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Non-copper Regions Frame
         # #############################################################################################################
-        self.clearcopper_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Non-copper regions"))
+        self.clearcopper_label = FCLabel('%s' % _("Non-copper regions"), color='blue', bold=True)
         self.clearcopper_label.setToolTip(
             _("Create polygons covering the\n"
               "areas without copper on the PCB.\n"
@@ -68,7 +68,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Bounding Box Frame
         # #############################################################################################################
-        self.boundingbox_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _('Bounding Box'))
+        self.boundingbox_label = FCLabel('%s' % _("Bounding Box"), color='brown', bold=True)
         self.layout.addWidget(self.boundingbox_label)
 
         bb_frame = FCFrame()

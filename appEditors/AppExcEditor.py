@@ -2580,6 +2580,10 @@ class AppExcEditor(QtCore.QObject):
         self.app.ui.g_editor_cmenu.menuAction().setVisible(False)
         self.app.ui.grb_editor_cmenu.menuAction().setVisible(False)
 
+        self.app.ui.pop_menucolor.menuAction().setVisible(False)
+        self.app.ui.popmenu_numeric_move.setVisible(False)
+        self.app.ui.popmenu_move2origin.setVisible(False)
+
         # show the UI
         self.ui.drills_frame.show()
 
@@ -2624,6 +2628,10 @@ class AppExcEditor(QtCore.QObject):
         self.app.ui.g_editor_cmenu.menuAction().setVisible(False)
         self.app.ui.e_editor_cmenu.menuAction().setVisible(False)
         self.app.ui.grb_editor_cmenu.menuAction().setVisible(False)
+
+        self.app.ui.pop_menucolor.menuAction().setVisible(True)
+        self.app.ui.popmenu_numeric_move.setVisible(True)
+        self.app.ui.popmenu_move2origin.setVisible(True)
 
         # Show original geometry
         if self.edited_obj:

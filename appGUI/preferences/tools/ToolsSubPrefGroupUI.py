@@ -21,7 +21,7 @@ class ToolsSubPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # PARAMETERS Frame
         # #############################################################################################################
-        self.sublabel = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.sublabel = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.sublabel.setToolTip(
             _("A tool to substract one Gerber or Geometry object\n"
               "from another of the same type.")

@@ -87,8 +87,11 @@ class PreferencesUIManager(QtCore.QObject):
             "global_draw_color": self.ui.general_pref_form.general_gui_group.draw_color_entry,
             "global_sel_draw_color": self.ui.general_pref_form.general_gui_group.sel_draw_color_entry,
 
-            "global_proj_item_color": self.ui.general_pref_form.general_gui_group.proj_color_entry,
-            "global_proj_item_dis_color": self.ui.general_pref_form.general_gui_group.proj_color_dis_entry,
+            "global_proj_item_color_light": self.ui.general_pref_form.general_gui_group.proj_color_light_entry,
+            "global_proj_item_dis_color_light": self.ui.general_pref_form.general_gui_group.proj_color_dis_light_entry,
+            "global_proj_item_color_dark": self.ui.general_pref_form.general_gui_group.proj_color_dark_entry,
+            "global_proj_item_dis_color_dark": self.ui.general_pref_form.general_gui_group.proj_color_dis_dark_entry,
+
             "global_project_autohide": self.ui.general_pref_form.general_gui_group.project_autohide_cb,
 
             # General APP Settings
@@ -1006,13 +1009,21 @@ class PreferencesUIManager(QtCore.QObject):
         self.ui.general_pref_form.general_gui_group.sel_draw_color_entry.set_value(
             self.defaults['global_sel_draw_color'])
 
-        # Init Project Items color
-        self.ui.general_pref_form.general_gui_group.proj_color_entry.set_value(
-            self.defaults['global_proj_item_color'])
+        # Init Project Items color - Light Theme
+        self.ui.general_pref_form.general_gui_group.proj_color_light_entry.set_value(
+            self.defaults['global_proj_item_color_light'])
 
-        # Init Project Disabled Items color
-        self.ui.general_pref_form.general_gui_group.proj_color_dis_entry.set_value(
-            self.defaults['global_proj_item_dis_color'])
+        # Init Project Disabled Items color - Light Theme
+        self.ui.general_pref_form.general_gui_group.proj_color_dis_light_entry.set_value(
+            self.defaults['global_proj_item_dis_color_light'])
+
+        # Init Project Items color - Dark Theme
+        self.ui.general_pref_form.general_gui_group.proj_color_dark_entry.set_value(
+            self.defaults['global_proj_item_color_dark'])
+
+        # Init Project Disabled Items color - Dark Theme
+        self.ui.general_pref_form.general_gui_group.proj_color_dis_dark_entry.set_value(
+            self.defaults['global_proj_item_dis_color_dark'])
 
         # Init Mouse Cursor color
         self.ui.general_pref_form.general_app_set_group.mouse_cursor_entry.set_value(

@@ -52,6 +52,9 @@ class MainGUI(QtWidgets.QMainWindow):
     final_save = QtCore.pyqtSignal(name='saveBeforeExit')
     # screenChanged = QtCore.pyqtSignal(QtGui.QScreen, QtGui.QScreen)
 
+    def theme_safe_color(self, color):
+        return color
+
     # https://www.w3.org/TR/SVG11/types.html#ColorKeywords
     def __init__(self, app):
         super(MainGUI, self).__init__()
@@ -59,6 +62,8 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.app = app
         self.decimals = self.app.decimals
+
+        FCLabel.patching_text_color = self.theme_safe_color
 
         # Divine icon pack by Ipapun @ finicons.com
 
@@ -718,15 +723,19 @@ class MainGUI(QtWidgets.QMainWindow):
             '%s\t%s' % (_("Move"), _('M')))
         self.geo_buffer_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/buffer16.png'),
-            '%s\t%s' % (_("Buffer Tool"), _('B'))
+            '%s\t%s' % (_("Buffer"), _('B'))
+        )
+        self.geo_simplification_menuitem = self.geo_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/simplify32.png'),
+            '%s\t%s' % (_("Simplification"), '')
         )
         self.geo_paint_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/paint20_1.png'),
-            '%s\t%s' % (_("Paint Tool"), _('I'))
+            '%s\t%s' % (_("Paint"), _('I'))
         )
         self.geo_transform_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/transform.png'),
-            '%s\t%s' % (_("Transform Tool"), _('Alt+R'))
+            '%s\t%s' % (_("Transformation"), _('Alt+R'))
         )
         self.geo_editor_menu.addSeparator()
         self.geo_cornersnap_menuitem = self.geo_editor_menu.addAction(
@@ -1219,6 +1228,8 @@ class MainGUI(QtWidgets.QMainWindow):
         self.geo_edit_toolbar.addSeparator()
         self.geo_add_text_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/text32.png'), _('Add Text'))
+        self.geo_add_simplification_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/simplify32.png'), _('Simplify'))
         self.geo_add_buffer_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'), _('Add Buffer'))
         self.geo_add_paint_btn = self.geo_edit_toolbar.addAction(
@@ -1779,6 +1790,8 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.draw_text = self.g_editor_cmenu.addAction(
             QtGui.QIcon(self.app.resource_location + '/text32.png'), _("Text"))
+        self.draw_simplification = self.g_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/simplify32.png'), _("Simplification"))
         self.draw_buffer = self.g_editor_cmenu.addAction(
             QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'), _("Buffer"))
         self.draw_paint = self.g_editor_cmenu.addAction(
@@ -3463,7 +3476,8 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.app.geo_editor.transform_tool.on_offy_key()
                     return
             # NO MODIFIER
-            elif modifiers == QtCore.Qt.KeyboardModifier.NoModifier:
+            elif modifiers == QtCore.Qt.KeyboardModifier.NoModifier or \
+                    modifiers == QtCore.Qt.KeyboardModifier.KeypadModifier:
                 # toggle display of Notebook area
                 if key == QtCore.Qt.Key.Key_QuoteLeft or key == '`':
                     self.on_toggle_notebook()
@@ -3482,16 +3496,39 @@ class MainGUI(QtWidgets.QMainWindow):
                             self.app.geo_editor.select_tool('select')
                             return
                         else:
-                            self.app.geo_editor.active_tool.click(
-                                self.app.geo_editor.snap(self.app.geo_editor.x, self.app.geo_editor.y))
+                            if self.app.geo_editor.active_tool.name == 'path' and \
+                                self.app.geo_editor.active_tool.path_tool.length != 0.0:
+                                pass
+                            elif self.app.geo_editor.active_tool.name == 'polygon' and \
+                                self.app.geo_editor.active_tool.polygon_tool.length != 0.0:
+                                pass
+                            elif self.app.geo_editor.active_tool.name == 'circle' and \
+                                self.app.geo_editor.active_tool.circle_tool.x != 0.0 and \
+                                    self.app.geo_editor.active_tool.circle_tool.y != 0.0:
+                                pass
+                            elif self.app.geo_editor.active_tool.name == 'rectangle' and \
+                                self.app.geo_editor.active_tool.rect_tool.length != 0.0 and \
+                                    self.app.geo_editor.active_tool.rect_tool.width != 0.0:
+                                pass
+                            elif self.app.geo_editor.active_tool.name == 'move' and \
+                                self.app.geo_editor.active_tool.move_tool.length != 0.0 and \
+                                    self.app.geo_editor.active_tool.move_tool.width != 0.0:
+                                pass
+                            elif self.app.geo_editor.active_tool.name == 'copy' and \
+                                self.app.geo_editor.active_tool.copy_tool.length != 0.0 and \
+                                    self.app.geo_editor.active_tool.copy_tool.width != 0.0:
+                                pass
+                            else:
+                                self.app.geo_editor.active_tool.click(
+                                    self.app.geo_editor.snap(self.app.geo_editor.x, self.app.geo_editor.y))
 
-                            self.app.geo_editor.active_tool.make()
+                                self.app.geo_editor.active_tool.make()
 
-                            if self.app.geo_editor.active_tool.complete:
-                                self.app.geo_editor.on_shape_complete()
-                                self.app.inform.emit('[success] %s' % _("Done."))
-                            # automatically make the selection tool active after completing current action
-                            self.app.geo_editor.select_tool('select')
+                                if self.app.geo_editor.active_tool.complete:
+                                    self.app.geo_editor.on_shape_complete()
+                                    self.app.inform.emit('[success] %s' % _("Done."))
+                                # automatically make the selection tool active after completing current action
+                                self.app.geo_editor.select_tool('select')
 
                 # Abort the current action
                 if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':
@@ -3523,17 +3560,17 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.app.plotcanvas.zoom(self.app.defaults['global_zoom_ratio'],
                                              [self.app.geo_editor.snap_x, self.app.geo_editor.snap_y])
 
-                # Switch to Project Tab
-                if key == QtCore.Qt.Key.Key_1 or key == '1':
-                    self.on_select_tab('project')
-
-                # Switch to Selected Tab
-                if key == QtCore.Qt.Key.Key_2 or key == '2':
-                    self.on_select_tab('selected')
-
-                # Switch to Tool Tab
-                if key == QtCore.Qt.Key.Key_3 or key == '3':
-                    self.on_select_tab('tool')
+                # # Switch to Project Tab
+                # if key == QtCore.Qt.Key.Key_1 or key == '1':
+                #     self.on_select_tab('project')
+                #
+                # # Switch to Selected Tab
+                # if key == QtCore.Qt.Key.Key_2 or key == '2':
+                #     self.on_select_tab('selected')
+                #
+                # # Switch to Tool Tab
+                # if key == QtCore.Qt.Key.Key_3 or key == '3':
+                #     self.on_select_tab('tool')
 
                 # Grid Snap
                 if key == QtCore.Qt.Key.Key_G or key == 'G':
@@ -3569,7 +3606,8 @@ class MainGUI(QtWidgets.QMainWindow):
 
                     # Copy
                     if key == QtCore.Qt.Key.Key_C or key == 'C':
-                        self.app.geo_editor.on_copy_click()
+                        self.app.geo_editor.select_tool('copy')
+                        # self.app.geo_editor.on_copy_click()
 
                     # Substract Tool
                     if key == QtCore.Qt.Key.Key_E or key == 'E':
@@ -3601,7 +3639,8 @@ class MainGUI(QtWidgets.QMainWindow):
 
                     # Move
                     if key == QtCore.Qt.Key.Key_M or key == 'M':
-                        self.app.geo_editor.on_move_click()
+                        self.app.geo_editor.select_tool('move')
+                        # self.app.geo_editor.on_move_click()
 
                     # Polygon Tool
                     if key == QtCore.Qt.Key.Key_N or key == 'N':

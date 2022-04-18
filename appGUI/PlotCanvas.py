@@ -166,6 +166,9 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         self.on_update_text_hud()
 
+        # cursor text t obe attached to mouse cursor in Editors
+        self.text_cursor = Text('', color=self.text_hud_color, method='gpu', anchor_x='left', parent=None)
+
         # draw a rectangle made out of 4 lines on the canvas to serve as a hint for the work area
         # all CNC have a limited workspace
         if self.fcapp.options['global_workspace'] is True:

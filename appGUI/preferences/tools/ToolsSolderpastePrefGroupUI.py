@@ -25,7 +25,7 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # PARAMETERS Frame
         # #############################################################################################################
-        self.solderpastelabel = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.solderpastelabel = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.solderpastelabel.setToolTip(
             _("A tool to create GCode for dispensing\n"
               "solder paste onto a PCB.")

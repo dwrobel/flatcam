@@ -720,7 +720,7 @@ class DsidedUI:
         # #############################################################################################################
         # Source Object
         # #############################################################################################################
-        self.m_objects_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.m_objects_label = FCLabel('%s' % _("Source Object"), color='darkorange', bold=True)
         self.m_objects_label.setToolTip('%s.' % _("Objects to be mirrored"))
         self.tools_box.addWidget(self.m_objects_label)
 
@@ -753,7 +753,7 @@ class DsidedUI:
         # #############################################################################################################
         # ##########    BOUNDS OPERATION    ###########################################################################
         # #############################################################################################################
-        self.bv_label = FCLabel('<span style="color:purple;"><b>%s</b></span>' % _('Bounds Values'))
+        self.bv_label = FCLabel('%s' % _("Bounds Values"), color='purple', bold=True)
         self.bv_label.setToolTip(
             _("Select on canvas the object(s)\n"
               "for which to calculate bounds values.")
@@ -854,7 +854,7 @@ class DsidedUI:
         # #############################################################################################################
         # ##########    MIRROR OPERATION    ###########################################################################
         # #############################################################################################################
-        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Mirror Operation"))
+        self.param_label = FCLabel('%s' % _("Mirror Operation"), color='blue', bold=True)
         self.param_label.setToolTip('%s.' % _("Parameters for the mirror operation"))
         self.tools_box.addWidget(self.param_label)
 
@@ -1024,7 +1024,7 @@ class DsidedUI:
         # ##########    ALIGNMENT OPERATION    ########################################################################
         # #############################################################################################################
         # ## Alignment holes
-        self.alignment_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _('PCB Alignment'))
+        self.alignment_label = FCLabel('%s' % _("PCB Alignment"), color='brown', bold=True)
         self.alignment_label.setToolTip(
             _("Creates an Excellon Object containing the\n"
               "specified alignment holes and their mirror\n"
