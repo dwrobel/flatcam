@@ -1899,8 +1899,9 @@ class FCMove(FCShapeTool):
         for select_shape in self.draw_app.get_selected():
             geometric_data = select_shape.geo
             try:
-                for g in geometric_data:
-                    geo_list.append(g)
+                w_geo = geometric_data.geoms if \
+                    isinstance(geometric_data, (MultiPolygon, MultiLineString)) else geometric_data
+                geo_list += [g for g in w_geo]
             except TypeError:
                 geo_list.append(geometric_data)
 
