@@ -11,7 +11,7 @@ class SimplificationTool(AppTool):
     Do a shape simplification for the selected geometry.
     """
 
-    update_ui = pyqtSignal(list, int)
+    update_ui = pyqtSignal(object, int)
 
     def __init__(self, app, draw_app):
         AppTool.__init__(self, app)
