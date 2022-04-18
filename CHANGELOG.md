@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+19.04.2022
+
+- fixed and prettified the 'Light' theme
+- some more fixes for the 'Light' theme
+- made sure that the 'default' theme gets the 'stronger' colors
+
 18.04.2022
 
 - in Geometry Editor, in Copy Tool added the 2D copy-as-array feature therefore finishing this editor plugin upgrade

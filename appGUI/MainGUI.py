@@ -82,7 +82,7 @@ class MainGUI(QtWidgets.QMainWindow):
         """
 
         if color in self.theme_safe_colors:
-            if self.app.options['global_theme'] == 'light':
+            if self.app.options['global_theme'] in ['default', 'light']:
                 return color
             else:
                 return self.theme_safe_colors[color]
@@ -174,12 +174,12 @@ class MainGUI(QtWidgets.QMainWindow):
 
         # Open Gerber ...
         self.menufileopengerber = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/flatcam_icon24.png'),
-                                                    '%s...\t%s' % (_('Open Gerber'), _('Ctrl+G')), self)
+                                                '%s...\t%s' % (_('Open Gerber'), _('Ctrl+G')), self)
         self.menufile_open.addAction(self.menufileopengerber)
 
         # Open Excellon ...
         self.menufileopenexcellon = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'),
-                                                      '%s...\t%s' % (_('Open Excellon'), _('Ctrl+E')), self)
+                                                  '%s...\t%s' % (_('Open Excellon'), _('Ctrl+E')), self)
         self.menufile_open.addAction(self.menufileopenexcellon)
 
         # Open G-Code ...
@@ -211,7 +211,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         # Save Project As ...
         self.menufilesaveprojectas = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/floppy16.png'),
-                                                       '%s...\t%s' % (_('Save Project As'), _('Ctrl+Shift+S')), self)
+                                                   '%s...\t%s' % (_('Save Project As'), _('Ctrl+Shift+S')), self)
         self.menufile_save.addAction(self.menufilesaveprojectas)
 
         # Save Project Copy ...
@@ -230,9 +230,9 @@ class MainGUI(QtWidgets.QMainWindow):
         self.menufile_scripting.setToolTipsVisible(True)
 
         self.menufilenewscript = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/script_new16.png'),
-                                                   '%s...\t%s' % (_('New Script'), ''), self)
+                                               '%s...\t%s' % (_('New Script'), ''), self)
         self.menufileopenscript = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/open_script32.png'),
-                                                    '%s...\t%s' % (_('Open Script'), ''), self)
+                                                '%s...\t%s' % (_('Open Script'), ''), self)
         self.menufileopenscriptexample = QtGui.QAction(
             QtGui.QIcon(self.app.resource_location + '/open_script32.png'),
             '%s...\t%s' % (_('Open Example'), ''), self)
@@ -2068,7 +2068,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.lock_action.triggered[bool].connect(self.lock_toolbar)
 
         self.pref_open_button.clicked.connect(self.on_preferences_open_folder)
-        self.clear_btn.clicked.connect(self.on_gui_clear)
+        self.clear_btn.clicked.connect(lambda: self.on_gui_clear())
 
         self.wplace_label.clicked.connect(self.app.on_workspace_toggle)
         self.fcinfo.clicked.connect(self.toggle_shell_ui)
@@ -2387,7 +2387,7 @@ class MainGUI(QtWidgets.QMainWindow):
             subprocess.Popen(['xdg-open', self.app.data_path])
         self.app.inform.emit('[success] %s' % _("FlatCAM Preferences Folder opened."))
 
-    def on_gui_clear(self, signal=None, forced_clear=False):
+    def on_gui_clear(self, forced_clear=False):
         """
         Will clear the settings that are stored in QSettings.
         """
@@ -2397,8 +2397,6 @@ class MainGUI(QtWidgets.QMainWindow):
         theme_settings.setValue('theme', 'light')
 
         del theme_settings
-
-        resource_loc = self.app.resource_location
 
         response = None
         bt_yes = None
@@ -3530,27 +3528,27 @@ class MainGUI(QtWidgets.QMainWindow):
                             self.app.geo_editor.select_tool('select')
                             return
                         else:
-                            if self.app.geo_editor.active_tool.name == 'path' and \
-                                self.app.geo_editor.active_tool.path_tool.length != 0.0:
+                            if self.app.geo_editor.active_tool.name == 'path' \
+                                    and self.app.geo_editor.active_tool.path_tool.length != 0.0:
                                 pass
-                            elif self.app.geo_editor.active_tool.name == 'polygon' and \
-                                self.app.geo_editor.active_tool.polygon_tool.length != 0.0:
+                            elif self.app.geo_editor.active_tool.name == 'polygon' \
+                                    and self.app.geo_editor.active_tool.polygon_tool.length != 0.0:
                                 pass
-                            elif self.app.geo_editor.active_tool.name == 'circle' and \
-                                self.app.geo_editor.active_tool.circle_tool.x != 0.0 and \
-                                    self.app.geo_editor.active_tool.circle_tool.y != 0.0:
+                            elif self.app.geo_editor.active_tool.name == 'circle' \
+                                    and self.app.geo_editor.active_tool.circle_tool.x != 0.0 \
+                                    and self.app.geo_editor.active_tool.circle_tool.y != 0.0:
                                 pass
-                            elif self.app.geo_editor.active_tool.name == 'rectangle' and \
-                                self.app.geo_editor.active_tool.rect_tool.length != 0.0 and \
-                                    self.app.geo_editor.active_tool.rect_tool.width != 0.0:
+                            elif self.app.geo_editor.active_tool.name == 'rectangle' \
+                                    and self.app.geo_editor.active_tool.rect_tool.length != 0.0 \
+                                    and self.app.geo_editor.active_tool.rect_tool.width != 0.0:
                                 pass
-                            elif self.app.geo_editor.active_tool.name == 'move' and \
-                                self.app.geo_editor.active_tool.move_tool.length != 0.0 and \
-                                    self.app.geo_editor.active_tool.move_tool.width != 0.0:
+                            elif self.app.geo_editor.active_tool.name == 'move' \
+                                    and self.app.geo_editor.active_tool.move_tool.length != 0.0 \
+                                    and self.app.geo_editor.active_tool.move_tool.width != 0.0:
                                 pass
-                            elif self.app.geo_editor.active_tool.name == 'copy' and \
-                                self.app.geo_editor.active_tool.copy_tool.length != 0.0 and \
-                                    self.app.geo_editor.active_tool.copy_tool.width != 0.0:
+                            elif self.app.geo_editor.active_tool.name == 'copy' \
+                                    and self.app.geo_editor.active_tool.copy_tool.length != 0.0 \
+                                    and self.app.geo_editor.active_tool.copy_tool.width != 0.0:
                                 pass
                             else:
                                 self.app.geo_editor.active_tool.click(
@@ -3896,8 +3894,9 @@ class MainGUI(QtWidgets.QMainWindow):
                             self.app.inform.emit(_("Click on target point."))
                             self.app.ui.aperture_copy_btn.setChecked(True)
                             self.app.grb_editor.on_tool_select('copy')
-                            self.app.grb_editor.active_tool.set_origin(
-                                (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
+                            if self.app.grb_editor.active_tool is not None:
+                                self.app.grb_editor.active_tool.set_origin(
+                                    (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
                         else:
                             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected."))
                         return
@@ -3942,8 +3941,9 @@ class MainGUI(QtWidgets.QMainWindow):
                             self.app.inform.emit(_("Click on target point."))
                             self.app.ui.aperture_move_btn.setChecked(True)
                             self.app.grb_editor.on_tool_select('move')
-                            self.app.grb_editor.active_tool.set_origin(
-                                (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
+                            if self.app.grb_editor.active_tool is not None:
+                                self.app.grb_editor.active_tool.set_origin(
+                                    (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
                         else:
                             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected."))
                         return
@@ -4154,8 +4154,9 @@ class MainGUI(QtWidgets.QMainWindow):
                             self.app.inform.emit(_("Click on target point."))
                             self.app.ui.copy_drill_btn.setChecked(True)
                             self.app.exc_editor.on_tool_select('drill_copy')
-                            self.app.exc_editor.active_tool.set_origin(
-                                (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
+                            if self.app.exc_editor.active_tool is not None:
+                                self.app.exc_editor.active_tool.set_origin(
+                                    (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
                         else:
                             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected."))
                         return
@@ -4183,8 +4184,9 @@ class MainGUI(QtWidgets.QMainWindow):
                             self.app.inform.emit(_("Click on target location ..."))
                             self.app.ui.move_drill_btn.setChecked(True)
                             self.app.exc_editor.on_tool_select('drill_move')
-                            self.app.exc_editor.active_tool.set_origin(
-                                (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
+                            if self.app.exc_editor.active_tool is not None:
+                                self.app.exc_editor.active_tool.set_origin(
+                                    (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
                         else:
                             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected."))
                         return

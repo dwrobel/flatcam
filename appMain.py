@@ -42,13 +42,14 @@ import tkinter as tk
 
 import qdarktheme
 import qdarktheme.themes.dark.stylesheet as qdarksheet
+import qdarktheme.themes.light.stylesheet as qlightsheet
 
 # ####################################################################################################################
 # ###################################      Imports part of FlatCAM       #############################################
 # ####################################################################################################################
 
 # Various
-from appGUI import style_sheet
+from appGUI.themes import dark_style_sheet, light_style_sheet
 
 from appCommon.Common import LoudDict
 from appCommon.Common import color_variant
@@ -640,10 +641,11 @@ class App(QtCore.QObject):
             self.resource_location = 'assets/resources'
         elif self.options["global_theme"] == 'light':
             self.resource_location = 'assets/resources'
+            qlightsheet.STYLE_SHEET = light_style_sheet.L_STYLE_SHEET
             self.qapp.setStyleSheet(qdarktheme.load_stylesheet('light'))
         else:
             self.resource_location = 'assets/resources/dark_resources'
-            qdarksheet.STYLE_SHEET = style_sheet.D_STYLE_SHEET
+            qdarksheet.STYLE_SHEET = dark_style_sheet.D_STYLE_SHEET
             self.qapp.setStyleSheet(qdarktheme.load_stylesheet())
 
         # ###########################################################################################################
