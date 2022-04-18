@@ -461,15 +461,11 @@ class CopyEditorUI:
                                                                                   minval,
                                                                                   self.decimals,
                                                                                   maxval), False)
-        else:
-            self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)
 
     def confirmation_message_int(self, accepted, minval, maxval):
         if accepted is False:
             self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%d, %d]' %
                                             (_("Edited value is out of range"), minval, maxval), False)
-        else:
-            self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)
 
     def on_copy_mode(self, val):
         if val == 'n':
@@ -496,7 +492,7 @@ class CopyEditorUI:
             self.rows.valueChanged.connect(self.on_rows_cols_value_changed)
             self.columns.valueChanged.connect(self.on_rows_cols_value_changed)
 
-            self.app.inform.emit(_("Click to place ..."))
+            self.app.inform.emit(_("Click on reference location ..."))
         else:
             if val == 'linear':
                 self.array_circular_frame.hide()
@@ -505,7 +501,7 @@ class CopyEditorUI:
                 self.spacing_frame.hide()
                 self.offset_frame.hide()
 
-                self.app.inform.emit(_("Click to place ..."))
+                self.app.inform.emit(_("Click on reference location ..."))
             else:   # 'circular'
                 self.array_circular_frame.show()
                 self.array_linear_frame.hide()
