@@ -54,6 +54,9 @@ class MainGUI(QtWidgets.QMainWindow):
     final_save = QtCore.pyqtSignal(name='saveBeforeExit')
     # screenChanged = QtCore.pyqtSignal(QtGui.QScreen, QtGui.QScreen)
 
+    def theme_safe_color(self, color):
+        return color
+
     # https://www.w3.org/TR/SVG11/types.html#ColorKeywords
     def __init__(self, app):
         super(MainGUI, self).__init__()
@@ -61,6 +64,8 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.app = app
         self.decimals = self.app.decimals
+
+        FCLabel.patching_text_color = self.theme_safe_color
 
         # Divine icon pack by Ipapun @ finicons.com
 

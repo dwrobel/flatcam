@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM Evo beta
 - updated the FCLabel widget
 - replaced all the FCLabel widgets that have color HTML with the new FCLabel widget that uses parameters for 'color' and weight
 - minor changes
+- added a way to allow patching FCLabel widget colors for certain cases without having to pass them each instance 
 
 17.04.2022
 

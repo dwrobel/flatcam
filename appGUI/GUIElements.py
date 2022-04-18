@@ -155,11 +155,11 @@ class RadioSetCross(QtWidgets.QWidget):
             self.choices[choice]['radio'].toggled.connect(self.on_toggle)
 
         # add to layout
-        layout.addWidget(self.choices[0]['radio'], 0, 0)    # top-left
-        layout.addWidget(self.choices[1]['radio'], 0, 2)    # top-right
-        layout.addWidget(self.choices[2]['radio'], 2, 0)    # bottom-left
-        layout.addWidget(self.choices[3]['radio'], 2, 2)    # bottom-right
-        layout.addWidget(self.choices[4]['radio'], 1, 1)    # center
+        layout.addWidget(self.choices[0]['radio'], 0, 0)  # top-left
+        layout.addWidget(self.choices[1]['radio'], 0, 2)  # top-right
+        layout.addWidget(self.choices[2]['radio'], 2, 0)  # bottom-left
+        layout.addWidget(self.choices[3]['radio'], 2, 2)  # bottom-right
+        layout.addWidget(self.choices[4]['radio'], 1, 1)  # center
 
         layout.setContentsMargins(0, 0, 0, 0)
 
@@ -2435,9 +2435,9 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
             idx = start.start()
             # Select the matched text and apply the desired format
             cursor.setPosition(idx, QtGui.QTextCursor.MoveMode.MoveAnchor)
-            cursor.movePosition(QtGui.QTextCursor.MoveOperation.EndOfWord, QtGui.QTextCursor.MoveMode.KeepAnchor ,1)
+            cursor.movePosition(QtGui.QTextCursor.MoveOperation.EndOfWord, QtGui.QTextCursor.MoveMode.KeepAnchor, 1)
             cursor.mergeCharFormat(fmt)
-            start = pattern.search(text, idx+1)
+            start = pattern.search(text, idx + 1)
 
         cursor.select(QtGui.QTextCursor.SelectionType.WordUnderCursor)
 
@@ -2623,6 +2623,7 @@ class DialogBoxChoice(QtWidgets.QDialog):
     def mouseMoveEvent(self, event):
         if self.moving:
             self.move(event.globalPosition().toPoint() - self.offset.toPoint())
+
 
 class FCInputDialog(QtWidgets.QInputDialog):
     def __init__(self, parent=None, ok=False, val=None, title=None, text=None, min=None, max=None, decimals=None,
@@ -2970,15 +2971,14 @@ class FCLabel(QtWidgets.QLabel):
     right_clicked = QtCore.pyqtSignal(bool)
     middle_clicked = QtCore.pyqtSignal(bool)
 
-    def __init__(self, title=None, color=None, color_callback=None, bold=None, parent=None):
+
+    def __init__(self, title=None, color=None, bold=None, parent=None):
         """
 
         :param title:           the label's text
         :type title:            str
         :param color:           text color
         :type color:            str
-        :param color_callback:  function to alter the color
-        :type color_callback:   function
         :param bold:            the text weight
         :type bold:             bool
         :param parent:          parent of this widget
@@ -2987,8 +2987,8 @@ class FCLabel(QtWidgets.QLabel):
 
         super(FCLabel, self).__init__(parent)
 
-        if color and color_callback:
-            color = color_callback(color)
+        if color:
+            color = self.patching_text_color(color)
 
         if isinstance(title, str):
             if color and not bold:
@@ -3004,6 +3004,9 @@ class FCLabel(QtWidgets.QLabel):
         self.clicked_state = False
         self.middle_clicked_state = False
         self.right_clicked_state = False
+
+    def patching_text_color(self, color):
+        return color
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
@@ -5723,19 +5726,20 @@ class FCMessageBox(QtWidgets.QMessageBox):
     """
     Frameless QMessageBox
     """
+
     def __init__(self, *args, **kwargs):
         super(FCMessageBox, self).__init__(*args, **kwargs)
         self.offset = None
         self.moving = None
         self.setWindowFlags(self.windowFlags() | Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowSystemMenuHint)
 
-    #   "background-color: palette(base); "
+        #   "background-color: palette(base); "
         self.setStyleSheet(
             "QDialog { "
             "border: 1px solid palette(shadow); "
             "}"
         )
-    
+
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
             self.moving = True
@@ -5791,7 +5795,7 @@ class FCDate(QtWidgets.QDateEdit):
         date = self.date()
         date_formated = date.toString(QtCore.Qt.DateFormat.ISODate)
         return date_formated
-   
+
 
 def message_dialog(title, message, kind="info", parent=None):
     """
