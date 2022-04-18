@@ -22,7 +22,7 @@ class ToolsLevelPrefGroupUI(OptionsGroupUI):
         self.options = app.options
 
         # ## Board cuttout
-        self.levelling_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _("Parameters")))
+        self.levelling_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.levelling_label.setToolTip(
             _("Generate CNC Code with auto-levelled paths.")
         )

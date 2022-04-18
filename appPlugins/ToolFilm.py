@@ -1267,7 +1267,7 @@ class FilmUI:
         # #############################################################################################################
         # Source Object Frame
         # #############################################################################################################
-        self.obj_combo_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('darkorange'), _("Source Object")))
+        self.obj_combo_label = FCLabel('%s' % _("Source Object"), color='darkorange', bold=True)
         self.obj_combo_label.setToolTip(
             _("Excellon object for drilling/milling operation.")
         )
@@ -1332,7 +1332,7 @@ class FilmUI:
         # #############################################################################################################
         # Adjustments Frame
         # #############################################################################################################
-        self.film_adj_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _("Adjustments")))
+        self.film_adj_label = FCLabel('%s' % _("Adjustments"), color='green', bold=True)
         self.film_adj_label.setToolTip(
             _("Compensate print distortions.")
         )
@@ -1514,7 +1514,7 @@ class FilmUI:
         # #############################################################################################################
         # Parameters Frame
         # #############################################################################################################
-        self.film_param_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _("Parameters")))
+        self.film_param_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.tools_box.addWidget(self.film_param_label)
 
         par_frame = FCFrame()
@@ -1654,7 +1654,7 @@ class FilmUI:
         # #############################################################################################################
         # Export Frame
         # #############################################################################################################
-        self.export_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('red'), _('Export')))
+        self.export_label = FCLabel('%s' % _("Export"), color='red', bold=True)
         self.tools_box.addWidget(self.export_label)
 
         exp_frame = FCFrame()

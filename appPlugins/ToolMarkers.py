@@ -1260,7 +1260,7 @@ class MarkersUI:
         # Gerber Source Object
         # #############################################################################################################
 
-        self.object_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('darkorange'), _("Source Object")))
+        self.object_label = FCLabel('%s' % _("Source Object"), color='darkorange', bold=True)
         self.object_label.setToolTip(_("The Gerber object to which will be added corner markers."))
 
         self.object_combo = FCComboBox()
@@ -1280,7 +1280,7 @@ class MarkersUI:
         # #############################################################################################################
         # Parameters Frame
         # #############################################################################################################
-        self.param_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _('Parameters')))
+        self.param_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.param_label.setToolTip(_("Parameters used for this tool."))
         self.tools_box.addWidget(self.param_label)
 
@@ -1334,7 +1334,7 @@ class MarkersUI:
         # #############################################################################################################
         # Offset Frame
         # #############################################################################################################
-        self.offset_title_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('magenta'), _('Offset')))
+        self.offset_title_label = FCLabel('%s' % _("Offset"), color='magenta', bold=True)
         self.offset_title_label.setToolTip(_("Offset locations from the set reference."))
         self.tools_box.addWidget(self.offset_title_label)
 
@@ -1397,7 +1397,7 @@ class MarkersUI:
         # #############################################################################################################
         # Locations Frame
         # #############################################################################################################
-        self.locs_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('red'), _('Locations')))
+        self.locs_label = FCLabel('%s' % _("Locations"), color='red', bold=True)
         self.locs_label.setToolTip(_("Locations where to place corner markers."))
         self.tools_box.addWidget(self.locs_label)
 
@@ -1436,7 +1436,7 @@ class MarkersUI:
         # #############################################################################################################
         # Selection Frame
         # #############################################################################################################
-        self.mode_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _("Selection")))
+        self.mode_label = FCLabel('%s' % _("Selection"), color='green', bold=True)
         self.tools_box.addWidget(self.mode_label)
 
         self.s_frame = FCFrame()
@@ -1495,7 +1495,7 @@ class MarkersUI:
         # Drill in markers Frame
         # #############################################################################################################
         # Drill is markers
-        self.drills_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('brown'), _('Drills in Locations')))
+        self.drills_label = FCLabel('%s' % _("Drills in Locations"), color='brown', bold=True)
         self.tools_box.addWidget(self.drills_label)
 
         self.drill_frame = FCFrame()
@@ -1535,7 +1535,7 @@ class MarkersUI:
         # #############################################################################################################
         # Check in Locations Frame
         # #############################################################################################################
-        self.check_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('indigo'), _('Check in Locations')))
+        self.check_label = FCLabel('%s' % _("Check in Locations"), color='indigo', bold=True)
         self.tools_box.addWidget(self.check_label)
 
         # ## Create an Excellon object for checking the positioning
@@ -1558,7 +1558,7 @@ class MarkersUI:
         # #############################################################################################################
         # Insert Markers Frame
         # #############################################################################################################
-        self.insert_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('teal'), _('Insert Markers')))
+        self.insert_label = FCLabel('%s' % _("Insert Markers"), color='teal', bold=True)
         self.insert_label.setToolTip(
             _("Enabled only if markers are available (added to an object).\n"
               "Those markers will be inserted in yet another object.")

@@ -23,7 +23,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # PARAMETERS Frame
         # #############################################################################################################
-        self.param_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _("Parameters")))
+        self.param_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.param_label.setToolTip(
             _("A list of Excellon Editor parameters.")
         )
@@ -79,7 +79,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Linear Array Frame
         # #############################################################################################################
-        self.drill_array_linear_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('brown'), _('Linear Drill Array')))
+        self.drill_array_linear_label = FCLabel('%s' % _("Linear Drill Array"), color='brown', bold=True)
         self.layout.addWidget(self.drill_array_linear_label)
 
         lin_frame = FCFrame()
@@ -134,7 +134,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Circular Array Frame
         # #############################################################################################################
-        self.drill_array_circ_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _('Circular Drill Array')))
+        self.drill_array_circ_label = FCLabel('%s' % _("Circular Drill Array"), color='green', bold=True)
         self.layout.addWidget(self.drill_array_circ_label)
 
         circ_frame = FCFrame()
@@ -173,7 +173,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Slots Frame
         # #############################################################################################################
-        self.drill_array_circ_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('darkorange'), _('Slots')))
+        self.drill_array_circ_label = FCLabel('%s' % _("Slots"), color='darkorange', bold=True)
         self.layout.addWidget(self.drill_array_circ_label)
 
         slots_frame = FCFrame()
@@ -236,7 +236,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Slots Array Frame
         # #############################################################################################################
-        self.slot_array_linear_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('magenta'), _('Linear Slot Array')))
+        self.slot_array_linear_label = FCLabel('%s' % _("Linear Slot Array"), color='magenta', bold=True)
         self.layout.addWidget(self.slot_array_linear_label)
 
         slot_array_frame = FCFrame()
@@ -306,7 +306,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Circular Slot Array Frame
         # #############################################################################################################
-        self.slot_array_circ_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _('Circular Slot Array')))
+        self.slot_array_circ_label = FCLabel('%s' % _("Circular Slot Array"), color='blue', bold=True)
         self.layout.addWidget(self.slot_array_circ_label)
 
         circ_slot_frame = FCFrame()

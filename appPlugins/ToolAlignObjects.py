@@ -414,7 +414,7 @@ class AlignUI:
         # #############################################################################################################
         # Moving Object Frame
         # #############################################################################################################
-        self.aligned_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('indigo'), _("MOVING object")))
+        self.aligned_label = FCLabel('%s' % _("MOVING object"), color='indigo', bold=True)
         self.aligned_label.setToolTip(
             _("Specify the type of object to be aligned.\n"
               "It can be of type: Gerber or Excellon.\n"
@@ -453,7 +453,7 @@ class AlignUI:
         # #############################################################################################################
         # Destination Object Frame
         # #############################################################################################################
-        self.aligned_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('red'), _("DESTINATION object")))
+        self.aligned_label = FCLabel('%s' % _("DESTINATION object"), color='red', bold=True)
         self.aligned_label.setToolTip(
             _("Specify the type of object to be aligned to.\n"
               "It can be of type: Gerber or Excellon.\n"
@@ -492,7 +492,7 @@ class AlignUI:
         # #############################################################################################################
         # Parameters Frame
         # #############################################################################################################
-        self.param_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _('Parameters')))
+        self.param_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.tools_box.addWidget(self.param_label)
 
         par_frame = FCFrame()

@@ -28,7 +28,7 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Rules Frame
         # #############################################################################################################
-        rules_copper_label = FCLabel('<span style="color:%s;"><b>%s %s</b></span>' % (self.app.theme_safe_color('darkorange'), _("Copper"), _("Rules")))
+        rules_copper_label = FCLabel('%s %s' % (_("Copper"), _("Rules")), color='darkorange', bold=True)
         self.layout.addWidget(rules_copper_label)
 
         copper_frame = FCFrame()
@@ -127,7 +127,7 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Silk Frame
         # #############################################################################################################
-        silk_copper_label = FCLabel('<span style="color:%s;"><b>%s %s</b></span>' % (self.app.theme_safe_color('teal'), _("Silk"), _("Rules")))
+        silk_copper_label = FCLabel('%s %s' % (_("Silk"), _("Rules")), color='teal', bold=True)
         self.layout.addWidget(silk_copper_label)
 
         silk_frame = FCFrame()
@@ -205,7 +205,7 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Soldermask Frame
         # #############################################################################################################
-        sm_copper_label = FCLabel('<span style="color:%s;"><b>%s %s</b></span>' % (self.app.theme_safe_color('magenta'), _("Soldermask"), _("Rules")))
+        sm_copper_label = FCLabel('%s %s' % (_("Soldermask"), _("Rules")), color='magenta', bold=True)
         self.layout.addWidget(sm_copper_label)
 
         solder_frame = FCFrame()
@@ -240,7 +240,7 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Holes Frame
         # #############################################################################################################
-        holes_copper_label = FCLabel('<span style="color:%s;"><b>%s %s</b></span>' % (self.app.theme_safe_color('brown'), _("Holes"), _("Rules")))
+        holes_copper_label = FCLabel('%s %s' % (_("Holes"), _("Rules")), color='brown', bold=True)
         self.layout.addWidget(holes_copper_label)
 
         holes_frame = FCFrame()

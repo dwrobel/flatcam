@@ -24,7 +24,7 @@ class Tools2OptimalPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Parameters Frame
         # #############################################################################################################
-        self.optlabel = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _("Parameters")))
+        self.optlabel = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.optlabel.setToolTip(
             _("A tool to find the minimum distance between\n"
               "every two Gerber geometric elements")

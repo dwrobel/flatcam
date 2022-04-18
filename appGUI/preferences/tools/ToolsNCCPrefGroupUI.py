@@ -23,7 +23,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.options = app.options
 
         # ## Clear non-copper regions
-        self.clearcopper_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _("Parameters")))
+        self.clearcopper_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.clearcopper_label.setToolTip(
             _("Create a Geometry object with\n"
               "toolpaths to cut all non-copper regions.")
@@ -155,7 +155,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         # Tool Frame
         # #############################################################################################################
         # ### Tools ## ##
-        self.tools_table_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _("Tool Parameters")))
+        self.tools_table_label = FCLabel('%s' % _("Tool Parameters"), color='green', bold=True)
         self.layout.addWidget(self.tools_table_label)
 
         tt_frame = FCFrame()
@@ -271,7 +271,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # General Parameters Frame
         # #############################################################################################################
-        self.gen_param_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('indigo'), _("Common Parameters")))
+        self.gen_param_label = FCLabel('%s' % _("Common Parameters"), color='indigo', bold=True)
         self.gen_param_label.setToolTip(
             _("Parameters that are common for all tools.")
         )

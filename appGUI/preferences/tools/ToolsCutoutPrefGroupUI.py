@@ -23,7 +23,7 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.options = app.options
 
         # ## Board cutout
-        self.board_cutout_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _("Parameters")))
+        self.board_cutout_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.board_cutout_label.setToolTip(
             _("Create toolpaths to cut around\n"
               "the PCB and separate it from\n"
@@ -134,7 +134,7 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         param_grid.addWidget(marginlabel, 10, 0)
         param_grid.addWidget(self.cutout_margin_entry, 10, 1)
 
-        self.gaps_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _("Gaps")))
+        self.gaps_label = FCLabel('%s' % _("Gaps"), color='green', bold=True)
         self.layout.addWidget(self.gaps_label)
         # #############################################################################################################
         # Gaps Frame
@@ -260,7 +260,7 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         gaps_grid.addWidget(self.big_cursor_cb, 18, 0, 1, 2)
 
         # Cut by Drilling Title
-        self.title_drillcut_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('red'), _('Cut by Drilling')))
+        self.title_drillcut_label = FCLabel('%s' % _("Cut by Drilling"), color='red', bold=True)
         self.title_drillcut_label.setToolTip(_("Create a series of drill holes following a geometry line."))
         self.layout.addWidget(self.title_drillcut_label)
 

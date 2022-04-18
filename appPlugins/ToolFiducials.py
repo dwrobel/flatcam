@@ -937,7 +937,7 @@ class FidoUI:
         # #############################################################################################################
         # Gerber Source Object
         # #############################################################################################################
-        self.obj_combo_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('darkorange'), _("Source Object")))
+        self.obj_combo_label = FCLabel('%s' % _("Source Object"), color='darkorange', bold=True)
         self.obj_combo_label.setToolTip(
             _("Gerber object for adding fiducials and soldermask openings.")
         )
@@ -954,7 +954,7 @@ class FidoUI:
         # #############################################################################################################
         # Coordinates Table Frame
         # #############################################################################################################
-        self.points_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _('Coordinates')))
+        self.points_label = FCLabel('%s' % _("Coordinates"), color='green', bold=True)
         self.points_label.setToolTip(
             _("A table with the fiducial points coordinates,\n"
               "in the format (x, y).")
@@ -1048,7 +1048,7 @@ class FidoUI:
         # #############################################################################################################
         # Parameters Frame
         # #############################################################################################################
-        self.param_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _('Parameters')))
+        self.param_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.param_label.setToolTip(
             _("Parameters used for this tool.")
         )
@@ -1146,7 +1146,7 @@ class FidoUI:
         # #############################################################################################################
         # Selection Frame
         # #############################################################################################################
-        self.sel_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _("Selection")))
+        self.sel_label = FCLabel('%s' % _("Selection"), color='green', bold=True)
         self.tools_box.addWidget(self.sel_label)
 
         self.s_frame = FCFrame()

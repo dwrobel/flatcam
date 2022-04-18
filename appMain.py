@@ -3720,8 +3720,7 @@ class App(QtCore.QObject):
 
                 line = 1
                 for i in translators:
-                    self.translator_grid_lay.addWidget(
-                        FCLabel('<span style="color:%s">%s</span>' % (self.app.theme_safe_color('blue'), i['language']), line, 0))
+                    self.translator_grid_lay.addWidget(FCLabel('%s' % i['language'], color='blue', bold=False), line, 0)
                     for author in range(len(i['authors'])):
                         auth_widget = FCLabel('%s' % i['authors'][author][0])
                         email_widget = FCLabel('%s' % i['authors'][author][1])

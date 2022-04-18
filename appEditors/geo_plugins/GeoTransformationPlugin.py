@@ -588,7 +588,7 @@ class TransformEditorTool(AppTool):
                     maxy = max(maxy, maxy_)
                 return minx, miny, maxx, maxy
             except TypeError:
-                # it's an object, return it's bounds
+                # it's an object, return its bounds
                 return lst.bounds()
 
         return bounds_rec(shapelist)

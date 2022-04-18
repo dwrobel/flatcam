@@ -25,7 +25,7 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # PARAMETERS Frame
         # #############################################################################################################
-        self.mill_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _("Parameters")))
+        self.mill_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.mill_label.setToolTip(
             _("Create CNCJob with toolpaths for milling either Geometry or drill holes.")
         )
@@ -289,7 +289,7 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Advanced Options Frame
         # #############################################################################################################
-        self.adv_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('teal'), _('Advanced Options')))
+        self.adv_label = FCLabel('%s' % _("Advanced Options"), color='teal', bold=True)
         self.adv_label.setToolTip(
             _("A list of advanced parameters.")
         )
@@ -437,7 +437,7 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Area Exclusion Frame
         # #############################################################################################################
-        self.area_exc_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('magenta'), _('Area Exclusion')))
+        self.area_exc_label = FCLabel('%s' % _("Area Exclusion"), color='magenta', bold=True)
         self.area_exc_label.setToolTip(
             _("Area exclusion parameters.")
         )
@@ -503,7 +503,7 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Area Polish Frame
         # #############################################################################################################
-        self.pol_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('brown'), _('Add Polish')))
+        self.pol_label = FCLabel('%s' % _("Add Polish"), color='brown', bold=True)
         self.pol_label.setToolTip(
             _("Will add a Paint section at the end of the GCode.\n"
               "A metallic brush will clean the material after milling.")
@@ -562,7 +562,7 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Excellon Milling Frame
         # #############################################################################################################
-        self.mille_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('darkorange'), _('Excellon Milling')))
+        self.mille_label = FCLabel('%s' % _("Excellon Milling"), color='darkorange', bold=True)
         self.mille_label.setToolTip(
             _("Will mill Excellon holes progressively from the center of the hole.")
         )

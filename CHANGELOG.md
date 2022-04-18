@@ -7,15 +7,18 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+18.04.2022
+
+- in Geometry Editor, in Copy Tool added the 2D copy-as-array feature therefore finishing this editor plugin upgrade
+- updated the FCLabel widget
+- replaced all the FCLabel widgets that have color HTML with the new FCLabel widget that uses parameters for 'color' and weight
+- minor changes
+
 17.04.2022
 
 - in Geometry Editor, in Copy Tool - work in progress (adding utility geometry for the array mode)
 - in Geometry Editor, in Copy Tool - linear array utility geometry is working
-- in Geometry Editor, COpy Tool, finished the copy-as-array feature except the 2D array type which was not implemented yet
-- Added new python module dependency for `darkdetect` which is used to detec the operating system appearance
-- Updated code application wide to set theme based on OS appearance at launch
-- Added option to have dark canvas in Light mode
-- Added combination of colors to be used for labels in the Preferences tab. The existing colors have been retained for Light mode and alternative colors added that work better in Dark mode
+- in Geometry Editor, Copy Tool, finished the copy-as-array feature except the 2D array type which was not implemented yet
 
 16.04.2022
 

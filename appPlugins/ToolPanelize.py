@@ -1160,7 +1160,7 @@ class PanelizeUI:
         # #############################################################################################################
         # Source Object Frame
         # #############################################################################################################
-        self.object_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('darkorange'), _("Source Object")))
+        self.object_label = FCLabel('%s' % _("Source Object"), color='darkorange', bold=True)
         self.object_label.setToolTip(
             _("Specify the type of object to be panelized\n"
               "It can be of type: Gerber, Excellon or Geometry.\n"
@@ -1205,7 +1205,7 @@ class PanelizeUI:
         # Reference Object Frame
         # #############################################################################################################
         # Type of box Panel object
-        self.box_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _("Reference")))
+        self.box_label = FCLabel('%s' % _("Reference"), color='green', bold=True)
         self.box_label.setToolTip(
             _("Choose the reference for panelization:\n"
               "- Object = the bounding box of a different object\n"
@@ -1263,7 +1263,7 @@ class PanelizeUI:
         # #############################################################################################################
         # Panel Data Frame
         # #############################################################################################################
-        panel_data_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('red'), _("Panel Data")))
+        panel_data_label = FCLabel('%s' % _("Panel Data"), color='red', bold=True)
         panel_data_label.setToolTip(
             _("This informations will shape the resulting panel.\n"
               "The number of rows and columns will set how many\n"
@@ -1287,7 +1287,7 @@ class PanelizeUI:
 
         self.spacing_columns_label = FCLabel('%s:' % _("Spacing cols"))
         self.spacing_columns_label.setToolTip(
-            _("Spacing between columns of the desired panel.\n"
+            _("Spacing between columns.\n"
               "In current units.")
         )
         grid2.addWidget(self.spacing_columns_label, 0, 0)
@@ -1300,7 +1300,7 @@ class PanelizeUI:
 
         self.spacing_rows_label = FCLabel('%s:' % _("Spacing rows"))
         self.spacing_rows_label.setToolTip(
-            _("Spacing between rows of the desired panel.\n"
+            _("Spacing between rows.\n"
               "In current units.")
         )
         grid2.addWidget(self.spacing_rows_label, 2, 0)
@@ -1312,7 +1312,7 @@ class PanelizeUI:
 
         self.columns_label = FCLabel('%s:' % _("Columns"))
         self.columns_label.setToolTip(
-            _("Number of columns of the desired panel")
+            _("Number of columns")
         )
         grid2.addWidget(self.columns_label, 4, 0)
         grid2.addWidget(self.columns, 4, 1)
@@ -1323,7 +1323,7 @@ class PanelizeUI:
 
         self.rows_label = FCLabel('%s:' % _("Rows"))
         self.rows_label.setToolTip(
-            _("Number of rows of the desired panel")
+            _("Number of rows")
         )
         grid2.addWidget(self.rows_label, 6, 0)
         grid2.addWidget(self.rows, 6, 1)
@@ -1331,7 +1331,7 @@ class PanelizeUI:
         # #############################################################################################################
         # COMMON PARAMETERS Frame
         # #############################################################################################################
-        self.param_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _("Parameters")))
+        self.param_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.param_label.setToolTip(_("Parameters that are common for all tools."))
         self.tools_box.addWidget(self.param_label)
 

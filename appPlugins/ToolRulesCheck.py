@@ -1182,7 +1182,7 @@ class RulesUI:
         # #############################################################################################################
         # Select All Frame
         # #############################################################################################################
-        select_all_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('CornflowerBlue'), _("Select All")))
+        select_all_label = FCLabel('%s' % _("Select All"), color='CornflowerBlue', bold=True)
         self.layout.addWidget(select_all_label)
 
         sel_frame = FCFrame()
@@ -1236,7 +1236,7 @@ class RulesUI:
         # #############################################################################################################
         # Top Gerber Frame
         # #############################################################################################################
-        top_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('red'), _("Top")))
+        top_label = FCLabel('%s' % _("Top"), color='red', bold=True)
         self.layout.addWidget(top_label)
 
         top_frame = FCFrame()
@@ -1302,7 +1302,7 @@ class RulesUI:
         # #############################################################################################################
         # Bottom Gerber Frame
         # #############################################################################################################
-        bottom_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _("Bottom")))
+        bottom_label = FCLabel('%s' % _("Bottom"), color='blue', bold=True)
         self.layout.addWidget(bottom_label)
 
         bottom_frame = FCFrame()
@@ -1368,7 +1368,7 @@ class RulesUI:
         # #############################################################################################################
         # Outline Frame
         # #############################################################################################################
-        outline_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _("Outline")))
+        outline_label = FCLabel('%s' % _("Outline"), color='green', bold=True)
         self.layout.addWidget(outline_label)
 
         outline_frame = FCFrame()
@@ -1397,7 +1397,7 @@ class RulesUI:
         # #############################################################################################################
         # Excellon Frame
         # #############################################################################################################
-        exc_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('brown'), _("Excellon")))
+        exc_label = FCLabel('%s' % _("Excellon"), color='brown', bold=True)
         exc_label.setToolTip(
             _("Excellon objects for which to check rules.")
         )
@@ -1460,7 +1460,7 @@ class RulesUI:
         # #############################################################################################################
         # Rules Frame
         # #############################################################################################################
-        rules_copper_label = FCLabel('<span style="color:%s;"><b>%s %s</b></span>' % (self.app.theme_safe_color('darkorange'), _("Copper"), _("Rules")))
+        rules_copper_label = FCLabel('%s %s' % (_("Copper"), _("Rules")), color='darkorange', bold=True)
         self.layout.addWidget(rules_copper_label)
         
         copper_frame = FCFrame()
@@ -1570,7 +1570,7 @@ class RulesUI:
         # #############################################################################################################
         # Silk Frame
         # #############################################################################################################
-        silk_copper_label = FCLabel('<span style="color:%s;"><b>%s %s</b></span>' % (self.app.theme_safe_color('teal'), _("Silk"), _("Rules")))
+        silk_copper_label = FCLabel('%s %s' % (_("Silk"), _("Rules")), color='teal', bold=True)
         self.layout.addWidget(silk_copper_label)
 
         silk_frame = FCFrame()
@@ -1657,7 +1657,7 @@ class RulesUI:
         # #############################################################################################################
         # Soldermask Frame
         # #############################################################################################################
-        sm_copper_label = FCLabel('<span style="color:%s;"><b>%s %s</b></span>' % (self.app.theme_safe_color('magenta'), _("Soldermask"), _("Rules")))
+        sm_copper_label = FCLabel('%s %s' % (_("Soldermask"), _("Rules")), color='magenta', bold=True)
         self.layout.addWidget(sm_copper_label)
 
         solder_frame = FCFrame()
@@ -1695,7 +1695,7 @@ class RulesUI:
         # #############################################################################################################
         # Holes Frame
         # #############################################################################################################
-        holes_copper_label = FCLabel('<span style="color:%s;"><b>%s %s</b></span>' % (self.app.theme_safe_color('brown'), _("Holes"), _("Rules")))
+        holes_copper_label = FCLabel('%s %s' % (_("Holes"), _("Rules")), color='brown', bold=True)
         self.layout.addWidget(holes_copper_label)
 
         holes_frame = FCFrame()

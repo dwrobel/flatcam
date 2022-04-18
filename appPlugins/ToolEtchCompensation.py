@@ -313,7 +313,7 @@ class EtchUI:
         # #############################################################################################################
         # Source Object Frame
         # #############################################################################################################
-        self.gerber_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('darkorange'), _("Source Object")))
+        self.gerber_label = FCLabel('%s' % _("Source Object"), color='darkorange', bold=True)
         self.gerber_label.setToolTip(
             _("Gerber object that will be compensated.")
         )
@@ -331,7 +331,7 @@ class EtchUI:
         # #############################################################################################################
         # Utilities
         # #############################################################################################################
-        self.util_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('red'), _("Utilities")))
+        self.util_label = FCLabel('%s' % _("Utilities"), color='red', bold=True)
         self.util_label.setToolTip('%s.' % _("Conversion utilities"))
         self.tools_box.addWidget(self.util_label)
 
@@ -389,7 +389,7 @@ class EtchUI:
         # #############################################################################################################
         # COMMON PARAMETERS Frame
         # #############################################################################################################
-        self.param_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _("Parameters")))
+        self.param_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.param_label.setToolTip(_("Parameters used for this tool."))
         self.tools_box.addWidget(self.param_label)
 

@@ -27,7 +27,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Plot Frame
         # #############################################################################################################
-        self.plot_options_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _("Plot Options")))
+        self.plot_options_label = FCLabel('%s' % _("Plot Options"), color='blue', bold=True)
         self.layout.addWidget(self.plot_options_label)
 
         plot_frame = FCFrame()
@@ -77,7 +77,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Excellon Format Frame
         # #############################################################################################################
-        self.excellon_format_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _("Excellon Format")))
+        self.excellon_format_label = FCLabel('%s' % _("Excellon Format"), color='green', bold=True)
         self.excellon_format_label.setToolTip(
             _("The NC drill files, usually named Excellon files\n"
               "are files that can be found in different formats.\n"
@@ -220,7 +220,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Optimization Frame
         # #############################################################################################################
-        self.excellon_general_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('teal'), _("Path Optimization")))
+        self.excellon_general_label = FCLabel('%s' % _("Path Optimization"), color='teal', bold=True)
         self.layout.addWidget(self.excellon_general_label)
 
         opt_frame = FCFrame()
@@ -272,7 +272,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         # Fusing Frame
         # #############################################################################################################
         # Fuse Tools
-        self.join_geo_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('magenta'), _('Join Option')))
+        self.join_geo_label = FCLabel('%s' % _("Join Option"), color='magenta', bold=True)
         self.layout.addWidget(self.join_geo_label)
 
         fuse_frame = FCFrame()
@@ -291,7 +291,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Object Color Frame
         # #############################################################################################################
-        self.gerber_color_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('darkorange'), _('Object Color')))
+        self.gerber_color_label = FCLabel('%s' % _("Object Color"), color='darkorange', bold=True)
         self.layout.addWidget(self.gerber_color_label)
 
         obj_frame = FCFrame()

@@ -2400,7 +2400,7 @@ class DrillingUI:
         # #############################################################################################################
         # Excellon Source Object Frame
         # #############################################################################################################
-        self.obj_combo_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('darkorange'), _("Source Object")))
+        self.obj_combo_label = FCLabel('%s' % _("Source Object"), color='darkorange', bold=True)
         self.obj_combo_label.setToolTip(
             _("Excellon object for drilling/milling operation.")
         )
@@ -2429,7 +2429,7 @@ class DrillingUI:
         # #############################################################################################################
         # Excellon Tool Table Frame
         # #############################################################################################################
-        self.tools_table_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _('Tools Table')))
+        self.tools_table_label = FCLabel('%s' % _("Tools Table"), color='green', bold=True)
         self.tools_table_label.setToolTip(_("Tools in the object used for drilling."))
         self.tools_box.addWidget(self.tools_table_label)
 
@@ -2744,7 +2744,7 @@ class DrillingUI:
         # COMMON PARAMETERS Frame
         # #############################################################################################################
         # General Parameters
-        self.gen_param_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('indigo'), _("Common Parameters")))
+        self.gen_param_label = FCLabel('%s' % _("Common Parameters"), color='indigo', bold=True)
         self.gen_param_label.setToolTip(
             _("Parameters that are common for all tools.")
         )

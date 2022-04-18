@@ -590,7 +590,7 @@ class TransformUI:
         # #############################################################################################################
         # PARAMETERS
         # #############################################################################################################
-        self.transform_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _("Parameters")))
+        self.transform_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.layout.addWidget(self.transform_label)
 
         # #############################################################################################################
@@ -671,7 +671,7 @@ class TransformUI:
         # #############################################################################################################
         # Rotate Frame
         # #############################################################################################################
-        rotate_title_lbl = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('tomato'), _("Rotate")))
+        rotate_title_lbl = FCLabel('%s' % _("Rotate"), color='tomato', bold=True)
         self.layout.addWidget(rotate_title_lbl)
 
         rot_frame = FCFrame()
@@ -714,7 +714,7 @@ class TransformUI:
         s_t_lay = QtWidgets.QHBoxLayout()
         self.layout.addLayout(s_t_lay)
 
-        skew_title_lbl = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('teal'), _("Skew")))
+        skew_title_lbl = FCLabel('%s' % _("Skew"), color='teal', bold=True)
         s_t_lay.addWidget(skew_title_lbl)
 
         s_t_lay.addStretch()
@@ -785,7 +785,7 @@ class TransformUI:
         sc_t_lay = QtWidgets.QHBoxLayout()
         self.layout.addLayout(sc_t_lay)
 
-        scale_title_lbl = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('magenta'), _("Scale")))
+        scale_title_lbl = FCLabel('%s' % _("Scale"), color='magenta', bold=True)
         sc_t_lay.addWidget(scale_title_lbl)
 
         sc_t_lay.addStretch()
@@ -853,7 +853,7 @@ class TransformUI:
         # #############################################################################################################
         # Mirror Frame
         # #############################################################################################################
-        flip_title_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('brown'), self.flipName))
+        flip_title_label = FCLabel('%s' % self.flipName, color='brown', bold=True)
         self.layout.addWidget(flip_title_label)
 
         mirror_frame = FCFrame()
@@ -881,7 +881,7 @@ class TransformUI:
         # #############################################################################################################
         # Offset Frame
         # #############################################################################################################
-        offset_title_lbl = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _("Offset")))
+        offset_title_lbl = FCLabel('%s' % _("Offset"), color='green', bold=True)
         self.layout.addWidget(offset_title_lbl)
 
         off_frame = FCFrame()
@@ -936,7 +936,7 @@ class TransformUI:
         b_t_lay = QtWidgets.QHBoxLayout()
         self.layout.addLayout(b_t_lay)
 
-        buffer_title_lbl = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('indigo'), _("Buffer")))
+        buffer_title_lbl = FCLabel('%s' % _("Buffer"), color='indigo', bold=True)
         b_t_lay.addWidget(buffer_title_lbl)
 
         b_t_lay.addStretch()

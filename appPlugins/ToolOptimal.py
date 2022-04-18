@@ -481,7 +481,7 @@ class OptimalUI:
         # #############################################################################################################
         # Gerber Source Object
         # #############################################################################################################
-        self.obj_combo_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('darkorange'), _("Source Object")))
+        self.obj_combo_label = FCLabel('%s' % _("Source Object"), color='darkorange', bold=True)
         self.obj_combo_label.setToolTip(
             "Gerber object for which to find the minimum distance between copper features."
         )
@@ -508,7 +508,7 @@ class OptimalUI:
         # #############################################################################################################
         # Parameters Frame
         # #############################################################################################################
-        self.param_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _('Parameters')))
+        self.param_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.param_label.setToolTip(_("Parameters used for this tool."))
         self.layout.addWidget(self.param_label)
 
@@ -531,7 +531,7 @@ class OptimalUI:
         # #############################################################################################################
         # Results Frame
         # #############################################################################################################
-        res_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('green'), _("Minimum distance")))
+        res_label = FCLabel('%s' % _("Minimum distance"), color='green', bold=True)
         res_label.setToolTip(_("Display minimum distance between copper features."))
         self.layout.addWidget(res_label)
 
@@ -595,7 +595,7 @@ class OptimalUI:
         # #############################################################################################################
         # Other Distances
         # #############################################################################################################
-        self.title_second_res_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('magenta'), _("Other distances")))
+        self.title_second_res_label = FCLabel('%s' % _("Other distances"), color='magenta', bold=True)
         self.title_second_res_label.setToolTip(_("Will display other distances in the Gerber file ordered from\n"
                                                  "the minimum to the maximum, not including the absolute minimum."))
         self.layout.addWidget(self.title_second_res_label)

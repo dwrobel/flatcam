@@ -1759,7 +1759,7 @@ class LevelUI:
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
-        self.obj_combo_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('darkorange'), _("Source Object")))
+        self.obj_combo_label = FCLabel('%s' % _("Source Object"), color='darkorange', bold=True)
         self.obj_combo_label.setToolTip(
             _("CNCJob source object to be levelled.")
         )
@@ -1836,7 +1836,7 @@ class LevelUI:
         # #############################################################################################################
         # ############### Probe GCode Generation ######################################################################
         # #############################################################################################################
-        self.probe_gc_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('blue'), _("Parameters")))
+        self.probe_gc_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.probe_gc_label.setToolTip(
             _("Will create a GCode which will be sent to the controller,\n"
               "either through a file or directly, with the intent to get the height map\n"
@@ -1953,7 +1953,7 @@ class LevelUI:
         # #############################################################################################################
         # Controller Frame
         # #############################################################################################################
-        self.al_controller_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('red'), _("Controller")))
+        self.al_controller_label = FCLabel('%s' % _("Controller"), color='red', bold=True)
         self.al_controller_label.setToolTip(
             _("The kind of controller for which to generate\n"
               "height map gcode.")

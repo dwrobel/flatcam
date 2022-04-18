@@ -25,7 +25,7 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # GCode Frame
         # #############################################################################################################
-        self.export_gcode_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('brown'), _("Export G-Code")))
+        self.export_gcode_label = FCLabel('%s' % _("Export G-Code"), color='brown', bold=True)
         self.export_gcode_label.setToolTip(
             _("Export and save G-Code to\n"
               "make this object to a file.")

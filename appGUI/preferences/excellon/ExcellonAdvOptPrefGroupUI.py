@@ -24,7 +24,7 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # PARAMETERS Frame
         # #############################################################################################################
-        self.exc_label = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (self.app.theme_safe_color('indigo'), _('Advanced Options')))
+        self.exc_label = FCLabel('%s' % _("Advanced Options"), color='indigo', bold=True)
         self.exc_label.setToolTip(
             _("A list of advanced parameters.\n"
               "Those parameters are available only for\n"
