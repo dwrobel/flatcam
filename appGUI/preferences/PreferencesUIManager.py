@@ -575,6 +575,7 @@ class PreferencesUIManager(QtCore.QObject):
             # SolderPaste Dispensing Tool
             "tools_solderpaste_tools": self.ui.plugin_pref_form.tools_solderpaste_group.nozzle_tool_dia_entry,
             "tools_solderpaste_new": self.ui.plugin_pref_form.tools_solderpaste_group.addtool_entry,
+            "tools_solderpaste_margin": self.ui.plugin_pref_form.tools_solderpaste_group.margin_entry,
             "tools_solderpaste_z_start": self.ui.plugin_pref_form.tools_solderpaste_group.z_start_entry,
             "tools_solderpaste_z_dispense": self.ui.plugin_pref_form.tools_solderpaste_group.z_dispense_entry,
             "tools_solderpaste_z_stop": self.ui.plugin_pref_form.tools_solderpaste_group.z_stop_entry,

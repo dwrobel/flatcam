@@ -1001,15 +1001,15 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         if postamble == '':
             postamble = self.app.options["cncjob_append"]
 
-        try:
-            if self.special_group:
-                self.app.inform.emit('[WARNING_NOTCL] %s %s %s.' %
-                                     (_("This CNCJob object can't be processed because it is a"),
-                                      str(self.special_group),
-                                      _("CNCJob object")))
-                return 'fail'
-        except AttributeError:
-            pass
+        # try:
+        #     if self.special_group:
+        #         self.app.inform.emit('[WARNING_NOTCL] %s %s %s.' %
+        #                              (_("This CNCJob object can't be processed because it is a"),
+        #                               str(self.special_group),
+        #                               _("CNCJob object")))
+        #         return 'fail'
+        # except AttributeError:
+        #     pass
 
         # if this dict is not empty then the object is a Geometry object
         if self.obj_options['type'].lower() == 'geometry':
@@ -1357,7 +1357,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                             self.plot2(tooldia=dia_plot, obj=self, visible=visible, gcode_parsed=gcode_parsed,
                                        kind=kind)
             self.shapes.redraw()
-        except (ObjectDeleted, AttributeError):
+        except (ObjectDeleted, AttributeError) as err:
+            self.app.log.debug("CNCJobObject.plot() --> %s" % str(err))
             self.shapes.clear(update=True)
             if self.app.use_3d_engine:
                 self.annotation.clear(update=True)

@@ -650,6 +650,7 @@ class AppDefaults:
         # SolderPaste Tool
         "tools_solderpaste_tools": "1.0, 0.3",
         "tools_solderpaste_new": 0.3,
+        "tools_solderpaste_margin": 0.0,
         "tools_solderpaste_z_start": 0.05,
         "tools_solderpaste_z_dispense": 0.1,
         "tools_solderpaste_z_stop": 0.05,

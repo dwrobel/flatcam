@@ -154,6 +154,7 @@ class SolderPaste(AppTool):
             "tools_solderpaste_z_dispense":     self.ui.z_dispense_entry,
             "tools_solderpaste_z_stop":         self.ui.z_stop_entry,
             "tools_solderpaste_z_travel":       self.ui.z_travel_entry,
+            "tools_solderpaste_margin":         self.ui.margin_entry,
             "tools_solderpaste_z_toolchange":   self.ui.z_toolchange_entry,
             "tools_solderpaste_xy_toolchange":  self.ui.xy_toolchange_entry,
             "tools_solderpaste_frxy":           self.ui.frxy_entry,
@@ -217,6 +218,12 @@ class SolderPaste(AppTool):
         if obj and obj.kind == 'gerber':
             obj_name = obj.obj_options['name']
             self.ui.obj_combo.set_value(obj_name)
+        else:
+            # select first Gerber object found
+            for o in self.app.collection.get_list():
+                if o.kind == 'gerber':
+                    obj_name = o.obj_options['name']
+                    self.ui.obj_combo.set_value(obj_name)
 
     def build_ui(self):
         """
@@ -451,6 +458,8 @@ class SolderPaste(AppTool):
 
         current_row = self.ui.tools_table.currentRow()
         uid = tooluid if tooluid else int(self.ui.tools_table.item(current_row, 2).text())
+        if uid < 0:
+            return 
         for key in self.form_fields:
             self.tooltable_tools[uid]['data'].update({
                 key: self.form_fields[key].get_value()
@@ -718,6 +727,10 @@ class SolderPaste(AppTool):
         :param use_thread: use thread, True or False
         :return: a Geometry type object
         """
+
+        # this is a percentage of the tool diameter
+        tool_margin = self.ui.margin_entry.get_value()
+
         proc = self.app.proc_container.new('%s...' % _("Working"))
         obj = work_object
 
@@ -795,7 +808,7 @@ class SolderPaste(AppTool):
             tooluid = 1
 
             for tool in sorted_tools:
-                offset = tool / 2
+                offset = ((tool_margin * tool) * 0.01) + (tool / 2)
                 for uid, vl in self.tooltable_tools.items():
                     if float('%.*f' % (self.decimals, float(vl['tooldia']))) == tool:
                         tooluid = int(uid)
@@ -817,7 +830,7 @@ class SolderPaste(AppTool):
                 # so we do a hack: get first the exterior in a form of LinearRings and then convert back to Polygon
                 # because intersection does not work on LinearRings
                 for g in work_geo:
-                    # for whatever reason intersection on LinearRings does not work so we convert back to Polygons
+                    # for whatever reason intersection on LinearRings does not work, so we convert back to Polygons
                     poly = Polygon(g)
                     x_min, y_min, x_max, y_max = poly.bounds
 
@@ -1002,13 +1015,13 @@ class SolderPaste(AppTool):
                     app_obj.log.debug("GeometryObject.mtool_gen_cncjob() --> generate_from_geometry2() failed")
                     return 'fail'
                 else:
-                    tool_cnc_dict['gcode'] = StringIO(res)
+                    tool_cnc_dict['gcode'] = res
                 total_gcode += res
 
                 # ## PARSE GCODE # ##
                 tool_cnc_dict['gcode_parsed'] = new_obj.gcode_parse(tool_data=tool_cnc_dict['data'])
 
-                # TODO this serve for bounding box creation only; should be optimized
+                # TODO this serve for bounding box creation only; should be optimized. Using recursive bounds()?
                 tool_cnc_dict['solid_geometry'] = unary_union([geo['geom'] for geo in tool_cnc_dict['gcode_parsed']])
 
                 # tell gcode_parse from which point to start drawing the lines depending on what kind of
@@ -1018,6 +1031,9 @@ class SolderPaste(AppTool):
                     tooluid_key: deepcopy(tool_cnc_dict)
                 })
                 tool_cnc_dict.clear()
+
+            used_tools = list(obj.tools.keys())
+            new_obj.used_tools = used_tools
 
             new_obj.source_file = StringIO(total_gcode)
 
@@ -1329,6 +1345,21 @@ class SolderUI:
         )
         param_grid.addWidget(self.z_travel_label, 0, 0)
         param_grid.addWidget(self.z_travel_entry, 0, 1)
+
+        # MARGIN
+        self.margin_label = FCLabel('%s:' % _("Margin"))
+        self.margin_label.setToolTip('%s %s' % (
+            _("Offset from the boundary."),
+            _("Fraction of tool diameter.")
+        )
+        )
+        self.margin_entry = FCDoubleSpinner(suffix='%')
+        self.margin_entry.set_range(-100.0000, 100.0000)
+        self.margin_entry.set_precision(self.decimals)
+        self.margin_entry.setSingleStep(0.1)
+
+        param_grid.addWidget(self.margin_label, 2, 0)
+        param_grid.addWidget(self.margin_entry, 2, 1)
 
         # #############################################################################################################
         # Dispense Frame
