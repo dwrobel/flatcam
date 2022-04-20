@@ -3003,6 +3003,9 @@ class FCPaint(FCShapeTool):
         self.origin = (0, 0)
         self.draw_app.paint_tool.run()
 
+    def clean_up(self):
+        pass
+
 
 class FCTransform(FCShapeTool):
     def __init__(self, draw_app):
@@ -3015,6 +3018,9 @@ class FCTransform(FCShapeTool):
         self.draw_app.app.inform.emit(_("Shape transformations ..."))
         self.origin = (0, 0)
         self.draw_app.transform_tool.run()
+
+    def clean_up(self):
+        pass
 
 
 # ###############################################

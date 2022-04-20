@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM Evo beta
 - updated some custom widgets in the GUI elements such that the scrolling in the Preferences can be done without blocking on some of the widgets
 - remade how the Preferences Tab is constructed such that now is made on demand for each section (tab) therefore making it faster to load (once a section is loaded - by clicking its tab - it will not be reloaded in the current session)
 - a fix for the latest change in the Preferences Tab
+- some changes in the Geometry Editor UI's and in some cases, fixes for the right-click close action
 
 19.04.2022
 

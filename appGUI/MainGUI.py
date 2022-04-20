@@ -749,7 +749,7 @@ class MainGUI(QtWidgets.QMainWindow):
             '%s\t%s' % (_("Copy Geom"), _('C')))
         self.geo_delete_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/deleteshape16.png'),
-            '%s\t%s' % (_("Delete Shape"), _('DEL'))
+            '%s\t%s' % (_("Delete"), _('DEL'))
         )
         self.geo_editor_menu.addSeparator()
         self.geo_move_menuitem = self.geo_editor_menu.addAction(
@@ -1297,7 +1297,7 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/copy32.png'), _("Copy Shape(s)"))
 
         self.geo_delete_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete Shape"))
+            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete"))
         self.geo_transform_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transformations"))
         self.geo_edit_toolbar.addSeparator()
@@ -2665,7 +2665,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.geo_copy_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/copy32.png'), _("Copy Objects"))
         self.geo_delete_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete Shape"))
+            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete"))
         self.geo_transform_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transformations"))
 
@@ -5247,7 +5247,7 @@ class ShortcutsTab(QtWidgets.QWidget):
             _('Space'), _("Rotate Geometry"),
             _('ENTER'), _("Finish drawing for certain tools"),
             _('Esc'), _("Abort and return to Select"),
-            _('Del'), _("Delete Shape")
+            _('Del'), _("Delete")
         )
 
         # EXCELLON EDITOR SHORTCUT LIST

@@ -219,8 +219,20 @@ class RectangleEditorUI:
         grid0 = GLay(v_spacing=5, h_spacing=3)
         self.rect_tool_box.addLayout(grid0)
 
+        # Position
+        self.pos_lbl = FCLabel('%s' % _("Position"), bold=True, color='red')
+        grid0.addWidget(self.pos_lbl, 0, 0, 1, 2)
+        # #############################################################################################################
+        # Position Frame
+        # #############################################################################################################
+        pos_frame = FCFrame()
+        grid0.addWidget(pos_frame, 2, 0, 1, 2)
+
+        pos_grid = GLay(v_spacing=5, h_spacing=3)
+        pos_frame.setLayout(pos_grid)
+
         # Anchor
-        self.anchor_lbl = FCLabel('%s:' % _("Anchor"), bold=True)
+        self.anchor_lbl = FCLabel('%s:' % _("Anchor"), bold=False)
         choices = [
             {"label": _("T Left"), "value": "tl"},
             {"label": _("T Right"), "value": "tr"},
@@ -229,31 +241,38 @@ class RectangleEditorUI:
             {"label": _("Center"), "value": "c"}
         ]
         self.anchor_radio = RadioSetCross(choices, compact=True)
-        grid0.addWidget(self.anchor_lbl, 0, 0)
-        grid0.addWidget(self.anchor_radio, 0, 1)
-
-        # Position
-        self.pos_lbl = FCLabel('%s' % _("Position"), bold=True)
-        grid0.addWidget(self.pos_lbl, 2, 0, 1, 2)
+        pos_grid.addWidget(self.anchor_lbl, 0, 0)
+        pos_grid.addWidget(self.anchor_radio, 0, 1)
 
         # X Pos
         self.x_lbl = FCLabel('%s:' % _("X"))
         self.x_entry = FCDoubleSpinner()
         self.x_entry.set_precision(self.decimals)
         self.x_entry.set_range(-10000.0000, 10000.0000)
-        grid0.addWidget(self.x_lbl, 4, 0)
-        grid0.addWidget(self.x_entry, 4, 1)
+        pos_grid.addWidget(self.x_lbl, 2, 0)
+        pos_grid.addWidget(self.x_entry, 2, 1)
 
         # Y Pos
         self.y_lbl = FCLabel('%s:' % _("Y"))
         self.y_entry = FCDoubleSpinner()
         self.y_entry.set_precision(self.decimals)
         self.y_entry.set_range(-10000.0000, 10000.0000)
-        grid0.addWidget(self.y_lbl, 6, 0)
-        grid0.addWidget(self.y_entry, 6, 1)
+        pos_grid.addWidget(self.y_lbl, 4, 0)
+        pos_grid.addWidget(self.y_entry, 4, 1)
+
+        self.corner_lbl = FCLabel('%s' % _("Corner"), bold=True, color='green')
+        grid0.addWidget(self.corner_lbl, 4, 0, 1, 2)
+        # #############################################################################################################
+        # Corner Frame
+        # #############################################################################################################
+        cor_frame = FCFrame()
+        grid0.addWidget(cor_frame, 6, 0, 1, 2)
+
+        cor_grid = GLay(v_spacing=5, h_spacing=3)
+        cor_frame.setLayout(cor_grid)
 
         # Corner Type
-        self.corner_lbl = FCLabel('%s:' % _("Corner"))
+        self.corner_lbl = FCLabel('%s:' % _("Type"))
         self.corner_lbl.setToolTip(
             _("There are 3 types of corners:\n"
               " - 'Round': the corners are rounded\n"
@@ -265,38 +284,47 @@ class RectangleEditorUI:
             {'label': _('Square'), 'value': 's'},
             {'label': _('Beveled'), 'value': 'b'},
         ], orientation='vertical', compact=True)
-        grid0.addWidget(self.corner_lbl, 8, 0)
-        grid0.addWidget(self.corner_radio, 8, 1)
+        cor_grid.addWidget(self.corner_lbl, 0, 0)
+        cor_grid.addWidget(self.corner_radio, 0, 1)
 
         # Radius
         self.radius_lbl = FCLabel('%s:' % _("Radius"))
         self.radius_entry = FCDoubleSpinner()
         self.radius_entry.set_precision(self.decimals)
         self.radius_entry.set_range(0.0000, 10000.0000)
-        grid0.addWidget(self.radius_lbl, 10, 0)
-        grid0.addWidget(self.radius_entry, 10, 1)
+        cor_grid.addWidget(self.radius_lbl, 2, 0)
+        cor_grid.addWidget(self.radius_entry, 2, 1)
 
         # Size
-        self.size_lbl = FCLabel('%s' % _("Size"), bold=True)
-        grid0.addWidget(self.size_lbl, 12, 0, 1, 2)
+        self.size_lbl = FCLabel('%s' % _("Size"), bold=True, color='indigo')
+        grid0.addWidget(self.size_lbl, 8, 0, 1, 2)
+        # #############################################################################################################
+        # Size Frame
+        # #############################################################################################################
+        size_frame = FCFrame()
+        grid0.addWidget(size_frame, 10, 0, 1, 2)
+
+        size_grid = GLay(v_spacing=5, h_spacing=3)
+        size_frame.setLayout(size_grid)
 
         # Length
         self.length_lbl = FCLabel('%s:' % _("Length"))
         self.length_entry = NumericalEvalEntry()
-        grid0.addWidget(self.length_lbl, 14, 0)
-        grid0.addWidget(self.length_entry, 14, 1)
+        size_grid.addWidget(self.length_lbl, 0, 0)
+        size_grid.addWidget(self.length_entry, 0, 1)
 
         # Width
         self.width_lbl = FCLabel('%s:' % _("Width"))
         self.width_entry = NumericalEvalEntry()
-        grid0.addWidget(self.width_lbl, 16, 0)
-        grid0.addWidget(self.width_entry, 16, 1)
+        size_grid.addWidget(self.width_lbl, 2, 0)
+        size_grid.addWidget(self.width_entry, 2, 1)
 
         # Buttons
         self.add_button = FCButton(_("Add"))
         self.add_button.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
         grid0.addWidget(self.add_button, 18, 0, 1, 2)
 
+        GLay.set_common_column_size([grid0, pos_grid, cor_grid, size_grid], 0)
         self.layout.addStretch(1)
 
         # Note
