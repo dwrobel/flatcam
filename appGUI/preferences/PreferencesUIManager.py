@@ -809,6 +809,7 @@ class PreferencesUIManager(QtCore.QObject):
 
         :return: None
         """
+        self.init_preferences_gui()
 
         self.pref_connect()
 
@@ -818,6 +819,16 @@ class PreferencesUIManager(QtCore.QObject):
         # log.debug("Finished Preferences GUI form initialization.")
 
     def init_preferences_gui(self):
+        self.general_displayed = False
+        self.gerber_displayed = False
+        self.excellon_displayed = False
+        self.geometry_displayed = False
+        self.cnc_displayed = False
+        self.engrave_displayed = False
+        self.plugins_displayed = False
+        self.plugins2_displayed = False
+        self.util_displayed = False
+
         gen_form = self.ui.general_pref_form
         try:
             self.ui.general_scroll_area.takeWidget()
@@ -825,12 +836,10 @@ class PreferencesUIManager(QtCore.QObject):
             self.ui.app.log.debug("Nothing to remove")
         self.ui.general_scroll_area.setWidget(gen_form)
         gen_form.show()
-        self.general_displayed = True
 
     def pref_connect(self):
         self.pref_disconnect()
 
-        self.init_preferences_gui()
         self.ui.pref_tab_area.tabBarClicked.connect(self.on_tab_clicked)
 
         # Button handlers
@@ -866,53 +875,52 @@ class PreferencesUIManager(QtCore.QObject):
         except Exception:
             pass
 
-        try:
-            self.ui.general_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-
-        try:
-            self.ui.gerber_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-
-        try:
-            self.ui.excellon_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-
-        try:
-            self.ui.geometry_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-
-        try:
-            self.ui.cncjob_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-
-        try:
-            self.ui.plugins_engraving_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-
-        try:
-            self.ui.tools_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-
-        try:
-            self.ui.tools2_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-
-        try:
-            self.ui.fa_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-
     def clear_preferences_gui(self):
         self.pref_disconnect()
+        # try:
+        #     self.ui.general_scroll_area.takeWidget()
+        # except Exception:
+        #     self.ui.app.log.debug("Nothing to remove")
+        #
+        # try:
+        #     self.ui.gerber_scroll_area.takeWidget()
+        # except Exception:
+        #     self.ui.app.log.debug("Nothing to remove")
+        #
+        # try:
+        #     self.ui.excellon_scroll_area.takeWidget()
+        # except Exception:
+        #     self.ui.app.log.debug("Nothing to remove")
+        #
+        # try:
+        #     self.ui.geometry_scroll_area.takeWidget()
+        # except Exception:
+        #     self.ui.app.log.debug("Nothing to remove")
+        #
+        # try:
+        #     self.ui.cncjob_scroll_area.takeWidget()
+        # except Exception:
+        #     self.ui.app.log.debug("Nothing to remove")
+        #
+        # try:
+        #     self.ui.plugins_engraving_scroll_area.takeWidget()
+        # except Exception:
+        #     self.ui.app.log.debug("Nothing to remove")
+        #
+        # try:
+        #     self.ui.tools_scroll_area.takeWidget()
+        # except Exception:
+        #     self.ui.app.log.debug("Nothing to remove")
+        #
+        # try:
+        #     self.ui.tools2_scroll_area.takeWidget()
+        # except Exception:
+        #     self.ui.app.log.debug("Nothing to remove")
+        #
+        # try:
+        #     self.ui.fa_scroll_area.takeWidget()
+        # except Exception:
+        #     self.ui.app.log.debug("Nothing to remove")
 
     def on_tab_clicked(self, idx):
         if idx == 0 and self.general_displayed is False:
