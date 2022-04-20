@@ -28,6 +28,16 @@ class PreferencesUIManager(QtCore.QObject):
         """
         super(PreferencesUIManager, self).__init__()
 
+        self.general_displayed = False
+        self.gerber_displayed = False
+        self.excellon_displayed = False
+        self.geometry_displayed = False
+        self.cnc_displayed = False
+        self.engrave_displayed = False
+        self.plugins_displayed = False
+        self.plugins2_displayed = False
+        self.util_displayed = False
+
         self.defaults = defaults
         self.data_path = data_path
         self.ui = ui
@@ -800,6 +810,14 @@ class PreferencesUIManager(QtCore.QObject):
         :return: None
         """
 
+        self.pref_connect()
+
+        # Initialize the color box's color in Preferences -> Global -> Colors
+        self.__init_color_pickers()
+
+        # log.debug("Finished Preferences GUI form initialization.")
+
+    def init_preferences_gui(self):
         gen_form = self.ui.general_pref_form
         try:
             self.ui.general_scroll_area.takeWidget()
@@ -807,73 +825,13 @@ class PreferencesUIManager(QtCore.QObject):
             self.ui.app.log.debug("Nothing to remove")
         self.ui.general_scroll_area.setWidget(gen_form)
         gen_form.show()
+        self.general_displayed = True
 
-        ger_form = self.ui.gerber_pref_form
-        try:
-            self.ui.gerber_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-        self.ui.gerber_scroll_area.setWidget(ger_form)
-        ger_form.show()
+    def pref_connect(self):
+        self.pref_disconnect()
 
-        exc_form = self.ui.excellon_pref_form
-        try:
-            self.ui.excellon_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-        self.ui.excellon_scroll_area.setWidget(exc_form)
-        exc_form.show()
-
-        geo_form = self.ui.geo_pref_form
-        try:
-            self.ui.geometry_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-        self.ui.geometry_scroll_area.setWidget(geo_form)
-        geo_form.show()
-
-        cnc_form = self.ui.cncjob_pref_form
-        try:
-            self.ui.cncjob_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-        self.ui.cncjob_scroll_area.setWidget(cnc_form)
-        cnc_form.show()
-
-        plugins_engraving_form = self.ui.plugin_eng_pref_form
-        try:
-            self.ui.plugins_engraving_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-        self.ui.plugins_engraving_scroll_area.setWidget(plugins_engraving_form)
-        plugins_engraving_form.show()
-
-        plugins_form = self.ui.plugin_pref_form
-        try:
-            self.ui.tools_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-        self.ui.tools_scroll_area.setWidget(plugins_form)
-        plugins_form.show()
-
-        plugins2_form = self.ui.plugin2_pref_form
-        try:
-            self.ui.tools2_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-        self.ui.tools2_scroll_area.setWidget(plugins2_form)
-        plugins2_form.show()
-
-        fa_form = self.ui.util_pref_form
-        try:
-            self.ui.fa_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-        self.ui.fa_scroll_area.setWidget(fa_form)
-        fa_form.show()
-
-        # Initialize the color box's color in Preferences -> Global -> Colors
-        self.__init_color_pickers()
+        self.init_preferences_gui()
+        self.ui.pref_tab_area.tabBarClicked.connect(self.on_tab_clicked)
 
         # Button handlers
         self.ui.pref_save_button.clicked.connect(lambda: self.on_save_button(save_to_file=True))
@@ -881,9 +839,12 @@ class PreferencesUIManager(QtCore.QObject):
         self.ui.pref_close_button.clicked.connect(self.on_pref_close_button)
         self.ui.pref_defaults_button.clicked.connect(self.on_restore_defaults_preferences)
 
-        # log.debug("Finished Preferences GUI form initialization.")
+    def pref_disconnect(self):
+        try:
+            self.ui.pref_tab_area.tabBarClicked.disconnect()
+        except Exception:
+            pass
 
-    def clear_preferences_gui(self):
         # Disconnect Button handlers
         try:
             self.ui.pref_save_button.clicked.disconnect()
@@ -949,6 +910,100 @@ class PreferencesUIManager(QtCore.QObject):
             self.ui.fa_scroll_area.takeWidget()
         except Exception:
             self.ui.app.log.debug("Nothing to remove")
+
+    def clear_preferences_gui(self):
+        self.pref_disconnect()
+
+    def on_tab_clicked(self, idx):
+        if idx == 0 and self.general_displayed is False:
+            self.general_displayed = True
+            gen_form = self.ui.general_pref_form
+            try:
+                self.ui.general_scroll_area.takeWidget()
+            except Exception:
+                self.ui.app.log.debug("Nothing to remove")
+            self.ui.general_scroll_area.setWidget(gen_form)
+            gen_form.show()
+
+        if idx == 1 and self.gerber_displayed is False:
+            self.gerber_displayed = True
+            ger_form = self.ui.gerber_pref_form
+            try:
+                self.ui.gerber_scroll_area.takeWidget()
+            except Exception:
+                self.ui.app.log.debug("Nothing to remove")
+            self.ui.gerber_scroll_area.setWidget(ger_form)
+            ger_form.show()
+
+        if idx == 2 and self.excellon_displayed is False:
+            self.excellon_displayed = True
+            exc_form = self.ui.excellon_pref_form
+            try:
+                self.ui.excellon_scroll_area.takeWidget()
+            except Exception:
+                self.ui.app.log.debug("Nothing to remove")
+            self.ui.excellon_scroll_area.setWidget(exc_form)
+            exc_form.show()
+
+        if idx == 3 and self.geometry_displayed is False:
+            self.geometry_displayed = True
+            geo_form = self.ui.geo_pref_form
+            try:
+                self.ui.geometry_scroll_area.takeWidget()
+            except Exception:
+                self.ui.app.log.debug("Nothing to remove")
+            self.ui.geometry_scroll_area.setWidget(geo_form)
+            geo_form.show()
+
+        if idx == 4 and self.cnc_displayed is False:
+            self.cnc_displayed = True
+            cnc_form = self.ui.cncjob_pref_form
+            try:
+                self.ui.cncjob_scroll_area.takeWidget()
+            except Exception:
+                self.ui.app.log.debug("Nothing to remove")
+            self.ui.cncjob_scroll_area.setWidget(cnc_form)
+            cnc_form.show()
+
+        if idx == 5 and self.engrave_displayed is False:
+            self.engrave_displayed = True
+            plugins_engraving_form = self.ui.plugin_eng_pref_form
+            try:
+                self.ui.plugins_engraving_scroll_area.takeWidget()
+            except Exception:
+                self.ui.app.log.debug("Nothing to remove")
+            self.ui.plugins_engraving_scroll_area.setWidget(plugins_engraving_form)
+            plugins_engraving_form.show()
+
+        if idx == 6 and self.plugins_displayed is False:
+            self.plugins_displayed = True
+            plugins_form = self.ui.plugin_pref_form
+            try:
+                self.ui.tools_scroll_area.takeWidget()
+            except Exception:
+                self.ui.app.log.debug("Nothing to remove")
+            self.ui.tools_scroll_area.setWidget(plugins_form)
+            plugins_form.show()
+
+        if idx == 7 and self.plugins2_displayed is False:
+            self.plugins2_displayed = True
+            plugins2_form = self.ui.plugin2_pref_form
+            try:
+                self.ui.tools2_scroll_area.takeWidget()
+            except Exception:
+                self.ui.app.log.debug("Nothing to remove")
+            self.ui.tools2_scroll_area.setWidget(plugins2_form)
+            plugins2_form.show()
+
+        if idx == 8 and self.util_displayed is False:
+            self.util_displayed = True
+            fa_form = self.ui.util_pref_form
+            try:
+                self.ui.fa_scroll_area.takeWidget()
+            except Exception:
+                self.ui.app.log.debug("Nothing to remove")
+            self.ui.fa_scroll_area.setWidget(fa_form)
+            fa_form.show()
 
     def __init_color_pickers(self):
         # Init Gerber Plot Colors
