@@ -1045,12 +1045,25 @@ class FCColorEntry(QtWidgets.QFrame):
         return value[7:9]
 
 
+class FCSlider(QtWidgets.QSlider):
+
+    def __int__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+
+    def wheelEvent(self, event: QtGui.QWheelEvent) -> None:
+        if self.hasFocus():
+            super().wheelEvent(event)
+        else:
+            event.ignore()
+
+
 class FCSliderWithSpinner(QtWidgets.QFrame):
 
     def __init__(self, min=0, max=100, step=1, **kwargs):
         super().__init__(**kwargs)
 
-        self.slider = QtWidgets.QSlider(QtCore.Qt.Orientation.Horizontal)
+        self.slider = FCSlider(QtCore.Qt.Orientation.Horizontal)
         self.slider.setMinimum(min)
         self.slider.setMaximum(max)
         self.slider.setSingleStep(step)
@@ -1075,7 +1088,7 @@ class FCSliderWithSpinner(QtWidgets.QFrame):
         self.spinner.valueChanged.connect(self._on_spinner)
 
         self.valueChanged = self.spinner.valueChanged
-        self.slider.installEventFilter(self)
+        # self.slider.installEventFilter(self)
 
     def get_value(self) -> int:
         return self.spinner.get_value()
@@ -1091,11 +1104,11 @@ class FCSliderWithSpinner(QtWidgets.QFrame):
         slider_value = self.slider.value()
         self.spinner.set_value(slider_value)
 
-    def eventFilter(self, object, event):
-        if event.type() == QtCore.QEvent.Type.Wheel:
-            if not self.slider.hasFocus():
-                return True
-        return False
+    # def eventFilter(self, object, event):
+    #     if event.type() == QtCore.QEvent.Type.Wheel:
+    #         if not self.slider.hasFocus():
+    #             return True
+    #     return False
 
 
 class FCSpinner(QtWidgets.QSpinBox):
@@ -1127,6 +1140,7 @@ class FCSpinner(QtWidgets.QSpinBox):
         self.prev_readyToEdit = True
         self.menu = None
 
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         if policy:
             sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored,
                                                QtWidgets.QSizePolicy.Policy.Preferred)
@@ -1151,10 +1165,17 @@ class FCSpinner(QtWidgets.QSpinBox):
         else:
             super().keyPressEvent(event)
 
-    def wheelEvent(self, *args, **kwargs):
-        # should work only there is a focus in the lineedit of the SpinBox
-        if self.readyToEdit is False:
-            super().wheelEvent(*args, **kwargs)
+    def wheelEvent(self, event: QtGui.QWheelEvent) -> None:
+        if self.hasFocus():
+            super().wheelEvent(event)
+        else:
+            event.ignore()
+    # def wheelEvent(self, *args, **kwargs):
+    #     # should work only there is a focus in the lineedit of the SpinBox
+    #     if self.readyToEdit is False:
+    #         super().wheelEvent(*args, **kwargs)
+    #         return
+    #     self.clearFocus()
 
     def on_edit_finished(self):
         self.clearFocus()
@@ -1326,173 +1347,6 @@ class FCSpinner(QtWidgets.QSpinBox):
     #     return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
 
 
-class FCDoubleSlider(QtWidgets.QSlider):
-    # frome here: https://stackoverflow.com/questions/42820380/use-float-for-qslider
-
-    # create our our signal that we can connect to if necessary
-    doubleValueChanged = pyqtSignal(float)
-
-    def __init__(self, decimals=3, orientation='horizontal', *args, **kargs):
-        if orientation == 'horizontal':
-            super(FCDoubleSlider, self).__init__(QtCore.Qt.Orientation.Horizontal, *args, **kargs)
-        else:
-            super(FCDoubleSlider, self).__init__(QtCore.Qt.Orientation.Vertical, *args, **kargs)
-
-        self._multi = 10 ** decimals
-
-        self.valueChanged.connect(self.emitDoubleValueChanged)
-
-    def emitDoubleValueChanged(self):
-        value = float(super(FCDoubleSlider, self).value()) / self._multi
-        self.doubleValueChanged.emit(value)
-
-    def value(self):
-        return float(super(FCDoubleSlider, self).value()) / self._multi
-
-    def get_value(self):
-        return self.value()
-
-    def setMinimum(self, value):
-        return super(FCDoubleSlider, self).setMinimum(int(value * self._multi))
-
-    def setMaximum(self, value):
-        return super(FCDoubleSlider, self).setMaximum(int(value * self._multi))
-
-    def setSingleStep(self, value):
-        return super(FCDoubleSlider, self).setSingleStep(int(value * self._multi))
-
-    def singleStep(self):
-        return float(super(FCDoubleSlider, self).singleStep()) / self._multi
-
-    def set_value(self, value):
-        super(FCDoubleSlider, self).setValue(int(value * self._multi))
-
-    def set_precision(self, decimals):
-        self._multi = 10 ** decimals
-
-    def set_range(self, min, max):
-        self.blockSignals(True)
-        self.setRange(int(min * self._multi), int(max * self._multi))
-        self.blockSignals(False)
-
-
-class FCSliderWithDoubleSpinner(QtWidgets.QFrame):
-
-    def __init__(self, min=0, max=10000.0000, step=1, precision=4, orientation='horizontal', **kwargs):
-        super().__init__(**kwargs)
-
-        self.slider = FCDoubleSlider(orientation=orientation)
-        self.slider.setMinimum(min)
-        self.slider.setMaximum(max)
-        self.slider.setSingleStep(step)
-        self.slider.set_range(min, max)
-
-        self.spinner = FCDoubleSpinner()
-        self.spinner.set_range(min, max)
-        self.spinner.set_precision(precision)
-
-        self.spinner.set_step(step)
-        self.spinner.setMinimumWidth(70)
-
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred,
-                                           QtWidgets.QSizePolicy.Policy.Preferred)
-        self.spinner.setSizePolicy(sizePolicy)
-
-        self.layout = QtWidgets.QHBoxLayout()
-        self.layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
-        self.layout.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.slider)
-        self.layout.addWidget(self.spinner)
-        self.setLayout(self.layout)
-
-        self.slider.doubleValueChanged.connect(self._on_slider)
-        self.spinner.valueChanged.connect(self._on_spinner)
-
-        self.valueChanged = self.spinner.valueChanged
-
-    def set_precision(self, prec):
-        self.spinner.set_precision(prec)
-
-    def setSingleStep(self, step):
-        self.spinner.set_step(step)
-
-    def set_range(self, min, max):
-        self.spinner.set_range(min, max)
-        self.slider.set_range(min, max)
-
-    def set_minimum(self, min):
-        self.slider.setMinimum(min)
-        self.spinner.setMinimum(min)
-
-    def set_maximum(self, max):
-        self.slider.setMaximum(max)
-        self.spinner.setMaximum(max)
-
-    def get_value(self) -> float:
-        return self.spinner.get_value()
-
-    def set_value(self, value: float):
-        self.spinner.set_value(value)
-
-    def _on_spinner(self):
-        spinner_value = self.spinner.value()
-        self.slider.set_value(spinner_value)
-
-    def _on_slider(self):
-        slider_value = self.slider.value()
-        self.spinner.set_value(slider_value)
-
-
-class FCButtonWithDoubleSpinner(QtWidgets.QFrame):
-
-    def __init__(self, min=0, max=100, step=1, decimals=4, button_text='', button_icon=None, callback=None, **kwargs):
-        super().__init__(**kwargs)
-
-        self.button = QtWidgets.QToolButton()
-        if button_text != '':
-            self.button.setText(button_text)
-        if button_icon:
-            self.button.setIcon(button_icon)
-
-        self.spinner = FCDoubleSpinner()
-        self.spinner.set_range(min, max)
-        self.spinner.set_step(step)
-        self.spinner.set_precision(decimals)
-        self.spinner.setMinimumWidth(70)
-
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
-                                           QtWidgets.QSizePolicy.Policy.Preferred)
-        self.spinner.setSizePolicy(sizePolicy)
-
-        self.layout = QtWidgets.QHBoxLayout()
-        self.layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
-        self.layout.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.spinner)
-        self.layout.addWidget(self.button)
-        self.setLayout(self.layout)
-
-        self.valueChanged = self.spinner.valueChanged
-
-        self._callback = callback
-        self.button.clicked.connect(self._callback)
-
-    def get_value(self) -> float:
-        return self.spinner.get_value()
-
-    def set_value(self, value: float):
-        self.spinner.set_value(value)
-
-    def set_callback(self, callback):
-        self._callback = callback
-
-    def set_text(self, txt: str):
-        if txt:
-            self.button.setText(txt)
-
-    def set_icon(self, icon: QtGui.QIcon):
-        self.button.setIcon(icon)
-
-
 class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
     returnPressed = QtCore.pyqtSignal()
     confirmation_signal = QtCore.pyqtSignal(bool, float, float)
@@ -1507,6 +1361,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         :param policy:      by default the widget will not compact as much as possible on horizontal
         """
         super(FCDoubleSpinner, self).__init__(parent)
+        self.cursor_pos = None
         self.readyToEdit = True
 
         self.editingFinished.connect(self.on_edit_finished)
@@ -1536,6 +1391,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         self.prev_readyToEdit = True
         self.menu = None
 
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         if policy:
             sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored,
                                                QtWidgets.QSizePolicy.Policy.Preferred)
@@ -1565,10 +1421,15 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         else:
             super().keyPressEvent(event)
 
-    def wheelEvent(self, *args, **kwargs):
-        # should work only there is a focus in the lineedit of the SpinBox
-        if self.readyToEdit is False:
-            super().wheelEvent(*args, **kwargs)
+    def wheelEvent(self, event: QtGui.QWheelEvent) -> None:
+        if self.hasFocus():
+            super().wheelEvent(event)
+        else:
+            event.ignore()
+    # def wheelEvent(self, *args, **kwargs):
+    #     # should work only there is a focus in the lineedit of the SpinBox
+    #     if self.readyToEdit is False:
+    #         super().wheelEvent(*args, **kwargs)
 
     def focusOutEvent(self, e):
         # don't focus out if the user requests an popup menu
@@ -1745,6 +1606,189 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
     # def sizeHint(self):
     #     default_hint_size = super(FCDoubleSpinner, self).sizeHint()
     #     return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
+
+
+class FCSliderWithDoubleSpinner(QtWidgets.QFrame):
+
+    def __init__(self, min=0, max=10000.0000, step=1, precision=4, orientation='horizontal', **kwargs):
+        super().__init__(**kwargs)
+
+        self.slider = FCDoubleSlider(orientation=orientation)
+        self.slider.setMinimum(min)
+        self.slider.setMaximum(max)
+        self.slider.setSingleStep(step)
+        self.slider.set_range(min, max)
+
+        self.spinner = FCDoubleSpinner()
+        self.spinner.set_range(min, max)
+        self.spinner.set_precision(precision)
+
+        self.spinner.set_step(step)
+        self.spinner.setMinimumWidth(70)
+
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred,
+                                           QtWidgets.QSizePolicy.Policy.Preferred)
+        self.spinner.setSizePolicy(sizePolicy)
+
+        self.layout = QtWidgets.QHBoxLayout()
+        self.layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.slider)
+        self.layout.addWidget(self.spinner)
+        self.setLayout(self.layout)
+
+        self.slider.doubleValueChanged.connect(self._on_slider)
+        self.spinner.valueChanged.connect(self._on_spinner)
+
+        self.valueChanged = self.spinner.valueChanged
+
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+
+    def wheelEvent(self, event: QtGui.QWheelEvent) -> None:
+        if self.hasFocus():
+            super().wheelEvent(event)
+        else:
+            event.ignore()
+
+    def set_precision(self, prec):
+        self.spinner.set_precision(prec)
+
+    def setSingleStep(self, step):
+        self.spinner.set_step(step)
+
+    def set_range(self, min, max):
+        self.spinner.set_range(min, max)
+        self.slider.set_range(min, max)
+
+    def set_minimum(self, min):
+        self.slider.setMinimum(min)
+        self.spinner.setMinimum(min)
+
+    def set_maximum(self, max):
+        self.slider.setMaximum(max)
+        self.spinner.setMaximum(max)
+
+    def get_value(self) -> float:
+        return self.spinner.get_value()
+
+    def set_value(self, value: float):
+        self.spinner.set_value(value)
+
+    def _on_spinner(self):
+        spinner_value = self.spinner.value()
+        self.slider.set_value(spinner_value)
+
+    def _on_slider(self):
+        slider_value = self.slider.value()
+        self.spinner.set_value(slider_value)
+
+
+class FCDoubleSlider(QtWidgets.QSlider):
+    # frome here: https://stackoverflow.com/questions/42820380/use-float-for-qslider
+
+    # create our own signal that we can connect to if necessary
+    doubleValueChanged = pyqtSignal(float)
+
+    def __init__(self, decimals=3, orientation='horizontal', *args, **kargs):
+        if orientation == 'horizontal':
+            super(FCDoubleSlider, self).__init__(QtCore.Qt.Orientation.Horizontal, *args, **kargs)
+        else:
+            super(FCDoubleSlider, self).__init__(QtCore.Qt.Orientation.Vertical, *args, **kargs)
+
+        self._multi = 10 ** decimals
+
+        self.valueChanged.connect(self.emitDoubleValueChanged)
+
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+
+    def wheelEvent(self, event: QtGui.QWheelEvent) -> None:
+        if self.hasFocus():
+            super().wheelEvent(event)
+        else:
+            event.ignore()
+
+    def emitDoubleValueChanged(self):
+        value = float(super(FCDoubleSlider, self).value()) / self._multi
+        self.doubleValueChanged.emit(value)
+
+    def value(self):
+        return float(super(FCDoubleSlider, self).value()) / self._multi
+
+    def get_value(self):
+        return self.value()
+
+    def setMinimum(self, value):
+        return super(FCDoubleSlider, self).setMinimum(int(value * self._multi))
+
+    def setMaximum(self, value):
+        return super(FCDoubleSlider, self).setMaximum(int(value * self._multi))
+
+    def setSingleStep(self, value):
+        return super(FCDoubleSlider, self).setSingleStep(int(value * self._multi))
+
+    def singleStep(self):
+        return float(super(FCDoubleSlider, self).singleStep()) / self._multi
+
+    def set_value(self, value):
+        super(FCDoubleSlider, self).setValue(int(value * self._multi))
+
+    def set_precision(self, decimals):
+        self._multi = 10 ** decimals
+
+    def set_range(self, min, max):
+        self.blockSignals(True)
+        self.setRange(int(min * self._multi), int(max * self._multi))
+        self.blockSignals(False)
+
+
+class FCButtonWithDoubleSpinner(QtWidgets.QFrame):
+
+    def __init__(self, min=0, max=100, step=1, decimals=4, button_text='', button_icon=None, callback=None, **kwargs):
+        super().__init__(**kwargs)
+
+        self.button = QtWidgets.QToolButton()
+        if button_text != '':
+            self.button.setText(button_text)
+        if button_icon:
+            self.button.setIcon(button_icon)
+
+        self.spinner = FCDoubleSpinner()
+        self.spinner.set_range(min, max)
+        self.spinner.set_step(step)
+        self.spinner.set_precision(decimals)
+        self.spinner.setMinimumWidth(70)
+
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                           QtWidgets.QSizePolicy.Policy.Preferred)
+        self.spinner.setSizePolicy(sizePolicy)
+
+        self.layout = QtWidgets.QHBoxLayout()
+        self.layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.spinner)
+        self.layout.addWidget(self.button)
+        self.setLayout(self.layout)
+
+        self.valueChanged = self.spinner.valueChanged
+
+        self._callback = callback
+        self.button.clicked.connect(self._callback)
+
+    def get_value(self) -> float:
+        return self.spinner.get_value()
+
+    def set_value(self, value: float):
+        self.spinner.set_value(value)
+
+    def set_callback(self, callback):
+        self._callback = callback
+
+    def set_text(self, txt: str):
+        if txt:
+            self.button.setText(txt)
+
+    def set_icon(self, icon: QtGui.QIcon):
+        self.button.setIcon(icon)
 
 
 class FCCheckBox(QtWidgets.QCheckBox):
@@ -2491,6 +2535,7 @@ class FCComboBox(QtWidgets.QComboBox):
         self._set_last = False
         self._obj_type = None
 
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         if policy is True:
             sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored,
                                                QtWidgets.QSizePolicy.Policy.Preferred)
@@ -2508,8 +2553,11 @@ class FCComboBox(QtWidgets.QComboBox):
                 return True
         return False
 
-    def wheelEvent(self, *args, **kwargs):
-        pass
+    def wheelEvent(self, event: QtGui.QWheelEvent) -> None:
+        if self.hasFocus():
+            super().wheelEvent(event)
+        else:
+            event.ignore()
 
     def get_value(self):
         return str(self.currentText())
