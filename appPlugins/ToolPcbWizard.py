@@ -484,7 +484,7 @@ class WizardUI:
         # Units type
         self.units_radio = RadioSet([{'label': _('Inch'), 'value': 'INCH'},
                                      {'label': _('mm'), 'value': 'METRIC'}])
-        self.units_label = FCLabel("<b>%s:</b>" % _('Units'))
+        self.units_label = FCLabel('%s:' % _('Units'), bold=True)
         self.units_label.setToolTip(
             _("The type of units that the coordinates and tool\n"
               "diameters are using. Can be INCH or MM.")

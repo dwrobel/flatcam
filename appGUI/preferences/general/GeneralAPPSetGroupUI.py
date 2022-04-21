@@ -26,9 +26,9 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         if theme_settings.contains("theme"):
             theme = theme_settings.value('theme', type=str)
         else:
-            theme = 'white'
+            theme = 'light'
 
-        if theme == 'white':
+        if theme == 'light':
             self.resource_loc = 'assets/resources'
         else:
             self.resource_loc = 'assets/resources'
@@ -496,9 +496,14 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
             if theme_settings.contains("theme"):
                 theme = theme_settings.value('theme', type=str)
             else:
-                theme = 'white'
+                theme = 'default'
 
-            if theme == 'white':
+            if theme_settings.contains("dark_canvas"):
+                dark_canvas = theme_settings.value('dark_canvas', type=bool)
+            else:
+                dark_canvas = False
+
+            if (theme == 'default' or theme == 'light') and not dark_canvas:
                 self.app.cursor_color_3D = 'black'
             else:
                 self.app.cursor_color_3D = 'gray'

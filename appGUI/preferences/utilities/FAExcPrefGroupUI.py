@@ -43,7 +43,7 @@ class FAExcPrefGroupUI(OptionsGroupUI):
         self.vertical_lay.addLayout(hlay0)
 
         # # ## Excellon associations
-        list_label = FCLabel("<b>%s:</b>" % _("Extensions list"))
+        list_label = FCLabel('%s:' % _("Extensions list"), bold=True)
         list_label.setToolTip(
             _("List of file extensions to be\n"
               "associated with FlatCAM.")

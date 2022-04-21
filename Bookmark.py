@@ -75,7 +75,7 @@ class BookmarkManager(QtWidgets.QWidget):
         new_vlay = QtWidgets.QVBoxLayout()
         layout.addLayout(new_vlay)
 
-        new_title_lbl = FCLabel('<b>%s</b>' % _("New Bookmark"))
+        new_title_lbl = FCLabel('%s' % _("New Bookmark"), bold=True)
         new_vlay.addWidget(new_title_lbl)
 
         grid0 = GLay(v_spacing=5, h_spacing=3)

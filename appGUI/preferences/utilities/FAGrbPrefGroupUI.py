@@ -33,7 +33,7 @@ class FAGrbPrefGroupUI(OptionsGroupUI):
         hlay0.addWidget(self.del_all_btn)
 
         # ## Gerber associations
-        self.grb_list_label = FCLabel("<b>%s:</b>" % _("Extensions list"))
+        self.grb_list_label = FCLabel('%s:' % _("Extensions list"), bold=True)
         self.grb_list_label.setToolTip(
             _("List of file extensions to be\n"
               "associated with FlatCAM.")

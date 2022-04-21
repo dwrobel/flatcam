@@ -28,6 +28,16 @@ class PreferencesUIManager(QtCore.QObject):
         """
         super(PreferencesUIManager, self).__init__()
 
+        self.general_displayed = False
+        self.gerber_displayed = False
+        self.excellon_displayed = False
+        self.geometry_displayed = False
+        self.cnc_displayed = False
+        self.engrave_displayed = False
+        self.plugins_displayed = False
+        self.plugins2_displayed = False
+        self.util_displayed = False
+
         self.defaults = defaults
         self.data_path = data_path
         self.ui = ui
@@ -73,8 +83,8 @@ class PreferencesUIManager(QtCore.QObject):
             "global_tpdf_rmargin": self.ui.general_pref_form.general_app_group.rmargin_entry,
 
             # General GUI Preferences
-            "global_theme": self.ui.general_pref_form.general_gui_group.theme_radio,
-            "global_gray_icons": self.ui.general_pref_form.general_gui_group.gray_icons_cb,
+            "global_appearance": self.ui.general_pref_form.general_gui_group.appearance_radio,
+            "global_dark_canvas": self.ui.general_pref_form.general_gui_group.dark_canvas_cb,
             "global_layout": self.ui.general_pref_form.general_gui_group.layout_combo,
             "global_hover_shape": self.ui.general_pref_form.general_gui_group.hover_cb,
             "global_selection_shape": self.ui.general_pref_form.general_gui_group.selection_cb,
@@ -575,6 +585,7 @@ class PreferencesUIManager(QtCore.QObject):
             # SolderPaste Dispensing Tool
             "tools_solderpaste_tools": self.ui.plugin_pref_form.tools_solderpaste_group.nozzle_tool_dia_entry,
             "tools_solderpaste_new": self.ui.plugin_pref_form.tools_solderpaste_group.addtool_entry,
+            "tools_solderpaste_margin": self.ui.plugin_pref_form.tools_solderpaste_group.margin_entry,
             "tools_solderpaste_z_start": self.ui.plugin_pref_form.tools_solderpaste_group.z_start_entry,
             "tools_solderpaste_z_dispense": self.ui.plugin_pref_form.tools_solderpaste_group.z_dispense_entry,
             "tools_solderpaste_z_stop": self.ui.plugin_pref_form.tools_solderpaste_group.z_stop_entry,
@@ -798,6 +809,25 @@ class PreferencesUIManager(QtCore.QObject):
 
         :return: None
         """
+        self.init_preferences_gui()
+
+        self.pref_connect()
+
+        # Initialize the color box's color in Preferences -> Global -> Colors
+        self.__init_color_pickers()
+
+        # log.debug("Finished Preferences GUI form initialization.")
+
+    def init_preferences_gui(self):
+        self.general_displayed = False
+        self.gerber_displayed = False
+        self.excellon_displayed = False
+        self.geometry_displayed = False
+        self.cnc_displayed = False
+        self.engrave_displayed = False
+        self.plugins_displayed = False
+        self.plugins2_displayed = False
+        self.util_displayed = False
 
         gen_form = self.ui.general_pref_form
         try:
@@ -807,72 +837,10 @@ class PreferencesUIManager(QtCore.QObject):
         self.ui.general_scroll_area.setWidget(gen_form)
         gen_form.show()
 
-        ger_form = self.ui.gerber_pref_form
-        try:
-            self.ui.gerber_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-        self.ui.gerber_scroll_area.setWidget(ger_form)
-        ger_form.show()
+    def pref_connect(self):
+        self.pref_disconnect()
 
-        exc_form = self.ui.excellon_pref_form
-        try:
-            self.ui.excellon_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-        self.ui.excellon_scroll_area.setWidget(exc_form)
-        exc_form.show()
-
-        geo_form = self.ui.geo_pref_form
-        try:
-            self.ui.geometry_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-        self.ui.geometry_scroll_area.setWidget(geo_form)
-        geo_form.show()
-
-        cnc_form = self.ui.cncjob_pref_form
-        try:
-            self.ui.cncjob_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-        self.ui.cncjob_scroll_area.setWidget(cnc_form)
-        cnc_form.show()
-
-        plugins_engraving_form = self.ui.plugin_eng_pref_form
-        try:
-            self.ui.plugins_engraving_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-        self.ui.plugins_engraving_scroll_area.setWidget(plugins_engraving_form)
-        plugins_engraving_form.show()
-
-        plugins_form = self.ui.plugin_pref_form
-        try:
-            self.ui.tools_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-        self.ui.tools_scroll_area.setWidget(plugins_form)
-        plugins_form.show()
-
-        plugins2_form = self.ui.plugin2_pref_form
-        try:
-            self.ui.tools2_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-        self.ui.tools2_scroll_area.setWidget(plugins2_form)
-        plugins2_form.show()
-
-        fa_form = self.ui.util_pref_form
-        try:
-            self.ui.fa_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
-        self.ui.fa_scroll_area.setWidget(fa_form)
-        fa_form.show()
-
-        # Initialize the color box's color in Preferences -> Global -> Colors
-        self.__init_color_pickers()
+        self.ui.pref_tab_area.tabBarClicked.connect(self.on_tab_clicked)
 
         # Button handlers
         self.ui.pref_save_button.clicked.connect(lambda: self.on_save_button(save_to_file=True))
@@ -880,9 +848,12 @@ class PreferencesUIManager(QtCore.QObject):
         self.ui.pref_close_button.clicked.connect(self.on_pref_close_button)
         self.ui.pref_defaults_button.clicked.connect(self.on_restore_defaults_preferences)
 
-        # log.debug("Finished Preferences GUI form initialization.")
+    def pref_disconnect(self):
+        try:
+            self.ui.pref_tab_area.tabBarClicked.disconnect()
+        except Exception:
+            pass
 
-    def clear_preferences_gui(self):
         # Disconnect Button handlers
         try:
             self.ui.pref_save_button.clicked.disconnect()
@@ -904,50 +875,143 @@ class PreferencesUIManager(QtCore.QObject):
         except Exception:
             pass
 
-        try:
-            self.ui.general_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
+    def clear_preferences_gui(self):
+        self.pref_disconnect()
+        # try:
+        #     self.ui.general_scroll_area.takeWidget()
+        # except Exception:
+        #     self.ui.app.log.debug("Nothing to remove")
+        #
+        # try:
+        #     self.ui.gerber_scroll_area.takeWidget()
+        # except Exception:
+        #     self.ui.app.log.debug("Nothing to remove")
+        #
+        # try:
+        #     self.ui.excellon_scroll_area.takeWidget()
+        # except Exception:
+        #     self.ui.app.log.debug("Nothing to remove")
+        #
+        # try:
+        #     self.ui.geometry_scroll_area.takeWidget()
+        # except Exception:
+        #     self.ui.app.log.debug("Nothing to remove")
+        #
+        # try:
+        #     self.ui.cncjob_scroll_area.takeWidget()
+        # except Exception:
+        #     self.ui.app.log.debug("Nothing to remove")
+        #
+        # try:
+        #     self.ui.plugins_engraving_scroll_area.takeWidget()
+        # except Exception:
+        #     self.ui.app.log.debug("Nothing to remove")
+        #
+        # try:
+        #     self.ui.tools_scroll_area.takeWidget()
+        # except Exception:
+        #     self.ui.app.log.debug("Nothing to remove")
+        #
+        # try:
+        #     self.ui.tools2_scroll_area.takeWidget()
+        # except Exception:
+        #     self.ui.app.log.debug("Nothing to remove")
+        #
+        # try:
+        #     self.ui.fa_scroll_area.takeWidget()
+        # except Exception:
+        #     self.ui.app.log.debug("Nothing to remove")
 
-        try:
-            self.ui.gerber_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
+    def on_tab_clicked(self, idx):
+        if idx == 0 and self.general_displayed is False:
+            self.general_displayed = True
+            gen_form = self.ui.general_pref_form
+            try:
+                self.ui.general_scroll_area.takeWidget()
+            except Exception:
+                self.ui.app.log.debug("Nothing to remove")
+            self.ui.general_scroll_area.setWidget(gen_form)
+            gen_form.show()
 
-        try:
-            self.ui.excellon_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
+        if idx == 1 and self.gerber_displayed is False:
+            self.gerber_displayed = True
+            ger_form = self.ui.gerber_pref_form
+            try:
+                self.ui.gerber_scroll_area.takeWidget()
+            except Exception:
+                self.ui.app.log.debug("Nothing to remove")
+            self.ui.gerber_scroll_area.setWidget(ger_form)
+            ger_form.show()
 
-        try:
-            self.ui.geometry_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
+        if idx == 2 and self.excellon_displayed is False:
+            self.excellon_displayed = True
+            exc_form = self.ui.excellon_pref_form
+            try:
+                self.ui.excellon_scroll_area.takeWidget()
+            except Exception:
+                self.ui.app.log.debug("Nothing to remove")
+            self.ui.excellon_scroll_area.setWidget(exc_form)
+            exc_form.show()
 
-        try:
-            self.ui.cncjob_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
+        if idx == 3 and self.geometry_displayed is False:
+            self.geometry_displayed = True
+            geo_form = self.ui.geo_pref_form
+            try:
+                self.ui.geometry_scroll_area.takeWidget()
+            except Exception:
+                self.ui.app.log.debug("Nothing to remove")
+            self.ui.geometry_scroll_area.setWidget(geo_form)
+            geo_form.show()
 
-        try:
-            self.ui.plugins_engraving_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
+        if idx == 4 and self.cnc_displayed is False:
+            self.cnc_displayed = True
+            cnc_form = self.ui.cncjob_pref_form
+            try:
+                self.ui.cncjob_scroll_area.takeWidget()
+            except Exception:
+                self.ui.app.log.debug("Nothing to remove")
+            self.ui.cncjob_scroll_area.setWidget(cnc_form)
+            cnc_form.show()
 
-        try:
-            self.ui.tools_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
+        if idx == 5 and self.engrave_displayed is False:
+            self.engrave_displayed = True
+            plugins_engraving_form = self.ui.plugin_eng_pref_form
+            try:
+                self.ui.plugins_engraving_scroll_area.takeWidget()
+            except Exception:
+                self.ui.app.log.debug("Nothing to remove")
+            self.ui.plugins_engraving_scroll_area.setWidget(plugins_engraving_form)
+            plugins_engraving_form.show()
 
-        try:
-            self.ui.tools2_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
+        if idx == 6 and self.plugins_displayed is False:
+            self.plugins_displayed = True
+            plugins_form = self.ui.plugin_pref_form
+            try:
+                self.ui.tools_scroll_area.takeWidget()
+            except Exception:
+                self.ui.app.log.debug("Nothing to remove")
+            self.ui.tools_scroll_area.setWidget(plugins_form)
+            plugins_form.show()
 
-        try:
-            self.ui.fa_scroll_area.takeWidget()
-        except Exception:
-            self.ui.app.log.debug("Nothing to remove")
+        if idx == 7 and self.plugins2_displayed is False:
+            self.plugins2_displayed = True
+            plugins2_form = self.ui.plugin2_pref_form
+            try:
+                self.ui.tools2_scroll_area.takeWidget()
+            except Exception:
+                self.ui.app.log.debug("Nothing to remove")
+            self.ui.tools2_scroll_area.setWidget(plugins2_form)
+            plugins2_form.show()
+
+        if idx == 8 and self.util_displayed is False:
+            self.util_displayed = True
+            fa_form = self.ui.util_pref_form
+            try:
+                self.ui.fa_scroll_area.takeWidget()
+            except Exception:
+                self.ui.app.log.debug("Nothing to remove")
+            self.ui.fa_scroll_area.setWidget(fa_form)
+            fa_form.show()
 
     def __init_color_pickers(self):
         # Init Gerber Plot Colors
@@ -1064,20 +1128,26 @@ class PreferencesUIManager(QtCore.QObject):
         # make sure we update the self.current_defaults dict used to undo changes to self.defaults
         self.defaults.current_defaults.update(self.defaults)
 
-        # deal with theme change
-        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
-        if theme_settings.contains("theme"):
-            theme = theme_settings.value('theme', type=str)
+        # deal with appearance change
+        appearance_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        if appearance_settings.contains("appearance"):
+            appearance = appearance_settings.value('appearance', type=str)
         else:
-            theme = 'white'
+            appearance = None
+
+        if appearance_settings.contains("dark_canvas"):
+            dark_canvas = appearance_settings.value('dark_canvas', type=bool)
+        else:
+            dark_canvas = None
 
         should_restart = False
-        theme_new_val = self.ui.general_pref_form.general_gui_group.theme_radio.get_value()
+        appearance_new_val = self.ui.general_pref_form.general_gui_group.appearance_radio.get_value()
+        dark_canvas_new_val = self.ui.general_pref_form.general_gui_group.dark_canvas_cb.get_value()
 
         ge = self.defaults["global_graphic_engine"]
         ge_val = self.ui.general_pref_form.general_app_group.ge_radio.get_value()
 
-        if theme_new_val != theme or ge != ge_val:
+        if appearance_new_val != appearance or ge != ge_val or dark_canvas_new_val != dark_canvas:
             msgbox = FCMessageBox(parent=self.ui)
             title = _("Application will restart")
             txt = _("Are you sure you want to continue?")
@@ -1094,17 +1164,24 @@ class PreferencesUIManager(QtCore.QObject):
             msgbox.exec()
             response = msgbox.clickedButton()
 
-            if theme_new_val != theme:
+            if appearance_new_val != appearance:
                 if response == bt_yes:
-                    theme_settings.setValue('theme', theme_new_val)
-
-                    # This will write the setting to the platform specific storage.
-                    del theme_settings
-
+                    appearance_settings.setValue('appearance', appearance_new_val)
                     should_restart = True
                 else:
-                    self.ui.general_pref_form.general_gui_group.theme_radio.set_value(theme)
-            else:
+                    self.ui.general_pref_form.general_gui_group.appearance_radio.set_value(appearance)
+
+            if dark_canvas_new_val != dark_canvas:
+                if response == bt_yes:
+                    appearance_settings.setValue('dark_canvas', dark_canvas_new_val)
+                    should_restart = True
+                else:
+                    self.ui.general_pref_form.general_gui_group.dark_canvas_cb.set_value(dark_canvas)
+
+            # This will write the setting to the platform specific storage.
+            del appearance_settings
+
+            if ge != ge_val:
                 if response == bt_yes:
                     self.defaults["global_graphic_engine"] = ge_val
                     should_restart = True

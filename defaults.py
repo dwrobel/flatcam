@@ -112,8 +112,9 @@ class AppDefaults:
         "global_tpdf_rmargin": 20.0,
 
         # General GUI Preferences
-        "global_theme": 'white',
-        "global_gray_icons": False,
+        "global_appearance": 'default',
+        "global_dark_canvas": False,
+        "global_theme": 'default',
 
         "global_layout": "compact",
         "global_hover_shape": False,
@@ -129,8 +130,8 @@ class AppDefaults:
         # Project Items colors
         "global_proj_item_color_light": '#000000FF',
         "global_proj_item_dis_color_light": '#b7b7cbFF',
-        "global_proj_item_color_dark": '#4385C8FF',
-        "global_proj_item_dis_color_dark": '#61616CFF',
+        "global_proj_item_color_dark": '#F2F2F2FF',
+        "global_proj_item_dis_color_dark": '#a6a6a6ff',
 
         "global_project_autohide": True,
 
@@ -649,6 +650,7 @@ class AppDefaults:
         # SolderPaste Tool
         "tools_solderpaste_tools": "1.0, 0.3",
         "tools_solderpaste_new": 0.3,
+        "tools_solderpaste_margin": 0.0,
         "tools_solderpaste_z_start": 0.05,
         "tools_solderpaste_z_dispense": 0.1,
         "tools_solderpaste_z_stop": 0.05,

@@ -38,7 +38,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         param_frame.setLayout(param_grid)
 
         # ### Milling Holes ## ##
-        self.mill_hole_label = FCLabel('<b>%s</b>' % _('Mill Holes'))
+        self.mill_hole_label = FCLabel('%s' % _('Mill Holes'), bold=True)
         self.mill_hole_label.setToolTip(
             _("Create Geometry for milling holes.")
         )

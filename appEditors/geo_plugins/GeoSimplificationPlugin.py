@@ -196,43 +196,52 @@ class SimplificationEditorUI:
         self.simp_tools_box.addLayout(grid0)
 
         # Coordinates
-        coords_lbl = FCLabel('<b>%s</b>:' % _("Coordinates"))
+        coords_lbl = FCLabel('%s' % _("Coordinates"), bold=True, color='red')
         coords_lbl.setToolTip(
             _("The coordinates of the selected geometry element.")
         )
-        grid0.addWidget(coords_lbl, 22, 0, 1, 3)
+        grid0.addWidget(coords_lbl, 0, 0, 1, 2)
+
+        # #############################################################################################################
+        # Coordinates Frame
+        # #############################################################################################################
+        coors_frame = FCFrame()
+        grid0.addWidget(coors_frame, 2, 0, 1, 2)
+
+        coords_grid = GLay(v_spacing=5, h_spacing=3)
+        coors_frame.setLayout(coords_grid)
 
         self.geo_coords_entry = FCTextEdit()
         self.geo_coords_entry.setPlaceholderText(
             _("The coordinates of the selected geometry element.")
         )
-        grid0.addWidget(self.geo_coords_entry, 24, 0, 1, 3)
+        coords_grid.addWidget(self.geo_coords_entry, 0, 0, 1, 2)
 
         # Vertex Points Number
-        vertex_lbl = FCLabel('<b>%s</b>:' % _("Vertex Points"))
+        vertex_lbl = FCLabel('%s:' % _("Vertex Points"), bold=False)
         vertex_lbl.setToolTip(
             _("The number of vertex points in the selected geometry element.")
         )
         self.geo_vertex_entry = FCEntry(decimals=self.decimals)
         self.geo_vertex_entry.setReadOnly(True)
 
-        grid0.addWidget(vertex_lbl, 26, 0)
-        grid0.addWidget(self.geo_vertex_entry, 26, 1, 1, 2)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 28, 0, 1, 3)
+        coords_grid.addWidget(vertex_lbl, 2, 0)
+        coords_grid.addWidget(self.geo_vertex_entry, 2, 1)
 
         # Simplification Title
-        simplif_lbl = FCLabel('<b>%s</b>:' % _("Simplification"))
-        simplif_lbl.setToolTip(
-            _("Simplify a geometry by reducing its vertex points number.")
-        )
-        grid0.addWidget(simplif_lbl, 30, 0, 1, 3)
+        par_lbl = FCLabel('%s' % _("Parameters"), bold=True, color='blue')
+        grid0.addWidget(par_lbl, 4, 0, 1, 2)
+        # #############################################################################################################
+        # Parameters Frame
+        # #############################################################################################################
+        par_frame = FCFrame()
+        grid0.addWidget(par_frame, 6, 0, 1, 2)
+
+        par_grid = GLay(v_spacing=5, h_spacing=3)
+        par_frame.setLayout(par_grid)
 
         # Simplification Tolerance
-        simplification_tol_lbl = FCLabel('<b>%s</b>:' % _("Tolerance"))
+        simplification_tol_lbl = FCLabel('%s' % _("Tolerance"), bold=True)
         simplification_tol_lbl.setToolTip(
             _("All points in the simplified object will be\n"
               "within the tolerance distance of the original geometry.")
@@ -242,8 +251,8 @@ class SimplificationEditorUI:
         self.geo_tol_entry.setSingleStep(10 ** -self.decimals)
         self.geo_tol_entry.set_range(0.0000, 10000.0000)
 
-        grid0.addWidget(simplification_tol_lbl, 32, 0)
-        grid0.addWidget(self.geo_tol_entry, 32, 1, 1, 2)
+        par_grid.addWidget(simplification_tol_lbl, 0, 0)
+        par_grid.addWidget(self.geo_tol_entry, 0, 1)
 
         # Simplification button
         self.simplification_btn = FCButton(_("Simplify"))
@@ -258,6 +267,7 @@ class SimplificationEditorUI:
                                                      }
                                                      """)
 
-        grid0.addWidget(self.simplification_btn, 34, 0, 1, 3)
+        self.layout.addWidget(self.simplification_btn)
 
+        GLay.set_common_column_size([grid0, coords_grid, par_grid], 0)
         self.layout.addStretch(1)

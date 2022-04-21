@@ -494,7 +494,7 @@ class OptimalUI:
         self.gerber_object_combo.is_last = True
         self.gerber_object_combo.obj_type = "Gerber"
 
-        self.gerber_object_label = FCLabel("<b>%s:</b>" % _("GERBER"))
+        self.gerber_object_label = FCLabel('%s:' % _("GERBER"), bold=True)
         self.gerber_object_label.setToolTip(
             "Gerber object for which to find the minimum distance between copper features."
         )

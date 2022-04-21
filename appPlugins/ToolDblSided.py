@@ -884,7 +884,7 @@ class DsidedUI:
         grid_mirror.addWidget(separator_line, 3, 0, 1, 3)
 
         # ## Reference
-        self.axloc_label = FCLabel('<b>%s</b>:' % _("Reference"))
+        self.axloc_label = FCLabel('%s' % _("Reference"), bold=True)
         self.axloc_label.setToolTip(
             _("The coordinates used as reference for the mirror operation.\n"
               "Can be:\n"
@@ -980,7 +980,7 @@ class DsidedUI:
         grid_snap_ref.setContentsMargins(0, 0, 0, 0)
         self.sr_frame.setLayout(grid_snap_ref)
 
-        self.exc_hole_lbl = FCLabel('<b>%s</b>:' % _("Excellon"))
+        self.exc_hole_lbl = FCLabel('%s' % _("Excellon"), bold=True)
         self.exc_hole_lbl.setToolTip(
             _("Object that holds holes that can be picked as reference for mirroring.")
         )

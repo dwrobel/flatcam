@@ -3003,6 +3003,9 @@ class FCPaint(FCShapeTool):
         self.origin = (0, 0)
         self.draw_app.paint_tool.run()
 
+    def clean_up(self):
+        pass
+
 
 class FCTransform(FCShapeTool):
     def __init__(self, draw_app):
@@ -3015,6 +3018,9 @@ class FCTransform(FCShapeTool):
         self.draw_app.app.inform.emit(_("Shape transformations ..."))
         self.origin = (0, 0)
         self.draw_app.transform_tool.run()
+
+    def clean_up(self):
+        pass
 
 
 # ###############################################
@@ -3096,7 +3102,7 @@ class AppGeoEditor(QtCore.QObject):
         self.tools_box.addLayout(self.grid_d)
 
         # Tool diameter
-        tooldia_lbl = FCLabel('<b>%s</b>:' % _("Tool dia"))
+        tooldia_lbl = FCLabel('%s' % _("Tool dia"), bold=True)
         tooldia_lbl.setToolTip(
             _("Edited tool diameter.")
         )
@@ -3108,7 +3114,7 @@ class AppGeoEditor(QtCore.QObject):
         self.grid_d.addWidget(tooldia_lbl, 0, 0)
         self.grid_d.addWidget(self.tooldia_entry, 0, 1)
         # Tree Widget Title
-        tw_label = FCLabel('<b>%s</b>:' % _("Geometry Table"))
+        tw_label = FCLabel('%s' % _("Geometry Table"), bold=True)
         tw_label.setToolTip(
             _("The list of geometry elements inside the edited object.")
         )
@@ -3148,35 +3154,35 @@ class AppGeoEditor(QtCore.QObject):
         grid0.addWidget(separator_line, 2, 0, 1, 3)
 
         # Parameters Title
-        param_title = FCLabel('<b>%s</b>:' % _("Parameters"))
+        param_title = FCLabel('%s' % _("Parameters"), bold=True)
         param_title.setToolTip(
             _("Geometry parameters.")
         )
         grid0.addWidget(param_title, 4, 0, 1, 3)
 
         # Is Valid
-        is_valid_lbl = FCLabel('<b>%s</b>:' % _("Is Valid"))
+        is_valid_lbl = FCLabel('%s' % _("Is Valid"), bold=True)
         self.is_valid_entry = FCLabel('None')
 
         grid0.addWidget(is_valid_lbl, 10, 0)
         grid0.addWidget(self.is_valid_entry, 10, 1, 1, 2)
 
         # Is Empty
-        is_empty_lbl = FCLabel('<b>%s</b>:' % _("Is Empty"))
+        is_empty_lbl = FCLabel('%s' % _("Is Empty"), bold=True)
         self.is_empty_entry = FCLabel('None')
 
         grid0.addWidget(is_empty_lbl, 12, 0)
         grid0.addWidget(self.is_empty_entry, 12, 1, 1, 2)
 
         # Is Ring
-        is_ring_lbl = FCLabel('<b>%s</b>:' % _("Is Ring"))
+        is_ring_lbl = FCLabel('%s' % _("Is Ring"), bold=True)
         self.is_ring_entry = FCLabel('None')
 
         grid0.addWidget(is_ring_lbl, 14, 0)
         grid0.addWidget(self.is_ring_entry, 14, 1, 1, 2)
 
         # Is CCW
-        is_ccw_lbl = FCLabel('<b>%s</b>:' % _("Is CCW"))
+        is_ccw_lbl = FCLabel('%s' % _("Is CCW"), bold=True)
         self.is_ccw_entry = FCLabel('None')
         self.change_orientation_btn = FCButton(_("Change"))
         self.change_orientation_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/orientation32.png'))
@@ -3189,14 +3195,14 @@ class AppGeoEditor(QtCore.QObject):
         grid0.addWidget(self.change_orientation_btn, 16, 2)
 
         # Is Simple
-        is_simple_lbl = FCLabel('<b>%s</b>:' % _("Is Simple"))
+        is_simple_lbl = FCLabel('%s' % _("Is Simple"), bold=True)
         self.is_simple_entry = FCLabel('None')
 
         grid0.addWidget(is_simple_lbl, 18, 0)
         grid0.addWidget(self.is_simple_entry, 18, 1, 1, 2)
 
         # Length
-        len_lbl = FCLabel('<b>%s</b>:' % _("Length"))
+        len_lbl = FCLabel('%s' % _("Length"), bold=True)
         len_lbl.setToolTip(
             _("The length of the geometry element.")
         )
@@ -3207,7 +3213,7 @@ class AppGeoEditor(QtCore.QObject):
         grid0.addWidget(self.geo_len_entry, 20, 1, 1, 2)
 
         # Coordinates
-        coords_lbl = FCLabel('<b>%s</b>:' % _("Coordinates"))
+        coords_lbl = FCLabel('%s' % _("Coordinates"), bold=True)
         coords_lbl.setToolTip(
             _("The coordinates of the selected geometry element.")
         )
@@ -3220,7 +3226,7 @@ class AppGeoEditor(QtCore.QObject):
         grid0.addWidget(self.geo_coords_entry, 24, 0, 1, 3)
 
         # Vertex Points Number
-        vertex_lbl = FCLabel('<b>%s</b>:' % _("Vertex Points"))
+        vertex_lbl = FCLabel('%s' % _("Vertex Points"), bold=True)
         vertex_lbl.setToolTip(
             _("The number of vertex points in the selected geometry element.")
         )

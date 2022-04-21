@@ -508,7 +508,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
             theme = theme_settings.value('theme', type=str)
 
-            if theme in ['black', 'dark']:
+            if theme == 'dark':
                 color = QColor(self.app.options['global_proj_item_color_dark'][:-2])
                 color_disabled = QColor(self.app.options['global_proj_item_dis_color_dark'][:-2])
             else:

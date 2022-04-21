@@ -42,7 +42,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         par_frame.setLayout(param_grid)
 
         # Tool dia
-        ptdlabel = FCLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
+        ptdlabel = FCLabel('%s:' % _('Tools Dia'), color='green', bold=True)
         ptdlabel.setToolTip(
             _("Diameters of the tools, separated by comma.\n"
               "The value of the diameter has to use the dot decimals separator.\n"

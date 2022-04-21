@@ -38,7 +38,7 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         param_frame.setLayout(param_grid)
 
         # Tooldia
-        tdlabel = FCLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
+        tdlabel = FCLabel('%s:' % _('Tools Dia'), color='green', bold=True)
         tdlabel.setToolTip(
             _("Diameters of the tools, separated by comma.\n"
               "The value of the diameter has to use the dot decimals separator.\n"

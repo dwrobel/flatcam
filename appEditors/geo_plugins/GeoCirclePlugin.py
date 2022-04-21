@@ -187,48 +187,70 @@ class CircleEditorUI:
         self.circle_tool_box.addLayout(grid0)
 
         # Position
-        self.pos_lbl = FCLabel('<b>%s</b>' % _("Position"))
+        self.pos_lbl = FCLabel('%s' % _("Position"), color='red', bold=True)
         grid0.addWidget(self.pos_lbl, 0, 0, 1, 3)
+
+        # #############################################################################################################
+        # Position Frame
+        # #############################################################################################################
+        pos_frame = FCFrame()
+        grid0.addWidget(pos_frame, 2, 0, 1, 2)
+
+        pos_grid = GLay(v_spacing=5, h_spacing=3)
+        pos_frame.setLayout(pos_grid)
 
         # X Pos
         self.x_lbl = FCLabel('%s:' % _("X"))
         self.x_entry = FCDoubleSpinner()
         self.x_entry.set_precision(self.decimals)
         self.x_entry.set_range(-10000.0000, 10000.0000)
-        grid0.addWidget(self.x_lbl, 2, 0)
-        grid0.addWidget(self.x_entry, 2, 1, 1, 2)
+        pos_grid.addWidget(self.x_lbl, 0, 0)
+        pos_grid.addWidget(self.x_entry, 0, 1, 1, 2)
 
         # Y Pos
         self.y_lbl = FCLabel('%s:' % _("Y"))
         self.y_entry = FCDoubleSpinner()
         self.y_entry.set_precision(self.decimals)
         self.y_entry.set_range(-10000.0000, 10000.0000)
-        grid0.addWidget(self.y_lbl, 4, 0)
-        grid0.addWidget(self.y_entry, 4, 1, 1, 2)
+        pos_grid.addWidget(self.y_lbl, 2, 0)
+        pos_grid.addWidget(self.y_entry, 2, 1, 1, 2)
+
+        # Radius
+        self.radius_lbl = FCLabel('%s' % _("Radius"), bold=True, color='blue')
+        grid0.addWidget(self.radius_lbl, 4, 0)
+
+        # #############################################################################################################
+        # Radius Frame
+        # #############################################################################################################
+        rad_frame = FCFrame()
+        grid0.addWidget(rad_frame, 6, 0, 1, 2)
+
+        rad_grid = GLay(v_spacing=5, h_spacing=3)
+        rad_frame.setLayout(rad_grid)
 
         # Radius X
-        self.radius_x_lbl = FCLabel('%s X:' % _("Radius"))
+        self.radius_x_lbl = FCLabel('%s:' % "X")
         self.radius_x_entry = FCDoubleSpinner()
         self.radius_x_entry.set_precision(self.decimals)
         self.radius_x_entry.set_range(0.0000, 10000.0000)
-        grid0.addWidget(self.radius_x_lbl, 6, 0)
-        grid0.addWidget(self.radius_x_entry, 6, 1)
+        rad_grid.addWidget(self.radius_x_lbl, 0, 0)
+        rad_grid.addWidget(self.radius_x_entry, 0, 1)
 
         # Radius Y
-        self.radius_y_lbl = FCLabel('%s Y:' % _("Radius"))
+        self.radius_y_lbl = FCLabel('%s:' % "Y")
         self.radius_y_entry = FCDoubleSpinner()
         self.radius_y_entry.set_precision(self.decimals)
         self.radius_y_entry.set_range(0.0000, 10000.0000)
-        grid0.addWidget(self.radius_y_lbl, 7, 0)
-        grid0.addWidget(self.radius_y_entry, 7, 1)
+        rad_grid.addWidget(self.radius_y_lbl, 1, 0)
+        rad_grid.addWidget(self.radius_y_entry, 1, 1)
 
         # Angle
         self.angle_lbl = FCLabel('%s:' % _("Angle"))
         self.angle_entry = FCDoubleSpinner()
         self.angle_entry.set_precision(self.decimals)
         self.angle_entry.set_range(0.0000, 360.0000)
-        grid0.addWidget(self.angle_lbl, 8, 0)
-        grid0.addWidget(self.angle_entry, 8, 1)
+        rad_grid.addWidget(self.angle_lbl, 2, 0)
+        rad_grid.addWidget(self.angle_entry, 2, 1)
 
         # Radius link
         self.radius_link_btn = QtWidgets.QToolButton()
@@ -236,17 +258,19 @@ class CircleEditorUI:
         self.radius_link_btn.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
                                            QtWidgets.QSizePolicy.Policy.Expanding)
         self.radius_link_btn.setCheckable(True)
-        grid0.addWidget(self.radius_link_btn, 6, 2, 3, 1)
+        rad_grid.addWidget(self.radius_link_btn, 0, 2, 3, 1)
 
         # Buttons
         self.add_button = FCButton(_("Add"))
         self.add_button.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
         grid0.addWidget(self.add_button, 18, 0, 1, 3)
 
+        GLay.set_common_column_size([grid0, pos_grid, rad_grid], 0)
+
         self.layout.addStretch(1)
 
         # Note
-        self.note_lbl = FCLabel('<b>%s</b>' % _("Note"))
+        self.note_lbl = FCLabel('%s' % _("Note"), bold=True)
         self.layout.addWidget(self.note_lbl)
         self.note_description_lbl = FCLabel('%s' % _("Shift + click to select a shape for modification."))
         self.layout.addWidget(self.note_description_lbl)
@@ -256,14 +280,14 @@ class CircleEditorUI:
 
     def on_link_checked(self, checked):
         if checked:
-            self.radius_x_lbl.set_value('%s:' % _("Radius"))
+            self.radius_x_lbl.set_value('%s:' % _("Value"))
             self.radius_y_lbl.setDisabled(True)
             self.radius_y_entry.setDisabled(True)
             self.radius_y_entry.set_value(self.radius_x_entry.get_value())
             self.angle_lbl.setDisabled(True)
             self.angle_entry.setDisabled(True)
         else:
-            self.radius_x_lbl.set_value('%s X:' % _("Radius"))
+            self.radius_x_lbl.set_value('%s:' % "X")
             self.radius_y_lbl.setDisabled(False)
             self.radius_y_entry.setDisabled(False)
             self.angle_lbl.setDisabled(False)

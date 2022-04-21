@@ -570,7 +570,7 @@ class ObjectDistanceUI:
         res_grid.addWidget(separator_line, 6, 0, 1, 3)
 
         # Total Distance
-        self.total_distance_label = FCLabel("<b>%s:</b>" % _('DISTANCE'))
+        self.total_distance_label = FCLabel('%s:' % _('DISTANCE'), bold=True)
         self.total_distance_label.setToolTip(_("This is the point to point Euclidian distance."))
 
         self.total_distance_entry = FCEntry()
@@ -584,7 +584,7 @@ class ObjectDistanceUI:
         res_grid.addWidget(FCLabel("%s" % self.units), 8, 2)
         
         # Half Point
-        self.half_point_label = FCLabel("<b>%s:</b>" % _('Half Point'))
+        self.half_point_label = FCLabel('%s:' % _('Half Point'), bold=True)
         self.half_point_label.setToolTip(_("This is the middle point of the point to point Euclidean distance."))
 
         self.half_point_entry = FCEntry()
