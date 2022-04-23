@@ -8641,7 +8641,8 @@ class App(QtCore.QObject):
         root = d_properties_tw.invisibleRootItem()
         font = QtGui.QFont()
         font.setBold(True)
-        p_color = QtGui.QColor("#000000") if self.options['global_theme'] == 'light' else QtGui.QColor("#FFFFFF")
+        p_color = QtGui.QColor("#000000") if self.options['global_theme'] in ['default', 'light'] else \
+            QtGui.QColor("#FFFFFF")
 
         # main Items categories
         general_cat = d_properties_tw.addParent(root, _('General'), expanded=True, color=p_color, font=font)

@@ -49,6 +49,8 @@ sudo -H python3 -m pip install --upgrade \
 	pikepdf \
 	foronoi \
 	ortools \
-	pyqtdarktheme
+	pyqtdarktheme \
+	darkdetect \
+	svgtrace
 # OR-TOOLS package is now optional
 # ################################

@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+23.04.2022
+
+- fixed some leftovers due of recent changes in the theme management
+- added a new feature (new modules are required) in the Image Plugin (Menu -> File -> Import -> Import Image) that allow tracing images. This may allow engraving pictures.
+- started to add UI's for the Excellon Editor Tools (really early work)
+
 20.04.2022
 
 - in Solderpaste Plugin fixed the GCode generation; make sure that if no object is selected then the first Gerber object is autoselected

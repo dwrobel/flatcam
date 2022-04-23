@@ -3457,8 +3457,8 @@ class MainGUI(QtWidgets.QMainWindow):
                     if self.app.geo_editor.get_selected() is not None:
                         self.app.geo_editor.cutpath()
                     else:
-                        msg = _('Please first select a geometry item to be cutted\n'
-                                'then select the geometry item that will be cutted\n'
+                        msg = _('Please first select a geometry item to be cut\n'
+                                'then select the geometry item that will be cut\n'
                                 'out of the first item. In the end press ~X~ key or\n'
                                 'the toolbar button.')
 
