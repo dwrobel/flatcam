@@ -179,6 +179,8 @@ class ToolImage(AppTool):
                 if response == bt_no:
                     self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
                     return
+            self.app.inform.emit(_("Please be patient. Chromium is being downloaded in background.\n"
+                                   "The app will resume after it is installed."))
 
         _filter = "Image Files(*.BMP *.PNG *.JPG *.JPEG);;" \
                   "Bitmap File (*.BMP);;" \
@@ -289,7 +291,7 @@ class ToolImage(AppTool):
                     1: {
                         'tooldia': tooldia,
                         'data': deepcopy(new_data),
-                        'solid_geometry': geo_obj.solid_geometry
+                        'solid_geometry': deepcopy(geo_obj.solid_geometry)
                     }
                 })
 
@@ -885,7 +887,7 @@ class ImageUI:
         options_grid.addWidget(self.blur_lbl, 38, 0, 1, 2)
 
         # Radius
-        self.blur_radius_lbl = FCLabel('%s' % _("Rounding"))
+        self.blur_radius_lbl = FCLabel('%s' % _("Radius"))
         self.blur_radius_lbl.setToolTip(
             _("Selective Gaussian blur preprocessing.")
         )

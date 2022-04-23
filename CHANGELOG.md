@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+24.04.2022
+
+- some fixes in the Import Image Plugin
+- made sure that the CNCJob objects made out of non-multi-toolGeometries are plotted correctly
+
 23.04.2022
 
 - fixed some leftovers due of recent changes in the theme management
