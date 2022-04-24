@@ -545,8 +545,7 @@ class SolderPaste(AppTool):
                 try:
                     tool_dia = float(self.ui.addtool_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                     return
             if tool_dia is None:
                 self.build_ui()
@@ -580,12 +579,12 @@ class SolderPaste(AppTool):
         # if float('%.*f' % (self.decimals, tool_dia)) in tool_dias:
         if self.app.dec_format(tool_dia, self.decimals) in tool_dias:
             if muted is None:
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
+                self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Cancelled."), _("Tool already in Tool Table.")))
             self.ui.tools_table.itemChanged.connect(self.on_tool_edit)
             return
         else:
             if muted is None:
-                self.app.inform.emit('[success] %s' % _("New Nozzle tool added to Tool Table."))
+                self.app.inform.emit('[success] %s' % _("New tool added to Tool Table."))
             self.tooltable_tools.update({
                 int(self.tooluid): {
                     'tooldia':          float('%.*f' % (self.decimals, tool_dia)),
@@ -618,8 +617,7 @@ class SolderPaste(AppTool):
                 try:
                     new_tool_dia = float(self.ui.tools_table.item(row, 1).text().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                     return
 
             tooluid = int(self.ui.tools_table.item(row, 2).text())
@@ -627,7 +625,7 @@ class SolderPaste(AppTool):
             # identify the tool that was edited and get it's tooluid
             if new_tool_dia not in tool_dias:
                 self.tooltable_tools[tooluid]['tooldia'] = new_tool_dia
-                self.app.inform.emit('[success] %s' % _("Nozzle tool from Tool Table was edited."))
+                self.app.inform.emit('[success] %s' % _("Tool from Tool Table was edited."))
                 self.build_ui()
                 return
             else:
@@ -639,8 +637,7 @@ class SolderPaste(AppTool):
                         break
                 restore_dia_item = self.ui.tools_table.item(row, 1)
                 restore_dia_item.setText(str(old_tool_dia))
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Cancelled. New diameter value is already in the Tool Table."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Already in the Tool Table."))
         self.build_ui()
 
     def on_tool_delete(self, rows_to_delete=None, all_tools=None):
@@ -744,7 +741,7 @@ class SolderPaste(AppTool):
         """
         name = self.ui.obj_combo.currentText()
         if name == '':
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No SolderPaste mask Gerber object loaded."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Selected object cannot be used."))
             return
 
         obj = self.app.collection.get_by_name(name)
@@ -775,7 +772,7 @@ class SolderPaste(AppTool):
         sorted_tools.sort(reverse=True)
 
         if not sorted_tools:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No Nozzle tools in the tool table."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Tools table is empty."))
             return 'fail'
 
         def flatten(geometry=None, reset=True, pathonly=False):
@@ -968,9 +965,7 @@ class SolderPaste(AppTool):
             return
 
         if obj.special_group != 'solder_paste_tool':
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("This Geometry can't be processed. "
-                                   "NOT a solder_paste_tool geometry."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Selected object cannot be used."))
             return
 
         a = 0
@@ -978,7 +973,7 @@ class SolderPaste(AppTool):
             if obj.tools[tooluid_key]['solid_geometry'] is None:
                 a += 1
         if a == len(obj.tools):
-            self.app.inform.emit('[ERROR_NOTCL] %s...' % _('Cancelled. Empty file, it has no geometry'))
+            self.app.inform.emit('[ERROR_NOTCL] %s...' % _('Cancelled.'))
             return
 
         # use the name of the first tool selected in self.geo_tools_table which has the diameter passed as tool_dia
@@ -1049,7 +1044,7 @@ class SolderPaste(AppTool):
                 res = new_obj.generate_gcode_from_solderpaste_geo(is_first=is_first, **tooluid_value)
 
                 if res == 'fail':
-                    app_obj.log.debug("GeometryObject.mtool_gen_cncjob() --> generate_from_geometry2() failed")
+                    app_obj.log.debug("SolderPaste.on_create_gcode() --> generate_gcode_from_solderpaste_geo() failed")
                     return 'fail'
                 else:
                     tool_cnc_dict['gcode'] = res
@@ -1079,7 +1074,7 @@ class SolderPaste(AppTool):
             def job_thread(app_obj):
                 with self.app.proc_container.new('%s...' % _("Working")):
                     if app_obj.app_obj.new_object("cncjob", name, job_init) != 'fail':
-                        app_obj.inform.emit('[success] %s: %s' % (_("ToolSolderPaste CNCjob created"), name))
+                        app_obj.inform.emit('[success] %s: %s' % (_("CNCjob created"), name))
             # Create a promise with the name
             self.app.collection.promise(name)
             # Send to worker
@@ -1095,6 +1090,20 @@ class SolderPaste(AppTool):
         """
         time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
 
+        name = self.ui.cnc_obj_combo.currentText()
+        obj = self.app.collection.get_by_name(name)
+
+        if not obj:
+            return
+
+        try:
+            if obj.special_group != 'solder_paste_tool':
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Selected object cannot be used."))
+                return
+        except AttributeError:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Selected object cannot be used."))
+            return
+
         self.text_editor_tab = AppTextEditor(app=self.app, plain_text=True)
 
         # add the tab if it was closed
@@ -1103,21 +1112,6 @@ class SolderPaste(AppTool):
 
         # Switch plot_area to CNCJob tab
         self.app.ui.plot_tab_area.setCurrentWidget(self.text_editor_tab)
-
-        name = self.ui.cnc_obj_combo.currentText()
-        obj = self.app.collection.get_by_name(name)
-
-        try:
-            if obj.special_group != 'solder_paste_tool':
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("This CNCJob object can't be processed. "
-                                       "NOT a solder_paste_tool CNCJob object."))
-                return
-        except AttributeError:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("This CNCJob object can't be processed. "
-                                   "NOT a solder_paste_tool CNCJob object."))
-            return
 
         gcode = '(G-CODE GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s)\n' % \
                 (str(self.app.version), str(self.app.version_date)) + '\n'
@@ -1152,7 +1146,7 @@ class SolderPaste(AppTool):
             self.text_editor_tab.load_text(gcode, move_to_start=True)
         except Exception as e:
             self.app.log.error('ToolSolderPaste.on_view_gcode() -->%s' % str(e))
-            self.app.inform.emit('[ERROR] %s --> %s' % ('ToolSolderPaste.on_view_gcode()', str(e)))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
             return
 
     def on_save_gcode(self):
@@ -1166,9 +1160,7 @@ class SolderPaste(AppTool):
         obj = self.app.collection.get_by_name(name)
 
         if obj.special_group != 'solder_paste_tool':
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("This CNCJob object can't be processed. "
-                                   "NOT a solder_paste_tool CNCJob object."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Selected object cannot be used."))
             return
 
         _filter_ = "G-Code Files (*.nc);;G-Code Files (*.txt);;G-Code Files (*.tap);;G-Code Files (*.cnc);;" \
@@ -1211,8 +1203,7 @@ class SolderPaste(AppTool):
                     for line in lines:
                         f.write(line)
             except FileNotFoundError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("No such file or directory"))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("No such file or directory"))
                 return
             except PermissionError:
                 self.app.inform.emit('[WARNING] %s' %
@@ -1223,7 +1214,7 @@ class SolderPaste(AppTool):
         if self.app.options["global_open_style"] is False:
             self.app.file_opened.emit("gcode", filename)
         self.app.file_saved.emit("gcode", filename)
-        self.app.inform.emit('[success] %s: %s' % (_("Solder paste dispenser GCode file saved to"), filename))
+        self.app.inform.emit('[success] %s: %s' % (_("Saved to"), filename))
 
     def reset_fields(self):
         self.ui.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

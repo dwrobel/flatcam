@@ -3,7 +3,6 @@ from PyQt6 import QtWidgets
 from appGUI.preferences.tools.Tools2InvertPrefGroupUI import Tools2InvertPrefGroupUI
 from appGUI.preferences.tools.Tools2PunchGerberPrefGroupUI import Tools2PunchGerberPrefGroupUI
 from appGUI.preferences.tools.Tools2ExtractPrefGroupUI import Tools2EDrillsPrefGroupUI
-from appGUI.preferences.tools.Tools2CalPrefGroupUI import Tools2CalPrefGroupUI
 from appGUI.preferences.tools.Tools2FiducialsPrefGroupUI import Tools2FiducialsPrefGroupUI
 from appGUI.preferences.tools.Tools2CThievingPrefGroupUI import Tools2CThievingPrefGroupUI
 from appGUI.preferences.tools.Tools2QRCodePrefGroupUI import Tools2QRCodePrefGroupUI
@@ -20,9 +19,10 @@ fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
+
 class Plugins2PreferencesUI(QtWidgets.QWidget):
 
-    def __init__(self,app, parent=None):
+    def __init__(self, app, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
         if app.defaults['global_gui_layout'] == 0:
             self.layout = QtWidgets.QHBoxLayout()
@@ -45,9 +45,6 @@ class Plugins2PreferencesUI(QtWidgets.QWidget):
         self.tools2_fiducials_group = Tools2FiducialsPrefGroupUI(app=app)
         self.tools2_fiducials_group.setMinimumWidth(250)
 
-        self.tools2_cal_group = Tools2CalPrefGroupUI(app=app)
-        self.tools2_cal_group.setMinimumWidth(250)
-
         self.tools2_edrills_group = Tools2EDrillsPrefGroupUI(app=app)
         self.tools2_edrills_group.setMinimumWidth(250)
 
@@ -69,7 +66,6 @@ class Plugins2PreferencesUI(QtWidgets.QWidget):
         self.vlay2.addWidget(self.tools2_cfill_group)
 
         self.vlay3 = QtWidgets.QVBoxLayout()
-        self.vlay3.addWidget(self.tools2_cal_group)
         self.vlay3.addWidget(self.tools2_edrills_group)
 
         self.vlay4 = QtWidgets.QVBoxLayout()

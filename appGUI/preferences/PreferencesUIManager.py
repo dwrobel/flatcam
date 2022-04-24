@@ -685,15 +685,6 @@ class PreferencesUIManager(QtCore.QObject):
             "tools_fiducials_type": self.ui.plugin2_pref_form.tools2_fiducials_group.fid_type_combo,
             "tools_fiducials_line_thickness": self.ui.plugin2_pref_form.tools2_fiducials_group.line_thickness_entry,
 
-            # Calibration Tool
-            "tools_cal_calsource": self.ui.plugin2_pref_form.tools2_cal_group.cal_source_radio,
-            "tools_cal_travelz": self.ui.plugin2_pref_form.tools2_cal_group.travelz_entry,
-            "tools_cal_verz": self.ui.plugin2_pref_form.tools2_cal_group.verz_entry,
-            "tools_cal_zeroz": self.ui.plugin2_pref_form.tools2_cal_group.zeroz_cb,
-            "tools_cal_toolchangez": self.ui.plugin2_pref_form.tools2_cal_group.toolchangez_entry,
-            "tools_cal_toolchange_xy": self.ui.plugin2_pref_form.tools2_cal_group.toolchange_xy_entry,
-            "tools_cal_sec_point": self.ui.plugin2_pref_form.tools2_cal_group.second_point_radio,
-
             # Extract Drills Tool
             "tools_extract_hole_type": self.ui.plugin2_pref_form.tools2_edrills_group.method_radio,
             "tools_extract_hole_fixed_dia": self.ui.plugin2_pref_form.tools2_edrills_group.dia_entry,

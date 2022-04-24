@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+25.04.2022
+
+- deleted the Calibration Plugin (made redundant by changes in other Plugins)
+- some strings were updated
+
 24.04.2022
 
 - some fixes in the Import Image Plugin

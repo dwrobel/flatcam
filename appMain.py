@@ -1253,7 +1253,6 @@ class App(QtCore.QObject):
         self.pdf_tool = None
         self.image_tool = None
         self.pcb_wizard_tool = None
-        self.cal_exc_tool = None
         self.qrcode_tool = None
         self.copper_thieving_tool = None
         self.fiducial_tool = None
@@ -1913,12 +1912,6 @@ class App(QtCore.QObject):
         self.dblsidedtool = DblSidedTool(self)
         self.dblsidedtool.install(icon=QtGui.QIcon(self.resource_location + '/doubleside16.png'), separator=False)
 
-        self.cal_exc_tool = ToolCalibration(self)
-        self.cal_exc_tool.install(icon=QtGui.QIcon(self.resource_location + '/calibrate_16.png'),
-                                  pos=self.ui.menu_plugins,
-                                  before=self.dblsidedtool.menuAction,
-                                  separator=False)
-
         self.align_objects_tool = AlignObjects(self)
         self.align_objects_tool.install(icon=QtGui.QIcon(self.resource_location + '/align16.png'), separator=False)
 
@@ -2063,7 +2056,6 @@ class App(QtCore.QObject):
             self.pdf_tool,
             self.image_tool,
             self.pcb_wizard_tool,
-            self.cal_exc_tool,
             self.qrcode_tool,
             self.copper_thieving_tool,
             self.fiducial_tool,
@@ -2342,7 +2334,6 @@ class App(QtCore.QObject):
         self.ui.punch_btn.triggered.connect(lambda: self.punch_tool.run(toggle=True))
         self.ui.calculators_btn.triggered.connect(lambda: self.calculator_tool.run(toggle=True))
 
-        # self.ui.cal_btn.triggered.connect(lambda: self.cal_exc_tool.run(toggle=True))
         #
         # self.ui.solder_btn.triggered.connect(lambda: self.paste_tool.run(toggle=True))
         # self.ui.rules_btn.triggered.connect(lambda: self.rules_tool.run(toggle=True))
@@ -4901,9 +4892,6 @@ class App(QtCore.QObject):
 
             # Fiducials Plugin
             "tools_fiducials_dia", "tools_fiducials_margin", "tools_fiducials_line_thickness",
-
-            # Calibration Plugin
-            "tools_cal_travelz", "tools_cal_verz", "tools_cal_toolchangez", "tools_cal_toolchange_xy",
 
             # Drills Extraction Plugin
             "tools_extract_hole_fixed_dia", "tools_extract_circular_ring", "tools_extract_oblong_ring",

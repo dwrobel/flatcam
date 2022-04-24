@@ -1,5 +1,4 @@
 from appPlugins.ToolCalculators import ToolCalculator
-from appPlugins.ToolCalibration import ToolCalibration
 
 from appPlugins.ToolDblSided import DblSidedTool
 from appPlugins.ToolExtract import ToolExtract

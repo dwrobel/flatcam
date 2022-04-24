@@ -3142,7 +3142,6 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Extract Drills  Tool
                 if key == QtCore.Qt.Key.Key_E:
-                    # self.app.cal_exc_tool.run(toggle=True)
                     self.app.extract_tool.run(toggle=True)
                     return
 

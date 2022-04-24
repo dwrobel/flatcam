@@ -757,15 +757,6 @@ class AppDefaults:
         "tools_fiducials_line_thickness": 0.25,
         "tools_fiducials_big_cursor": True,
 
-        # Calibration Tool
-        "tools_cal_calsource": 'object',
-        "tools_cal_travelz": 2.0,
-        "tools_cal_verz": 0.1,
-        "tools_cal_zeroz": False,
-        "tools_cal_toolchangez": 15,
-        "tools_cal_toolchange_xy": '',
-        "tools_cal_sec_point": 'tl',
-
         # Drills Extraction Tool
         "tools_extract_hole_type": 'fixed',
         "tools_extract_hole_fixed_dia": 0.5,

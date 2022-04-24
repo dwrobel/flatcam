@@ -1577,7 +1577,7 @@ class ToolIsolation(AppTool, Gerber):
         except Exception as e:
             self.app.log.error(str(e))
 
-        self.app.inform.emit('[success] %s' % _("Tool(s) deleted from Tool Table."))
+        self.app.inform.emit('[success] %s' % _("Tools deleted from Tool Table."))
         self.build_ui()
 
     def on_generate_buffer(self):
