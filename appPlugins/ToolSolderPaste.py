@@ -39,6 +39,7 @@ class SolderPaste(AppTool):
 
         self.obj_options = LoudDict()
         self.form_fields = {}
+        self.general_form_fields = {}
 
         self.units = ''
         self.name = ""
@@ -128,6 +129,8 @@ class SolderPaste(AppTool):
     def connect_signals_at_init(self):
         self.ui.combo_context_del_action.triggered.connect(self.on_delete_object)
 
+        self.ui.tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
+
         self.ui.addtool_btn.clicked.connect(self.on_tool_add)
         self.ui.addtool_entry.returnPressed.connect(self.on_tool_add)
         self.ui.deltool_btn.clicked.connect(self.on_tool_delete)
@@ -141,6 +144,26 @@ class SolderPaste(AppTool):
 
         self.app.object_status_changed.connect(self.update_comboboxes)
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
+
+    def on_toggle_all_rows(self):
+        """
+
+        :return:
+        :rtype:
+        """
+
+        sel_model = self.ui.tools_table.selectionModel()
+        sel_indexes = sel_model.selectedIndexes()
+
+        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        sel_rows = set()
+        for idx in sel_indexes:
+            sel_rows.add(idx.row())
+
+        if len(sel_rows) == self.ui.tools_table.rowCount():
+            self.ui.tools_table.clearSelection()
+        else:
+            self.ui.tools_table.selectAll()
 
     def set_tool_ui(self):
         self.clear_ui(self.layout)
@@ -158,6 +181,7 @@ class SolderPaste(AppTool):
             "tools_solderpaste_z_toolchange":   self.ui.z_toolchange_entry,
             "tools_solderpaste_xy_toolchange":  self.ui.xy_toolchange_entry,
             "tools_solderpaste_frxy":           self.ui.frxy_entry,
+            "tools_solderpaste_fr_rapids":      self.ui.fr_rapids_entry,
             "tools_solderpaste_frz":            self.ui.frz_entry,
             "tools_solderpaste_frz_dispense":   self.ui.frz_dispense_entry,
             "tools_solderpaste_speedfwd":       self.ui.speedfwd_entry,
@@ -167,6 +191,10 @@ class SolderPaste(AppTool):
             "tools_solderpaste_pp":             self.ui.pp_combo
         })
         self.set_form_from_defaults()
+
+        self.general_form_fields.update({
+            "tools_solderpaste_pp": self.ui.pp_combo
+        })
 
         for option in self.app.options:
             if option.find('tools_') == 0:
@@ -377,7 +405,7 @@ class SolderPaste(AppTool):
                     wdg.returnPressed.connect(self.form_to_storage)
 
         self.ui.tools_table.itemChanged.connect(self.on_tool_edit)
-        self.ui.tools_table.currentItemChanged.connect(self.on_row_selection_change)
+        self.ui.tools_table.itemSelectionChanged.connect(self.on_row_selection_change)
 
     def ui_disconnect(self):
         # if connected, disconnect the signal from the slot on item_changed as it creates issues
@@ -407,7 +435,7 @@ class SolderPaste(AppTool):
             pass
 
         try:
-            self.ui.tools_table.currentItemChanged.disconnect(self.on_row_selection_change)
+            self.ui.tools_table.itemSelectionChanged.disconnect(self.on_row_selection_change)
         except (TypeError, AttributeError):
             pass
 
@@ -464,6 +492,13 @@ class SolderPaste(AppTool):
             self.tooltable_tools[uid]['data'].update({
                 key: self.form_fields[key].get_value()
             })
+
+        # set General Parameters for all tools; always done last
+        for key in self.general_form_fields:
+            for uid in self.tooltable_tools:
+                self.tooltable_tools[uid]['data'].update({
+                    key: self.general_form_fields[key].get_value()
+                })
 
     def set_form_from_defaults(self):
         """
@@ -728,9 +763,6 @@ class SolderPaste(AppTool):
         :return: a Geometry type object
         """
 
-        # this is a percentage of the tool diameter
-        tool_margin = self.ui.margin_entry.get_value()
-
         proc = self.app.proc_container.new('%s...' % _("Working"))
         obj = work_object
 
@@ -808,7 +840,6 @@ class SolderPaste(AppTool):
             tooluid = 1
 
             for tool in sorted_tools:
-                offset = ((tool_margin * tool) * 0.01) + (tool / 2)
                 for uid, vl in self.tooltable_tools.items():
                     if float('%.*f' % (self.decimals, float(vl['tooldia']))) == tool:
                         tooluid = int(uid)
@@ -824,6 +855,10 @@ class SolderPaste(AppTool):
                 geo_obj.tools[tooluid]['data']['tools_mill_offset_value'] = 0.0
                 geo_obj.tools[tooluid]['data']['tools_mill_job_type'] = 'SP'  # ''
                 geo_obj.tools[tooluid]['data']['tools_mill_tool_shape'] = 'DN'  # 'DN'
+
+                # this is a percentage of the tool diameter
+                tool_margin = geo_obj.tools[tooluid]['data']['tools_solderpaste_margin']
+                offset = ((tool_margin * tool) * 0.01) + (tool / 2)
 
                 # self.flat_geometry is a list of LinearRings produced by flatten() from the exteriors of the Polygons
                 # We get possible issues if we try to directly use the Polygons, due of possible the interiors,
@@ -985,8 +1020,9 @@ class SolderPaste(AppTool):
             # this turn on the FlatCAMCNCJob plot for multiple tools
             new_obj.multitool = True
             new_obj.multigeo = True
-            # new_obj object is a CNCJob object made from an Geometry object
+            # new_obj object is a CNCJob object made from a Geometry object
             new_obj.tools.clear()
+            new_obj.tools = obj.tools
             new_obj.special_group = 'solder_paste_tool'
 
             new_obj.obj_options['xmin'] = xmin
@@ -995,7 +1031,7 @@ class SolderPaste(AppTool):
             new_obj.obj_options['ymax'] = ymax
 
             total_gcode = ''
-            for tooluid_key, tooluid_value in obj.tools.items():
+            for tooluid_key, tooluid_value in new_obj.tools.items():
                 # find the tool_dia associated with the tooluid_key
                 tool_dia = tooluid_value['tooldia']
                 tool_cnc_dict = deepcopy(tooluid_value)
@@ -1009,7 +1045,8 @@ class SolderPaste(AppTool):
                 new_obj.obj_options['tool_dia'] = tool_dia
 
                 # ## CREATE GCODE # ##
-                res = new_obj.generate_gcode_from_solderpaste_geo(**tooluid_value)
+                is_first = True if tooluid_key == list(new_obj.tools.keys())[0] else False
+                res = new_obj.generate_gcode_from_solderpaste_geo(is_first=is_first, **tooluid_value)
 
                 if res == 'fail':
                     app_obj.log.debug("GeometryObject.mtool_gen_cncjob() --> generate_from_geometry2() failed")
@@ -1265,6 +1302,7 @@ class SolderUI:
         tt_frame.setLayout(tool_grid)
 
         self.tools_table = FCTable()
+        self.tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         tool_grid.addWidget(self.tools_table, 0, 0, 1, 4)
 
         self.tools_table.setColumnCount(3)
@@ -1318,7 +1356,7 @@ class SolderUI:
         # grid0.addWidget(separator_line, 2, 0, 1, 4)
 
         # #############################################################################################################
-        # Parameters Frame
+        # General Parameters Frame
         # #############################################################################################################
         self.param_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.param_label.setToolTip(
@@ -1332,21 +1370,7 @@ class SolderUI:
         param_grid = GLay(v_spacing=5, h_spacing=3)
         par_frame.setLayout(param_grid)
 
-        # Z travel
-        self.z_travel_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.z_travel_entry.set_range(0.0000001, 10000.0000)
-        self.z_travel_entry.set_precision(self.decimals)
-        self.z_travel_entry.setSingleStep(0.1)
-
-        self.z_travel_label = FCLabel('%s:' % _("Travel Z"))
-        self.z_travel_label.setToolTip(
-            _("The height (Z) for travel between pads\n"
-              "(without dispensing solder paste).")
-        )
-        param_grid.addWidget(self.z_travel_label, 0, 0)
-        param_grid.addWidget(self.z_travel_entry, 0, 1)
-
-        # MARGIN
+        # Margin
         self.margin_label = FCLabel('%s:' % _("Margin"))
         self.margin_label.setToolTip('%s %s' % (
             _("Offset from the boundary."),
@@ -1358,8 +1382,22 @@ class SolderUI:
         self.margin_entry.set_precision(self.decimals)
         self.margin_entry.setSingleStep(0.1)
 
-        param_grid.addWidget(self.margin_label, 2, 0)
-        param_grid.addWidget(self.margin_entry, 2, 1)
+        param_grid.addWidget(self.margin_label, 0, 0)
+        param_grid.addWidget(self.margin_entry, 0, 1)
+
+        # Z travel
+        self.z_travel_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.z_travel_entry.set_range(0.0000001, 10000.0000)
+        self.z_travel_entry.set_precision(self.decimals)
+        self.z_travel_entry.setSingleStep(0.1)
+
+        self.z_travel_label = FCLabel('%s:' % _("Travel Z"))
+        self.z_travel_label.setToolTip(
+            _("The height (Z) for travel between pads\n"
+              "(without dispensing solder paste).")
+        )
+        param_grid.addWidget(self.z_travel_label, 2, 0)
+        param_grid.addWidget(self.z_travel_entry, 2, 1)
 
         # #############################################################################################################
         # Dispense Frame
@@ -1472,6 +1510,20 @@ class SolderUI:
         fr_grid.addWidget(self.frxy_label, 0, 0)
         fr_grid.addWidget(self.frxy_entry, 0, 1)
 
+        # Feedrate Rapids
+        self.frapids_lbl = FCLabel('%s:' % _("Feedrate Rapids"))
+        self.frapids_lbl.setToolTip(
+            _("Feedrate while moving as fast as possible.")
+        )
+
+        self.fr_rapids_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.fr_rapids_entry.set_range(0.0000, 10000.0000)
+        self.fr_rapids_entry.set_precision(self.decimals)
+        self.fr_rapids_entry.setSingleStep(0.1)
+
+        fr_grid.addWidget(self.frapids_lbl, 2, 0)
+        fr_grid.addWidget(self.fr_rapids_entry, 2, 1)
+
         # Feedrate Z
         self.frz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.frz_entry.set_range(0.0000, 910000.0000)
@@ -1483,8 +1535,8 @@ class SolderUI:
             _("Feedrate (speed) while moving vertically\n"
               "(on Z plane).")
         )
-        fr_grid.addWidget(self.frz_label, 2, 0)
-        fr_grid.addWidget(self.frz_entry, 2, 1)
+        fr_grid.addWidget(self.frz_label, 4, 0)
+        fr_grid.addWidget(self.frz_entry, 4, 1)
 
         # Feedrate Z Dispense
         self.frz_dispense_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -1497,8 +1549,8 @@ class SolderUI:
             _("Feedrate (speed) while moving up vertically\n"
               "to Dispense position (on Z plane).")
         )
-        fr_grid.addWidget(self.frz_dispense_label, 4, 0)
-        fr_grid.addWidget(self.frz_dispense_entry, 4, 1)
+        fr_grid.addWidget(self.frz_dispense_label, 6, 0)
+        fr_grid.addWidget(self.frz_dispense_entry, 6, 1)
 
         # #############################################################################################################
         # Spindle Forward Frame
@@ -1577,13 +1629,19 @@ class SolderUI:
         sp_rev_grid.addWidget(self.dwellrev_entry, 2, 1)
 
         # #############################################################################################################
-        # Preprocessors Frame
+        # General Parameters Frame
         # #############################################################################################################
-        pp_frame = FCFrame()
-        self.tools_box.addWidget(pp_frame)
+        self.gen_param_label = FCLabel('%s' % _("Common Parameters"), color='indigo', bold=True)
+        self.gen_param_label.setToolTip(
+            _("Parameters that are common for all tools.")
+        )
+        self.tools_box.addWidget(self.gen_param_label)
 
-        pp_grid = GLay(v_spacing=5, h_spacing=3)
-        pp_frame.setLayout(pp_grid)
+        gen_par_frame = FCFrame()
+        self.tools_box.addWidget(gen_par_frame)
+
+        gen_param_grid = GLay(v_spacing=5, h_spacing=3)
+        gen_par_frame.setLayout(gen_param_grid)
 
         pp_label = FCLabel('%s:' % _('Preprocessor'))
         pp_label.setToolTip(
@@ -1591,8 +1649,8 @@ class SolderUI:
         )
 
         self.pp_combo = FCComboBox()
-        pp_grid.addWidget(pp_label, 0, 0)
-        pp_grid.addWidget(self.pp_combo, 0, 1)
+        gen_param_grid.addWidget(pp_label, 0, 0)
+        gen_param_grid.addWidget(self.pp_combo, 0, 1)
 
         # #############################################################################################################
         # Geometry Frame
@@ -1702,7 +1760,7 @@ class SolderUI:
 
         GLay.set_common_column_size(
             [geo_grid, fr_grid, tc_grid, disp_grid, tool_grid, sp_fw_grid, sp_rev_grid, param_grid, cnc_grid,
-             pp_grid], 0)
+             gen_param_grid], 0)
 
         self.layout.addStretch(1)
 

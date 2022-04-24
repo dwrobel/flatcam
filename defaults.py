@@ -658,6 +658,7 @@ class AppDefaults:
         "tools_solderpaste_z_toolchange": 1.0,
         "tools_solderpaste_xy_toolchange": "0.0, 0.0",
         "tools_solderpaste_frxy": 150,
+        "tools_solderpaste_fr_rapids": 1500,
         "tools_solderpaste_frz": 150,
         "tools_solderpaste_frz_dispense": 1.0,
         "tools_solderpaste_speedfwd": 300,

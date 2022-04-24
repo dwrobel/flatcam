@@ -6263,7 +6263,7 @@ class CNCjob(Geometry):
 
         return self.gcode, start_gcode
 
-    def generate_gcode_from_solderpaste_geo(self, **kwargs):
+    def generate_gcode_from_solderpaste_geo(self, is_first=False, **kwargs):
         """
                Algorithm to generate from multitool Geometry.
 
@@ -6290,6 +6290,7 @@ class CNCjob(Geometry):
 
         # this is the tool diameter, it is used as such to accommodate the preprocessor who need the tool diameter
         # given under the name 'toolC'
+        self.postdata['toolC'] = kwargs['tooldia']
 
         self.postdata['z_start'] = kwargs['data']['tools_solderpaste_z_start']
         self.postdata['z_dispense'] = kwargs['data']['tools_solderpaste_z_dispense']
@@ -6298,6 +6299,7 @@ class CNCjob(Geometry):
         self.postdata['z_toolchange'] = kwargs['data']['tools_solderpaste_z_toolchange']
         self.postdata['xy_toolchange'] = kwargs['data']['tools_solderpaste_xy_toolchange']
         self.postdata['frxy'] = kwargs['data']['tools_solderpaste_frxy']
+        self.postdata['fr_rapids'] = kwargs['data']['tools_solderpaste_fr_rapids']
         self.postdata['frz'] = kwargs['data']['tools_solderpaste_frz']
         self.postdata['frz_dispense'] = kwargs['data']['tools_solderpaste_frz_dispense']
         self.postdata['speedfwd'] = kwargs['data']['tools_solderpaste_speedfwd']
@@ -6305,8 +6307,6 @@ class CNCjob(Geometry):
         self.postdata['speedrev'] = kwargs['data']['tools_solderpaste_speedrev']
         self.postdata['dwellrev'] = kwargs['data']['tools_solderpaste_dwellrev']
         self.postdata['pp_solderpaste_name'] = kwargs['data']['tools_solderpaste_pp']
-
-        self.postdata['toolC'] = kwargs['tooldia']
 
         self.pp_solderpaste_name = kwargs['data']['tools_solderpaste_pp'] if kwargs['data']['tools_solderpaste_pp'] \
             else self.app.options['tools_solderpaste_pp']
@@ -6331,7 +6331,9 @@ class CNCjob(Geometry):
                 storage.insert(geo_shape)
 
         # Initial G-Code
-        self.gcode = self.doformat(p.start_code)
+        self.gcode = ''
+        if is_first:
+            self.gcode += self.doformat(p.start_code)
         self.gcode += self.doformat(p.spindle_off_code)
         self.gcode += self.doformat(p.toolchange_code)
 

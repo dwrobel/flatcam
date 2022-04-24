@@ -11,6 +11,11 @@ CHANGELOG for FlatCAM Evo beta
 
 - some fixes in the Import Image Plugin
 - made sure that the CNCJob objects made out of non-multi-toolGeometries are plotted correctly
+- in SolderPaste Plugin fixed an issue where the new parameter 'margin' was taken from the current UI and applied to all tools (nozzles); now each nozzle use his 'margin' parameter
+- in SolderPaste Plugin make sure that the preprocessor is set the same for all tools (nozzles) whenever is modified
+- added 2 new preprocessor files for the SolderPaste Plugin (GRBL and MARLIN)
+- in SolderPaste Plugin made sure that the start GCode is not added for each nozzle but only once at start
+- in SolderPaste Plugin added a new parameter: 'Feedrate Rapids' which will set the feedrate for the fast moves as opposed with the previously used G0 command. This allows to fine tune the fast moves to reduce the vibrations
 
 23.04.2022
 

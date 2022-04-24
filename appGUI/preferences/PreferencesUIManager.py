@@ -594,6 +594,7 @@ class PreferencesUIManager(QtCore.QObject):
             "tools_solderpaste_xy_toolchange": self.ui.plugin_pref_form.tools_solderpaste_group.xy_toolchange_entry,
             "tools_solderpaste_frxy": self.ui.plugin_pref_form.tools_solderpaste_group.frxy_entry,
             "tools_solderpaste_frz": self.ui.plugin_pref_form.tools_solderpaste_group.frz_entry,
+            "tools_solderpaste_fr_rapids": self.ui.plugin_pref_form.tools_solderpaste_group.fr_rapids_entry,
             "tools_solderpaste_frz_dispense": self.ui.plugin_pref_form.tools_solderpaste_group.frz_dispense_entry,
             "tools_solderpaste_speedfwd": self.ui.plugin_pref_form.tools_solderpaste_group.speedfwd_entry,
             "tools_solderpaste_dwellfwd": self.ui.plugin_pref_form.tools_solderpaste_group.dwellfwd_entry,

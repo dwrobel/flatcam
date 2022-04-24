@@ -162,7 +162,7 @@ class ToolImage(AppTool):
                 txt = _("The tracing require Chromium,\n"
                         "but it was not detected.\n"
                         "\n"
-                        "Do you want to download (about 300MB)?")
+                        "Do you want to download it (about 300MB)?")
                 msgbox.setWindowTitle(title)  # taskbar still shows it
                 msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/app128.png'))
                 msgbox.setText('<b>%s</b>' % title)
@@ -179,7 +179,7 @@ class ToolImage(AppTool):
                 if response == bt_no:
                     self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
                     return
-            self.app.inform.emit(_("Please be patient. Chromium is being downloaded in background.\n"
+            self.app.inform.emit(_("Please be patient. Chromium is being downloaded in the background.\n"
                                    "The app will resume after it is installed."))
 
         _filter = "Image Files(*.BMP *.PNG *.JPG *.JPEG);;" \
