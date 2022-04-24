@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM Evo beta
 
 - deleted the Calibration Plugin (made redundant by changes in other Plugins)
 - some strings were updated
+- in SolderPaste Plugin fixed an issue when creating a new project with this plugin open
+- updated the application strings
 
 24.04.2022
 

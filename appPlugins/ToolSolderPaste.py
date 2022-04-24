@@ -485,6 +485,8 @@ class SolderPaste(AppTool):
         """
 
         current_row = self.ui.tools_table.currentRow()
+        if not current_row or current_row < 0:
+            return
         uid = tooluid if tooluid else int(self.ui.tools_table.item(current_row, 2).text())
         if uid < 0:
             return 
@@ -818,7 +820,7 @@ class SolderPaste(AppTool):
         # flatten(geometry=obj.solid_geometry, pathonly=True)
         flatten(tools_geometry, pathonly=True)
         if not self.flat_geometry:
-            self.app.log.debug("Failed due of missing Gerber tools geometry.")
+            self.app.log.debug("Failed due of missing Gerber pads geometry.")
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
             return
 
