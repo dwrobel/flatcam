@@ -13,6 +13,8 @@ CHANGELOG for FlatCAM Evo beta
 - some strings were updated
 - in SolderPaste Plugin fixed an issue when creating a new project with this plugin open
 - updated the application strings
+- changed again the FClabel GUI element to allow font size change from a class parameter and modified the way the weight is set
+- small UI change in the Image Import Plugin
 
 24.04.2022
 

@@ -546,7 +546,7 @@ class ImageUI:
         par_grid.addWidget(self.tf_type_obj_combo, 0, 1, 1, 2)
 
         # DPI value of the imported image
-        self.dpi_entry = FCSpinner(callback=self.confirmation_message_int)
+        self.dpi_entry = FCSpinner()
         self.dpi_entry.set_range(0, 99999)
         self.dpi_label = FCLabel('%s:' % _("DPI value"))
         self.dpi_label.setToolTip(_("Specify a DPI value for the image."))
@@ -554,7 +554,7 @@ class ImageUI:
         par_grid.addWidget(self.dpi_entry, 2, 1, 1, 2)
 
         # Area
-        area_lbl = FCLabel('%s' % _("Area"), bold=True)
+        area_lbl = FCLabel('%s' % _("Area:"), bold=True)
         area_lbl.setToolTip(
             _("Polygons inside the image with less area are discarded.")
         )
@@ -568,19 +568,6 @@ class ImageUI:
         par_grid.addWidget(area_lbl, 4, 0)
         par_grid.addWidget(self.min_area_entry, 4, 1)
         par_grid.addWidget(area_units_lbl, 4, 2)
-
-        # Type of image interpretation
-        self.image_type_label = FCLabel('%s:' % _('Image type'), bold=True)
-        self.image_type_label.setToolTip(
-            _("Choose a method for the image interpretation.\n"
-              "B/W means a black & white image. Color means a colored image.")
-        )
-
-        self.image_type = RadioSet([{'label': 'B/W', 'value': 'black'},
-                                    {'label': 'Color', 'value': 'color'}])
-
-        par_grid.addWidget(self.image_type_label, 6, 0)
-        par_grid.addWidget(self.image_type, 6, 1, 1, 2)
 
         # The import Mode
         self.import_mode_lbl = FCLabel('%s:' % _('Mode'), color='red', bold=True)
@@ -600,6 +587,19 @@ class ImageUI:
         mod_grid.addWidget(self.import_mode_lbl, 0, 0)
         mod_grid.addWidget(self.import_mode_radio, 0, 1)
 
+        # Type of image interpretation
+        self.image_type_label = FCLabel('%s:' % _('Type'), bold=True)
+        self.image_type_label.setToolTip(
+            _("Choose a method for the image interpretation.\n"
+              "B/W means a black & white image. Color means a colored image.")
+        )
+
+        self.image_type = RadioSet([{'label': 'B/W', 'value': 'black'},
+                                    {'label': 'Color', 'value': 'color'}])
+
+        mod_grid.addWidget(self.image_type_label, 6, 0)
+        mod_grid.addWidget(self.image_type, 6, 1, 1, 2)
+
         # #############################################################################################################
         # ######################################## Raster Mode ########################################################
         # #############################################################################################################
@@ -610,11 +610,11 @@ class ImageUI:
         raster_grid = GLay(v_spacing=5, h_spacing=3)
         self.raster_frame.setLayout(raster_grid)
 
-        self.detail_label = FCLabel("<font size=4><b>%s:</b></font>" % _('Level of detail'))
+        self.detail_label = FCLabel("%s:" % _('Level of detail'), bold=True)
         raster_grid.addWidget(self.detail_label, 0, 0, 1, 2)
 
         # Mask value of the imported image when image monochrome
-        self.mask_bw_entry = FCSpinner(callback=self.confirmation_message_int)
+        self.mask_bw_entry = FCSpinner()
         self.mask_bw_entry.set_range(0, 255)
 
         self.mask_bw_label = FCLabel("%s <b>B/W</b>:" % _('Mask value'))
@@ -630,7 +630,7 @@ class ImageUI:
         raster_grid.addWidget(self.mask_bw_entry, 2, 1)
 
         # Mask value of the imported image for RED color when image color
-        self.mask_r_entry = FCSpinner(callback=self.confirmation_message_int)
+        self.mask_r_entry = FCSpinner()
         self.mask_r_entry.set_range(0, 255)
 
         self.mask_r_label = FCLabel("%s <b>R:</b>" % _('Mask value'))
@@ -644,7 +644,7 @@ class ImageUI:
         raster_grid.addWidget(self.mask_r_entry, 4, 1)
 
         # Mask value of the imported image for GREEN color when image color
-        self.mask_g_entry = FCSpinner(callback=self.confirmation_message_int)
+        self.mask_g_entry = FCSpinner()
         self.mask_g_entry.set_range(0, 255)
 
         self.mask_g_label = FCLabel("%s <b>G:</b>" % _('Mask value'))
@@ -658,7 +658,7 @@ class ImageUI:
         raster_grid.addWidget(self.mask_g_entry, 6, 1)
 
         # Mask value of the imported image for BLUE color when image color
-        self.mask_b_entry = FCSpinner(callback=self.confirmation_message_int)
+        self.mask_b_entry = FCSpinner()
         self.mask_b_entry.set_range(0, 255)
 
         self.mask_b_label = FCLabel("%s <b>B:</b>" % _('Mask value'))
@@ -967,20 +967,3 @@ class ImageUI:
         else:
             self.preset_frame.hide()
             self.options_frame.show()
-
-    def confirmation_message(self, accepted, minval, maxval):
-        if accepted is False:
-            self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%.*f, %.*f]' % (_("Edited value is out of range"),
-                                                                                  self.decimals,
-                                                                                  minval,
-                                                                                  self.decimals,
-                                                                                  maxval), False)
-        else:
-            self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)
-
-    def confirmation_message_int(self, accepted, minval, maxval):
-        if accepted is False:
-            self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%d, %d]' %
-                                            (_("Edited value is out of range"), minval, maxval), False)
-        else:
-            self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)

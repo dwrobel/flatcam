@@ -3020,7 +3020,7 @@ class FCLabel(QtWidgets.QLabel):
     middle_clicked = QtCore.pyqtSignal(bool)
 
 
-    def __init__(self, title=None, color=None, bold=None, parent=None):
+    def __init__(self, title=None, color=None, bold=None, size=None, parent=None):
         """
 
         :param title:           the label's text
@@ -3029,6 +3029,8 @@ class FCLabel(QtWidgets.QLabel):
         :type color:            str
         :param bold:            the text weight
         :type bold:             bool
+        :param size:            Font Size in points
+        :type size:             int
         :param parent:          parent of this widget
         :type parent:           QtWidgets.QWidget | None
         """
@@ -3039,14 +3041,25 @@ class FCLabel(QtWidgets.QLabel):
             color = self.patching_text_color(color)
 
         if isinstance(title, str):
-            if color and not bold:
-                self.setText('<span style="color:%s;">%s</span>' % (str(color), title))
-            elif not color and bold:
-                self.setText('<b>%s</b>' % title)
-            elif color and bold:
-                self.setText('<span style="color:%s;"><b>%s</b></span>' % (str(color), title))
+            # if color and not bold:
+            #     self.setText('<span style="color:%s;">%s</span>' % (str(color), title))
+            # elif not color and bold:
+            #     self.setText('<b>%s</b>' % title)
+            # elif color and bold:
+            #     self.setText('<span style="color:%s;"><b>%s</b></span>' % (str(color), title))
+            # else:
+            #     self.setText(title)
+            if color:
+                self.setText('<font color="%s">%s</font>' % (str(color), title))
             else:
                 self.setText(title)
+
+            font = QtGui.QFont()
+            font.setBold(True) if bold else font.setBold(False)
+            if size:
+                font.setPointSize(size)
+                # "<font size=4>%s</font>"
+            self.setFont(font)
 
         # for the usage of this label as a clickable label, to know that current state
         self.clicked_state = False
