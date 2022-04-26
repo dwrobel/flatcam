@@ -428,9 +428,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 if obj.kind == 'gerber' or obj.kind == 'excellon':
                     self.app.ui.menuprojectcolor.setEnabled(True)
 
-                if obj.kind != 'gerber' and obj.kind != 'excellon' and obj.kind != 'cncjob':
+                if obj.kind not in ['geometry', 'gerber', 'excellon', 'cncjob']:
                     self.app.ui.menuprojectviewsource.setVisible(False)
-                if obj.kind != 'gerber' and obj.kind != 'geometry' and obj.kind != 'excellon' and obj.kind != 'cncjob':
                     # meaning for Scripts and for Document type of FlatCAM object
                     self.app.ui.menuprojectenable.setVisible(False)
                     self.app.ui.menuprojectdisable.setVisible(False)

@@ -198,16 +198,27 @@ class AppTextEditor(QtWidgets.QWidget):
         self.buttonSave.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as_red.png'))
 
     def load_text(self, text, move_to_start=False, move_to_end=False, clear_text=True, as_html=False):
-        self.code_editor.textChanged.disconnect()
+        try:
+            self.code_editor.textChanged.disconnect()
+        except (AttributeError, TypeError):
+            pass
         if clear_text:
             # first clear previous text in text editor (if any)
             self.code_editor.clear()
 
         self.code_editor.setReadOnly(False)
-        if as_html is False:
-            self.code_editor.setPlainText(text)
-        else:
-            self.code_editor.setHtml(text)
+        try:
+            if as_html is False:
+                self.code_editor.setPlainText(text)
+            else:
+                if isinstance(self.code_editor, QtWidgets.QTextEdit):
+                    self.code_editor.setHtml(text)
+                else:
+                    self.code_editor.setPlainText(text)
+        except Exception as err:
+            self.app.log.error("AppTextEditor.load_text() --> %s." % str(err))
+            self.code_editor.textChanged.connect(self.handleTextChanged)
+            return
         if move_to_start:
             self.code_editor.moveCursor(QtGui.QTextCursor.MoveOperation.Start)
         elif move_to_end:

@@ -3515,7 +3515,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Finish the current action. Use with tools that do not
                 # complete automatically, like a polygon or path.
-                if key == QtCore.Qt.Key.Key_Enter or key == 'Enter':
+                if key == QtCore.Qt.Key.Key_Enter or key == 'Enter' or key == QtCore.Qt.Key.Key_Return:
                     if isinstance(self.app.geo_editor.active_tool, FCShapeTool):
                         if self.app.geo_editor.active_tool.name == 'rotate':
                             self.app.geo_editor.active_tool.make()
@@ -3791,7 +3791,8 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.app.grb_editor.on_transform()
                     return
             # NO MODIFIER
-            elif modifiers == QtCore.Qt.KeyboardModifier.NoModifier:
+            elif modifiers == QtCore.Qt.KeyboardModifier.NoModifier or \
+                    modifiers == QtCore.Qt.KeyboardModifier.KeypadModifier:
                 # Abort the current action
                 if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':
                     # self.on_tool_select("select")
@@ -4024,7 +4025,8 @@ class MainGUI(QtWidgets.QMainWindow):
             elif modifiers == QtCore.Qt.KeyboardModifier.AltModifier:
                 pass
             # NO MODIFIER
-            elif modifiers == QtCore.Qt.KeyboardModifier.NoModifier:
+            elif modifiers == QtCore.Qt.KeyboardModifier.NoModifier or \
+                    modifiers == QtCore.Qt.KeyboardModifier.KeypadModifier:
                 # Abort the current action
                 if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':
                     self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
@@ -4033,6 +4035,44 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.app.exc_editor.active_tool.clean_up()
                     self.app.exc_editor.select_tool('drill_select')
                     return
+
+                # Finish the current action. Use with tools that do not
+                # complete automatically.
+                if key == QtCore.Qt.Key.Key_Enter or key == 'Enter' or key == QtCore.Qt.Key.Key_Return:
+                    if isinstance(self.app.exc_editor.active_tool, FCShapeTool):
+                        if self.app.exc_editor.active_tool.name == 'drill_add' \
+                                and self.app.exc_editor.active_tool.drill_tool.length != 0.0:
+                            pass
+                        elif self.app.exc_editor.active_tool.name == 'drill_array' \
+                                and self.app.exc_editor.active_tool.drill_array_tool.length != 0.0:
+                            pass
+                        elif self.app.exc_editor.active_tool.name == 'slot_add' \
+                                and self.app.exc_editor.active_tool.slot_tool.x != 0.0 \
+                                and self.app.exc_editor.active_tool.slot_tool.y != 0.0:
+                            pass
+                        elif self.app.exc_editor.active_tool.name == 'slot_array' \
+                                and self.app.exc_editor.active_tool.slot_array_tool.length != 0.0 \
+                                and self.app.exc_editor.active_tool.slot_array_tool.width != 0.0:
+                            pass
+                        elif self.app.exc_editor.active_tool.name == 'move' \
+                                and self.app.exc_editor.active_tool.move_tool.length != 0.0 \
+                                and self.app.exc_editor.active_tool.move_tool.width != 0.0:
+                            pass
+                        elif self.app.exc_editor.active_tool.name == 'copy' \
+                                and self.app.exc_editor.active_tool.copy_tool.length != 0.0 \
+                                and self.app.exc_editor.active_tool.copy_tool.width != 0.0:
+                            pass
+                        else:
+                            self.app.exc_editor.active_tool.click(
+                                self.app.geo_editor.snap(self.app.exc_editor.x, self.app.exc_editor.y))
+
+                            self.app.exc_editor.active_tool.make()
+
+                            if self.app.exc_editor.active_tool.complete:
+                                self.app.exc_editor.on_shape_complete()
+                                self.app.inform.emit('[success] %s' % _("Done."))
+                            # automatically make the selection tool active after completing current action
+                            self.app.exc_editor.select_tool('select')
 
                 # Delete selected object if delete key event comes out of canvas
                 if key == 'Delete':
@@ -4068,23 +4108,23 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.on_toggle_notebook()
                     return
 
-                # Switch to Project Tab
-                if key == QtCore.Qt.Key.Key_1 or key == '1':
-                    self.app.exc_editor.launched_from_shortcuts = True
-                    self.on_select_tab('project')
-                    return
-
-                # Switch to Selected Tab
-                if key == QtCore.Qt.Key.Key_2 or key == '2':
-                    self.app.exc_editor.launched_from_shortcuts = True
-                    self.on_select_tab('selected')
-                    return
-
-                # Switch to Tool Tab
-                if key == QtCore.Qt.Key.Key_3 or key == '3':
-                    self.app.exc_editor.launched_from_shortcuts = True
-                    self.on_select_tab('tool')
-                    return
+                # # Switch to Project Tab
+                # if key == QtCore.Qt.Key.Key_1 or key == '1':
+                #     self.app.exc_editor.launched_from_shortcuts = True
+                #     self.on_select_tab('project')
+                #     return
+                #
+                # # Switch to Selected Tab
+                # if key == QtCore.Qt.Key.Key_2 or key == '2':
+                #     self.app.exc_editor.launched_from_shortcuts = True
+                #     self.on_select_tab('selected')
+                #     return
+                #
+                # # Switch to Tool Tab
+                # if key == QtCore.Qt.Key.Key_3 or key == '3':
+                #     self.app.exc_editor.launched_from_shortcuts = True
+                #     self.on_select_tab('tool')
+                #     return
 
                 # Grid Snap
                 if key == QtCore.Qt.Key.Key_G or key == 'G':

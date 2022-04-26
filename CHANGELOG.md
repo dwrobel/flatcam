@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+26.04.2022
+
+- activated the 'View Source' option in the project menu context menu for the Geometry objects
+- in Image Import plugin now the created objects have the 'source_file' attribute with content
+- working in the Excellon Editor - wip
+
 25.04.2022
 
 - deleted the Calibration Plugin (made redundant by changes in other Plugins)

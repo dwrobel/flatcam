@@ -179,8 +179,8 @@ class ToolImage(AppTool):
                 if response == bt_no:
                     self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
                     return
-            self.app.inform.emit(_("Please be patient. Chromium is being downloaded in the background.\n"
-                                   "The app will resume after it is installed."))
+                self.app.inform.emit(_("Please be patient. Chromium is being downloaded in the background.\n"
+                                       "The app will resume after it is installed."))
 
         _filter = "Image Files(*.BMP *.PNG *.JPG *.JPEG);;" \
                   "Bitmap File (*.BMP);;" \
@@ -296,6 +296,11 @@ class ToolImage(AppTool):
                 })
 
                 geo_obj.tools[1]['data']['name'] = name
+                if svg_text is not None:
+                    geo_obj.source_file = svg_text
+                else:
+                    geo_obj.source_file = app_obj.f_handlers.export_dxf(
+                        obj_name=None, filename=None, local_use=geo_obj, use_thread=False)
             else:   # 'gerber'
                 if 0 not in geo_obj.tools:
                     geo_obj.tools[0] = {
@@ -317,6 +322,8 @@ class ToolImage(AppTool):
                         isinstance(geo_obj.solid_geometry, Polygon) else geo_obj.solid_geometry
                     }
                     geo_obj.tools[0]['geometry'].append(new_el)
+                geo_obj.source_file = app_obj.f_handlers.export_gerber(
+                    obj_name=None, filename=None, local_use=geo_obj, use_thread=False)
 
         with self.app.proc_container.new('%s ...' % _("Importing")):
 

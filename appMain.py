@@ -8298,7 +8298,8 @@ class App(QtCore.QObject):
 
         self.source_editor_tab.t_frame.hide()
         try:
-            self.source_editor_tab.load_text(file.getvalue(), clear_text=True, move_to_start=True)
+            source_text = file.getvalue()
+            self.source_editor_tab.load_text(source_text, clear_text=True, move_to_start=True)
         except Exception as e:
             self.log.error('App.on_view_source() -->%s' % str(e))
             self.inform.emit('[ERROR] %s: %s' % (_('Failed to load the source code for the selected object'), str(e)))

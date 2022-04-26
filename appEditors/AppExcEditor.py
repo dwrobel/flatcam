@@ -5,15 +5,15 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtGui, QtCore, QtWidgets
-from PyQt6.QtCore import Qt
-
 from camlib import distance, arc, AppRTreeStorage
+
+from appEditors.exc_plugins.ExcGenPlugin import *
+
 from appGUI.GUIElements import FCEntry, FCTable, FCDoubleSpinner, RadioSet, FCSpinner, FCButton, FCLabel, GLay
 from appEditors.AppGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, AppGeoEditor
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point
-import shapely.affinity as affinity
+from shapely.affinity import scale, rotate, translate
 # from appCommon.Common import LoudDict
 
 import numpy as np
@@ -60,6 +60,17 @@ class SelectEditorExc(FCShapeTool):
         self.draw_app.ui.array_frame.hide()
         self.draw_app.ui.slot_frame.hide()
         self.draw_app.ui.slot_array_frame.hide()
+
+        # make sure that the cursor text from the DrillAdd is deleted
+        if self.draw_app.app.plotcanvas.text_cursor.parent and self.draw_app.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.text_cursor.parent = None
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+
+        # make sure that the Tools tab is removed
+        try:
+            self.draw_app.app.ui.notebook.removeTab(2)
+        except Exception:
+            pass
 
     def click(self, point):
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
@@ -229,6 +240,7 @@ class DrillAdd(FCShapeTool):
         DrawTool.__init__(self, draw_app)
         self.name = 'drill_add'
         self.draw_app = draw_app
+        self.app = self.draw_app.app
 
         self.selected_dia = None
         try:
@@ -258,17 +270,27 @@ class DrillAdd(FCShapeTool):
 
         self.draw_app.app.inform.emit(_("Click to place ..."))
 
+        if self.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = self.draw_cursor_data
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
-        # Switch notebook to Properties page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
+        self.drill_tool = ExcGenEditorTool(self.app, self.draw_app, plugin_name=_("Drill"))
+        self.drill_tool.run()
+
+        self.app.ui.notebook.setTabText(2, _("Drill"))
+        if self.app.ui.splitter.sizes()[0] == 0:
+            self.app.ui.splitter.setSizes([1, 1])
+
+        self.points = deepcopy(self.draw_app.pos) if \
+            self.draw_app.pos and self.draw_app.pos[0] and self.draw_app.pos[1] else (0.0, 0.0)
+        self.drill_point = None
 
     def click(self, point):
+        self.drill_point = point
         self.make()
         return "Done."
 
     def utility_geometry(self, data=None):
-        self.points = data
         return DrawToolUtilityShape(self.util_shape(data))
 
     def util_shape(self, point):
@@ -289,6 +311,9 @@ class DrillAdd(FCShapeTool):
         return MultiLineString([(start_hor_line, stop_hor_line), (start_vert_line, stop_vert_line)])
 
     def make(self):
+        if self.drill_point is None:
+            self.drill_point = (self.draw_app.snap_x, self.draw_app.snap_y)
+
         self.selected_dia = self.draw_app.tool2tooldia[self.draw_app.last_tool_selected]
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -298,21 +323,129 @@ class DrillAdd(FCShapeTool):
         # add the point to drills if the diameter is a key in the dict, if not, create it add the drill location
         # to the value, as a list of itself
         if self.selected_dia in self.draw_app.points_edit:
-            self.draw_app.points_edit[self.selected_dia].append(self.points)
+            self.draw_app.points_edit[self.selected_dia].append(self.drill_point)
         else:
-            self.draw_app.points_edit[self.selected_dia] = [self.points]
+            self.draw_app.points_edit[self.selected_dia] = [self.drill_point]
 
         self.draw_app.current_storage = self.draw_app.storage_dict[self.selected_dia]
-        self.geometry = DrawToolShape(self.util_shape(self.points))
+        self.geometry = DrawToolShape(self.util_shape(self.drill_point))
         self.draw_app.in_action = False
         self.complete = True
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
-        self.draw_app.app.jump_signal.disconnect()
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+    def draw_cursor_data(self, pos=None, delete=False):
+        if pos is None:
+            pos = self.draw_app.snap_x, self.draw_app.snap_y
+
+        if not self.points:
+            self.points = (0, 0)
+
+        if delete:
+            if self.draw_app.app.use_3d_engine:
+                self.draw_app.app.plotcanvas.text_cursor.parent = None
+                self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+            return
+
+        # font size
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("hud_font_size"):
+            fsize = qsettings.value('hud_font_size', type=int)
+        else:
+            fsize = 8
+
+        x = pos[0]
+        y = pos[1]
+        try:
+            length = abs(np.sqrt((pos[0] - self.points[0]) ** 2 + (pos[1] - self.points[1]) ** 2))
+        except IndexError:
+            length = self.draw_app.app.dec_format(0.0, self.draw_app.app.decimals)
+        except TypeError:
+            print(self.points)
+        units = self.draw_app.app.app_units.lower()
+
+        x_dec = str(self.draw_app.app.dec_format(x, self.draw_app.app.decimals)) if x else '0.0'
+        y_dec = str(self.draw_app.app.dec_format(y, self.draw_app.app.decimals)) if y else '0.0'
+        length_dec = str(self.draw_app.app.dec_format(length, self.draw_app.app.decimals)) if length else '0.0'
+
+        l1_txt = 'X:   %s [%s]' % (x_dec, units)
+        l2_txt = 'Y:   %s [%s]' % (y_dec, units)
+        l3_txt = 'L:   %s [%s]' % (length_dec, units)
+        cursor_text = '%s\n%s\n\n%s' % (l1_txt, l2_txt, l3_txt)
+
+        if self.draw_app.app.use_3d_engine:
+            new_pos = self.draw_app.app.plotcanvas.translate_coords_2((x, y))
+            x, y, __, ___ = self.draw_app.app.plotcanvas.translate_coords((new_pos[0]+30, new_pos[1]))
+
+            # text
+            self.draw_app.app.plotcanvas.text_cursor.font_size = fsize
+            self.draw_app.app.plotcanvas.text_cursor.text = cursor_text
+            self.draw_app.app.plotcanvas.text_cursor.pos = x, y
+            self.draw_app.app.plotcanvas.text_cursor.anchors = 'left', 'top'
+
+            if self.draw_app.app.plotcanvas.text_cursor.parent is None:
+                self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
+
+    def on_key(self, key):
+        # Jump to coords
+        if key == QtCore.Qt.Key.Key_J or key == 'J':
+            self.draw_app.app.on_jump_to()
+
+        if key in [str(i) for i in range(10)] + ['.', ',', '+', '-', '/', '*'] or \
+                key in [QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_1, QtCore.Qt.Key.Key_2,
+                        QtCore.Qt.Key.Key_3, QtCore.Qt.Key.Key_4, QtCore.Qt.Key.Key_5, QtCore.Qt.Key.Key_6,
+                        QtCore.Qt.Key.Key_7, QtCore.Qt.Key.Key_8, QtCore.Qt.Key.Key_9, QtCore.Qt.Key.Key_Minus,
+                        QtCore.Qt.Key.Key_Plus, QtCore.Qt.Key.Key_Comma, QtCore.Qt.Key.Key_Period,
+                        QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
+            try:
+                # VisPy keys
+                if self.drill_tool.length == 0:
+                    self.drill_tool.length = str(key.name)
+                else:
+                    self.drill_tool.length = str(self.drill_tool.length) + str(key.name)
+            except AttributeError:
+                # Qt keys
+                if self.drill_tool.length == 0:
+                    self.drill_tool.length = chr(key)
+                else:
+                    self.drill_tool.length = str(self.drill_tool.length) + chr(key)
+
+        if key == 'Enter' or key == QtCore.Qt.Key.Key_Return or key == QtCore.Qt.Key.Key_Enter:
+            if self.drill_tool.length != 0:
+                target_length = self.drill_tool.length
+                if target_length is None:
+                    self.drill_tool.length = 0.0
+                    return _("Failed.")
+
+                first_pt = self.points
+                last_pt = self.draw_app.app.mouse
+
+                seg_length = math.sqrt((last_pt[0] - first_pt[0])**2 + (last_pt[1] - first_pt[1])**2)
+                if seg_length == 0.0:
+                    return
+                try:
+                    new_x = first_pt[0] + (last_pt[0] - first_pt[0]) / seg_length * target_length
+                    new_y = first_pt[1] + (last_pt[1] - first_pt[1]) / seg_length * target_length
+                except ZeroDivisionError as err:
+                    self.clean_up()
+                    return '[ERROR_NOTCL] %s %s' % (_("Failed."), str(err).capitalize())
+
+                if self.points != (new_x, new_y):
+                    self.draw_app.app.on_jump_to(custom_location=(new_x, new_y), fit_center=False)
+                    self.make()
+                    self.drill_point = (new_x, new_y)
 
     def clean_up(self):
         self.draw_app.selected = []
         self.draw_app.ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
+
+        if self.draw_app.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.text_cursor.parent = None
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
 
         try:
             self.draw_app.app.jump_signal.disconnect()
@@ -449,7 +582,7 @@ class DrillArray(FCShapeTool):
                     )
 
                 if static is None or static is False:
-                    geo_list.append(affinity.translate(geo, xoff=(dx - self.last_dx), yoff=(dy - self.last_dy)))
+                    geo_list.append(translate(geo, xoff=(dx - self.last_dx), yoff=(dy - self.last_dy)))
                 else:
                     geo_list.append(geo)
             # self.origin = data
@@ -649,6 +782,7 @@ class SlotAdd(FCShapeTool):
         DrawTool.__init__(self, draw_app)
         self.name = 'slot_add'
         self.draw_app = draw_app
+        self.app = self.draw_app.app
 
         self.draw_app.ui.slot_frame.show()
 
@@ -685,10 +819,16 @@ class SlotAdd(FCShapeTool):
 
         self.draw_app.app.inform.emit(_("Click on target location ..."))
 
+        if self.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = self.draw_cursor_data
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
-        # Switch notebook to Properties page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
+        self.slot_tool = ExcGenEditorTool(self.app, self.draw_app, plugin_name=_("Slot"))
+        self.slot_tool.run()
+
+        self.app.ui.notebook.setTabText(2, _("Slot"))
+        if self.app.ui.splitter.sizes()[0] == 0:
+            self.app.ui.splitter.setSizes([1, 1])
 
     def click(self, point):
         self.make()
@@ -774,7 +914,7 @@ class SlotAdd(FCShapeTool):
             geo.append(p4)
 
             if self.draw_app.ui.slot_axis_radio.get_value() == 'A':
-                return affinity.rotate(geom=Polygon(geo), angle=-slot_angle)
+                return rotate(geom=Polygon(geo), angle=-slot_angle)
             else:
                 return Polygon(geo)
         else:
@@ -831,7 +971,58 @@ class SlotAdd(FCShapeTool):
         self.draw_app.ui.slot_frame.hide()
         self.draw_app.app.jump_signal.disconnect()
 
+    def draw_cursor_data(self, pos=None, delete=False):
+        if pos is None:
+            pos = self.draw_app.snap_x, self.draw_app.snap_y
+
+        if delete:
+            if self.draw_app.app.use_3d_engine:
+                self.draw_app.app.plotcanvas.text_cursor.parent = None
+                self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+            return
+
+        # font size
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("hud_font_size"):
+            fsize = qsettings.value('hud_font_size', type=int)
+        else:
+            fsize = 8
+
+        x = pos[0]
+        y = pos[1]
+        try:
+            length = abs(np.sqrt((pos[0] - self.points[-1][0]) ** 2 + (pos[1] - self.points[-1][1]) ** 2))
+        except IndexError:
+            length = self.draw_app.app.dec_format(0.0, self.draw_app.app.decimals)
+        units = self.draw_app.app.app_units.lower()
+
+        x_dec = str(self.draw_app.app.dec_format(x, self.draw_app.app.decimals)) if x else '0.0'
+        y_dec = str(self.draw_app.app.dec_format(y, self.draw_app.app.decimals)) if y else '0.0'
+        length_dec = str(self.draw_app.app.dec_format(length, self.draw_app.app.decimals)) if length else '0.0'
+
+        l1_txt = 'X:   %s [%s]' % (x_dec, units)
+        l2_txt = 'Y:   %s [%s]' % (y_dec, units)
+        l3_txt = 'L:   %s [%s]' % (length_dec, units)
+        cursor_text = '%s\n%s\n\n%s' % (l1_txt, l2_txt, l3_txt)
+
+        if self.draw_app.app.use_3d_engine:
+            new_pos = self.draw_app.app.plotcanvas.translate_coords_2((x, y))
+            x, y, __, ___ = self.draw_app.app.plotcanvas.translate_coords((new_pos[0]+30, new_pos[1]))
+
+            # text
+            self.draw_app.app.plotcanvas.text_cursor.font_size = fsize
+            self.draw_app.app.plotcanvas.text_cursor.text = cursor_text
+            self.draw_app.app.plotcanvas.text_cursor.pos = x, y
+            self.draw_app.app.plotcanvas.text_cursor.anchors = 'left', 'top'
+
+            if self.draw_app.app.plotcanvas.text_cursor.parent is None:
+                self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
+
     def on_key(self, key):
+        # Jump to coords
+        if key == QtCore.Qt.Key.Key_J or key == 'J':
+            self.draw_app.app.on_jump_to()
+
         # Toggle Pad Direction
         if key == QtCore.Qt.Key.Key_Space:
             if self.draw_app.ui.slot_axis_radio.get_value() == 'X':
@@ -842,6 +1033,57 @@ class SlotAdd(FCShapeTool):
                 self.draw_app.ui.slot_axis_radio.set_value('X')
             # ## Utility geometry (animated)
             self.draw_app.update_utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+
+        if key in [str(i) for i in range(10)] + ['.', ',', '+', '-', '/', '*'] or \
+                key in [QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_1, QtCore.Qt.Key.Key_2,
+                        QtCore.Qt.Key.Key_3, QtCore.Qt.Key.Key_4, QtCore.Qt.Key.Key_5, QtCore.Qt.Key.Key_6,
+                        QtCore.Qt.Key.Key_7, QtCore.Qt.Key.Key_8, QtCore.Qt.Key.Key_9, QtCore.Qt.Key.Key_Minus,
+                        QtCore.Qt.Key.Key_Plus, QtCore.Qt.Key.Key_Comma, QtCore.Qt.Key.Key_Period,
+                        QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
+            try:
+                # VisPy keys
+                if self.slot_tool.length == 0:
+                    self.slot_tool.length = str(key.name)
+                else:
+                    self.slot_tool.length = str(self.slot_tool.length) + str(key.name)
+            except AttributeError:
+                # Qt keys
+                if self.slot_tool.length == 0:
+                    self.slot_tool.length = chr(key)
+                else:
+                    self.slot_tool.length = str(self.slot_tool.length) + chr(key)
+
+        if key == 'Enter' or key == QtCore.Qt.Key.Key_Return or key == QtCore.Qt.Key.Key_Enter:
+            if self.slot_tool.length != 0:
+                target_length = self.slot_tool.length
+                if target_length is None:
+                    self.slot_tool.length = 0.0
+                    return _("Failed.")
+
+                first_pt = self.points[-1]
+                last_pt = self.draw_app.app.mouse
+
+                seg_length = math.sqrt((last_pt[0] - first_pt[0])**2 + (last_pt[1] - first_pt[1])**2)
+                if seg_length == 0.0:
+                    return
+                try:
+                    new_x = first_pt[0] + (last_pt[0] - first_pt[0]) / seg_length * target_length
+                    new_y = first_pt[1] + (last_pt[1] - first_pt[1]) / seg_length * target_length
+                except ZeroDivisionError as err:
+                    self.points = []
+                    self.clean_up()
+                    return '[ERROR_NOTCL] %s %s' % (_("Failed."), str(err).capitalize())
+
+                if self.points[-1] != (new_x, new_y):
+                    self.points.append((new_x, new_y))
+                    self.draw_app.app.on_jump_to(custom_location=(new_x, new_y), fit_center=False)
+                    if len(self.points) > 0:
+                        msg = '%s: %s. %s' % (
+                            _("Projected"), str(self.slot_tool.length),
+                            _("Click on next Point or click right mouse button to complete ..."))
+                        self.draw_app.app.inform.emit(msg)
+                        # self.interpolate_length = ''
+                        # return "Click on next point or hit ENTER to complete ..."
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -988,7 +1230,7 @@ class SlotArray(FCShapeTool):
                     )
 
                 if static is None or static is False:
-                    geo_el = affinity.translate(geo_el, xoff=(dx - self.last_dx), yoff=(dy - self.last_dy))
+                    geo_el = translate(geo_el, xoff=(dx - self.last_dx), yoff=(dy - self.last_dy))
                 geo_el_list.append(geo_el)
 
             self.last_dx = dx
@@ -1053,7 +1295,7 @@ class SlotArray(FCShapeTool):
                 y = self.origin[1] + radius * math.sin(-angle_radians + angle)
 
                 geo_sol = self.util_shape((x, y))
-                geo_sol = affinity.rotate(geo_sol, angle=(math.pi - angle_radians + angle), use_radians=True)
+                geo_sol = rotate(geo_sol, angle=(math.pi - angle_radians + angle), use_radians=True)
 
                 circular_geo.append(DrawToolShape(geo_sol))
         else:
@@ -1063,7 +1305,7 @@ class SlotArray(FCShapeTool):
                 y = self.origin[1] + radius * math.sin(angle_radians + angle)
 
                 geo_sol = self.util_shape((x, y))
-                geo_sol = affinity.rotate(geo_sol, angle=(angle_radians + angle - math.pi), use_radians=True)
+                geo_sol = rotate(geo_sol, angle=(angle_radians + angle - math.pi), use_radians=True)
 
                 circular_geo.append(DrawToolShape(geo_sol))
 
@@ -1162,7 +1404,7 @@ class SlotArray(FCShapeTool):
         # this function return one slot in the slot array and the following will rotate that one slot around it's
         # center if the radio value is "A".
         if self.draw_app.ui.slot_axis_radio.get_value() == 'A':
-            return affinity.rotate(Polygon(geo), -slot_angle)
+            return rotate(Polygon(geo), -slot_angle)
         else:
             return Polygon(geo)
 
@@ -1360,10 +1602,8 @@ class ResizeEditorExc(FCShapeTool):
                         # add new geometry according to the new size
                         if isinstance(select_shape.geo, MultiLineString):
                             factor = new_dia / sel_dia
-                            self.geometry.append(DrawToolShape(affinity.scale(select_shape.geo,
-                                                                              xfact=factor,
-                                                                              yfact=factor,
-                                                                              origin='center')))
+                            self.geometry.append(DrawToolShape(scale(select_shape.geo, xfact=factor, yfact=factor,
+                                                                     origin='center')))
                         elif isinstance(select_shape.geo, Polygon):
                             # I don't have any info regarding the angle of the slot geometry, nor how thick it is or
                             # how long it is given the angle. So I will have to make an approximation because
@@ -1384,7 +1624,7 @@ class ResizeEditorExc(FCShapeTool):
                             # make a list of intersections with the rotated line
                             list_of_cuttings = []
                             for angle in range(0, 359, 1):
-                                rot_poly_diagonal = affinity.rotate(poly_diagonal, angle=angle, origin=poly_center)
+                                rot_poly_diagonal = rotate(poly_diagonal, angle=angle, origin=poly_center)
                                 cut_line = rot_poly_diagonal.intersection(poly)
                                 cut_line_len = cut_line.length
                                 list_of_cuttings.append(
@@ -1594,7 +1834,7 @@ class MoveEditorExc(FCShapeTool):
             for select_shape in self.draw_app.get_selected():
                 if select_shape in self.current_storage.get_objects():
 
-                    self.geometry.append(DrawToolShape(affinity.translate(select_shape.geo, xoff=dx, yoff=dy)))
+                    self.geometry.append(DrawToolShape(translate(select_shape.geo, xoff=dx, yoff=dy)))
                     self.current_storage.remove(select_shape)
                     sel_shapes_to_be_deleted.append(select_shape)
                     self.draw_app.on_exc_shape_complete(self.current_storage)
@@ -1655,7 +1895,7 @@ class MoveEditorExc(FCShapeTool):
         if len(self.draw_app.get_selected()) <= self.sel_limit:
             try:
                 for geom in self.draw_app.get_selected():
-                    geo_list.append(affinity.translate(geom.geo, xoff=dx, yoff=dy))
+                    geo_list.append(translate(geom.geo, xoff=dx, yoff=dy))
             except AttributeError:
                 self.draw_app.select_tool('drill_select')
                 self.draw_app.selected = []
@@ -1663,7 +1903,7 @@ class MoveEditorExc(FCShapeTool):
             return DrawToolUtilityShape(geo_list)
         else:
             try:
-                ss_el = affinity.translate(self.selection_shape, xoff=dx, yoff=dy)
+                ss_el = translate(self.selection_shape, xoff=dx, yoff=dy)
             except ValueError:
                 ss_el = None
             return DrawToolUtilityShape(ss_el)
@@ -1694,7 +1934,7 @@ class CopyEditorExc(MoveEditorExc):
             self.current_storage = self.draw_app.storage_dict[sel_dia]
             for select_shape in self.draw_app.get_selected():
                 if select_shape in self.current_storage.get_objects():
-                    self.geometry.append(DrawToolShape(affinity.translate(select_shape.geo, xoff=dx, yoff=dy)))
+                    self.geometry.append(DrawToolShape(translate(select_shape.geo, xoff=dx, yoff=dy)))
 
                     # Add some fake drills into the self.draw_app.points_edit to update the drill count in tool table
                     # This may fail if we copy slots.
@@ -2438,7 +2678,7 @@ class AppExcEditor(QtCore.QObject):
             geo_list = []
             if isinstance(shape_exc.geo, MultiLineString):
                 for subgeo in shape_exc.geo.geoms:
-                    geo_list.append(affinity.scale(subgeo, xfact=factor, yfact=factor, origin='center'))
+                    geo_list.append(scale(subgeo, xfact=factor, yfact=factor, origin='center'))
                 new_geo = MultiLineString(geo_list)
             elif isinstance(shape_exc.geo, Polygon):
                 # I don't have any info regarding the angle of the slot geometry, nor how thick it is or
@@ -2460,7 +2700,7 @@ class AppExcEditor(QtCore.QObject):
                 # make a list of intersections with the rotated line
                 list_of_cuttings = []
                 for angle in range(0, 359, 1):
-                    rot_poly_diagonal = affinity.rotate(poly_diagonal, angle=angle, origin=poly_center)
+                    rot_poly_diagonal = rotate(poly_diagonal, angle=angle, origin=poly_center)
                     cut_line = rot_poly_diagonal.intersection(poly)
                     cut_line_len = cut_line.length
                     list_of_cuttings.append(
@@ -3460,7 +3700,7 @@ class AppExcEditor(QtCore.QObject):
         #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
         self.app.ui.update_location_labels(self.app.dx, self.app.dy, x, y)
 
-        units = self.app.app_units.lower()
+        # units = self.app.app_units.lower()
         # self.app.plotcanvas.text_hud.text = \
         #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
         #         self.app.dx, units, self.app.dy, units, x, units, y, units)
@@ -3468,6 +3708,14 @@ class AppExcEditor(QtCore.QObject):
 
         # ## Utility geometry (animated)
         self.update_utility_geometry(data=(x, y))
+
+        self.update_utility_geometry(data=(x, y))
+        if self.active_tool.name in ['drill_add', 'drill_array', 'slot_add', 'slot_array', 'copy']:
+            try:
+                self.active_tool.draw_cursor_data(pos=(x, y))
+            except AttributeError:
+                # this can happen if the method is not implemented yet for the active_tool
+                pass
 
         # ## Selection area on canvas section # ##
         if event_is_dragging == 1 and event.button == 1:
@@ -3495,34 +3743,34 @@ class AppExcEditor(QtCore.QObject):
                                      edge_width=self.app.options["global_cursor_width"],
                                      size=self.app.options["global_cursor_size"])
 
-    def add_exc_shape(self, shape, storage):
+    def add_exc_shape(self, shp, storage):
         """
         Adds a shape to a specified shape storage.
 
-        :param shape:       Shape to be added.
-        :type shape:        DrawToolShape
+        :param shp:       Shape to be added.
+        :type shp:        DrawToolShape
         :param storage:     object where to store the shapes
         :return:            None
         """
         # List of DrawToolShape?
-        if isinstance(shape, list):
-            for subshape in shape:
+        if isinstance(shp, list):
+            for subshape in shp:
                 self.add_exc_shape(subshape, storage)
             return
 
-        assert isinstance(shape, DrawToolShape), \
-            "Expected a DrawToolShape, got %s" % str(type(shape))
+        assert isinstance(shp, DrawToolShape), \
+            "Expected a DrawToolShape, got %s" % str(type(shp))
 
-        assert shape.geo is not None, \
+        assert shp.geo is not None, \
             "Shape object has empty geometry (None)"
 
-        assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or not isinstance(shape.geo, list), \
+        assert (isinstance(shp.geo, list) and len(shp.geo) > 0) or not isinstance(shp.geo, list), \
             "Shape objects has empty geometry ([])"
 
-        if isinstance(shape, DrawToolUtilityShape):
-            self.utility.append(shape)
+        if isinstance(shp, DrawToolUtilityShape):
+            self.utility.append(shp)
         else:
-            storage.insert(shape)  # TODO: Check performance
+            storage.insert(shp)  # TODO: Check performance
 
     def add_shape(self, shape):
         """
@@ -3970,13 +4218,13 @@ class AppExcEditor(QtCore.QObject):
             for dict_dia, geo_dict in self.storage_dict.items():
                 if self.dec_format(float(dict_dia)) == table_tooldia:
                     storage_elem = AppGeoEditor.make_storage()
-                    for shape in geo_dict.get_objects():
-                        if isinstance(shape.geo, MultiLineString):
+                    for shp in geo_dict.get_objects():
+                        if isinstance(shp.geo, MultiLineString):
                             # it's a drill just add it as it is to storage
-                            self.add_exc_shape(shape, storage_elem)
-                        if isinstance(shape.geo, Polygon):
+                            self.add_exc_shape(shp, storage_elem)
+                        if isinstance(shp.geo, Polygon):
                             # it's a slot, convert drill to slot and then add it to storage
-                            new_shape = convert_slot2drill(shape.geo, table_tooldia)
+                            new_shape = convert_slot2drill(shp.geo, table_tooldia)
                             self.add_exc_shape(DrawToolShape(new_shape), storage_elem)
 
                     new_storage_dict[table_tooldia] = storage_elem
