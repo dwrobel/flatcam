@@ -107,7 +107,7 @@ class SolderPaste(AppTool):
         self.set_tool_ui()
         self.build_ui()
 
-        self.app.ui.notebook.setTabText(2, _("SP Dispenser"))
+        self.app.ui.notebook.setTabText(2, _("SolderPaste"))
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+K', **kwargs)
@@ -1226,7 +1226,7 @@ class SolderPaste(AppTool):
 
 class SolderUI:
 
-    pluginName = _("SP Dispenser")
+    pluginName = _("SolderPaste")
 
     def __init__(self, layout, app, solder_class):
         self.app = app

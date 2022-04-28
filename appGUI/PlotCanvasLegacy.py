@@ -29,9 +29,9 @@ try:
     # Prevent conflict with Qt5 and above.
     from matplotlib import use as mpl_use
 
-    mpl_use("Qt5Agg")
+    mpl_use("QtAgg")
     from matplotlib.figure import Figure
-    from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+    from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 except ImportError:
     MATPLOTLIB_AVAILABLE = False
 

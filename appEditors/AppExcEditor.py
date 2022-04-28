@@ -174,11 +174,11 @@ class SelectEditorExc(FCShapeTool):
 
         return ""
 
-        # pos[0] and pos[1] are the mouse click coordinates (x, y)
+        # clicked_pos[0] and clicked_pos[1] are the mouse click coordinates (x, y)
         # for storage in self.draw_app.storage_dict:
         #     for obj_shape in self.draw_app.storage_dict[storage].get_objects():
         #         minx, miny, maxx, maxy = obj_shape.geo.bounds
-        #         if (minx <= pos[0] <= maxx) and (miny <= pos[1] <= maxy):
+        #         if (minx <= clicked_pos[0] <= maxx) and (miny <= clicked_pos[1] <= maxy):
         #             over_shape_list.append(obj_shape)
         #
         # try:
@@ -277,12 +277,20 @@ class DrillAdd(FCShapeTool):
         self.drill_tool = ExcGenEditorTool(self.app, self.draw_app, plugin_name=_("Drill"))
         self.drill_tool.run()
 
+        self.drill_tool.length = self.draw_app.last_length
+        if not self.draw_app.snap_x:
+            self.draw_app.snap_x = 0.0
+        if not self.draw_app.snap_y:
+            self.draw_app.snap_y = 0.0
+        self.drill_tool.ui.x_entry.set_value(float(self.draw_app.snap_x))
+        self.drill_tool.ui.y_entry.set_value(float(self.draw_app.snap_y))
+
         self.app.ui.notebook.setTabText(2, _("Drill"))
         if self.app.ui.splitter.sizes()[0] == 0:
             self.app.ui.splitter.setSizes([1, 1])
 
-        self.points = deepcopy(self.draw_app.pos) if \
-            self.draw_app.pos and self.draw_app.pos[0] and self.draw_app.pos[1] else (0.0, 0.0)
+        self.points = deepcopy(self.draw_app.clicked_pos) if \
+            self.draw_app.clicked_pos and self.draw_app.clicked_pos[0] and self.draw_app.clicked_pos[1] else (0.0, 0.0)
         self.drill_point = None
 
     def click(self, point):
@@ -320,7 +328,7 @@ class DrillAdd(FCShapeTool):
         except Exception:
             pass
 
-        # add the point to drills if the diameter is a key in the dict, if not, create it add the drill location
+        # add the point to drills if the diameter is a key in the dict, if not, create it and add the drill location
         # to the value, as a list of itself
         if self.selected_dia in self.draw_app.points_edit:
             self.draw_app.points_edit[self.selected_dia].append(self.drill_point)
@@ -331,6 +339,11 @@ class DrillAdd(FCShapeTool):
         self.geometry = DrawToolShape(self.util_shape(self.drill_point))
         self.draw_app.in_action = False
         self.complete = True
+
+        self.draw_app.last_length = self.drill_tool.length
+        self.drill_tool.ui.x_entry.set_value(float(self.draw_app.snap_x))
+        self.drill_tool.ui.y_entry.set_value(float(self.draw_app.snap_y))
+
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         try:
             self.draw_app.app.jump_signal.disconnect()
@@ -339,10 +352,10 @@ class DrillAdd(FCShapeTool):
 
     def draw_cursor_data(self, pos=None, delete=False):
         if pos is None:
-            pos = self.draw_app.snap_x, self.draw_app.snap_y
+            pos = 0, 0
 
         if not self.points:
-            self.points = (0, 0)
+            self.points = self.draw_app.snap_x, self.draw_app.snap_y
 
         if delete:
             if self.draw_app.app.use_3d_engine:
@@ -360,11 +373,10 @@ class DrillAdd(FCShapeTool):
         x = pos[0]
         y = pos[1]
         try:
-            length = abs(np.sqrt((pos[0] - self.points[0]) ** 2 + (pos[1] - self.points[1]) ** 2))
+            length = abs(np.sqrt((x - self.points[0]) ** 2 + (y - self.points[1]) ** 2))
         except IndexError:
             length = self.draw_app.app.dec_format(0.0, self.draw_app.app.decimals)
-        except TypeError:
-            print(self.points)
+
         units = self.draw_app.app.app_units.lower()
 
         x_dec = str(self.draw_app.app.dec_format(x, self.draw_app.app.decimals)) if x else '0.0'
@@ -402,7 +414,7 @@ class DrillAdd(FCShapeTool):
                         QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
             try:
                 # VisPy keys
-                if self.drill_tool.length == 0:
+                if self.drill_tool.length == self.draw_app.last_length:
                     self.drill_tool.length = str(key.name)
                 else:
                     self.drill_tool.length = str(self.drill_tool.length) + str(key.name)
@@ -420,8 +432,8 @@ class DrillAdd(FCShapeTool):
                     self.drill_tool.length = 0.0
                     return _("Failed.")
 
-                first_pt = self.points
-                last_pt = self.draw_app.app.mouse
+                first_pt = self.drill_tool.ui.x_entry.get_value(), self.drill_tool.ui.y_entry.get_value()
+                last_pt = self.draw_app.snap_x, self.draw_app.snap_y
 
                 seg_length = math.sqrt((last_pt[0] - first_pt[0])**2 + (last_pt[1] - first_pt[1])**2)
                 if seg_length == 0.0:
@@ -433,7 +445,7 @@ class DrillAdd(FCShapeTool):
                     self.clean_up()
                     return '[ERROR_NOTCL] %s %s' % (_("Failed."), str(err).capitalize())
 
-                if self.points != (new_x, new_y):
+                if first_pt != (new_x, new_y):
                     self.draw_app.app.on_jump_to(custom_location=(new_x, new_y), fit_center=False)
                     self.make()
                     self.drill_point = (new_x, new_y)
@@ -1012,7 +1024,7 @@ class SlotAdd(FCShapeTool):
             # text
             self.draw_app.app.plotcanvas.text_cursor.font_size = fsize
             self.draw_app.app.plotcanvas.text_cursor.text = cursor_text
-            self.draw_app.app.plotcanvas.text_cursor.pos = x, y
+            self.draw_app.app.plotcanvas.text_cursor.clicked_pos = x, y
             self.draw_app.app.plotcanvas.text_cursor.anchors = 'left', 'top'
 
             if self.draw_app.app.plotcanvas.text_cursor.parent is None:
@@ -2064,12 +2076,14 @@ class AppExcEditor(QtCore.QObject):
 
         self.key = None  # Currently pressed key
         self.modifiers = None
-        self.x = None  # Current mouse cursor pos
+        self.x = None  # Current mouse cursor clicked_pos
         self.y = None
-        # Current snapped mouse pos
+        # Current snapped mouse clicked_pos
         self.snap_x = None
         self.snap_y = None
-        self.pos = None
+        self.clicked_pos = None
+
+        self.last_length = 0.0
 
         self.complete = False
 
@@ -3500,53 +3514,53 @@ class AppExcEditor(QtCore.QObject):
             # right_button = 3
 
         if event.button == 1:
-            self.pos = self.canvas.translate_coords(event_pos)
-
+            self.clicked_pos = self.canvas.translate_coords(event_pos)
             if self.app.grid_status():
-                self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
+                self.clicked_pos = self.app.geo_editor.snap(self.clicked_pos[0], self.clicked_pos[1])
             else:
-                self.pos = (self.pos[0], self.pos[1])
+                self.clicked_pos = (self.clicked_pos[0], self.clicked_pos[1])
 
-            self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                                   "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
+            self.on_canvas_click_left_handler()
 
-            # Selection with left mouse button
-            if self.active_tool is not None and event.button == 1:
-                # Dispatch event to active_tool
-                # msg = self.active_tool.click(self.app.geo_editor.snap(event.xdata, event.ydata))
-                self.active_tool.click(self.app.geo_editor.snap(self.pos[0], self.pos[1]))
+    def on_canvas_click_left_handler(self, custom_pos=None):
+        self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
 
-                # If it is a shape generating tool
-                if isinstance(self.active_tool, FCShapeTool) and self.active_tool.complete:
-                    if self.current_storage is not None:
-                        self.on_exc_shape_complete(self.current_storage)
-                        self.build_ui()
+        click_position = custom_pos if custom_pos is not None else self.clicked_pos
+        if self.active_tool is not None:
+            # Dispatch event to active_tool
+            self.active_tool.click(click_position)
 
-                    # MS: always return to the Select Tool if modifier key is not pressed
-                    # else return to the current tool
-                    key_modifier = QtWidgets.QApplication.keyboardModifiers()
-                    if self.app.options["global_mselect_key"] == 'Control':
-                        modifier_to_use = Qt.KeyboardModifier.ControlModifier
-                    else:
-                        modifier_to_use = Qt.KeyboardModifier.ShiftModifier
+            # If it is a shape generating tool
+            if isinstance(self.active_tool, FCShapeTool) and self.active_tool.complete:
+                if self.current_storage is not None:
+                    self.on_exc_shape_complete(self.current_storage)
+                    self.build_ui()
 
-                    # if modifier key is pressed then we add to the selected list the current shape but if it's already
-                    # in the selected list, we removed it. Therefore first click selects, second deselects.
-                    if key_modifier == modifier_to_use:
+                # MS: always return to the Select Tool if modifier key is not pressed
+                # else return to the current tool
+                if self.app.options["global_mselect_key"] == 'Control':
+                    modifier_to_use = Qt.KeyboardModifier.ControlModifier
+                else:
+                    modifier_to_use = Qt.KeyboardModifier.ShiftModifier
+
+                # if modifier key is pressed then we add to the selected list the current shape but if it's already
+                # in the selected list, we removed it. Therefore, first click selects, second deselects.
+                if QtWidgets.QApplication.keyboardModifiers() == modifier_to_use:
+                    self.select_tool(self.active_tool.name)
+                else:
+                    # return to Select tool but not for FCDrillAdd or SlotAdd
+                    if isinstance(self.active_tool, DrillAdd) or isinstance(self.active_tool, SlotAdd):
                         self.select_tool(self.active_tool.name)
                     else:
-                        # return to Select tool but not for FCDrillAdd or SlotAdd
-                        if isinstance(self.active_tool, DrillAdd) or isinstance(self.active_tool, SlotAdd):
-                            self.select_tool(self.active_tool.name)
-                        else:
-                            self.select_tool("drill_select")
-                        return
+                        self.select_tool("drill_select")
+                    return
 
-                if isinstance(self.active_tool, SelectEditorExc):
-                    # self.app.log.debug("Replotting after click.")
-                    self.replot()
-            else:
-                self.app.log.debug("No active tool to respond to click!")
+            if isinstance(self.active_tool, SelectEditorExc):
+                # self.app.log.debug("Replotting after click.")
+                self.replot()
+        else:
+            self.app.log.debug("No active tool to respond to click!")
 
     def on_exc_click_release(self, event):
         """
@@ -3611,11 +3625,11 @@ class AppExcEditor(QtCore.QObject):
         try:
             if event.button == 1:  # left click
                 if self.app.selection_type is not None:
-                    self.draw_selection_area_handler(self.pos, pos, self.app.selection_type)
+                    self.draw_selection_area_handler(self.clicked_pos, pos, self.app.selection_type)
                     self.app.selection_type = None
 
                 elif isinstance(self.active_tool, SelectEditorExc):
-                    self.active_tool.click_release((self.pos[0], self.pos[1]))
+                    self.active_tool.click_release((self.clicked_pos[0], self.clicked_pos[1]))
 
                     # if there are selected objects then plot them
                     if self.selected:
@@ -3687,10 +3701,10 @@ class AppExcEditor(QtCore.QObject):
         self.snap_x = x
         self.snap_y = y
 
-        if self.pos is None:
-            self.pos = (0, 0)
-        self.app.dx = x - self.pos[0]
-        self.app.dy = y - self.pos[1]
+        if self.clicked_pos is None:
+            self.clicked_pos = (0, 0)
+        self.app.dx = x - self.clicked_pos[0]
+        self.app.dy = y - self.clicked_pos[1]
 
         # # update the position label in the infobar since the APP mouse event handlers are disconnected
         # self.app.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
@@ -3725,15 +3739,15 @@ class AppExcEditor(QtCore.QObject):
                     isinstance(self.active_tool, SlotAdd) or isinstance(self.active_tool, SlotArray):
                 self.app.selection_type = None
             else:
-                dx = pos[0] - self.pos[0]
+                dx = pos[0] - self.clicked_pos[0]
                 self.app.delete_selection_shape()
                 if dx < 0:
-                    self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x, y),
+                    self.app.draw_moving_selection_shape((self.clicked_pos[0], self.clicked_pos[1]), (x, y),
                                                          color=self.app.options["global_alt_sel_line"],
                                                          face_color=self.app.options['global_alt_sel_fill'])
                     self.app.selection_type = False
                 else:
-                    self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x, y))
+                    self.app.draw_moving_selection_shape((self.clicked_pos[0], self.clicked_pos[1]), (x, y))
                     self.app.selection_type = True
         else:
             self.app.selection_type = None

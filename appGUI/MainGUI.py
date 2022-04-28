@@ -4063,16 +4063,12 @@ class MainGUI(QtWidgets.QMainWindow):
                                 and self.app.exc_editor.active_tool.copy_tool.width != 0.0:
                             pass
                         else:
-                            self.app.exc_editor.active_tool.click(
-                                self.app.geo_editor.snap(self.app.exc_editor.x, self.app.exc_editor.y))
-
-                            self.app.exc_editor.active_tool.make()
+                            curr_pos = self.app.exc_editor.snap_x, self.app.exc_editor.snap_y
+                            self.app.exc_editor.on_canvas_click_left_handler(curr_pos)
 
                             if self.app.exc_editor.active_tool.complete:
                                 self.app.exc_editor.on_shape_complete()
                                 self.app.inform.emit('[success] %s' % _("Done."))
-                            # automatically make the selection tool active after completing current action
-                            self.app.exc_editor.select_tool('select')
 
                 # Delete selected object if delete key event comes out of canvas
                 if key == 'Delete':

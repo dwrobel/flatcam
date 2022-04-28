@@ -3203,7 +3203,7 @@ class AppGeoEditor(QtCore.QObject):
         grid0.addWidget(self.is_simple_entry, 18, 1, 1, 2)
 
         # Length
-        len_lbl = FCLabel('%s' % _("Length"), bold=True)
+        len_lbl = FCLabel('%s' % _("Projection"), bold=True)
         len_lbl.setToolTip(
             _("The length of the geometry element.")
         )

@@ -7,6 +7,15 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+28.04.2022
+
+- in Isolation Plugin made sure that the last displayed message is the warning, in the case of using tool validation and the tool is not validated
+- some more work in the Excellon Editor - Drill adding
+- some fixes in the image loader when clicking the an image that is in the list of previous loaded files
+- a small fin in the SVG parser
+- added a new Tcl command that is returning the name of the active object ('get_active') to accompany the 'set_active' command
+- a small fix for the 2d graphic mode by replacing the q5agg matplotlib backend with the qtagg backend which should work with the Qt6
+
 26.04.2022
 
 - activated the 'View Source' option in the project menu context menu for the Geometry objects

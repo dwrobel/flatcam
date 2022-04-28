@@ -100,8 +100,8 @@ class ExcGenEditorUI:
 
     def __init__(self, layout, path_class, plugin_name):
         self.pluginName = plugin_name
-        self.path_class = path_class
-        self.decimals = self.path_class.app.decimals
+        self.ed_class = path_class
+        self.decimals = self.ed_class.app.decimals
         self.layout = layout
 
         # Title
@@ -119,38 +119,63 @@ class ExcGenEditorUI:
         self.path_tool_frame = QtWidgets.QFrame()
         self.path_tool_frame.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.path_tool_frame)
-        self.path_tool_box = QtWidgets.QVBoxLayout()
-        self.path_tool_box.setContentsMargins(0, 0, 0, 0)
-        self.path_tool_frame.setLayout(self.path_tool_box)
+        self.editor_vbox = QtWidgets.QVBoxLayout()
+        self.editor_vbox.setContentsMargins(0, 0, 0, 0)
+        self.path_tool_frame.setLayout(self.editor_vbox)
 
-        # Grid Layout
-        grid_path = GLay(v_spacing=5, h_spacing=3)
-        self.path_tool_box.addLayout(grid_path)
+        # Position
+        self.pos_lbl = FCLabel('%s' % _("Position"), bold=True, color='red')
+        self.editor_vbox.addWidget(self.pos_lbl)
+        # #############################################################################################################
+        # Position Frame
+        # #############################################################################################################
+        pos_frame = FCFrame()
+        self.editor_vbox.addWidget(pos_frame)
+
+        pos_grid = GLay(v_spacing=5, h_spacing=3)
+        pos_frame.setLayout(pos_grid)
+
+        # X Pos
+        self.x_lbl = FCLabel('%s:' % _("X"))
+        self.x_entry = FCDoubleSpinner()
+        self.x_entry.set_precision(self.decimals)
+        self.x_entry.set_range(-10000.0000, 10000.0000)
+        pos_grid.addWidget(self.x_lbl, 2, 0)
+        pos_grid.addWidget(self.x_entry, 2, 1)
+
+        # Y Pos
+        self.y_lbl = FCLabel('%s:' % _("Y"))
+        self.y_entry = FCDoubleSpinner()
+        self.y_entry.set_precision(self.decimals)
+        self.y_entry.set_range(-10000.0000, 10000.0000)
+        pos_grid.addWidget(self.y_lbl, 4, 0)
+        pos_grid.addWidget(self.y_entry, 4, 1)
+
+        # #############################################################################################################
+        # Projection Frame
+        # #############################################################################################################
+        pro_frame = FCFrame()
+        self.editor_vbox.addWidget(pro_frame)
+
+        pro_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
+        pro_frame.setLayout(pro_grid)
 
         # Project distance
-        self.project_line_lbl = FCLabel('%s:' % _("Length"))
+        self.project_line_lbl = FCLabel('%s:' % _("Projection"))
         self.project_line_lbl.setToolTip(
             _("Length of the current segment/move.")
         )
         self.project_line_entry = NumericalEvalEntry(border_color='#0069A9')
-        grid_path.addWidget(self.project_line_lbl, 0, 0)
-        grid_path.addWidget(self.project_line_entry, 0, 1)
+        pro_grid.addWidget(self.project_line_lbl, 0, 0)
+        pro_grid.addWidget(self.project_line_entry, 0, 1)
 
-        # self.buffer_corner_lbl = FCLabel('%s:' % _("Buffer corner"))
-        # self.buffer_corner_lbl.setToolTip(
-        #     _("There are 3 types of corners:\n"
-        #       " - 'Round': the corner is rounded for exterior buffer.\n"
-        #       " - 'Square': the corner is met in a sharp angle for exterior buffer.\n"
-        #       " - 'Beveled': the corner is a line that directly connects the features meeting in the corner")
-        # )
-        # self.buffer_corner_cb = FCComboBox()
-        # self.buffer_corner_cb.addItem(_("Round"))
-        # self.buffer_corner_cb.addItem(_("Square"))
-        # self.buffer_corner_cb.addItem(_("Beveled"))
-        # grid_path.addWidget(self.buffer_corner_lbl, 2, 0)
-        # grid_path.addWidget(self.buffer_corner_cb, 2, 1)
+        self.clear_btn = QtWidgets.QToolButton()
+        self.clear_btn.setIcon(QtGui.QIcon(self.ed_class.app.resource_location + '/trash32.png'))
+        pro_grid.addWidget(self.clear_btn, 0, 2)
 
-        self.clear_btn = FCButton(_("Clear"))
-        grid_path.addWidget(self.clear_btn, 4, 0, 1, 2)
+        self.add_btn = FCButton(_("Add"))
+        self.add_btn.setIcon(QtGui.QIcon(self.ed_class.app.resource_location + '/plus32.png'))
+        self.editor_vbox.addWidget(self.add_btn)
 
+        GLay.set_common_column_size([pos_grid, pro_grid], 0)
         self.layout.addStretch(1)

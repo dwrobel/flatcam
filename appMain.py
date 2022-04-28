@@ -658,7 +658,8 @@ class App(QtCore.QObject):
                                   'del', 'drillcncjob', 'export_dxf', 'edxf', 'export_excellon',
                                   'export_exc',
                                   'export_gcode', 'export_gerber', 'export_svg', 'ext', 'exteriors', 'follow',
-                                  'geo_union', 'geocutout', 'get_bounds', 'get_names', 'get_path', 'get_sys', 'help',
+                                  'geo_union', 'geocutout', 'get_active', 'get_bounds', 'get_names', 'get_path',
+                                  'get_sys', 'help',
                                   'interiors', 'isolate', 'join_excellon',
                                   'join_geometry', 'list_sys', 'list_pp', 'milld', 'mills', 'milldrills', 'millslots',
                                   'mirror', 'ncc',
@@ -8456,9 +8457,9 @@ class App(QtCore.QObject):
             "script": lambda fname: self.worker_task.emit({'fcn': self.f_handlers.open_script, 'params': [fname]}),
             "document": None,
             'project': self.f_handlers.open_project,
-            'svg': self.f_handlers.import_svg,
-            'dxf': self.f_handlers.import_dxf,
-            'image': image_opener,
+            'svg': lambda fname: self.worker_task.emit({'fcn': self.f_handlers.import_svg, 'params': [fname]}),
+            'dxf': lambda fname: self.worker_task.emit({'fcn': self.f_handlers.import_dxf, 'params': [fname]}),
+            'image': lambda fname: self.worker_task.emit({'fcn': image_opener, 'params': [fname]}),
             'pdf': self.f_handlers.import_pdf
         }
 

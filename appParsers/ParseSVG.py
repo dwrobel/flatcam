@@ -478,7 +478,7 @@ def getsvggeo(node, object_type, root=None, units='MM', res=64, factor=1.0, app=
         if ref is not None:
             geo = getsvggeo(ref, object_type, root=root, units=units, res=res, factor=factor, app=app)
 
-    elif kind in ['defs', 'namedview', 'format', 'type', 'title', 'desc']:
+    elif kind in ['defs', 'namedview', 'format', 'type', 'title', 'desc', 'svg']:
         log.warning('SVG Element not supported: %s. Skipping to next.' % kind)
 
     elif kind in ['g']:

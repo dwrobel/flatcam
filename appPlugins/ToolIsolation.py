@@ -18,7 +18,6 @@ log = logging.getLogger('base')
 
 
 class ToolIsolation(AppTool, Gerber):
-
     optimal_found_sig = QtCore.pyqtSignal(float)
 
     def __init__(self, app):
@@ -90,6 +89,9 @@ class ToolIsolation(AppTool, Gerber):
         # multiprocessing
         self.pool = self.app.pool
         self.results = []
+
+        # store here the validation status (if tool validation is used)
+        self.validation_status = True
 
         # disconnect flags
         self.area_sel_disconnect_flag = False
@@ -754,7 +756,7 @@ class ToolIsolation(AppTool, Gerber):
         new_tools_list = []
         if order == 1:  # "Forward"
             new_tools_list = deepcopy(sorted(self.iso_tools.items(), key=lambda x: x[1]['tooldia'], reverse=False))
-        elif order == 2:    # "Reverse"
+        elif order == 2:  # "Reverse"
             new_tools_list = deepcopy(sorted(self.iso_tools.items(), key=lambda x: x[1]['tooldia'], reverse=True))
 
         # clear the tools dictionary
@@ -787,7 +789,7 @@ class ToolIsolation(AppTool, Gerber):
         vdia = float(self.ui.tipdia_entry.get_value())
         half_vangle = float(self.ui.tipangle_entry.get_value()) / 2
         cut_z = self.ui.cutz_entry.get_value()
-        cut_z = -cut_z if cut_z < 0 else cut_z      # cut_z param has to have a positive value here
+        cut_z = -cut_z if cut_z < 0 else cut_z  # cut_z param has to have a positive value here
 
         row = self.ui.tools_table.currentRow()
         tool_uid_item = self.ui.tools_table.item(row, 3)
@@ -1021,7 +1023,7 @@ class ToolIsolation(AppTool, Gerber):
     def on_toggle_reference(self):
         val = self.ui.select_combo.get_value()
 
-        if val == 0:    # ALl
+        if val == 0:  # ALl
             self.ui.reference_combo.hide()
             self.ui.reference_combo_type.hide()
             self.ui.reference_combo_type_label.hide()
@@ -1059,7 +1061,7 @@ class ToolIsolation(AppTool, Gerber):
             self.ui.sel_all_btn.show()
             self.ui.clear_all_btn.show()
 
-        else:   # Reference Object
+        else:  # Reference Object
             self.ui.reference_combo.show()
             self.ui.reference_combo_type.show()
             self.ui.reference_combo_type_label.show()
@@ -1078,7 +1080,7 @@ class ToolIsolation(AppTool, Gerber):
 
     def on_rest_machining_check(self, state):
         if state:
-            self.ui.iso_order_combo.set_value(2)    # "Reverse"
+            self.ui.iso_order_combo.set_value(2)  # "Reverse"
             self.ui.order_label.setDisabled(True)
             self.ui.iso_order_combo.setDisabled(True)
 
@@ -1119,8 +1121,9 @@ class ToolIsolation(AppTool, Gerber):
 
         min_dict = {}
         idx = 1
-        for geo in total_geo:
-            for s_geo in total_geo[idx:]:
+        w_geo = total_geo.geoms if isinstance(total_geo, (MultiLineString, MultiPolygon)) else total_geo
+        for geo in w_geo:
+            for s_geo in w_geo[idx:]:
                 # minimize the number of distances by not taking into considerations
                 # those that are too small
                 dist = geo.distance(s_geo)
@@ -1141,7 +1144,7 @@ class ToolIsolation(AppTool, Gerber):
 
         min_list = list(min_dict.keys())
         min_dist = min(min_list)
-        min_dist -= 10**-decimals  # make sure that this works for isolation case
+        min_dist -= 10 ** -decimals  # make sure that this works for isolation case
 
         return msg, min_dist
 
@@ -1174,40 +1177,39 @@ class ToolIsolation(AppTool, Gerber):
                 if res[0] != 'ok':
                     app_obj.inform.emit(res[0])
                     return 'fail'
-                else:
-                    min_dist = res[1]
 
-                try:
-                    min_dist_truncated = self.app.dec_format(float(min_dist), self.decimals)
-                    self.safe_tooldia = min_dist_truncated
+                min_dist = res[1]
+                min_dist_truncated = self.app.dec_format(float(min_dist), self.decimals)
+                self.safe_tooldia = min_dist_truncated
 
-                    if self.safe_tooldia:
-                        # find the selected tool ID's
-                        sorted_tools = []
-                        table_items = self.ui.tools_table.selectedItems()
-                        sel_rows = {t.row() for t in table_items}
-                        for row in sel_rows:
-                            tid = int(self.ui.tools_table.item(row, 3).text())
-                            sorted_tools.append(tid)
-                        if not sorted_tools:
-                            msg = _("There are no tools selected in the Tool Table.")
-                            self.app.inform.emit('[ERROR_NOTCL] %s' % msg)
-                            return 'fail'
+                if self.safe_tooldia:
+                    # find the selected tool ID's
+                    sorted_tools = []
+                    table_items = self.ui.tools_table.selectedItems()
+                    sel_rows = {t.row() for t in table_items}
+                    for row in sel_rows:
+                        tid = int(self.ui.tools_table.item(row, 3).text())
+                        sorted_tools.append(tid)
+                    if not sorted_tools:
+                        msg = _("There are no tools selected in the Tool Table.")
+                        self.app.inform.emit('[ERROR_NOTCL] %s' % msg)
+                        return 'fail'
 
-                        # check if the tools diameters are less then the safe tool diameter
-                        for tool in sorted_tools:
-                            tool_dia = float(self.iso_tools[tool]['tooldia'])
-                            if tool_dia > self.safe_tooldia:
-                                msg = _("Incomplete isolation. "
-                                        "At least one tool could not do a complete isolation.")
-                                self.app.inform.emit('[WARNING] %s' % msg)
-                                break
+                    # check if the tools diameters are less then the safe tool diameter
+                    for tool in sorted_tools:
+                        tool_dia = float(self.iso_tools[tool]['tooldia'])
+                        if tool_dia > self.safe_tooldia:
+                            msg = _("Incomplete isolation. "
+                                    "At least one tool could not do a complete isolation.")
+                            self.app.inform.emit('[WARNING] %s' % msg)
+                            # reset the value to prepare for another isolation
+                            self.safe_tooldia = None
+                            self.validation_status = False
+                            return
 
-                        # reset the value to prepare for another isolation
-                        self.safe_tooldia = None
-                except Exception as ee:
-                    self.app.log.error(str(ee))
-                    return
+                    # reset the value to prepare for another isolation
+                    self.safe_tooldia = None
+                self.app.inform.emit("Tool validation passed.")
 
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
@@ -1367,7 +1369,7 @@ class ToolIsolation(AppTool, Gerber):
             high_limit = float(db_tool_val['data']['tol_max'])
 
             # we need only tool marked for Isolation Tool
-            if db_tool_val['data']['tool_target'] != 3:     # _('Isolation')
+            if db_tool_val['data']['tool_target'] != 3:  # _('Isolation')
                 continue
 
             # if we find a tool with the same diameter in the Tools DB just update it's data
@@ -1609,9 +1611,11 @@ class ToolIsolation(AppTool, Gerber):
         self.app.worker_task.emit({'fcn': buffer_task, 'params': [self.app]})
 
     def on_iso_button_click(self):
+        use_validation = self.ui.valid_cb.get_value()
+        # assume that the validation is OK
+        self.validation_status = True
 
         self.obj_name = self.ui.object_combo.currentText()
-
         # Get source object.
         try:
             self.grb_obj = self.app.collection.get_by_name(self.obj_name)
@@ -1623,7 +1627,7 @@ class ToolIsolation(AppTool, Gerber):
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(self.obj_name)))
             return
 
-        if self.ui.valid_cb.get_value() is True:
+        if use_validation is True:
             self.find_safe_tooldia_multiprocessing()
 
         def worker_task(iso_class):
@@ -1654,7 +1658,7 @@ class ToolIsolation(AppTool, Gerber):
         selection = self.ui.select_combo.get_value()
         if selection == 0:  # ALL
             self.isolate(isolated_obj=isolated_obj, sel_tools=sel_tools, tools_storage=self.iso_tools)
-        elif selection == 1:    # Area Selection
+        elif selection == 1:  # Area Selection
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the start point of the area."))
 
             if self.app.use_3d_engine:
@@ -1673,7 +1677,7 @@ class ToolIsolation(AppTool, Gerber):
             # disconnect flags
             self.area_sel_disconnect_flag = True
 
-        elif selection == 2:    # Polygon Selection
+        elif selection == 2:  # Polygon Selection
             # disengage the grid snapping since it may be hard to click on polygons with grid snapping on
             if self.app.ui.grid_snap_btn.isChecked():
                 self.grid_status_memory = True
@@ -1694,7 +1698,7 @@ class ToolIsolation(AppTool, Gerber):
             # disconnect flags
             self.poly_sel_disconnect_flag = True
 
-        elif selection == 3:    # Reference Object
+        elif selection == 3:  # Reference Object
             ref_obj = self.app.collection.get_by_name(self.ui.reference_combo.get_value())
             ref_geo = unary_union(ref_obj.solid_geometry)
             use_geo = unary_union(isolated_obj.solid_geometry).difference(ref_geo)
@@ -1755,7 +1759,7 @@ class ToolIsolation(AppTool, Gerber):
                     tools_storage[tool_iso][key]["tools_iso_isoexcept"] = use_iso_except
                     tools_storage[tool_iso][key]["tools_iso_selection"] = selection_type
                     tools_storage[tool_iso][key]["tools_iso_area_shape"] = sel_area_shape
-                    tools_storage[tool_iso][key]["tools_mill_job_type"] = 2    # _("Isolation")
+                    tools_storage[tool_iso][key]["tools_mill_job_type"] = 2  # _("Isolation")
                     tools_storage[tool_iso][key]["tools_mill_tool_shape"] = tool_tip_shape
 
         if use_combine:
@@ -1837,7 +1841,7 @@ class ToolIsolation(AppTool, Gerber):
                             pad_pass_geo = []
                             for geo in extra_geo:
                                 iso_offset = tool_dia * ((2 * nr_pass + 1) / 2.0000001) - (
-                                            nr_pass * overlap * tool_dia)
+                                        nr_pass * overlap * tool_dia)
                                 if negative_dia:
                                     iso_offset = -iso_offset
                                 pad_pass_geo.append(
@@ -1917,11 +1921,14 @@ class ToolIsolation(AppTool, Gerber):
                             fc_obj.inform.emit(msg)
                             return 'fail'
                         else:
-                            msg = '[success] %s: %s' % (_("Isolation geometry created"), geo_obj.obj_options["name"])
-                            fc_obj.inform.emit(msg)
+                            if self.validation_status:
+                                msg = '[success] %s: %s' % (_("Isolation geometry created"),
+                                                            geo_obj.obj_options["name"])
+                                fc_obj.inform.emit(msg)
                         geo_obj.multigeo = True
 
-                    self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
+                    a_select = True if self.validation_status else False
+                    self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot, autoselected=a_select)
 
             # clean the progressive plotted shapes if it was used
 
@@ -1992,7 +1999,7 @@ class ToolIsolation(AppTool, Gerber):
         order = self.ui.iso_order_combo.get_value()
         if order == 1:  # "Forward"
             sorted_tools.sort(reverse=False)
-        elif order == 2:    # "Reverse"
+        elif order == 2:  # "Reverse"
             sorted_tools.sort(reverse=True)
         else:
             pass
@@ -2130,9 +2137,12 @@ class ToolIsolation(AppTool, Gerber):
                 app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Empty Geometry in"), geo_obj.obj_options["name"]))
                 return 'fail'
             else:
-                app_obj.inform.emit('[success] %s: %s' % (_("Isolation geometry created"), geo_obj.obj_options["name"]))
+                if self.validation_status:
+                    msg = '[success] %s: %s' % (_("Isolation geometry created"), geo_obj.obj_options["name"])
+                    app_obj.inform.emit(msg)
 
-        self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
+        a_select = True if self.validation_status else False
+        self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot, autoselected=a_select)
 
         # the tools are finished but the isolation is not finished therefore it failed
         if work_geo:
@@ -2354,9 +2364,12 @@ class ToolIsolation(AppTool, Gerber):
                 app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Empty Geometry in"), geo_obj.obj_options["name"]))
                 return 'fail'
             else:
-                app_obj.inform.emit('[success] %s: %s' % (_("Isolation geometry created"), geo_obj.obj_options["name"]))
+                if self.validation_status:
+                    msg = '[success] %s: %s' % (_("Isolation geometry created"), geo_obj.obj_options["name"])
+                    app_obj.inform.emit(msg)
 
-        self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
+        a_select = True if self.validation_status else False
+        self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot, autoselected=a_select)
 
     def area_subtraction(self, geo, subtraction_geo=None):
         """
@@ -2956,7 +2969,7 @@ class ToolIsolation(AppTool, Gerber):
         """
         tool_from_db = deepcopy(tool)
 
-        if tool['data']['tool_target'] not in [0, 3]:   # [General, Isolation]
+        if tool['data']['tool_target'] not in [0, 3]:  # [General, Isolation]
             for idx in range(self.app.ui.plot_tab_area.count()):
                 if self.app.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
                     wdg = self.app.ui.plot_tab_area.widget(idx)
@@ -3215,7 +3228,7 @@ class ToolIsolation(AppTool, Gerber):
 
                                 if isinstance(temp_geo, Polygon):
                                     # calculate the number of subgeos in the buffered geo
-                                    temp_geo_len = len([1] + list(temp_geo.interiors))    # one exterior + interiors
+                                    temp_geo_len = len([1] + list(temp_geo.interiors))  # one exterior + interiors
                                     if total_poly_len != temp_geo_len:
                                         # some interiors could not be isolated
                                         break
@@ -3330,7 +3343,6 @@ class ToolIsolation(AppTool, Gerber):
 
 
 class IsoUI:
-
     pluginName = _("Isolation")
 
     def __init__(self, layout, app):

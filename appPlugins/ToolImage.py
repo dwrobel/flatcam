@@ -218,7 +218,7 @@ class ToolImage(AppTool):
             else:
                 self.import_image(filename, import_mode, type_obj, dpi, mode, mask, svg_text, min_area)
 
-    def import_image(self, filename, import_mode, o_type=_("Gerber"), dpi=96, mode='black',
+    def import_image(self, filename, import_mode='raster', o_type=_("Geometry"), dpi=96, mode='black',
                      mask=None, svg_text=None, min_area=0.0, outname=None, silent=False):
         """
         Adds a new Geometry Object to the projects and populates
@@ -331,8 +331,10 @@ class ToolImage(AppTool):
             name = outname or filename.split('/')[-1].split('\\')[-1]
             units = self.app.app_units
 
-            self.app.app_obj.new_object(obj_type, name, obj_init)
-
+            res = self.app.app_obj.new_object(obj_type, name, obj_init)
+            if res == 'fail':
+                self.app.inform.emit("[ERROR_NOTCL] %s" % _("Failed."))
+                return
             # Register recent file
             self.app.file_opened.emit("image", filename)
 

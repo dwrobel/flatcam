@@ -128,7 +128,7 @@ class PathEditorUI:
         self.path_tool_box.addLayout(grid_path)
 
         # Project distance
-        self.project_line_lbl = FCLabel('%s:' % _("Length"))
+        self.project_line_lbl = FCLabel('%s:' % _("Projection"))
         self.project_line_lbl.setToolTip(
             _("Length of the current segment/move.")
         )
