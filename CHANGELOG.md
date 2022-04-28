@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM Evo beta
 - a small fin in the SVG parser
 - added a new Tcl command that is returning the name of the active object ('get_active') to accompany the 'set_active' command
 - a small fix for the 2d graphic mode by replacing the q5agg matplotlib backend with the qtagg backend which should work with the Qt6
+- in Calculators Plugin fixed the Electroplating Calculator to work as expected and removed the redundant button 'Calculate'
 
 26.04.2022
 
