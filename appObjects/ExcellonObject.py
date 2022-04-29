@@ -849,10 +849,10 @@ class ExcellonObject(FlatCAMObj, Excellon):
                 for slot in self.tools[tool]['slots']:
                     if form == 'dec':
                         try:
-                            start_slot_x = slot.x * factor
-                            start_slot_y = slot.y * factor
-                            stop_slot_x = slot.x * factor
-                            stop_slot_y = slot.y * factor
+                            start_slot_x = slot[0].x * factor
+                            start_slot_y = slot[0].y * factor
+                            stop_slot_x = slot[1].x * factor
+                            stop_slot_y = slot[1].y * factor
                             if slot_type == 'routing':
                                 excellon_code += "G00X{:.{dec}f}Y{:.{dec}f}\nM15\n".format(start_slot_x,
                                                                                            start_slot_y,
@@ -868,10 +868,10 @@ class ExcellonObject(FlatCAMObj, Excellon):
                             self.app.log.error('ExcellonObject.export_excellon() slots "dec" -> %s' % str(err))
                     elif e_zeros == 'LZ':
                         try:
-                            start_slot_x = slot.x * factor
-                            start_slot_y = slot.y * factor
-                            stop_slot_x = slot.x * factor
-                            stop_slot_y = slot.y * factor
+                            start_slot_x = slot[0].x * factor
+                            start_slot_y = slot[0].y * factor
+                            stop_slot_x = slot[1].x * factor
+                            stop_slot_y = slot[1].y * factor
 
                             start_slot_x_formatted = "{:.{dec}f}".format(start_slot_x, dec=fract).replace('.', '')
                             start_slot_y_formatted = "{:.{dec}f}".format(start_slot_y, dec=fract).replace('.', '')
@@ -911,10 +911,10 @@ class ExcellonObject(FlatCAMObj, Excellon):
                             self.app.log.error('ExcellonObject.export_excellon() slots "LZ" -> %s' % str(err))
                     else:
                         try:
-                            start_slot_x = slot.x * factor
-                            start_slot_y = slot.y * factor
-                            stop_slot_x = slot.x * factor
-                            stop_slot_y = slot.y * factor
+                            start_slot_x = slot[0].x * factor
+                            start_slot_y = slot[0].y * factor
+                            stop_slot_x = slot[1].x * factor
+                            stop_slot_y = slot[1].y * factor
                             length = whole + fract
 
                             start_slot_x_formatted = "{:.{dec}f}".format(start_slot_x, dec=fract).replace('.', '')

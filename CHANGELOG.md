@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+29.04.2022
+
+- In Excellon Editor, finished updating the Drill Plugin and Slot Plugin
+- fixed a bug in the excellon export method, regarding the slots processing
+
 28.04.2022
 
 - in Isolation Plugin made sure that the last displayed message is the warning, in the case of using tool validation and the tool is not validated

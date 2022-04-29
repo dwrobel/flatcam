@@ -6,7 +6,7 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
-class ExcGenEditorTool(AppTool):
+class ExcSlotEditorTool(AppTool):
     """
     Simple input for buffer distance.
     """
@@ -18,7 +18,7 @@ class ExcGenEditorTool(AppTool):
         self.decimals = app.decimals
         self.plugin_name = plugin_name
 
-        self.ui = ExcGenEditorUI(layout=self.layout, path_class=self, plugin_name=plugin_name)
+        self.ui = ExcSlotEditorUI(layout=self.layout, path_class=self, plugin_name=plugin_name)
 
         self.connect_signals_at_init()
         self.set_tool_ui()
@@ -96,7 +96,7 @@ class ExcGenEditorTool(AppTool):
             self.draw_app.select_tool("select")
 
 
-class ExcGenEditorUI:
+class ExcSlotEditorUI:
 
     def __init__(self, layout, path_class, plugin_name):
         self.pluginName = plugin_name
@@ -122,6 +122,28 @@ class ExcGenEditorUI:
         self.editor_vbox = QtWidgets.QVBoxLayout()
         self.editor_vbox.setContentsMargins(0, 0, 0, 0)
         self.path_tool_frame.setLayout(self.editor_vbox)
+
+        # Position
+        self.tool_lbl = FCLabel('%s' % _("Tool Diameter"), bold=True, color='blue')
+        self.editor_vbox.addWidget(self.tool_lbl)
+        # #############################################################################################################
+        # Diameter Frame
+        # #############################################################################################################
+        dia_frame = FCFrame()
+        self.editor_vbox.addWidget(dia_frame)
+
+        dia_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
+        dia_frame.setLayout(dia_grid)
+
+        # Dia Value
+        self.dia_lbl = FCLabel('%s:' % _("Value"))
+        self.dia_entry = NumericalEvalEntry(border_color='#0069A9')
+        self.dia_entry.setDisabled(True)
+        self.dia_unit = FCLabel('%s' % 'mm')
+
+        dia_grid.addWidget(self.dia_lbl, 0, 0)
+        dia_grid.addWidget(self.dia_entry, 0, 1)
+        dia_grid.addWidget(self.dia_unit, 0, 2)
 
         # Position
         self.pos_lbl = FCLabel('%s' % _("Position"), bold=True, color='red')
@@ -151,6 +173,70 @@ class ExcGenEditorUI:
         pos_grid.addWidget(self.y_lbl, 4, 0)
         pos_grid.addWidget(self.y_entry, 4, 1)
 
+        # Parameters
+        self.slot_label = FCLabel('%s' % _("Parameters"), bold=True, color='purple')
+        self.slot_label.setToolTip(
+            _("Parameters for adding a slot (hole with oval shape)\n"
+              "either single or as an part of an array.")
+        )
+        self.editor_vbox.addWidget(self.slot_label)
+        # #############################################################################################################
+        # ################################### Parameter Frame #########################################################
+        # #############################################################################################################
+        self.par_frame = FCFrame()
+        self.editor_vbox.addWidget(self.par_frame)
+
+        par_grid = GLay(v_spacing=5, h_spacing=3)
+        self.par_frame.setLayout(par_grid)
+
+        # Slot length
+        self.slot_length_label = FCLabel('%s:' % _('Length'))
+        self.slot_length_label.setToolTip(
+            _("Length. The length of the slot.")
+        )
+
+        self.slot_length_entry = FCDoubleSpinner(policy=False)
+        self.slot_length_entry.set_precision(self.decimals)
+        self.slot_length_entry.setSingleStep(0.1)
+        self.slot_length_entry.setRange(0.0000, 10000.0000)
+
+        par_grid.addWidget(self.slot_length_label, 2, 0)
+        par_grid.addWidget(self.slot_length_entry, 2, 1)
+
+        # Slot direction
+        self.slot_axis_label = FCLabel('%s:' % _('Direction'))
+        self.slot_axis_label.setToolTip(
+            _("Direction on which the slot is oriented:\n"
+              "- 'X' - horizontal axis \n"
+              "- 'Y' - vertical axis or \n"
+              "- 'Angle' - a custom angle for the slot inclination")
+        )
+
+        self.slot_axis_radio = RadioSet([{'label': _('X'), 'value': 'X'},
+                                         {'label': _('Y'), 'value': 'Y'},
+                                         {'label': _('Angle'), 'value': 'A'}])
+
+        par_grid.addWidget(self.slot_axis_label, 4, 0)
+        par_grid.addWidget(self.slot_axis_radio, 4, 1)
+
+        # Slot custom angle
+        self.slot_angle_label = FCLabel('%s:' % _('Angle'))
+        self.slot_angle_label.setToolTip(
+            _("Angle at which the slot is placed.\n"
+              "The precision is of max 2 decimals.\n"
+              "Min value is: -360.00 degrees.\n"
+              "Max value is: 360.00 degrees.")
+        )
+
+        self.slot_angle_spinner = FCDoubleSpinner(policy=False)
+        self.slot_angle_spinner.set_precision(self.decimals)
+        self.slot_angle_spinner.setWrapping(True)
+        self.slot_angle_spinner.setRange(-360.00, 360.00)
+        self.slot_angle_spinner.setSingleStep(1.0)
+
+        par_grid.addWidget(self.slot_angle_label, 6, 0)
+        par_grid.addWidget(self.slot_angle_spinner, 6, 1)
+
         # #############################################################################################################
         # Projection Frame
         # #############################################################################################################
@@ -177,5 +263,17 @@ class ExcGenEditorUI:
         self.add_btn.setIcon(QtGui.QIcon(self.ed_class.app.resource_location + '/plus32.png'))
         self.editor_vbox.addWidget(self.add_btn)
 
-        GLay.set_common_column_size([pos_grid, pro_grid], 0)
+        GLay.set_common_column_size([dia_grid, par_grid, pos_grid, pro_grid], 0)
         self.layout.addStretch(1)
+
+        # Signals
+        self.slot_axis_radio.activated_custom.connect(self.on_slot_angle_radio)
+
+    def on_slot_angle_radio(self):
+        val = self.slot_axis_radio.get_value()
+        if val == 'A':
+            self.slot_angle_spinner.setEnabled(True)
+            self.slot_angle_label.setEnabled(True)
+        else:
+            self.slot_angle_spinner.setEnabled(False)
+            self.slot_angle_label.setEnabled(False)

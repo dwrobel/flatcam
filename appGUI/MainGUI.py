@@ -4047,8 +4047,7 @@ class MainGUI(QtWidgets.QMainWindow):
                                 and self.app.exc_editor.active_tool.drill_array_tool.length != 0.0:
                             pass
                         elif self.app.exc_editor.active_tool.name == 'slot_add' \
-                                and self.app.exc_editor.active_tool.slot_tool.x != 0.0 \
-                                and self.app.exc_editor.active_tool.slot_tool.y != 0.0:
+                                and self.app.exc_editor.active_tool.slot_tool.length != 0.0 :
                             pass
                         elif self.app.exc_editor.active_tool.name == 'slot_array' \
                                 and self.app.exc_editor.active_tool.slot_array_tool.length != 0.0 \
