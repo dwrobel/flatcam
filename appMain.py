@@ -2745,7 +2745,7 @@ class App(QtCore.QObject):
         if cleanup is None:
             msgbox = FCMessageBox(parent=self.ui)
             title = _("Exit Editor")
-            txt = _("Do you want to save the edited object?")
+            txt = _("Do you want to save the changes?")
             msgbox.setWindowTitle(title)    # taskbar still shows it
             msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/app128.png'))
             msgbox.setText('<b>%s</b>' % title)
