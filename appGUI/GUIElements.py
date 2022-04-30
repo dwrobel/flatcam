@@ -4387,12 +4387,12 @@ class DialogBoxRadio(QtWidgets.QDialog):
         grid0.addWidget(self.ref_label, 2, 0)
         grid0.addWidget(self.ref_radio, 2, 1)
 
-        grid0.addWidget(QtWidgets.QLabel(''), 4, 0, 1, 2)
+        grid0.addWidget(FCLabel(''), 4, 0, 1, 2)
 
-        self.wdg_label = QtWidgets.QLabel('<b>%s</b>' % str(label))
+        self.wdg_label = FCLabel('<b>%s</b>' % str(label))
         grid0.addWidget(self.wdg_label, 6, 0, 1, 2)
 
-        self.loc_label = QtWidgets.QLabel('%s:' % _("Location"))
+        self.loc_label = FCLabel('%s:' % _("Location"))
         self.loc_label.setToolTip(
             _("The Location value is a tuple (x,y).\n"
               "If the reference is Absolute then the Jump will be at the position (x,y).\n"
@@ -5511,7 +5511,7 @@ class FlatCAMActivityView(QtWidgets.QWidget):
         self.setLayout(layout)
 
         layout.addWidget(self.icon)
-        self.text = QtWidgets.QLabel(self)
+        self.text = FCLabel(self)
         self.text.setText(_("Idle."))
         self.icon.setPixmap(QtGui.QPixmap(self.icon_path))
 
@@ -5544,7 +5544,7 @@ class AppInfoBar(QtWidgets.QWidget):
         # for the usage of this label as a clickable label, to know that current state
         self.clicked_state = False
 
-        self.icon = QtWidgets.QLabel(self)
+        self.icon = FCLabel(self)
         self.icon.setGeometry(0, 0, 12, 12)
         self.pmap = QtGui.QPixmap(self.app.resource_location + '/graylight12.png')
         self.icon.setPixmap(self.pmap)
@@ -5563,7 +5563,7 @@ class AppInfoBar(QtWidgets.QWidget):
         self.blue_pamap = QtGui.QPixmap(self.app.resource_location + '/bluelight12.png')
         self.gray_pmap = QtGui.QPixmap(self.app.resource_location + '/graylight12.png')
 
-        self.text = QtWidgets.QLabel(self)
+        self.text = FCLabel(self)
         self.text.setText(_("Application started ..."))
         self.text.setToolTip(_("Hello!"))
 
