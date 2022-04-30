@@ -11,8 +11,9 @@ from appEditors.exc_plugins.ExcDrillPlugin import *
 from appEditors.exc_plugins.ExcSlotPlugin import ExcSlotEditorTool
 from appEditors.exc_plugins.ExcDrillArrayPlugin import ExcDrillArrayEditorTool
 from appEditors.exc_plugins.ExcSlotArrayPlugin import ExcSlotArrayEditorTool
+from appEditors.exc_plugins.ExcResizePlugin import ExcResizeEditorTool
 
-from appGUI.GUIElements import FCEntry, FCTable, FCDoubleSpinner, RadioSet, FCSpinner, FCButton, FCLabel, GLay
+from appGUI.GUIElements import FCEntry, FCTable, FCDoubleSpinner, FCButton, FCLabel, GLay
 from appEditors.AppGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, AppGeoEditor
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point
@@ -58,8 +59,6 @@ class SelectEditorExc(FCShapeTool):
 
         # here we store all shapes that were selected so we can search for the nearest to our click location
         self.sel_storage = AppExcEditor.make_storage()
-
-        self.draw_app.ui.resize_frame.hide()
 
         # make sure that the cursor text from the DrillAdd is deleted
         if self.draw_app.app.plotcanvas.text_cursor.parent and self.draw_app.app.use_3d_engine:
@@ -1893,10 +1892,10 @@ class ResizeEditorExc(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
         self.name = 'drill_resize'
+        self.draw_app = draw_app
+        self.app = self.draw_app.app
 
-        self.draw_app.app.inform.emit(_("Click on the Drill(s) to resize ..."))
         self.resize_dia = None
-        self.draw_app.ui.resize_frame.show()
         self.points = None
 
         # made this a set so there are no duplicates
@@ -1906,11 +1905,53 @@ class ResizeEditorExc(FCShapeTool):
         self.geometry = []
         self.destination_storage = None
 
-        self.draw_app.ui.resize_btn.clicked.connect(self.make)
-        self.draw_app.ui.resdrill_entry.editingFinished.connect(self.make)
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except Exception:
+            pass
+        # #############################################################################################################
+        # Plugin UI
+        # #############################################################################################################
+        self.resize_tool = ExcResizeEditorTool(self.app, self.draw_app, plugin_name=_("Resize"))
+        self.ui = self.resize_tool.ui
+        self.resize_tool.run()
 
-        # Switch notebook to Properties page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
+        if self.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = self.draw_cursor_data
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
+        if not self.draw_app.snap_x:
+            self.draw_app.snap_x = 0.0
+        if not self.draw_app.snap_y:
+            self.draw_app.snap_y = 0.0
+
+        self.app.ui.notebook.setTabText(2, _("Resize"))
+        if self.app.ui.splitter.sizes()[0] == 0:
+            self.app.ui.splitter.setSizes([1, 1])
+
+        self.set_plugin_ui()
+
+        # Signals
+        try:
+            self.ui.resize_btn.clicked.disconnect()
+        except (AttributeError, TypeError):
+            pass
+        try:
+            self.ui.res_dia_entry.editingFinished.disconnect()
+        except (AttributeError, TypeError):
+            pass
+        self.ui.resize_btn.clicked.connect(self.on_resize)
+        self.ui.res_dia_entry.editingFinished.connect(self.on_resize)
+
+        self.draw_app.app.inform.emit(_("Click on the Drill(s) to resize ..."))
+
+    def set_plugin_ui(self):
+        curr_row = self.draw_app.ui.tools_table_exc.currentRow()
+        tool_dia = float(self.draw_app.ui.tools_table_exc.item(curr_row, 1).text())
+        self.ui.dia_entry.set_value(tool_dia)
+
+    def utility_geometry(self, data=None):
+        return DrawToolUtilityShape([])
 
     def make(self):
         self.draw_app.is_modified = True
@@ -1920,9 +1961,8 @@ class ResizeEditorExc(FCShapeTool):
         except TypeError:
             pass
 
-        try:
-            new_dia = self.draw_app.ui.resdrill_entry.get_value()
-        except Exception:
+        new_dia = self.ui.res_dia_entry.get_value()
+        if new_dia == 0.0:
             self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
                                           _("Resize drill(s) failed. Please enter a diameter for resize."))
             return
@@ -2101,21 +2141,78 @@ class ResizeEditorExc(FCShapeTool):
 
             self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         else:
-            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected."))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Cancelled."), _("Nothing selected")))
 
         # init this set() for another use perhaps
         self.selected_dia_set = set()
 
-        self.draw_app.ui.resize_frame.hide()
         self.complete = True
 
         # MS: always return to the Select Tool
         self.draw_app.select_tool("drill_select")
 
+    def on_resize(self):
+        self.make()
+        self.clean_up()
+
+    def draw_cursor_data(self, pos=None, delete=False):
+        if pos is None:
+            pos = self.draw_app.snap_x, self.draw_app.snap_y
+
+        if delete:
+            if self.draw_app.app.use_3d_engine:
+                self.draw_app.app.plotcanvas.text_cursor.parent = None
+                self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+            return
+
+        if not self.points:
+            self.points = self.draw_app.snap_x, self.draw_app.snap_y
+
+        # font size
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("hud_font_size"):
+            fsize = qsettings.value('hud_font_size', type=int)
+        else:
+            fsize = 8
+
+        x = pos[0]
+        y = pos[1]
+        try:
+            length = abs(np.sqrt((x - self.points[0]) ** 2 + (y - self.points[1]) ** 2))
+        except IndexError:
+            length = self.draw_app.app.dec_format(0.0, self.draw_app.app.decimals)
+
+        x_dec = str(self.draw_app.app.dec_format(x, self.draw_app.app.decimals)) if x else '0.0'
+        y_dec = str(self.draw_app.app.dec_format(y, self.draw_app.app.decimals)) if y else '0.0'
+        length_dec = str(self.draw_app.app.dec_format(length, self.draw_app.app.decimals)) if length else '0.0'
+
+        units = self.draw_app.app.app_units.lower()
+        l1_txt = 'X:   %s [%s]' % (x_dec, units)
+        l2_txt = 'Y:   %s [%s]' % (y_dec, units)
+        l3_txt = 'L:   %s [%s]' % (length_dec, units)
+        cursor_text = '%s\n%s\n\n%s' % (l1_txt, l2_txt, l3_txt)
+
+        if self.draw_app.app.use_3d_engine:
+            new_pos = self.draw_app.app.plotcanvas.translate_coords_2((x, y))
+            x, y, __, ___ = self.draw_app.app.plotcanvas.translate_coords((new_pos[0]+30, new_pos[1]))
+
+            # text
+            self.draw_app.app.plotcanvas.text_cursor.font_size = fsize
+            self.draw_app.app.plotcanvas.text_cursor.text = cursor_text
+            self.draw_app.app.plotcanvas.text_cursor.pos = x, y
+            self.draw_app.app.plotcanvas.text_cursor.anchors = 'left', 'top'
+
+            if self.draw_app.app.plotcanvas.text_cursor.parent is None:
+                self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
+
     def clean_up(self):
         self.draw_app.selected = []
         self.draw_app.ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
+
+        if self.draw_app.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.text_cursor.parent = None
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
 
         try:
             self.draw_app.app.jump_signal.disconnect()
@@ -2442,9 +2539,19 @@ class AppExcEditor(QtCore.QObject):
         self.last_darray_circ_angle = None
         self.last_darray_radius = None
 
+        self.last_sarray_radius = None
+        self.last_sarray_circ_angle = None
+        self.last_sarray_lin_angle = None
+        self.last_sarray_pitch = None
+        self.last_sarray_circ_dir = None
+        self.last_sarray_lin_dir = None
+        self.last_sarray_size = None
+        self.last_sarray_type = None
+
         self.last_slot_length = None
         self.last_slot_direction = None
         self.last_slot_angle = None
+
         self.complete = False
 
         self.editor_options = {
@@ -4070,7 +4177,7 @@ class AppExcEditor(QtCore.QObject):
         self.update_utility_geometry(data=(x, y))
 
         self.update_utility_geometry(data=(x, y))
-        if self.active_tool.name in ['drill_add', 'drill_array', 'slot_add', 'slot_array', 'copy']:
+        if self.active_tool.name in ['drill_add', 'drill_array', 'slot_add', 'slot_array', 'copy', 'drill_resize']:
             try:
                 self.active_tool.draw_cursor_data(pos=(x, y))
             except AttributeError:
@@ -4132,7 +4239,7 @@ class AppExcEditor(QtCore.QObject):
         else:
             storage.insert(shp)  # TODO: Check performance
 
-    def add_shape(self, shape):
+    def add_shape(self, shp):
         """
         Adds a shape to the shape storage.
 
@@ -4142,22 +4249,22 @@ class AppExcEditor(QtCore.QObject):
         """
 
         # List of DrawToolShape?
-        if isinstance(shape, list):
-            for subshape in shape:
+        if isinstance(shp, list):
+            for subshape in shp:
                 self.add_shape(subshape)
             return
 
-        assert isinstance(shape, DrawToolShape), \
-            "Expected a DrawToolShape, got %s" % type(shape)
+        assert isinstance(shp, DrawToolShape), \
+            "Expected a DrawToolShape, got %s" % type(shp)
 
-        assert shape.geo is not None, \
+        assert shp.geo is not None, \
             "Shape object has empty geometry (None)"
 
-        assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or not isinstance(shape.geo, list), \
+        assert (isinstance(shp.geo, list) and len(shp.geo) > 0) or not isinstance(shp.geo, list), \
             "Shape objects has empty geometry ([])"
 
-        if isinstance(shape, DrawToolUtilityShape):
-            self.utility.append(shape)
+        if isinstance(shp, DrawToolUtilityShape):
+            self.utility.append(shp)
         # else:
         #     self.storage.insert(shape)
 
@@ -4698,63 +4805,10 @@ class AppExcEditorUI:
         )
         grid1.addWidget(self.deltool_btn, 2, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid1.addWidget(separator_line, 4, 0, 1, 2)
-
-        # #############################################################################################################
-        # ############################## Resize Tool Grid #############################################################
-        # #############################################################################################################
-        # add a frame and inside add a grid box layout. Inside this layout I add all the Drills widgets
-        # this way I can hide/show the frame
-        self.resize_frame = QtWidgets.QFrame()
-        self.resize_frame.setContentsMargins(0, 0, 0, 0)
-        self.ui_vertical_lay.addWidget(self.resize_frame)
-
-        self.resize_grid = GLay(v_spacing=5, h_spacing=3)
-        self.resize_grid.setContentsMargins(0, 0, 0, 0)
-        self.resize_frame.setLayout(self.resize_grid)
-
-        self.drillresize_label = FCLabel('%s' % _("Resize Tool"), bold=True)
-        self.drillresize_label.setToolTip(
-            _("Resize a drill or a selection of drills.")
-        )
-        self.resize_grid.addWidget(self.drillresize_label, 0, 0, 1, 2)
-
-        # Resize Diameter
-        res_entry_lbl = FCLabel('%s:' % _('Resize Dia'))
-        res_entry_lbl.setToolTip(
-            _("Diameter to resize to.")
-        )
-
-        hlay2 = QtWidgets.QHBoxLayout()
-        self.resdrill_entry = FCDoubleSpinner(policy=False)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
-                                           QtWidgets.QSizePolicy.Policy.Preferred)
-        self.resdrill_entry.setSizePolicy(sizePolicy)
-        self.resdrill_entry.set_precision(self.decimals)
-        self.resdrill_entry.set_range(0.0000, 10000.0000)
-
-        hlay2.addWidget(self.resdrill_entry)
-
-        # Resize Button
-        self.resize_btn = FCButton(_('Resize'))
-        self.resize_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/resize16.png'))
-        self.resize_btn.setToolTip(
-            _("Resize drill(s)")
-        )
-        hlay2.addWidget(self.resize_btn)
-
-        self.resize_grid.addWidget(res_entry_lbl, 2, 0)
-        self.resize_grid.addLayout(hlay2, 2, 1)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.resize_grid.addWidget(separator_line, 6, 0, 1, 2)
-
-        self.resize_frame.hide()
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # grid1.addWidget(separator_line, 4, 0, 1, 2)
 
         self.ui_vertical_lay.addStretch()
         layout.addStretch(1)

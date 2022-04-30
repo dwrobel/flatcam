@@ -801,7 +801,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.exc_resize_drill_menuitem = self.exc_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/resize16.png'),
-            '%s\t%s' % (_('Resize Drill(S)'), _('R'))
+            '%s\t%s' % (_('Resize Drill'), _('R'))
         )
         self.exc_copy_drill_menuitem = self.exc_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/copy32.png'),
@@ -814,7 +814,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.exc_move_drill_menuitem = self.exc_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/move32.png'),
-            '%s\t%s' % (_('Move Drill'), _('M')))
+            '%s\t%s' % (_('Move'), _('M')))
 
         # ########################################################################
         # ########################## GERBER Editor # #############################
@@ -1234,13 +1234,13 @@ class MainGUI(QtWidgets.QMainWindow):
         self.exc_edit_toolbar.addSeparator()
 
         self.copy_drill_btn = self.exc_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _('Copy Drill'))
+            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _('Copy'))
         self.delete_drill_btn = self.exc_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete Drill"))
+            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete"))
 
         self.exc_edit_toolbar.addSeparator()
         self.move_drill_btn = self.exc_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move Drill"))
+            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move"))
 
         # ########################################################################
         # ########################## Geometry Editor Toolbar# ####################
@@ -2611,13 +2611,13 @@ class MainGUI(QtWidgets.QMainWindow):
         self.exc_edit_toolbar.addSeparator()
 
         self.copy_drill_btn = self.exc_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _('Copy Drill'))
+            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _('Copy'))
         self.delete_drill_btn = self.exc_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete Drill"))
+            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete"))
 
         self.exc_edit_toolbar.addSeparator()
         self.move_drill_btn = self.exc_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move Drill"))
+            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move"))
 
         # ########################################################################
         # ################### Geometry Editor Toolbar ############################
@@ -5371,16 +5371,16 @@ class ShortcutsTab(QtWidgets.QWidget):
         """ % (
             _("EXCELLON EDITOR"),
             _('A'), _("Add Drill Array"),
-            _('C'), _("Copy Drill"),
+            _('C'), _("Copy"),
             _('D'), _("Add Drill"),
             _('J'), _("Jump to Location (x, y)"),
-            _('M'), _("Move Drill"),
+            _('M'), _("Move"),
             _('Q'), _("Add Slot Array"),
             _('R'), _("Resize Drill"),
             _('T'), _("Add a new Tool"),
             _('W'), _("Add Slot"),
             _('Shift+M'), _("Distance Minimum Tool"),
-            _('Del'), _("Delete Drill"),
+            _('Del'), _("Delete"),
             _('Del'), _("Alternate: Delete Tool"),
             _('Esc'), _("Abort and return to Select"),
             _('Space'), _("Toggle Slot direction"),
