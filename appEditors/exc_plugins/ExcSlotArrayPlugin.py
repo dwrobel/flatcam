@@ -72,8 +72,6 @@ class ExcSlotArrayEditorTool(AppTool):
     def set_tool_ui(self):
         # Init appGUI
         self.length = 0.0
-        self.ui.mode_radio.set_value('n')
-        self.ui.on_copy_mode(self.ui.mode_radio.get_value())
         self.ui.array_type_radio.set_value('linear')
         self.ui.on_array_type_radio(self.ui.array_type_radio.get_value())
         self.ui.axis_radio.set_value('X')
@@ -108,7 +106,7 @@ class ExcSlotArrayEditorTool(AppTool):
         self.ui.project_line_entry.set_value(val)
 
     def hide_tool(self):
-        self.ui.copy_frame.hide()
+        self.ui.sarray_frame.hide()
         self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
         if self.draw_app.active_tool.name != 'select':
             self.draw_app.select_tool("select")
@@ -116,12 +114,12 @@ class ExcSlotArrayEditorTool(AppTool):
 
 class ExcSlotArrayEditorUI:
 
-    def __init__(self, layout, copy_class, plugin_name):
+    def __init__(self, layout, sarray_class, plugin_name):
         self.pluginName = plugin_name
-        self.copy_class = copy_class
-        self.decimals = self.copy_class.app.decimals
+        self.ed_class = sarray_class
+        self.decimals = self.ed_class.app.decimals
         self.layout = layout
-        self.app = self.copy_class.app
+        self.app = self.ed_class.app
 
         # Title
         title_label = FCLabel("%s" % ('Editor ' + self.pluginName))
@@ -135,16 +133,71 @@ class ExcSlotArrayEditorUI:
         self.layout.addWidget(title_label)
 
         # this way I can hide/show the frame
-        self.copy_frame = QtWidgets.QFrame()
-        self.copy_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.copy_frame)
-        self.copy_tool_box = QtWidgets.QVBoxLayout()
-        self.copy_tool_box.setContentsMargins(0, 0, 0, 0)
-        self.copy_frame.setLayout(self.copy_tool_box)
+        self.sarray_frame = QtWidgets.QFrame()
+        self.sarray_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.sarray_frame)
+        self.editor_vbox = QtWidgets.QVBoxLayout()
+        self.editor_vbox.setContentsMargins(0, 0, 0, 0)
+        self.sarray_frame.setLayout(self.editor_vbox)
 
-        # Grid Layout
-        grid0 = GLay(v_spacing=5, h_spacing=3)
-        self.copy_tool_box.addLayout(grid0)
+        # Position
+        self.tool_lbl = FCLabel('%s' % _("Tool Diameter"), bold=True, color='blue')
+        self.editor_vbox.addWidget(self.tool_lbl)
+        # #############################################################################################################
+        # Diameter Frame
+        # #############################################################################################################
+        dia_frame = FCFrame()
+        self.editor_vbox.addWidget(dia_frame)
+
+        dia_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
+        dia_frame.setLayout(dia_grid)
+
+        # Dia Value
+        self.dia_lbl = FCLabel('%s:' % _("Value"))
+        self.dia_entry = NumericalEvalEntry(border_color='#0069A9')
+        self.dia_entry.setDisabled(True)
+        self.dia_unit = FCLabel('%s' % 'mm')
+
+        dia_grid.addWidget(self.dia_lbl, 0, 0)
+        dia_grid.addWidget(self.dia_entry, 0, 1)
+        dia_grid.addWidget(self.dia_unit, 0, 2)
+
+        # Position
+        self.pos_lbl = FCLabel('%s' % _("Position"), bold=True, color='red')
+        self.editor_vbox.addWidget(self.pos_lbl)
+        # #############################################################################################################
+        # Position Frame
+        # #############################################################################################################
+        pos_frame = FCFrame()
+        self.editor_vbox.addWidget(pos_frame)
+
+        pos_grid = GLay(v_spacing=5, h_spacing=3)
+        pos_frame.setLayout(pos_grid)
+
+        # X Pos
+        self.x_lbl = FCLabel('%s:' % _("X"))
+        self.x_entry = FCDoubleSpinner()
+        self.x_entry.set_precision(self.decimals)
+        self.x_entry.set_range(-10000.0000, 10000.0000)
+        pos_grid.addWidget(self.x_lbl, 2, 0)
+        pos_grid.addWidget(self.x_entry, 2, 1)
+
+        # Y Pos
+        self.y_lbl = FCLabel('%s:' % _("Y"))
+        self.y_entry = FCDoubleSpinner()
+        self.y_entry.set_precision(self.decimals)
+        self.y_entry.set_range(-10000.0000, 10000.0000)
+        pos_grid.addWidget(self.y_lbl, 4, 0)
+        pos_grid.addWidget(self.y_entry, 4, 1)
+
+        # #############################################################################################################
+        # Projection Frame
+        # #############################################################################################################
+        pro_frame = FCFrame()
+        self.editor_vbox.addWidget(pro_frame)
+
+        pro_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
+        pro_frame.setLayout(pro_grid)
 
         # Project distance
         self.project_line_lbl = FCLabel('%s:' % _("Projection"))
@@ -152,29 +205,12 @@ class ExcSlotArrayEditorUI:
             _("Length of the current segment/move.")
         )
         self.project_line_entry = NumericalEvalEntry(border_color='#0069A9')
-        grid0.addWidget(self.project_line_lbl, 0, 0)
-        grid0.addWidget(self.project_line_entry, 0, 1)
+        pro_grid.addWidget(self.project_line_lbl, 0, 0)
+        pro_grid.addWidget(self.project_line_entry, 0, 1)
 
-        self.clear_btn = FCButton(_("Clear"))
-        grid0.addWidget(self.clear_btn, 2, 0, 1, 2)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 4, 0, 1, 2)
-
-        # Type of Array
-        self.mode_label = FCLabel('%s:' % _("Mode"), bold=True)
-        self.mode_label.setToolTip(
-            _("Single copy or special (array of copies)")
-        )
-        self.mode_radio = RadioSet([
-            {'label': _('Single'), 'value': 'n'},
-            {'label': _('Array'), 'value': 'a'}
-        ])
-
-        grid0.addWidget(self.mode_label, 6, 0)
-        grid0.addWidget(self.mode_radio, 6, 1)
+        self.clear_btn = QtWidgets.QToolButton()
+        self.clear_btn.setIcon(QtGui.QIcon(self.ed_class.app.resource_location + '/trash32.png'))
+        pro_grid.addWidget(self.clear_btn, 0, 2)
 
         # #############################################################################################################
         # ######################################## Add Array ##########################################################
@@ -443,13 +479,12 @@ class ExcSlotArrayEditorUI:
         self.layout.addWidget(self.add_button)
 
         GLay.set_common_column_size([
-            grid0, self.array_grid, self.lin_grid, self.dd_grid, self.circ_grid, self.s_grid, self.o_grid
+            self.array_grid, self.lin_grid, self.dd_grid, self.circ_grid, self.s_grid, self.o_grid
         ], 0)
 
         self.layout.addStretch(1)
 
         # Signals
-        self.mode_radio.activated_custom.connect(self.on_copy_mode)
         self.array_type_radio.activated_custom.connect(self.on_array_type_radio)
         self.axis_radio.activated_custom.connect(self.on_linear_angle_radio)
         self.placement_radio.activated_custom.connect(self.on_placement_radio)
@@ -466,13 +501,6 @@ class ExcSlotArrayEditorUI:
         if accepted is False:
             self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%d, %d]' %
                                             (_("Edited value is out of range"), minval, maxval), False)
-
-    def on_copy_mode(self, val):
-        if val == 'n':
-            self.array_frame.hide()
-            self.app.inform.emit(_("Click on reference location ..."))
-        else:
-            self.array_frame.show()
 
     def on_array_type_radio(self, val):
         if val == '2D':
@@ -492,7 +520,7 @@ class ExcSlotArrayEditorUI:
             self.rows.valueChanged.connect(self.on_rows_cols_value_changed)
             self.columns.valueChanged.connect(self.on_rows_cols_value_changed)
 
-            self.app.inform.emit(_("Click on reference location ..."))
+            self.app.inform.emit(_("Click to place ..."))
         else:
             if val == 'linear':
                 self.array_circular_frame.hide()
@@ -501,7 +529,7 @@ class ExcSlotArrayEditorUI:
                 self.spacing_frame.hide()
                 self.offset_frame.hide()
 
-                self.app.inform.emit(_("Click on reference location ..."))
+                self.app.inform.emit(_("Click to place ..."))
             else:   # 'circular'
                 self.array_circular_frame.show()
                 self.array_linear_frame.hide()

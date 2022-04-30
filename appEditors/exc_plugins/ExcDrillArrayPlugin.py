@@ -18,7 +18,7 @@ class ExcDrillArrayEditorTool(AppTool):
         self.decimals = app.decimals
         self.plugin_name = plugin_name
 
-        self.ui = ExcDrillArrayEditorUI(layout=self.layout, copy_class=self, plugin_name=plugin_name)
+        self.ui = ExcDrillArrayEditorUI(layout=self.layout, darray_class=self, plugin_name=plugin_name)
 
         self.connect_signals_at_init()
         self.set_tool_ui()
@@ -72,24 +72,13 @@ class ExcDrillArrayEditorTool(AppTool):
     def set_tool_ui(self):
         # Init appGUI
         self.length = 0.0
-        self.ui.mode_radio.set_value('n')
-        self.ui.on_copy_mode(self.ui.mode_radio.get_value())
+
         self.ui.array_type_radio.set_value('linear')
         self.ui.on_array_type_radio(self.ui.array_type_radio.get_value())
         self.ui.axis_radio.set_value('X')
         self.ui.on_linear_angle_radio(self.ui.axis_radio.get_value())
 
         self.ui.array_dir_radio.set_value('CW')
-
-        self.ui.placement_radio.set_value('s')
-        self.ui.on_placement_radio(self.ui.placement_radio.get_value())
-
-        self.ui.spacing_rows.set_value(0)
-        self.ui.spacing_columns.set_value(0)
-        self.ui.rows.set_value(1)
-        self.ui.columns.set_value(1)
-        self.ui.offsetx_entry.set_value(0)
-        self.ui.offsety_entry.set_value(0)
 
     def on_tab_close(self):
         self.disconnect_signals()
@@ -108,7 +97,7 @@ class ExcDrillArrayEditorTool(AppTool):
         self.ui.project_line_entry.set_value(val)
 
     def hide_tool(self):
-        self.ui.copy_frame.hide()
+        self.ui.darray_frame.hide()
         self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
         if self.draw_app.active_tool.name != 'select':
             self.draw_app.select_tool("select")
@@ -116,12 +105,12 @@ class ExcDrillArrayEditorTool(AppTool):
 
 class ExcDrillArrayEditorUI:
 
-    def __init__(self, layout, copy_class, plugin_name):
+    def __init__(self, layout, darray_class, plugin_name):
         self.pluginName = plugin_name
-        self.copy_class = copy_class
-        self.decimals = self.copy_class.app.decimals
+        self.darray_class = darray_class
+        self.decimals = self.darray_class.app.decimals
         self.layout = layout
-        self.app = self.copy_class.app
+        self.app = self.darray_class.app
 
         # Title
         title_label = FCLabel("%s" % ('Editor ' + self.pluginName))
@@ -135,57 +124,74 @@ class ExcDrillArrayEditorUI:
         self.layout.addWidget(title_label)
 
         # this way I can hide/show the frame
-        self.copy_frame = QtWidgets.QFrame()
-        self.copy_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.copy_frame)
-        self.copy_tool_box = QtWidgets.QVBoxLayout()
-        self.copy_tool_box.setContentsMargins(0, 0, 0, 0)
-        self.copy_frame.setLayout(self.copy_tool_box)
+        self.darray_frame = QtWidgets.QFrame()
+        self.darray_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.darray_frame)
+        self.editor_vbox = QtWidgets.QVBoxLayout()
+        self.editor_vbox.setContentsMargins(0, 0, 0, 0)
+        self.darray_frame.setLayout(self.editor_vbox)
 
-        # Grid Layout
-        grid0 = GLay(v_spacing=5, h_spacing=3)
-        self.copy_tool_box.addLayout(grid0)
+        # Position
+        self.tool_lbl = FCLabel('%s' % _("Tool Diameter"), bold=True, color='blue')
+        self.editor_vbox.addWidget(self.tool_lbl)
+        # #############################################################################################################
+        # Diameter Frame
+        # #############################################################################################################
+        dia_frame = FCFrame()
+        self.editor_vbox.addWidget(dia_frame)
 
-        # Project distance
-        self.project_line_lbl = FCLabel('%s:' % _("Projection"))
-        self.project_line_lbl.setToolTip(
-            _("Length of the current segment/move.")
-        )
-        self.project_line_entry = NumericalEvalEntry(border_color='#0069A9')
-        grid0.addWidget(self.project_line_lbl, 0, 0)
-        grid0.addWidget(self.project_line_entry, 0, 1)
+        dia_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
+        dia_frame.setLayout(dia_grid)
 
-        self.clear_btn = FCButton(_("Clear"))
-        grid0.addWidget(self.clear_btn, 2, 0, 1, 2)
+        # Dia Value
+        self.dia_lbl = FCLabel('%s:' % _("Value"))
+        self.dia_entry = NumericalEvalEntry(border_color='#0069A9')
+        self.dia_entry.setDisabled(True)
+        self.dia_unit = FCLabel('%s' % 'mm')
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 4, 0, 1, 2)
+        dia_grid.addWidget(self.dia_lbl, 0, 0)
+        dia_grid.addWidget(self.dia_entry, 0, 1)
+        dia_grid.addWidget(self.dia_unit, 0, 2)
 
-        # Type of Array
-        self.mode_label = FCLabel('%s:' % _("Mode"), bold=True)
-        self.mode_label.setToolTip(
-            _("Single copy or special (array of copies)")
-        )
-        self.mode_radio = RadioSet([
-            {'label': _('Single'), 'value': 'n'},
-            {'label': _('Array'), 'value': 'a'}
-        ])
+        # Position
+        self.pos_lbl = FCLabel('%s' % _("Position"), bold=True, color='red')
+        self.editor_vbox.addWidget(self.pos_lbl)
+        # #############################################################################################################
+        # Position Frame
+        # #############################################################################################################
+        pos_frame = FCFrame()
+        self.editor_vbox.addWidget(pos_frame)
 
-        grid0.addWidget(self.mode_label, 6, 0)
-        grid0.addWidget(self.mode_radio, 6, 1)
+        pos_grid = GLay(v_spacing=5, h_spacing=3)
+        pos_frame.setLayout(pos_grid)
 
+        # X Pos
+        self.x_lbl = FCLabel('%s:' % _("X"))
+        self.x_entry = FCDoubleSpinner()
+        self.x_entry.set_precision(self.decimals)
+        self.x_entry.set_range(-10000.0000, 10000.0000)
+        pos_grid.addWidget(self.x_lbl, 2, 0)
+        pos_grid.addWidget(self.x_entry, 2, 1)
+
+        # Y Pos
+        self.y_lbl = FCLabel('%s:' % _("Y"))
+        self.y_entry = FCDoubleSpinner()
+        self.y_entry.set_precision(self.decimals)
+        self.y_entry.set_range(-10000.0000, 10000.0000)
+        pos_grid.addWidget(self.y_lbl, 4, 0)
+        pos_grid.addWidget(self.y_entry, 4, 1)
+
+        # Position
+        self.par_lbl = FCLabel('%s' % _("Parameters"), bold=True, color='purple')
+        self.editor_vbox.addWidget(self.par_lbl)
         # #############################################################################################################
         # ######################################## Add Array ##########################################################
         # #############################################################################################################
         # add a frame and inside add a grid box layout.
         self.array_frame = FCFrame()
-        # self.array_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.array_frame)
+        self.editor_vbox.addWidget(self.array_frame)
 
         self.array_grid = GLay(v_spacing=5, h_spacing=3)
-        # self.array_grid.setContentsMargins(0, 0, 0, 0)
         self.array_frame.setLayout(self.array_grid)
 
         # Set the number of items in the array
@@ -207,7 +213,6 @@ class ExcDrillArrayEditorUI:
 
         self.array_type_radio = RadioSet([
             {'label': _('Linear'), 'value': 'linear'},
-            {'label': _('2D'), 'value': '2D'},
             {'label': _('Circular'), 'value': 'circular'}
         ])
 
@@ -279,129 +284,6 @@ class ExcDrillArrayEditorUI:
         self.lin_grid.addWidget(self.linear_angle_spinner, 4, 1)
 
         # #############################################################################################################
-        # ################################ 2D Array ###################################################################
-        # #############################################################################################################
-        self.two_dim_array_frame = QtWidgets.QFrame()
-        self.two_dim_array_frame.setContentsMargins(0, 0, 0, 0)
-        self.array_grid.addWidget(self.two_dim_array_frame, 10, 0, 1, 2)
-
-        self.dd_grid = GLay(v_spacing=5, h_spacing=3)
-        self.dd_grid.setContentsMargins(0, 0, 0, 0)
-        self.two_dim_array_frame.setLayout(self.dd_grid)
-
-        # 2D placement
-        self.place_label = FCLabel('%s:' % _('Placement'))
-        self.place_label.setToolTip(
-            _("Placement of array items:\n"
-              "'Spacing' - define space between rows and columns \n"
-              "'Offset' - each row (and column) will be placed at a multiple of a value, from origin")
-        )
-
-        self.placement_radio = RadioSet([
-            {'label': _('Spacing'), 'value': 's'},
-            {'label': _('Offset'), 'value': 'o'}
-        ])
-
-        self.dd_grid.addWidget(self.place_label, 0, 0)
-        self.dd_grid.addWidget(self.placement_radio, 0, 1)
-
-        # Rows
-        self.rows = FCSpinner(callback=self.confirmation_message_int)
-        self.rows.set_range(0, 10000)
-
-        self.rows_label = FCLabel('%s:' % _("Rows"))
-        self.rows_label.setToolTip(
-            _("Number of rows")
-        )
-        self.dd_grid.addWidget(self.rows_label, 2, 0)
-        self.dd_grid.addWidget(self.rows, 2, 1)
-
-        # Columns
-        self.columns = FCSpinner(callback=self.confirmation_message_int)
-        self.columns.set_range(0, 10000)
-
-        self.columns_label = FCLabel('%s:' % _("Columns"))
-        self.columns_label.setToolTip(
-            _("Number of columns")
-        )
-        self.dd_grid.addWidget(self.columns_label, 4, 0)
-        self.dd_grid.addWidget(self.columns, 4, 1)
-
-        # ------------------------------------------------
-        # ##############  Spacing Frame  #################
-        # ------------------------------------------------
-        self.spacing_frame = QtWidgets.QFrame()
-        self.spacing_frame.setContentsMargins(0, 0, 0, 0)
-        self.dd_grid.addWidget(self.spacing_frame, 6, 0, 1, 2)
-
-        self.s_grid = GLay(v_spacing=5, h_spacing=3)
-        self.s_grid.setContentsMargins(0, 0, 0, 0)
-        self.spacing_frame.setLayout(self.s_grid)
-
-        # Spacing Rows
-        self.spacing_rows = FCDoubleSpinner(callback=self.confirmation_message)
-        self.spacing_rows.set_range(0, 9999)
-        self.spacing_rows.set_precision(4)
-
-        self.spacing_rows_label = FCLabel('%s:' % _("Spacing rows"))
-        self.spacing_rows_label.setToolTip(
-            _("Spacing between rows.\n"
-              "In current units.")
-        )
-        self.s_grid.addWidget(self.spacing_rows_label, 0, 0)
-        self.s_grid.addWidget(self.spacing_rows, 0, 1)
-
-        # Spacing Columns
-        self.spacing_columns = FCDoubleSpinner(callback=self.confirmation_message)
-        self.spacing_columns.set_range(0, 9999)
-        self.spacing_columns.set_precision(4)
-
-        self.spacing_columns_label = FCLabel('%s:' % _("Spacing cols"))
-        self.spacing_columns_label.setToolTip(
-            _("Spacing between columns.\n"
-              "In current units.")
-        )
-        self.s_grid.addWidget(self.spacing_columns_label, 2, 0)
-        self.s_grid.addWidget(self.spacing_columns, 2, 1)
-
-        # ------------------------------------------------
-        # ##############  Offset Frame  ##################
-        # ------------------------------------------------
-        self.offset_frame = QtWidgets.QFrame()
-        self.offset_frame.setContentsMargins(0, 0, 0, 0)
-        self.dd_grid.addWidget(self.offset_frame, 8, 0, 1, 2)
-
-        self.o_grid = GLay(v_spacing=5, h_spacing=3)
-        self.o_grid.setContentsMargins(0, 0, 0, 0)
-        self.offset_frame.setLayout(self.o_grid)
-
-        # Offset X Value
-        self.offsetx_label = FCLabel('%s X:' % _("Offset"))
-        self.offsetx_label.setToolTip(
-            _("'Offset' - each row (and column) will be placed at a multiple of a value, from origin")
-        )
-
-        self.offsetx_entry = FCDoubleSpinner(policy=False)
-        self.offsetx_entry.set_precision(self.decimals)
-        self.offsetx_entry.set_range(0.0000, 10000.0000)
-
-        self.o_grid.addWidget(self.offsetx_label, 0, 0)
-        self.o_grid.addWidget(self.offsetx_entry, 0, 1)
-
-        # Offset Y Value
-        self.offsety_label = FCLabel('%s Y:' % _("Offset"))
-        self.offsety_label.setToolTip(
-            _("'Offset' - each row (and column) will be placed at a multiple of a value, from origin")
-        )
-
-        self.offsety_entry = FCDoubleSpinner(policy=False)
-        self.offsety_entry.set_precision(self.decimals)
-        self.offsety_entry.set_range(0.0000, 10000.0000)
-
-        self.o_grid.addWidget(self.offsety_label, 2, 0)
-        self.o_grid.addWidget(self.offsety_entry, 2, 1)
-
-        # #############################################################################################################
         # ############################ CIRCULAR Array #################################################################
         # #############################################################################################################
         self.array_circular_frame = QtWidgets.QFrame()
@@ -437,22 +319,42 @@ class ExcDrillArrayEditorUI:
         self.circ_grid.addWidget(self.array_angle_lbl, 2, 0)
         self.circ_grid.addWidget(self.angle_entry, 2, 1)
 
-        # Buttons
-        self.add_button = FCButton(_("Add"))
-        self.add_button.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
-        self.layout.addWidget(self.add_button)
+        # #############################################################################################################
+        # Projection Frame
+        # #############################################################################################################
+        pro_frame = FCFrame()
+        self.editor_vbox.addWidget(pro_frame)
 
-        GLay.set_common_column_size([
-            grid0, self.array_grid, self.lin_grid, self.dd_grid, self.circ_grid, self.s_grid, self.o_grid
-        ], 0)
+        pro_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
+        pro_frame.setLayout(pro_grid)
+
+        # Project distance
+        self.project_line_lbl = FCLabel('%s:' % _("Projection"))
+        self.project_line_lbl.setToolTip(
+            _("Length of the current segment/move.")
+        )
+        self.project_line_entry = NumericalEvalEntry(border_color='#0069A9')
+        pro_grid.addWidget(self.project_line_lbl, 0, 0)
+        pro_grid.addWidget(self.project_line_entry, 0, 1)
+
+        self.clear_btn = QtWidgets.QToolButton()
+        self.clear_btn.setIcon(QtGui.QIcon(self.darray_class.app.resource_location + '/trash32.png'))
+        pro_grid.addWidget(self.clear_btn, 0, 2)
+
+        # #############################################################################################################
+        # Buttons
+        # #############################################################################################################
+        self.add_btn = FCButton(_("Add"))
+        self.add_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
+        self.layout.addWidget(self.add_btn)
+
+        GLay.set_common_column_size([dia_grid, pro_grid, pos_grid, self.array_grid, self.lin_grid, self.circ_grid], 0)
 
         self.layout.addStretch(1)
 
         # Signals
-        self.mode_radio.activated_custom.connect(self.on_copy_mode)
         self.array_type_radio.activated_custom.connect(self.on_array_type_radio)
         self.axis_radio.activated_custom.connect(self.on_linear_angle_radio)
-        self.placement_radio.activated_custom.connect(self.on_placement_radio)
 
     def confirmation_message(self, accepted, minval, maxval):
         if accepted is False:
@@ -467,79 +369,24 @@ class ExcDrillArrayEditorUI:
             self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%d, %d]' %
                                             (_("Edited value is out of range"), minval, maxval), False)
 
-    def on_copy_mode(self, val):
-        if val == 'n':
-            self.array_frame.hide()
-            self.app.inform.emit(_("Click on reference location ..."))
-        else:
-            self.array_frame.show()
-
     def on_array_type_radio(self, val):
-        if val == '2D':
+        if val == 'linear':
             self.array_circular_frame.hide()
+            self.array_linear_frame.show()
+
+            self.app.inform.emit(_("Click to place ..."))
+        else:  # 'circular'
+            self.array_circular_frame.show()
             self.array_linear_frame.hide()
-            self.two_dim_array_frame.show()
-            if self.placement_radio.get_value() == 's':
-                self.spacing_frame.show()
-                self.offset_frame.hide()
-            else:
-                self.spacing_frame.hide()
-                self.offset_frame.show()
 
-            self.array_size_entry.setDisabled(True)
-            self.on_rows_cols_value_changed()
+            self.app.inform.emit(_("Click on the circular array Center position"))
 
-            self.rows.valueChanged.connect(self.on_rows_cols_value_changed)
-            self.columns.valueChanged.connect(self.on_rows_cols_value_changed)
-
-            self.app.inform.emit(_("Click on reference location ..."))
-        else:
-            if val == 'linear':
-                self.array_circular_frame.hide()
-                self.array_linear_frame.show()
-                self.two_dim_array_frame.hide()
-                self.spacing_frame.hide()
-                self.offset_frame.hide()
-
-                self.app.inform.emit(_("Click on reference location ..."))
-            else:   # 'circular'
-                self.array_circular_frame.show()
-                self.array_linear_frame.hide()
-                self.two_dim_array_frame.hide()
-                self.spacing_frame.hide()
-                self.offset_frame.hide()
-
-                self.app.inform.emit(_("Click on the circular array Center position"))
-
-            self.array_size_entry.setDisabled(False)
-            try:
-                self.rows.valueChanged.disconnect()
-            except (TypeError, AttributeError):
-                pass
-
-            try:
-                self.columns.valueChanged.disconnect()
-            except (TypeError, AttributeError):
-                pass
-
-    def on_rows_cols_value_changed(self):
-        new_size = self.rows.get_value() * self.columns.get_value()
-        if new_size == 0:
-            new_size = 1
-        self.array_size_entry.set_value(new_size)
+        self.array_size_entry.setDisabled(False)
 
     def on_linear_angle_radio(self, val):
         if val == 'A':
-            self.linear_angle_spinner.show()
-            self.linear_angle_label.show()
+            self.linear_angle_spinner.setEnabled(True)
+            self.linear_angle_label.setEnabled(True)
         else:
-            self.linear_angle_spinner.hide()
-            self.linear_angle_label.hide()
-
-    def on_placement_radio(self, val):
-        if val == 's':
-            self.spacing_frame.show()
-            self.offset_frame.hide()
-        else:
-            self.spacing_frame.hide()
-            self.offset_frame.show()
+            self.linear_angle_spinner.setEnabled(False)
+            self.linear_angle_label.setEnabled(False)

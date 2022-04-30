@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+30.04.2022
+
+- in Excellon Editor, Slot Plugin, made sure that once the Editor is active any change for this plugin parameters will be kept until editor is exit or that parameter is changed again
+- In Excellon Editor, Drill Array Plugin, upgraded the UI and work in progress for the features
+
 29.04.2022
 
 - In Excellon Editor, finished updating the Drill Plugin and Slot Plugin
@@ -17,7 +22,7 @@ CHANGELOG for FlatCAM Evo beta
 - in Isolation Plugin made sure that the last displayed message is the warning, in the case of using tool validation and the tool is not validated
 - some more work in the Excellon Editor - Drill adding
 - some fixes in the image loader when clicking the an image that is in the list of previous loaded files
-- a small fin in the SVG parser
+- a small fix in the SVG parser
 - added a new Tcl command that is returning the name of the active object ('get_active') to accompany the 'set_active' command
 - a small fix for the 2d graphic mode by replacing the q5agg matplotlib backend with the qtagg backend which should work with the Qt6
 - in Calculators Plugin fixed the Electroplating Calculator to work as expected and removed the redundant button 'Calculate'

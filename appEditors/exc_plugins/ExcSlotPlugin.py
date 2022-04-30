@@ -212,12 +212,12 @@ class ExcSlotEditorUI:
               "- 'Angle' - a custom angle for the slot inclination")
         )
 
-        self.slot_axis_radio = RadioSet([{'label': _('X'), 'value': 'X'},
-                                         {'label': _('Y'), 'value': 'Y'},
-                                         {'label': _('Angle'), 'value': 'A'}])
+        self.slot_direction_radio = RadioSet([{'label': _('X'), 'value': 'X'},
+                                              {'label': _('Y'), 'value': 'Y'},
+                                              {'label': _('Angle'), 'value': 'A'}])
 
         par_grid.addWidget(self.slot_axis_label, 4, 0)
-        par_grid.addWidget(self.slot_axis_radio, 4, 1)
+        par_grid.addWidget(self.slot_direction_radio, 4, 1)
 
         # Slot custom angle
         self.slot_angle_label = FCLabel('%s:' % _('Angle'))
@@ -267,10 +267,10 @@ class ExcSlotEditorUI:
         self.layout.addStretch(1)
 
         # Signals
-        self.slot_axis_radio.activated_custom.connect(self.on_slot_angle_radio)
+        self.slot_direction_radio.activated_custom.connect(self.on_slot_angle_radio)
 
     def on_slot_angle_radio(self):
-        val = self.slot_axis_radio.get_value()
+        val = self.slot_direction_radio.get_value()
         if val == 'A':
             self.slot_angle_spinner.setEnabled(True)
             self.slot_angle_label.setEnabled(True)

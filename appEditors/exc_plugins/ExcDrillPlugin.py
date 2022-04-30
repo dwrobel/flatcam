@@ -90,7 +90,7 @@ class ExcDrillEditorTool(AppTool):
         self.ui.project_line_entry.set_value(val)
 
     def hide_tool(self):
-        self.ui.path_tool_frame.hide()
+        self.ui.drill_tool_frame.hide()
         self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
         if self.draw_app.active_tool.name != 'select':
             self.draw_app.select_tool("select")
@@ -116,12 +116,12 @@ class ExcDrillEditorUI:
         self.layout.addWidget(title_label)
 
         # this way I can hide/show the frame
-        self.path_tool_frame = QtWidgets.QFrame()
-        self.path_tool_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.path_tool_frame)
+        self.drill_tool_frame = QtWidgets.QFrame()
+        self.drill_tool_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.drill_tool_frame)
         self.editor_vbox = QtWidgets.QVBoxLayout()
         self.editor_vbox.setContentsMargins(0, 0, 0, 0)
-        self.path_tool_frame.setLayout(self.editor_vbox)
+        self.drill_tool_frame.setLayout(self.editor_vbox)
 
         # Position
         self.tool_lbl = FCLabel('%s' % _("Tool Diameter"), bold=True, color='blue')

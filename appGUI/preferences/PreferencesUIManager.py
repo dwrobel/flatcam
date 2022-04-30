@@ -234,7 +234,7 @@ class PreferencesUIManager(QtCore.QObject):
                 self.ui.excellon_pref_form.excellon_editor_group.drill_circular_angle_entry,
             # Excellon Slots
             "excellon_editor_slot_direction":
-                self.ui.excellon_pref_form.excellon_editor_group.slot_axis_radio,
+                self.ui.excellon_pref_form.excellon_editor_group.slot_direction_radio,
             "excellon_editor_slot_angle":
                 self.ui.excellon_pref_form.excellon_editor_group.slot_angle_spinner,
             "excellon_editor_slot_length":
