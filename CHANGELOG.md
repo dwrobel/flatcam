@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM Evo beta
 - in Excellon Editor, finished the upgrade work on the Drill Array Plugin
 - in Excellon Editor, finished the upgrade work on the Slot Array Plugin
 - in Excellon Editor, finished the upgrade work on the Resize Plugin
+- minor changes in the Excellon Editor -> Resize Plugin
 
 29.04.2022
 

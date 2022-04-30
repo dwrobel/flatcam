@@ -25,7 +25,7 @@ class ExcResizeEditorTool(AppTool):
 
     def connect_signals_at_init(self):
         # Signals
-        self.ui.clear_btn.clicked.connect(self.on_clear)
+        self.ui.clear_btn.clicked.connect(lambda: self.ui.res_dia_entry.set_value(0.0))
 
     def disconnect_signals(self):
         # Signals

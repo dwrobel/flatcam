@@ -1946,12 +1946,31 @@ class ResizeEditorExc(FCShapeTool):
         self.draw_app.app.inform.emit(_("Click on the Drill(s) to resize ..."))
 
     def set_plugin_ui(self):
-        curr_row = self.draw_app.ui.tools_table_exc.currentRow()
-        tool_dia = float(self.draw_app.ui.tools_table_exc.item(curr_row, 1).text())
-        self.ui.dia_entry.set_value(tool_dia)
+        # curr_row = self.draw_app.ui.tools_table_exc.currentRow()
+        # tool_dia = float(self.draw_app.ui.tools_table_exc.item(curr_row, 1).text())
+        # self.ui.dia_entry.set_value(tool_dia)
+
+        self.update_diameters()
 
     def utility_geometry(self, data=None):
         return DrawToolUtilityShape([])
+
+    def click_release(self, point):
+        self.update_diameters()
+
+    def update_diameters(self):
+        sel_dia_list = set()
+        for index in self.draw_app.ui.tools_table_exc.selectedIndexes():
+            row = index.row()
+            if row < 0:
+                continue
+            # on column 1 in tool tables we hold the diameters, and we retrieve them as strings
+            # therefore below we convert to float
+            dia_on_row = self.draw_app.ui.tools_table_exc.item(row, 1).text()
+            if dia_on_row != '':
+                sel_dia_list.add(dia_on_row)
+
+        self.ui.dia_entry.set_value(', '.join([i for i in list(sel_dia_list)]))
 
     def make(self):
         self.draw_app.is_modified = True
@@ -4075,21 +4094,28 @@ class AppExcEditor(QtCore.QObject):
 
         # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
         # selection and then select a type of selection ("enclosing" or "touching")
-        try:
-            if event.button == 1:  # left click
-                if self.app.selection_type is not None:
+        if event.button == 1:  # left click
+            if self.app.selection_type is not None:
+                try:
                     self.draw_selection_area_handler(self.clicked_pos, pos, self.app.selection_type)
-                    self.app.selection_type = None
+                except Exception as e:
+                    self.app.log.error("AppExcEditor.on_exc_click_release() LMB click --> Error: %s" % str(e))
+                    raise
+                self.app.selection_type = None
+            elif isinstance(self.active_tool, SelectEditorExc):
+                self.active_tool.click_release((self.clicked_pos[0], self.clicked_pos[1]))
 
-                elif isinstance(self.active_tool, SelectEditorExc):
-                    self.active_tool.click_release((self.clicked_pos[0], self.clicked_pos[1]))
+                # if there are selected objects then plot them
+                if self.selected:
+                    self.replot()
 
-                    # if there are selected objects then plot them
-                    if self.selected:
-                        self.replot()
-        except Exception as e:
-            self.app.log.error("AppExcEditor.on_exc_click_release() LMB click --> Error: %s" % str(e))
-            raise
+            click_position = pos if pos is not None else self.clicked_pos
+            if self.active_tool is not None:
+                # Dispatch event to active_tool
+                try:
+                    self.active_tool.click_release(click_position)
+                except AttributeError:
+                    pass
 
     def on_canvas_move(self, event):
         """
