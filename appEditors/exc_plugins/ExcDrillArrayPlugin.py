@@ -179,16 +179,6 @@ class ExcDrillArrayEditorUI:
         self.array_grid = GLay(v_spacing=5, h_spacing=3)
         self.array_frame.setLayout(self.array_grid)
 
-        # Set the number of items in the array
-        self.array_size_label = FCLabel('%s:' % _('Size'))
-        self.array_size_label.setToolTip(_("Specify how many items to be in the array."))
-
-        self.array_size_entry = FCSpinner(policy=False)
-        self.array_size_entry.set_range(1, 100000)
-
-        self.array_grid.addWidget(self.array_size_label, 2, 0)
-        self.array_grid.addWidget(self.array_size_entry, 2, 1)
-
         # Array Type
         array_type_lbl = FCLabel('%s:' % _("Type"))
         array_type_lbl.setToolTip(
@@ -201,8 +191,18 @@ class ExcDrillArrayEditorUI:
             {'label': _('Circular'), 'value': 'circular'}
         ])
 
-        self.array_grid.addWidget(array_type_lbl, 4, 0)
-        self.array_grid.addWidget(self.array_type_radio, 4, 1)
+        self.array_grid.addWidget(array_type_lbl, 2, 0)
+        self.array_grid.addWidget(self.array_type_radio, 2, 1)
+
+        # Array Size
+        self.array_size_label = FCLabel('%s:' % _('Size'))
+        self.array_size_label.setToolTip(_("Specify how many items to be in the array."))
+
+        self.array_size_entry = FCSpinner(policy=False)
+        self.array_size_entry.set_range(1, 100000)
+
+        self.array_grid.addWidget(self.array_size_label, 4, 0)
+        self.array_grid.addWidget(self.array_size_entry, 4, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)

@@ -214,8 +214,7 @@ def restart_program(app, ask=None):
     if app.should_we_save and app.collection.get_list() or ask is True:
         msgbox = FCMessageBox(parent=app.ui)
         title = _("Save changes")
-        txt = _("There are files/objects modified in FlatCAM. "
-                "\n"
+        txt = _("There are files/objects modified.\n"
                 "Do you want to Save the project?")
         msgbox.setWindowTitle(title)  # taskbar still shows it
         msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/app128.png'))

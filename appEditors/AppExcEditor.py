@@ -10,6 +10,7 @@ from camlib import distance, arc, AppRTreeStorage
 from appEditors.exc_plugins.ExcDrillPlugin import *
 from appEditors.exc_plugins.ExcSlotPlugin import ExcSlotEditorTool
 from appEditors.exc_plugins.ExcDrillArrayPlugin import ExcDrillArrayEditorTool
+from appEditors.exc_plugins.ExcSlotArrayPlugin import ExcSlotArrayEditorTool
 
 from appGUI.GUIElements import FCEntry, FCTable, FCDoubleSpinner, RadioSet, FCSpinner, FCButton, FCLabel, GLay
 from appEditors.AppGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, AppGeoEditor
@@ -59,7 +60,6 @@ class SelectEditorExc(FCShapeTool):
         self.sel_storage = AppExcEditor.make_storage()
 
         self.draw_app.ui.resize_frame.hide()
-        self.draw_app.ui.slot_array_frame.hide()
 
         # make sure that the cursor text from the DrillAdd is deleted
         if self.draw_app.app.plotcanvas.text_cursor.parent and self.draw_app.app.use_3d_engine:
@@ -546,7 +546,6 @@ class DrillArray(FCShapeTool):
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception:
             pass
-
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_drill_array.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
@@ -566,7 +565,6 @@ class DrillArray(FCShapeTool):
             self.draw_app.app.plotcanvas.view.camera.zoom_callback = self.draw_cursor_data
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
-        self.darray_tool.length = self.draw_app.last_length
         if not self.draw_app.snap_x:
             self.draw_app.snap_x = 0.0
         if not self.draw_app.snap_y:
@@ -619,7 +617,7 @@ class DrillArray(FCShapeTool):
 
             self.flag_for_circ_array = True
             self.set_origin(point)
-            self.draw_app.app.inform.emit(_("Click on the Drill Circular Array Start position"))
+            self.draw_app.app.inform.emit(_("Click on the Circular Array Start position"))
         else:
             self.destination = point
             self.make()
@@ -1319,33 +1317,16 @@ class SlotArray(FCShapeTool):
         DrawTool.__init__(self, draw_app)
         self.name = 'slot_array'
         self.draw_app = draw_app
+        self.app = self.draw_app.app
 
         self.selected_dia = None
-        try:
-            self.draw_app.app.inform.emit(_("Click to place ..."))
-            self.selected_dia = self.draw_app.tool2tooldia[self.draw_app.last_tool_selected]
-            # as a visual marker, select again in tooltable the actual tool that we are using
-            # remember that it was deselected when clicking on canvas
-            item = self.draw_app.ui.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
-            self.draw_app.ui.tools_table_exc.setCurrentItem(item)
-        except KeyError:
-            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
-                                          _("To add an Slot Array first select a tool in Tool Table"))
-            return
-
-        try:
-            QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception:
-            pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_array.png'))
-        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.steps_per_circ = self.draw_app.app.options["geometry_circle_steps"]
 
         self.half_width = 0.0
         self.half_height = 0.0
-        self.radius = float(self.selected_dia / 2.0)
 
+        self.array_radius = 0.0
         self.slot_axis = 'X'
         self.slot_array = 'linear'     # 'linear'
         self.slot_array_size = None
@@ -1365,18 +1346,91 @@ class SlotArray(FCShapeTool):
 
         self.pt = []
 
+        try:
+            self.draw_app.app.inform.emit(_("Click to place ..."))
+            self.selected_dia = self.draw_app.tool2tooldia[self.draw_app.last_tool_selected]
+            # as a visual marker, select again in tooltable the actual tool that we are using
+            # remember that it was deselected when clicking on canvas
+            item = self.draw_app.ui.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
+            self.draw_app.ui.tools_table_exc.setCurrentItem(item)
+        except KeyError:
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
+                                          _("To add an Slot Array first select a tool in Tool Table"))
+            return
+        self.radius = float(self.selected_dia / 2.0)
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except Exception:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_array.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
+
+        # #############################################################################################################
+        # Plugin UI
+        # #############################################################################################################
+        self.sarray_tool = ExcSlotArrayEditorTool(self.app, self.draw_app, plugin_name=_("Slot Array"))
+        self.ui = self.sarray_tool.ui
+        self.sarray_tool.run()
+
         geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y), static=True)
         if isinstance(geo, DrawToolShape) and geo.geo is not None:
             self.draw_app.draw_utility_geometry(geo=geo)
 
-        self.draw_app.app.inform.emit(_("Click on target location ..."))
-
+        if self.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = self.draw_cursor_data
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
-        # Switch notebook to Properties page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
+        if not self.draw_app.snap_x:
+            self.draw_app.snap_x = 0.0
+        if not self.draw_app.snap_y:
+            self.draw_app.snap_y = 0.0
+
+        self.app.ui.notebook.setTabText(2, _("Slot Array"))
+        if self.app.ui.splitter.sizes()[0] == 0:
+            self.app.ui.splitter.setSizes([1, 1])
+
+        self.set_plugin_ui()
+
+        # Signals
+        try:
+            self.ui.add_btn.clicked.disconnect()
+        except (AttributeError, TypeError):
+            pass
+        self.ui.add_btn.clicked.connect(self.on_add_slot_array)
+
+        # self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
+    def set_plugin_ui(self):
+        curr_row = self.draw_app.ui.tools_table_exc.currentRow()
+        tool_dia = float(self.draw_app.ui.tools_table_exc.item(curr_row, 1).text())
+        self.ui.dia_entry.set_value(tool_dia)
+        self.ui.x_entry.set_value(float(self.draw_app.snap_x))
+        self.ui.y_entry.set_value(float(self.draw_app.snap_y))
+
+        # Slot set-up
+        self.ui.slot_length_entry.set_value(self.draw_app.last_slot_length)
+        self.ui.slot_direction_radio.set_value(self.draw_app.last_slot_direction)
+        self.ui.on_slot_angle_radio()
+        self.ui.slot_angle_entry.set_value(self.draw_app.last_slot_angle)
+
+        # Slot Array set-up
+        self.ui.array_type_radio.set_value(self.draw_app.last_sarray_type)
+        self.ui.on_array_type_radio(val=self.ui.array_type_radio.get_value())
+
+        self.ui.array_size_entry.set_value(self.draw_app.last_sarray_size)
+        self.ui.array_axis_radio.set_value(self.draw_app.last_sarray_lin_dir)
+        self.ui.array_pitch_entry.set_value(self.draw_app.last_sarray_pitch)
+        self.ui.array_linear_angle_entry.set_value(self.draw_app.last_sarray_lin_angle)
+        self.ui.array_direction_radio.set_value(self.draw_app.last_sarray_circ_dir)
+        self.ui.array_angle_entry.set_value(self.draw_app.last_sarray_circ_angle)
+        self.ui.radius_entry.set_value(self.draw_app.last_sarray_radius)
+
+        self.ui.on_slot_array_linear_angle_radio()
 
     def click(self, point):
+        self.ui.x_entry.set_value(float(self.draw_app.snap_x))
+        self.ui.y_entry.set_value(float(self.draw_app.snap_y))
 
         if self.slot_array == 'linear':    # 'Linear'
             self.make()
@@ -1388,7 +1442,7 @@ class SlotArray(FCShapeTool):
 
                 self.flag_for_circ_array = True
                 self.set_origin(point)
-                self.draw_app.app.inform.emit(_("Click on the Slot Circular Array Start position"))
+                self.draw_app.app.inform.emit(_("Click on the Circular Array Start position"))
             else:
                 self.destination = point
                 self.make()
@@ -1399,22 +1453,14 @@ class SlotArray(FCShapeTool):
         self.origin = origin
 
     def utility_geometry(self, data=None, static=None):
-        self.slot_axis = self.draw_app.ui.slot_array_axis_radio.get_value()
-        self.slot_direction = self.draw_app.ui.slot_array_direction_radio.get_value()
-        self.slot_array = self.draw_app.ui.slot_array_type_radio.get_value()
-        try:
-            self.slot_array_size = int(self.draw_app.ui.slot_array_size_entry.get_value())
-            try:
-                self.slot_pitch = float(self.draw_app.ui.slot_array_pitch_entry.get_value())
-                self.slot_linear_angle = float(self.draw_app.ui.slot_array_linear_angle_spinner.get_value())
-                self.slot_angle = float(self.draw_app.ui.slot_array_angle_entry.get_value())
-            except TypeError:
-                self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
-                                              _("The value is not Float. Check for comma instead of dot separator."))
-                return
-        except Exception:
-            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("The value is mistyped. Check the value."))
-            return
+        self.slot_axis = self.ui.array_axis_radio.get_value()
+        self.slot_direction = self.ui.array_direction_radio.get_value()
+        self.slot_array = self.ui.array_type_radio.get_value()
+
+        self.slot_array_size = int(self.ui.array_size_entry.get_value())
+        self.slot_pitch = float(self.ui.array_pitch_entry.get_value())
+        self.slot_linear_angle = float(self.ui.array_linear_angle_entry.get_value())
+        self.slot_angle = float(self.ui.array_angle_entry.get_value())
 
         if self.slot_array == 'linear':    # 'Linear'
             if data[0] is None and data[1] is None:
@@ -1466,9 +1512,9 @@ class SlotArray(FCShapeTool):
                 radius = distance((cdx, cdy), self.origin)
             except Exception:
                 radius = 0
-
             if radius == 0:
                 self.draw_app.delete_utility_geometry()
+            self.ui.radius_entry.set_value(radius)
 
             if len(self.pt) >= 1 and radius > 0:
                 try:
@@ -1494,9 +1540,9 @@ class SlotArray(FCShapeTool):
                     log.error("SlotArray.utility_geometry -- circular -> %s" % str(e))
 
     def circular_util_shape(self, radius, angle):
-        self.slot_direction = self.draw_app.ui.slot_array_direction_radio.get_value()
-        self.slot_angle = self.draw_app.ui.slot_array_angle_entry.get_value()
-        self.slot_array_size = self.draw_app.ui.slot_array_size_entry.get_value()
+        self.slot_direction = self.ui.array_direction_radio.get_value()
+        self.slot_angle = self.ui.array_angle_entry.get_value()
+        self.slot_array_size = self.ui.array_size_entry.get_value()
 
         circular_geo = []
         if self.slot_direction == 'CW':
@@ -1528,26 +1574,10 @@ class SlotArray(FCShapeTool):
         self.radius = float(self.selected_dia / 2.0)
         self.steps_per_circ = self.draw_app.app.options["geometry_circle_steps"]
 
-        try:
-            slot_length = float(self.draw_app.ui.slot_length_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                slot_length = float(self.draw_app.ui.slot_length_entry.get_value().replace(',', '.'))
-                self.draw_app.ui.slot_length_entry.set_value(slot_length)
-            except ValueError:
-                self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
-                                              _("Value is missing or wrong format. Add it and retry."))
-                return
+        slot_length = float(self.ui.slot_length_entry.get_value())
+        slot_angle = float(self.ui.slot_angle_entry.get_value())
 
-        try:
-            slot_angle = float(self.draw_app.ui.slot_angle_spinner.get_value())
-        except ValueError:
-            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
-                                          _("Value is missing or wrong format. Add it and retry."))
-            return
-
-        if self.draw_app.ui.slot_direction_radio.get_value() == 'X':
+        if self.ui.slot_direction_radio.get_value() == 'X':
             self.half_width = slot_length / 2.0
             self.half_height = self.radius
         else:
@@ -1614,7 +1644,7 @@ class SlotArray(FCShapeTool):
 
         # this function return one slot in the slot array and the following will rotate that one slot around it's
         # center if the radio value is "A".
-        if self.draw_app.ui.slot_direction_radio.get_value() == 'A':
+        if self.ui.slot_direction_radio.get_value() == 'A':
             return rotate(Polygon(geo), -slot_angle)
         else:
             return Polygon(geo)
@@ -1655,7 +1685,10 @@ class SlotArray(FCShapeTool):
             if (self.slot_angle * self.slot_array_size) > 360:
                 self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
                                               _("Too many items for the selected spacing angle."))
-                self.draw_app.app.jump_signal.disconnect()
+                try:
+                    self.draw_app.app.jump_signal.disconnect()
+                except (AttributeError, TypeError):
+                    pass
                 return
 
             # radius = distance(self.destination, self.origin)
@@ -1694,9 +1727,76 @@ class SlotArray(FCShapeTool):
         self.complete = True
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         self.draw_app.in_action = False
-        self.draw_app.ui.slot_frame.hide()
-        self.draw_app.ui.slot_array_frame.hide()
-        self.draw_app.app.jump_signal.disconnect()
+
+        # Slot
+        self.draw_app.last_slot_length = self.ui.slot_length_entry.get_value()
+        self.draw_app.last_slot_direction = self.ui.slot_direction_radio.get_value()
+        self.draw_app.last_slot_angle = self.ui.slot_angle_entry.get_value()
+
+        # Slot array
+        self.draw_app.last_sarray_type = self.ui.array_type_radio.get_value()
+        self.draw_app.last_sarray_size = self.ui.array_size_entry.get_value()
+        self.draw_app.last_sarray_lin_dir = self.ui.array_axis_radio.get_value()
+        self.draw_app.last_sarray_circ_dir = self.ui.array_direction_radio.get_value()
+        self.draw_app.last_sarray_pitch = self.ui.array_pitch_entry.get_value()
+        self.draw_app.last_sarray_lin_angle = self.ui.array_linear_angle_entry.get_value()
+        self.draw_app.last_sarray_circ_angle = self.ui.array_angle_entry.get_value()
+        self.draw_app.last_sarray_radius = self.ui.radius_entry.get_value()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (AttributeError, TypeError):
+            pass
+
+    def draw_cursor_data(self, pos=None, delete=False):
+        if pos is None:
+            pos = self.draw_app.snap_x, self.draw_app.snap_y
+
+        if delete:
+            if self.draw_app.app.use_3d_engine:
+                self.draw_app.app.plotcanvas.text_cursor.parent = None
+                self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+            return
+
+        if not self.points:
+            self.points = self.draw_app.snap_x, self.draw_app.snap_y
+
+        # font size
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("hud_font_size"):
+            fsize = qsettings.value('hud_font_size', type=int)
+        else:
+            fsize = 8
+
+        x = pos[0]
+        y = pos[1]
+        try:
+            length = abs(self.ui.radius_entry.get_value())
+        except IndexError:
+            length = self.draw_app.app.dec_format(0.0, self.draw_app.app.decimals)
+
+        x_dec = str(self.draw_app.app.dec_format(x, self.draw_app.app.decimals)) if x else '0.0'
+        y_dec = str(self.draw_app.app.dec_format(y, self.draw_app.app.decimals)) if y else '0.0'
+        length_dec = str(self.draw_app.app.dec_format(length, self.draw_app.app.decimals)) if length else '0.0'
+
+        units = self.draw_app.app.app_units.lower()
+        l1_txt = 'X:   %s [%s]' % (x_dec, units)
+        l2_txt = 'Y:   %s [%s]' % (y_dec, units)
+        l3_txt = 'L:   %s [%s]' % (length_dec, units)
+        cursor_text = '%s\n%s\n\n%s' % (l1_txt, l2_txt, l3_txt)
+
+        if self.draw_app.app.use_3d_engine:
+            new_pos = self.draw_app.app.plotcanvas.translate_coords_2((x, y))
+            x, y, __, ___ = self.draw_app.app.plotcanvas.translate_coords((new_pos[0]+30, new_pos[1]))
+
+            # text
+            self.draw_app.app.plotcanvas.text_cursor.font_size = fsize
+            self.draw_app.app.plotcanvas.text_cursor.text = cursor_text
+            self.draw_app.app.plotcanvas.text_cursor.pos = x, y
+            self.draw_app.app.plotcanvas.text_cursor.anchors = 'left', 'top'
+
+            if self.draw_app.app.plotcanvas.text_cursor.parent is None:
+                self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
 
     def on_key(self, key):
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
@@ -1711,31 +1811,77 @@ class SlotArray(FCShapeTool):
         if mod_key == 'Control':
             # Toggle Pad Array Direction
             if key == QtCore.Qt.Key.Key_Space:
-                if self.draw_app.ui.slot_array_axis_radio.get_value() == 'X':
-                    self.draw_app.ui.slot_array_axis_radio.set_value('Y')
-                elif self.draw_app.ui.slot_array_axis_radio.get_value() == 'Y':
-                    self.draw_app.ui.slot_array_axis_radio.set_value('A')
-                elif self.draw_app.ui.slot_array_axis_radio.get_value() == 'A':
-                    self.draw_app.ui.slot_array_axis_radio.set_value('X')
+                if self.ui.array_axis_radio.get_value() == 'X':
+                    self.ui.array_axis_radio.set_value('Y')
+                elif self.ui.array_axis_radio.get_value() == 'Y':
+                    self.ui.array_axis_radio.set_value('A')
+                elif self.ui.array_axis_radio.get_value() == 'A':
+                    self.ui.array_axis_radio.set_value('X')
 
                 # ## Utility geometry (animated)
                 self.draw_app.update_utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
         elif mod_key is None:
+            # Jump to coords
+            if key == QtCore.Qt.Key.Key_J or key == 'J':
+                self.draw_app.app.on_jump_to()
+
             # Toggle Pad Direction
             if key == QtCore.Qt.Key.Key_Space:
-                if self.draw_app.ui.slot_direction_radio.get_value() == 'X':
-                    self.draw_app.ui.slot_direction_radio.set_value('Y')
-                elif self.draw_app.ui.slot_direction_radio.get_value() == 'Y':
-                    self.draw_app.ui.slot_direction_radio.set_value('A')
-                elif self.draw_app.ui.slot_direction_radio.get_value() == 'A':
-                    self.draw_app.ui.slot_direction_radio.set_value('X')
+                if self.ui.slot_direction_radio.get_value() == 'X':
+                    self.ui.slot_direction_radio.set_value('Y')
+                elif self.ui.slot_direction_radio.get_value() == 'Y':
+                    self.ui.slot_direction_radio.set_value('A')
+                elif self.ui.slot_direction_radio.get_value() == 'A':
+                    self.ui.slot_direction_radio.set_value('X')
                 # ## Utility geometry (animated)
                 self.draw_app.update_utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+
+    def add_slot_array(self, array_pos):
+        self.array_radius = self.ui.radius_entry.get_value()
+
+        self.slot_axis = self.ui.array_axis_radio.get_value()
+        self.slot_direction = self.ui.array_direction_radio.get_value()
+        self.slot_array = self.ui.array_type_radio.get_value()
+
+        self.slot_array_size = int(self.ui.array_size_entry.get_value())
+        self.slot_pitch = float(self.ui.array_pitch_entry.get_value())
+        self.slot_linear_angle = float(self.ui.array_linear_angle_entry.get_value())
+        self.slot_angle = float(self.ui.array_angle_entry.get_value())
+
+        curr_pos = self.draw_app.app.geo_editor.snap(array_pos[0], array_pos[1])
+        self.draw_app.snap_x = curr_pos[0]
+        self.draw_app.snap_y = curr_pos[1]
+
+        self.points = [self.draw_app.snap_x, self.draw_app.snap_y]
+        self.origin = [self.draw_app.snap_x, self.draw_app.snap_y]
+        self.destination = ((self.origin[0] + self.array_radius), self.origin[1])
+        self.flag_for_circ_array = True
+        self.make()
+
+        if self.draw_app.current_storage is not None:
+            self.draw_app.on_exc_shape_complete(self.draw_app.current_storage)
+            self.draw_app.build_ui()
+
+        if self.draw_app.active_tool.complete:
+            self.draw_app.on_shape_complete()
+
+        self.draw_app.select_tool("drill_select")
+
+        self.draw_app.clicked_pos = curr_pos
+
+    def on_add_slot_array(self):
+        x = self.ui.x_entry.get_value()
+        y = self.ui.y_entry.get_value()
+        self.add_slot_array(array_pos=(x, y))
 
     def clean_up(self):
         self.draw_app.selected = []
         self.draw_app.ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
+
+        if self.draw_app.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.text_cursor.parent = None
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
 
         try:
             self.draw_app.app.jump_signal.disconnect()
@@ -2360,10 +2506,6 @@ class AppExcEditor(QtCore.QObject):
         self.ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
         self.ui.tools_table_exc.selectionModel().selectionChanged.connect(self.on_table_selection)
 
-        self.ui.slot_array_type_radio.activated_custom.connect(self.on_slot_array_type_radio)
-
-        self.ui.slot_array_axis_radio.activated_custom.connect(self.on_slot_array_linear_angle_radio)
-
         self.app.ui.exc_add_array_drill_menuitem.triggered.connect(self.exc_add_drill_array)
         self.app.ui.exc_add_drill_menuitem.triggered.connect(self.exc_add_drill)
 
@@ -2473,16 +2615,14 @@ class AppExcEditor(QtCore.QObject):
         self.last_slot_direction = self.app.options['excellon_editor_slot_direction']
         self.last_slot_angle = self.app.options['excellon_editor_slot_angle']
 
-        self.ui.slot_array_size_entry.set_value(int(self.app.options['excellon_editor_slot_array_size']))
-        self.ui.slot_array_axis_radio.set_value(self.app.options['excellon_editor_slot_lin_dir'])
-        self.ui.slot_array_pitch_entry.set_value(float(self.app.options['excellon_editor_slot_lin_pitch']))
-        self.ui.slot_array_linear_angle_spinner.set_value(float(self.app.options['excellon_editor_slot_lin_angle']))
-        self.ui.slot_array_direction_radio.set_value(self.app.options['excellon_editor_slot_circ_dir'])
-        self.ui.slot_array_angle_entry.set_value(float(self.app.options['excellon_editor_slot_circ_angle']))
-
-        self.ui.slot_array_type_radio.set_value('linear')
-        self.on_slot_array_type_radio(val=self.ui.slot_array_type_radio.get_value())
-        self.on_slot_array_linear_angle_radio()
+        self.last_sarray_type = 'linear'
+        self.last_sarray_size = int(self.app.options['excellon_editor_slot_array_size'])
+        self.last_sarray_lin_dir = self.app.options['excellon_editor_slot_lin_dir']
+        self.last_sarray_circ_dir = self.app.options['excellon_editor_slot_circ_dir']
+        self.last_sarray_pitch = float(self.app.options['excellon_editor_slot_lin_pitch'])
+        self.last_sarray_lin_angle = float(self.app.options['excellon_editor_slot_lin_angle'])
+        self.last_sarray_circ_angle = float(self.app.options['excellon_editor_slot_circ_angle'])
+        self.last_sarray_radius = 0.0
 
         # Show/Hide Advanced Options
         app_mode = self.app.options["global_app_level"]
@@ -4338,26 +4478,6 @@ class AppExcEditor(QtCore.QObject):
         if unsel_shape in self.selected:
             self.selected.remove(unsel_shape)
 
-    def on_slot_array_type_radio(self, val):
-        if val == 'linear':
-            self.ui.slot_array_circular_frame.hide()
-            self.ui.slot_array_linear_frame.show()
-            self.app.inform.emit(_("Click to place ..."))
-        else:
-            self.delete_utility_geometry()
-            self.ui.slot_array_circular_frame.show()
-            self.ui.slot_array_linear_frame.hide()
-            self.app.inform.emit(_("Click on the circular array Center position"))
-
-    def on_slot_array_linear_angle_radio(self):
-        val = self.ui.slot_array_axis_radio.get_value()
-        if val == 'A':
-            self.ui.slot_array_linear_angle_spinner.show()
-            self.ui.slot_array_linear_angle_label.show()
-        else:
-            self.ui.slot_array_linear_angle_spinner.hide()
-            self.ui.slot_array_linear_angle_label.hide()
-
     def exc_add_drill(self):
         self.select_tool('drill_add')
         return
@@ -4636,140 +4756,6 @@ class AppExcEditorUI:
 
         self.resize_frame.hide()
 
-        # #############################################################################################################
-        # ##################################### ADDING SLOT ARRAY  ####################################################
-        # #############################################################################################################
-        self.slot_array_frame = QtWidgets.QFrame()
-        self.slot_array_frame.setContentsMargins(0, 0, 0, 0)
-        self.ui_vertical_lay.addWidget(self.slot_array_frame)
-
-        self.slot_array_grid = GLay(v_spacing=5, h_spacing=3)
-        self.slot_array_grid.setContentsMargins(0, 0, 0, 0)
-        self.slot_array_frame.setLayout(self.slot_array_grid)
-
-        # Slot Array Title
-        self.slot_array_label = FCLabel('%s' % _("Slot Array Parameters"), bold=True)
-        self.slot_array_label.setToolTip(
-            _("Parameters for the array of slots (linear or circular array)")
-        )
-
-        self.slot_array_grid.addWidget(self.slot_array_label, 0, 0, 1, 2)
-
-        # Array Type
-        array_type_lbl = FCLabel('%s:' % _("Type"))
-        array_type_lbl.setToolTip(
-            _("Select the type of slot array to create.\n"
-              "It can be Linear X(Y) or Circular")
-        )
-
-        self.slot_array_type_radio = RadioSet([{'label': _('Linear'), 'value': 'linear'},
-                                               {'label': _('Circular'), 'value': 'circular'}])
-
-        self.slot_array_grid.addWidget(array_type_lbl, 2, 0)
-        self.slot_array_grid.addWidget(self.slot_array_type_radio, 2, 1)
-
-        # Set the number of slot holes in the slot array
-        self.slot_array_size_label = FCLabel('%s:' % _('Number'))
-        self.slot_array_size_label.setToolTip(_("Specify how many slots to be in the array."))
-
-        self.slot_array_size_entry = FCSpinner(policy=False)
-        self.slot_array_size_entry.set_range(0, 10000)
-
-        self.slot_array_grid.addWidget(self.slot_array_size_label, 4, 0)
-        self.slot_array_grid.addWidget(self.slot_array_size_entry, 4, 1)
-
-        # #############################################################################################################
-        # ##################################### Linear SLOT ARRAY  ####################################################
-        # #############################################################################################################
-        self.slot_array_linear_frame = QtWidgets.QFrame()
-        self.slot_array_linear_frame.setContentsMargins(0, 0, 0, 0)
-        self.slot_array_grid.addWidget(self.slot_array_linear_frame, 6, 0, 1, 2)
-
-        self.slot_array_lin_grid = GLay(v_spacing=5, h_spacing=3)
-        self.slot_array_lin_grid.setContentsMargins(0, 0, 0, 0)
-        self.slot_array_linear_frame.setLayout(self.slot_array_lin_grid)
-
-        # Linear Slot Array direction
-        self.slot_array_axis_label = FCLabel('%s:' % _('Direction'))
-        self.slot_array_axis_label.setToolTip(
-            _("Direction on which the linear array is oriented:\n"
-              "- 'X' - horizontal axis \n"
-              "- 'Y' - vertical axis or \n"
-              "- 'Angle' - a custom angle for the array inclination")
-        )
-
-        self.slot_array_axis_radio = RadioSet([{'label': _('X'), 'value': 'X'},
-                                               {'label': _('Y'), 'value': 'Y'},
-                                               {'label': _('Angle'), 'value': 'A'}])
-
-        self.slot_array_lin_grid.addWidget(self.slot_array_axis_label, 0, 0)
-        self.slot_array_lin_grid.addWidget(self.slot_array_axis_radio, 0, 1)
-
-        # Linear Slot Array pitch distance
-        self.slot_array_pitch_label = FCLabel('%s:' % _('Pitch'))
-        self.slot_array_pitch_label.setToolTip(
-            _("Pitch = Distance between elements of the array.")
-        )
-
-        self.slot_array_pitch_entry = FCDoubleSpinner(policy=False)
-        self.slot_array_pitch_entry.set_precision(self.decimals)
-        self.slot_array_pitch_entry.setSingleStep(0.1)
-        self.slot_array_pitch_entry.setRange(0.0000, 10000.0000)
-
-        self.slot_array_lin_grid.addWidget(self.slot_array_pitch_label, 2, 0)
-        self.slot_array_lin_grid.addWidget(self.slot_array_pitch_entry, 2, 1)
-
-        # Linear Slot Array angle
-        self.slot_array_linear_angle_label = FCLabel('%s:' % _('Angle'))
-        self.slot_array_linear_angle_label.setToolTip(
-            _("Angle at which the linear array is placed.\n"
-              "The precision is of max 2 decimals.\n"
-              "Min value is: -360.00 degrees.\n"
-              "Max value is: 360.00 degrees.")
-        )
-
-        self.slot_array_linear_angle_spinner = FCDoubleSpinner(policy=False)
-        self.slot_array_linear_angle_spinner.set_precision(self.decimals)
-        self.slot_array_linear_angle_spinner.setSingleStep(1.0)
-        self.slot_array_linear_angle_spinner.setRange(-360.00, 360.00)
-
-        self.slot_array_lin_grid.addWidget(self.slot_array_linear_angle_label, 4, 0)
-        self.slot_array_lin_grid.addWidget(self.slot_array_linear_angle_spinner, 4, 1)
-
-        # #############################################################################################################
-        # ##################################### Circular SLOT ARRAY  ##################################################
-        # #############################################################################################################
-        self.slot_array_circular_frame = QtWidgets.QFrame()
-        self.slot_array_circular_frame.setContentsMargins(0, 0, 0, 0)
-        self.slot_array_grid.addWidget(self.slot_array_circular_frame, 8, 0, 1, 2)
-
-        self.slot_array_circ_grid = GLay(v_spacing=5, h_spacing=3)
-        self.slot_array_circ_grid.setContentsMargins(0, 0, 0, 0)
-        self.slot_array_circular_frame.setLayout(self.slot_array_circ_grid)
-
-        # Slot Circular Array Direction
-        self.slot_array_direction_label = FCLabel('%s:' % _('Direction'))
-        self.slot_array_direction_label.setToolTip(_("Direction for circular array.\n"
-                                                     "Can be CW = clockwise or CCW = counter clockwise."))
-
-        self.slot_array_direction_radio = RadioSet([{'label': _('CW'), 'value': 'CW'},
-                                                    {'label': _('CCW'), 'value': 'CCW'}])
-
-        self.slot_array_circ_grid.addWidget(self.slot_array_direction_label, 0, 0)
-        self.slot_array_circ_grid.addWidget(self.slot_array_direction_radio, 0, 1)
-
-        # Slot Circular Array Angle
-        self.slot_array_angle_label = FCLabel('%s:' % _('Angle'))
-        self.slot_array_angle_label.setToolTip(_("Angle at which each element in circular array is placed."))
-
-        self.slot_array_angle_entry = FCDoubleSpinner(policy=False)
-        self.slot_array_angle_entry.set_precision(self.decimals)
-        self.slot_array_angle_entry.setSingleStep(1)
-        self.slot_array_angle_entry.setRange(-360.00, 360.00)
-
-        self.slot_array_circ_grid.addWidget(self.slot_array_angle_label, 2, 0)
-        self.slot_array_circ_grid.addWidget(self.slot_array_angle_entry, 2, 1)
-
         self.ui_vertical_lay.addStretch()
         layout.addStretch(1)
 
@@ -4790,9 +4776,7 @@ class AppExcEditorUI:
         # #############################################################################################################
         # ###################### INIT Excellon Editor UI ##############################################################
         # #############################################################################################################
-        self.slot_array_linear_angle_spinner.hide()
-        self.slot_array_linear_angle_label.hide()
-        self.slot_array_frame.hide()
+        pass
 
         # ############################ FINSIHED GUI ###################################
         # #############################################################################

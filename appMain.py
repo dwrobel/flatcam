@@ -4025,8 +4025,7 @@ class App(QtCore.QObject):
         if self.should_we_save and self.collection.get_list():
             msgbox = FCMessageBox(parent=self.ui)
             title = _("Save changes")
-            txt = _("There are files/objects modified in FlatCAM. "
-                    "\n"
+            txt = _("There are files/objects modified.\n"
                     "Do you want to Save the project?")
             msgbox.setWindowTitle(title)  # taskbar still shows it
             msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/app128.png'))
@@ -10234,7 +10233,7 @@ class MenuFileHandlers(QtCore.QObject):
         if self.app.collection.get_list() and self.app.should_we_save:
             msgbox = FCMessageBox(parent=self.app.ui)
             title = _("Save changes")
-            txt = _("There are files/objects opened in FlatCAM.\n"
+            txt = _("There are files/objects opened.\n"
                     "Creating a New project will delete them.\n"
                     "Do you want to Save the project?")
             msgbox.setWindowTitle(title)  # taskbar still shows it

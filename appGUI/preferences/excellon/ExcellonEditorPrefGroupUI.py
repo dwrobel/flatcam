@@ -249,7 +249,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         self.drill_array_size_label.setToolTip(
             _("Specify how many slots to be in the array.")
         )
-        # self.slot_array_size_label.setMinimumWidth(100)
+        # self.array_size_label.setMinimumWidth(100)
 
         self.slot_array_size_entry = FCSpinner()
         self.slot_array_size_entry.set_range(0, 999999)

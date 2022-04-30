@@ -18,21 +18,18 @@ class ExcSlotArrayEditorTool(AppTool):
         self.decimals = app.decimals
         self.plugin_name = plugin_name
 
-        self.ui = ExcSlotArrayEditorUI(layout=self.layout, copy_class=self, plugin_name=plugin_name)
+        self.ui = ExcSlotArrayEditorUI(layout=self.layout, sarray_class=self, plugin_name=plugin_name)
 
         self.connect_signals_at_init()
         self.set_tool_ui()
 
     def connect_signals_at_init(self):
         # Signals
-        self.ui.clear_btn.clicked.connect(self.on_clear)
+        pass
 
     def disconnect_signals(self):
         # Signals
-        try:
-            self.ui.clear_btn.clicked.disconnect()
-        except (TypeError, AttributeError):
-            pass
+        pass
 
     def run(self):
         self.app.defaults.report_usage("Exc Editor ArrayTool()")
@@ -71,23 +68,7 @@ class ExcSlotArrayEditorTool(AppTool):
 
     def set_tool_ui(self):
         # Init appGUI
-        self.length = 0.0
-        self.ui.array_type_radio.set_value('linear')
-        self.ui.on_array_type_radio(self.ui.array_type_radio.get_value())
-        self.ui.axis_radio.set_value('X')
-        self.ui.on_linear_angle_radio(self.ui.axis_radio.get_value())
-
-        self.ui.array_dir_radio.set_value('CW')
-
-        self.ui.placement_radio.set_value('s')
-        self.ui.on_placement_radio(self.ui.placement_radio.get_value())
-
-        self.ui.spacing_rows.set_value(0)
-        self.ui.spacing_columns.set_value(0)
-        self.ui.rows.set_value(1)
-        self.ui.columns.set_value(1)
-        self.ui.offsetx_entry.set_value(0)
-        self.ui.offsety_entry.set_value(0)
+        pass
 
     def on_tab_close(self):
         self.disconnect_signals()
@@ -96,14 +77,6 @@ class ExcSlotArrayEditorTool(AppTool):
 
     def on_clear(self):
         self.set_tool_ui()
-
-    @property
-    def length(self):
-        return self.ui.project_line_entry.get_value()
-
-    @length.setter
-    def length(self, val):
-        self.ui.project_line_entry.set_value(val)
 
     def hide_tool(self):
         self.ui.sarray_frame.hide()
@@ -136,6 +109,7 @@ class ExcSlotArrayEditorUI:
         self.sarray_frame = QtWidgets.QFrame()
         self.sarray_frame.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.sarray_frame)
+
         self.editor_vbox = QtWidgets.QVBoxLayout()
         self.editor_vbox.setContentsMargins(0, 0, 0, 0)
         self.sarray_frame.setLayout(self.editor_vbox)
@@ -190,65 +164,109 @@ class ExcSlotArrayEditorUI:
         pos_grid.addWidget(self.y_lbl, 4, 0)
         pos_grid.addWidget(self.y_entry, 4, 1)
 
-        # #############################################################################################################
-        # Projection Frame
-        # #############################################################################################################
-        pro_frame = FCFrame()
-        self.editor_vbox.addWidget(pro_frame)
-
-        pro_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
-        pro_frame.setLayout(pro_grid)
-
-        # Project distance
-        self.project_line_lbl = FCLabel('%s:' % _("Projection"))
-        self.project_line_lbl.setToolTip(
-            _("Length of the current segment/move.")
+        # Slot Parameters
+        self.slot_label = FCLabel('%s' % _("Slot"), bold=True, color='green')
+        self.slot_label.setToolTip(
+            _("Parameters for adding a slot (hole with oval shape)\n"
+              "either single or as an part of an array.")
         )
-        self.project_line_entry = NumericalEvalEntry(border_color='#0069A9')
-        pro_grid.addWidget(self.project_line_lbl, 0, 0)
-        pro_grid.addWidget(self.project_line_entry, 0, 1)
-
-        self.clear_btn = QtWidgets.QToolButton()
-        self.clear_btn.setIcon(QtGui.QIcon(self.ed_class.app.resource_location + '/trash32.png'))
-        pro_grid.addWidget(self.clear_btn, 0, 2)
-
+        self.editor_vbox.addWidget(self.slot_label)
         # #############################################################################################################
-        # ######################################## Add Array ##########################################################
+        # ################################### Parameter Frame #########################################################
         # #############################################################################################################
-        # add a frame and inside add a grid box layout.
+        self.slot_frame = FCFrame()
+        self.editor_vbox.addWidget(self.slot_frame)
+
+        slot_grid = GLay(v_spacing=5, h_spacing=3)
+        self.slot_frame.setLayout(slot_grid)
+
+        # Slot length
+        self.slot_length_label = FCLabel('%s:' % _('Length'))
+        self.slot_length_label.setToolTip(
+            _("Length. The length of the slot.")
+        )
+
+        self.slot_length_entry = FCDoubleSpinner(policy=False)
+        self.slot_length_entry.set_precision(self.decimals)
+        self.slot_length_entry.setSingleStep(0.1)
+        self.slot_length_entry.setRange(0.0000, 10000.0000)
+
+        slot_grid.addWidget(self.slot_length_label, 2, 0)
+        slot_grid.addWidget(self.slot_length_entry, 2, 1)
+
+        # Slot direction
+        self.slot_axis_label = FCLabel('%s:' % _('Direction'))
+        self.slot_axis_label.setToolTip(
+            _("Direction on which the slot is oriented:\n"
+              "- 'X' - horizontal axis \n"
+              "- 'Y' - vertical axis or \n"
+              "- 'Angle' - a custom angle for the slot inclination")
+        )
+
+        self.slot_direction_radio = RadioSet([{'label': _('X'), 'value': 'X'},
+                                              {'label': _('Y'), 'value': 'Y'},
+                                              {'label': _('Angle'), 'value': 'A'}])
+
+        slot_grid.addWidget(self.slot_axis_label, 4, 0)
+        slot_grid.addWidget(self.slot_direction_radio, 4, 1)
+
+        # Slot custom angle
+        self.slot_angle_label = FCLabel('%s:' % _('Angle'))
+        self.slot_angle_label.setToolTip(
+            _("Angle at which the slot is placed.\n"
+              "The precision is of max 2 decimals.\n"
+              "Min value is: -360.00 degrees.\n"
+              "Max value is: 360.00 degrees.")
+        )
+
+        self.slot_angle_entry = FCDoubleSpinner(policy=False)
+        self.slot_angle_entry.set_precision(self.decimals)
+        self.slot_angle_entry.setWrapping(True)
+        self.slot_angle_entry.setRange(-360.00, 360.00)
+        self.slot_angle_entry.setSingleStep(1.0)
+
+        slot_grid.addWidget(self.slot_angle_label, 6, 0)
+        slot_grid.addWidget(self.slot_angle_entry, 6, 1)
+
+        # Slot Array Title
+        self.slot_array_label = FCLabel('%s' % _("Parameters"), bold=True, color='purple')
+        self.slot_array_label.setToolTip(
+            _("Array parameters.")
+        )
+
+        self.editor_vbox.addWidget(self.slot_array_label)
+        # #############################################################################################################
+        # ##################################### ADDING SLOT ARRAY  ####################################################
+        # #############################################################################################################
         self.array_frame = FCFrame()
-        # self.array_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.array_frame)
+        self.editor_vbox.addWidget(self.array_frame)
 
         self.array_grid = GLay(v_spacing=5, h_spacing=3)
-        # self.array_grid.setContentsMargins(0, 0, 0, 0)
         self.array_frame.setLayout(self.array_grid)
-
-        # Set the number of items in the array
-        self.array_size_label = FCLabel('%s:' % _('Size'))
-        self.array_size_label.setToolTip(_("Specify how many items to be in the array."))
-
-        self.array_size_entry = FCSpinner(policy=False)
-        self.array_size_entry.set_range(1, 100000)
-
-        self.array_grid.addWidget(self.array_size_label, 2, 0)
-        self.array_grid.addWidget(self.array_size_entry, 2, 1)
 
         # Array Type
         array_type_lbl = FCLabel('%s:' % _("Type"))
         array_type_lbl.setToolTip(
-            _("Select the type of array to create.\n"
+            _("Select the type of slot array to create.\n"
               "It can be Linear X(Y) or Circular")
         )
 
         self.array_type_radio = RadioSet([
             {'label': _('Linear'), 'value': 'linear'},
-            {'label': _('2D'), 'value': '2D'},
-            {'label': _('Circular'), 'value': 'circular'}
-        ])
+            {'label': _('Circular'), 'value': 'circular'}])
 
-        self.array_grid.addWidget(array_type_lbl, 4, 0)
-        self.array_grid.addWidget(self.array_type_radio, 4, 1)
+        self.array_grid.addWidget(array_type_lbl, 2, 0)
+        self.array_grid.addWidget(self.array_type_radio, 2, 1)
+
+        # Array Size
+        self.array_size_label = FCLabel('%s:' % _('Size'))
+        self.array_size_label.setToolTip(_("Specify how many slots to be in the array."))
+
+        self.array_size_entry = FCSpinner(policy=False)
+        self.array_size_entry.set_range(0, 10000)
+
+        self.array_grid.addWidget(self.array_size_label, 4, 0)
+        self.array_grid.addWidget(self.array_size_entry, 4, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
@@ -256,238 +274,128 @@ class ExcSlotArrayEditorUI:
         self.array_grid.addWidget(separator_line, 6, 0, 1, 2)
 
         # #############################################################################################################
-        # ############################ LINEAR Array ###################################################################
+        # ##################################### Linear SLOT ARRAY  ####################################################
         # #############################################################################################################
         self.array_linear_frame = QtWidgets.QFrame()
         self.array_linear_frame.setContentsMargins(0, 0, 0, 0)
         self.array_grid.addWidget(self.array_linear_frame, 8, 0, 1, 2)
 
-        self.lin_grid = GLay(v_spacing=5, h_spacing=3)
-        self.lin_grid.setContentsMargins(0, 0, 0, 0)
-        self.array_linear_frame.setLayout(self.lin_grid)
+        self.array_lin_grid = GLay(v_spacing=5, h_spacing=3)
+        self.array_lin_grid.setContentsMargins(0, 0, 0, 0)
+        self.array_linear_frame.setLayout(self.array_lin_grid)
 
-        # Linear Drill Array direction
-        self.axis_label = FCLabel('%s:' % _('Direction'))
-        self.axis_label.setToolTip(
+        # Linear Slot Array direction
+        self.slot_array_axis_label = FCLabel('%s:' % _('Direction'))
+        self.slot_array_axis_label.setToolTip(
             _("Direction on which the linear array is oriented:\n"
               "- 'X' - horizontal axis \n"
               "- 'Y' - vertical axis or \n"
               "- 'Angle' - a custom angle for the array inclination")
         )
 
-        self.axis_radio = RadioSet([
+        self.array_axis_radio = RadioSet([
             {'label': _('X'), 'value': 'X'},
             {'label': _('Y'), 'value': 'Y'},
-            {'label': _('Angle'), 'value': 'A'}
-        ])
+            {'label': _('Angle'), 'value': 'A'}])
 
-        self.lin_grid.addWidget(self.axis_label, 0, 0)
-        self.lin_grid.addWidget(self.axis_radio, 0, 1)
+        self.array_lin_grid.addWidget(self.slot_array_axis_label, 0, 0)
+        self.array_lin_grid.addWidget(self.array_axis_radio, 0, 1)
 
-        # Linear Array pitch distance
-        self.pitch_label = FCLabel('%s:' % _('Pitch'))
-        self.pitch_label.setToolTip(
+        # Linear Slot Array pitch distance
+        self.slot_array_pitch_label = FCLabel('%s:' % _('Pitch'))
+        self.slot_array_pitch_label.setToolTip(
             _("Pitch = Distance between elements of the array.")
         )
 
-        self.pitch_entry = FCDoubleSpinner(policy=False)
-        self.pitch_entry.set_precision(self.decimals)
-        self.pitch_entry.set_range(0.0000, 10000.0000)
+        self.array_pitch_entry = FCDoubleSpinner(policy=False)
+        self.array_pitch_entry.set_precision(self.decimals)
+        self.array_pitch_entry.setSingleStep(0.1)
+        self.array_pitch_entry.setRange(0.0000, 10000.0000)
 
-        self.lin_grid.addWidget(self.pitch_label, 2, 0)
-        self.lin_grid.addWidget(self.pitch_entry, 2, 1)
+        self.array_lin_grid.addWidget(self.slot_array_pitch_label, 2, 0)
+        self.array_lin_grid.addWidget(self.array_pitch_entry, 2, 1)
 
-        # Linear Array angle
-        self.linear_angle_label = FCLabel('%s:' % _('Angle'))
-        self.linear_angle_label.setToolTip(
+        # Linear Slot Array angle
+        self.slot_array_linear_angle_label = FCLabel('%s:' % _('Angle'))
+        self.slot_array_linear_angle_label.setToolTip(
             _("Angle at which the linear array is placed.\n"
               "The precision is of max 2 decimals.\n"
               "Min value is: -360.00 degrees.\n"
               "Max value is: 360.00 degrees.")
         )
 
-        self.linear_angle_spinner = FCDoubleSpinner(policy=False)
-        self.linear_angle_spinner.set_precision(self.decimals)
-        self.linear_angle_spinner.setSingleStep(1.0)
-        self.linear_angle_spinner.setRange(-360.00, 360.00)
+        self.array_linear_angle_entry = FCDoubleSpinner(policy=False)
+        self.array_linear_angle_entry.set_precision(self.decimals)
+        self.array_linear_angle_entry.setSingleStep(1.0)
+        self.array_linear_angle_entry.setRange(-360.00, 360.00)
 
-        self.lin_grid.addWidget(self.linear_angle_label, 4, 0)
-        self.lin_grid.addWidget(self.linear_angle_spinner, 4, 1)
-
-        # #############################################################################################################
-        # ################################ 2D Array ###################################################################
-        # #############################################################################################################
-        self.two_dim_array_frame = QtWidgets.QFrame()
-        self.two_dim_array_frame.setContentsMargins(0, 0, 0, 0)
-        self.array_grid.addWidget(self.two_dim_array_frame, 10, 0, 1, 2)
-
-        self.dd_grid = GLay(v_spacing=5, h_spacing=3)
-        self.dd_grid.setContentsMargins(0, 0, 0, 0)
-        self.two_dim_array_frame.setLayout(self.dd_grid)
-
-        # 2D placement
-        self.place_label = FCLabel('%s:' % _('Placement'))
-        self.place_label.setToolTip(
-            _("Placement of array items:\n"
-              "'Spacing' - define space between rows and columns \n"
-              "'Offset' - each row (and column) will be placed at a multiple of a value, from origin")
-        )
-
-        self.placement_radio = RadioSet([
-            {'label': _('Spacing'), 'value': 's'},
-            {'label': _('Offset'), 'value': 'o'}
-        ])
-
-        self.dd_grid.addWidget(self.place_label, 0, 0)
-        self.dd_grid.addWidget(self.placement_radio, 0, 1)
-
-        # Rows
-        self.rows = FCSpinner(callback=self.confirmation_message_int)
-        self.rows.set_range(0, 10000)
-
-        self.rows_label = FCLabel('%s:' % _("Rows"))
-        self.rows_label.setToolTip(
-            _("Number of rows")
-        )
-        self.dd_grid.addWidget(self.rows_label, 2, 0)
-        self.dd_grid.addWidget(self.rows, 2, 1)
-
-        # Columns
-        self.columns = FCSpinner(callback=self.confirmation_message_int)
-        self.columns.set_range(0, 10000)
-
-        self.columns_label = FCLabel('%s:' % _("Columns"))
-        self.columns_label.setToolTip(
-            _("Number of columns")
-        )
-        self.dd_grid.addWidget(self.columns_label, 4, 0)
-        self.dd_grid.addWidget(self.columns, 4, 1)
-
-        # ------------------------------------------------
-        # ##############  Spacing Frame  #################
-        # ------------------------------------------------
-        self.spacing_frame = QtWidgets.QFrame()
-        self.spacing_frame.setContentsMargins(0, 0, 0, 0)
-        self.dd_grid.addWidget(self.spacing_frame, 6, 0, 1, 2)
-
-        self.s_grid = GLay(v_spacing=5, h_spacing=3)
-        self.s_grid.setContentsMargins(0, 0, 0, 0)
-        self.spacing_frame.setLayout(self.s_grid)
-
-        # Spacing Rows
-        self.spacing_rows = FCDoubleSpinner(callback=self.confirmation_message)
-        self.spacing_rows.set_range(0, 9999)
-        self.spacing_rows.set_precision(4)
-
-        self.spacing_rows_label = FCLabel('%s:' % _("Spacing rows"))
-        self.spacing_rows_label.setToolTip(
-            _("Spacing between rows.\n"
-              "In current units.")
-        )
-        self.s_grid.addWidget(self.spacing_rows_label, 0, 0)
-        self.s_grid.addWidget(self.spacing_rows, 0, 1)
-
-        # Spacing Columns
-        self.spacing_columns = FCDoubleSpinner(callback=self.confirmation_message)
-        self.spacing_columns.set_range(0, 9999)
-        self.spacing_columns.set_precision(4)
-
-        self.spacing_columns_label = FCLabel('%s:' % _("Spacing cols"))
-        self.spacing_columns_label.setToolTip(
-            _("Spacing between columns.\n"
-              "In current units.")
-        )
-        self.s_grid.addWidget(self.spacing_columns_label, 2, 0)
-        self.s_grid.addWidget(self.spacing_columns, 2, 1)
-
-        # ------------------------------------------------
-        # ##############  Offset Frame  ##################
-        # ------------------------------------------------
-        self.offset_frame = QtWidgets.QFrame()
-        self.offset_frame.setContentsMargins(0, 0, 0, 0)
-        self.dd_grid.addWidget(self.offset_frame, 8, 0, 1, 2)
-
-        self.o_grid = GLay(v_spacing=5, h_spacing=3)
-        self.o_grid.setContentsMargins(0, 0, 0, 0)
-        self.offset_frame.setLayout(self.o_grid)
-
-        # Offset X Value
-        self.offsetx_label = FCLabel('%s X:' % _("Offset"))
-        self.offsetx_label.setToolTip(
-            _("'Offset' - each row (and column) will be placed at a multiple of a value, from origin")
-        )
-
-        self.offsetx_entry = FCDoubleSpinner(policy=False)
-        self.offsetx_entry.set_precision(self.decimals)
-        self.offsetx_entry.set_range(0.0000, 10000.0000)
-
-        self.o_grid.addWidget(self.offsetx_label, 0, 0)
-        self.o_grid.addWidget(self.offsetx_entry, 0, 1)
-
-        # Offset Y Value
-        self.offsety_label = FCLabel('%s Y:' % _("Offset"))
-        self.offsety_label.setToolTip(
-            _("'Offset' - each row (and column) will be placed at a multiple of a value, from origin")
-        )
-
-        self.offsety_entry = FCDoubleSpinner(policy=False)
-        self.offsety_entry.set_precision(self.decimals)
-        self.offsety_entry.set_range(0.0000, 10000.0000)
-
-        self.o_grid.addWidget(self.offsety_label, 2, 0)
-        self.o_grid.addWidget(self.offsety_entry, 2, 1)
+        self.array_lin_grid.addWidget(self.slot_array_linear_angle_label, 4, 0)
+        self.array_lin_grid.addWidget(self.array_linear_angle_entry, 4, 1)
 
         # #############################################################################################################
-        # ############################ CIRCULAR Array #################################################################
+        # ##################################### Circular SLOT ARRAY  ##################################################
         # #############################################################################################################
         self.array_circular_frame = QtWidgets.QFrame()
         self.array_circular_frame.setContentsMargins(0, 0, 0, 0)
-        self.array_grid.addWidget(self.array_circular_frame, 12, 0, 1, 2)
+        self.array_grid.addWidget(self.array_circular_frame, 10, 0, 1, 2)
 
-        self.circ_grid = GLay(v_spacing=5, h_spacing=3)
-        self.circ_grid.setContentsMargins(0, 0, 0, 0)
-        self.array_circular_frame.setLayout(self.circ_grid)
+        self.array_circ_grid = GLay(v_spacing=5, h_spacing=3)
+        self.array_circ_grid.setContentsMargins(0, 0, 0, 0)
+        self.array_circular_frame.setLayout(self.array_circ_grid)
 
-        # Array Direction
-        self.array_dir_lbl = FCLabel('%s:' % _('Direction'))
-        self.array_dir_lbl.setToolTip(
-            _("Direction for circular array.\n"
-              "Can be CW = clockwise or CCW = counter clockwise."))
+        # Slot Circular Array Direction
+        self.slot_array_direction_label = FCLabel('%s:' % _('Direction'))
+        self.slot_array_direction_label.setToolTip(_("Direction for circular array.\n"
+                                                     "Can be CW = clockwise or CCW = counter clockwise."))
 
-        self.array_dir_radio = RadioSet([
+        self.array_direction_radio = RadioSet([
             {'label': _('CW'), 'value': 'CW'},
             {'label': _('CCW'), 'value': 'CCW'}])
 
-        self.circ_grid.addWidget(self.array_dir_lbl, 0, 0)
-        self.circ_grid.addWidget(self.array_dir_radio, 0, 1)
+        self.array_circ_grid.addWidget(self.slot_array_direction_label, 0, 0)
+        self.array_circ_grid.addWidget(self.array_direction_radio, 0, 1)
 
-        # Array Angle
-        self.array_angle_lbl = FCLabel('%s:' % _('Angle'))
-        self.array_angle_lbl.setToolTip(_("Angle at which each element in circular array is placed."))
+        # Slot Circular Array Angle
+        self.slot_array_angle_label = FCLabel('%s:' % _('Angle'))
+        self.slot_array_angle_label.setToolTip(_("Angle at which each element in circular array is placed."))
 
-        self.angle_entry = FCDoubleSpinner(policy=False)
-        self.angle_entry.set_precision(self.decimals)
-        self.angle_entry.setSingleStep(1.0)
-        self.angle_entry.setRange(-360.00, 360.00)
+        self.array_angle_entry = FCDoubleSpinner(policy=False)
+        self.array_angle_entry.set_precision(self.decimals)
+        self.array_angle_entry.setSingleStep(1)
+        self.array_angle_entry.setRange(-360.00, 360.00)
 
-        self.circ_grid.addWidget(self.array_angle_lbl, 2, 0)
-        self.circ_grid.addWidget(self.angle_entry, 2, 1)
+        self.array_circ_grid.addWidget(self.slot_array_angle_label, 2, 0)
+        self.array_circ_grid.addWidget(self.array_angle_entry, 2, 1)
 
+        # Radius
+        self.radius_lbl = FCLabel('%s:' % _('Radius'))
+        self.radius_lbl.setToolTip(_("Array radius."))
+
+        self.radius_entry = FCDoubleSpinner(policy=False)
+        self.radius_entry.set_precision(self.decimals)
+        self.radius_entry.setSingleStep(1.0)
+        self.radius_entry.setRange(-10000.0000, 10000.000)
+
+        self.array_circ_grid.addWidget(self.radius_lbl, 4, 0)
+        self.array_circ_grid.addWidget(self.radius_entry, 4, 1)
+
+        # #############################################################################################################
         # Buttons
-        self.add_button = FCButton(_("Add"))
-        self.add_button.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
-        self.layout.addWidget(self.add_button)
+        # #############################################################################################################
+        self.add_btn = FCButton(_("Add"))
+        self.add_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
+        self.layout.addWidget(self.add_btn)
 
         GLay.set_common_column_size([
-            self.array_grid, self.lin_grid, self.dd_grid, self.circ_grid, self.s_grid, self.o_grid
-        ], 0)
+            dia_grid, pos_grid, slot_grid, self.array_grid, self.array_lin_grid, self.array_circ_grid], 0)
 
         self.layout.addStretch(1)
 
         # Signals
+        self.slot_direction_radio.activated_custom.connect(self.on_slot_angle_radio)
+
         self.array_type_radio.activated_custom.connect(self.on_array_type_radio)
-        self.axis_radio.activated_custom.connect(self.on_linear_angle_radio)
-        self.placement_radio.activated_custom.connect(self.on_placement_radio)
+        self.array_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
 
     def confirmation_message(self, accepted, minval, maxval):
         if accepted is False:
@@ -503,71 +411,49 @@ class ExcSlotArrayEditorUI:
                                             (_("Edited value is out of range"), minval, maxval), False)
 
     def on_array_type_radio(self, val):
-        if val == '2D':
+        if val == 'linear':
             self.array_circular_frame.hide()
-            self.array_linear_frame.hide()
-            self.two_dim_array_frame.show()
-            if self.placement_radio.get_value() == 's':
-                self.spacing_frame.show()
-                self.offset_frame.hide()
-            else:
-                self.spacing_frame.hide()
-                self.offset_frame.show()
-
-            self.array_size_entry.setDisabled(True)
-            self.on_rows_cols_value_changed()
-
-            self.rows.valueChanged.connect(self.on_rows_cols_value_changed)
-            self.columns.valueChanged.connect(self.on_rows_cols_value_changed)
-
+            self.array_linear_frame.show()
             self.app.inform.emit(_("Click to place ..."))
-        else:
-            if val == 'linear':
-                self.array_circular_frame.hide()
-                self.array_linear_frame.show()
-                self.two_dim_array_frame.hide()
-                self.spacing_frame.hide()
-                self.offset_frame.hide()
+        else:  # 'circular'
+            self.array_circular_frame.show()
+            self.array_linear_frame.hide()
+            self.app.inform.emit(_("Click on the circular array Center position"))
 
-                self.app.inform.emit(_("Click to place ..."))
-            else:   # 'circular'
-                self.array_circular_frame.show()
-                self.array_linear_frame.hide()
-                self.two_dim_array_frame.hide()
-                self.spacing_frame.hide()
-                self.offset_frame.hide()
-
-                self.app.inform.emit(_("Click on the circular array Center position"))
-
-            self.array_size_entry.setDisabled(False)
-            try:
-                self.rows.valueChanged.disconnect()
-            except (TypeError, AttributeError):
-                pass
-
-            try:
-                self.columns.valueChanged.disconnect()
-            except (TypeError, AttributeError):
-                pass
-
-    def on_rows_cols_value_changed(self):
-        new_size = self.rows.get_value() * self.columns.get_value()
-        if new_size == 0:
-            new_size = 1
-        self.array_size_entry.set_value(new_size)
+        self.array_size_entry.setDisabled(False)
 
     def on_linear_angle_radio(self, val):
         if val == 'A':
-            self.linear_angle_spinner.show()
-            self.linear_angle_label.show()
+            self.array_linear_angle_entry.show()
+            self.slot_array_linear_angle_label.show()
         else:
-            self.linear_angle_spinner.hide()
-            self.linear_angle_label.hide()
+            self.array_linear_angle_entry.hide()
+            self.slot_array_linear_angle_label.hide()
 
-    def on_placement_radio(self, val):
-        if val == 's':
-            self.spacing_frame.show()
-            self.offset_frame.hide()
+    def on_slot_array_type_radio(self, val):
+        if val == 'linear':
+            self.array_circular_frame.hide()
+            self.array_linear_frame.show()
+            self.app.inform.emit(_("Click to place ..."))
         else:
-            self.spacing_frame.hide()
-            self.offset_frame.show()
+            self.array_circular_frame.show()
+            self.array_linear_frame.hide()
+            self.app.inform.emit(_("Click on the circular array Center position"))
+
+    def on_slot_array_linear_angle_radio(self):
+        val = self.array_axis_radio.get_value()
+        if val == 'A':
+            self.array_linear_angle_entry.show()
+            self.slot_array_linear_angle_label.show()
+        else:
+            self.array_linear_angle_entry.hide()
+            self.slot_array_linear_angle_label.hide()
+
+    def on_slot_angle_radio(self):
+        val = self.slot_direction_radio.get_value()
+        if val == 'A':
+            self.slot_angle_entry.setEnabled(True)
+            self.slot_angle_label.setEnabled(True)
+        else:
+            self.slot_angle_entry.setEnabled(False)
+            self.slot_angle_label.setEnabled(False)

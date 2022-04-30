@@ -306,7 +306,7 @@ class AppDefaults:
         "excellon_editor_slot_lin_pitch": 2.54,
         "excellon_editor_slot_lin_angle": 0.0,
         "excellon_editor_slot_circ_dir": 'CW',
-        "excellon_editor_slot_circ_angle": 0.0,
+        "excellon_editor_slot_circ_angle": 12,
 
         # Geometry General
         "geometry_plot": True,
