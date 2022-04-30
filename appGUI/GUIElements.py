@@ -2633,8 +2633,18 @@ class DialogBoxChoice(QtWidgets.QDialog):
         self.setWindowTitle(str(title))
         self.setWindowFlags(self.windowFlags() | Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowSystemMenuHint)
 
+        #   "background-color: palette(base); "
+        self.setStyleSheet(
+            ".DialogBoxChoice { "
+            "border: 1px solid palette(shadow);"
+            "border-radius: 5px; "
+            "}"
+        )
+
         grid0 = GLay(parent=self, h_spacing=5, v_spacing=5)
-        main_label = FCLabel(str(title))
+
+        # Main Label
+        main_label = FCLabel(str(title), bold=True)
         grid0.addWidget(main_label, 0, 0)
 
         self.ref_radio = RadioSetCross(choices, compact=True)
@@ -2655,13 +2665,6 @@ class DialogBoxChoice(QtWidgets.QDialog):
         else:
             self.ok = False
             self.location_point = None
-
-        #   "background-color: palette(base); "
-        self.setStyleSheet(
-            "QDialog { "
-            "border: 1px solid palette(shadow); "
-            "}"
-        )
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
@@ -4349,11 +4352,26 @@ class DialogBoxRadio(QtWidgets.QDialog):
             self.location = initial_text
 
         self.ok = False
+        self.offset = None
+        self.moving = None
 
         self.setWindowIcon(icon)
         self.setWindowTitle(str(title))
+        self.setWindowFlags(self.windowFlags() | Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowSystemMenuHint)
+
+        #   "background-color: palette(base); "
+        self.setStyleSheet(
+            ".DialogBoxRadio { "
+            "border: 1px solid palette(shadow);"
+            "border-radius: 5px; "
+            "}"
+        )
 
         grid0 = GLay(parent=self, h_spacing=5, v_spacing=5)
+
+        # Main Label
+        main_label = FCLabel(str(title), bold=True)
+        grid0.addWidget(main_label, 0, 0)
 
         self.ref_label = FCLabel('%s:' % _("Reference"))
         self.ref_label.setToolTip(
@@ -4366,13 +4384,13 @@ class DialogBoxRadio(QtWidgets.QDialog):
             {"label": _("Relative"), "value": "rel"}
         ], orientation='horizontal', compact=True)
         self.ref_radio.set_value(reference)
-        grid0.addWidget(self.ref_label, 0, 0)
-        grid0.addWidget(self.ref_radio, 0, 1)
+        grid0.addWidget(self.ref_label, 2, 0)
+        grid0.addWidget(self.ref_radio, 2, 1)
 
-        grid0.addWidget(QtWidgets.QLabel(''), 2, 0, 1, 2)
+        grid0.addWidget(QtWidgets.QLabel(''), 4, 0, 1, 2)
 
         self.wdg_label = QtWidgets.QLabel('<b>%s</b>' % str(label))
-        grid0.addWidget(self.wdg_label, 4, 0, 1, 2)
+        grid0.addWidget(self.wdg_label, 6, 0, 1, 2)
 
         self.loc_label = QtWidgets.QLabel('%s:' % _("Location"))
         self.loc_label.setToolTip(
@@ -4386,13 +4404,13 @@ class DialogBoxRadio(QtWidgets.QDialog):
         self.lineEdit.setText(str(self.location).replace('(', '').replace(')', ''))
         self.lineEdit.selectAll()
         self.lineEdit.setFocus()
-        grid0.addWidget(self.loc_label, 6, 0)
-        grid0.addWidget(self.lineEdit, 6, 1)
+        grid0.addWidget(self.loc_label, 8, 0)
+        grid0.addWidget(self.lineEdit, 8, 1)
 
         self.button_box = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel,
             orientation=Qt.Orientation.Horizontal, parent=self)
-        grid0.addWidget(self.button_box, 8, 0, 1, 2)
+        grid0.addWidget(self.button_box, 10, 0, 1, 2)
 
         self.button_box.button(QtWidgets.QDialogButtonBox.StandardButton.Ok).setText(_("Ok"))
         self.button_box.button(QtWidgets.QDialogButtonBox.StandardButton.Cancel).setText(_("Cancel"))
@@ -4408,6 +4426,15 @@ class DialogBoxRadio(QtWidgets.QDialog):
             self.reference = self.ref_radio.get_value()
         else:
             self.ok = False
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.moving = True
+            self.offset = event.position()
+
+    def mouseMoveEvent(self, event):
+        if self.moving:
+            self.move(event.globalPosition().toPoint() - self.offset.toPoint())
 
 
 class _BrowserTextEdit(QTextEdit):
@@ -5796,8 +5823,9 @@ class FCMessageBox(QtWidgets.QMessageBox):
 
         #   "background-color: palette(base); "
         self.setStyleSheet(
-            "QDialog { "
-            "border: 1px solid palette(shadow); "
+            ".FCMessageBox { "
+            "border: 1px solid palette(shadow);"
+            "border-radius: 5px; "
             "}"
         )
 
@@ -5838,7 +5866,7 @@ class FCDate(QtWidgets.QDateEdit):
     def __init__(self, parent=None):
         super(FCDate, self).__init__(parent)
         self.setStyleSheet("""
-        QDateEdit {
+        .FCDate {
             border: 0px solid white;
             background-color : none;
         }
