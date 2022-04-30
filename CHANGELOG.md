@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM Evo beta
 - in Excellon Editor, Slot Plugin, made sure that once the Editor is active any change for this plugin parameters will be kept until editor is exit or that parameter is changed again
 - In Excellon Editor, Drill Array Plugin, upgraded the UI and work in progress for the features
 - prettified some GUI elements (some of those that are used in the popup messages)
+- In Excellon Editor, finished th upgrade work on the Drill Array Plugin
 
 29.04.2022
 

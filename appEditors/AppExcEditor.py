@@ -594,37 +594,36 @@ class DrillArray(FCShapeTool):
         self.ui.x_entry.set_value(float(self.draw_app.snap_x))
         self.ui.y_entry.set_value(float(self.draw_app.snap_y))
 
-        self.ui.array_type_radio.set_value('linear')
+        self.ui.array_type_radio.set_value(self.draw_app.last_darray_type)
         self.ui.on_array_type_radio(val=self.ui.array_type_radio.get_value())
 
         self.ui.array_size_entry.set_value(self.draw_app.last_darray_size)
         self.ui.axis_radio.set_value(self.draw_app.last_darray_lin_dir)
         self.ui.pitch_entry.set_value(self.draw_app.last_darray_pitch)
-        self.ui.linear_angle_spinner.set_value(self.draw_app.last_darray_lin_angle)
+        self.ui.linear_angle_entry.set_value(self.draw_app.last_darray_lin_angle)
         self.ui.array_dir_radio.set_value(self.draw_app.last_darray_circ_dir)
-        self.ui.angle_entry.set_value(self.draw_app.last_darray_circ_angle)
+        self.ui.circular_angle_entry.set_value(self.draw_app.last_darray_circ_angle)
+        self.ui.radius_entry.set_value(self.draw_app.last_darray_radius)
 
     def click(self, point):
-        self.draw_app.last_length = self.darray_tool.length
         self.ui.x_entry.set_value(float(self.draw_app.snap_x))
         self.ui.y_entry.set_value(float(self.draw_app.snap_y))
 
         if self.drill_array == 'linear':   # 'Linear'
             self.make()
             return
-        else:
-            if self.flag_for_circ_array is None:
-                self.draw_app.in_action = True
-                self.pt.append(point)
 
-                self.flag_for_circ_array = True
-                self.set_origin(point)
-                self.draw_app.app.inform.emit(_("Click on the Drill Circular Array Start position"))
-            else:
-                self.destination = point
-                self.make()
-                self.flag_for_circ_array = None
-                return
+        if self.flag_for_circ_array is None:
+            self.draw_app.in_action = True
+            self.pt.append(point)
+
+            self.flag_for_circ_array = True
+            self.set_origin(point)
+            self.draw_app.app.inform.emit(_("Click on the Drill Circular Array Start position"))
+        else:
+            self.destination = point
+            self.make()
+            self.flag_for_circ_array = None
 
     def set_origin(self, origin):
         self.origin = origin
@@ -633,25 +632,16 @@ class DrillArray(FCShapeTool):
         self.drill_axis = self.ui.axis_radio.get_value()
         self.drill_direction = self.ui.array_dir_radio.get_value()
         self.drill_array = self.ui.array_type_radio.get_value()
-        try:
-            self.drill_array_size = int(self.ui.array_size_entry.get_value())
-            try:
-                self.drill_pitch = float(self.ui.pitch_entry.get_value())
-                self.drill_linear_angle = float(self.ui.linear_angle_spinner.get_value())
-                self.drill_angle = float(self.ui.angle_entry.get_value())
-            except TypeError:
-                self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
-                                              _("The value is not Float. Check for comma instead of dot separator."))
-                return
-        except Exception as e:
-            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s. %s' %
-                                          (_("The value is mistyped. Check the value"), str(e)))
-            return
+
+        self.drill_array_size = int(self.ui.array_size_entry.get_value())
+        self.drill_pitch = float(self.ui.pitch_entry.get_value())
+        self.drill_linear_angle = float(self.ui.linear_angle_entry.get_value())
+        self.drill_angle = float(self.ui.circular_angle_entry.get_value())
 
         if self.drill_array == 'linear':   # 'Linear'
             if data[0] is None and data[1] is None:
-                dx = self.draw_app.x
-                dy = self.draw_app.y
+                dx = self.draw_app.snap_x
+                dy = self.draw_app.snap_y
             else:
                 dx = data[0]
                 dy = data[1]
@@ -683,21 +673,22 @@ class DrillArray(FCShapeTool):
             return DrawToolUtilityShape(geo_list)
         elif self.drill_array == 'circular':  # 'Circular'
             if data[0] is None and data[1] is None:
-                cdx = self.draw_app.x
-                cdy = self.draw_app.y
+                cdx = self.draw_app.snap_x
+                cdy = self.draw_app.snap_y
             else:
                 cdx = data[0]
                 cdy = data[1]
 
             utility_list = []
+            self.points = [cdx, cdy]
 
             try:
                 radius = distance((cdx, cdy), self.origin)
             except Exception:
                 radius = 0
-
             if radius == 0:
                 self.draw_app.delete_utility_geometry()
+            self.ui.radius_entry.set_value(radius)
 
             if len(self.pt) >= 1 and radius > 0:
                 try:
@@ -724,7 +715,7 @@ class DrillArray(FCShapeTool):
 
     def circular_util_shape(self, radius, angle):
         self.drill_direction = self.ui.array_dir_radio.get_value()
-        self.drill_angle = self.ui.angle_entry.get_value()
+        self.drill_angle = self.ui.circular_angle_entry.get_value()
 
         circular_geo = []
         if self.drill_direction == 'CW':
@@ -825,7 +816,19 @@ class DrillArray(FCShapeTool):
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         self.draw_app.in_action = False
 
-        self.draw_app.app.jump_signal.disconnect()
+        self.draw_app.last_darray_type = self.ui.array_type_radio.get_value()
+        self.draw_app.last_darray_size = self.ui.array_size_entry.get_value()
+        self.draw_app.last_darray_lin_dir = self.ui.axis_radio.get_value()
+        self.draw_app.last_darray_circ_dir = self.ui.array_dir_radio.get_value()
+        self.draw_app.last_darray_pitch = self.ui.pitch_entry.get_value()
+        self.draw_app.last_darray_lin_angle = self.ui.linear_angle_entry.get_value()
+        self.draw_app.last_darray_circ_angle = self.ui.circular_angle_entry.get_value()
+        self.draw_app.last_darray_radius = self.ui.radius_entry.get_value()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (AttributeError, TypeError):
+            pass
 
     def draw_cursor_data(self, pos=None, delete=False):
         if pos is None:
@@ -850,7 +853,7 @@ class DrillArray(FCShapeTool):
         x = pos[0]
         y = pos[1]
         try:
-            length = abs(np.sqrt((x - self.points[0]) ** 2 + (y - self.points[1]) ** 2))
+            length = abs(self.ui.radius_entry.get_value())
         except IndexError:
             length = self.draw_app.app.dec_format(0.0, self.draw_app.app.decimals)
 
@@ -887,9 +890,7 @@ class DrillArray(FCShapeTool):
         else:
             mod_key = None
 
-        if mod_key == 'Control':
-            pass
-        elif mod_key is None:
+        if mod_key is None:
             # Toggle Drill Array Direction
             if key == QtCore.Qt.Key.Key_Space:
                 if self.ui.axis_radio.get_value() == 'X':
@@ -906,54 +907,35 @@ class DrillArray(FCShapeTool):
             if key == QtCore.Qt.Key.Key_J or key == 'J':
                 self.draw_app.app.on_jump_to()
 
-            if key in [str(i) for i in range(10)] + ['.', ',', '+', '-', '/', '*'] or \
-                    key in [QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_1, QtCore.Qt.Key.Key_2,
-                            QtCore.Qt.Key.Key_3, QtCore.Qt.Key.Key_4, QtCore.Qt.Key.Key_5, QtCore.Qt.Key.Key_6,
-                            QtCore.Qt.Key.Key_7, QtCore.Qt.Key.Key_8, QtCore.Qt.Key.Key_9, QtCore.Qt.Key.Key_Minus,
-                            QtCore.Qt.Key.Key_Plus, QtCore.Qt.Key.Key_Comma, QtCore.Qt.Key.Key_Period,
-                            QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
-                try:
-                    # VisPy keys
-                    if self.darray_tool.length == self.draw_app.last_length:
-                        self.darray_tool.length = str(key.name)
-                    else:
-                        self.darray_tool.length = str(self.darray_tool.length) + str(key.name)
-                except AttributeError:
-                    # Qt keys
-                    if self.darray_tool.length == self.draw_app.last_length:
-                        self.darray_tool.length = chr(key)
-                    else:
-                        self.darray_tool.length = str(self.darray_tool.length) + chr(key)
-
-            if key == 'Enter' or key == QtCore.Qt.Key.Key_Return or key == QtCore.Qt.Key.Key_Enter:
-                if self.darray_tool.length != 0:
-                    target_length = self.darray_tool.length
-                    if target_length is None:
-                        self.darray_tool.length = 0.0
-                        return _("Failed.")
-
-                    first_pt = self.ui.x_entry.get_value(), self.ui.y_entry.get_value()
-                    last_pt = self.draw_app.snap_x, self.draw_app.snap_y
-
-                    seg_length = math.sqrt((last_pt[0] - first_pt[0]) ** 2 + (last_pt[1] - first_pt[1]) ** 2)
-                    if seg_length == 0.0:
-                        return
-                    try:
-                        new_x = first_pt[0] + (last_pt[0] - first_pt[0]) / seg_length * target_length
-                        new_y = first_pt[1] + (last_pt[1] - first_pt[1]) / seg_length * target_length
-                    except ZeroDivisionError as err:
-                        self.clean_up()
-                        return '[ERROR_NOTCL] %s %s' % (_("Failed."), str(err).capitalize())
-
-                    if first_pt != (new_x, new_y):
-                        self.draw_app.app.on_jump_to(custom_location=(new_x, new_y), fit_center=False)
-                        self.add_drill_array(drill_pos=(new_x, new_y))
-
     def add_drill_array(self, array_pos):
-        pass
+        self.drill_radius = self.ui.radius_entry.get_value()
+        self.drill_array = self.ui.array_type_radio.get_value()
+
+        curr_pos = self.draw_app.app.geo_editor.snap(array_pos[0], array_pos[1])
+        self.draw_app.snap_x = curr_pos[0]
+        self.draw_app.snap_y = curr_pos[1]
+
+        self.points = [self.draw_app.snap_x, self.draw_app.snap_y]
+        self.origin = [self.draw_app.snap_x, self.draw_app.snap_y]
+        self.destination = ((self.origin[0] + self.drill_radius), self.origin[1])
+        self.flag_for_circ_array = True
+        self.make()
+
+        if self.draw_app.current_storage is not None:
+            self.draw_app.on_exc_shape_complete(self.draw_app.current_storage)
+            self.draw_app.build_ui()
+
+        if self.draw_app.active_tool.complete:
+            self.draw_app.on_shape_complete()
+
+        self.draw_app.select_tool("drill_select")
+
+        self.draw_app.clicked_pos = curr_pos
 
     def on_add_drill_array(self):
-        pass
+        x = self.ui.x_entry.get_value()
+        y = self.ui.y_entry.get_value()
+        self.add_drill_array(array_pos=(x, y))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -2312,6 +2294,7 @@ class AppExcEditor(QtCore.QObject):
         self.last_darray_pitch = None
         self.last_darray_lin_angle = None
         self.last_darray_circ_angle = None
+        self.last_darray_radius = None
 
         self.last_slot_length = None
         self.last_slot_direction = None
@@ -2484,6 +2467,7 @@ class AppExcEditor(QtCore.QObject):
         self.last_darray_pitch = float(self.app.options['excellon_editor_lin_pitch'])
         self.last_darray_lin_angle = float(self.app.options['excellon_editor_lin_angle'])
         self.last_darray_circ_angle = float(self.app.options['excellon_editor_circ_angle'])
+        self.last_darray_radius = 0.0
 
         self.last_slot_length = self.app.options['excellon_editor_slot_length']
         self.last_slot_direction = self.app.options['excellon_editor_slot_direction']

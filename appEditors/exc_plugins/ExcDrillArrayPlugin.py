@@ -19,20 +19,15 @@ class ExcDrillArrayEditorTool(AppTool):
         self.plugin_name = plugin_name
 
         self.ui = ExcDrillArrayEditorUI(layout=self.layout, darray_class=self, plugin_name=plugin_name)
-
         self.connect_signals_at_init()
-        self.set_tool_ui()
 
     def connect_signals_at_init(self):
         # Signals
-        self.ui.clear_btn.clicked.connect(self.on_clear)
+        pass
 
     def disconnect_signals(self):
         # Signals
-        try:
-            self.ui.clear_btn.clicked.disconnect()
-        except (TypeError, AttributeError):
-            pass
+        pass
 
     def run(self):
         self.app.defaults.report_usage("Exc Editor ArrayTool()")
@@ -71,8 +66,6 @@ class ExcDrillArrayEditorTool(AppTool):
 
     def set_tool_ui(self):
         # Init appGUI
-        self.length = 0.0
-
         self.ui.array_type_radio.set_value('linear')
         self.ui.on_array_type_radio(self.ui.array_type_radio.get_value())
         self.ui.axis_radio.set_value('X')
@@ -87,14 +80,6 @@ class ExcDrillArrayEditorTool(AppTool):
 
     def on_clear(self):
         self.set_tool_ui()
-
-    @property
-    def length(self):
-        return self.ui.project_line_entry.get_value()
-
-    @length.setter
-    def length(self, val):
-        self.ui.project_line_entry.set_value(val)
 
     def hide_tool(self):
         self.ui.darray_frame.hide()
@@ -275,13 +260,13 @@ class ExcDrillArrayEditorUI:
               "Max value is: 360.00 degrees.")
         )
 
-        self.linear_angle_spinner = FCDoubleSpinner(policy=False)
-        self.linear_angle_spinner.set_precision(self.decimals)
-        self.linear_angle_spinner.setSingleStep(1.0)
-        self.linear_angle_spinner.setRange(-360.00, 360.00)
+        self.linear_angle_entry = FCDoubleSpinner(policy=False)
+        self.linear_angle_entry.set_precision(self.decimals)
+        self.linear_angle_entry.setSingleStep(1.0)
+        self.linear_angle_entry.setRange(-360.00, 360.00)
 
         self.lin_grid.addWidget(self.linear_angle_label, 4, 0)
-        self.lin_grid.addWidget(self.linear_angle_spinner, 4, 1)
+        self.lin_grid.addWidget(self.linear_angle_entry, 4, 1)
 
         # #############################################################################################################
         # ############################ CIRCULAR Array #################################################################
@@ -308,38 +293,28 @@ class ExcDrillArrayEditorUI:
         self.circ_grid.addWidget(self.array_dir_radio, 0, 1)
 
         # Array Angle
-        self.array_angle_lbl = FCLabel('%s:' % _('Angle'))
-        self.array_angle_lbl.setToolTip(_("Angle at which each element in circular array is placed."))
+        self.circular_angle_lbl = FCLabel('%s:' % _('Angle'))
+        self.circular_angle_lbl.setToolTip(_("Angle at which each element in circular array is placed."))
 
-        self.angle_entry = FCDoubleSpinner(policy=False)
-        self.angle_entry.set_precision(self.decimals)
-        self.angle_entry.setSingleStep(1.0)
-        self.angle_entry.setRange(-360.00, 360.00)
+        self.circular_angle_entry = FCDoubleSpinner(policy=False)
+        self.circular_angle_entry.set_precision(self.decimals)
+        self.circular_angle_entry.setSingleStep(1.0)
+        self.circular_angle_entry.setRange(-360.00, 360.00)
 
-        self.circ_grid.addWidget(self.array_angle_lbl, 2, 0)
-        self.circ_grid.addWidget(self.angle_entry, 2, 1)
+        self.circ_grid.addWidget(self.circular_angle_lbl, 2, 0)
+        self.circ_grid.addWidget(self.circular_angle_entry, 2, 1)
 
-        # #############################################################################################################
-        # Projection Frame
-        # #############################################################################################################
-        pro_frame = FCFrame()
-        self.editor_vbox.addWidget(pro_frame)
+        # Radius
+        self.radius_lbl = FCLabel('%s:' % _('Radius'))
+        self.radius_lbl.setToolTip(_("Array radius."))
 
-        pro_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
-        pro_frame.setLayout(pro_grid)
+        self.radius_entry = FCDoubleSpinner(policy=False)
+        self.radius_entry.set_precision(self.decimals)
+        self.radius_entry.setSingleStep(1.0)
+        self.radius_entry.setRange(-10000.0000,10000.000)
 
-        # Project distance
-        self.project_line_lbl = FCLabel('%s:' % _("Projection"))
-        self.project_line_lbl.setToolTip(
-            _("Length of the current segment/move.")
-        )
-        self.project_line_entry = NumericalEvalEntry(border_color='#0069A9')
-        pro_grid.addWidget(self.project_line_lbl, 0, 0)
-        pro_grid.addWidget(self.project_line_entry, 0, 1)
-
-        self.clear_btn = QtWidgets.QToolButton()
-        self.clear_btn.setIcon(QtGui.QIcon(self.darray_class.app.resource_location + '/trash32.png'))
-        pro_grid.addWidget(self.clear_btn, 0, 2)
+        self.circ_grid.addWidget(self.radius_lbl, 4, 0)
+        self.circ_grid.addWidget(self.radius_entry, 4, 1)
 
         # #############################################################################################################
         # Buttons
@@ -348,7 +323,7 @@ class ExcDrillArrayEditorUI:
         self.add_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
         self.layout.addWidget(self.add_btn)
 
-        GLay.set_common_column_size([dia_grid, pro_grid, pos_grid, self.array_grid, self.lin_grid, self.circ_grid], 0)
+        GLay.set_common_column_size([dia_grid, pos_grid, self.array_grid, self.lin_grid, self.circ_grid], 0)
 
         self.layout.addStretch(1)
 
@@ -385,8 +360,8 @@ class ExcDrillArrayEditorUI:
 
     def on_linear_angle_radio(self, val):
         if val == 'A':
-            self.linear_angle_spinner.setEnabled(True)
+            self.linear_angle_entry.setEnabled(True)
             self.linear_angle_label.setEnabled(True)
         else:
-            self.linear_angle_spinner.setEnabled(False)
+            self.linear_angle_entry.setEnabled(False)
             self.linear_angle_label.setEnabled(False)
