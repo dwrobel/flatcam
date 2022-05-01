@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+1.05.2022
+
+- fixed persistence of view status for the coordinates toolbars
+- fixed broken selection in Excellon Editor
+
 30.04.2022
 
 - in Excellon Editor, Slot Plugin, made sure that once the Editor is active any change for this plugin parameters will be kept until editor is exit or that parameter is changed again

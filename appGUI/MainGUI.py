@@ -2357,19 +2357,19 @@ class MainGUI(QtWidgets.QMainWindow):
         status_action.triggered.connect(self.toggle_statusbar)
 
     def toggle_coords(self, checked):
-        self.app.defaults["global_coordsbar_show"] = checked
+        self.app.options["global_coordsbar_show"] = checked
         self.coords_toolbar.setVisible(checked)
 
     def toggle_delta_coords(self, checked):
-        self.app.defaults["global_delta_coordsbar_show"] = checked
+        self.app.options["global_delta_coordsbar_show"] = checked
         self.delta_coords_toolbar.setVisible(checked)
 
     def toggle_gridbar(self, checked):
-        self.app.defaults["global_gridbar_show"] = checked
+        self.app.options["global_gridbar_show"] = checked
         self.grid_toolbar.setVisible(checked)
 
     def toggle_statusbar(self, checked):
-        self.app.defaults["global_statusbar_show"] = checked
+        self.app.options["global_statusbar_show"] = checked
         self.status_toolbar.setVisible(checked)
 
     def on_preferences_open_folder(self):

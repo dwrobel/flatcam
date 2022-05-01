@@ -4110,7 +4110,7 @@ class AppExcEditor(QtCore.QObject):
                     self.replot()
 
             click_position = pos if pos is not None else self.clicked_pos
-            if self.active_tool is not None:
+            if self.active_tool is not None and self.active_tool.name != 'drill_select':
                 # Dispatch event to active_tool
                 try:
                     self.active_tool.click_release(click_position)
