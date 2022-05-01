@@ -30,7 +30,7 @@ from appEditors.geo_plugins.GeoCopyPlugin import CopyEditorTool
 
 from vispy.geometry import Rect
 
-from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point
+from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point, box, base
 from shapely.ops import unary_union, linemerge
 from shapely.affinity import translate, scale, skew, rotate
 from shapely.geometry.polygon import orient
@@ -460,6 +460,7 @@ class FCCircle(FCShapeTool):
         self.app = self.draw_app.app
         self.plugin_name = _("Circle")
         self.storage = self.draw_app.storage
+        self.util_geo = None
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -473,6 +474,7 @@ class FCCircle(FCShapeTool):
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
         self.circle_tool = CircleEditorTool(self.app, self.draw_app, plugin_name=self.plugin_name)
+        self.ui = self.circle_tool.ui
         self.circle_tool.run()
 
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
@@ -519,21 +521,69 @@ class FCCircle(FCShapeTool):
         self.circle_tool.ui.y_entry.set_value(point[1])
 
         if len(self.points) == 1:
-            self.draw_app.app.inform.emit(_("Click on Perimeter point to complete ..."))
-            return "Click on perimeter to complete ..."
+            if self.ui.radius_link_btn.isChecked():
+                self.draw_app.app.inform.emit(_("Click on Perimeter point to complete ..."))
+                return "Click on perimeter to complete ..."
+            else:
+                self.draw_app.app.inform.emit(_("Click on Perimeter point to set axis major ..."))
+                return "Click on perimeter to complete ..."
 
         if len(self.points) == 2:
+            if self.ui.radius_link_btn.isChecked():
+                self.make()
+                return "Done."
+            else:
+                self.draw_app.app.inform.emit(_("Click on Perimeter point to set axis minor ..."))
+                return "Click on perimeter to complete ..."
+
+        if len(self.points) == 3:
             self.make()
             return "Done."
 
         return ""
 
     def utility_geometry(self, data=None):
-        if len(self.points) == 1:
-            p1 = self.points[0]
-            p2 = data
-            radius = np.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
-            return DrawToolUtilityShape(Point(p1).buffer(radius, int(self.steps_per_circ / 4)))
+        if self.ui.radius_link_btn.isChecked():  # circle
+            if len(self.points) == 1:
+                p1 = self.points[0]
+                p2 = data
+
+                radius = np.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
+                self.ui.radius_x_entry.set_value(radius)
+                util_geo = Point(p1).buffer(radius, int(self.steps_per_circ))
+                self.util_geo = util_geo
+                return DrawToolUtilityShape(util_geo)
+        else:  # ellipse
+            if len(self.points) == 1:
+                p1 = self.points[0]
+                p2 = data
+                radius = np.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
+                angle = math.atan2(p2[1] - p1[1], p2[0] - p1[0]) * 180 / math.pi
+
+                axis_min_radius = radius * 0.66
+                if axis_min_radius > 3:
+                    axis_min_radius = 3
+                self.ui.angle_entry.set_value(angle)
+                self.ui.radius_x_entry.set_value(radius)
+                self.ui.radius_y_entry.set_value(axis_min_radius)
+            elif len(self.points) == 2:
+                p1 = self.points[0]
+                p2 = data
+
+                angle = self.ui.angle_entry.get_value()
+                radius = self.ui.radius_x_entry.get_value()
+                axis_min_radius = np.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
+                self.ui.radius_y_entry.set_value(axis_min_radius)
+            else:
+                return
+
+            circle_geo = Point((p1[0], p1[1])).buffer(1)
+            util_geo = scale(circle_geo, radius, axis_min_radius)
+            if angle != 0:
+                util_geo = rotate(util_geo, angle)
+
+            self.util_geo = util_geo
+            return DrawToolUtilityShape(util_geo)
 
         return None
 
@@ -654,12 +704,12 @@ class FCCircle(FCShapeTool):
         except Exception:
             pass
 
-        p1 = self.points[0]
-        p2 = self.points[1]
-        radius = distance(p1, p2)
-        circle_shape = Point(p1).buffer(radius, int(self.steps_per_circ / 4)).exterior
+        # p1 = self.points[0]
+        # p2 = self.points[1]
+        # radius = distance(p1, p2)
+        # circle_shape = Point(p1).buffer(radius, int(self.steps_per_circ / 4)).exterior
 
-        self.geometry = DrawToolShape(circle_shape)
+        self.geometry = DrawToolShape(self.util_geo.exterior)
         self.geometry.data['type'] = _('Circle')
 
         self.complete = True
@@ -940,6 +990,8 @@ class FCRectangle(FCShapeTool):
         self.plugin_name = _("Rectangle")
         self.storage = self.draw_app.storage
 
+        self.util_geo = None
+
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception:
@@ -1006,7 +1058,43 @@ class FCRectangle(FCShapeTool):
         if len(self.points) == 1:
             p1 = self.points[0]
             p2 = data
-            return DrawToolUtilityShape(LinearRing([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])]))
+
+            corner_type = self.rect_tool.ui.corner_radio.get_value()
+            corner_radius = self.rect_tool.ui.radius_entry.get_value()
+            length = abs(p1[0] - p2[0])
+            width = abs(p1[1] - p2[1])
+
+            if corner_radius == 0.0:
+                corner_type = 's'
+            if corner_type in ['r', 'b']:
+                length -= 2 * corner_radius
+                width -= 2 * corner_radius
+
+            base_util_geo = Polygon([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])])
+            center_pt = base_util_geo.centroid
+            cx = center_pt.x
+            cy = center_pt.y
+            minx = cx - (length / 2)
+            miny = cy - (width / 2)
+            maxx = cx + (length / 2)
+            maxy = cy + (width / 2)
+
+            if length < 0 or width < 0:
+                corner_type = 's'
+
+            if corner_type == 'r':
+                util_geo = box(minx, miny, maxx, maxy).buffer(
+                    corner_radius, join_style=base.JOIN_STYLE.round,
+                    resolution=self.draw_app.app.options["geometry_circle_steps"]).exterior
+            elif corner_type == 'b':
+                util_geo = box(minx, miny, maxx, maxy).buffer(
+                    corner_radius, join_style=base.JOIN_STYLE.bevel,
+                    resolution=self.draw_app.app.options["geometry_circle_steps"]).exterior
+            else:  # 's' - square
+                util_geo = base_util_geo.exterior
+
+            self.util_geo = util_geo
+            return DrawToolUtilityShape(util_geo)
 
         return None
 
@@ -1016,12 +1104,12 @@ class FCRectangle(FCShapeTool):
         except Exception:
             pass
 
-        p1 = self.points[0]
-        p2 = self.points[1]
-        # self.geometry = LinearRing([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])])
-        geo = LinearRing([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])])
+        # p1 = self.points[0]
+        # p2 = self.points[1]
+        # # self.geometry = LinearRing([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])])
+        # geo = LinearRing([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])])
 
-        self.geometry = DrawToolShape(geo)
+        self.geometry = DrawToolShape(self.util_geo)
         self.geometry.data['type'] = _('Rectangle')
 
         self.complete = True

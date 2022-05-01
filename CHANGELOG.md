@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM Evo beta
 
 - fixed persistence of view status for the coordinates toolbars
 - fixed broken selection in Excellon Editor
+- in Geometry Editor updated the Rectangle Plugin such that when selecting different corners now the drawn rectangle will have those
+- in Geometry Editor updated the Circle Plugin such that when the Radius parameters are not linked then an ellipse is drawn
 
 30.04.2022
 
