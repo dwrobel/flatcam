@@ -91,6 +91,8 @@ class ExcCopyEditorTool(AppTool):
         self.ui.offsetx_entry.set_value(0)
         self.ui.offsety_entry.set_value(0)
 
+        self.ui.pitch_entry.set_value(1.0)
+
     def on_tab_close(self):
         self.disconnect_signals()
         self.hide_tool()
@@ -110,8 +112,8 @@ class ExcCopyEditorTool(AppTool):
     def hide_tool(self):
         self.ui.copy_frame.hide()
         self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
-        if self.draw_app.active_tool.name != 'select':
-            self.draw_app.select_tool("select")
+        if self.draw_app.active_tool.name != 'drill_select':
+            self.draw_app.select_tool("drill_select")
 
 
 class ExcCopyEditorUI:

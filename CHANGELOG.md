@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+2.05.2022
+
+- in Excellon Editor, Copy sub-tool, added UI and ability to copy as array
+- fixed an issue in Geometry Editor, Copy sub-tool where when the geometry copied numbers over the set limit then the copy as array is incorrect
+
 1.05.2022
 
 - fixed persistence of view status for the coordinates toolbars

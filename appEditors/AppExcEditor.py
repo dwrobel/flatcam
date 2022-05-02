@@ -12,11 +12,13 @@ from appEditors.exc_plugins.ExcSlotPlugin import ExcSlotEditorTool
 from appEditors.exc_plugins.ExcDrillArrayPlugin import ExcDrillArrayEditorTool
 from appEditors.exc_plugins.ExcSlotArrayPlugin import ExcSlotArrayEditorTool
 from appEditors.exc_plugins.ExcResizePlugin import ExcResizeEditorTool
+from appEditors.exc_plugins.ExcCopyPlugin import ExcCopyEditorTool
 
 from appGUI.GUIElements import FCEntry, FCTable, FCDoubleSpinner, FCButton, FCLabel, GLay
 from appEditors.AppGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, AppGeoEditor
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point
+from shapely.geometry.base import BaseGeometry
 from shapely.affinity import scale, rotate, translate
 # from appCommon.Common import LoudDict
 
@@ -2392,22 +2394,102 @@ class MoveEditorExc(FCShapeTool):
             pass
 
 
-class CopyEditorExc(MoveEditorExc):
+class CopyEditorExc(FCShapeTool):
     def __init__(self, draw_app):
-        MoveEditorExc.__init__(self, draw_app)
+        FCShapeTool.__init__(self, draw_app)
         self.name = 'drill_copy'
+        self.draw_app = draw_app
+        self.app = self.draw_app.app
+        self.storage = self.draw_app.storage_dict
+
+        self.origin = None
+        self.destination = None
+        self.sel_limit = self.draw_app.app.options["excellon_editor_sel_limit"]
+        self.selection_shape = self.selection_bbox()
+        self.selected_dia_list = []
+
+        self.current_storage = None
+        self.geometry = []
+
+        for index in self.draw_app.ui.tools_table_exc.selectedIndexes():
+            row = index.row()
+            # on column 1 in tool tables we hold the diameters, and we retrieve them as strings
+            # therefore below we convert to float
+            dia_on_row = self.draw_app.ui.tools_table_exc.item(row, 1).text()
+            self.selected_dia_list.append(float(dia_on_row))
+
+        # store here the utility geometry, so we can use it on the last step
+        self.util_geo = None
+
+        if not self.draw_app.get_selected():
+            self.has_selection = False
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Cancelled."), _("Nothing selected.")))
+            self.draw_app.app.ui.select_drill_btn.setChecked(True)
+            self.draw_app.on_tool_select('drill_select')
+        else:
+            self.has_selection = True
+            self.draw_app.app.inform.emit(_("Click on reference location ..."))
+
+        if self.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = self.draw_cursor_data
+
+        self.copy_tool = ExcCopyEditorTool(self.app, self.draw_app, plugin_name=_("Copy"))
+        self.ui = self.copy_tool.ui
+        self.copy_tool.run()
+
+        self.app.ui.notebook.setTabText(2, _("Copy"))
+        if self.draw_app.app.ui.splitter.sizes()[0] == 0:
+            self.draw_app.app.ui.splitter.setSizes([1, 1])
+
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
+    def set_origin(self, origin):
+        self.draw_app.app.inform.emit(_("Click on destination point ..."))
+        self.origin = origin
+
+    def click(self, point):
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
+        if self.has_selection is False:
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Cancelled."), _(" Nothing selected.")))
+            return "Nothing to move."
+
+        if self.origin is None:
+            self.set_origin(point)
+            self.draw_app.app.inform.emit(_("Click on target location ..."))
+            return
+        else:
+            self.destination = point
+            self.make()
+
+            # MS: always return to the Select Tool
+            self.draw_app.select_tool("drill_select")
+            return
 
     def make(self):
         # Create new geometry
-        dx = self.destination[0] - self.origin[0]
-        dy = self.destination[1] - self.origin[1]
+        # dx = self.destination[0] - self.origin[0]
+        # dy = self.destination[1] - self.origin[1]
         sel_shapes_to_be_deleted = []
+
+        if len(self.draw_app.get_selected()) > self.sel_limit:
+            self.util_geo = self.array_util_geometry((self.destination[0], self.destination[1]))
+
+        # when doing circular array we remove the last geometry item in the list because it is the temp_line
+        if self.ui.mode_radio.get_value() == 'a' and \
+                self.ui.array_type_radio.get_value() == 'circular':
+            del self.util_geo.geo[-1]
+
+        self.geometry = [DrawToolShape(deepcopy(shp)) for shp in self.util_geo.geo]
 
         for sel_dia in self.selected_dia_list:
             self.current_storage = self.draw_app.storage_dict[sel_dia]
             for select_shape in self.draw_app.get_selected():
                 if select_shape in self.current_storage.get_objects():
-                    self.geometry.append(DrawToolShape(translate(select_shape.geo, xoff=dx, yoff=dy)))
 
                     # Add some fake drills into the self.draw_app.points_edit to update the drill count in tool table
                     # This may fail if we copy slots.
@@ -2432,19 +2514,371 @@ class CopyEditorExc(MoveEditorExc):
                 self.draw_app.selected.remove(shp)
             sel_shapes_to_be_deleted = []
 
+        self.complete = True
+        self.origin = None
+        self.draw_cursor_data(delete=True)
+
         self.draw_app.build_ui()
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
-        self.draw_app.app.jump_signal.disconnect()
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+    def selection_bbox(self):
+        geo_list = []
+        for select_shape in self.draw_app.get_selected():
+            if isinstance(select_shape.geo, (MultiLineString, MultiPolygon)):
+                geometric_data = select_shape.geo.geoms
+            else:
+                geometric_data = select_shape.geo
+
+            try:
+                for g in geometric_data:
+                    geo_list.append(g)
+            except TypeError:
+                geo_list.append(geometric_data)
+
+        xmin, ymin, xmax, ymax = get_shapely_list_bounds(geo_list)
+
+        pt1 = (xmin, ymin)
+        pt2 = (xmax, ymin)
+        pt3 = (xmax, ymax)
+        pt4 = (xmin, ymax)
+
+        return Polygon([pt1, pt2, pt3, pt4])
+
+    def utility_geometry(self, data=None):
+        """
+        Temporary geometry on screen while using this tool.
+
+        :param data:
+        :return:
+        """
+        geo_list = []
+
+        if self.origin is None:
+            return None
+
+        if len(self.draw_app.get_selected()) == 0:
+            return None
+
+        dx = data[0] - self.origin[0]
+        dy = data[1] - self.origin[1]
+
+        if len(self.draw_app.get_selected()) <= self.sel_limit:
+            copy_mode = self.ui.mode_radio.get_value()
+            if copy_mode == 'n':
+                try:
+                    for geom in self.draw_app.get_selected():
+                        geo_list.append(translate(geom.geo, xoff=dx, yoff=dy))
+                except AttributeError:
+                    self.draw_app.select_tool('drill_select')
+                    self.draw_app.selected = []
+                    return
+                self.util_geo = DrawToolUtilityShape(geo_list)
+            else:
+                self.util_geo = self.array_util_geometry((dx, dy))
+        else:
+            try:
+                ss_el = translate(self.selection_shape, xoff=dx, yoff=dy)
+            except ValueError:
+                ss_el = None
+            self.util_geo = DrawToolUtilityShape(ss_el)
+
+        return self.util_geo
+
+    def array_util_geometry(self, pos, static=None):
+        array_type = self.ui.array_type_radio.get_value()      # 'linear', '2D', 'circular'
+
+        if array_type == 'linear':  # 'Linear'
+            return self.linear_geo(pos, static)
+        elif array_type == '2D':
+            return self.dd_geo(pos)
+        elif array_type == 'circular':  # 'Circular'
+            return self.circular_geo(pos)
+
+    def linear_geo(self, pos, static):
+        axis = self.ui.axis_radio.get_value()  # X, Y or A
+        pitch = float(self.ui.pitch_entry.get_value())
+        linear_angle = float(self.ui.linear_angle_spinner.get_value())
+        array_size = int(self.ui.array_size_entry.get_value())
+
+        if pos[0] is None and pos[1] is None:
+            dx = self.draw_app.x
+            dy = self.draw_app.y
+        else:
+            dx = pos[0]
+            dy = pos[1]
+
+        geo_list = []
+        self.points = [(dx, dy)]
+
+        for item in range(array_size):
+            if axis == 'X':
+                new_pos = ((dx + (pitch * item)), dy)
+            elif axis == 'Y':
+                new_pos = (dx, (dy + (pitch * item)))
+            else:  # 'A'
+                x_adj = pitch * math.cos(math.radians(linear_angle))
+                y_adj = pitch * math.sin(math.radians(linear_angle))
+                new_pos = ((dx + (x_adj * item)), (dy + (y_adj * item)))
+
+            for g in self.draw_app.get_selected():
+                if static is None or static is False:
+                    geo_list.append(translate(g.geo, xoff=new_pos[0], yoff=new_pos[1]))
+                else:
+                    geo_list.append(g.geo)
+        return DrawToolUtilityShape(geo_list)
+
+    def dd_geo(self, pos):
+        trans_geo = []
+        array_2d_type = self.ui.placement_radio.get_value()
+
+        rows = self.ui.rows.get_value()
+        columns = self.ui.columns.get_value()
+
+        spacing_rows = self.ui.spacing_rows.get_value()
+        spacing_columns = self.ui.spacing_columns.get_value()
+
+        off_x = self.ui.offsetx_entry.get_value()
+        off_y = self.ui.offsety_entry.get_value()
+
+        geo_source = [s.geo for s in self.draw_app.get_selected()]
+
+        def geo_bounds(geo: (BaseGeometry, list)):
+            minx = np.Inf
+            miny = np.Inf
+            maxx = -np.Inf
+            maxy = -np.Inf
+
+            if type(geo) == list:
+                for shp in geo:
+                    minx_, miny_, maxx_, maxy_ = geo_bounds(shp)
+                    minx = min(minx, minx_)
+                    miny = min(miny, miny_)
+                    maxx = max(maxx, maxx_)
+                    maxy = max(maxy, maxy_)
+                return minx, miny, maxx, maxy
+            else:
+                # it's an object, return its bounds
+                return geo.bounds
+
+        xmin, ymin, xmax, ymax = geo_bounds(geo_source)
+
+        currentx = pos[0]
+        currenty = pos[1]
+
+        def translate_recursion(geom):
+            if type(geom) == list:
+                geoms = []
+                for local_geom in geom:
+                    res_geo = translate_recursion(local_geom)
+                    try:
+                        geoms += res_geo
+                    except TypeError:
+                        geoms.append(res_geo)
+                return geoms
+            else:
+                return translate(geom, xoff=currentx, yoff=currenty)
+
+        for row in range(rows):
+            currentx = pos[0]
+
+            for col in range(columns):
+                trans_geo += translate_recursion(geo_source)
+                if array_2d_type == 's':  # 'spacing'
+                    currentx += (xmax - xmin + spacing_columns)
+                else:   # 'offset'
+                    currentx = pos[0] + off_x * (col + 1)    # because 'col' starts from 0 we increment by 1
+
+            if array_2d_type == 's':  # 'spacing'
+                currenty += (ymax - ymin + spacing_rows)
+            else:   # 'offset;
+                currenty = pos[1] + off_y * (row + 1)    # because 'row' starts from 0 we increment by 1
+
+        return DrawToolUtilityShape(trans_geo)
+
+    def circular_geo(self, pos):
+        if pos[0] is None and pos[1] is None:
+            cdx = self.draw_app.x
+            cdy = self.draw_app.y
+        else:
+            cdx = pos[0] + self.origin[0]
+            cdy = pos[1] + self.origin[1]
+
+        utility_list = []
+
+        try:
+            radius = distance((cdx, cdy), self.origin)
+        except Exception:
+            radius = 0
+
+        if radius == 0:
+            self.draw_app.delete_utility_geometry()
+
+        if len(self.points) >= 1 and radius > 0:
+            try:
+                if cdx < self.origin[0]:
+                    radius = -radius
+
+                # draw the temp geometry
+                initial_angle = math.asin((cdy - self.origin[1]) / radius)
+                temp_circular_geo = self.circular_util_shape(radius, initial_angle)
+
+                temp_points = [
+                    (self.origin[0], self.origin[1]),
+                    (self.origin[0] + pos[0], self.origin[1] + pos[1])
+                ]
+                temp_line = LineString(temp_points)
+
+                for geo_shape in temp_circular_geo:
+                    utility_list.append(geo_shape.geo)
+                utility_list.append(temp_line)
+
+                return DrawToolUtilityShape(utility_list)
+            except Exception as e:
+                log.error("DrillArray.utility_geometry -- circular -> %s" % str(e))
+
+    def circular_util_shape(self, radius, ini_angle):
+        direction = self.ui.array_dir_radio.get_value()      # CW or CCW
+        angle = self.ui.angle_entry.get_value()
+        array_size = int(self.ui.array_size_entry.get_value())
+
+        circular_geo = []
+        for i in range(array_size):
+            angle_radians = math.radians(angle * i)
+            if direction == 'CW':
+                x = radius * math.cos(-angle_radians + ini_angle)
+                y = radius * math.sin(-angle_radians + ini_angle)
+            else:
+                x = radius * math.cos(angle_radians + ini_angle)
+                y = radius * math.sin(angle_radians + ini_angle)
+
+            for sshp in self.draw_app.get_selected():
+                geo_sol = translate(sshp.geo, x, y)
+                # geo_sol = affinity.rotate(geo_sol, angle=(math.pi - angle_radians), use_radians=True)
+
+                circular_geo.append(DrawToolShape(geo_sol))
+
+        return circular_geo
+
+    def draw_cursor_data(self, pos=None, delete=False):
+        if pos is None:
+            pos = self.draw_app.snap_x, self.draw_app.snap_y
+
+        if delete:
+            if self.draw_app.app.use_3d_engine:
+                self.draw_app.app.plotcanvas.text_cursor.parent = None
+                self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+            return
+
+        # font size
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("hud_font_size"):
+            fsize = qsettings.value('hud_font_size', type=int)
+        else:
+            fsize = 8
+
+        ref_val = (0, 0) if self.origin is None else self.origin
+        x = pos[0]
+        y = pos[1]
+        try:
+            length = abs(np.sqrt((pos[0] - ref_val[0]) ** 2 + (pos[1] - ref_val[1]) ** 2))
+        except IndexError:
+            length = self.draw_app.app.dec_format(0.0, self.draw_app.app.decimals)
+        units = self.draw_app.app.app_units.lower()
+
+        x_dec = str(self.draw_app.app.dec_format(x, self.draw_app.app.decimals)) if x else '0.0'
+        y_dec = str(self.draw_app.app.dec_format(y, self.draw_app.app.decimals)) if y else '0.0'
+        length_dec = str(self.draw_app.app.dec_format(length, self.draw_app.app.decimals)) if length else '0.0'
+
+        l1_txt = 'X:   %s [%s]' % (x_dec, units)
+        l2_txt = 'Y:   %s [%s]' % (y_dec, units)
+        l3_txt = 'L:   %s [%s]' % (length_dec, units)
+        cursor_text = '%s\n%s\n\n%s' % (l1_txt, l2_txt, l3_txt)
+
+        if self.draw_app.app.use_3d_engine:
+            new_pos = self.draw_app.app.plotcanvas.translate_coords_2((x, y))
+            x, y, __, ___ = self.draw_app.app.plotcanvas.translate_coords((new_pos[0] + 30, new_pos[1]))
+
+            # text
+            self.draw_app.app.plotcanvas.text_cursor.font_size = fsize
+            self.draw_app.app.plotcanvas.text_cursor.text = cursor_text
+            self.draw_app.app.plotcanvas.text_cursor.pos = x, y
+            self.draw_app.app.plotcanvas.text_cursor.anchors = 'left', 'top'
+
+            if self.draw_app.app.plotcanvas.text_cursor.parent is None:
+                self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
+
+    def on_key(self, key):
+        # Jump to coords
+        if key == QtCore.Qt.Key.Key_J or key == 'J':
+            self.draw_app.app.on_jump_to()
+
+        if key in [str(i) for i in range(10)] + ['.', ',', '+', '-', '/', '*'] or \
+                key in [QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_1, QtCore.Qt.Key.Key_2,
+                        QtCore.Qt.Key.Key_3, QtCore.Qt.Key.Key_4, QtCore.Qt.Key.Key_5, QtCore.Qt.Key.Key_6,
+                        QtCore.Qt.Key.Key_7, QtCore.Qt.Key.Key_8, QtCore.Qt.Key.Key_9, QtCore.Qt.Key.Key_Minus,
+                        QtCore.Qt.Key.Key_Plus, QtCore.Qt.Key.Key_Comma, QtCore.Qt.Key.Key_Period,
+                        QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
+            try:
+                # VisPy keys
+                if self.copy_tool.length == 0:
+                    self.copy_tool.length = str(key.name)
+                else:
+                    self.copy_tool.length = str(self.copy_tool.length) + str(key.name)
+            except AttributeError:
+                # Qt keys
+                if self.copy_tool.length == 0:
+                    self.copy_tool.length = chr(key)
+                else:
+                    self.copy_tool.length = str(self.copy_tool.length) + chr(key)
+
+        if key == 'Enter' or key == QtCore.Qt.Key.Key_Return or key == QtCore.Qt.Key.Key_Enter:
+            if self.copy_tool.length != 0:
+                target_length = self.copy_tool.length
+                if target_length is None:
+                    self.copy_tool.length = 0.0
+                    return _("Failed.")
+
+                first_pt = self.points[-1]
+                last_pt = self.draw_app.app.mouse
+
+                seg_length = math.sqrt((last_pt[0] - first_pt[0]) ** 2 + (last_pt[1] - first_pt[1]) ** 2)
+                if seg_length == 0.0:
+                    return
+                try:
+                    new_x = first_pt[0] + (last_pt[0] - first_pt[0]) / seg_length * target_length
+                    new_y = first_pt[1] + (last_pt[1] - first_pt[1]) / seg_length * target_length
+                except ZeroDivisionError as err:
+                    self.points = []
+                    self.clean_up()
+                    return '[ERROR_NOTCL] %s %s' % (_("Failed."), str(err).capitalize())
+
+                if self.points[-1] != (new_x, new_y):
+                    self.points.append((new_x, new_y))
+                    self.draw_app.app.on_jump_to(custom_location=(new_x, new_y), fit_center=False)
+                    self.destination = (new_x, new_y)
+                    self.make()
+                    self.draw_app.on_shape_complete()
+                    self.draw_app.select_tool("select")
+                    return "Done."
 
     def clean_up(self):
         self.draw_app.selected = []
         self.draw_app.ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
+        if self.draw_app.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.text_cursor.parent = None
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+
         try:
             self.draw_app.app.jump_signal.disconnect()
         except (TypeError, AttributeError):
             pass
+        self.copy_tool.on_tab_close()
 
 
 class AppExcEditor(QtCore.QObject):
@@ -4203,7 +4637,9 @@ class AppExcEditor(QtCore.QObject):
         self.update_utility_geometry(data=(x, y))
 
         self.update_utility_geometry(data=(x, y))
-        if self.active_tool.name in ['drill_add', 'drill_array', 'slot_add', 'slot_array', 'copy', 'drill_resize']:
+        if self.active_tool.name in [
+            'drill_add', 'drill_array', 'slot_add', 'slot_array', 'drill_copy', 'drill_resize', 'drill_move'
+        ]:
             try:
                 self.active_tool.draw_cursor_data(pos=(x, y))
             except AttributeError:
@@ -4269,9 +4705,9 @@ class AppExcEditor(QtCore.QObject):
         """
         Adds a shape to the shape storage.
 
-        :param shape:       Shape to be added.
-        :type shape:        DrawToolShape
-        :return:            None
+        :param shp: Shape to be added.
+        :type shp:  DrawToolShape
+        :return:    None
         """
 
         # List of DrawToolShape?

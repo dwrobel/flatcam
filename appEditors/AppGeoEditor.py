@@ -2229,6 +2229,8 @@ class FCCopy(FCShapeTool):
         # store here the utility geometry, so we can use it on the last step
         self.util_geo = None
 
+        self.clicked_postion = None
+
         if len(self.draw_app.get_selected()) == 0:
             self.has_selection = False
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s %s' %
@@ -2260,6 +2262,8 @@ class FCCopy(FCShapeTool):
         except (TypeError, AttributeError):
             pass
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
+        self.clicked_postion = point
 
         if self.has_selection is False:
             # self.complete = True
@@ -2301,6 +2305,9 @@ class FCCopy(FCShapeTool):
 
     def make(self):
         # Create new geometry
+        if len(self.draw_app.get_selected()) > self.sel_limit:
+            self.util_geo = self.array_util_geometry((self.clicked_postion[0], self.clicked_postion[1]))
+
         # when doing circular array we remove the last geometry item in the list because it is the temp_line
         if self.copy_tool.ui.mode_radio.get_value() == 'a' and \
                 self.copy_tool.ui.array_type_radio.get_value() == 'circular':
