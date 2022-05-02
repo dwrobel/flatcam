@@ -248,7 +248,7 @@ class CircleEditorUI:
         self.angle_lbl = FCLabel('%s:' % _("Angle"))
         self.angle_entry = FCDoubleSpinner()
         self.angle_entry.set_precision(self.decimals)
-        self.angle_entry.set_range(0.0000, 360.0000)
+        self.angle_entry.set_range(-360.0000, 360.0000)
         rad_grid.addWidget(self.angle_lbl, 2, 0)
         rad_grid.addWidget(self.angle_entry, 2, 1)
 

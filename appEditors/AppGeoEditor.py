@@ -1950,6 +1950,7 @@ class FCMove(FCShapeTool):
             self.selection_shape = self.selection_bbox()
             # self.draw_app.plot_all()
             self.draw_app.app.inform.emit(_("Click on reference location ..."))
+            self.set_origin(point)
             return
 
         if self.origin is None:

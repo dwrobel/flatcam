@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM Evo beta
 
 - in Excellon Editor, Copy sub-tool, added UI and ability to copy as array
 - fixed an issue in Geometry Editor, Copy sub-tool where when the geometry copied numbers over the set limit then the copy as array is incorrect
+- in Geometry Editor fixed an angle issue in the Circle sub-tool
+- in Geometry Editor made sure that when using the Move sub-tool if there is no shape selected, when clicking to get selection that point is also used as reference for the Move command
 
 1.05.2022
 
