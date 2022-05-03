@@ -308,7 +308,7 @@ class RectangleEditorUI:
         size_frame.setLayout(size_grid)
 
         # Length
-        self.length_lbl = FCLabel('%s:' % _("Length"))
+        self.length_lbl = FCLabel('%s:' % _("Projection"))
         self.length_entry = NumericalEvalEntry()
         size_grid.addWidget(self.length_lbl, 0, 0)
         size_grid.addWidget(self.length_entry, 0, 1)

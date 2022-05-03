@@ -3060,8 +3060,11 @@ class ToolMilling(AppTool, Excellon):
             new_cncjob_obj.z_pdepth = float(geo_obj.obj_options["tools_mill_z_pdepth"])
             new_cncjob_obj.feedrate_probe = float(geo_obj.obj_options["tools_mill_feedrate_probe"])
 
+            used_tools = list(tools_dict.keys())
+            new_cncjob_obj.used_tools = used_tools
+
             total_gcode = ''
-            for tooluid_key in list(tools_dict.keys()):
+            for tooluid_key in used_tools:
                 tool_cnt += 1
 
                 dia_cnc_dict = deepcopy(tools_dict[tooluid_key])

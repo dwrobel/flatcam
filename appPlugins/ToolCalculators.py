@@ -94,9 +94,40 @@ class ToolCalculator(AppTool):
         self.ui.fl_oz_entry.editingFinished.connect(self.on_calculate_ml_units)
 
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
-        self.ui.area_sel_radio.activated_custom.connect(self.on_area_calculation_radio)
         self.ui.calculate_tin_button.clicked.connect(lambda: self.on_tin_solution_calculation())
         self.ui.sol_radio.activated_custom.connect(self.on_tin_solution_type)
+        self.ui.area_sel_radio.activated_custom.connect(self.on_area_calculation_radio)
+
+    def on_area_calculation_radio(self, val):
+        self.ui_disconnect()
+        self.ui_connect()
+
+        if val == 'a':
+            self.ui.pcbwidthlabel.hide()
+            self.ui.pcbwidth_entry.hide()
+            self.ui.width_unit.hide()
+
+            self.ui.pcblengthlabel.hide()
+            self.ui.pcblength_entry.hide()
+            self.ui.length_unit.hide()
+
+            self.ui.area_label.show()
+            self.ui.area_entry.show()
+            self.ui.area_unit.show()
+        else:
+            self.ui.pcbwidthlabel.show()
+            self.ui.pcbwidth_entry.show()
+            self.ui.width_unit.show()
+
+            self.ui.pcblengthlabel.show()
+            self.ui.pcblength_entry.show()
+            self.ui.length_unit.show()
+
+            self.ui.area_label.hide()
+            self.ui.area_entry.hide()
+            self.ui.area_unit.hide()
+
+        self.ep_calculate_output()
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+C', **kwargs)
@@ -143,42 +174,16 @@ class ToolCalculator(AppTool):
         self.ui.cutDepth_entry.set_value(cut_z)
         self.on_calculate_tool_dia()
 
+        # Electroplating Calculator
         self.ui.area_sel_radio.set_value('d')
-        self.on_area_calculation_radio(val='d')
-
-        self.on_calculate_eplate()
+        self.on_area_calculation_radio(val=self.ui.area_sel_radio.get_value())
+        self.ep_calculate_output()
 
         # Tinning Calculator
         self.ui.sol_radio.set_value("sol1")
 
         self.ui_disconnect()
         self.ui_connect()
-
-    def on_area_calculation_radio(self, val):
-        if val == 'a':
-            self.ui.pcbwidthlabel.hide()
-            self.ui.pcbwidth_entry.hide()
-            self.ui.width_unit.hide()
-
-            self.ui.pcblengthlabel.hide()
-            self.ui.pcblength_entry.hide()
-            self.ui.length_unit.hide()
-
-            self.ui.area_label.show()
-            self.ui.area_entry.show()
-            self.ui.area_unit.show()
-        else:
-            self.ui.pcbwidthlabel.show()
-            self.ui.pcbwidth_entry.show()
-            self.ui.width_unit.show()
-
-            self.ui.pcblengthlabel.show()
-            self.ui.pcblength_entry.show()
-            self.ui.length_unit.show()
-
-            self.ui.area_label.hide()
-            self.ui.area_entry.hide()
-            self.ui.area_unit.hide()
 
     def on_calculate_tool_dia(self):
         self.ui_disconnect()
@@ -261,7 +266,7 @@ class ToolCalculator(AppTool):
         floz_val = float(self.ui.fl_oz_entry.get_value())
         self.ui.ml_entry.set_value('%.*f' % (self.decimals, (floz_val * 29.5735296875)))
 
-    def on_calculate_current(self):
+    def ep_calculate_current(self):
         """
 
         :return:
@@ -290,10 +295,10 @@ class ToolCalculator(AppTool):
         else:
             calculated_current = (area * density) * 0.0021527820833419
 
-        self.ui.cvalue_entry.set_value('%.2f' % calculated_current)
+        self.ui.cvalue_entry.set_value('%.3f' % calculated_current)
         self.ui_connect()
 
-    def on_calculate_time(self):
+    def ep_calculate_procedure_time(self):
         """
 
         :return:
@@ -321,12 +326,12 @@ class ToolCalculator(AppTool):
         self.ui.time_entry.set_value('%.1f' % calculated_time)
         self.ui_connect()
 
-    def on_calculate_eplate(self):
-        self.on_calculate_time()
-        self.on_calculate_current()
+    def ep_calculate_output(self):
+        self.ep_calculate_procedure_time()
+        self.ep_calculate_current()
         self.app.inform.emit('[success] %s' % _("Done."))
 
-    def on_calculate_growth(self):
+    def ep_calculate_copper_growth(self):
         self.ui_disconnect()
         density = self.ui.cdensity_entry.get_value()
         g_time = self.ui.time_entry.get_value()
@@ -404,19 +409,27 @@ class ToolCalculator(AppTool):
         self.ui.calculate_vshape_button.clicked.connect(self.on_calculate_tool_dia)
 
         # Electroplating Calculator
-        self.ui.cdensity_entry.valueChanged.connect(self.on_calculate_eplate)
-        self.ui.cdensity_entry.returnPressed.connect(self.on_calculate_eplate)
+        self.ui.cdensity_entry.valueChanged.connect(self.on_density_changed)
+        self.ui.growth_entry.valueChanged.connect(self.on_growth_changed)
+        if self.ui.area_sel_radio.get_value() == 'a':   # 'area'
+            self.ui.area_entry.valueChanged.connect(self.on_dims_changed)
+        else:
+            self.ui.pcblength_entry.valueChanged.connect(self.on_dims_changed)
+            self.ui.pcbwidth_entry.valueChanged.connect(self.on_dims_changed)
+        self.ui.time_entry.valueChanged.connect(self.on_time_changed)
 
-        self.ui.growth_entry.valueChanged.connect(self.on_calculate_time)
-        self.ui.growth_entry.returnPressed.connect(self.on_calculate_time)
+    def on_density_changed(self):
+        self.ep_calculate_output()
 
-        self.ui.area_entry.valueChanged.connect(self.on_calculate_current)
-        self.ui.area_entry.returnPressed.connect(self.on_calculate_current)
+    def on_growth_changed(self):
+        self.ep_calculate_output()
 
-        self.ui.time_entry.valueChanged.connect(self.on_calculate_growth)
-        self.ui.time_entry.returnPressed.connect(self.on_calculate_growth)
+    def on_dims_changed(self):
+        self.ep_calculate_output()
 
-        self.ui.calculate_plate_button.clicked.connect(self.on_calculate_eplate)
+    def on_time_changed(self):
+        self.ep_calculate_copper_growth()
+        self.ep_calculate_output()
 
     def ui_disconnect(self):
         # V-Shape Calculator
@@ -458,17 +471,9 @@ class ToolCalculator(AppTool):
             self.ui.cdensity_entry.valueChanged.disconnect()
         except (AttributeError, TypeError):
             pass
-        try:
-            self.ui.cdensity_entry.returnPressed.disconnect()
-        except (AttributeError, TypeError):
-            pass
         # Growth
         try:
             self.ui.growth_entry.valueChanged.disconnect()
-        except (AttributeError, TypeError):
-            pass
-        try:
-            self.ui.growth_entry.returnPressed.disconnect()
         except (AttributeError, TypeError):
             pass
         # Area
@@ -477,21 +482,16 @@ class ToolCalculator(AppTool):
         except (AttributeError, TypeError):
             pass
         try:
-            self.ui.area_entry.returnPressed.disconnect()
+            self.ui.pcblength_entry.valueChanged.disconnect()
+        except (AttributeError, TypeError):
+            pass
+        try:
+            self.ui.pcbwidth_entry.valueChanged.disconnect()
         except (AttributeError, TypeError):
             pass
         # Time
         try:
             self.ui.time_entry.valueChanged.disconnect()
-        except (AttributeError, TypeError):
-            pass
-        try:
-            self.ui.time_entry.returnPressed.disconnect()
-        except (AttributeError, TypeError):
-            pass
-        # Calculate
-        try:
-            self.ui.calculate_plate_button.clicked.disconnect()
         except (AttributeError, TypeError):
             pass
 
@@ -680,7 +680,10 @@ class CalcUI:
         # grid_electro.addWidget(FCLabel(""), 0, 0, 1, 2)
 
         # Area Calculation
-        self.area_sel_label = FCLabel('%s:' % _("Area Calculation"))
+        self.area_sel_label = FCLabel('%s:' % _("Area Calculation"), bold=True)
+        grid_electro.addWidget(self.area_sel_label, 4, 0)
+
+        # Area Choice
         self.area_sel_label.setToolTip(
             _("Determine the board area.")
         )
@@ -689,7 +692,6 @@ class CalcUI:
             {"label": _("Area"), "value": "a"}
         ], compact=True)
 
-        grid_electro.addWidget(self.area_sel_label, 4, 0)
         grid_electro.addWidget(self.area_sel_radio, 6, 0, 1, 2)
 
         # BOARD LENGTH
@@ -795,6 +797,15 @@ class CalcUI:
         grid_electro.addWidget(self.growth_label, 18, 0)
         grid_electro.addLayout(g_hlay, 18, 1)
 
+        self.separator_line = QtWidgets.QFrame()
+        self.separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        grid_electro.addWidget(self.separator_line, 20, 0, 1, 2)
+
+        # Output values
+        self.output_lbl = FCLabel('%s' % _("Output"), bold=True)
+        grid_electro.addWidget(self.output_lbl, 22, 0)
+
         # CURRENT
         self.cvaluelabel = FCLabel('%s:' % _("Current Value"))
         self.cvaluelabel.setToolTip(_('This is the current intensity value\n'
@@ -814,8 +825,8 @@ class CalcUI:
         c_hlay.addWidget(self.cvalue_entry)
         c_hlay.addWidget(current_unit)
 
-        grid_electro.addWidget(self.cvaluelabel, 20, 0)
-        grid_electro.addLayout(c_hlay, 20, 1)
+        grid_electro.addWidget(self.cvaluelabel, 24, 0)
+        grid_electro.addLayout(c_hlay, 24, 1)
 
         # TIME
         self.timelabel = FCLabel('%s:' % _("Time"))
@@ -835,16 +846,8 @@ class CalcUI:
         t_hlay.addWidget(self.time_entry)
         t_hlay.addWidget(time_unit)
 
-        grid_electro.addWidget(self.timelabel, 22, 0)
-        grid_electro.addLayout(t_hlay, 22, 1)
-
-        # ## Buttons
-        self.calculate_plate_button = FCButton(_("Calculate"))
-        self.calculate_plate_button.setIcon(QtGui.QIcon(self.app.resource_location + '/calculator16.png'))
-        self.calculate_plate_button.setToolTip(
-            _("Calculate the current intensity value and the procedure time.")
-        )
-        grid_electro.addWidget(self.calculate_plate_button, 24, 0, 1, 2)
+        grid_electro.addWidget(self.timelabel, 26, 0)
+        grid_electro.addLayout(t_hlay, 26, 1)
 
         # #############################################################################################################
         # ############################## Tinning Calculator ###############################################

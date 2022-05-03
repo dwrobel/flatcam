@@ -1189,7 +1189,7 @@ class NonCopperClear(AppTool, Gerber):
 
         # if new tool diameter already in the Tool List then abort
         if truncated_tooldia in tool_dias:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Cancelled."), _("Tool already in Tool Table.")))
             self.blockSignals(False)
             return
 
@@ -1268,7 +1268,7 @@ class NonCopperClear(AppTool, Gerber):
 
         # if new tool diameter found in Tools Database already in the Tool List then abort
         if updated_tooldia is not None and updated_tooldia in tool_dias:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Cancelled."), _("Tool already in Tool Table.")))
             self.blockSignals(False)
             return
 
@@ -1326,7 +1326,7 @@ class NonCopperClear(AppTool, Gerber):
         truncated_tooldia = self.app.dec_format(tool_dia, self.decimals)
         if truncated_tooldia in tool_dias:
             if muted is None:
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
+                self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Cancelled."), _("Tool already in Tool Table.")))
             # self.ui.tools_table.itemChanged.connect(self.on_tool_edit)
             self.blockSignals(False)
             return
@@ -1479,7 +1479,7 @@ class NonCopperClear(AppTool, Gerber):
         except Exception as e:
             self.app.log.error(str(e))
 
-        self.app.inform.emit('[success] %s' % _("Tool(s) deleted from Tool Table."))
+        self.app.inform.emit('[success] %s' % _("Tools deleted from Tool Table."))
         self.blockSignals(False)
         self.build_ui()
 
@@ -3962,7 +3962,7 @@ class NonCopperClear(AppTool, Gerber):
 
         truncated_tooldia = self.app.dec_format(tooldia, self.decimals)
         if truncated_tooldia in tool_dias:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Cancelled."), _("Tool already in Tool Table.")))
             self.ui_connect()
             return 'fail'
 

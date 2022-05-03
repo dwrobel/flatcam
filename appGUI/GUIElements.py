@@ -2633,8 +2633,18 @@ class DialogBoxChoice(QtWidgets.QDialog):
         self.setWindowTitle(str(title))
         self.setWindowFlags(self.windowFlags() | Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowSystemMenuHint)
 
+        #   "background-color: palette(base); "
+        self.setStyleSheet(
+            ".DialogBoxChoice { "
+            "border: 1px solid palette(shadow);"
+            "border-radius: 5px; "
+            "}"
+        )
+
         grid0 = GLay(parent=self, h_spacing=5, v_spacing=5)
-        main_label = FCLabel(str(title))
+
+        # Main Label
+        main_label = FCLabel(str(title), bold=True)
         grid0.addWidget(main_label, 0, 0)
 
         self.ref_radio = RadioSetCross(choices, compact=True)
@@ -2655,13 +2665,6 @@ class DialogBoxChoice(QtWidgets.QDialog):
         else:
             self.ok = False
             self.location_point = None
-
-        #   "background-color: palette(base); "
-        self.setStyleSheet(
-            "QDialog { "
-            "border: 1px solid palette(shadow); "
-            "}"
-        )
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
@@ -3020,7 +3023,7 @@ class FCLabel(QtWidgets.QLabel):
     middle_clicked = QtCore.pyqtSignal(bool)
 
 
-    def __init__(self, title=None, color=None, bold=None, parent=None):
+    def __init__(self, title=None, color=None, bold=None, size=None, parent=None):
         """
 
         :param title:           the label's text
@@ -3029,6 +3032,8 @@ class FCLabel(QtWidgets.QLabel):
         :type color:            str
         :param bold:            the text weight
         :type bold:             bool
+        :param size:            Font Size in points
+        :type size:             int
         :param parent:          parent of this widget
         :type parent:           QtWidgets.QWidget | None
         """
@@ -3039,14 +3044,25 @@ class FCLabel(QtWidgets.QLabel):
             color = self.patching_text_color(color)
 
         if isinstance(title, str):
-            if color and not bold:
-                self.setText('<span style="color:%s;">%s</span>' % (str(color), title))
-            elif not color and bold:
-                self.setText('<b>%s</b>' % title)
-            elif color and bold:
-                self.setText('<span style="color:%s;"><b>%s</b></span>' % (str(color), title))
+            # if color and not bold:
+            #     self.setText('<span style="color:%s;">%s</span>' % (str(color), title))
+            # elif not color and bold:
+            #     self.setText('<b>%s</b>' % title)
+            # elif color and bold:
+            #     self.setText('<span style="color:%s;"><b>%s</b></span>' % (str(color), title))
+            # else:
+            #     self.setText(title)
+            if color:
+                self.setText('<font color="%s">%s</font>' % (str(color), title))
             else:
                 self.setText(title)
+
+            font = QtGui.QFont()
+            font.setBold(True) if bold else font.setBold(False)
+            if size:
+                font.setPointSize(size)
+                # "<font size=4>%s</font>"
+            self.setFont(font)
 
         # for the usage of this label as a clickable label, to know that current state
         self.clicked_state = False
@@ -4336,11 +4352,26 @@ class DialogBoxRadio(QtWidgets.QDialog):
             self.location = initial_text
 
         self.ok = False
+        self.offset = None
+        self.moving = None
 
         self.setWindowIcon(icon)
         self.setWindowTitle(str(title))
+        self.setWindowFlags(self.windowFlags() | Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowSystemMenuHint)
+
+        #   "background-color: palette(base); "
+        self.setStyleSheet(
+            ".DialogBoxRadio { "
+            "border: 1px solid palette(shadow);"
+            "border-radius: 5px; "
+            "}"
+        )
 
         grid0 = GLay(parent=self, h_spacing=5, v_spacing=5)
+
+        # Main Label
+        main_label = FCLabel(str(title), bold=True)
+        grid0.addWidget(main_label, 0, 0)
 
         self.ref_label = FCLabel('%s:' % _("Reference"))
         self.ref_label.setToolTip(
@@ -4353,15 +4384,15 @@ class DialogBoxRadio(QtWidgets.QDialog):
             {"label": _("Relative"), "value": "rel"}
         ], orientation='horizontal', compact=True)
         self.ref_radio.set_value(reference)
-        grid0.addWidget(self.ref_label, 0, 0)
-        grid0.addWidget(self.ref_radio, 0, 1)
+        grid0.addWidget(self.ref_label, 2, 0)
+        grid0.addWidget(self.ref_radio, 2, 1)
 
-        grid0.addWidget(QtWidgets.QLabel(''), 2, 0, 1, 2)
+        grid0.addWidget(FCLabel(''), 4, 0, 1, 2)
 
-        self.wdg_label = QtWidgets.QLabel('<b>%s</b>' % str(label))
-        grid0.addWidget(self.wdg_label, 4, 0, 1, 2)
+        self.wdg_label = FCLabel('<b>%s</b>' % str(label))
+        grid0.addWidget(self.wdg_label, 6, 0, 1, 2)
 
-        self.loc_label = QtWidgets.QLabel('%s:' % _("Location"))
+        self.loc_label = FCLabel('%s:' % _("Location"))
         self.loc_label.setToolTip(
             _("The Location value is a tuple (x,y).\n"
               "If the reference is Absolute then the Jump will be at the position (x,y).\n"
@@ -4373,13 +4404,13 @@ class DialogBoxRadio(QtWidgets.QDialog):
         self.lineEdit.setText(str(self.location).replace('(', '').replace(')', ''))
         self.lineEdit.selectAll()
         self.lineEdit.setFocus()
-        grid0.addWidget(self.loc_label, 6, 0)
-        grid0.addWidget(self.lineEdit, 6, 1)
+        grid0.addWidget(self.loc_label, 8, 0)
+        grid0.addWidget(self.lineEdit, 8, 1)
 
         self.button_box = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel,
             orientation=Qt.Orientation.Horizontal, parent=self)
-        grid0.addWidget(self.button_box, 8, 0, 1, 2)
+        grid0.addWidget(self.button_box, 10, 0, 1, 2)
 
         self.button_box.button(QtWidgets.QDialogButtonBox.StandardButton.Ok).setText(_("Ok"))
         self.button_box.button(QtWidgets.QDialogButtonBox.StandardButton.Cancel).setText(_("Cancel"))
@@ -4395,6 +4426,15 @@ class DialogBoxRadio(QtWidgets.QDialog):
             self.reference = self.ref_radio.get_value()
         else:
             self.ok = False
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.moving = True
+            self.offset = event.position()
+
+    def mouseMoveEvent(self, event):
+        if self.moving:
+            self.move(event.globalPosition().toPoint() - self.offset.toPoint())
 
 
 class _BrowserTextEdit(QTextEdit):
@@ -5471,7 +5511,7 @@ class FlatCAMActivityView(QtWidgets.QWidget):
         self.setLayout(layout)
 
         layout.addWidget(self.icon)
-        self.text = QtWidgets.QLabel(self)
+        self.text = FCLabel(self)
         self.text.setText(_("Idle."))
         self.icon.setPixmap(QtGui.QPixmap(self.icon_path))
 
@@ -5504,7 +5544,7 @@ class AppInfoBar(QtWidgets.QWidget):
         # for the usage of this label as a clickable label, to know that current state
         self.clicked_state = False
 
-        self.icon = QtWidgets.QLabel(self)
+        self.icon = FCLabel(self)
         self.icon.setGeometry(0, 0, 12, 12)
         self.pmap = QtGui.QPixmap(self.app.resource_location + '/graylight12.png')
         self.icon.setPixmap(self.pmap)
@@ -5523,7 +5563,7 @@ class AppInfoBar(QtWidgets.QWidget):
         self.blue_pamap = QtGui.QPixmap(self.app.resource_location + '/bluelight12.png')
         self.gray_pmap = QtGui.QPixmap(self.app.resource_location + '/graylight12.png')
 
-        self.text = QtWidgets.QLabel(self)
+        self.text = FCLabel(self)
         self.text.setText(_("Application started ..."))
         self.text.setToolTip(_("Hello!"))
 
@@ -5783,8 +5823,9 @@ class FCMessageBox(QtWidgets.QMessageBox):
 
         #   "background-color: palette(base); "
         self.setStyleSheet(
-            "QDialog { "
-            "border: 1px solid palette(shadow); "
+            ".FCMessageBox { "
+            "border: 1px solid palette(shadow);"
+            "border-radius: 5px; "
             "}"
         )
 
@@ -5825,7 +5866,7 @@ class FCDate(QtWidgets.QDateEdit):
     def __init__(self, parent=None):
         super(FCDate, self).__init__(parent)
         self.setStyleSheet("""
-        QDateEdit {
+        .FCDate {
             border: 0px solid white;
             background-color : none;
         }

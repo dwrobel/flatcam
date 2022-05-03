@@ -29,9 +29,9 @@ try:
     # Prevent conflict with Qt5 and above.
     from matplotlib import use as mpl_use
 
-    mpl_use("Qt5Agg")
+    mpl_use("QtAgg")
     from matplotlib.figure import Figure
-    from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+    from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 except ImportError:
     MATPLOTLIB_AVAILABLE = False
 
@@ -650,7 +650,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         if self.app.options["global_cursor_color_enabled"]:
             color = self.app.options["global_cursor_color"]
         else:
-            if self.app.options['global_theme'] == 'light':
+            if self.app.options['global_theme'] in ['default', 'light']:
                 color = '#000000'
             else:
                 color = '#FFFFFF'
@@ -705,7 +705,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         if color:
             color = color
         else:
-            if self.app.options['global_theme'] == 'light':
+            if self.app.options['global_theme'] in ['default', 'light']:
                 color = '#000000'
             else:
                 color = '#FFFFFF'
@@ -748,7 +748,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         self.canvas.blit(self.axes.bbox)
 
     def clear_cursor(self, state):
-        if self.app.options['global_theme'] == 'light':
+        if self.app.options['global_theme'] in ['default', 'light']:
             color = '#000000'
         else:
             color = '#FFFFFF'

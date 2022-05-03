@@ -658,7 +658,8 @@ class App(QtCore.QObject):
                                   'del', 'drillcncjob', 'export_dxf', 'edxf', 'export_excellon',
                                   'export_exc',
                                   'export_gcode', 'export_gerber', 'export_svg', 'ext', 'exteriors', 'follow',
-                                  'geo_union', 'geocutout', 'get_bounds', 'get_names', 'get_path', 'get_sys', 'help',
+                                  'geo_union', 'geocutout', 'get_active', 'get_bounds', 'get_names', 'get_path',
+                                  'get_sys', 'help',
                                   'interiors', 'isolate', 'join_excellon',
                                   'join_geometry', 'list_sys', 'list_pp', 'milld', 'mills', 'milldrills', 'millslots',
                                   'mirror', 'ncc',
@@ -1253,7 +1254,6 @@ class App(QtCore.QObject):
         self.pdf_tool = None
         self.image_tool = None
         self.pcb_wizard_tool = None
-        self.cal_exc_tool = None
         self.qrcode_tool = None
         self.copper_thieving_tool = None
         self.fiducial_tool = None
@@ -1913,12 +1913,6 @@ class App(QtCore.QObject):
         self.dblsidedtool = DblSidedTool(self)
         self.dblsidedtool.install(icon=QtGui.QIcon(self.resource_location + '/doubleside16.png'), separator=False)
 
-        self.cal_exc_tool = ToolCalibration(self)
-        self.cal_exc_tool.install(icon=QtGui.QIcon(self.resource_location + '/calibrate_16.png'),
-                                  pos=self.ui.menu_plugins,
-                                  before=self.dblsidedtool.menuAction,
-                                  separator=False)
-
         self.align_objects_tool = AlignObjects(self)
         self.align_objects_tool.install(icon=QtGui.QIcon(self.resource_location + '/align16.png'), separator=False)
 
@@ -2063,7 +2057,6 @@ class App(QtCore.QObject):
             self.pdf_tool,
             self.image_tool,
             self.pcb_wizard_tool,
-            self.cal_exc_tool,
             self.qrcode_tool,
             self.copper_thieving_tool,
             self.fiducial_tool,
@@ -2342,7 +2335,6 @@ class App(QtCore.QObject):
         self.ui.punch_btn.triggered.connect(lambda: self.punch_tool.run(toggle=True))
         self.ui.calculators_btn.triggered.connect(lambda: self.calculator_tool.run(toggle=True))
 
-        # self.ui.cal_btn.triggered.connect(lambda: self.cal_exc_tool.run(toggle=True))
         #
         # self.ui.solder_btn.triggered.connect(lambda: self.paste_tool.run(toggle=True))
         # self.ui.rules_btn.triggered.connect(lambda: self.rules_tool.run(toggle=True))
@@ -2753,7 +2745,7 @@ class App(QtCore.QObject):
         if cleanup is None:
             msgbox = FCMessageBox(parent=self.ui)
             title = _("Exit Editor")
-            txt = _("Do you want to save the edited object?")
+            txt = _("Do you want to save the changes?")
             msgbox.setWindowTitle(title)    # taskbar still shows it
             msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/app128.png'))
             msgbox.setText('<b>%s</b>' % title)
@@ -4033,8 +4025,7 @@ class App(QtCore.QObject):
         if self.should_we_save and self.collection.get_list():
             msgbox = FCMessageBox(parent=self.ui)
             title = _("Save changes")
-            txt = _("There are files/objects modified in FlatCAM. "
-                    "\n"
+            txt = _("There are files/objects modified.\n"
                     "Do you want to Save the project?")
             msgbox.setWindowTitle(title)  # taskbar still shows it
             msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/app128.png'))
@@ -4901,9 +4892,6 @@ class App(QtCore.QObject):
 
             # Fiducials Plugin
             "tools_fiducials_dia", "tools_fiducials_margin", "tools_fiducials_line_thickness",
-
-            # Calibration Plugin
-            "tools_cal_travelz", "tools_cal_verz", "tools_cal_toolchangez", "tools_cal_toolchange_xy",
 
             # Drills Extraction Plugin
             "tools_extract_hole_fixed_dia", "tools_extract_circular_ring", "tools_extract_oblong_ring",
@@ -8310,7 +8298,8 @@ class App(QtCore.QObject):
 
         self.source_editor_tab.t_frame.hide()
         try:
-            self.source_editor_tab.load_text(file.getvalue(), clear_text=True, move_to_start=True)
+            source_text = file.getvalue()
+            self.source_editor_tab.load_text(source_text, clear_text=True, move_to_start=True)
         except Exception as e:
             self.log.error('App.on_view_source() -->%s' % str(e))
             self.inform.emit('[ERROR] %s: %s' % (_('Failed to load the source code for the selected object'), str(e)))
@@ -8467,9 +8456,9 @@ class App(QtCore.QObject):
             "script": lambda fname: self.worker_task.emit({'fcn': self.f_handlers.open_script, 'params': [fname]}),
             "document": None,
             'project': self.f_handlers.open_project,
-            'svg': self.f_handlers.import_svg,
-            'dxf': self.f_handlers.import_dxf,
-            'image': image_opener,
+            'svg': lambda fname: self.worker_task.emit({'fcn': self.f_handlers.import_svg, 'params': [fname]}),
+            'dxf': lambda fname: self.worker_task.emit({'fcn': self.f_handlers.import_dxf, 'params': [fname]}),
+            'image': lambda fname: self.worker_task.emit({'fcn': image_opener, 'params': [fname]}),
             'pdf': self.f_handlers.import_pdf
         }
 
@@ -8641,7 +8630,8 @@ class App(QtCore.QObject):
         root = d_properties_tw.invisibleRootItem()
         font = QtGui.QFont()
         font.setBold(True)
-        p_color = QtGui.QColor("#000000") if self.options['global_theme'] == 'light' else QtGui.QColor("#FFFFFF")
+        p_color = QtGui.QColor("#000000") if self.options['global_theme'] in ['default', 'light'] else \
+            QtGui.QColor("#FFFFFF")
 
         # main Items categories
         general_cat = d_properties_tw.addParent(root, _('General'), expanded=True, color=p_color, font=font)
@@ -10243,7 +10233,7 @@ class MenuFileHandlers(QtCore.QObject):
         if self.app.collection.get_list() and self.app.should_we_save:
             msgbox = FCMessageBox(parent=self.app.ui)
             title = _("Save changes")
-            txt = _("There are files/objects opened in FlatCAM.\n"
+            txt = _("There are files/objects opened.\n"
                     "Creating a New project will delete them.\n"
                     "Do you want to Save the project?")
             msgbox.setWindowTitle(title)  # taskbar still shows it

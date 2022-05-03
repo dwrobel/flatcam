@@ -306,7 +306,7 @@ class AppDefaults:
         "excellon_editor_slot_lin_pitch": 2.54,
         "excellon_editor_slot_lin_angle": 0.0,
         "excellon_editor_slot_circ_dir": 'CW',
-        "excellon_editor_slot_circ_angle": 0.0,
+        "excellon_editor_slot_circ_angle": 12,
 
         # Geometry General
         "geometry_plot": True,
@@ -658,6 +658,7 @@ class AppDefaults:
         "tools_solderpaste_z_toolchange": 1.0,
         "tools_solderpaste_xy_toolchange": "0.0, 0.0",
         "tools_solderpaste_frxy": 150,
+        "tools_solderpaste_fr_rapids": 1500,
         "tools_solderpaste_frz": 150,
         "tools_solderpaste_frz_dispense": 1.0,
         "tools_solderpaste_speedfwd": 300,
@@ -755,15 +756,6 @@ class AppDefaults:
         "tools_fiducials_type": 'circular',
         "tools_fiducials_line_thickness": 0.25,
         "tools_fiducials_big_cursor": True,
-
-        # Calibration Tool
-        "tools_cal_calsource": 'object',
-        "tools_cal_travelz": 2.0,
-        "tools_cal_verz": 0.1,
-        "tools_cal_zeroz": False,
-        "tools_cal_toolchangez": 15,
-        "tools_cal_toolchange_xy": '',
-        "tools_cal_sec_point": 'tl',
 
         # Drills Extraction Tool
         "tools_extract_hole_type": 'fixed',

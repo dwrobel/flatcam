@@ -6,9 +6,9 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
-class CopyEditorTool(AppTool):
+class ExcCopyEditorTool(AppTool):
     """
-    Simple input for buffer distance.
+    Copy Plugin
     """
 
     def __init__(self, app, draw_app, plugin_name):
@@ -18,7 +18,7 @@ class CopyEditorTool(AppTool):
         self.decimals = app.decimals
         self.plugin_name = plugin_name
 
-        self.ui = CopyEditorUI(layout=self.layout, copy_class=self, plugin_name=plugin_name)
+        self.ui = ExcCopyEditorUI(layout=self.layout, copy_class=self, plugin_name=plugin_name)
 
         self.connect_signals_at_init()
         self.set_tool_ui()
@@ -91,6 +91,8 @@ class CopyEditorTool(AppTool):
         self.ui.offsetx_entry.set_value(0)
         self.ui.offsety_entry.set_value(0)
 
+        self.ui.pitch_entry.set_value(1.0)
+
     def on_tab_close(self):
         self.disconnect_signals()
         self.hide_tool()
@@ -110,11 +112,11 @@ class CopyEditorTool(AppTool):
     def hide_tool(self):
         self.ui.copy_frame.hide()
         self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
-        if self.draw_app.active_tool.name != 'select':
-            self.draw_app.select_tool("select")
+        if self.draw_app.active_tool.name != 'drill_select':
+            self.draw_app.select_tool("drill_select")
 
 
-class CopyEditorUI:
+class ExcCopyEditorUI:
 
     def __init__(self, layout, copy_class, plugin_name):
         self.pluginName = plugin_name

@@ -801,7 +801,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.exc_resize_drill_menuitem = self.exc_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/resize16.png'),
-            '%s\t%s' % (_('Resize Drill(S)'), _('R'))
+            '%s\t%s' % (_('Resize Drill'), _('R'))
         )
         self.exc_copy_drill_menuitem = self.exc_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/copy32.png'),
@@ -814,7 +814,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.exc_move_drill_menuitem = self.exc_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/move32.png'),
-            '%s\t%s' % (_('Move Drill'), _('M')))
+            '%s\t%s' % (_('Move'), _('M')))
 
         # ########################################################################
         # ########################## GERBER Editor # #############################
@@ -1234,13 +1234,13 @@ class MainGUI(QtWidgets.QMainWindow):
         self.exc_edit_toolbar.addSeparator()
 
         self.copy_drill_btn = self.exc_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _('Copy Drill'))
+            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _('Copy'))
         self.delete_drill_btn = self.exc_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete Drill"))
+            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete"))
 
         self.exc_edit_toolbar.addSeparator()
         self.move_drill_btn = self.exc_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move Drill"))
+            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move"))
 
         # ########################################################################
         # ########################## Geometry Editor Toolbar# ####################
@@ -2357,19 +2357,19 @@ class MainGUI(QtWidgets.QMainWindow):
         status_action.triggered.connect(self.toggle_statusbar)
 
     def toggle_coords(self, checked):
-        self.app.defaults["global_coordsbar_show"] = checked
+        self.app.options["global_coordsbar_show"] = checked
         self.coords_toolbar.setVisible(checked)
 
     def toggle_delta_coords(self, checked):
-        self.app.defaults["global_delta_coordsbar_show"] = checked
+        self.app.options["global_delta_coordsbar_show"] = checked
         self.delta_coords_toolbar.setVisible(checked)
 
     def toggle_gridbar(self, checked):
-        self.app.defaults["global_gridbar_show"] = checked
+        self.app.options["global_gridbar_show"] = checked
         self.grid_toolbar.setVisible(checked)
 
     def toggle_statusbar(self, checked):
-        self.app.defaults["global_statusbar_show"] = checked
+        self.app.options["global_statusbar_show"] = checked
         self.status_toolbar.setVisible(checked)
 
     def on_preferences_open_folder(self):
@@ -2611,13 +2611,13 @@ class MainGUI(QtWidgets.QMainWindow):
         self.exc_edit_toolbar.addSeparator()
 
         self.copy_drill_btn = self.exc_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _('Copy Drill'))
+            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _('Copy'))
         self.delete_drill_btn = self.exc_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete Drill"))
+            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete"))
 
         self.exc_edit_toolbar.addSeparator()
         self.move_drill_btn = self.exc_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move Drill"))
+            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move"))
 
         # ########################################################################
         # ################### Geometry Editor Toolbar ############################
@@ -3142,7 +3142,6 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Extract Drills  Tool
                 if key == QtCore.Qt.Key.Key_E:
-                    # self.app.cal_exc_tool.run(toggle=True)
                     self.app.extract_tool.run(toggle=True)
                     return
 
@@ -3457,8 +3456,8 @@ class MainGUI(QtWidgets.QMainWindow):
                     if self.app.geo_editor.get_selected() is not None:
                         self.app.geo_editor.cutpath()
                     else:
-                        msg = _('Please first select a geometry item to be cutted\n'
-                                'then select the geometry item that will be cutted\n'
+                        msg = _('Please first select a geometry item to be cut\n'
+                                'then select the geometry item that will be cut\n'
                                 'out of the first item. In the end press ~X~ key or\n'
                                 'the toolbar button.')
 
@@ -3516,7 +3515,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Finish the current action. Use with tools that do not
                 # complete automatically, like a polygon or path.
-                if key == QtCore.Qt.Key.Key_Enter or key == 'Enter':
+                if key == QtCore.Qt.Key.Key_Enter or key == 'Enter' or key == QtCore.Qt.Key.Key_Return:
                     if isinstance(self.app.geo_editor.active_tool, FCShapeTool):
                         if self.app.geo_editor.active_tool.name == 'rotate':
                             self.app.geo_editor.active_tool.make()
@@ -3792,7 +3791,8 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.app.grb_editor.on_transform()
                     return
             # NO MODIFIER
-            elif modifiers == QtCore.Qt.KeyboardModifier.NoModifier:
+            elif modifiers == QtCore.Qt.KeyboardModifier.NoModifier or \
+                    modifiers == QtCore.Qt.KeyboardModifier.KeypadModifier:
                 # Abort the current action
                 if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':
                     # self.on_tool_select("select")
@@ -4025,7 +4025,8 @@ class MainGUI(QtWidgets.QMainWindow):
             elif modifiers == QtCore.Qt.KeyboardModifier.AltModifier:
                 pass
             # NO MODIFIER
-            elif modifiers == QtCore.Qt.KeyboardModifier.NoModifier:
+            elif modifiers == QtCore.Qt.KeyboardModifier.NoModifier or \
+                    modifiers == QtCore.Qt.KeyboardModifier.KeypadModifier:
                 # Abort the current action
                 if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':
                     self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
@@ -4034,6 +4035,37 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.app.exc_editor.active_tool.clean_up()
                     self.app.exc_editor.select_tool('drill_select')
                     return
+
+                # Finish the current action. Use with tools that do not
+                # complete automatically.
+                if key == QtCore.Qt.Key.Key_Enter or key == 'Enter' or key == QtCore.Qt.Key.Key_Return:
+                    if isinstance(self.app.exc_editor.active_tool, FCShapeTool):
+                        if self.app.exc_editor.active_tool.name == 'drill_add' \
+                                and self.app.exc_editor.active_tool.drill_tool.length != 0.0:
+                            pass
+                        # elif self.app.exc_editor.active_tool.name == 'drill_array' \
+                        #         and self.app.exc_editor.active_tool.darray_tool.length != 0.0:
+                        #     pass
+                        elif self.app.exc_editor.active_tool.name == 'slot_add' \
+                                and self.app.exc_editor.active_tool.slot_tool.length != 0.0 :
+                            pass
+                        # elif self.app.exc_editor.active_tool.name == 'slot_array' \
+                        #         and self.app.exc_editor.active_tool.sarray_tool.length != 0.0:
+                        #     pass
+                        elif self.app.exc_editor.active_tool.name == 'drill_move' \
+                                and self.app.exc_editor.active_tool.move_tool.length != 0.0 \
+                                and self.app.exc_editor.active_tool.move_tool.width != 0.0:
+                            pass
+                        elif self.app.exc_editor.active_tool.name == 'drill_copy' \
+                                and self.app.exc_editor.active_tool.copy_tool.length != 0.0:
+                            pass
+                        else:
+                            curr_pos = self.app.exc_editor.snap_x, self.app.exc_editor.snap_y
+                            self.app.exc_editor.on_canvas_click_left_handler(curr_pos)
+
+                            if self.app.exc_editor.active_tool.complete:
+                                self.app.exc_editor.on_shape_complete()
+                                self.app.inform.emit('[success] %s' % _("Done."))
 
                 # Delete selected object if delete key event comes out of canvas
                 if key == 'Delete':
@@ -4069,23 +4101,23 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.on_toggle_notebook()
                     return
 
-                # Switch to Project Tab
-                if key == QtCore.Qt.Key.Key_1 or key == '1':
-                    self.app.exc_editor.launched_from_shortcuts = True
-                    self.on_select_tab('project')
-                    return
-
-                # Switch to Selected Tab
-                if key == QtCore.Qt.Key.Key_2 or key == '2':
-                    self.app.exc_editor.launched_from_shortcuts = True
-                    self.on_select_tab('selected')
-                    return
-
-                # Switch to Tool Tab
-                if key == QtCore.Qt.Key.Key_3 or key == '3':
-                    self.app.exc_editor.launched_from_shortcuts = True
-                    self.on_select_tab('tool')
-                    return
+                # # Switch to Project Tab
+                # if key == QtCore.Qt.Key.Key_1 or key == '1':
+                #     self.app.exc_editor.launched_from_shortcuts = True
+                #     self.on_select_tab('project')
+                #     return
+                #
+                # # Switch to Selected Tab
+                # if key == QtCore.Qt.Key.Key_2 or key == '2':
+                #     self.app.exc_editor.launched_from_shortcuts = True
+                #     self.on_select_tab('selected')
+                #     return
+                #
+                # # Switch to Tool Tab
+                # if key == QtCore.Qt.Key.Key_3 or key == '3':
+                #     self.app.exc_editor.launched_from_shortcuts = True
+                #     self.on_select_tab('tool')
+                #     return
 
                 # Grid Snap
                 if key == QtCore.Qt.Key.Key_G or key == 'G':
@@ -5338,16 +5370,16 @@ class ShortcutsTab(QtWidgets.QWidget):
         """ % (
             _("EXCELLON EDITOR"),
             _('A'), _("Add Drill Array"),
-            _('C'), _("Copy Drill"),
+            _('C'), _("Copy"),
             _('D'), _("Add Drill"),
             _('J'), _("Jump to Location (x, y)"),
-            _('M'), _("Move Drill"),
+            _('M'), _("Move"),
             _('Q'), _("Add Slot Array"),
             _('R'), _("Resize Drill"),
             _('T'), _("Add a new Tool"),
             _('W'), _("Add Slot"),
             _('Shift+M'), _("Distance Minimum Tool"),
-            _('Del'), _("Delete Drill"),
+            _('Del'), _("Delete"),
             _('Del'), _("Alternate: Delete Tool"),
             _('Esc'), _("Abort and return to Select"),
             _('Space'), _("Toggle Slot direction"),

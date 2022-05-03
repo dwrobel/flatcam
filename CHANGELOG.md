@@ -7,6 +7,77 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+2.05.2022
+
+- in Excellon Editor, Copy sub-tool, added UI and ability to copy as array
+- fixed an issue in Geometry Editor, Copy sub-tool where when the geometry copied numbers over the set limit then the copy as array is incorrect
+- in Geometry Editor fixed an angle issue in the Circle sub-tool
+- in Geometry Editor made sure that when using the Move sub-tool if there is no shape selected, when clicking to get selection that point is also used as reference for the Move command
+
+1.05.2022
+
+- fixed persistence of view status for the coordinates toolbars
+- fixed broken selection in Excellon Editor
+- in Geometry Editor updated the Rectangle Plugin such that when selecting different corners now the drawn rectangle will have those
+- in Geometry Editor updated the Circle Plugin such that when the Radius parameters are not linked then an ellipse is drawn
+
+30.04.2022
+
+- in Excellon Editor, Slot Plugin, made sure that once the Editor is active any change for this plugin parameters will be kept until editor is exit or that parameter is changed again
+- in Excellon Editor, Drill Array Plugin, upgraded the UI and work in progress for the features
+- prettified some GUI elements (some of those that are used in the popup messages)
+- in Excellon Editor, finished the upgrade work on the Drill Array Plugin
+- in Excellon Editor, finished the upgrade work on the Slot Array Plugin
+- in Excellon Editor, finished the upgrade work on the Resize Plugin
+- minor changes in the Excellon Editor -> Resize Plugin
+- updated the language strings
+
+29.04.2022
+
+- In Excellon Editor, finished updating the Drill Plugin and Slot Plugin
+- fixed a bug in the excellon export method, regarding the slots processing
+
+28.04.2022
+
+- in Isolation Plugin made sure that the last displayed message is the warning, in the case of using tool validation and the tool is not validated
+- some more work in the Excellon Editor - Drill adding
+- some fixes in the image loader when clicking the an image that is in the list of previous loaded files
+- a small fix in the SVG parser
+- added a new Tcl command that is returning the name of the active object ('get_active') to accompany the 'set_active' command
+- a small fix for the 2d graphic mode by replacing the q5agg matplotlib backend with the qtagg backend which should work with the Qt6
+- in Calculators Plugin fixed the Electroplating Calculator to work as expected and removed the redundant button 'Calculate'
+
+26.04.2022
+
+- activated the 'View Source' option in the project menu context menu for the Geometry objects
+- in Image Import plugin now the created objects have the 'source_file' attribute with content
+- working in the Excellon Editor - wip
+
+25.04.2022
+
+- deleted the Calibration Plugin (made redundant by changes in other Plugins)
+- some strings were updated
+- in SolderPaste Plugin fixed an issue when creating a new project with this plugin open
+- updated the application strings
+- changed again the FClabel GUI element to allow font size change from a class parameter and modified the way the weight is set
+- small UI change in the Image Import Plugin
+
+24.04.2022
+
+- some fixes in the Import Image Plugin
+- made sure that the CNCJob objects made out of non-multi-toolGeometries are plotted correctly
+- in SolderPaste Plugin fixed an issue where the new parameter 'margin' was taken from the current UI and applied to all tools (nozzles); now each nozzle use his 'margin' parameter
+- in SolderPaste Plugin make sure that the preprocessor is set the same for all tools (nozzles) whenever is modified
+- added 2 new preprocessor files for the SolderPaste Plugin (GRBL and MARLIN)
+- in SolderPaste Plugin made sure that the start GCode is not added for each nozzle but only once at start
+- in SolderPaste Plugin added a new parameter: 'Feedrate Rapids' which will set the feedrate for the fast moves as opposed with the previously used G0 command. This allows to fine tune the fast moves to reduce the vibrations
+
+23.04.2022
+
+- fixed some leftovers due of recent changes in the theme management
+- added a new feature (new modules are required) in the Image Plugin (Menu -> File -> Import -> Import Image) that allow tracing images. This may allow engraving pictures.
+- started to add UI's for the Excellon Editor Tools (really early work)
+
 20.04.2022
 
 - in Solderpaste Plugin fixed the GCode generation; make sure that if no object is selected then the first Gerber object is autoselected

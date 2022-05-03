@@ -9,7 +9,7 @@
 from appPreProcessor import *
 
 
-class Paste_1(AppPreProcTools):
+class Paste_GRBL(AppPreProcTools):
 
     include_header = True
     coordinate_format = "%.*f"
@@ -118,6 +118,7 @@ class Paste_1(AppPreProcTools):
 
         gcode += ('G20\n' if p.units.upper() == 'IN' else 'G21\n')
         gcode += 'G90\n'
+        gcode += 'G17\n'
         gcode += 'G94\n'
         return gcode
 
@@ -160,7 +161,6 @@ class Paste_1(AppPreProcTools):
 G01 Z{z_toolchange} F{fr_rapids}
 G01 X{x_toolchange} Y{y_toolchange} F{fr_rapids}
 T{tool}
-M6    
 (MSG, Change to Tool with Nozzle Dia = {toolC})
 M0
 G01 Z{z_toolchange} F{fr_rapids}
@@ -176,7 +176,6 @@ G01 Z{z_toolchange} F{fr_rapids}
 (Toolchange: START)
 G01 Z{z_toolchange} F{fr_rapids}
 T{tool}
-M6    
 (MSG, Change to Tool with Nozzle Dia = {toolC})
 M0
 G01 Z{z_toolchange} F{fr_rapids}

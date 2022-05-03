@@ -536,7 +536,7 @@ class FlatCAMObj(QtCore.QObject):
         font = QtGui.QFont()
         font.setBold(True)
 
-        p_color = QtGui.QColor("#000000") if self.app.options['global_theme'] == 'light' \
+        p_color = QtGui.QColor("#000000") if self.app.options['global_theme'] in ['default', 'light'] \
             else QtGui.QColor("#FFFFFF")
 
         # main Items categories

@@ -6,7 +6,7 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
-class PathEditorTool(AppTool):
+class ExcResizeEditorTool(AppTool):
     """
     Simple input for buffer distance.
     """
@@ -18,14 +18,14 @@ class PathEditorTool(AppTool):
         self.decimals = app.decimals
         self.plugin_name = plugin_name
 
-        self.ui = PathEditorUI(layout=self.layout, path_class=self, plugin_name=plugin_name)
+        self.ui = ExcResizeEditorUI(layout=self.layout, resize_class=self, plugin_name=plugin_name)
 
         self.connect_signals_at_init()
         self.set_tool_ui()
 
     def connect_signals_at_init(self):
         # Signals
-        self.ui.clear_btn.clicked.connect(self.on_clear)
+        self.ui.clear_btn.clicked.connect(lambda: self.ui.res_dia_entry.set_value(0.0))
 
     def disconnect_signals(self):
         # Signals
@@ -71,7 +71,7 @@ class PathEditorTool(AppTool):
 
     def set_tool_ui(self):
         # Init appGUI
-        self.length = 0.0
+        pass
 
     def on_tab_close(self):
         self.disconnect_signals()
@@ -81,27 +81,19 @@ class PathEditorTool(AppTool):
     def on_clear(self):
         self.set_tool_ui()
 
-    @property
-    def length(self):
-        return self.ui.project_line_entry.get_value()
-
-    @length.setter
-    def length(self, val):
-        self.ui.project_line_entry.set_value(val)
-
     def hide_tool(self):
-        self.ui.path_tool_frame.hide()
+        self.ui.tool_frame.hide()
         self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
         if self.draw_app.active_tool.name != 'select':
             self.draw_app.select_tool("select")
 
 
-class PathEditorUI:
+class ExcResizeEditorUI:
 
-    def __init__(self, layout, path_class, plugin_name):
+    def __init__(self, layout, resize_class, plugin_name):
         self.pluginName = plugin_name
-        self.path_class = path_class
-        self.decimals = self.path_class.app.decimals
+        self.ed_class = resize_class
+        self.decimals = self.ed_class.app.decimals
         self.layout = layout
 
         # Title
@@ -116,41 +108,66 @@ class PathEditorUI:
         self.layout.addWidget(title_label)
 
         # this way I can hide/show the frame
-        self.path_tool_frame = QtWidgets.QFrame()
-        self.path_tool_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.path_tool_frame)
-        self.path_tool_box = QtWidgets.QVBoxLayout()
-        self.path_tool_box.setContentsMargins(0, 0, 0, 0)
-        self.path_tool_frame.setLayout(self.path_tool_box)
+        self.tool_frame = QtWidgets.QFrame()
+        self.tool_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.tool_frame)
+        self.editor_vbox = QtWidgets.QVBoxLayout()
+        self.editor_vbox.setContentsMargins(0, 0, 0, 0)
+        self.tool_frame.setLayout(self.editor_vbox)
 
-        # Grid Layout
-        grid_path = GLay(v_spacing=5, h_spacing=3)
-        self.path_tool_box.addLayout(grid_path)
+        # Tool Diameter
+        self.tool_lbl = FCLabel('%s' % _("Tool Diameter"), bold=True, color='blue')
+        self.editor_vbox.addWidget(self.tool_lbl)
+        # #############################################################################################################
+        # Diameter Frame
+        # #############################################################################################################
+        dia_frame = FCFrame()
+        self.editor_vbox.addWidget(dia_frame)
 
-        # Project distance
-        self.project_line_lbl = FCLabel('%s:' % _("Projection"))
-        self.project_line_lbl.setToolTip(
-            _("Length of the current segment/move.")
+        dia_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
+        dia_frame.setLayout(dia_grid)
+
+        # Dia Value
+        self.dia_lbl = FCLabel('%s:' % _("Value"))
+        self.dia_entry = NumericalEvalEntry(border_color='#0069A9')
+        self.dia_entry.setDisabled(True)
+        self.dia_unit = FCLabel('%s' % 'mm')
+
+        dia_grid.addWidget(self.dia_lbl, 0, 0)
+        dia_grid.addWidget(self.dia_entry, 0, 1)
+        dia_grid.addWidget(self.dia_unit, 0, 2)
+
+        # #############################################################################################################
+        # Resize Frame
+        # #############################################################################################################
+        resize_frame = FCFrame()
+        self.editor_vbox.addWidget(resize_frame)
+
+        resize_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
+        resize_frame.setLayout(resize_grid)
+
+        # Resize Diameter
+        self.res_dia_lbl = FCLabel('%s %s:' % (_("Resize"), _("Value").lower()))
+        self.res_dia_lbl.setToolTip(
+            _("Diameter to resize to.")
         )
-        self.project_line_entry = NumericalEvalEntry(border_color='#0069A9')
-        grid_path.addWidget(self.project_line_lbl, 0, 0)
-        grid_path.addWidget(self.project_line_entry, 0, 1)
+        self.res_dia_entry = FCDoubleSpinner(policy=False)
+        self.res_dia_entry.set_precision(self.decimals)
+        self.res_dia_entry.set_range(0.0000, 10000.0000)
 
-        # self.buffer_corner_lbl = FCLabel('%s:' % _("Buffer corner"))
-        # self.buffer_corner_lbl.setToolTip(
-        #     _("There are 3 types of corners:\n"
-        #       " - 'Round': the corner is rounded for exterior buffer.\n"
-        #       " - 'Square': the corner is met in a sharp angle for exterior buffer.\n"
-        #       " - 'Beveled': the corner is a line that directly connects the features meeting in the corner")
-        # )
-        # self.buffer_corner_cb = FCComboBox()
-        # self.buffer_corner_cb.addItem(_("Round"))
-        # self.buffer_corner_cb.addItem(_("Square"))
-        # self.buffer_corner_cb.addItem(_("Beveled"))
-        # grid_path.addWidget(self.buffer_corner_lbl, 2, 0)
-        # grid_path.addWidget(self.buffer_corner_cb, 2, 1)
+        resize_grid.addWidget(self.res_dia_lbl, 0, 0)
+        resize_grid.addWidget(self.res_dia_entry, 0, 1)
 
-        self.clear_btn = FCButton(_("Clear"))
-        grid_path.addWidget(self.clear_btn, 4, 0, 1, 2)
+        self.clear_btn = QtWidgets.QToolButton()
+        self.clear_btn.setIcon(QtGui.QIcon(self.ed_class.app.resource_location + '/trash32.png'))
+        resize_grid.addWidget(self.clear_btn, 0, 2)
 
+        self.resize_btn = FCButton(_("Resize"))
+        self.resize_btn.setToolTip(
+            _("Resize a drill or a selection of drills.")
+        )
+        self.resize_btn.setIcon(QtGui.QIcon(self.ed_class.app.resource_location + '/resize16.png'))
+        self.editor_vbox.addWidget(self.resize_btn)
+
+        GLay.set_common_column_size([dia_grid, resize_grid], 0)
         self.layout.addStretch(1)

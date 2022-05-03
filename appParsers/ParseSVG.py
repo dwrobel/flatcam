@@ -433,44 +433,44 @@ def getsvggeo(node, object_type, root=None, units='MM', res=64, factor=1.0, app=
 
     # Parse
     elif kind == 'path':
-        log.debug("***PATH***")
+        # log.debug("***PATH***")
         P = parse_path(node.get('d'))
         P = path2shapely(P, object_type, units=units, factor=factor)
         # for path, the resulting geometry is already a list so no need to create a new one
         geo = P
 
     elif kind == 'rect':
-        log.debug("***RECT***")
+        # log.debug("***RECT***")
         R = svgrect2shapely(node, n_points=res, factor=factor)
         geo = [R]
 
     elif kind == 'circle':
-        log.debug("***CIRCLE***")
+        # log.debug("***CIRCLE***")
         C = svgcircle2shapely(node, n_points=res, factor=factor)
         geo = [C]
 
     elif kind == 'ellipse':
-        log.debug("***ELLIPSE***")
+        # log.debug("***ELLIPSE***")
         E = svgellipse2shapely(node, n_points=res, factor=factor)
         geo = [E]
 
     elif kind == 'polygon':
-        log.debug("***POLYGON***")
+        # log.debug("***POLYGON***")
         poly = svgpolygon2shapely(node, n_points=res, factor=factor)
         geo = [poly]
 
     elif kind == 'line':
-        log.debug("***LINE***")
+        # log.debug("***LINE***")
         line = svgline2shapely(node, factor=factor)
         geo = [line]
 
     elif kind == 'polyline':
-        log.debug("***POLYLINE***")
+        # log.debug("***POLYLINE***")
         pline = svgpolyline2shapely(node, factor=factor)
         geo = [pline]
 
     elif kind == 'use':
-        log.debug('***USE***')
+        # log.debug('***USE***')
         # href= is the preferred name for this[1], but inkscape still generates xlink:href=.
         # [1] https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use#Attributes
         href = node.attrib['href'] if 'href' in node.attrib else node.attrib['{http://www.w3.org/1999/xlink}href']
@@ -478,7 +478,7 @@ def getsvggeo(node, object_type, root=None, units='MM', res=64, factor=1.0, app=
         if ref is not None:
             geo = getsvggeo(ref, object_type, root=root, units=units, res=res, factor=factor, app=app)
 
-    elif kind in ['defs', 'namedview', 'format', 'type', 'title', 'desc']:
+    elif kind in ['defs', 'namedview', 'format', 'type', 'title', 'desc', 'svg']:
         log.warning('SVG Element not supported: %s. Skipping to next.' % kind)
 
     elif kind in ['g']:

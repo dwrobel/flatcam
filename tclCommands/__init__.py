@@ -29,6 +29,7 @@ import tclCommands.TclCommandExteriors
 import tclCommands.TclCommandFollow
 import tclCommands.TclCommandGeoCutout
 import tclCommands.TclCommandGeoUnion
+import tclCommands.TclCommandGetActive
 import tclCommands.TclCommandGetNames
 import tclCommands.TclCommandGetPath
 import tclCommands.TclCommandGetSys

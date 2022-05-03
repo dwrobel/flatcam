@@ -1,4 +1,3 @@
-from PyQt6 import QtWidgets
 
 from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
@@ -208,11 +207,11 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         )
         self.slot_axis_label.setMinimumWidth(100)
 
-        self.slot_axis_radio = RadioSet([{'label': _('X'), 'value': 'X'},
-                                         {'label': _('Y'), 'value': 'Y'},
-                                         {'label': _('Angle'), 'value': 'A'}], compact=True)
+        self.slot_direction_radio = RadioSet([{'label': _('X'), 'value': 'X'},
+                                              {'label': _('Y'), 'value': 'Y'},
+                                              {'label': _('Angle'), 'value': 'A'}], compact=True)
         slots_grid.addWidget(self.slot_axis_label, 2, 0)
-        slots_grid.addWidget(self.slot_axis_radio, 2, 1)
+        slots_grid.addWidget(self.slot_direction_radio, 2, 1)
 
         # Slot custom angle
         self.slot_angle_label = FCLabel('%s:' % _('Angle'))
@@ -250,7 +249,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         self.drill_array_size_label.setToolTip(
             _("Specify how many slots to be in the array.")
         )
-        # self.slot_array_size_label.setMinimumWidth(100)
+        # self.array_size_label.setMinimumWidth(100)
 
         self.slot_array_size_entry = FCSpinner()
         self.slot_array_size_entry.set_range(0, 999999)
