@@ -91,9 +91,7 @@ QStatusBar QWidget {
     background-color: transparent;
     padding: 0px;
     border-radius: 0px;
-}
-QStatusBar QWidget:hover {
-    background-color: rgba(68.000, 70.000, 74.000, 1.000);
+    margin: 0px;
 }
 QStatusBar QWidget:pressed {
     background-color: rgba(79.000, 80.000, 84.000, 1.000);
