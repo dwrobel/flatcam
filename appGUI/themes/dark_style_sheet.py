@@ -29,7 +29,7 @@ QToolBar * {
 }
 QWidget {
     background-color: rgba(32.000, 33.000, 36.000, 1.000);
-    color: rgba(228.000, 231.000, 235.000, 1.000);
+    color: rgba(170.000, 170.000, 170.000, 1.000);
     selection-background-color: rgba(138.000, 180.000, 247.000, 1.000);
     selection-color: rgba(32.000, 33.000, 36.000, 1.000);
 }
@@ -153,7 +153,6 @@ QGroupBox::title {
 QMenuBar {
     background-color: rgba(32.000, 33.000, 36.000, 1.000);
     padding: 2px;
-    border-bottom: 1px solid rgba(63.000, 64.000, 66.000, 1.000);
 }
 QMenuBar::item {
     background: transparent;
@@ -171,10 +170,10 @@ QMenuBar::item:pressed {
 }
 QToolBar {
     background-color: rgba(41.000, 42.000, 45.000, 1.000);
-    padding: 0px;
+    padding: 1x;
     font-weight: bold;
     spacing: 1px;
-    margin: 0px;
+    margin: 1px;
 }
 QToolBar::handle:horizontal {
     width: 10px;
@@ -549,11 +548,7 @@ QDockWidget::float-button:hover {
     background-color: rgba(30.000, 43.000, 60.000, 1.000);
     border-radius: 2px
 }
-QFrame {
-    border: 1px solid rgba(63.000, 64.000, 66.000, 1.000);
-    padding: 1px;
-    border-radius: 4px;
-}
+
 QLCDNumber {
     color: rgba(228.000, 231.000, 235.000, 1.000);
     min-width: 2em;
@@ -585,7 +580,6 @@ QSplitter {
     border: none;
 }
 QSplitter::handle {
-    background-color: rgba(63.000, 64.000, 66.000, 1.000);
     margin: 1px 3px;
 }
 QSplitter::handle:hover {

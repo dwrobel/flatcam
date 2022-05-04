@@ -5819,7 +5819,9 @@ class FCMessageBox(QtWidgets.QMessageBox):
         super(FCMessageBox, self).__init__(*args, **kwargs)
         self.offset = None
         self.moving = None
+
         self.setWindowFlags(self.windowFlags() | Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowSystemMenuHint)
+        # self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
 
         #   "background-color: palette(base); "
         self.setStyleSheet(

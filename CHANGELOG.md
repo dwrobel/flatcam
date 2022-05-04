@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+4.05.2020
+
+- some changes to the dark mode stylesheet to make it look better
+- darkened the text color for the dark theme in order to make it easier on the eyes
+- in Distance Plugin, when using the big cursor, the cursor colors are fixed to work for the dark mode too
+
 2.05.2022
 
 - in Excellon Editor, Copy sub-tool, added UI and ability to copy as array

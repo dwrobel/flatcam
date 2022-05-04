@@ -217,10 +217,17 @@ class Distance(AppTool):
         if self.ui.big_cursor_cb.get_value():
             self.app.on_cursor_type(val="big", control_cursor=True)
             self.cursor_color_memory = self.app.plotcanvas.cursor_color
-            if self.app.use_3d_engine is True:
-                self.app.plotcanvas.cursor_color = '#000000FF'
+
+            if self.app.options["global_theme"] in ['defaul', 'light']:
+                if self.app.use_3d_engine is True:
+                    self.app.plotcanvas.cursor_color = '#000000FF'
+                else:
+                    self.app.plotcanvas.cursor_color = '#000000'
             else:
-                self.app.plotcanvas.cursor_color = '#000000'
+                if self.app.use_3d_engine is True:
+                    self.app.plotcanvas.cursor_color = '#AAAAAAFF'
+                else:
+                    self.app.plotcanvas.cursor_color = '#AAAAAA'
             self.app.app_cursor.enabled = True
 
         self.app.call_source = 'measurement'
