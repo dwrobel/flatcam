@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM Evo beta
 - darkened the text color for the dark theme in order to make it easier on the eyes
 - in Distance Plugin, when using the big cursor, the cursor colors are fixed to work for the dark mode too
 - for dark mode disabled hover highlight on the Status Bar
+- more changes for dark theme
 
 2.05.2022
 

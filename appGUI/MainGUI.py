@@ -1533,6 +1533,15 @@ class MainGUI(QtWidgets.QMainWindow):
         # remove the close button from the Plot Area tab (first tab index = 0) as this one will always be ON
         self.plot_tab_area.protectTab(0)
 
+        if self.app.options["global_theme"] not in ['default', 'light']:
+            self.plot_tab_area.setStyleSheet(
+                """
+                QTabWidget::pane {
+                border: 0px solid rgba(255.000, 00.000, 00.000, 1.000);
+                }
+                """
+            )
+
         # ########################################################################
         # ########################## PREFERENCES AREA Tab # ######################
         # ########################################################################
@@ -1542,6 +1551,14 @@ class MainGUI(QtWidgets.QMainWindow):
         self.pref_tab_layout.setContentsMargins(2, 2, 2, 2)
 
         self.pref_tab_area = FCTab()
+        if self.app.options["global_theme"] not in ['default', 'light']:
+            self.pref_tab_area.setStyleSheet(
+                """
+                QTabWidget::pane {
+                border: 0px solid rgba(63.000, 64.000, 66.000, 1.000);
+                }
+                """
+            )
         self.pref_tab_area.setTabsClosable(False)
         self.pref_tab_area_tabBar = self.pref_tab_area.tabBar()
         self.pref_tab_area_tabBar.setStyleSheet("QTabBar::tab{min-width:90px;}")
