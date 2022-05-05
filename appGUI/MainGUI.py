@@ -3040,7 +3040,8 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # PDF Import
                 if key == QtCore.Qt.Key.Key_Q:
-                    self.app.pdf_tool.run()
+                    # self.app.pdf_tool.run()
+                    pass
 
                 # Save Project
                 if key == QtCore.Qt.Key.Key_S:
@@ -4606,8 +4607,9 @@ class ShortcutsTab(QtWidgets.QWidget):
         self.sh_tab_layout.addWidget(self.sh_title)
         self.sh_tab_layout.addLayout(self.sh_hlay)
 
-        self.app_sh_msg = (
-                '''<b>%s</b><br>
+        self.app_sh_title = "<b>%s</b><br>" % _("General Shortcut list")
+
+        self.app_sh_no_mod = """
             <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
                 <tbody>
                     <tr height="20">
@@ -4617,6 +4619,10 @@ class ShortcutsTab(QtWidgets.QWidget):
                     <tr height="20">
                         <td height="20">&nbsp;</td>
                         <td>&nbsp;</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>%s</strong></td>
@@ -4699,68 +4705,46 @@ class ShortcutsTab(QtWidgets.QWidget):
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>&#39;%s&#39;</strong></td>
+                        <td height="20"><strong>%s</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
-                    <tr height="20">
-                        <td height="20"><strong>&#39;%s&#39;</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
+                </tbody>
+            </table>
+        """ % (
+            _('F3'), _("SHOW SHORTCUT LIST"),
+            _('1'), _("Switch to Project Tab"),
+            _('2'), _("Switch to Selected Tab"),
+            _('3'), _("Switch to Tool Tab"),
+            _('B'), _("New Gerber"),
+            _('E'), _("Edit Object (if selected)"),
+            _('G'), _("Grid On/Off"),
+            _('J'), _("Jump to Coordinates"),
+            _('L'), _("New Excellon"),
+            _('M'), _("Move Obj"),
+            _('N'), _("New Geometry"),
+            _('O'), _("Set Origin"),
+            _('Q'), _("Change Units"),
+            _('P'), _("Open Properties Plugin"),
+            _('R'), _("Rotate by 90 degree CW"),
+            _('S'), _("Shell Toggle"),
+            _('T'), _("Add a Tool (when in Geometry Selected Tab or in Tools NCC or Tools Paint)"),
+            _('V'), _("Zoom Fit"),
+            _('X'), _("Flip on X_axis"),
+            _('Y'), _("Flip on Y_axis"),
+            _('-'), _("Zoom Out"),
+            _('='), _("Zoom In"),
+        )
+
+        self.app_sh_ctrl_mod = """
+            <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
+                <tbody>
                     <tr height="20">
                         <td height="20">&nbsp;</td>
                         <td>&nbsp;</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>                   
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr> 
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20">&nbsp;</td>
-                        <td>&nbsp;</td>
+                        <td height="20" width="89"><strong>%s</strong></td>
+                        <td width="194"><span>&nbsp;%s</span></td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>%s</strong></td>
@@ -4792,197 +4776,6 @@ class ShortcutsTab(QtWidgets.QWidget):
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20">&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20">&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20">&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20">&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>'%s'</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
@@ -4995,112 +4788,344 @@ class ShortcutsTab(QtWidgets.QWidget):
                     </tr>
                 </tbody>
             </table>
-            ''' %
-                (
-                    _("General Shortcut list"),
-                    _('F3'), _("SHOW SHORTCUT LIST"),
-                    _('1'), _("Switch to Project Tab"),
-                    _('2'), _("Switch to Selected Tab"),
-                    _('3'), _("Switch to Tool Tab"),
-                    _('B'), _("New Gerber"),
-                    _('E'), _("Edit Object (if selected)"),
-                    _('G'), _("Grid On/Off"),
-                    _('J'), _("Jump to Coordinates"),
-                    _('L'), _("New Excellon"),
-                    _('M'), _("Move Obj"),
-                    _('N'), _("New Geometry"),
-                    _('O'), _("Set Origin"),
-                    _('Q'), _("Change Units"),
-                    _('P'), _("Open Properties Plugin"),
-                    _('R'), _("Rotate by 90 degree CW"),
-                    _('S'), _("Shell Toggle"),
-                    _('T'), _("Add a Tool (when in Geometry Selected Tab or in Tools NCC or Tools Paint)"),
-                    _('V'), _("Zoom Fit"),
-                    _('X'), _("Flip on X_axis"),
-                    _('Y'), _("Flip on Y_axis"),
-                    _('-'), _("Zoom Out"),
-                    _('='), _("Zoom In"),
-
-                    # CTRL section
-                    _('Ctrl+A'), _("Select All"),
-                    _('Ctrl+C'), _("Copy Obj"),
-                    _('Ctrl+D'), _("Open Tools Database"),
-                    _('Ctrl+E'), _("Open Excellon File"),
-                    _('Ctrl+G'), _("Open Gerber File"),
-                    _('Ctrl+M'), _("Distance Tool"),
-                    _('Ctrl+N'), _("New Project"),
-                    _('Ctrl+O'), _("Open Project"),
-                    _('Ctrl+P'), _("Print (PDF)"),
-                    _('Ctrl+Q'), _("PDF Import Tool"),
-                    _('Ctrl+S'), _("Save Project"),
-                    _('Ctrl+F10'), _("Toggle Plot Area"),
-
-                    # SHIFT section
-                    _('Shift+A'), _("Toggle the axis"),
-                    _('Shift+C'), _("Copy Obj_Name"),
-                    _('Shift+E'), _("Toggle Code Editor"),
-                    _('Shift+G'), _("Toggle Grid Lines"),
-                    _('Shift+H'), _("Toggle HUD"),
-                    _('Shift+J'), _("Locate in Object"),
-                    _('Shift+M'), _("Distance Minimum Tool"),
-                    _('Shift+P'), _("Open Preferences Window"),
-                    _('Shift+R'), _("Rotate by 90 degree CCW"),
-                    _('Shift+S'), _("Run a Script"),
-                    _('Shift+W'), _("Toggle the workspace"),
-                    _('Shift+X'), _("Skew on X axis"),
-                    _('Shift+Y'), _("Skew on Y axis"),
-
-                    # ALT section
-                    _('Alt+A'), _("Align Objects"),
-                    _('Alt+B'), _("Markers"),
-                    _('Alt+C'), _("Calculators"),
-                    _('Alt+D'), _("2-Sided PCB"),
-                    _('Alt+E'), _("Extract"),
-                    _('Alt+F'), _("Fiducials"),
-                    _('Alt+G'), _("Invert Gerber"),
-                    _('Alt+H'), _("Punch Gerber"),
-                    _('Alt+I'), _("Isolation"),
-                    _('Alt+J'), _("Copper Thieving"),
-                    _('Alt+K'), _("Solder Paste Dispensing"),
-                    _('Alt+L'), _("Film PCB"),
-                    _('Alt+M'), _("Milling"),
-                    _('Alt+N'), _("Non-Copper Clearing"),
-                    _('Alt+O'), _("Optimal"),
-                    _('Alt+P'), _("Paint Area"),
-                    _('Alt+Q'), _("QRCode"),
-                    _('Alt+R'), _("Rules Check"),
-                    _('Alt+S'), _("View File Source"),
-                    _('Alt+T'), _("Transformations"),
-                    _('Alt+W'), _("Subtract"),
-                    _('Alt+X'), _("Cutout PCB"),
-                    _('Alt+Z'), _("Panelize PCB"),
-                    _('Alt+1'), _("Enable all"),
-                    _('Alt+2'), _("Disable all"),
-                    _('Alt+3'), _("Enable Non-selected Objects"),
-                    _('Alt+4'), _("Disable Non-selected Objects"),
-                    _('Alt+F10'), _("Toggle Full Screen"),
-
-                    # CTRL + ALT section
-                    _('Ctrl+Alt+X'), _("Abort current task (gracefully)"),
-
-                    # CTRL + SHIFT section
-                    _('Ctrl+Shift+S'), _("Save Project As"),
-                    _('Ctrl+Shift+V'), _("Paste Special. "
-                                         "Will convert a Windows path style to the one required in Tcl Shell"),
-
-                    # F keys section
-                    _('F1'), _("Open Online Manual"),
-                    _('F2'), _("Rename Objects"),
-                    _('F4'), _("Open Online Tutorials"),
-                    _('F5'), _("Refresh Plots"),
-                    _('Del'), _("Delete Object"),
-                    _('Del'), _("Alternate: Delete Tool"),
-                    _('`'), _("(left to Key_1)Toggle Notebook Area (Left Side)"),
-                    _('Space'), _("En(Dis)able Obj Plot"),
-                    _('Esc'), _("Deselects all objects")
-                )
+        """ % (
+            # CTRL section
+            _('Ctrl+A'), _("Select All"),
+            _('Ctrl+C'), _("Copy Obj"),
+            _('Ctrl+D'), _("Open Tools Database"),
+            _('Ctrl+E'), _("Open Excellon File"),
+            _('Ctrl+G'), _("Open Gerber File"),
+            _('Ctrl+M'), _("Distance Tool"),
+            _('Ctrl+N'), _("New Project"),
+            _('Ctrl+O'), _("Open Project"),
+            _('Ctrl+P'), _("Print (PDF)"),
+            _('Ctrl+S'), _("Save Project"),
+            _('Ctrl+F10'), _("Toggle Plot Area"),
         )
 
+        self.app_sh_shift_mod = """
+            <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
+                <tbody>
+                    <tr height="20">
+                        <td height="20">&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20" width="89"><strong>%s</strong></td>
+                        <td width="194"><span>&nbsp;%s</span></td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                </tbody>
+            </table>
+        """ % (
+            # SHIFT section
+            _('Shift+A'), _("Toggle the axis"),
+            _('Shift+C'), _("Copy Obj_Name"),
+            _('Shift+E'), _("Toggle Code Editor"),
+            _('Shift+G'), _("Toggle Grid Lines"),
+            _('Shift+H'), _("Toggle HUD"),
+            _('Shift+J'), _("Locate in Object"),
+            _('Shift+M'), _("Distance Minimum Tool"),
+            _('Shift+P'), _("Open Preferences Window"),
+            _('Shift+R'), _("Rotate by 90 degree CCW"),
+            _('Shift+S'), _("Run a Script"),
+            _('Shift+W'), _("Toggle the workspace"),
+            _('Shift+X'), _("Skew on X axis"),
+            _('Shift+Y'), _("Skew on Y axis"),
+        )
+
+        self.app_sh_alt_mod = """
+            <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
+                <tbody>
+                    <tr height="20">
+                        <td height="20">&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20" width="89"><strong>%s</strong></td>
+                        <td width="194"><span>&nbsp;%s</span></td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong%s>T</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>&#39;%s&#39;</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>&#39;%s&#39;</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>&#39;%s&#39;</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>&#39;%s&#39;</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>&#39;%s&#39;</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>&#39;%s&#39;</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                </tbody>
+            </table>
+        """ % (
+            # ALT section
+            _('Alt+A'), _("Align Objects"),
+            _('Alt+B'), _("Markers"),
+            _('Alt+C'), _("Calculators"),
+            _('Alt+D'), _("2-Sided PCB"),
+            _('Alt+E'), _("Extract"),
+            _('Alt+F'), _("Fiducials"),
+            _('Alt+G'), _("Invert Gerber"),
+            _('Alt+H'), _("Punch Gerber"),
+            _('Alt+I'), _("Isolation"),
+            _('Alt+J'), _("Copper Thieving"),
+            _('Alt+K'), _("Solder Paste Dispensing"),
+            _('Alt+L'), _("Film PCB"),
+            _('Alt+M'), _("Milling"),
+            _('Alt+N'), _("Non-Copper Clearing"),
+            _('Alt+O'), _("Optimal"),
+            _('Alt+P'), _("Paint Area"),
+            _('Alt+Q'), _("QRCode"),
+            _('Alt+R'), _("Rules Check"),
+            _('Alt+S'), _("View File Source"),
+            _('Alt+T'), _("Transformations"),
+            _('Alt+W'), _("Subtract"),
+            _('Alt+X'), _("Cutout PCB"),
+            _('Alt+Z'), _("Panelize PCB"),
+            _('Alt+1'), _("Enable all"),
+            _('Alt+2'), _("Disable all"),
+            _('Alt+3'), _("Enable Non-selected Objects"),
+            _('Alt+4'), _("Disable Non-selected Objects"),
+            _('Alt+F10'), _("Toggle Full Screen"),
+        )
+
+        self.app_sh_combo_mod = """
+            <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
+                <tbody>
+                    <tr height="20">
+                        <td height="20">&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20" width="89"><strong>%s</strong></td>
+                        <td width="194"><span>&nbsp;%s</span></td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                </tbody>
+            </table>
+        """ % (
+            # CTRL + ALT section
+            _('Ctrl+Alt+X'), _("Abort current task (gracefully)"),
+
+            # CTRL + SHIFT section
+            _('Ctrl+Shift+S'), _("Save Project As"),
+            _('Ctrl+Shift+V'), _("Paste Special. "
+                                 "Will convert a Windows path style to the one required in Tcl Shell"),
+
+        )
+
+        self.app_sh_div = """
+            <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
+                <tbody>
+                    <tr height="20">
+                        <td height="20">&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20" width="89"><strong>%s</strong></td>
+                        <td width="194"><span>&nbsp;%s</span></td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                </tbody>
+            </table>
+        """ % (
+            # F keys section
+            _('F1'), _("Open Online Manual"),
+            _('F2'), _("Rename Objects"),
+            _('F4'), _("Open Online Tutorials"),
+            _('F5'), _("Refresh Plots"),
+            _('Del'), _("Delete Object"),
+            _('Del'), _("Alternate: Delete Tool"),
+            _('`'), _("(left to Key_1)Toggle Notebook Area (Left Side)"),
+            _('Space'), _("En(Dis)able Obj Plot"),
+            _('Esc'), _("Deselects all objects")
+        )
+
+        self.app_sh_msg = self.app_sh_title + self.app_sh_no_mod + self.app_sh_ctrl_mod + self.app_sh_shift_mod + \
+                          self.app_sh_alt_mod + self.app_sh_combo_mod + self.app_sh_div
         self.sh_app = QtWidgets.QTextEdit()
         self.sh_app.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
 
@@ -5109,9 +5134,9 @@ class ShortcutsTab(QtWidgets.QWidget):
         self.sh_hlay.addWidget(self.sh_app)
 
         editor_title = """
-        <b>%s</b><br>
-        <br>
-        """ % _("Editor Shortcut list")
+                            <b>%s</b><br>
+                            <br>
+                       """ % _("Editor Shortcut list")
 
         # GEOMETRY EDITOR SHORTCUT LIST
         geo_sh_messages = """

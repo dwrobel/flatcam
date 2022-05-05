@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM Evo beta
 - when exiting an Editor with a sub-tool active the cursor data display feature is removed
 - updated the GCode header
 - fixed the 'light' theme paint icon name
+- removed the shortcut for the PDF Import Plugin (Ctrl+Q) since it interfered with the MacOS usage
 
 4.05.2020
 

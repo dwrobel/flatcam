@@ -56,7 +56,7 @@ class ToolPDF(AppTool):
         self.on_open_pdf_click()
 
     def install(self, icon=None, separator=None, **kwargs):
-        AppTool.install(self, icon, separator, shortcut='Ctrl+Q', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='', **kwargs)
 
     def set_tool_ui(self):
         pass
