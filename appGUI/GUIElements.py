@@ -3120,6 +3120,10 @@ class FCTab(QtWidgets.QTabWidget):
 
     def protectTab(self, currentIndex):
         self.tabBar().setTabButton(currentIndex, QtWidgets.QTabBar.ButtonPosition.RightSide, None)
+        try:
+            self.tabBar().setTabButton(currentIndex, QtWidgets.QTabBar.ButtonPosition.LeftSide, None)
+        except Exception:
+            pass
 
 
 # class FCTabBar(QtWidgets.QTabBar):
