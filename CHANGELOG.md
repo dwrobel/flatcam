@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+6.05.2022
+
+- minor changes to one of the custom widgets
+
 5.05.2022
 
 - changed the activity GIF's for the dark theme

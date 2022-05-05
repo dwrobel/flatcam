@@ -3249,7 +3249,17 @@ class FCDetachableTab(QtWidgets.QTabWidget):
 
     def protectTab(self, currentIndex):
         # self.FCTabBar().setTabButton(currentIndex, QtWidgets.QTabBar.RightSide, None)
+        # self.tabBar.tabButton(currentIndex, QtWidgets.QTabBar.ButtonPosition.RightSide).deleteLater()
+        # try:
+        #     self.tabBar.tabButton(currentIndex, QtWidgets.QTabBar.ButtonPosition.RightSide).deleteLater()
+        # except Exception:
+        #     pass
+
         self.tabBar.setTabButton(currentIndex, QtWidgets.QTabBar.ButtonPosition.RightSide, None)
+        try:
+            self.tabBar.setTabButton(currentIndex, QtWidgets.QTabBar.ButtonPosition.LeftSide, None)
+        except Exception:
+            pass
 
     def setMovable(self, movable):
         """
