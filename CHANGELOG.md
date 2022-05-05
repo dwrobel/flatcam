@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM Evo beta
 - changed some of the dark theme icons to the red color
 - made sure that the draw color in Editors is inverted for the dark mode
 - added a hack so the dark stylesheet for QWidget is reapplied if that Qwidget is removed (I don't know why it is lost in the first time)
+- when exiting an Editor with a sub-tool active the cursor data display feature is removed
 
 4.05.2020
 
