@@ -2734,9 +2734,17 @@ class App(QtCore.QObject):
         """
         self.defaults.report_usage("editor2object()")
 
-        # do not update a geometry or excellon object unless it comes out of an editor
+        # do not update a Geometry/Excellon/Gerber/GCode object unless it comes out of an editor
         if self.call_source == 'app':
             return
+
+        # make sure that when we exit an Editor with a tool active then we make some clean-up
+        try:
+            if self.use_3d_engine:
+                self.plotcanvas.text_cursor.parent = None
+                self.plotcanvas.view.camera.zoom_callback = lambda *args: None
+        except Exception:
+            pass
 
         # This is the object that exit from the Editor. It may be the edited object but it can be a new object
         # created by the Editor
