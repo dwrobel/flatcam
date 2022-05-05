@@ -62,8 +62,8 @@ class ExcDrillEditorTool(AppTool):
                 self.app.ui.plugin_tab_layout.addWidget(self.app.ui.plugin_scroll_area)
                 self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
 
-            # focus on Tool Tab
-            self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
+        # focus on Tool Tab
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
 
         # self.app.ui.notebook.callback_on_close = self.on_tab_close
 

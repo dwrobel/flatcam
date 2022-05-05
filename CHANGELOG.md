@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM Evo beta
 - changed the activity GIF's for the dark theme
 - changed some of the dark theme icons to the red color
 - made sure that the draw color in Editors is inverted for the dark mode
+- added a hack so the dark stylesheet for QWidget is reapplied if that Qwidget is removed (I don't know why it is lost in the first time)
 
 4.05.2020
 
