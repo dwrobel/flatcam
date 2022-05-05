@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM Evo beta
 
 - changed the activity GIF's for the dark theme
 - changed some of the dark theme icons to the red color
+- made sure that the draw color in Editors is inverted for the dark mode
 
 4.05.2020
 

@@ -4684,7 +4684,7 @@ class AppGeoEditor(QtCore.QObject):
                     for poly in el.geoms:
                         self.tool_shape.add(
                             shape=poly,
-                            color=(self.app.options["global_draw_color"]),
+                            color=self.get_draw_color(),
                             update=False,
                             layer=0,
                             tolerance=None
@@ -4693,7 +4693,7 @@ class AppGeoEditor(QtCore.QObject):
                     for linestring in el.geoms:
                         self.tool_shape.add(
                             shape=linestring,
-                            color=(self.app.options["global_draw_color"]),
+                            color=self.get_draw_color(),
                             update=False,
                             layer=0,
                             tolerance=None
@@ -4701,19 +4701,37 @@ class AppGeoEditor(QtCore.QObject):
                 else:
                     self.tool_shape.add(
                         shape=el,
-                        color=(self.app.options["global_draw_color"]),
+                        color=(self.get_draw_color()),
                         update=False,
                         layer=0,
                         tolerance=None
                     )
         except TypeError:
             self.tool_shape.add(
-                shape=geo.geo, color=(self.app.options["global_draw_color"]),
+                shape=geo.geo, color=self.get_draw_color(),
                 update=False, layer=0, tolerance=None)
         except AttributeError:
             pass
 
         self.tool_shape.redraw()
+
+    def get_draw_color(self):
+        orig_color = self.app.options["global_draw_color"]
+
+        if self.app.options['global_theme'] in ['default', 'light']:
+            return orig_color
+
+        # in the "dark" theme we invert the color
+        lowered_color = orig_color.lower()
+        group1 = "#0123456789abcdef"
+        group2 = "#fedcba9876543210"
+        # create color dict
+        color_dict = {group1[i]: group2[i] for i in range(len(group1))}
+        new_color = ''.join([color_dict[j] for j in lowered_color])
+        return new_color
+
+    def get_sel_color(self):
+        return self.app.options['global_sel_draw_color']
 
     def on_delete_btn(self):
         self.delete_selected()
@@ -4830,8 +4848,10 @@ class AppGeoEditor(QtCore.QObject):
 
         self.shapes.clear(update=True)
 
-        draw_color = self.app.options['global_draw_color'][:-2] + "FF"
-        sel_color = self.app.options['global_sel_draw_color'][:-2] + 'FF'
+        orig_draw_color = self.get_draw_color()
+        draw_color = orig_draw_color[:-2] + "FF"
+        orig_sel_color = self.get_sel_color()
+        sel_color = orig_sel_color[:-2] + 'FF'
 
         for shape in self.storage.get_objects():
             if shape.geo and not shape.geo.is_empty and shape.geo.is_valid:

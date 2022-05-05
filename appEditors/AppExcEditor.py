@@ -4858,7 +4858,7 @@ class AppExcEditor(QtCore.QObject):
                     for sub_geo in el.geoms:
                         self.tool_shape.add(
                             shape=sub_geo,
-                            color=(self.app.options["global_draw_color"]),
+                            color=self.get_draw_color(),
                             update=False,
                             layer=0,
                             tolerance=None
@@ -4866,19 +4866,37 @@ class AppExcEditor(QtCore.QObject):
                 else:
                     self.tool_shape.add(
                         shape=el,
-                        color=(self.app.options["global_draw_color"]),
+                        color=self.get_draw_color(),
                         update=False,
                         layer=0,
                         tolerance=None)
         except TypeError:
             self.tool_shape.add(
                 shape=util_geo,
-                color=(self.app.options["global_draw_color"]),
+                color=self.get_draw_color(),
                 update=False,
                 layer=0,
                 tolerance=None)
         # print(self.tool_shape.data)
         self.tool_shape.redraw()
+
+    def get_draw_color(self):
+        orig_color = self.app.options["global_draw_color"]
+
+        if self.app.options['global_theme'] in ['default', 'light']:
+            return orig_color
+
+        # in the "dark" theme we invert the color
+        lowered_color = orig_color.lower()
+        group1 = "#0123456789abcdef"
+        group2 = "#fedcba9876543210"
+        # create color dict
+        color_dict = {group1[i]: group2[i] for i in range(len(group1))}
+        new_color = ''.join([color_dict[j] for j in lowered_color])
+        return new_color
+
+    def get_sel_color(self):
+        return self.app.options['global_sel_draw_color']
 
     def replot(self):
         self.plot_all()
@@ -4900,10 +4918,10 @@ class AppExcEditor(QtCore.QObject):
 
                 if shape_plus in self.selected:
                     self.plot_shape(geometry=shape_plus.geo,
-                                    color=self.app.options['global_sel_draw_color'][:-2] + 'FF',
+                                    color=self.get_sel_color()[:-2] + 'FF',
                                     linewidth=2)
                     continue
-                self.plot_shape(geometry=shape_plus.geo, color=self.app.options['global_draw_color'][:-2] + 'FF')
+                self.plot_shape(geometry=shape_plus.geo, color=self.get_draw_color()[:-2] + 'FF')
 
         for shape_form in self.utility:
             self.plot_shape(geometry=shape_form.geo, linewidth=1)
