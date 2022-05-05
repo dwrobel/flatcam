@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+5.05.2022
+
+- changed the activity GIF's for the dark theme
+- changed some of the dark theme icons to the red color
+
 4.05.2020
 
 - some changes to the dark mode stylesheet to make it look better

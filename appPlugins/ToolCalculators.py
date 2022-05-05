@@ -652,7 +652,7 @@ class CalcUI:
 
         # ## Buttons
         self.calculate_vshape_button = FCButton(_("Calculate"))
-        self.calculate_vshape_button.setIcon(QtGui.QIcon(self.app.resource_location + '/calculator16.png'))
+        self.calculate_vshape_button.setIcon(QtGui.QIcon(self.app.resource_location + '/calculator32.png'))
 
         self.calculate_vshape_button.setToolTip(
             _("Calculate either the depth of cut or the effective tool diameter.")
@@ -1036,7 +1036,7 @@ class CalcUI:
 
         # ## Buttons
         self.calculate_tin_button = FCButton(_("Calculate"))
-        self.calculate_tin_button.setIcon(QtGui.QIcon(self.app.resource_location + '/calculator16.png'))
+        self.calculate_tin_button.setIcon(QtGui.QIcon(self.app.resource_location + '/calculator32.png'))
         self.calculate_tin_button.setToolTip(
             _("Calculate the chemical quantities for the desired volume of tinning solution.")
         )

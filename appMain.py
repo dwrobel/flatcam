@@ -1929,7 +1929,7 @@ class App(QtCore.QObject):
         self.paste_tool.install(icon=QtGui.QIcon(self.resource_location + '/solderpastebis32.png'))
 
         self.calculator_tool = ToolCalculator(self)
-        self.calculator_tool.install(icon=QtGui.QIcon(self.resource_location + '/calculator16.png'), separator=True)
+        self.calculator_tool.install(icon=QtGui.QIcon(self.resource_location + '/calculator32.png'), separator=True)
 
         self.sub_tool = ToolSub(self)
         self.sub_tool.install(icon=QtGui.QIcon(self.resource_location + '/sub32.png'),
@@ -1956,7 +1956,7 @@ class App(QtCore.QObject):
                                   before=self.sub_tool.menuAction, separator=True)
 
         self.paint_tool = ToolPaint(self)
-        self.paint_tool.install(icon=QtGui.QIcon(self.resource_location + '/paint20_1.png'), pos=self.ui.menu_plugins,
+        self.paint_tool.install(icon=QtGui.QIcon(self.resource_location + '/paint32.png'), pos=self.ui.menu_plugins,
                                 before=self.sub_tool.menuAction, separator=True)
 
         self.isolation_tool = ToolIsolation(self)
@@ -3301,6 +3301,12 @@ class App(QtCore.QObject):
                         'Icons by <a href="http://www.onlinewebfonts.com">oNline Web Fonts</a>'
                         '<div>Icons by <a href="https://www.flaticon.com/authors/pixel-perfect" '
                         'title="Pixel perfect">Pixel perfect</a> from <a href="https://www.flaticon.com/" '
+                        'title="Flaticon">www.flaticon.com</a></div>'
+                        '<div>Icons by <a href="https://www.flaticon.com/authors/anggara" '
+                        'title="Anggara"> Anggara </a> from <a href="https://www.flaticon.com/" '
+                        'title="Flaticon">www.flaticon.com</a></div>'
+                        '<div>Icons by <a href="https://www.flaticon.com/authors/kharisma" '
+                        'title="Kharisma"> Kharisma </a> from <a href="https://www.flaticon.com/" '
                         'title="Flaticon">www.flaticon.com</a></div>'
                     )
                 )
@@ -5679,12 +5685,12 @@ class App(QtCore.QObject):
 
             # dia_box = Dialog_box(title=_("Jump to ..."),
             #                      label=_("Enter the coordinates in format X,Y:"),
-            #                      icon=QtGui.QIcon(self.resource_location + '/jump_to16.png'),
+            #                      icon=QtGui.QIcon(self.resource_location + '/jump_to32.png'),
             #                      initial_text=dia_box_location)
 
             dia_box = DialogBoxRadio(title=_("Jump to ..."),
                                      label=_("Enter the coordinates in format X,Y:"),
-                                     icon=QtGui.QIcon(self.resource_location + '/jump_to16.png'),
+                                     icon=QtGui.QIcon(self.resource_location + '/jump_to32.png'),
                                      initial_text=dia_box_location,
                                      reference=self.options['global_jump_ref'],
                                      parent=self.ui)
@@ -8337,7 +8343,7 @@ class App(QtCore.QObject):
         """
         dia_box = Dialog_box(title=_("Go to Line ..."),
                              label='%s:' % _("Line"),
-                             icon=QtGui.QIcon(self.resource_location + '/jump_to16.png'),
+                             icon=QtGui.QIcon(self.resource_location + '/jump_to32.png'),
                              initial_text='')
         try:
             line = int(dia_box.location) - 1
