@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM Evo beta
 6.05.2022
 
 - minor changes to one of the custom widgets
+- added an example of custom titlebar - still needs a lot of work
 
 5.05.2022
 
