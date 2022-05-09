@@ -186,10 +186,38 @@ def path2shapely(path, object_type, res=1.0, units='MM', factor=1.0):
                 geo_element = Polygon(rings.geoms[0])
             else:
                 geo_element = LineString(rings.geoms[0])
+            geometry.append(geo_element)
         else:
             try:
-                geo_element = Polygon(rings.geoms[0], rings.geoms[1:])
-            except Exception:
+                poly_list = [Polygon(line.coords) for line in rings.geoms]
+                # if len(poly_list) == 2:
+                #     if poly_list[0].contains(poly_list[1]):
+                #         geo_element = Polygon(rings.geoms[0], rings.geoms[1:])
+                #         geometry.append(geo_element)
+                #     else:
+                #         geometry = poly_list
+                # else:
+                #     geo_element = Polygon(rings.geoms[0], rings.geoms[1:])
+                #     geometry.append(geo_element)
+                contained = []
+                not_contained = []
+                if len(poly_list) > 1:
+                    for p in poly_list[1:-1]:
+                        if poly_list[0].contains(p):
+                            contained.append(p)
+                        else:
+                            not_contained.append(p)
+                else:
+                    not_contained = poly_list
+
+                if not_contained:
+                    geometry += [poly_list[0]]
+                    geometry += not_contained
+
+                if contained:
+                    geo_element = Polygon(poly_list[0].exterior, [p.exterior for p in contained])
+                    geometry.append(geo_element)
+            except Exception as err:
                 coords = []
                 for line in rings.geoms:
                     coords.append(line.coords[0])
@@ -198,7 +226,7 @@ def path2shapely(path, object_type, res=1.0, units='MM', factor=1.0):
                     geo_element = Polygon(coords)
                 except Exception:
                     geo_element = LineString(coords)
-        geometry.append(geo_element)
+                geometry.append(geo_element)
     return geometry
 
 
