@@ -51,9 +51,13 @@ class VisPyCanvas(scene.SceneCanvas):
             tick_color = Color('#000000')
             back_color = str(QPalette().color(QPalette.ColorRole.Window).name())
         else:
-            theme_color = Color('#000000')
+            if theme not in ['default', 'light']:
+                theme_color = Color('#202124')
+                back_color = Color('#202124')
+            else:
+                theme_color = Color('#000000')
+                back_color = Color('#000000')
             tick_color = Color('gray')
-            back_color = Color('#000000')
             # back_color = Color('#272822') # darker
             # back_color = Color('#3c3f41') # lighter
 

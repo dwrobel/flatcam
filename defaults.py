@@ -130,8 +130,8 @@ class AppDefaults:
         # Project Items colors
         "global_proj_item_color_light": '#000000FF',
         "global_proj_item_dis_color_light": '#b7b7cbFF',
-        "global_proj_item_color_dark": '#F2F2F2FF',
-        "global_proj_item_dis_color_dark": '#a6a6a6ff',
+        "global_proj_item_color_dark": '#AAAAAAFF',
+        "global_proj_item_dis_color_dark": '#697177FF',
 
         "global_project_autohide": True,
 

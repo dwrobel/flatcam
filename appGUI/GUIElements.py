@@ -3120,6 +3120,10 @@ class FCTab(QtWidgets.QTabWidget):
 
     def protectTab(self, currentIndex):
         self.tabBar().setTabButton(currentIndex, QtWidgets.QTabBar.ButtonPosition.RightSide, None)
+        try:
+            self.tabBar().setTabButton(currentIndex, QtWidgets.QTabBar.ButtonPosition.LeftSide, None)
+        except Exception:
+            pass
 
 
 # class FCTabBar(QtWidgets.QTabBar):
@@ -3249,7 +3253,17 @@ class FCDetachableTab(QtWidgets.QTabWidget):
 
     def protectTab(self, currentIndex):
         # self.FCTabBar().setTabButton(currentIndex, QtWidgets.QTabBar.RightSide, None)
+        # self.tabBar.tabButton(currentIndex, QtWidgets.QTabBar.ButtonPosition.RightSide).deleteLater()
+        # try:
+        #     self.tabBar.tabButton(currentIndex, QtWidgets.QTabBar.ButtonPosition.RightSide).deleteLater()
+        # except Exception:
+        #     pass
+
         self.tabBar.setTabButton(currentIndex, QtWidgets.QTabBar.ButtonPosition.RightSide, None)
+        try:
+            self.tabBar.setTabButton(currentIndex, QtWidgets.QTabBar.ButtonPosition.LeftSide, None)
+        except Exception:
+            pass
 
     def setMovable(self, movable):
         """
@@ -5487,6 +5501,9 @@ class FlatCAMActivityView(QtWidgets.QWidget):
         elif icon_kind == "Eclipse green":
             icon = icon_location + '/active_4_static.png'
             movie = icon_location + "/active_4.gif"
+        elif icon_kind == "Spinner green":
+            icon = icon_location + '/active_5_static.png'
+            movie = icon_location + "/active_5.gif"
         else:
             icon = icon_location + '/active_static.png'
             movie = icon_location + "/active.gif"
@@ -5700,7 +5717,7 @@ class AppSystemTray(QtWidgets.QSystemTrayIcon):
             self.menu_open.addSeparator()
 
             # Open Gerber ...
-            menu_opengerber = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/flatcam_icon24.png'),
+            menu_opengerber = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/open_gerber32.png'),
                                             '%s ...\t%s' % (_('Open Gerber'), _('Ctrl+G')), self)
             self.menu_open.addAction(menu_opengerber)
 
@@ -5819,7 +5836,9 @@ class FCMessageBox(QtWidgets.QMessageBox):
         super(FCMessageBox, self).__init__(*args, **kwargs)
         self.offset = None
         self.moving = None
+
         self.setWindowFlags(self.windowFlags() | Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowSystemMenuHint)
+        # self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
 
         #   "background-color: palette(base); "
         self.setStyleSheet(

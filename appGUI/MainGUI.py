@@ -99,6 +99,8 @@ class MainGUI(QtWidgets.QMainWindow):
 
         FCLabel.patching_text_color = self.theme_safe_color
 
+        # self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
+
         # Divine icon pack by Ipapun @ finicons.com
 
         # #######################################################################
@@ -162,7 +164,7 @@ class MainGUI(QtWidgets.QMainWindow):
         )
 
         self.menufile_open = self.menufile.addMenu(
-            QtGui.QIcon(self.app.resource_location + '/folder32_bis.png'), '%s' % _('Open'))
+            QtGui.QIcon(self.app.resource_location + '/folder32.png'), '%s' % _('Open'))
         self.menufile_open.setToolTipsVisible(True)
 
         # Open Project ...
@@ -173,7 +175,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.menufile_open.addSeparator()
 
         # Open Gerber ...
-        self.menufileopengerber = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/flatcam_icon24.png'),
+        self.menufileopengerber = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/open_gerber32.png'),
                                                 '%s...\t%s' % (_('Open Gerber'), _('Ctrl+G')), self)
         self.menufile_open.addAction(self.menufileopengerber)
 
@@ -475,14 +477,14 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/origin16.png'),
             '%s\t%s' % (_('Set Origin'), _('O')))
         self.menuedit_move2origin = self.menuedit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/origin2_16.png'),
+            QtGui.QIcon(self.app.resource_location + '/move2origin32.png'),
             '%s\t%s' % (_('Move to Origin'), _('Shift+O')))
         self.menuedit_center_in_origin = self.menuedit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/origin3_32.png'),
+            QtGui.QIcon(self.app.resource_location + '/custom_origin32.png'),
             '%s\t%s' % (_('Custom Origin'), ''))
 
         self.menueditjump = self.menuedit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/jump_to16.png'),
+            QtGui.QIcon(self.app.resource_location + '/jump_to32.png'),
             '%s\t%s' % (_('Jump to Location'), _('J')))
         self.menueditlocate = self.menuedit.addAction(
             QtGui.QIcon(self.app.resource_location + '/locate16.png'),
@@ -764,7 +766,7 @@ class MainGUI(QtWidgets.QMainWindow):
             '%s\t%s' % (_("Simplification"), '')
         )
         self.geo_paint_menuitem = self.geo_editor_menu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/paint20_1.png'),
+            QtGui.QIcon(self.app.resource_location + '/paint32.png'),
             '%s\t%s' % (_("Paint"), _('I'))
         )
         self.geo_transform_menuitem = self.geo_editor_menu.addAction(
@@ -1057,14 +1059,14 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################## File Toolbar# ###############################
         # ########################################################################
         self.file_open_gerber_btn = self.toolbarfile.addAction(
-            QtGui.QIcon(self.app.resource_location + '/flatcam_icon32.png'), _("Open Gerber"))
+            QtGui.QIcon(self.app.resource_location + '/open_gerber32.png'), _("Open Gerber"))
         self.file_open_excellon_btn = self.toolbarfile.addAction(
-            QtGui.QIcon(self.app.resource_location + '/drill32.png'), _("Open Excellon"))
+            QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'), _("Open Excellon"))
         self.toolbarfile.addSeparator()
         self.file_open_btn = self.toolbarfile.addAction(
             QtGui.QIcon(self.app.resource_location + '/folder32.png'), _("Open Project"))
         self.file_save_btn = self.toolbarfile.addAction(
-            QtGui.QIcon(self.app.resource_location + '/project_save32.png'), _("Save project"))
+            QtGui.QIcon(self.app.resource_location + '/save_as.png'), _("Save project"))
 
         # ########################################################################
         # ########################## Edit Toolbar# ###############################
@@ -1078,7 +1080,7 @@ class MainGUI(QtWidgets.QMainWindow):
                                           QToolButton
                                           {
                                               color: black;
-                                              background-color: tomato;
+                                              background-color: blue;
                                           }
                                           """)
         self.editor_exit_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/power16.png'))
@@ -1099,12 +1101,12 @@ class MainGUI(QtWidgets.QMainWindow):
         self.origin_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/origin32.png'), _('Set Origin'))
         self.move2origin_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/origin2_32.png'), _('Move to Origin'))
+            QtGui.QIcon(self.app.resource_location + '/move2origin32.png'), _('Move to Origin'))
         self.center_in_origin_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/origin3_32.png'), _('Custom Origin'))
+            QtGui.QIcon(self.app.resource_location + '/custom_origin32.png'), _('Custom Origin'))
 
         self.jmp_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/jump_to16.png'), _('Jump to Location'))
+            QtGui.QIcon(self.app.resource_location + '/jump_to32.png'), _('Jump to Location'))
         self.locate_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/locate32.png'), _('Locate in Object'))
 
@@ -1140,7 +1142,7 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################## Tools Toolbar# ##############################
         # ########################################################################
         self.drill_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Drilling"))
+            QtGui.QIcon(self.app.resource_location + '/drill32.png'), _("Drilling"))
         self.mill_btn = self.toolbarplugins.addAction(
             QtGui.QIcon(self.app.resource_location + '/milling_tool32.png'), _("Milling"))
         self.level_btn = self.toolbarplugins.addAction(
@@ -1151,13 +1153,13 @@ class MainGUI(QtWidgets.QMainWindow):
         self.toolbarplugins.addSeparator()
 
         self.isolation_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/iso_16.png'), _("Isolation"))
+            QtGui.QIcon(self.app.resource_location + '/iso32.png'), _("Isolation"))
         self.follow_btn = self.toolbarplugins.addAction(
             QtGui.QIcon(self.app.resource_location + '/follow32.png'), _("Follow"))
         self.ncc_btn = self.toolbarplugins.addAction(
             QtGui.QIcon(self.app.resource_location + '/ncc32.png'), _("NCC"))
         self.paint_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/paint20_1.png'), _("Paint"))
+            QtGui.QIcon(self.app.resource_location + '/paint32.png'), _("Paint"))
 
         self.toolbarplugins.addSeparator()
 
@@ -1188,7 +1190,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.punch_btn = self.toolbarplugins.addAction(
             QtGui.QIcon(self.app.resource_location + '/punch32.png'), _("Punch Gerber"))
         self.calculators_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/calculator24.png'), _("Calculators"))
+            QtGui.QIcon(self.app.resource_location + '/calculator32.png'), _("Calculators"))
 
         self.toolbarplugins.addSeparator()
 
@@ -1267,7 +1269,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.geo_add_buffer_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'), _('Add Buffer'))
         self.geo_add_paint_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/paint20_1.png'), _('Paint Shape'))
+            QtGui.QIcon(self.app.resource_location + '/paint32.png'), _('Paint Shape'))
         self.geo_eraser_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/eraser26.png'), _('Eraser'))
 
@@ -1355,7 +1357,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         # Snap GRID toolbar is always active to facilitate usage of measurements done on GRID
         self.grid_snap_btn = self.grid_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/grid32.png'), _('Snap to grid'))
+            QtGui.QIcon(self.app.resource_location + '/grid18.png'), _('Snap to grid'))
         self.grid_gap_x_entry = FCEntry2()
         self.grid_gap_x_entry.setMaximumWidth(70)
         self.grid_gap_x_entry.setToolTip(_("Grid X snapping distance"))
@@ -1396,7 +1398,7 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################################################################
         self.axis_status_label = FCLabel()
         self.axis_status_label.setToolTip(_("Toggle the display of axis on canvas"))
-        self.axis_status_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/axis16.png'))
+        self.axis_status_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/axis18.png'))
         self.status_toolbar.addWidget(self.axis_status_label)
         self.status_toolbar.addWidget(FCLabel(" "))
 
@@ -1408,7 +1410,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.hud_label = FCLabel()
         self.hud_label.setToolTip(_("HUD (Heads up display)"))
-        self.hud_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/hud16.png'))
+        self.hud_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/hud18.png'))
         self.status_toolbar.addWidget(self.hud_label)
         self.status_toolbar.addWidget(FCLabel(" "))
 
@@ -1533,6 +1535,15 @@ class MainGUI(QtWidgets.QMainWindow):
         # remove the close button from the Plot Area tab (first tab index = 0) as this one will always be ON
         self.plot_tab_area.protectTab(0)
 
+        if self.app.options["global_theme"] not in ['default', 'light']:
+            self.plot_tab_area.setStyleSheet(
+                """
+                QTabWidget::pane {
+                border: 0px solid rgba(255.000, 00.000, 00.000, 1.000);
+                }
+                """
+            )
+
         # ########################################################################
         # ########################## PREFERENCES AREA Tab # ######################
         # ########################################################################
@@ -1542,6 +1553,14 @@ class MainGUI(QtWidgets.QMainWindow):
         self.pref_tab_layout.setContentsMargins(2, 2, 2, 2)
 
         self.pref_tab_area = FCTab()
+        if self.app.options["global_theme"] not in ['default', 'light']:
+            self.pref_tab_area.setStyleSheet(
+                """
+                QTabWidget::pane {
+                border: 0px solid rgba(63.000, 64.000, 66.000, 1.000);
+                }
+                """
+            )
         self.pref_tab_area.setTabsClosable(False)
         self.pref_tab_area_tabBar = self.pref_tab_area.tabBar()
         self.pref_tab_area_tabBar.setStyleSheet("QTabBar::tab{min-width:90px;}")
@@ -1829,7 +1848,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.draw_buffer = self.g_editor_cmenu.addAction(
             QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'), _("Buffer"))
         self.draw_paint = self.g_editor_cmenu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/paint20_1.png'), _("Paint"))
+            QtGui.QIcon(self.app.resource_location + '/paint32.png'), _("Paint"))
         self.draw_eraser = self.g_editor_cmenu.addAction(
             QtGui.QIcon(self.app.resource_location + '/eraser26.png'), _("Eraser"))
         self.g_editor_cmenu.addSeparator()
@@ -1887,7 +1906,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.e_editor_cmenu = self.popMenu.addMenu(
             QtGui.QIcon(self.app.resource_location + '/drill32.png'), _("Exc Editor"))
         self.drill = self.e_editor_cmenu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/drill32.png'), _("Add Drill"))
+            QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'), _("Add Drill"))
         self.drill_array = self.e_editor_cmenu.addAction(
             QtGui.QIcon(self.app.resource_location + '/addarray32.png'), _("Add Drill Array"))
         self.e_editor_cmenu.addSeparator()
@@ -1913,7 +1932,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.popmenu_numeric_move = self.popMenu.addAction(
             QtGui.QIcon(self.app.resource_location + '/move32_bis.png'), _("Num Move"))
         self.popmenu_move2origin = self.popMenu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/origin2_32.png'), _("Move2Origin"))
+            QtGui.QIcon(self.app.resource_location + '/move2origin32.png'), _("Move2Origin"))
         self.popmenu_move = self.popMenu.addAction(
             QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move"))
         self.popmenu_properties = self.popMenu.addAction(
@@ -2436,14 +2455,14 @@ class MainGUI(QtWidgets.QMainWindow):
         # ##################### File Toolbar #####################################
         # ########################################################################
         self.file_open_gerber_btn = self.toolbarfile.addAction(
-            QtGui.QIcon(self.app.resource_location + '/flatcam_icon32.png'), _("Open Gerber"))
+            QtGui.QIcon(self.app.resource_location + '/open_gerber32.png'), _("Open Gerber"))
         self.file_open_excellon_btn = self.toolbarfile.addAction(
-            QtGui.QIcon(self.app.resource_location + '/drill32.png'), _("Open Excellon"))
+            QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'), _("Open Excellon"))
         self.toolbarfile.addSeparator()
         self.file_open_btn = self.toolbarfile.addAction(
             QtGui.QIcon(self.app.resource_location + '/folder32.png'), _("Open Project"))
         self.file_save_btn = self.toolbarfile.addAction(
-            QtGui.QIcon(self.app.resource_location + '/project_save32.png'), _("Save Project"))
+            QtGui.QIcon(self.app.resource_location + '/save_as.png'), _("Save Project"))
 
         # ########################################################################
         # ######################### Edit Toolbar #################################
@@ -2457,7 +2476,7 @@ class MainGUI(QtWidgets.QMainWindow):
                                           QToolButton
                                           {
                                               color: black;
-                                              background-color: tomato;
+                                              background-color: blue;
                                           }
                                           """)
         self.editor_exit_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/power16.png'))
@@ -2478,12 +2497,12 @@ class MainGUI(QtWidgets.QMainWindow):
         self.origin_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/origin32.png'), _('Set Origin'))
         self.move2origin_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/origin2_32.png'), _('Move to Origin'))
+            QtGui.QIcon(self.app.resource_location + '/move2origin32.png'), _('Move to Origin'))
         self.center_in_origin_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/origin3_32.png'), _('Custom Origin'))
+            QtGui.QIcon(self.app.resource_location + '/custom_origin32.png'), _('Custom Origin'))
 
         self.jmp_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/jump_to16.png'), _('Jump to Location'))
+            QtGui.QIcon(self.app.resource_location + '/jump_to32.png'), _('Jump to Location'))
         self.locate_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/locate32.png'), _('Locate in Object'))
 
@@ -2517,7 +2536,7 @@ class MainGUI(QtWidgets.QMainWindow):
         # ######################### Tools Toolbar #################################
         # #########################################################################
         self.drill_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Drilling"))
+            QtGui.QIcon(self.app.resource_location + '/drill32.png'), _("Drilling"))
         self.mill_btn = self.toolbarplugins.addAction(
             QtGui.QIcon(self.app.resource_location + '/milling_tool32.png'), _("Milling"))
         self.level_btn = self.toolbarplugins.addAction(
@@ -2528,13 +2547,13 @@ class MainGUI(QtWidgets.QMainWindow):
         self.toolbarplugins.addSeparator()
 
         self.isolation_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/iso_16.png'), _("Isolation"))
+            QtGui.QIcon(self.app.resource_location + '/iso32.png'), _("Isolation"))
         self.follow_btn = self.toolbarplugins.addAction(
             QtGui.QIcon(self.app.resource_location + '/follow32.png'), _("Follow"))
         self.ncc_btn = self.toolbarplugins.addAction(
             QtGui.QIcon(self.app.resource_location + '/ncc32.png'), _("NCC"))
         self.paint_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/paint20_1.png'), _("Paint"))
+            QtGui.QIcon(self.app.resource_location + '/paint32.png'), _("Paint"))
 
         self.toolbarplugins.addSeparator()
 
@@ -2565,7 +2584,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.punch_btn = self.toolbarplugins.addAction(
             QtGui.QIcon(self.app.resource_location + '/punch32.png'), _("Punch Gerber"))
         self.calculators_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/calculator24.png'), _("Calculators"))
+            QtGui.QIcon(self.app.resource_location + '/calculator32.png'), _("Calculators"))
 
         self.toolbarplugins.addSeparator()
 
@@ -2642,7 +2661,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.geo_add_buffer_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'), _('Add Buffer'))
         self.geo_add_paint_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/paint20_1.png'), _('Paint Shape'))
+            QtGui.QIcon(self.app.resource_location + '/paint32.png'), _('Paint Shape'))
         self.geo_eraser_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/eraser26.png'), _('Eraser'))
 
@@ -3021,7 +3040,8 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # PDF Import
                 if key == QtCore.Qt.Key.Key_Q:
-                    self.app.pdf_tool.run()
+                    # self.app.pdf_tool.run()
+                    pass
 
                 # Save Project
                 if key == QtCore.Qt.Key.Key_S:
@@ -4587,8 +4607,9 @@ class ShortcutsTab(QtWidgets.QWidget):
         self.sh_tab_layout.addWidget(self.sh_title)
         self.sh_tab_layout.addLayout(self.sh_hlay)
 
-        self.app_sh_msg = (
-                '''<b>%s</b><br>
+        self.app_sh_title = "<b>%s</b><br>" % _("General Shortcut list")
+
+        self.app_sh_no_mod = """
             <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
                 <tbody>
                     <tr height="20">
@@ -4598,6 +4619,10 @@ class ShortcutsTab(QtWidgets.QWidget):
                     <tr height="20">
                         <td height="20">&nbsp;</td>
                         <td>&nbsp;</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>%s</strong></td>
@@ -4680,68 +4705,46 @@ class ShortcutsTab(QtWidgets.QWidget):
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>&#39;%s&#39;</strong></td>
+                        <td height="20"><strong>%s</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
-                    <tr height="20">
-                        <td height="20"><strong>&#39;%s&#39;</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
+                </tbody>
+            </table>
+        """ % (
+            _('F3'), _("SHOW SHORTCUT LIST"),
+            _('1'), _("Switch to Project Tab"),
+            _('2'), _("Switch to Selected Tab"),
+            _('3'), _("Switch to Tool Tab"),
+            _('B'), _("New Gerber"),
+            _('E'), _("Edit Object (if selected)"),
+            _('G'), _("Grid On/Off"),
+            _('J'), _("Jump to Coordinates"),
+            _('L'), _("New Excellon"),
+            _('M'), _("Move Obj"),
+            _('N'), _("New Geometry"),
+            _('O'), _("Set Origin"),
+            _('Q'), _("Change Units"),
+            _('P'), _("Open Properties Plugin"),
+            _('R'), _("Rotate by 90 degree CW"),
+            _('S'), _("Shell Toggle"),
+            _('T'), _("Add a Tool (when in Geometry Selected Tab or in Tools NCC or Tools Paint)"),
+            _('V'), _("Zoom Fit"),
+            _('X'), _("Flip on X_axis"),
+            _('Y'), _("Flip on Y_axis"),
+            _('-'), _("Zoom Out"),
+            _('='), _("Zoom In"),
+        )
+
+        self.app_sh_ctrl_mod = """
+            <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
+                <tbody>
                     <tr height="20">
                         <td height="20">&nbsp;</td>
                         <td>&nbsp;</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>                   
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr> 
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20">&nbsp;</td>
-                        <td>&nbsp;</td>
+                        <td height="20" width="89"><strong>%s</strong></td>
+                        <td width="194"><span>&nbsp;%s</span></td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>%s</strong></td>
@@ -4773,197 +4776,6 @@ class ShortcutsTab(QtWidgets.QWidget):
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20">&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20">&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20">&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20">&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>%s</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>'%s'</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
@@ -4976,112 +4788,344 @@ class ShortcutsTab(QtWidgets.QWidget):
                     </tr>
                 </tbody>
             </table>
-            ''' %
-                (
-                    _("General Shortcut list"),
-                    _('F3'), _("SHOW SHORTCUT LIST"),
-                    _('1'), _("Switch to Project Tab"),
-                    _('2'), _("Switch to Selected Tab"),
-                    _('3'), _("Switch to Tool Tab"),
-                    _('B'), _("New Gerber"),
-                    _('E'), _("Edit Object (if selected)"),
-                    _('G'), _("Grid On/Off"),
-                    _('J'), _("Jump to Coordinates"),
-                    _('L'), _("New Excellon"),
-                    _('M'), _("Move Obj"),
-                    _('N'), _("New Geometry"),
-                    _('O'), _("Set Origin"),
-                    _('Q'), _("Change Units"),
-                    _('P'), _("Open Properties Plugin"),
-                    _('R'), _("Rotate by 90 degree CW"),
-                    _('S'), _("Shell Toggle"),
-                    _('T'), _("Add a Tool (when in Geometry Selected Tab or in Tools NCC or Tools Paint)"),
-                    _('V'), _("Zoom Fit"),
-                    _('X'), _("Flip on X_axis"),
-                    _('Y'), _("Flip on Y_axis"),
-                    _('-'), _("Zoom Out"),
-                    _('='), _("Zoom In"),
-
-                    # CTRL section
-                    _('Ctrl+A'), _("Select All"),
-                    _('Ctrl+C'), _("Copy Obj"),
-                    _('Ctrl+D'), _("Open Tools Database"),
-                    _('Ctrl+E'), _("Open Excellon File"),
-                    _('Ctrl+G'), _("Open Gerber File"),
-                    _('Ctrl+M'), _("Distance Tool"),
-                    _('Ctrl+N'), _("New Project"),
-                    _('Ctrl+O'), _("Open Project"),
-                    _('Ctrl+P'), _("Print (PDF)"),
-                    _('Ctrl+Q'), _("PDF Import Tool"),
-                    _('Ctrl+S'), _("Save Project"),
-                    _('Ctrl+F10'), _("Toggle Plot Area"),
-
-                    # SHIFT section
-                    _('Shift+A'), _("Toggle the axis"),
-                    _('Shift+C'), _("Copy Obj_Name"),
-                    _('Shift+E'), _("Toggle Code Editor"),
-                    _('Shift+G'), _("Toggle Grid Lines"),
-                    _('Shift+H'), _("Toggle HUD"),
-                    _('Shift+J'), _("Locate in Object"),
-                    _('Shift+M'), _("Distance Minimum Tool"),
-                    _('Shift+P'), _("Open Preferences Window"),
-                    _('Shift+R'), _("Rotate by 90 degree CCW"),
-                    _('Shift+S'), _("Run a Script"),
-                    _('Shift+W'), _("Toggle the workspace"),
-                    _('Shift+X'), _("Skew on X axis"),
-                    _('Shift+Y'), _("Skew on Y axis"),
-
-                    # ALT section
-                    _('Alt+A'), _("Align Objects"),
-                    _('Alt+B'), _("Markers"),
-                    _('Alt+C'), _("Calculators"),
-                    _('Alt+D'), _("2-Sided PCB"),
-                    _('Alt+E'), _("Extract"),
-                    _('Alt+F'), _("Fiducials"),
-                    _('Alt+G'), _("Invert Gerber"),
-                    _('Alt+H'), _("Punch Gerber"),
-                    _('Alt+I'), _("Isolation"),
-                    _('Alt+J'), _("Copper Thieving"),
-                    _('Alt+K'), _("Solder Paste Dispensing"),
-                    _('Alt+L'), _("Film PCB"),
-                    _('Alt+M'), _("Milling"),
-                    _('Alt+N'), _("Non-Copper Clearing"),
-                    _('Alt+O'), _("Optimal"),
-                    _('Alt+P'), _("Paint Area"),
-                    _('Alt+Q'), _("QRCode"),
-                    _('Alt+R'), _("Rules Check"),
-                    _('Alt+S'), _("View File Source"),
-                    _('Alt+T'), _("Transformations"),
-                    _('Alt+W'), _("Subtract"),
-                    _('Alt+X'), _("Cutout PCB"),
-                    _('Alt+Z'), _("Panelize PCB"),
-                    _('Alt+1'), _("Enable all"),
-                    _('Alt+2'), _("Disable all"),
-                    _('Alt+3'), _("Enable Non-selected Objects"),
-                    _('Alt+4'), _("Disable Non-selected Objects"),
-                    _('Alt+F10'), _("Toggle Full Screen"),
-
-                    # CTRL + ALT section
-                    _('Ctrl+Alt+X'), _("Abort current task (gracefully)"),
-
-                    # CTRL + SHIFT section
-                    _('Ctrl+Shift+S'), _("Save Project As"),
-                    _('Ctrl+Shift+V'), _("Paste Special. "
-                                         "Will convert a Windows path style to the one required in Tcl Shell"),
-
-                    # F keys section
-                    _('F1'), _("Open Online Manual"),
-                    _('F2'), _("Rename Objects"),
-                    _('F4'), _("Open Online Tutorials"),
-                    _('F5'), _("Refresh Plots"),
-                    _('Del'), _("Delete Object"),
-                    _('Del'), _("Alternate: Delete Tool"),
-                    _('`'), _("(left to Key_1)Toggle Notebook Area (Left Side)"),
-                    _('Space'), _("En(Dis)able Obj Plot"),
-                    _('Esc'), _("Deselects all objects")
-                )
+        """ % (
+            # CTRL section
+            _('Ctrl+A'), _("Select All"),
+            _('Ctrl+C'), _("Copy Obj"),
+            _('Ctrl+D'), _("Open Tools Database"),
+            _('Ctrl+E'), _("Open Excellon File"),
+            _('Ctrl+G'), _("Open Gerber File"),
+            _('Ctrl+M'), _("Distance Tool"),
+            _('Ctrl+N'), _("New Project"),
+            _('Ctrl+O'), _("Open Project"),
+            _('Ctrl+P'), _("Print (PDF)"),
+            _('Ctrl+S'), _("Save Project"),
+            _('Ctrl+F10'), _("Toggle Plot Area"),
         )
 
+        self.app_sh_shift_mod = """
+            <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
+                <tbody>
+                    <tr height="20">
+                        <td height="20">&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20" width="89"><strong>%s</strong></td>
+                        <td width="194"><span>&nbsp;%s</span></td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                </tbody>
+            </table>
+        """ % (
+            # SHIFT section
+            _('Shift+A'), _("Toggle the axis"),
+            _('Shift+C'), _("Copy Obj_Name"),
+            _('Shift+E'), _("Toggle Code Editor"),
+            _('Shift+G'), _("Toggle Grid Lines"),
+            _('Shift+H'), _("Toggle HUD"),
+            _('Shift+J'), _("Locate in Object"),
+            _('Shift+M'), _("Distance Minimum Tool"),
+            _('Shift+P'), _("Open Preferences Window"),
+            _('Shift+R'), _("Rotate by 90 degree CCW"),
+            _('Shift+S'), _("Run a Script"),
+            _('Shift+W'), _("Toggle the workspace"),
+            _('Shift+X'), _("Skew on X axis"),
+            _('Shift+Y'), _("Skew on Y axis"),
+        )
+
+        self.app_sh_alt_mod = """
+            <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
+                <tbody>
+                    <tr height="20">
+                        <td height="20">&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20" width="89"><strong>%s</strong></td>
+                        <td width="194"><span>&nbsp;%s</span></td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong%s>T</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>&#39;%s&#39;</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>&#39;%s&#39;</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>&#39;%s&#39;</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>&#39;%s&#39;</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>&#39;%s&#39;</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>&#39;%s&#39;</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                </tbody>
+            </table>
+        """ % (
+            # ALT section
+            _('Alt+A'), _("Align Objects"),
+            _('Alt+B'), _("Markers"),
+            _('Alt+C'), _("Calculators"),
+            _('Alt+D'), _("2-Sided PCB"),
+            _('Alt+E'), _("Extract"),
+            _('Alt+F'), _("Fiducials"),
+            _('Alt+G'), _("Invert Gerber"),
+            _('Alt+H'), _("Punch Gerber"),
+            _('Alt+I'), _("Isolation"),
+            _('Alt+J'), _("Copper Thieving"),
+            _('Alt+K'), _("Solder Paste Dispensing"),
+            _('Alt+L'), _("Film PCB"),
+            _('Alt+M'), _("Milling"),
+            _('Alt+N'), _("Non-Copper Clearing"),
+            _('Alt+O'), _("Optimal"),
+            _('Alt+P'), _("Paint Area"),
+            _('Alt+Q'), _("QRCode"),
+            _('Alt+R'), _("Rules Check"),
+            _('Alt+S'), _("View File Source"),
+            _('Alt+T'), _("Transformations"),
+            _('Alt+W'), _("Subtract"),
+            _('Alt+X'), _("Cutout PCB"),
+            _('Alt+Z'), _("Panelize PCB"),
+            _('Alt+1'), _("Enable all"),
+            _('Alt+2'), _("Disable all"),
+            _('Alt+3'), _("Enable Non-selected Objects"),
+            _('Alt+4'), _("Disable Non-selected Objects"),
+            _('Alt+F10'), _("Toggle Full Screen"),
+        )
+
+        self.app_sh_combo_mod = """
+            <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
+                <tbody>
+                    <tr height="20">
+                        <td height="20">&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20" width="89"><strong>%s</strong></td>
+                        <td width="194"><span>&nbsp;%s</span></td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                </tbody>
+            </table>
+        """ % (
+            # CTRL + ALT section
+            _('Ctrl+Alt+X'), _("Abort current task (gracefully)"),
+
+            # CTRL + SHIFT section
+            _('Ctrl+Shift+S'), _("Save Project As"),
+            _('Ctrl+Shift+V'), _("Paste Special. "
+                                 "Will convert a Windows path style to the one required in Tcl Shell"),
+
+        )
+
+        self.app_sh_div = """
+            <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
+                <tbody>
+                    <tr height="20">
+                        <td height="20">&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20" width="89"><strong>%s</strong></td>
+                        <td width="194"><span>&nbsp;%s</span></td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                </tbody>
+            </table>
+        """ % (
+            # F keys section
+            _('F1'), _("Open Online Manual"),
+            _('F2'), _("Rename Objects"),
+            _('F4'), _("Open Online Tutorials"),
+            _('F5'), _("Refresh Plots"),
+            _('Del'), _("Delete Object"),
+            _('Del'), _("Alternate: Delete Tool"),
+            _('`'), _("(left to Key_1)Toggle Notebook Area (Left Side)"),
+            _('Space'), _("En(Dis)able Obj Plot"),
+            _('Esc'), _("Deselects all objects")
+        )
+
+        self.app_sh_msg = self.app_sh_title + self.app_sh_no_mod + self.app_sh_ctrl_mod + self.app_sh_shift_mod + \
+                          self.app_sh_alt_mod + self.app_sh_combo_mod + self.app_sh_div
         self.sh_app = QtWidgets.QTextEdit()
         self.sh_app.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
 
@@ -5090,9 +5134,9 @@ class ShortcutsTab(QtWidgets.QWidget):
         self.sh_hlay.addWidget(self.sh_app)
 
         editor_title = """
-        <b>%s</b><br>
-        <br>
-        """ % _("Editor Shortcut list")
+                            <b>%s</b><br>
+                            <br>
+                       """ % _("Editor Shortcut list")
 
         # GEOMETRY EDITOR SHORTCUT LIST
         geo_sh_messages = """

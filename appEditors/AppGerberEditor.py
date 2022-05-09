@@ -3067,11 +3067,9 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
                                     if solid_geo not in self.get_selected_geos():
                                         shape_id = self.app.tool_shapes.add(tolerance=obj.drawing_tolerance, layer=0,
                                                                             shape=solid_geo,
-                                                                            color=self.app.options[
-                                                                                      'global_sel_draw_color'] + 'AF',
-                                                                            face_color=self.app.options[
-                                                                                           'global_sel_draw_color'
-                                                                                       ] + 'AF',
+                                                                            color=self.draw_app.get_sel_color() + 'AF',
+                                                                            face_color=self.draw_app.get_sel_color() +
+                                                                                       'AF',
                                                                             visible=True)
                                         new_ap_dict = {k: v for k, v in obj.tools[apid].items() if k != 'geometry'}
                                         new_ap_dict['geometry'] = [DrawToolShape(geo_el)]
@@ -3111,8 +3109,8 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
 
         added_poly_count = 0
 
-        color = self.app.options['global_sel_draw_color'] + 'AF'
-        face_color = self.app.options['global_sel_draw_color'] + 'AF'
+        color = self.draw_app.get_sel_color() + 'AF'
+        face_color = self.draw_app.get_sel_color() + 'AF'
 
         for obj in self.app.collection.get_list():
             # only Gerber objects and only those that are active and not the edited object
@@ -5583,7 +5581,7 @@ class AppGerberEditor(QtCore.QObject):
                 geometric_data = el['solid']
                 # Add the new utility shape
                 self.tool_shape.add(
-                    shape=geometric_data, color=(self.app.options["global_draw_color"]),
+                    shape=geometric_data, color=self.get_draw_color(),
                     # face_color=self.app.options['global_alt_sel_fill'],
                     update=False, layer=0, tolerance=None
                 )
@@ -5592,12 +5590,30 @@ class AppGerberEditor(QtCore.QObject):
             # Add the new utility shape
             self.tool_shape.add(
                 shape=geometric_data,
-                color=(self.app.options["global_draw_color"]),
+                color=self.get_draw_color(),
                 # face_color=self.app.options['global_alt_sel_fill'],
                 update=False, layer=0, tolerance=None
             )
 
         self.tool_shape.redraw()
+
+    def get_draw_color(self):
+        orig_color = self.app.options["global_draw_color"]
+
+        if self.app.options['global_theme'] in ['default', 'light']:
+            return orig_color
+
+        # in the "dark" theme we invert the color
+        lowered_color = orig_color.lower()
+        group1 = "#0123456789abcdef"
+        group2 = "#fedcba9876543210"
+        # create color dict
+        color_dict = {group1[i]: group2[i] for i in range(len(group1))}
+        new_color = ''.join([color_dict[j] for j in lowered_color])
+        return new_color
+
+    def get_sel_color(self):
+        return self.app.options['global_sel_draw_color']
 
     def plot_all(self):
         """
@@ -5609,14 +5625,14 @@ class AppGerberEditor(QtCore.QObject):
         with self.app.proc_container.new('%s ...' % _("Plotting")):
             self.shapes.clear(update=True)
 
-            if len(self.app.options['global_sel_draw_color']) == 7:
-                sel_draw_color = self.app.options['global_sel_draw_color'] + 'FF'
+            if len(self.get_sel_color()) == 7:
+                sel_draw_color = self.get_sel_color() + 'FF'
             else:
-                sel_draw_color = self.app.options['global_sel_draw_color'][:-2] + 'FF'
-            if len(self.app.options['global_draw_color']) == 7:
-                draw_color = self.app.options['global_draw_color'] + 'FF'
+                sel_draw_color = self.get_sel_color()[:-2] + 'FF'
+            if len(self.get_draw_color()) == 7:
+                draw_color = self.get_draw_color() + 'FF'
             else:
-                draw_color = self.app.options['global_draw_color'][:-2] + 'FF'
+                draw_color = self.get_draw_color()[:-2] + 'FF'
 
             for storage in self.storage_dict:
                 # fix for apertures with no geometry inside

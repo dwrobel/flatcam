@@ -158,7 +158,7 @@ class PaintOptionsTool(AppTool):
                     # If iterable, expand recursively.
                     try:
                         for geo_el in geometry:
-                            if geo_el is not None:
+                            if geo_el is not None and not geo_el.is_emoty:
                                 recurse(geometry=geo_el, reset=False)
 
                     # Not iterable, do the actual indexing and add.

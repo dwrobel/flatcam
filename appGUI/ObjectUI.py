@@ -1128,7 +1128,7 @@ class GeometryObjectUI(ObjectUI):
 
         # Paint Button
         self.paint_tool_button = FCButton(_('Paint'))
-        self.paint_tool_button.setIcon(QtGui.QIcon(self.app.resource_location + '/paint20_1.png'))
+        self.paint_tool_button.setIcon(QtGui.QIcon(self.app.resource_location + '/paint32.png'))
         self.paint_tool_button.setToolTip(
             _("Creates tool paths to cover the\n"
               "whole area of a polygon.")

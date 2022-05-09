@@ -472,7 +472,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
             _("Select the GIF that show activity when FlatCAM is active.")
         )
         self.activity_combo = FCComboBox()
-        self.activity_combo.addItems(['Ball black', 'Ball green', 'Arrow green', 'Eclipse green'])
+        self.activity_combo.addItems(['Ball black', 'Ball green', 'Arrow green', 'Spinner green', 'Eclipse green'])
 
         par_grid.addWidget(self.activity_label, 10, 0)
         par_grid.addWidget(self.activity_combo, 10, 1)

@@ -7,6 +7,34 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+9.05.2022
+
+- fixed an issue in the Paint Plugin where some polygons are discarded in a Geometry object made out of an imported SVG
+
+6.05.2022
+
+- minor changes to one of the custom widgets
+- added an example of custom titlebar - still needs a lot of work
+
+5.05.2022
+
+- changed the activity GIF's for the dark theme
+- changed some of the dark theme icons to the red color
+- made sure that the draw color in Editors is inverted for the dark mode
+- added a hack so the dark stylesheet for QWidget is reapplied if that Qwidget is removed (I don't know why it is lost in the first time)
+- when exiting an Editor with a sub-tool active the cursor data display feature is removed
+- updated the GCode header
+- fixed the 'light' theme paint icon name
+- removed the shortcut for the PDF Import Plugin (Ctrl+Q) since it interfered with the MacOS usage
+
+4.05.2020
+
+- some changes to the dark mode stylesheet to make it look better
+- darkened the text color for the dark theme in order to make it easier on the eyes
+- in Distance Plugin, when using the big cursor, the cursor colors are fixed to work for the dark mode too
+- for dark mode disabled hover highlight on the Status Bar
+- more changes for dark theme
+
 2.05.2022
 
 - in Excellon Editor, Copy sub-tool, added UI and ability to copy as array
