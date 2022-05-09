@@ -202,7 +202,7 @@ def path2shapely(path, object_type, res=1.0, units='MM', factor=1.0):
                 contained = []
                 not_contained = []
                 if len(poly_list) > 1:
-                    for p in poly_list[1:-1]:
+                    for p in poly_list[1:]:
                         if poly_list[0].contains(p):
                             contained.append(p)
                         else:
@@ -217,7 +217,7 @@ def path2shapely(path, object_type, res=1.0, units='MM', factor=1.0):
                 if contained:
                     geo_element = Polygon(poly_list[0].exterior, [p.exterior for p in contained])
                     geometry.append(geo_element)
-            except Exception as err:
+            except Exception:
                 coords = []
                 for line in rings.geoms:
                     coords.append(line.coords[0])
