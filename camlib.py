@@ -1260,7 +1260,8 @@ class Geometry(object):
 
         geos = geos_polys
         try:
-            for ml in merged_lines:
+            w_geo = merged_lines.geoms if isinstance(merged_lines, (MultiPolygon, MultiLineString)) else merged_lines
+            for ml in w_geo:
                 geos.append(ml)
         except TypeError:
             geos.append(merged_lines)

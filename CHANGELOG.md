@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+9.05.2022
+
+- fixed an issue in the Paint Plugin where some polygons are discarded in a Geometry object made out of an imported SVG
+
 6.05.2022
 
 - minor changes to one of the custom widgets

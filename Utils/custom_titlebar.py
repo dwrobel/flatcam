@@ -115,10 +115,14 @@ class TitleBar(QWidget):
         self.pressing = True
 
     def mouseDoubleClickEvent(self, a0):
-        self.on_click_maximize()
-        super().mouseDoubleClickEvent(a0)
+        if a0.button() == Qt.MouseButton.LeftButton:
+            self.on_click_maximize()
+        # super().mouseDoubleClickEvent(a0)
 
     def mouseMoveEvent(self, event):
+        if self.pressing and not self.maximaze:
+            self.on_click_maximize()
+            return
         if self.pressing:
             self.end = self.mapToGlobal(event.pos())
             self.movement = self.end - self.start

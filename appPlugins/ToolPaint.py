@@ -2438,9 +2438,8 @@ class ToolPaint(AppTool, Gerber):
             # ## If iterable, expand recursively.
             try:
                 for geo in geometry:
-                    if geo and not geo.is_empty and geo.is_valid:
+                    if geo and not geo.is_empty:
                         recurse(geometry=geo, reset=False)
-
             # ## Not iterable, do the actual indexing and add.
             except TypeError:
                 if isinstance(geometry, LinearRing):
@@ -2519,7 +2518,7 @@ class ToolPaint(AppTool, Gerber):
             try:
                 multigeo = geometry.geoms if isinstance(geometry, (MultiPolygon, MultiLineString)) else geometry
                 for geo in multigeo:
-                    if geo and not geo.is_empty and geo.is_valid:
+                    if geo and not geo.is_empty:
                         recurse(geometry=geo, reset=False)
             # ## Not iterable, do the actual indexing and add.
             except TypeError:
