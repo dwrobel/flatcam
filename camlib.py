@@ -1265,7 +1265,7 @@ class Geometry(object):
                 geos.append(ml)
         except TypeError:
             geos.append(merged_lines)
-            
+
         # Add to object
         if self.solid_geometry is None:
             self.solid_geometry = []
