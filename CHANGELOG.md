@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM Evo beta
 9.05.2022
 
 - fixed an issue in the Paint Plugin where some polygons are discarded in a Geometry object made out of an imported SVG
+- fixed an issue in the SVG parser where when parsing a path and getting multiple polygons will generate an invalid compound polygon (the polygons other than the first are seen as interiors even if they are not inside the first)
 
 6.05.2022
 

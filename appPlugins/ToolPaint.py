@@ -1976,9 +1976,7 @@ class ToolPaint(AppTool, Gerber):
                             total_geometry += list(x.get_objects())
 
                         # clean the geometry
-                        new_geo = [g for g in total_geometry if g and not g.is_empty]
-                        total_geometry = new_geo
-                        final_solid_geometry += total_geometry
+                        total_geometry = [g for g in total_geometry if g and not g.is_empty]
                 except grace:
                     return "fail"
                 except Exception as e:
@@ -1992,6 +1990,7 @@ class ToolPaint(AppTool, Gerber):
                 # dictionary and then reset the temporary list that stored that solid_geometry
                 tools_storage[current_uid]['solid_geometry'] = deepcopy(total_geometry)
                 tools_storage[current_uid]['data']['name'] = name
+                final_solid_geometry += total_geometry
 
             # clean the progressive plotted shapes if it was used
             if self.app.options["tools_paint_plotting"] == 'progressive':
