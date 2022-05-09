@@ -5561,7 +5561,7 @@ class AppInfoBar(QtWidgets.QWidget):
         # for the usage of this label as a clickable label, to know that current state
         self.clicked_state = False
 
-        self.icon = FCLabel(self)
+        self.icon = FCLabel(parent=self)
         self.icon.setGeometry(0, 0, 12, 12)
         self.pmap = QtGui.QPixmap(self.app.resource_location + '/graylight12.png')
         self.icon.setPixmap(self.pmap)
@@ -5580,12 +5580,15 @@ class AppInfoBar(QtWidgets.QWidget):
         self.blue_pamap = QtGui.QPixmap(self.app.resource_location + '/bluelight12.png')
         self.gray_pmap = QtGui.QPixmap(self.app.resource_location + '/graylight12.png')
 
-        self.text = FCLabel(self)
+        self.text = FCLabel(parent=self)
         self.text.setText(_("Application started ..."))
         self.text.setToolTip(_("Hello!"))
 
         layout.addWidget(self.text)
         layout.addStretch()
+
+        # Signals
+        self.text.clicked.connect(lambda x: self.clicked.emit(x))
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
