@@ -609,17 +609,11 @@ class ObjectDistanceUI:
         self.layout.addStretch(1)
 
         # ## Reset Tool
-        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"), bold=True)
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )
-        self.reset_button.setStyleSheet("""
-                                        QPushButton
-                                        {
-                                            font-weight: bold;
-                                        }
-                                        """)
         self.layout.addWidget(self.reset_button)
         # #################################### FINSIHED GUI ###########################
         # #############################################################################

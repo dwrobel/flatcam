@@ -726,14 +726,7 @@ class QRcodeUI:
         self.tools_box.addLayout(self.title_box)
 
         # ## Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
+        title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
         self.title_box.addWidget(title_label)
 
         # App Level label
@@ -933,7 +926,7 @@ class QRcodeUI:
             _("Set the QRCode fill color (squares color).")
         )
         self.fill_color_entry = FCEntry()
-        self.fill_color_button = QtWidgets.QPushButton()
+        self.fill_color_button = FCButton()
         self.fill_color_button.setFixedSize(15, 15)
 
         fill_lay_child = QtWidgets.QHBoxLayout()
@@ -957,7 +950,7 @@ class QRcodeUI:
             _("Set the QRCode background color.")
         )
         self.back_color_entry = FCEntry()
-        self.back_color_button = QtWidgets.QPushButton()
+        self.back_color_button = FCButton()
         self.back_color_button.setFixedSize(15, 15)
 
         back_lay_child = QtWidgets.QHBoxLayout()
@@ -973,59 +966,38 @@ class QRcodeUI:
         self.export_lay.addWidget(back_color_widget, 2, 1)
 
         # ## Export QRCode as SVG image
-        self.export_svg_button = QtWidgets.QPushButton(_("Export QRCode SVG"))
+        self.export_svg_button = FCButton(_("Export QRCode SVG"))
         self.export_svg_button.setToolTip(
             _("Export a SVG file with the QRCode content.")
         )
-        self.export_svg_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
+        self.export_svg_button.bold = True
         self.tools_box.addWidget(self.export_svg_button)
 
         # ## Export QRCode as PNG image
-        self.export_png_button = QtWidgets.QPushButton(_("Export QRCode PNG"))
+        self.export_png_button = FCButton(_("Export QRCode PNG"))
         self.export_png_button.setToolTip(
             _("Export a PNG image file with the QRCode content.")
         )
-        self.export_png_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
+        self.export_png_button.bold = True
         self.tools_box.addWidget(self.export_png_button)
 
         # ## Insert QRCode
-        self.qrcode_button = QtWidgets.QPushButton(_("Insert QRCode"))
+        self.qrcode_button = FCButton(_("Insert QRCode"))
         self.qrcode_button.setIcon(QtGui.QIcon(self.app.resource_location + '/qrcode32.png'))
         self.qrcode_button.setToolTip(
             _("Create the QRCode object.")
         )
-        self.qrcode_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
+        self.qrcode_button.bold = True
         self.tools_box.addWidget(self.qrcode_button)
 
         self.layout.addStretch(1)
 
         # ## Reset Tool
-        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"), bold=True)
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )
-        self.reset_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.layout.addWidget(self.reset_button)
 
         # #################################### FINSIHED GUI ###########################

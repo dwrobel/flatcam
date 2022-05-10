@@ -325,6 +325,7 @@ class AppDefaults:
         # Geometry Editor
         "geometry_editor_sel_limit": 30,
         "geometry_editor_milling_type": "cl",
+        "geometry_editor_parameters": False,
 
         # CNC Job General
         "cncjob_plot": True,

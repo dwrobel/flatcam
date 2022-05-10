@@ -3,7 +3,7 @@ import platform
 from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCSliderWithSpinner, FCColorEntry, FCLabel, \
-    GLay, FCFrame
+    GLay, FCFrame, FCButton
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -212,7 +212,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         format_grid.addWidget(self.update_excellon_cb, 5, 0, 1, 2)
 
         # Adding the Excellon Format Defaults Button
-        self.excellon_defaults_button = QtWidgets.QPushButton()
+        self.excellon_defaults_button = FCButton()
         self.excellon_defaults_button.setText(str(_("Restore Defaults")))
         self.excellon_defaults_button.setMinimumWidth(80)
         format_grid.addWidget(self.excellon_defaults_button, 6, 0, 1, 2)

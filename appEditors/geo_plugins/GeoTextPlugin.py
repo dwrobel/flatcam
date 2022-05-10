@@ -209,14 +209,7 @@ class TextEditorUI:
         self.text_tool_frame.setLayout(self.text_tools_box)
 
         # Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
+        title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
         self.text_tools_box.addWidget(title_label)
 
         # Grid Layout

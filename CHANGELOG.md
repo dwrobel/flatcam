@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+10.05.2022
+
+- upgraded the Geometry Editor main UI
+- upgraded the FCButton widget (and made it used everywhere instead of the QPushButton) so it can have the color and font weight properties settable
+
 9.05.2022
 
 - fixed an issue in the Paint Plugin where some polygons are discarded in a Geometry object made out of an imported SVG

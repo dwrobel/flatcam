@@ -574,14 +574,7 @@ class TransformUI:
         self.layout = layout
 
         # ## Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
+        title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
         title_label.setToolTip(
             _("A plugin that allow geometry transformation.")
         )
@@ -1015,17 +1008,11 @@ class TransformUI:
         self.layout.addStretch()
 
         # ## Reset Tool
-        self.reset_button = FCButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"), bold=True)
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )
-        self.reset_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.layout.addWidget(self.reset_button)
 
         # #################################### FINSIHED GUI ###########################

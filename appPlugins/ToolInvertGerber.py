@@ -199,14 +199,7 @@ class InvertUI:
         self.layout = layout
 
         # ## Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
+        title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
         self.layout.addWidget(title_label)
 
         self.tools_frame = QtWidgets.QFrame()
@@ -286,35 +279,23 @@ class InvertUI:
         # #############################################################################################################
         # Generate Inverted Gerber Button
         # #############################################################################################################
-        self.invert_btn = FCButton(_('Invert Gerber'))
+        self.invert_btn = FCButton(_('Invert Gerber'), bold=True)
         self.invert_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/invert32.png'))
         self.invert_btn.setToolTip(
             _("Will invert the Gerber object: areas that have copper\n"
               "will be empty of copper and previous empty area will be\n"
               "filled with copper.")
         )
-        self.invert_btn.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.tools_box.addWidget(self.invert_btn)
 
         self.tools_box.addStretch(1)
 
         # ## Reset Tool
-        self.reset_button = FCButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"), bold=True)
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )
-        self.reset_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.tools_box.addWidget(self.reset_button)
 
         # #################################### FINSIHED GUI ###########################

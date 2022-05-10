@@ -3910,14 +3910,14 @@ class MillingUI:
         self.layout.addLayout(self.title_box)
 
         # ## Title
-        title_label = FCLabel("%s" % name)
-        title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
+        title_label = FCLabel("%s" % name, size=16, bold=True)
+        # title_label.setStyleSheet("""
+        #                         QLabel
+        #                         {
+        #                             font-size: 16px;
+        #                             font-weight: bold;
+        #                         }
+        #                         """)
         title_label.setToolTip(
             _("Create CNCJob with toolpaths for milling either Geometry or drill holes.")
         )
@@ -5014,7 +5014,7 @@ class MillingUI:
         grid_a1.addWidget(self.over_z_entry, 2, 1)
 
         # Button Add Area
-        self.add_area_button = QtWidgets.QPushButton(_('Add Area:'))
+        self.add_area_button = FCButton(_('Add Area:'))
         self.add_area_button.setToolTip(_("Add an Exclusion Area."))
 
         # Area Selection shape
@@ -5032,11 +5032,11 @@ class MillingUI:
         self.exclusion_box.addLayout(h_lay_1)
 
         # Button Delete All Areas
-        self.delete_area_button = QtWidgets.QPushButton(_('Delete All'))
+        self.delete_area_button = FCButton(_('Delete All'))
         self.delete_area_button.setToolTip(_("Delete all exclusion areas."))
 
         # Button Delete Selected Areas
-        self.delete_sel_area_button = QtWidgets.QPushButton(_('Delete Selected'))
+        self.delete_sel_area_button = FCButton(_('Delete Selected'))
         self.delete_sel_area_button.setToolTip(_("Delete all exclusion areas that are selected in the table."))
 
         h_lay_1.addWidget(self.delete_area_button)
@@ -5052,7 +5052,7 @@ class MillingUI:
         # #############################################################################################################
         # Generate CNC Job object
         # #############################################################################################################
-        self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))
+        self.generate_cnc_button = FCButton(_('Generate CNCJob object'), bold=True)
         self.generate_cnc_button.setIcon(QtGui.QIcon(self.app.resource_location + '/cnc16.png'))
         self.generate_cnc_button.setToolTip(
             _("Generate the CNC Job.\n"
@@ -5061,28 +5061,16 @@ class MillingUI:
               "Click the # header to select all, or Ctrl + LMB\n"
               "for custom selection of tools.")
         )
-        self.generate_cnc_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.tool_params_box.addWidget(self.generate_cnc_button)
 
         self.tools_box.addStretch(1)
 
         # ## Reset Tool
-        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"), bold=True)
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )
-        self.reset_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.tools_box.addWidget(self.reset_button)
         # ############################ FINSIHED GUI ###################################
         # #############################################################################

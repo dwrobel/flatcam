@@ -241,29 +241,17 @@ class GerberObjectUI(ObjectUI):
         plot_grid.addWidget(self.follow_cb, 2, 2)
 
         # Editor
-        self.editor_button = FCButton(_('Gerber Editor'))
+        self.editor_button = FCButton(_('Gerber Editor'), bold=True)
         self.editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
         self.editor_button.setToolTip(
             _("Start the Object Editor")
         )
-        self.editor_button.setStyleSheet("""
-                                      QPushButton
-                                      {
-                                          font-weight: bold;
-                                      }
-                                      """)
         self.custom_box.addWidget(self.editor_button)
 
         # INFO CB
-        self.info_button = FCButton('%s' % _("INFO"), checkable=True)
+        self.info_button = FCButton('%s' % _("INFO"), checkable=True, bold=True)
         self.info_button.setIcon(QtGui.QIcon(self.app.resource_location + '/properties32.png'))
         self.info_button.setToolTip(_("Show the Object Attributes."))
-        self.info_button.setStyleSheet("""
-                                      QPushButton
-                                      {
-                                          font-weight: bold;
-                                      }
-                                      """)
         self.custom_box.addWidget(self.info_button)
 
         # INFO Frame
@@ -382,18 +370,12 @@ class GerberObjectUI(ObjectUI):
         plugins_frame.setLayout(plugins_grid)
 
         # Isolation Tool - will create isolation paths around the copper features
-        self.iso_button = FCButton(_('Isolation Routing'))
+        self.iso_button = FCButton(_('Isolation Routing'), bold=True)
         # self.iso_button.setIcon(QtGui.QIcon(self.app.resource_location + '/iso_16.png'))
         self.iso_button.setToolTip(
             _("Create a Geometry object with\n"
               "toolpaths to cut around polygons.")
         )
-        self.iso_button.setStyleSheet("""
-                                      QPushButton
-                                      {
-                                          font-weight: bold;
-                                      }
-                                      """)
         plugins_grid.addWidget(self.iso_button, 0, 0)
 
         # ## Board cutout
@@ -457,15 +439,9 @@ class GerberObjectUI(ObjectUI):
         # self.custom_box.addWidget(separator_line)
 
         # UTILITIES BUTTON
-        self.util_button = FCButton('%s' % _("Utilities").upper(), checkable=True)
+        self.util_button = FCButton('%s' % _("Utilities").upper(), checkable=True, bold=True)
         self.util_button.setIcon(QtGui.QIcon(self.app.resource_location + '/settings18.png'))
         self.util_button.setToolTip(_("Show the Utilities."))
-        self.util_button.setStyleSheet("""
-                                      QPushButton
-                                      {
-                                          font-weight: bold;
-                                      }
-                                      """)
         self.custom_box.addWidget(self.util_button)
 
         # UTILITIES Frame
@@ -647,30 +623,18 @@ class ExcellonObjectUI(ObjectUI):
         plot_grid.addLayout(self.name_hlay, 2, 0, 1, 3)
 
         # Editor
-        self.editor_button = FCButton(_('Excellon Editor'))
+        self.editor_button = FCButton(_('Excellon Editor'), bold=True)
         self.editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
 
         self.editor_button.setToolTip(
             _("Start the Object Editor")
         )
-        self.editor_button.setStyleSheet("""
-                                      QPushButton
-                                      {
-                                          font-weight: bold;
-                                      }
-                                      """)
         self.custom_box.addWidget(self.editor_button)
 
         # INFO CB
-        self.info_button = FCButton('%s' % _("INFO"), checkable=True)
+        self.info_button = FCButton('%s' % _("INFO"), checkable=True, bold=True)
         self.info_button.setIcon(QtGui.QIcon(self.app.resource_location + '/properties32.png'))
         self.info_button.setToolTip(_("Show the Object Attributes."))
-        self.info_button.setStyleSheet("""
-                                      QPushButton
-                                      {
-                                          font-weight: bold;
-                                      }
-                                      """)
         self.custom_box.addWidget(self.info_button)
 
         # INFO Frame
@@ -787,17 +751,11 @@ class ExcellonObjectUI(ObjectUI):
         plugins_frame.setLayout(plugins_grid)
 
         # Drilling Tool - will create GCode for drill holes
-        self.drill_button = FCButton(_('Drilling'))
+        self.drill_button = FCButton(_('Drilling'), bold=True)
         self.drill_button.setIcon(QtGui.QIcon(self.app.resource_location + '/drilling_tool32.png'))
         self.drill_button.setToolTip(
             _("Generate GCode from the drill holes in an Excellon object.")
         )
-        self.drill_button.setStyleSheet("""
-                                      QPushButton
-                                      {
-                                          font-weight: bold;
-                                      }
-                                      """)
         plugins_grid.addWidget(self.drill_button, 0, 0)
 
         # Milling Tool - will create GCode for slot holes
@@ -806,12 +764,6 @@ class ExcellonObjectUI(ObjectUI):
         self.milling_button.setToolTip(
             _("Generate a Geometry for milling drills or slots in an Excellon object.")
         )
-        # self.milling_button.setStyleSheet("""
-        #                 QPushButton
-        #                 {
-        #                     font-weight: bold;
-        #                 }
-        #                 """)
         plugins_grid.addWidget(self.milling_button, 2, 0)
 
         # separator_line = QtWidgets.QFrame()
@@ -820,15 +772,9 @@ class ExcellonObjectUI(ObjectUI):
         # self.custom_box.addWidget(separator_line)
 
         # UTILITIES BUTTON
-        self.util_button = FCButton('%s' % _("Utilities").upper(), checkable=True)
+        self.util_button = FCButton('%s' % _("Utilities").upper(), checkable=True, bold=True)
         self.util_button.setIcon(QtGui.QIcon(self.app.resource_location + '/settings18.png'))
         self.util_button.setToolTip(_("Show the Utilities."))
-        self.util_button.setStyleSheet("""
-                                      QPushButton
-                                      {
-                                          font-weight: bold;
-                                      }
-                                      """)
         self.custom_box.addWidget(self.util_button)
 
         # UTILITIES Frame
@@ -870,17 +816,11 @@ class ExcellonObjectUI(ObjectUI):
         self.tooldia_entry.set_range(0.0, 10000.0000)
         self.tooldia_entry.setSingleStep(0.1)
 
-        self.generate_milling_button = FCButton(_('Mill Drills'))
+        self.generate_milling_button = FCButton(_('Mill Drills'), bold=True)
         self.generate_milling_button.setToolTip(
             _("Create the Geometry Object\n"
               "for milling drills.")
         )
-        self.generate_milling_button.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
 
         grid_mill.addWidget(self.tooldia_entry, 2, 0, 1, 2)
         grid_mill.addWidget(self.generate_milling_button, 2, 2)
@@ -890,17 +830,11 @@ class ExcellonObjectUI(ObjectUI):
         self.slot_tooldia_entry.set_range(0.0, 10000.0000)
         self.slot_tooldia_entry.setSingleStep(0.1)
 
-        self.generate_milling_slots_button = FCButton(_('Mill Slots'))
+        self.generate_milling_slots_button = FCButton(_('Mill Slots'), bold=True)
         self.generate_milling_slots_button.setToolTip(
             _("Create the Geometry Object\n"
               "for milling slots.")
         )
-        self.generate_milling_slots_button.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
 
         grid_mill.addWidget(self.slot_tooldia_entry, 4, 0, 1, 2)
         grid_mill.addWidget(self.generate_milling_slots_button, 4, 2)
@@ -977,30 +911,18 @@ class GeometryObjectUI(ObjectUI):
         self.name_hlay.addWidget(self.name_entry)
 
         # Editor
-        self.editor_button = FCButton(_('Geometry Editor'))
+        self.editor_button = FCButton(_('Geometry Editor'), bold=True)
         self.editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
 
         self.editor_button.setToolTip(
             _("Start the Object Editor")
         )
-        self.editor_button.setStyleSheet("""
-                                      QPushButton
-                                      {
-                                          font-weight: bold;
-                                      }
-                                      """)
         self.custom_box.addWidget(self.editor_button)
 
         # INFO CB
-        self.info_button = FCButton('%s' % _("INFO"), checkable=True)
+        self.info_button = FCButton('%s' % _("INFO"), checkable=True, bold=True)
         self.info_button.setIcon(QtGui.QIcon(self.app.resource_location + '/properties32.png'))
         self.info_button.setToolTip(_("Show the Object Attributes."))
-        self.info_button.setStyleSheet("""
-                                      QPushButton
-                                      {
-                                          font-weight: bold;
-                                      }
-                                      """)
         self.custom_box.addWidget(self.info_button)
 
         # INFO Frame
@@ -1113,17 +1035,11 @@ class GeometryObjectUI(ObjectUI):
         plugins_frame.setLayout(plugins_grid)
 
         # Milling Tool - will create GCode for slot holes
-        self.milling_button = FCButton(_('Milling'))
+        self.milling_button = FCButton(_('Milling'), bold=True)
         self.milling_button.setIcon(QtGui.QIcon(self.app.resource_location + '/milling_tool32.png'))
         self.milling_button.setToolTip(
             _("Generate a CNCJob by milling a Geometry.")
         )
-        self.milling_button.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
         plugins_grid.addWidget(self.milling_button, 0, 0)
 
         # Paint Button
@@ -1157,15 +1073,9 @@ class GeometryObjectUI(ObjectUI):
         # self.custom_box.addWidget(separator_line)
 
         # UTILITIES BUTTON
-        self.util_button = FCButton('%s' % _("Utilities").upper(), checkable=True)
+        self.util_button = FCButton('%s' % _("Utilities").upper(), checkable=True, bold=True)
         self.util_button.setIcon(QtGui.QIcon(self.app.resource_location + '/settings18.png'))
         self.util_button.setToolTip(_("Show the Utilities."))
-        self.util_button.setStyleSheet("""
-                                        QPushButton
-                                        {
-                                            font-weight: bold;
-                                        }
-                                        """)
         self.custom_box.addWidget(self.util_button)
 
         # UTILITIES Frame
@@ -1327,28 +1237,16 @@ class CNCObjectUI(ObjectUI):
         self.name_hlay.addWidget(self.name_entry)
 
         # Editor
-        self.editor_button = FCButton(_('GCode Editor'))
+        self.editor_button = FCButton(_('GCode Editor'), bold=True)
         self.editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
 
         self.editor_button.setToolTip(_("Start the Object Editor"))
-        self.editor_button.setStyleSheet("""
-                                       QPushButton
-                                       {
-                                           font-weight: bold;
-                                       }
-                                       """)
         self.custom_box.addWidget(self.editor_button)
 
         # INFO CB
-        self.info_button = FCButton('%s' % _("INFO"), checkable=True)
+        self.info_button = FCButton('%s' % _("INFO"), checkable=True, bold=True)
         self.info_button.setIcon(QtGui.QIcon(self.app.resource_location + '/properties32.png'))
         self.info_button.setToolTip(_("Show the Object Attributes."))
-        self.info_button.setStyleSheet("""
-                                      QPushButton
-                                      {
-                                          font-weight: bold;
-                                      }
-                                      """)
         self.custom_box.addWidget(self.info_button)
 
         # INFO Frame
@@ -1521,17 +1419,11 @@ class CNCObjectUI(ObjectUI):
         self.custom_box.addWidget(self.tool_lbl)
 
         # Levelling Tool - will process the generated GCode using a Height Map generating levelled GCode
-        self.autolevel_button = FCButton(_('Levelling'))
+        self.autolevel_button = FCButton(_('Levelling'), bold=True)
         self.autolevel_button.setIcon(QtGui.QIcon(self.app.resource_location + '/level32.png'))
         self.autolevel_button.setToolTip(
             _("Generate CNC Code with auto-levelled paths.")
         )
-        self.autolevel_button.setStyleSheet("""
-                                      QPushButton
-                                      {
-                                          font-weight: bold;
-                                      }
-                                      """)
         self.custom_box.addWidget(self.autolevel_button)
         # self.autolevel_button.setDisabled(True)
         # self.autolevel_button.setToolTip("DISABLED. Work in progress!")

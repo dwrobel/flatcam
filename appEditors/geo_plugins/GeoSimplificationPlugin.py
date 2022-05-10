@@ -71,7 +71,7 @@ class SimplificationTool(AppTool):
         self.ui.geo_tol_entry.set_value(0.01 if self.draw_app.units == 'MM' else 0.0004)
 
         selected_shapes_geos = []
-        selected_tree_items = self.draw_app.tw.selectedItems()
+        selected_tree_items = self.draw_app.ui.tw.selectedItems()
         for sel in selected_tree_items:
             for obj_shape in self.draw_app.storage.get_objects():
                 try:
@@ -173,14 +173,7 @@ class SimplificationEditorUI:
         self.layout = layout
 
         # Title
-        title_label = FCLabel("%s" % ('Editor ' + self.pluginName))
-        title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
+        title_label = FCLabel("%s" % ('Editor ' + self.pluginName), size=16, bold=True)
         self.layout.addWidget(title_label)
 
         # this way I can hide/show the frame
@@ -255,17 +248,11 @@ class SimplificationEditorUI:
         par_grid.addWidget(self.geo_tol_entry, 0, 1)
 
         # Simplification button
-        self.simplification_btn = FCButton(_("Simplify"))
+        self.simplification_btn = FCButton(_("Simplify"), bold=True)
         self.simplification_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/simplify32.png'))
         self.simplification_btn.setToolTip(
             _("Simplify a geometry element by reducing its vertex points number.")
         )
-        self.simplification_btn.setStyleSheet("""
-                                                     QPushButton
-                                                     {
-                                                         font-weight: bold;
-                                                     }
-                                                     """)
 
         self.layout.addWidget(self.simplification_btn)
 

@@ -36,7 +36,7 @@ class ObjectReport(AppTool):
         self.info_frame.setLayout(self.info_box)
 
         # ## Title
-        # title_label = FCLabel("%s" % self.pluginName)
+        # title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
         # title_label.setStyleSheet("""
         #                 QLabel
         #                 {

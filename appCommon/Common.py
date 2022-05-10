@@ -509,13 +509,8 @@ class ExclusionAreas(QtCore.QObject):
                     return
 
             self.app.inform.emit("[success] %s" % _("Exclusion areas added."))
-            self.cnc_button.setStyleSheet("""
-                                    QPushButton
-                                    {
-                                        font-weight: bold;
-                                        color: orange;
-                                    }
-                                    """)
+            self.cnc_button.bold = True
+            self.cnc_button.color = 'orange'
             self.cnc_button.setToolTip(
                 '%s %s' % (_("Generate the CNC Job object."), _("With Exclusion areas."))
             )
@@ -646,12 +641,7 @@ class ExclusionAreas(QtCore.QObject):
         # restore the default StyleSheet
         self.cnc_button.setStyleSheet("")
         # update the StyleSheet
-        self.cnc_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
+        self.cnc_button.bold = True
         self.cnc_button.setToolTip('%s' % _("Generate the CNC Job object."))
 
     def clear_shapes(self):
@@ -708,12 +698,7 @@ class ExclusionAreas(QtCore.QObject):
             # restore the default StyleSheet
             self.cnc_button.setStyleSheet("")
             # update the StyleSheet
-            self.cnc_button.setStyleSheet("""
-                                            QPushButton
-                                            {
-                                                font-weight: bold;
-                                            }
-                                            """)
+            self.cnc_button.bold = True
             self.cnc_button.setToolTip('%s' % _("Generate the CNC Job object."))
 
             # there are no more exclusion areas in the storage, all have been selected and deleted

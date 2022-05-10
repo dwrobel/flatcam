@@ -902,14 +902,7 @@ class FidoUI:
         self.layout.addLayout(self.title_box)
         
         # ## Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
+        title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
         self.title_box.addWidget(title_label)
 
         # App Level label
@@ -1178,49 +1171,31 @@ class FidoUI:
         GLay.set_common_column_size([grid_sel, param_grid, param_grid], 0)
 
         # ## Insert Copper Fiducial
-        self.add_cfid_button = FCButton(_("Add Fiducial"))
+        self.add_cfid_button = FCButton(_("Add Fiducial"), bold=True)
         self.add_cfid_button.setIcon(QtGui.QIcon(self.app.resource_location + '/fiducials_32.png'))
         self.add_cfid_button.setToolTip(
             _("Will add a polygon on the copper layer to serve as fiducial.")
         )
-        self.add_cfid_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.tools_box.addWidget(self.add_cfid_button)
 
         # ## Insert Soldermask opening for Fiducial
-        self.add_sm_opening_button = FCButton(_("Add Soldermask Opening"))
+        self.add_sm_opening_button = FCButton(_("Add Soldermask Opening"), bold=True)
         self.add_sm_opening_button.setToolTip(
             _("Will add a polygon on the soldermask layer\n"
               "to serve as fiducial opening.\n"
               "The diameter is always double of the diameter\n"
               "for the copper fiducial.")
         )
-        self.add_sm_opening_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.tools_box.addWidget(self.add_sm_opening_button)
 
         self.layout.addStretch(1)
 
         # ## Reset Tool
-        self.reset_button = FCButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"), bold=True)
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )
-        self.reset_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.layout.addWidget(self.reset_button)
 
         # #################################### FINSIHED GUI ###########################

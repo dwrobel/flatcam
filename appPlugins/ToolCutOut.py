@@ -2228,14 +2228,7 @@ class CutoutUI:
         self.tools_box.addLayout(self.title_box)
 
         # Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
+        title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
         title_label.setToolTip(
             _("Create a Geometry object with toolpaths\n"
               "for cutting out the object from the surrounding material.")
@@ -2673,17 +2666,11 @@ class CutoutUI:
         man_hlay.addWidget(self.man_gaps_creation_btn)
 
         # Generate Geometry Button
-        self.generate_cutout_btn = FCButton(_("Generate Geometry"))
+        self.generate_cutout_btn = FCButton(_("Generate Geometry"), bold=True)
         self.generate_cutout_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/irregular32.png'))
         self.generate_cutout_btn.setToolTip(
             _("Generate the cutout geometry.")
         )
-        self.generate_cutout_btn.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.tools_box.addWidget(self.generate_cutout_btn)
 
         # self.tool_param_separator_line = QtWidgets.QFrame()
@@ -2768,33 +2755,21 @@ class CutoutUI:
         GLay.set_common_column_size([obj_grid, tool_grid, param_grid, man_grid, drill_cut_grid, gaps_grid], 0)
 
         # Drill Cut Button
-        self.drillcut_btn = FCButton(_("Cut by Drilling"))
+        self.drillcut_btn = FCButton(_("Cut by Drilling"), bold=True)
         self.drillcut_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/drill16.png'))
         self.drillcut_btn.setToolTip(
             _("Create a series of drill holes following a geometry line.")
         )
-        self.drillcut_btn.setStyleSheet("""
-                                        QPushButton
-                                        {
-                                            font-weight: bold;
-                                        }
-                                        """)
         self.tools_box.addWidget(self.drillcut_btn)
 
         self.layout.addStretch()
 
         # ## Reset Tool
-        self.reset_button = FCButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"), bold=True)
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )
-        self.reset_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.layout.addWidget(self.reset_button)
 
         self.gaptype_combo.currentIndexChanged.connect(self.on_gap_type_radio)

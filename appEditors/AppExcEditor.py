@@ -3393,7 +3393,7 @@ class AppExcEditor(QtCore.QObject):
         # make sure no rows are selected so the user have to click the correct row, meaning selecting the correct tool
         self.ui.tools_table_exc.clearSelection()
 
-        # Remove anything else in the GUI Selected Tab
+        # Remove anything else in the GUI Properties Tab
         self.app.ui.properties_scroll_area.takeWidget()
         # Put ourselves in the GUI Properties Tab
         self.app.ui.properties_scroll_area.setWidget(self.ui.exc_edit_widget)
@@ -5294,17 +5294,11 @@ class AppExcEditorUI:
         layout.addStretch(1)
 
         # Editor
-        self.exit_editor_button = FCButton(_('Exit Editor'))
+        self.exit_editor_button = FCButton(_('Exit Editor'), bold=True)
         self.exit_editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/power16.png'))
         self.exit_editor_button.setToolTip(
             _("Exit from Editor.")
         )
-        self.exit_editor_button.setStyleSheet("""
-                                      QPushButton
-                                      {
-                                          font-weight: bold;
-                                      }
-                                      """)
         layout.addWidget(self.exit_editor_button)
 
         # #############################################################################################################

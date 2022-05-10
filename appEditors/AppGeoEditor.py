@@ -1773,13 +1773,13 @@ class FCSelect(DrawTool):
 
         # if selection is done on canvas update the Tree in Properties Tab with the selection
         try:
-            self.draw_app.tw.itemPressed.disconnect(self.draw_app.on_tree_geo_click)
+            self.draw_app.ui.tw.itemPressed.disconnect(self.draw_app.on_tree_geo_click)
         except (AttributeError, TypeError):
             pass
 
-        self.draw_app.tw.selectionModel().clearSelection()
+        self.draw_app.ui.tw.selectionModel().clearSelection()
         for sel_shape in self.draw_app.selected:
-            iterator = QtWidgets.QTreeWidgetItemIterator(self.draw_app.tw)
+            iterator = QtWidgets.QTreeWidgetItemIterator(self.draw_app.ui.tw)
             while iterator.value():
                 item = iterator.value()
                 try:
@@ -1790,9 +1790,9 @@ class FCSelect(DrawTool):
 
                 iterator += 1
 
-        self.draw_app.tw.itemPressed.connect(self.draw_app.on_tree_geo_click)
+        self.draw_app.ui.tw.itemPressed.connect(self.draw_app.on_tree_geo_click)
 
-        # self.draw_app.tw.itemClicked.emit(self.draw_app.tw.currentItem(), 0)
+        # self.draw_app.ui.tw.itemClicked.emit(self.draw_app.ui.tw.currentItem(), 0)
         self.draw_app.update_ui()
 
         return ""
@@ -3146,208 +3146,15 @@ class AppGeoEditor(QtCore.QObject):
         self.decimals = app.decimals
         self.units = self.app.app_units
 
+        # #############################################################################################################
+        # Geometry Editor UI
+        # #############################################################################################################
+        self.ui = AppGeoEditorUI(app=self.app)
+        if disabled:
+            self.ui.geo_frame.setDisabled(True)
+
         # when True the Editor can't do selection due of an ongoing process
         self.interdict_selection = False
-
-        self.geo_edit_widget = QtWidgets.QWidget()
-        # ## Box for custom widgets
-        # This gets populated in offspring implementations.
-        layout = QtWidgets.QVBoxLayout()
-        self.geo_edit_widget.setLayout(layout)
-
-        # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Drills widgets
-        # this way I can hide/show the frame
-        self.geo_frame = QtWidgets.QFrame()
-        self.geo_frame.setContentsMargins(0, 0, 0, 0)
-        layout.addWidget(self.geo_frame)
-        self.tools_box = QtWidgets.QVBoxLayout()
-        self.tools_box.setContentsMargins(0, 0, 0, 0)
-        self.geo_frame.setLayout(self.tools_box)
-
-        if disabled:
-            self.geo_frame.setDisabled(True)
-
-        # ## Page Title box (spacing between children)
-        self.title_box = QtWidgets.QHBoxLayout()
-        self.tools_box.addLayout(self.title_box)
-
-        # ## Page Title icon
-        pixmap = QtGui.QPixmap(self.app.resource_location + '/app32.png')
-        self.icon = FCLabel()
-        self.icon.setPixmap(pixmap)
-        self.title_box.addWidget(self.icon, stretch=0)
-
-        # ## Title label
-        self.title_label = FCLabel("<font size=5><b>%s</b></font>" % _('Geometry Editor'))
-        self.title_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
-        self.title_box.addWidget(self.title_label, stretch=1)
-
-        # App Level label
-        self.level = QtWidgets.QToolButton()
-        self.level.setToolTip(
-            _(
-                "Beginner Mode - many parameters are hidden.\n"
-                "Advanced Mode - full control.\n"
-                "Permanent change is done in 'Preferences' menu."
-            )
-        )
-        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.level.setCheckable(True)
-        self.title_box.addWidget(self.level)
-
-        self.grid_d = GLay(v_spacing=5, h_spacing=3)
-        self.tools_box.addLayout(self.grid_d)
-
-        # Tool diameter
-        tooldia_lbl = FCLabel('%s' % _("Tool dia"), bold=True)
-        tooldia_lbl.setToolTip(
-            _("Edited tool diameter.")
-        )
-        self.tooldia_entry = FCDoubleSpinner()
-        self.tooldia_entry.set_precision(self.decimals)
-        self.tooldia_entry.setSingleStep(10 ** -self.decimals)
-        self.tooldia_entry.set_range(-10000.0000, 10000.0000)
-
-        self.grid_d.addWidget(tooldia_lbl, 0, 0)
-        self.grid_d.addWidget(self.tooldia_entry, 0, 1)
-        # Tree Widget Title
-        tw_label = FCLabel('%s' % _("Geometry Table"), bold=True)
-        tw_label.setToolTip(
-            _("The list of geometry elements inside the edited object.")
-        )
-        self.tools_box.addWidget(tw_label)
-
-        # Tree Widget
-        self.tw = FCTree(columns=3, header_hidden=False, protected_column=[0, 1], extended_sel=True)
-        self.tw.setHeaderLabels(["ID", _("Type"), _("Name")])
-        self.tw.setIndentation(0)
-        self.tw.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
-        self.tw.header().setStretchLastSection(True)
-        self.tw.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
-        self.tools_box.addWidget(self.tw)
-
-        self.geo_font = QtGui.QFont()
-        self.geo_font.setBold(True)
-        self.geo_parent = self.tw.invisibleRootItem()
-
-        # #############################################################################################################
-        # ############################################ Advanced Editor ################################################
-        # #############################################################################################################
-        self.adv_frame = QtWidgets.QFrame()
-        self.adv_frame.setContentsMargins(0, 0, 0, 0)
-        self.tools_box.addWidget(self.adv_frame)
-
-        grid0 = GLay(v_spacing=5, h_spacing=3)
-        grid0.setContentsMargins(0, 0, 0, 0)
-        self.adv_frame.setLayout(grid0)
-
-        # Zoom Selection
-        self.geo_zoom = FCCheckBox(_("Zoom on selection"))
-        grid0.addWidget(self.geo_zoom, 0, 0, 1, 3)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 2, 0, 1, 3)
-
-        # Parameters Title
-        param_title = FCLabel('%s' % _("Parameters"), bold=True)
-        param_title.setToolTip(
-            _("Geometry parameters.")
-        )
-        grid0.addWidget(param_title, 4, 0, 1, 3)
-
-        # Is Valid
-        is_valid_lbl = FCLabel('%s' % _("Is Valid"), bold=True)
-        self.is_valid_entry = FCLabel('None')
-
-        grid0.addWidget(is_valid_lbl, 10, 0)
-        grid0.addWidget(self.is_valid_entry, 10, 1, 1, 2)
-
-        # Is Empty
-        is_empty_lbl = FCLabel('%s' % _("Is Empty"), bold=True)
-        self.is_empty_entry = FCLabel('None')
-
-        grid0.addWidget(is_empty_lbl, 12, 0)
-        grid0.addWidget(self.is_empty_entry, 12, 1, 1, 2)
-
-        # Is Ring
-        is_ring_lbl = FCLabel('%s' % _("Is Ring"), bold=True)
-        self.is_ring_entry = FCLabel('None')
-
-        grid0.addWidget(is_ring_lbl, 14, 0)
-        grid0.addWidget(self.is_ring_entry, 14, 1, 1, 2)
-
-        # Is CCW
-        is_ccw_lbl = FCLabel('%s' % _("Is CCW"), bold=True)
-        self.is_ccw_entry = FCLabel('None')
-        self.change_orientation_btn = FCButton(_("Change"))
-        self.change_orientation_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/orientation32.png'))
-        self.change_orientation_btn.setToolTip(
-            _("Change the orientation of the geometric element.\n"
-              "Works for LinearRing and Polygons.")
-        )
-        grid0.addWidget(is_ccw_lbl, 16, 0)
-        grid0.addWidget(self.is_ccw_entry, 16, 1)
-        grid0.addWidget(self.change_orientation_btn, 16, 2)
-
-        # Is Simple
-        is_simple_lbl = FCLabel('%s' % _("Is Simple"), bold=True)
-        self.is_simple_entry = FCLabel('None')
-
-        grid0.addWidget(is_simple_lbl, 18, 0)
-        grid0.addWidget(self.is_simple_entry, 18, 1, 1, 2)
-
-        # Length
-        len_lbl = FCLabel('%s' % _("Projection"), bold=True)
-        len_lbl.setToolTip(
-            _("The length of the geometry element.")
-        )
-        self.geo_len_entry = FCEntry(decimals=self.decimals)
-        self.geo_len_entry.setReadOnly(True)
-
-        grid0.addWidget(len_lbl, 20, 0)
-        grid0.addWidget(self.geo_len_entry, 20, 1, 1, 2)
-
-        # Coordinates
-        coords_lbl = FCLabel('%s' % _("Coordinates"), bold=True)
-        coords_lbl.setToolTip(
-            _("The coordinates of the selected geometry element.")
-        )
-        grid0.addWidget(coords_lbl, 22, 0, 1, 3)
-
-        self.geo_coords_entry = FCTextEdit()
-        self.geo_coords_entry.setPlaceholderText(
-            _("The coordinates of the selected geometry element.")
-        )
-        grid0.addWidget(self.geo_coords_entry, 24, 0, 1, 3)
-
-        # Vertex Points Number
-        vertex_lbl = FCLabel('%s' % _("Vertex Points"), bold=True)
-        vertex_lbl.setToolTip(
-            _("The number of vertex points in the selected geometry element.")
-        )
-        self.geo_vertex_entry = FCEntry(decimals=self.decimals)
-        self.geo_vertex_entry.setReadOnly(True)
-
-        grid0.addWidget(vertex_lbl, 26, 0)
-        grid0.addWidget(self.geo_vertex_entry, 26, 1, 1, 2)
-
-        layout.addStretch()
-
-        # Editor
-        self.exit_editor_button = FCButton(_('Exit Editor'))
-        self.exit_editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/power16.png'))
-        self.exit_editor_button.setToolTip(
-            _("Exit from Editor.")
-        )
-        self.exit_editor_button.setStyleSheet("""
-                                      QPushButton
-                                      {
-                                          font-weight: bold;
-                                      }
-                                      """)
-        layout.addWidget(self.exit_editor_button)
 
         # ## Toolbar events and properties
         self.tools = {}
@@ -3439,7 +3246,6 @@ class AppGeoEditor(QtCore.QObject):
         # ####################### GEOMETRY Editor Signals #############################################################
         # #############################################################################################################
         self.build_ui_sig.connect(self.build_ui)
-        self.level.toggled.connect(self.on_level_changed)
 
         self.app.ui.grid_gap_x_entry.textChanged.connect(self.on_gridx_val_changed)
         self.app.ui.grid_gap_y_entry.textChanged.connect(self.on_gridy_val_changed)
@@ -3451,7 +3257,6 @@ class AppGeoEditor(QtCore.QObject):
         self.app.ui.corner_snap_btn.triggered.connect(lambda: self.toolbar_tool_toggle("corner_snap"))
 
         self.app.pool_recreated.connect(self.pool_recreated)
-        self.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
 
         # connect the toolbar signals
         self.connect_geo_toolbar_signals()
@@ -3490,9 +3295,9 @@ class AppGeoEditor(QtCore.QObject):
 
         self.transform_complete.connect(self.on_transform_complete)
 
-        self.change_orientation_btn.clicked.connect(self.on_change_orientation)
+        self.ui.change_orientation_btn.clicked.connect(self.on_change_orientation)
 
-        self.tw.customContextMenuRequested.connect(self.on_menu_request)
+        self.ui.tw.customContextMenuRequested.connect(self.on_menu_request)
 
         self.clear_tree_sig.connect(self.on_clear_tree)
 
@@ -3595,25 +3400,27 @@ class AppGeoEditor(QtCore.QObject):
         self.units = self.app.app_units.upper()
         self.decimals = self.app.decimals
 
+        self.ui.geo_coords_entry.setText('')
+        self.ui.is_ccw_entry.set_value('None')
+        self.ui.is_ring_entry.set_value('None')
+        self.ui.is_simple_entry.set_value('None')
+        self.ui.is_empty_entry.set_value('None')
+        self.ui.is_valid_entry.set_value('None')
+        self.ui.geo_vertex_entry.set_value(0.0)
+        self.ui.geo_zoom.set_value(False)
+
+        self.ui.param_button.setChecked(self.app.options['geometry_editor_parameters'])
+
         # Remove anything else in the GUI Selected Tab
         self.app.ui.properties_scroll_area.takeWidget()
         # Put ourselves in the appGUI Properties Tab
-        self.app.ui.properties_scroll_area.setWidget(self.geo_edit_widget)
+        self.app.ui.properties_scroll_area.setWidget(self.ui.geo_edit_widget)
         # Switch notebook to Properties page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
-        self.geo_coords_entry.setText('')
-        self.is_ccw_entry.set_value('None')
-        self.is_ring_entry.set_value('None')
-        self.is_simple_entry.set_value('None')
-        self.is_empty_entry.set_value('None')
-        self.is_valid_entry.set_value('None')
-        self.geo_vertex_entry.set_value(0.0)
-        self.geo_zoom.set_value(False)
-
         # Show/Hide Advanced Options
         app_mode = self.app.options["global_app_level"]
-        self.change_level(app_mode)
+        self.ui.change_level(app_mode)
 
     def build_ui(self):
         """
@@ -3622,14 +3429,14 @@ class AppGeoEditor(QtCore.QObject):
         :return:
         """
 
-        iterator = QtWidgets.QTreeWidgetItemIterator(self.geo_parent)
+        iterator = QtWidgets.QTreeWidgetItemIterator(self.ui.geo_parent)
         to_delete = []
         while iterator.value():
             item = iterator.value()
             to_delete.append(item)
             iterator += 1
         for it in to_delete:
-            self.geo_parent.removeChild(it)
+            self.ui.geo_parent.removeChild(it)
 
         for elem in self.storage.get_objects():
             geo_type = type(elem.geo)
@@ -3641,20 +3448,20 @@ class AppGeoEditor(QtCore.QObject):
             else:
                 el_type = elem.data['type']
 
-            self.tw.addParentEditable(
-                self.geo_parent,
+            self.ui.tw.addParentEditable(
+                self.ui.geo_parent,
                 [
                     str(id(elem)),
                     '%s' % el_type,
                     _("Geo Elem")
                 ],
-                font=self.geo_font,
+                font=self.ui.geo_font,
                 font_items=2,
                 # color=QtGui.QColor("#FF0000"),
                 editable=True
             )
 
-        self.tw.resize_sig.emit()
+        self.ui.tw.resize_sig.emit()
 
     def on_geo_elem_selected(self):
         pass
@@ -3664,7 +3471,7 @@ class AppGeoEditor(QtCore.QObject):
         last_obj_shape = None
         last_id = None
 
-        selected_tree_items = self.tw.selectedItems()
+        selected_tree_items = self.ui.tw.selectedItems()
         for sel in selected_tree_items:
             for obj_shape in self.storage.get_objects():
                 try:
@@ -3678,14 +3485,14 @@ class AppGeoEditor(QtCore.QObject):
         if last_obj_shape:
             last_sel_geo = last_obj_shape.geo
 
-            self.is_valid_entry.set_value(last_sel_geo.is_valid)
-            self.is_empty_entry.set_value(last_sel_geo.is_empty)
+            self.ui.is_valid_entry.set_value(last_sel_geo.is_valid)
+            self.ui.is_empty_entry.set_value(last_sel_geo.is_empty)
 
             if last_sel_geo.geom_type == 'MultiLineString':
                 length = last_sel_geo.length
-                self.is_simple_entry.set_value(last_sel_geo.is_simple)
-                self.is_ring_entry.set_value(last_sel_geo.is_ring)
-                self.is_ccw_entry.set_value('None')
+                self.ui.is_simple_entry.set_value(last_sel_geo.is_simple)
+                self.ui.is_ring_entry.set_value(last_sel_geo.is_ring)
+                self.ui.is_ccw_entry.set_value('None')
 
                 coords = ''
                 vertex_nr = 0
@@ -3696,9 +3503,9 @@ class AppGeoEditor(QtCore.QObject):
                     coords += str(line_coords) + '\n'
             elif last_sel_geo.geom_type == 'MultiPolygon':
                 length = 0.0
-                self.is_simple_entry.set_value('None')
-                self.is_ring_entry.set_value('None')
-                self.is_ccw_entry.set_value('None')
+                self.ui.is_simple_entry.set_value('None')
+                self.ui.is_ring_entry.set_value('None')
+                self.ui.is_ccw_entry.set_value('None')
 
                 coords = ''
                 vertex_nr = 0
@@ -3712,24 +3519,24 @@ class AppGeoEditor(QtCore.QObject):
                 length = last_sel_geo.length
                 coords = list(last_sel_geo.coords)
                 vertex_nr = len(coords)
-                self.is_simple_entry.set_value(last_sel_geo.is_simple)
-                self.is_ring_entry.set_value(last_sel_geo.is_ring)
+                self.ui.is_simple_entry.set_value(last_sel_geo.is_simple)
+                self.ui.is_ring_entry.set_value(last_sel_geo.is_ring)
                 if last_sel_geo.geom_type == 'LinearRing':
-                    self.is_ccw_entry.set_value(last_sel_geo.is_ccw)
+                    self.ui.is_ccw_entry.set_value(last_sel_geo.is_ccw)
             elif last_sel_geo.geom_type == 'Polygon':
                 length = last_sel_geo.exterior.length
                 coords = list(last_sel_geo.exterior.coords)
                 vertex_nr = len(coords)
-                self.is_simple_entry.set_value(last_sel_geo.is_simple)
-                self.is_ring_entry.set_value(last_sel_geo.is_ring)
+                self.ui.is_simple_entry.set_value(last_sel_geo.is_simple)
+                self.ui.is_ring_entry.set_value(last_sel_geo.is_ring)
                 if last_sel_geo.exterior.geom_type == 'LinearRing':
-                    self.is_ccw_entry.set_value(last_sel_geo.exterior.is_ccw)
+                    self.ui.is_ccw_entry.set_value(last_sel_geo.exterior.is_ccw)
             else:
                 length = 0.0
                 coords = 'None'
                 vertex_nr = 0
 
-            if self.geo_zoom.get_value():
+            if self.ui.geo_zoom.get_value():
                 xmin, ymin, xmax, ymax = last_sel_geo.bounds
                 if xmin == xmax and ymin != ymax:
                     xmin = ymin
@@ -3770,9 +3577,9 @@ class AppGeoEditor(QtCore.QObject):
                     ymax += 0.05 * height
                     self.app.plotcanvas.adjust_axes(xmin, ymin, xmax, ymax)
 
-            self.geo_len_entry.set_value(length, decimals=self.decimals)
-            self.geo_coords_entry.setText(str(coords))
-            self.geo_vertex_entry.set_value(vertex_nr)
+            self.ui.geo_len_entry.set_value(length, decimals=self.decimals)
+            self.ui.geo_coords_entry.setText(str(coords))
+            self.ui.geo_vertex_entry.set_value(vertex_nr)
 
             self.app.inform.emit('%s: %s' % (_("Last selected shape ID"), str(last_id)))
 
@@ -3783,52 +3590,10 @@ class AppGeoEditor(QtCore.QObject):
         except Exception as e:
             self.app.log.error("APpGeoEditor.on_tree_selection_change() -> %s" % str(e))
 
-    def change_level(self, level):
-        """
-
-        :param level:   application level: either 'b' or 'a'
-        :type level:    str
-        :return:
-        """
-
-        if level == 'a':
-            self.level.setChecked(True)
-        else:
-            self.level.setChecked(False)
-        self.on_level_changed(self.level.isChecked())
-
-    def on_level_changed(self, checked):
-        if not checked:
-            self.level.setText('%s' % _('Beginner'))
-            self.level.setStyleSheet("""
-                                    QToolButton
-                                    {
-                                        color: green;
-                                    }
-                                    """)
-
-            self.adv_frame.hide()
-
-            # Context Menu section
-            # self.tw.removeContextMenu()
-        else:
-            self.level.setText('%s' % _('Advanced'))
-            self.level.setStyleSheet("""
-                                    QToolButton
-                                    {
-                                        color: red;
-                                    }
-                                    """)
-
-            self.adv_frame.show()
-
-            # Context Menu section
-            # self.tw.setupContextMenu()
-
     def on_change_orientation(self):
         self.app.log.debug("AppGeoEditor.on_change_orientation()")
 
-        selected_tree_items = self.tw.selectedItems()
+        selected_tree_items = self.ui.tw.selectedItems()
         processed_shapes = []
         new_shapes = []
 
@@ -3876,11 +3641,11 @@ class AppGeoEditor(QtCore.QObject):
                                             _("Change"))
         orientation_change.triggered.connect(self.on_change_orientation)
 
-        if not self.tw.selectedItems():
+        if not self.ui.tw.selectedItems():
             delete_action.setDisabled(True)
             orientation_change.setDisabled(True)
 
-        menu.exec(self.tw.viewport().mapToGlobal(pos))
+        menu.exec(self.ui.tw.viewport().mapToGlobal(pos))
 
     def activate(self):
         # adjust the status of the menu entries related to the editor
@@ -3934,11 +3699,11 @@ class AppGeoEditor(QtCore.QObject):
         self.item_selected.connect(self.on_geo_elem_selected)
 
         # ## appGUI Events
-        self.tw.itemPressed.connect(self.on_tree_geo_click)
-        # self.tw.keyPressed.connect(self.app.ui.keyPressEvent)
-        # self.tw.customContextMenuRequested.connect(self.on_menu_request)
+        self.ui.tw.itemPressed.connect(self.on_tree_geo_click)
+        # self.ui.tw.keyPressed.connect(self.app.ui.keyPressEvent)
+        # self.ui.tw.customContextMenuRequested.connect(self.on_menu_request)
 
-        self.geo_frame.show()
+        self.ui.geo_frame.show()
 
         self.app.log.debug("Finished activating the Geometry Editor...")
 
@@ -4003,9 +3768,9 @@ class AppGeoEditor(QtCore.QObject):
 
         try:
             # ## appGUI Events
-            self.tw.itemPressed.disconnect(self.on_tree_geo_click)
-            # self.tw.keyPressed.connect(self.app.ui.keyPressEvent)
-            # self.tw.customContextMenuRequested.connect(self.on_menu_request)
+            self.ui.tw.itemPressed.disconnect(self.on_tree_geo_click)
+            # self.ui.tw.keyPressed.connect(self.app.ui.keyPressEvent)
+            # self.ui.tw.customContextMenuRequested.connect(self.on_menu_request)
         except (AttributeError, TypeError):
             pass
 
@@ -4028,7 +3793,7 @@ class AppGeoEditor(QtCore.QObject):
             self.app.log.error("AppGeoEditor.deactivate() --> %s" % str(err))
 
         # hide the UI
-        self.geo_frame.hide()
+        self.ui.geo_frame.hide()
 
         self.app.log.debug("Finished deactivating the Geometry Editor...")
 
@@ -4218,9 +3983,9 @@ class AppGeoEditor(QtCore.QObject):
             pass
 
     def on_clear_tree(self):
-        self.tw.clearSelection()
-        self.tw.clear()
-        self.geo_parent = self.tw.invisibleRootItem()
+        self.ui.tw.clearSelection()
+        self.ui.tw.clear()
+        self.ui.geo_parent = self.ui.tw.invisibleRootItem()
 
     def add_shape(self, shape, build_ui=True):
         """
@@ -4636,13 +4401,13 @@ class AppGeoEditor(QtCore.QObject):
         # #########  if selection is done on canvas update the Tree in Selected Tab with the selection  ###############
         # #############################################################################################################
         try:
-            self.tw.itemPressed.disconnect(self.on_tree_geo_click)
+            self.ui.tw.itemPressed.disconnect(self.on_tree_geo_click)
         except (AttributeError, TypeError):
             pass
 
-        self.tw.selectionModel().clearSelection()
+        self.ui.tw.selectionModel().clearSelection()
         for sel_shape in self.selected:
-            iterator = QtWidgets.QTreeWidgetItemIterator(self.tw)
+            iterator = QtWidgets.QTreeWidgetItemIterator(self.ui.tw)
             while iterator.value():
                 item = iterator.value()
                 try:
@@ -4668,9 +4433,9 @@ class AppGeoEditor(QtCore.QObject):
 
             vertex_nr += len(sha_geo_solid_coords)
 
-        self.geo_vertex_entry.set_value(vertex_nr)
+        self.ui.geo_vertex_entry.set_value(vertex_nr)
 
-        self.tw.itemPressed.connect(self.on_tree_geo_click)
+        self.ui.tw.itemPressed.connect(self.on_tree_geo_click)
 
         self.plot_all()
 
@@ -5098,10 +4863,10 @@ class AppGeoEditor(QtCore.QObject):
                             str(fcgeometry.tools[self.multigeo_tool]['tooldia'])
                         )
                     )
-                    self.tooldia_entry.set_value(
+                    self.ui.tooldia_entry.set_value(
                         float(fcgeometry.tools[self.multigeo_tool]['data']['tools_mill_tooldia']))
                 else:
-                    self.tooldia_entry.set_value(float(fcgeometry.obj_options['tools_mill_tooldia']))
+                    self.ui.tooldia_entry.set_value(float(fcgeometry.obj_options['tools_mill_tooldia']))
 
         self.app.worker_task.emit({'fcn': task_job, 'params': [self]})
 
@@ -5119,7 +4884,7 @@ class AppGeoEditor(QtCore.QObject):
             with editor_obj.app.proc_container.new(_("Working...")):
                 if editor_obj.multigeo_tool:
                     edited_dia = float(fcgeometry.tools[self.multigeo_tool]['tooldia'])
-                    new_dia = self.tooldia_entry.get_value()
+                    new_dia = self.ui.tooldia_entry.get_value()
 
                     if new_dia != edited_dia:
                         fcgeometry.tools[self.multigeo_tool]['tooldia'] = new_dia
@@ -5138,7 +4903,7 @@ class AppGeoEditor(QtCore.QObject):
                     editor_obj.multigeo_tool = None
                 else:
                     edited_dia = float(fcgeometry.obj_options['tools_mill_tooldia'])
-                    new_dia = self.tooldia_entry.get_value()
+                    new_dia = self.ui.tooldia_entry.get_value()
 
                     if new_dia != edited_dia:
                         fcgeometry.obj_options['tools_mill_tooldia'] = new_dia
@@ -5448,6 +5213,287 @@ class AppGeoEditor(QtCore.QObject):
                 self.flat_geo.append(geometry)
 
         return self.flat_geo
+
+
+class AppGeoEditorUI:
+    def __init__(self, app):
+        self.app = app
+        self.decimals = self.app.decimals
+        self.units = self.app.app_units.upper()
+
+        self.geo_edit_widget = QtWidgets.QWidget()
+        # ## Box for custom widgets
+        # This gets populated in offspring implementations.
+        layout = QtWidgets.QVBoxLayout()
+        self.geo_edit_widget.setLayout(layout)
+
+        # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Drills widgets
+        # this way I can hide/show the frame
+        self.geo_frame = QtWidgets.QFrame()
+        self.geo_frame.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.geo_frame)
+        self.tools_box = QtWidgets.QVBoxLayout()
+        self.tools_box.setContentsMargins(0, 0, 0, 0)
+        self.geo_frame.setLayout(self.tools_box)
+
+        # ## Page Title box (spacing between children)
+        self.title_box = QtWidgets.QHBoxLayout()
+        self.tools_box.addLayout(self.title_box)
+
+        # ## Page Title icon
+        pixmap = QtGui.QPixmap(self.app.resource_location + '/app32.png')
+        self.icon = FCLabel()
+        self.icon.setPixmap(pixmap)
+        self.title_box.addWidget(self.icon, stretch=0)
+
+        # ## Title label
+        self.title_label = FCLabel("<font size=5><b>%s</b></font>" % _('Geometry Editor'))
+        self.title_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.title_box.addWidget(self.title_label, stretch=1)
+
+        # App Level label
+        self.level = QtWidgets.QToolButton()
+        self.level.setToolTip(
+            _(
+                "Beginner Mode - many parameters are hidden.\n"
+                "Advanced Mode - full control.\n"
+                "Permanent change is done in 'Preferences' menu."
+            )
+        )
+        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.level.setCheckable(True)
+        self.title_box.addWidget(self.level)
+
+        dia_grid = GLay(v_spacing=5, h_spacing=3)
+        self.tools_box.addLayout(dia_grid)
+
+        # Tool diameter
+        tooldia_lbl = FCLabel('%s:' % _("Tool dia"), bold=True)
+        tooldia_lbl.setToolTip(
+            _("Edited tool diameter.")
+        )
+        self.tooldia_entry = FCDoubleSpinner()
+        self.tooldia_entry.set_precision(self.decimals)
+        self.tooldia_entry.setSingleStep(10 ** -self.decimals)
+        self.tooldia_entry.set_range(-10000.0000, 10000.0000)
+
+        dia_grid.addWidget(tooldia_lbl, 0, 0)
+        dia_grid.addWidget(self.tooldia_entry, 0, 1)
+
+        # #############################################################################################################
+        # Tree Widget Frame
+        # #############################################################################################################
+        # Tree Widget Title
+        tw_label = FCLabel('%s' % _("Geometry Table"), bold=True, color='green')
+        tw_label.setToolTip(
+            _("The list of geometry elements inside the edited object.")
+        )
+        self.tools_box.addWidget(tw_label)
+
+        tw_frame = FCFrame()
+        self.tools_box.addWidget(tw_frame)
+
+        # Grid Layout
+        tw_grid = GLay(v_spacing=5, h_spacing=3)
+        tw_frame.setLayout(tw_grid)
+
+        # Tree Widget
+        self.tw = FCTree(columns=3, header_hidden=False, protected_column=[0, 1], extended_sel=True)
+        self.tw.setHeaderLabels(["ID", _("Type"), _("Name")])
+        self.tw.setIndentation(0)
+        self.tw.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+        self.tw.header().setStretchLastSection(True)
+        self.tw.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        tw_grid.addWidget(self.tw, 0, 0, 1, 2)
+
+        self.geo_font = QtGui.QFont()
+        self.geo_font.setBold(True)
+        self.geo_parent = self.tw.invisibleRootItem()
+
+        # #############################################################################################################
+        # ############################################ Advanced Editor ################################################
+        # #############################################################################################################
+        self.adv_frame = QtWidgets.QFrame()
+        self.adv_frame.setContentsMargins(0, 0, 0, 0)
+        self.tools_box.addWidget(self.adv_frame)
+
+        grid0 = GLay(v_spacing=5, h_spacing=3)
+        grid0.setContentsMargins(0, 0, 0, 0)
+        self.adv_frame.setLayout(grid0)
+
+        # Zoom Selection
+        self.geo_zoom = FCCheckBox(_("Zoom on selection"))
+        grid0.addWidget(self.geo_zoom, 0, 0, 1, 2)
+
+        # Parameters Title
+        self.param_button = FCButton('%s' % _("Parameters"), checkable=True, color='blue', bold=True,
+                                     click_callback=self.on_param_click)
+        self.param_button.setToolTip(
+            _("Geometry parameters.")
+        )
+        grid0.addWidget(self.param_button, 2, 0, 1, 2)
+
+        # #############################################################################################################
+        # ############################################ Parameter Frame ################################################
+        # #############################################################################################################
+        self.par_frame = FCFrame()
+        grid0.addWidget(self.par_frame, 6, 0, 1, 2)
+
+        par_grid = GLay(v_spacing=5, h_spacing=3)
+        self.par_frame.setLayout(par_grid)
+
+        # Is Valid
+        is_valid_lbl = FCLabel('%s' % _("Is Valid"), bold=True)
+        self.is_valid_entry = FCLabel('None')
+
+        par_grid.addWidget(is_valid_lbl, 0, 0)
+        par_grid.addWidget(self.is_valid_entry, 0, 1, 1, 2)
+
+        # Is Empty
+        is_empty_lbl = FCLabel('%s' % _("Is Empty"), bold=True)
+        self.is_empty_entry = FCLabel('None')
+
+        par_grid.addWidget(is_empty_lbl, 2, 0)
+        par_grid.addWidget(self.is_empty_entry, 2, 1, 1, 2)
+
+        # Is Ring
+        is_ring_lbl = FCLabel('%s' % _("Is Ring"), bold=True)
+        self.is_ring_entry = FCLabel('None')
+
+        par_grid.addWidget(is_ring_lbl, 4, 0)
+        par_grid.addWidget(self.is_ring_entry, 4, 1, 1, 2)
+
+        # Is CCW
+        is_ccw_lbl = FCLabel('%s' % _("Is CCW"), bold=True)
+        self.is_ccw_entry = FCLabel('None')
+        self.change_orientation_btn = FCButton(_("Change"))
+        self.change_orientation_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/orientation32.png'))
+        self.change_orientation_btn.setToolTip(
+            _("Change the orientation of the geometric element.\n"
+              "Works for LinearRing and Polygons.")
+        )
+        par_grid.addWidget(is_ccw_lbl, 6, 0)
+        par_grid.addWidget(self.is_ccw_entry, 6, 1)
+        par_grid.addWidget(self.change_orientation_btn, 6, 2)
+
+        # Is Simple
+        is_simple_lbl = FCLabel('%s' % _("Is Simple"), bold=True)
+        self.is_simple_entry = FCLabel('None')
+
+        par_grid.addWidget(is_simple_lbl, 8, 0)
+        par_grid.addWidget(self.is_simple_entry, 8, 1, 1, 2)
+
+        # Length
+        len_lbl = FCLabel('%s' % _("Length"), bold=True)
+        len_lbl.setToolTip(
+            _("The length of the geometry element.")
+        )
+        self.geo_len_entry = FCEntry(decimals=self.decimals)
+        self.geo_len_entry.setReadOnly(True)
+
+        par_grid.addWidget(len_lbl, 10, 0)
+        par_grid.addWidget(self.geo_len_entry, 10, 1, 1, 2)
+
+        # #############################################################################################################
+        # Coordinates Frame
+        # #############################################################################################################
+        # Coordinates
+        coords_lbl = FCLabel('%s' % _("Coordinates"), bold=True, color='red')
+        coords_lbl.setToolTip(
+            _("The coordinates of the selected geometry element.")
+        )
+        self.tools_box.addWidget(coords_lbl)
+
+        c_frame = FCFrame()
+        self.tools_box.addWidget(c_frame)
+
+        # Grid Layout
+        coords_grid = GLay(v_spacing=5, h_spacing=3)
+        c_frame.setLayout(coords_grid)
+
+        self.geo_coords_entry = FCTextEdit()
+        self.geo_coords_entry.setPlaceholderText(
+            _("The coordinates of the selected geometry element.")
+        )
+        coords_grid.addWidget(self.geo_coords_entry, 0, 0, 1, 2)
+
+        # Grid Layout
+        v_grid = GLay(v_spacing=5, h_spacing=3)
+        self.tools_box.addLayout(v_grid)
+
+        # Vertex Points Number
+        vertex_lbl = FCLabel('%s' % _("Vertex Points"), bold=True)
+        vertex_lbl.setToolTip(
+            _("The number of vertex points in the selected geometry element.")
+        )
+        self.geo_vertex_entry = FCEntry(decimals=self.decimals)
+        self.geo_vertex_entry.setReadOnly(True)
+
+        v_grid.addWidget(vertex_lbl, 0, 0)
+        v_grid.addWidget(self.geo_vertex_entry, 0, 1)
+
+        GLay.set_common_column_size([grid0, v_grid, tw_grid, coords_grid, dia_grid, par_grid], 0)
+
+        layout.addStretch(1)
+
+        # Editor
+        self.exit_editor_button = FCButton(_('Exit Editor'), bold=True)
+        self.exit_editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/power16.png'))
+        self.exit_editor_button.setToolTip(
+            _("Exit from Editor.")
+        )
+        layout.addWidget(self.exit_editor_button)
+
+        # Signals
+        self.level.toggled.connect(self.on_level_changed)
+        self.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
+
+    def on_param_click(self):
+        if self.param_button.get_value():
+            self.par_frame.show()
+        else:
+            self.par_frame.hide()
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+        if level == 'a':
+            self.level.setChecked(True)
+        else:
+            self.level.setChecked(False)
+        self.on_level_changed(self.level.isChecked())
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.level.setText('%s' % _('Beginner'))
+            self.level.setStyleSheet("""
+                                    QToolButton
+                                    {
+                                        color: green;
+                                    }
+                                    """)
+
+            self.adv_frame.hide()
+
+            # Context Menu section
+            # self.tw.removeContextMenu()
+        else:
+            self.level.setText('%s' % _('Advanced'))
+            self.level.setStyleSheet("""
+                                    QToolButton
+                                    {
+                                        color: red;
+                                    }
+                                    """)
+
+            self.adv_frame.show()
+
+            # Context Menu section
+            # self.tw.setupContextMenu()
 
 
 def distance(pt1, pt2):

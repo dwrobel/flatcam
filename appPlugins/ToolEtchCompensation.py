@@ -300,14 +300,7 @@ class EtchUI:
         self.tools_frame.setLayout(self.tools_box)
 
         # Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
+        title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
         self.tools_box.addWidget(title_label)
 
         # #############################################################################################################
@@ -480,33 +473,21 @@ class EtchUI:
         # #############################################################################################################
         # Generate Etch Compensation Button
         # #############################################################################################################
-        self.compensate_btn = FCButton(_('Compensate'))
+        self.compensate_btn = FCButton(_('Compensate'), bold=True)
         self.compensate_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/etch_32.png'))
         self.compensate_btn.setToolTip(
             _("Will increase the copper features thickness to compensate the lateral etch.")
         )
-        self.compensate_btn.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.tools_box.addWidget(self.compensate_btn)
 
         self.tools_box.addStretch(1)
 
         # ## Reset Tool
-        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"), bold=True)
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )
-        self.reset_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.layout.addWidget(self.reset_button)
 
         # #################################### FINSIHED GUI ###########################

@@ -6435,17 +6435,11 @@ class AppGerberEditorUI:
         self.shape_grid.addWidget(self.geo_tol_entry, 16, 1, 1, 2)
 
         # Simplification button
-        self.simplification_btn = FCButton(_("Simplify"))
+        self.simplification_btn = FCButton(_("Simplify"), bold=True)
         self.simplification_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/simplify32.png'))
         self.simplification_btn.setToolTip(
             _("Simplify a geometry element by reducing its vertex points number.")
         )
-        self.simplification_btn.setStyleSheet("""
-                                                      QPushButton
-                                                      {
-                                                          font-weight: bold;
-                                                      }
-                                                      """)
 
         self.shape_grid.addWidget(self.simplification_btn, 18, 0, 1, 3)
 
@@ -6772,17 +6766,11 @@ class AppGerberEditorUI:
         layout.addStretch()
 
         # Editor
-        self.exit_editor_button = FCButton(_('Exit Editor'))
+        self.exit_editor_button = FCButton(_('Exit Editor'), bold=True)
         self.exit_editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/power16.png'))
         self.exit_editor_button.setToolTip(
             _("Exit from Editor.")
         )
-        self.exit_editor_button.setStyleSheet("""
-                                              QPushButton
-                                              {
-                                                  font-weight: bold;
-                                              }
-                                              """)
         layout.addWidget(self.exit_editor_button)
 
 
@@ -6807,14 +6795,7 @@ class TransformEditorTool(AppTool):
         self.decimals = self.app.decimals
 
         # ## Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                                        QLabel
-                                        {
-                                            font-size: 16px;
-                                            font-weight: bold;
-                                        }
-                                        """)
+        title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
         self.layout.addWidget(title_label)
         self.layout.addWidget(FCLabel(''))
 

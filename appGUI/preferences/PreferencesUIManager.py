@@ -1334,7 +1334,7 @@ class PreferencesUIManager(QtCore.QObject):
                     self.old_color = self.ui.plot_tab_area.tabBar.tabTextColor(idx)
                     self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
 
-            self.ui.pref_apply_button.setStyleSheet("QPushButton {color: red;}")
+            self.ui.pref_apply_button.color = 'red'
             self.ui.pref_apply_button.setIcon(QtGui.QIcon(self.ui.app.resource_location + '/apply_red32.png'))
 
             self.preferences_changed_flag = True

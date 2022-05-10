@@ -3255,7 +3255,7 @@ class App(QtCore.QObject):
                 )
                 title.setOpenExternalLinks(True)
 
-                closebtn = QtWidgets.QPushButton(_("Close"))
+                closebtn = FCButton(_("Close"))
 
                 tab_widget = QtWidgets.QTabWidget()
                 description_label = FCLabel(
@@ -3835,7 +3835,7 @@ class App(QtCore.QObject):
                 tab_widget = QtWidgets.QTabWidget()
                 tab_layout.addWidget(tab_widget)
 
-                closebtn = QtWidgets.QPushButton(_("Close"))
+                closebtn = FCButton(_("Close"))
                 buttons_hlay.addStretch()
                 buttons_hlay.addWidget(closebtn)
 

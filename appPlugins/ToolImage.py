@@ -516,14 +516,7 @@ class ImageUI:
         self.layout = layout
 
         # ## Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
+        title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
         self.layout.addWidget(title_label)
 
         self.param_lbl = FCLabel('%s' % _("Parameters"), color='blue', bold=True)

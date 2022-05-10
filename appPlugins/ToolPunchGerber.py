@@ -2002,14 +2002,7 @@ class PunchUI:
         self.tools_box.addLayout(self.title_box)
 
         # ## Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
+        title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
         self.title_box.addWidget(title_label)
 
         # App Level label
@@ -2361,34 +2354,22 @@ class PunchUI:
         grid2.addLayout(sel_hlay, 2, 0, 1, 2)
 
         # Buttons
-        self.punch_object_button = FCButton(_("Punch Gerber"))
+        self.punch_object_button = FCButton(_("Punch Gerber"), bold=True)
         self.punch_object_button.setIcon(QtGui.QIcon(self.app.resource_location + '/punch32.png'))
         self.punch_object_button.setToolTip(
             _("Create a Gerber object from the selected object, within\n"
               "the specified box.")
         )
-        self.punch_object_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.tools_box.addWidget(self.punch_object_button)
 
         self.layout.addStretch(1)
 
         # ## Reset Tool
-        self.reset_button = FCButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"), bold=True)
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )
-        self.reset_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.layout.addWidget(self.reset_button)
 
         self.circular_ring_entry.setEnabled(False)

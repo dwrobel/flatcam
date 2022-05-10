@@ -991,14 +991,8 @@ class ExtractUI:
         self.layout = layout
 
         # ## Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
+        title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
+
         self.layout.addWidget(title_label)
 
         self.tools_frame = QtWidgets.QFrame()
@@ -1320,17 +1314,11 @@ class ExtractUI:
         # #############################################################################################################
         # Extract drills from Gerber apertures flashes (pads) BUTTON
         # #############################################################################################################
-        self.e_drills_button = QtWidgets.QPushButton(_("Extract Drills"))
+        self.e_drills_button = FCButton(_("Extract Drills"), bold=True)
         self.e_drills_button.setIcon(QtGui.QIcon(self.app.resource_location + '/drill16.png'))
         self.e_drills_button.setToolTip(
             _("Extract drills from a given Gerber file.")
         )
-        self.e_drills_button.setStyleSheet("""
-                                        QPushButton
-                                        {
-                                            font-weight: bold;
-                                        }
-                                        """)
         self.tools_box.addWidget(self.e_drills_button)
 
         # #############################################################################################################
@@ -1365,17 +1353,12 @@ class ExtractUI:
         # #############################################################################################################
         # Extract solderemask from Gerber apertures flashes (pads) BUTTON
         # #############################################################################################################
-        self.e_sm_button = QtWidgets.QPushButton(_("Extract Soldermask"))
+        self.e_sm_button = FCButton(_("Extract Soldermask"))
         self.e_sm_button.setIcon(QtGui.QIcon(self.app.resource_location + '/extract32.png'))
         self.e_sm_button.setToolTip(
             _("Extract soldermask from a given Gerber file.")
         )
-        self.e_sm_button.setStyleSheet("""
-                                        QPushButton
-                                        {
-                                            font-weight: bold;
-                                        }
-                                        """)
+        self.e_sm_button.bold = True
         self.tools_box.addWidget(self.e_sm_button)
 
         # #############################################################################################################
@@ -1427,33 +1410,22 @@ class ExtractUI:
         # #############################################################################################################
         # Extract cutout from Gerber apertures flashes (pads) BUTTON
         # #############################################################################################################
-        self.e_cut_button = QtWidgets.QPushButton(_("Extract Cutout"))
+        self.e_cut_button = FCButton(_("Extract Cutout"))
         self.e_cut_button.setIcon(QtGui.QIcon(self.app.resource_location + '/extract32.png'))
         self.e_cut_button.setToolTip(
             _("Extract a cutout from a given Gerber file.")
         )
-        self.e_cut_button.setStyleSheet("""
-                                               QPushButton
-                                               {
-                                                   font-weight: bold;
-                                               }
-                                               """)
+        self.e_cut_button.bold = True
         self.tools_box.addWidget(self.e_cut_button)
 
         self.layout.addStretch(1)
 
         # ## Reset Tool
-        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"), bold=True)
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )
-        self.reset_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.layout.addWidget(self.reset_button)
 
         self.ring_frame.hide()

@@ -194,7 +194,7 @@ class AppTextEditor(QtWidgets.QWidget):
         # self.ui.buttonPrint.setEnabled(enable)
         # self.ui.buttonPreview.setEnabled(enable)
 
-        self.buttonSave.setStyleSheet("QPushButton {color: red;}")
+        self.buttonSave.setStyleSheet("QToolButton {color: red;}")
         self.buttonSave.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as_red.png'))
 
     def load_text(self, text, move_to_start=False, move_to_end=False, clear_text=True, as_html=False):

@@ -1167,14 +1167,7 @@ class RulesUI:
         self.layout = layout
 
         # ## Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
+        title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
         self.layout.addWidget(title_label)
 
         # https://www.w3schools.com/colors/colors_names.asp
@@ -1755,19 +1748,13 @@ class RulesUI:
             self.drill_size_cb, [self.drill_size_lbl, self.drill_size_entry])
 
         # Buttons
-        self.run_button = FCButton(_("Run Rules Check"))
+        self.run_button = FCButton(_("Run Rules Check"), bold=True)
         self.run_button.setIcon(QtGui.QIcon(self.app.resource_location + '/rules32.png'))
         self.run_button.setToolTip(
             _("Panelize the specified object around the specified box.\n"
               "In other words it creates multiple copies of the source object,\n"
               "arranged in a 2D array of rows and columns.")
         )
-        self.run_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.layout.addWidget(self.run_button)
 
         GLay.set_common_column_size(
@@ -1777,17 +1764,11 @@ class RulesUI:
         self.layout.addStretch(1)
 
         # ## Reset Tool
-        self.reset_button = FCButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"), bold=True)
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )
-        self.reset_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.layout.addWidget(self.reset_button)
         
         # #############################################################################################################

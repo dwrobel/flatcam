@@ -978,7 +978,7 @@ class FCColorEntry(QtWidgets.QFrame):
         validator = QtGui.QRegularExpressionValidator(regex, self.entry)
         self.entry.setValidator(validator)
 
-        self.button = QtWidgets.QPushButton()
+        self.button = FCButton()
         self.button.setFixedSize(15, 15)
         self.button.setStyleSheet("border-color: dimgray;")
 
@@ -3002,13 +3002,47 @@ class FCInputDialogSpinnerButton(QtWidgets.QDialog):
 
 
 class FCButton(QtWidgets.QPushButton):
-    def __init__(self, text=None, checkable=None, click_callback=None, parent=None):
+    def __init__(self, text=None, checkable=None, click_callback=None, bold=False, color=None, parent=None):
         super(FCButton, self).__init__(text, parent)
+
+        self._bold = False
+        self._color = None
+
+        self.bold = True if bold else False
+
+        if color:
+            self.color = self.patching_text_color(color)
+
         if checkable is not None:
             self.setCheckable(checkable)
 
         if click_callback is not None:
             self.clicked.connect(click_callback)
+
+    @property
+    def bold(self):
+        return self._bold
+
+    @bold.setter
+    def bold(self, bold):
+        self._bold = bold
+        font = QtGui.QFont()
+        font.setBold(True) if bold else font.setBold(False)
+        self.setFont(font)
+
+    @property
+    def color(self):
+        return self._color
+
+    @color.setter
+    def color(self, color):
+        self._color = color
+        self.setStyleSheet("""
+                            QPushButton
+                                {{
+                                    color: {color};
+                                }}
+                            """.format(color=color))
 
     def get_value(self):
         return self.isChecked()
@@ -3016,12 +3050,14 @@ class FCButton(QtWidgets.QPushButton):
     def set_value(self, val):
         self.setText(str(val))
 
+    def patching_text_color(self, color):
+        return color
+
 
 class FCLabel(QtWidgets.QLabel):
     clicked = QtCore.pyqtSignal(bool)
     right_clicked = QtCore.pyqtSignal(bool)
     middle_clicked = QtCore.pyqtSignal(bool)
-
 
     def __init__(self, title=None, color=None, bold=None, size=None, parent=None):
         """

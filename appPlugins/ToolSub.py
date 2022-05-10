@@ -772,14 +772,7 @@ class SubUI:
         self.layout.addLayout(self.title_box)
 
         # ## Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
+        title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
         title_label.setToolTip(
             _("A plugin to help subtract a Gerber/Geometry object from another of the same type.")
         )
@@ -872,7 +865,7 @@ class SubUI:
         # #############################################################################################################
         # Gerber Subtraction Button
         # #############################################################################################################
-        self.intersect_btn = FCButton(_('Subtract Gerber'))
+        self.intersect_btn = FCButton(_('Subtract Gerber'), bold=True)
         self.intersect_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/subtract_btn32.png'))
         self.intersect_btn.setToolTip(
             _("Will remove the area occupied by the subtractor\n"
@@ -880,12 +873,6 @@ class SubUI:
               "Can be used to remove the overlapping silkscreen\n"
               "over the soldermask.")
         )
-        self.intersect_btn.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.tools_box.addWidget(self.intersect_btn)
         # self.tools_box.addWidget(FCLabel(''))
 
@@ -945,35 +932,23 @@ class SubUI:
         # #############################################################################################################
         # Geometry Subtraction Button
         # #############################################################################################################
-        self.intersect_geo_btn = FCButton(_('Subtract Geometry'))
+        self.intersect_geo_btn = FCButton(_('Subtract Geometry'), bold=True)
         self.intersect_geo_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/subtract_btn32.png'))
         self.intersect_geo_btn.setToolTip(
             _("Will remove the area occupied by the subtractor\n"
               "Geometry from the Target Geometry.")
         )
-        self.intersect_geo_btn.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
 
         self.tools_box.addWidget(self.intersect_geo_btn)
 
         self.tools_box.addStretch(1)
 
         # ## Reset Tool
-        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"), bold=True)
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )
-        self.reset_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.tools_box.addWidget(self.reset_button)
 
         # #################################### FINSIHED GUI ###########################

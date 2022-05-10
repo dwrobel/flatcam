@@ -100,7 +100,7 @@ class BookmarkManager(QtWidgets.QWidget):
         remove_entry_btn = FCButton(_("Remove Entry"))
         export_list_btn = FCButton(_("Export List"))
         import_list_btn = FCButton(_("Import List"))
-        # closebtn = QtWidgets.QPushButton(_("Close"))
+        # closebtn = FCButton(_("Close"))
 
         # button_hlay.addStretch()
         button_hlay.addWidget(add_entry_btn)

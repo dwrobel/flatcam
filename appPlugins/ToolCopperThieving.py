@@ -1257,14 +1257,7 @@ class ThievingUI:
         self.layout = layout
 
         # ## Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
+        title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
         self.layout.addWidget(title_label)
 
         self.tools_frame = QtWidgets.QFrame()
@@ -1573,18 +1566,12 @@ class ThievingUI:
         # #############################################################################################################
         # ## Insert Copper Thieving BUTTON
         # #############################################################################################################
-        self.fill_button = QtWidgets.QPushButton(_("Insert Copper thieving"))
+        self.fill_button = FCButton(_("Insert Copper thieving"), bold=True)
         self.fill_button.setIcon(QtGui.QIcon(self.app.resource_location + '/copperfill32.png'))
         self.fill_button.setToolTip(
             _("Will add a polygon (may be split in multiple parts)\n"
               "that will surround the actual Gerber traces at a certain distance.")
         )
-        self.fill_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.tools_box.addWidget(self.fill_button)
 
         # #############################################################################################################
@@ -1638,7 +1625,7 @@ class ThievingUI:
         # #############################################################################################################
         # ## Insert Robber Bar
         # #############################################################################################################
-        self.rb_button = QtWidgets.QPushButton(_("Insert Robber Bar"))
+        self.rb_button = FCButton(_("Insert Robber Bar"), bold=True)
         self.rb_button.setIcon(QtGui.QIcon(self.app.resource_location + '/robber32.png'))
         self.rb_button.setToolTip(
             _("Will add a polygon with a defined thickness\n"
@@ -1646,12 +1633,6 @@ class ThievingUI:
               "at a certain distance.\n"
               "Required when doing holes pattern plating.")
         )
-        self.rb_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.tools_box.addWidget(self.rb_button)
 
         # #############################################################################################################
@@ -1751,35 +1732,23 @@ class ThievingUI:
         # #############################################################################################################
         # ## Pattern Plating Mask Button
         # #############################################################################################################
-        self.ppm_button = QtWidgets.QPushButton(_("Generate pattern plating mask"))
+        self.ppm_button = FCButton(_("Generate pattern plating mask"), bold=True)
         self.ppm_button.setIcon(QtGui.QIcon(self.app.resource_location + '/pattern32.png'))
         self.ppm_button.setToolTip(
             _("Will add to the soldermask gerber geometry\n"
               "the geometries of the copper thieving and/or\n"
               "the robber bar if those were generated.")
         )
-        self.ppm_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.tools_box.addWidget(self.ppm_button)
 
         self.layout.addStretch(1)
 
         # ## Reset Tool
-        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"), bold=True)
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )
-        self.reset_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.layout.addWidget(self.reset_button)
 
         # #################################### FINSIHED GUI ###########################

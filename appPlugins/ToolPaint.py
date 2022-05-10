@@ -2914,14 +2914,7 @@ class PaintUI:
         self.tools_box.addLayout(self.title_box)
 
         # ## Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
+        title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
         title_label.setToolTip(
             _("Create a Geometry object with toolpaths\n"
               "that cover only the copper pattern.")
@@ -3343,33 +3336,21 @@ class PaintUI:
         # #############################################################################################################
         # Generate Paint Geometry Button
         # #############################################################################################################
-        self.generate_paint_button = FCButton(_('Generate Geometry'))
+        self.generate_paint_button = FCButton(_('Generate Geometry'), bold=True)
         self.generate_paint_button.setIcon(QtGui.QIcon(self.app.resource_location + '/geometry32.png'))
         self.generate_paint_button.setToolTip(
             _("Create a Geometry Object which paints the polygons.")
         )
-        self.generate_paint_button.setStyleSheet("""
-                                                 QPushButton
-                                                 {
-                                                     font-weight: bold;
-                                                 }
-                                                 """)
         self.tools_box.addWidget(self.generate_paint_button)
 
         self.tools_box.addStretch(1)
 
         # ## Reset Tool
-        self.reset_button = FCButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"), bold=True)
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )
-        self.reset_button.setStyleSheet("""
-                                        QPushButton
-                                        {
-                                            font-weight: bold;
-                                        }
-                                        """)
         self.tools_box.addWidget(self.reset_button)
 
         # #################################### FINSIHED GUI ###########################

@@ -689,14 +689,7 @@ class DsidedUI:
         self.tools_box.addLayout(self.title_box)
 
         # ## Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                                        QLabel
-                                        {
-                                            font-size: 16px;
-                                            font-weight: bold;
-                                        }
-                                        """)
+        title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
         title_label.setToolTip(
             _("Create a Geometry object with\n"
               "toolpaths to cover the space outside the copper pattern.")
@@ -837,18 +830,12 @@ class DsidedUI:
         grid_bounds.addWidget(self.center_entry, 8, 1)
 
         # Calculate Bounding box
-        self.calculate_bb_button = FCButton(_("Calculate Bounds Values"))
+        self.calculate_bb_button = FCButton(_("Calculate Bounds Values"), bold=True)
         self.calculate_bb_button.setToolTip(
             _("Calculate the enveloping rectangular shape coordinates,\n"
               "for the selection of objects.\n"
               "The envelope shape is parallel with the X, Y axis.")
         )
-        self.calculate_bb_button.setStyleSheet("""
-                                               QPushButton
-                                               {
-                                                    font-weight: bold;
-                                               }
-                                               """)
         self.tools_box.addWidget(self.calculate_bb_button)
 
         # #############################################################################################################
@@ -1005,19 +992,13 @@ class DsidedUI:
         # #############################################################################################################
         # Mirror Button
         # #############################################################################################################
-        self.mirror_button = FCButton(_("Mirror"))
+        self.mirror_button = FCButton(_("Mirror"), bold=True)
         self.mirror_button.setIcon(QtGui.QIcon(self.app.resource_location + '/doubleside16.png'))
         self.mirror_button.setToolTip(
             _("Mirrors (flips) the specified object around \n"
               "the specified axis. Does not create a new \n"
               "object, but modifies it.")
         )
-        self.mirror_button.setStyleSheet("""
-                                QPushButton
-                                {   
-                                    font-weight: bold;
-                                }
-                                """)
         self.tools_box.addWidget(self.mirror_button)
 
         # #############################################################################################################
@@ -1125,35 +1106,23 @@ class DsidedUI:
         GLay.set_common_column_size([obj_grid, grid_bounds, grid_mirror, grid_box_ref, grid4], 0)
 
         # ## Buttons
-        self.create_excellon_button = FCButton(_("Create Excellon Object"))
+        self.create_excellon_button = FCButton(_("Create Excellon Object"), bold=True)
         self.create_excellon_button.setIcon(QtGui.QIcon(self.app.resource_location + '/drill32.png'))
         self.create_excellon_button.setToolTip(
             _("Creates an Excellon Object containing the\n"
               "specified alignment holes and their mirror\n"
               "images.")
         )
-        self.create_excellon_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.tools_box.addWidget(self.create_excellon_button)
 
         self.tools_box.addStretch(1)
 
         # ## Reset Tool
-        self.reset_button = FCButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"), bold=True)
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )
-        self.reset_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.tools_box.addWidget(self.reset_button)
 
         self.align_type_radio.activated_custom.connect(self.on_align_type_changed)

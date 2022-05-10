@@ -1224,14 +1224,14 @@ class MarkersUI:
         self.layout.addLayout(self.title_box)
 
         # ## Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
+        title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
+        # title_label.setStyleSheet("""
+        #                         QLabel
+        #                         {
+        #                             font-size: 16px;
+        #                             font-weight: bold;
+        #                         }
+        #                         """)
         self.title_box.addWidget(title_label)
 
         # App Level label
@@ -1478,17 +1478,11 @@ class MarkersUI:
         # #############################################################################################################
         # ## Insert Corner Marker Button
         # #############################################################################################################
-        self.add_marker_button = FCButton(_("Add Marker"))
+        self.add_marker_button = FCButton(_("Add Marker"), bold=True)
         self.add_marker_button.setIcon(QtGui.QIcon(self.app.resource_location + '/corners_32.png'))
         self.add_marker_button.setToolTip(
             _("Will add corner markers to the selected object.")
         )
-        self.add_marker_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.tools_box.addWidget(self.add_marker_button,)
 
         # #############################################################################################################
@@ -1519,17 +1513,11 @@ class MarkersUI:
         grid_drill.addWidget(self.drill_dia_entry, 0, 1)
 
         # ## Create an Excellon object
-        self.drill_button = FCButton(_("Create Excellon Object"))
+        self.drill_button = FCButton(_("Create Excellon Object"), bold=True)
         self.drill_button.setIcon(QtGui.QIcon(self.app.resource_location + '/drill32.png'))
         self.drill_button.setToolTip(
             _("Will add drill holes in the center of the markers.")
         )
-        self.drill_button.setStyleSheet("""
-                                        QPushButton
-                                        {
-                                            font-weight: bold;
-                                        }
-                                        """)
         self.tools_box.addWidget(self.drill_button)
 
         # #############################################################################################################
@@ -1539,7 +1527,7 @@ class MarkersUI:
         self.tools_box.addWidget(self.check_label)
 
         # ## Create an Excellon object for checking the positioning
-        self.check_button = FCButton(_("Create Excellon Object"))
+        self.check_button = FCButton(_("Create Excellon Object"), bold=True)
         self.check_button.setIcon(QtGui.QIcon(self.app.resource_location + '/drill32.png'))
         self.check_button.setToolTip(
             _("Will create an Excellon object using a special preprocessor.\n"
@@ -1547,12 +1535,6 @@ class MarkersUI:
               "the corner locations, wait for the user interaction and then\n"
               "move to the next location until the last one.")
         )
-        self.check_button.setStyleSheet("""
-                                        QPushButton
-                                        {
-                                            font-weight: bold;
-                                        }
-                                        """)
         self.tools_box.addWidget(self.check_button)
 
         # #############################################################################################################
@@ -1592,17 +1574,11 @@ class MarkersUI:
         insert_grid.addWidget(self.obj_insert_combo, 2, 0, 1, 2)
 
         # Insert Markers
-        self.insert_markers_button = FCButton(_("Insert Marker"))
+        self.insert_markers_button = FCButton(_("Insert Marker"), bold=True)
         self.insert_markers_button.setIcon(QtGui.QIcon(self.app.resource_location + '/corners_32.png'))
         self.insert_markers_button.setToolTip(
             _("Will add corner markers to the selected object.")
         )
-        self.insert_markers_button.setStyleSheet("""
-                                       QPushButton
-                                       {
-                                           font-weight: bold;
-                                       }
-                                       """)
         self.tools_box.addWidget(self.insert_markers_button)
 
         GLay.set_common_column_size([grid_sel, param_grid, off_grid, grid_loc, grid_drill, insert_grid], 0)
@@ -1610,17 +1586,11 @@ class MarkersUI:
         self.layout.addStretch(1)
 
         # ## Reset Tool
-        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"), bold=True)
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )
-        self.reset_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.layout.addWidget(self.reset_button)
 
         # #################################### FINSIHED GUI ###########################

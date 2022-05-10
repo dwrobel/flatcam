@@ -467,14 +467,7 @@ class OptimalUI:
         self.units = self.app.app_units.upper()
 
         # ## Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
+        title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
         self.layout.addWidget(title_label)
         # self.layout.addWidget(FCLabel(""))
 
@@ -678,19 +671,13 @@ class OptimalUI:
         self.distances_box.addWidget(self.locate_sec_button)
 
         # GO button
-        self.calculate_button = FCButton(_("Find Minimum"))
+        self.calculate_button = FCButton(_("Find Minimum"), bold=True)
         self.calculate_button.setIcon(QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'))
         self.calculate_button.setToolTip(
             _("Calculate the minimum distance between copper features,\n"
               "this will allow the determination of the right tool to\n"
               "use for isolation or copper clearing.")
         )
-        self.calculate_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.calculate_button.setMinimumWidth(60)
         self.layout.addWidget(self.calculate_button)
 
@@ -699,17 +686,11 @@ class OptimalUI:
         self.layout.addStretch(1)
 
         # ## Reset Tool
-        self.reset_button = FCButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"), bold=True)
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )
-        self.reset_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.layout.addWidget(self.reset_button)
 
         self.loc_ois = OptionalHideInputSection(self.locations_cb, [self.locations_textb, self.locate_button])

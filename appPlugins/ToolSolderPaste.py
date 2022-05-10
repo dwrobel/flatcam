@@ -1245,14 +1245,7 @@ class SolderUI:
         self.tools_box.addLayout(self.title_box)
 
         # ## Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                                   QLabel
-                                   {
-                                       font-size: 16px;
-                                       font-weight: bold;
-                                   }
-                                   """)
+        title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
         title_label.setToolTip(
             _("A plugin to help dispense solder paste on the PCB pads using a CNC machine.")
         )
@@ -1658,18 +1651,12 @@ class SolderUI:
         geo_frame.setLayout(geo_grid)
 
         # Generate Geometry
-        self.soldergeo_btn = FCButton(_("Generate Geometry"))
+        self.soldergeo_btn = FCButton(_("Generate Geometry"), bold=True)
         self.soldergeo_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/geometry32.png'))
 
         self.soldergeo_btn.setToolTip(
             _("Generate solder paste dispensing geometry.")
         )
-        self.soldergeo_btn.setStyleSheet("""
-                                           QPushButton
-                                           {
-                                               font-weight: bold;
-                                           }
-                                           """)
         geo_grid.addWidget(self.soldergeo_btn, 0, 0, 1, 2)
 
         # Geometry Object to be used for Solderpaste dispensing
@@ -1699,18 +1686,12 @@ class SolderUI:
         cnc_frame.setLayout(cnc_grid)
 
         # ## Buttons
-        self.solder_gcode_btn = FCButton(_("Generate CNCJob"))
+        self.solder_gcode_btn = FCButton(_("Generate CNCJob"), bold=True)
         self.solder_gcode_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/cnc16.png'))
         self.solder_gcode_btn.setToolTip(
             _("Generate GCode for Solder Paste dispensing\n"
               "on PCB pads.")
         )
-        self.solder_gcode_btn.setStyleSheet("""
-                               QPushButton
-                               {
-                                   font-weight: bold;
-                               }
-                               """)
         cnc_grid.addWidget(self.solder_gcode_btn, 0, 0, 1, 2)
 
         # Gerber Object to be used for solderpaste dispensing
@@ -1730,18 +1711,12 @@ class SolderUI:
 
         # Save and Review GCode
         buttons_hlay = QtWidgets.QHBoxLayout()
-        self.solder_gcode_save_btn = FCButton(_("Save GCode"))
+        self.solder_gcode_save_btn = FCButton(_("Save GCode"), bold=True)
         self.solder_gcode_save_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
         self.solder_gcode_save_btn.setToolTip(
             _("Save the generated GCode for Solder Paste dispensing\n"
               "on PCB pads, to a file.")
         )
-        self.solder_gcode_save_btn.setStyleSheet("""
-                               QPushButton
-                               {
-                                   font-weight: bold;
-                               }
-                               """)
 
         self.solder_gcode_view_btn = QtWidgets.QToolButton()
         self.solder_gcode_view_btn.setToolTip(_("Review CNC Code."))
@@ -1758,17 +1733,11 @@ class SolderUI:
         self.layout.addStretch(1)
 
         # ## Reset Tool
-        self.reset_button = FCButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"), bold=True)
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )
-        self.reset_button.setStyleSheet("""
-                               QPushButton
-                               {
-                                   font-weight: bold;
-                               }
-                               """)
         self.layout.addWidget(self.reset_button)
 
         # action to be added in the combobox context menu

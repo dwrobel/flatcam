@@ -1307,19 +1307,12 @@ class ToolsDB2UI:
         )
         self.buttons_box.addWidget(self.save_db_btn)
 
-        self.add_tool_from_db = FCButton(_("Transfer the Tool"))
+        self.add_tool_from_db = FCButton(_("Transfer the Tool"), bold=True, color='green')
         self.add_tool_from_db.setToolTip(
             _("Insert a new tool in the Tools Table of the\n"
               "object/application tool after selecting a tool\n"
               "in the Tools Database.")
         )
-        self.add_tool_from_db.setStyleSheet("""
-                                            QPushButton
-                                            {
-                                                font-weight: bold;
-                                                color: green;
-                                            }
-                                            """)
         self.add_tool_from_db.hide()
 
         self.cancel_tool_from_db = FCButton(_("Cancel"))
@@ -2663,7 +2656,7 @@ class ToolsDB2(QtWidgets.QWidget):
             if self.app.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
                 self.app.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
 
-        self.ui.save_db_btn.setStyleSheet("QPushButton {color: red;}")
+        self.ui.save_db_btn.color = 'red'
 
         self.app.tools_db_changed_flag = True
         if silent is None:

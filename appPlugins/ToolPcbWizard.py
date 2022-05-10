@@ -391,14 +391,7 @@ class WizardUI:
         self.layout = layout
 
         # ## Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
+        title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
         self.layout.addWidget(title_label)
         self.layout.addWidget(FCLabel(""))
 
@@ -494,7 +487,7 @@ class WizardUI:
 
         # Buttons
 
-        self.import_button = QtWidgets.QPushButton(_("Import Excellon"))
+        self.import_button = FCButton(_("Import Excellon"))
         self.import_button.setToolTip(
             _("Import an Excellon file\n"
               "that store it's information's in 2 files.\n"

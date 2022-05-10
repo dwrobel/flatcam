@@ -642,8 +642,8 @@ class AppGCodeEditor(QtCore.QObject):
         # self.ui.buttonPrint.setEnabled(enable)
         # self.ui.buttonPreview.setEnabled(enable)
 
-        self.buttonSave.setStyleSheet("QPushButton {color: red;}")
-        self.buttonSave.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as_red.png'))
+        self.ui.buttonSave.setStyleSheet("QPushButton {color: red;}")
+        self.ui.buttonSave.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as_red.png'))
 
     def insert_code_snippet_1(self):
         """
@@ -886,17 +886,11 @@ class AppGCodeEditorUI:
         layout.addStretch(1)
 
         # Editor
-        self.exit_editor_button = FCButton(_('Exit Editor'))
+        self.exit_editor_button = FCButton(_('Exit Editor'), bold=True)
         self.exit_editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/power16.png'))
         self.exit_editor_button.setToolTip(
             _("Exit from Editor.")
         )
-        self.exit_editor_button.setStyleSheet("""
-                                          QPushButton
-                                          {
-                                              font-weight: bold;
-                                          }
-                                          """)
         layout.addWidget(self.exit_editor_button)
         # ############################ FINSIHED GUI ##################################################################
         # #############################################################################################################

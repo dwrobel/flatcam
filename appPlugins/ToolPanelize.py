@@ -1135,14 +1135,7 @@ class PanelizeUI:
         self.tools_box.addLayout(self.title_box)
 
         # ## Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
+        title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
         self.title_box.addWidget(title_label)
 
         # App Level label
@@ -1411,35 +1404,23 @@ class PanelizeUI:
         # #############################################################################################################
         # Generate Panel Button
         # #############################################################################################################
-        self.panelize_object_button = FCButton(_("Panelize Object"))
+        self.panelize_object_button = FCButton(_("Panelize Object"), bold=True)
         self.panelize_object_button.setIcon(QtGui.QIcon(self.app.resource_location + '/panelize16.png'))
         self.panelize_object_button.setToolTip(
             _("Panelize the specified object around the specified box.\n"
               "In other words it creates multiple copies of the source object,\n"
               "arranged in a 2D array of rows and columns.")
         )
-        self.panelize_object_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.tools_box.addWidget(self.panelize_object_button)
 
         self.layout.addStretch(1)
 
         # ## Reset Tool
-        self.reset_button = FCButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"), bold=True)
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )
-        self.reset_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.layout.addWidget(self.reset_button)
 
         # #################################### FINSIHED GUI ###########################

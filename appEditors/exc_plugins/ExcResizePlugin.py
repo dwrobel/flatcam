@@ -97,14 +97,7 @@ class ExcResizeEditorUI:
         self.layout = layout
 
         # Title
-        title_label = FCLabel("%s" % ('Editor ' + self.pluginName))
-        title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
+        title_label = FCLabel("%s" % ('Editor ' + self.pluginName), size=16, bold=True)
         self.layout.addWidget(title_label)
 
         # this way I can hide/show the frame

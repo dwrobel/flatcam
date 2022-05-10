@@ -3361,14 +3361,7 @@ class IsoUI:
         self.tools_box.addLayout(self.title_box)
 
         # ## Title
-        title_label = FCLabel("%s" % self.pluginName)
-        title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
+        title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
         title_label.setToolTip(
             _("Create a Geometry object with\n"
               "toolpaths to cut around polygons.")
@@ -3971,14 +3964,8 @@ class IsoUI:
         # #############################################################################################################
         # Generate Geometry object
         # #############################################################################################################
-        self.generate_iso_button = FCButton("%s" % _("Generate Geometry"))
+        self.generate_iso_button = FCButton("%s" % _("Generate Geometry"), bold=True)
         self.generate_iso_button.setIcon(QtGui.QIcon(self.app.resource_location + '/geometry32.png'))
-        self.generate_iso_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.generate_iso_button.setToolTip(
             _("Create a Geometry object with toolpaths to cut \n"
               "isolation outside, inside or on both sides of the\n"
@@ -4004,17 +3991,11 @@ class IsoUI:
         self.tools_box.addStretch(1)
 
         # ## Reset Tool
-        self.reset_button = FCButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"), bold=True)
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )
-        self.reset_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
         self.tools_box.addWidget(self.reset_button)
         # ############################ FINSIHED GUI ###################################
         # #############################################################################

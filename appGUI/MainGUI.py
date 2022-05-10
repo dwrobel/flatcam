@@ -98,6 +98,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.decimals = self.app.decimals
 
         FCLabel.patching_text_color = self.theme_safe_color
+        FCButton.patching_text_color = self.theme_safe_color
 
         # self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
 
