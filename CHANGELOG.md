@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM Evo beta
 
 - upgraded the Geometry Editor main UI
 - upgraded the FCButton widget (and made it used everywhere instead of the QPushButton) so it can have the color and font weight properties settable
+- styled the border for the QToolButton (for dark mode)
 
 9.05.2022
 

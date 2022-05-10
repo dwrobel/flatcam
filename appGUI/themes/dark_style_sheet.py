@@ -312,6 +312,7 @@ QDialogButtonBox QPushButton {
     min-width: 65px;
 }
 QToolButton {
+    border: 1px solid rgba(63.000, 64.000, 66.000, 1.000);
     padding: 5px;
     border-radius: 2px;
     spacing: 2px;
