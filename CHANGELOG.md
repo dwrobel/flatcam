@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM Evo beta
 - updated the FClabel widget with some more properties
 - updated the hack to make sure that the Editor sub-tools do not lose the stylesheet of the background
 - updated the disabled project item color default value for the dark theme
+- in Document Object UI - upgraded the UI and fixed the colors setting
 
 10.05.2022
 

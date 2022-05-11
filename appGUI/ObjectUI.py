@@ -1563,8 +1563,8 @@ class DocumentObjectUI(ObjectUI):
         self.name_hlay.addWidget(name_label)
         self.name_hlay.addWidget(self.name_entry)
 
-        # Plot CB - this is added only for compatibility; other FlatCAM objects expect it and the mechanism is already
-        # established and I don't want to changed it right now
+        # Plot CB - this is added only for compatibility; other FlatCAM objects expect it, the mechanism is already
+        # established, and I don't want to change it right now
         self.plot_cb = FCCheckBox()
         self.plot_cb.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.custom_box.addWidget(self.plot_cb)
@@ -1582,15 +1582,23 @@ class DocumentObjectUI(ObjectUI):
         h_lay.addWidget(self.autocomplete_cb)
         h_lay.addStretch()
 
-        # ##############################################################
-        # ############ Grid LAYOUT #####################################
-        # ##############################################################
+        param_lbl = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
+        self.custom_box.addWidget(param_lbl)
+        # #############################################################################################################
+        # ################################################## Font Frame ###############################################
+        # #############################################################################################################
+        par_frame = FCFrame()
+        self.custom_box.addWidget(par_frame)
 
+        # Grid Layout
         self.grid0 = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
-        self.custom_box.addLayout(self.grid0)
+        par_frame.setLayout(self.grid0)
+
+        font_lbl = FCLabel('%s' % _("Font"), bold=True)
+        self.grid0.addWidget(font_lbl, 0, 0, 1, 2)
 
         # Font
-        self.font_type_label = FCLabel('%s:' % _("Font Type"))
+        self.font_type_label = FCLabel('%s:' % _("Type"))
 
         if sys.platform == "win32":
             f_current = QtGui.QFont("Arial")
@@ -1604,26 +1612,20 @@ class DocumentObjectUI(ObjectUI):
         self.font_type_cb = QtWidgets.QFontComboBox(self)
         self.font_type_cb.setCurrentFont(f_current)
 
-        self.grid0.addWidget(self.font_type_label, 0, 0)
-        self.grid0.addWidget(self.font_type_cb, 0, 1)
+        self.grid0.addWidget(self.font_type_label, 2, 0)
+        self.grid0.addWidget(self.font_type_cb, 2, 1)
 
         # Font Size
-        self.font_size_label = FCLabel('%s:' % _("Font Size"))
+        self.font_size_label = FCLabel('%s:' % _("Size"))
 
         size_hlay = QtWidgets.QHBoxLayout()
 
         self.font_size_cb = FCComboBox()
         self.font_size_cb.setEditable(True)
         self.font_size_cb.setMinimumContentsLength(3)
+        self.font_size_cb.setSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum,
+                                        QtWidgets.QSizePolicy.Policy.MinimumExpanding)
         # self.font_size_cb.setMaximumWidth(70)
-
-        font_sizes = ['6', '7', '8', '9', '10', '11', '12', '13', '14',
-                      '15', '16', '18', '20', '22', '24', '26', '28',
-                      '32', '36', '40', '44', '48', '54', '60', '66',
-                      '72', '80', '88', '96']
-
-        self.font_size_cb.addItems(font_sizes)
-
         size_hlay.addWidget(self.font_size_cb)
 
         self.font_bold_tb = QtWidgets.QToolButton()
@@ -1640,8 +1642,42 @@ class DocumentObjectUI(ObjectUI):
         self.font_under_tb.setIcon(QtGui.QIcon(self.resource_loc + '/underline32.png'))
         size_hlay.addWidget(self.font_under_tb)
 
-        self.grid0.addWidget(self.font_size_label, 2, 0)
-        self.grid0.addLayout(size_hlay, 2, 1)
+        self.grid0.addWidget(self.font_size_label, 4, 0)
+        self.grid0.addLayout(size_hlay, 4, 1)
+
+        # Font Color
+        self.font_color_label = FCLabel('%s:' % _('Font Color'))
+        self.font_color_label.setToolTip(
+            _("Set the font color for the selected text")
+        )
+
+        self.font_color_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
+
+        self.grid0.addWidget(self.font_color_label, 6, 0)
+        self.grid0.addWidget(self.font_color_entry, 6, 1)
+
+        # Selection Color
+        self.sel_color_label = FCLabel('%s:' % _('Selection Color'))
+        self.sel_color_label.setToolTip(
+            _("Set the selection color when doing text selection.")
+        )
+
+        self.sel_color_entry = FCColorEntry(icon=QtGui.QIcon(self.app.resource_location + '/set_colors64.png'))
+
+        self.grid0.addWidget(self.sel_color_label, 8, 0)
+        self.grid0.addWidget(self.sel_color_entry, 8, 1)
+
+        alignment_title_lbl = FCLabel('%s' % _("Alignment"), bold=True, color='darkorange')
+        self.custom_box.addWidget(alignment_title_lbl)
+        # #############################################################################################################
+        # Alignment Choices
+        # #############################################################################################################
+        a_frame = FCFrame()
+        self.custom_box.addWidget(a_frame)
+
+        # Grid Layout
+        a_grid = GLay(v_spacing=5, h_spacing=3)
+        a_frame.setLayout(a_grid)
 
         # Alignment Choices
         self.alignment_label = FCLabel('%s:' % _("Alignment"))
@@ -1670,58 +1706,21 @@ class DocumentObjectUI(ObjectUI):
 
         al_hlay.addStretch()
 
-        self.grid0.addWidget(self.alignment_label, 4, 0)
-        self.grid0.addLayout(al_hlay, 4, 1)
-
-        # Font Color
-        self.font_color_label = FCLabel('%s:' % _('Font Color'))
-        self.font_color_label.setToolTip(
-           _("Set the font color for the selected text")
-        )
-
-        self.grid0_child_1 = QtWidgets.QHBoxLayout()
-
-        self.font_color_entry = FCEntry()
-        self.font_color_button = FCButton()
-        self.font_color_button.setFixedSize(15, 15)
-
-        self.grid0_child_1.addWidget(self.font_color_entry)
-        self.grid0_child_1.addWidget(self.font_color_button)
-        self.grid0_child_1.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
-
-        self.grid0.addWidget(self.font_color_label, 6, 0)
-        self.grid0.addLayout(self.grid0_child_1, 6, 1)
-
-        # Selection Color
-        self.sel_color_label = FCLabel('%s:' % _('Selection Color'))
-        self.sel_color_label.setToolTip(
-           _("Set the selection color when doing text selection.")
-        )
-
-        self.grid0_child_2 = QtWidgets.QHBoxLayout()
-
-        self.sel_color_entry = FCEntry()
-        self.sel_color_button = FCButton()
-        self.sel_color_button.setFixedSize(15, 15)
-
-        self.grid0_child_2.addWidget(self.sel_color_entry)
-        self.grid0_child_2.addWidget(self.sel_color_button)
-        self.grid0_child_2.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
-
-        self.grid0.addWidget(self.sel_color_label, 8, 0)
-        self.grid0.addLayout(self.grid0_child_2, 8, 1)
+        a_grid.addWidget(self.alignment_label, 0, 0)
+        a_grid.addLayout(al_hlay, 0, 1)
 
         # Tab size
         self.tab_size_label = FCLabel('%s:' % _('Tab Size'))
         self.tab_size_label.setToolTip(
-            _("Set the tab size. In pixels. Default value is 80 pixels.")
+            _("Set the tab size. In pixels.")
         )
         self.tab_size_spinner = FCSpinner(callback=self.confirmation_message_int)
         self.tab_size_spinner.set_range(0, 1000)
 
-        self.grid0.addWidget(self.tab_size_label, 10, 0)
-        self.grid0.addWidget(self.tab_size_spinner, 10, 1)
+        a_grid.addWidget(self.tab_size_label, 2, 0)
+        a_grid.addWidget(self.tab_size_spinner, 2, 1)
 
+        GLay.set_common_column_size([self.grid0, a_grid], 0)
         self.custom_box.addStretch(1)
 
 # end of file

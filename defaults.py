@@ -840,10 +840,16 @@ class AppDefaults:
         "document_text": "",
         "document_plot": True,
         "document_source_file": "",
-        "document_font_color": '#000000',
-        "document_sel_color": '#0055ff',
+        "document_font_color": '#000000FF',
+        "document_sel_color": '#0055ffFF',
         "document_font_size": 6,
         "document_tab_size": 80,
+        "document_font_sizes": [
+            '6', '7', '8', '9', '10', '11', '12', '13', '14',
+            '15', '16', '18', '20', '22', '24', '26', '28',
+            '32', '36', '40', '44', '48', '54', '60', '66',
+            '72', '80', '88', '96'
+        ]
     }
 
     @classmethod

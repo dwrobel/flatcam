@@ -963,6 +963,8 @@ class NumericalEvalTupleEntry(EvalEntry):
 
 class FCColorEntry(QtWidgets.QFrame):
 
+    value_changed = pyqtSignal(str)
+
     def __init__(self, **kwargs):
         """
 
@@ -1004,6 +1006,7 @@ class FCColorEntry(QtWidgets.QFrame):
     def _sync_button_color(self):
         value = self.get_value()
         self.button.setStyleSheet("background-color:%s;" % self._extract_color(value))
+        self.value_changed.emit(str(value))
 
     def _on_button_clicked(self):
         value = self.entry.get_value()
@@ -1030,7 +1033,7 @@ class FCColorEntry(QtWidgets.QFrame):
 
             new_value = self.argb2rgba(selected_color.name(QtGui.QColor.NameFormat.HexArgb)).upper()
             self.set_value(new_value)
-        self.editingFinished.emit()
+            self.editingFinished.emit()
 
     @staticmethod
     def argb2rgba(argb_color):
