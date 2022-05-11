@@ -6,13 +6,13 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
-class CircleEditorTool(AppTool):
+class CircleEditorTool(AppToolEditor):
     """
     Simple input for buffer distance.
     """
 
     def __init__(self, app, draw_app, plugin_name):
-        AppTool.__init__(self, app)
+        AppToolEditor.__init__(self, app)
 
         self.draw_app = draw_app
         self.decimals = app.decimals
@@ -30,7 +30,7 @@ class CircleEditorTool(AppTool):
 
     def run(self):
         self.app.defaults.report_usage("Geo Editor CircleTool()")
-        AppTool.run(self)
+        super().run()
 
         # if the splitter us hidden, display it
         if self.app.ui.splitter.sizes()[0] == 0:

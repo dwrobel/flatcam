@@ -7,13 +7,13 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
-class PaintOptionsTool(AppTool):
+class PaintOptionsTool(AppToolEditor):
     """
     Inputs to specify how to paint the selected polygons.
     """
 
     def __init__(self, app, fcdraw):
-        AppTool.__init__(self, app)
+        AppToolEditor.__init__(self, app)
 
         self.app = app
         self.fcdraw = fcdraw
@@ -26,7 +26,7 @@ class PaintOptionsTool(AppTool):
 
     def run(self):
         self.app.defaults.report_usage("Geo Editor ToolPaint()")
-        AppTool.run(self)
+        AppToolEditor.run(self)
 
         # if the splitter us hidden, display it
         if self.app.ui.splitter.sizes()[0] == 0:

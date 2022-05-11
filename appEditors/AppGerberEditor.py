@@ -7219,7 +7219,7 @@ class TransformEditorTool(AppTool):
             except AttributeError:
                 pass
 
-        AppTool.run(self)
+        super().run()
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Transformation"))

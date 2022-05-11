@@ -105,7 +105,7 @@ class QRCode(AppTool):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
-        AppTool.run(self)
+        super().run()
 
         self.set_tool_ui()
 
@@ -148,11 +148,11 @@ class QRCode(AppTool):
         self.ui.text_data.set_value(self.app.options["tools_qrcode_qrdata"])
 
         self.ui.fill_color_entry.set_value(self.app.options['tools_qrcode_fill_color'])
-        self.ui.fill_color_button.setStyleSheet("background-color:%s" %
+        self.ui.fill_color_button.setStyleSheet("background-color:%s;" %
                                                 str(self.app.options['tools_qrcode_fill_color'])[:7])
 
         self.ui.back_color_entry.set_value(self.app.options['tools_qrcode_back_color'])
-        self.ui.back_color_button.setStyleSheet("background-color:%s" %
+        self.ui.back_color_button.setStyleSheet("background-color:%s;" %
                                                 str(self.app.options['tools_qrcode_back_color'])[:7])
 
         # SELECT THE CURRENT OBJECT
@@ -657,7 +657,7 @@ class QRCode(AppTool):
 
     def on_qrcode_fill_color_entry(self):
         color = self.ui.fill_color_entry.get_value()
-        self.ui.fill_color_button.setStyleSheet("background-color:%s" % str(color))
+        self.ui.fill_color_button.setStyleSheet("background-color:%s;" % str(color))
 
     def on_qrcode_fill_color_button(self):
         current_color = QtGui.QColor(self.ui.fill_color_entry.get_value())
@@ -668,14 +668,14 @@ class QRCode(AppTool):
         if fill_color.isValid() is False:
             return
 
-        self.ui.fill_color_button.setStyleSheet("background-color:%s" % str(fill_color.name()))
+        self.ui.fill_color_button.setStyleSheet("background-color:%s;" % str(fill_color.name()))
 
         new_val_sel = str(fill_color.name())
         self.ui.fill_color_entry.set_value(new_val_sel)
 
     def on_qrcode_back_color_entry(self):
         color = self.ui.back_color_entry.get_value()
-        self.ui.back_color_button.setStyleSheet("background-color:%s" % str(color))
+        self.ui.back_color_button.setStyleSheet("background-color:%s;" % str(color))
 
     def on_qrcode_back_color_button(self):
         current_color = QtGui.QColor(self.ui.back_color_entry.get_value())
@@ -686,7 +686,7 @@ class QRCode(AppTool):
         if back_color.isValid() is False:
             return
 
-        self.ui.back_color_button.setStyleSheet("background-color:%s" % str(back_color.name()))
+        self.ui.back_color_button.setStyleSheet("background-color:%s;" % str(back_color.name()))
 
         new_val_sel = str(back_color.name())
         self.ui.back_color_entry.set_value(new_val_sel)

@@ -131,7 +131,7 @@ class AppDefaults:
         "global_proj_item_color_light": '#000000FF',
         "global_proj_item_dis_color_light": '#b7b7cbFF',
         "global_proj_item_color_dark": '#AAAAAAFF',
-        "global_proj_item_dis_color_dark": '#697177FF',
+        "global_proj_item_dis_color_dark": '#4a4a4aFF',
 
         "global_project_autohide": True,
 

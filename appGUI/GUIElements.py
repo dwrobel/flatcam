@@ -3037,12 +3037,7 @@ class FCButton(QtWidgets.QPushButton):
     @color.setter
     def color(self, color):
         self._color = color
-        self.setStyleSheet("""
-                            QPushButton
-                                {{
-                                    color: {color};
-                                }}
-                            """.format(color=color))
+        self.setStyleSheet(".FCButton{color: %s;}" % color)
 
     def get_value(self):
         return self.isChecked()
@@ -3076,6 +3071,11 @@ class FCLabel(QtWidgets.QLabel):
 
         super(FCLabel, self).__init__(parent)
 
+        self._color = None
+        self._bold = False
+        self._title = title
+        self._font_size = None
+
         if color:
             color = self.patching_text_color(color)
 
@@ -3105,6 +3105,38 @@ class FCLabel(QtWidgets.QLabel):
         self.middle_clicked_state = False
         self.right_clicked_state = False
 
+    @property
+    def color(self):
+        return self._color
+
+    @color.setter
+    def color(self, color):
+        self._color = color
+        self.setText('<font color="%s">%s</font>' % (str(color), self._title))
+
+    @property
+    def bold(self):
+        return self._bold
+
+    @bold.setter
+    def bold(self, bold):
+        self._bold = bold
+        font = QtGui.QFont()
+        font.setBold(True) if bold else font.setBold(False)
+        self.setFont(font)
+
+    @property
+    def font_size(self):
+        return self._font_size
+
+    @font_size.setter
+    def font_size(self, size):
+        self._font_size = size
+        font = QtGui.QFont()
+        if size:
+            font.setPointSize(size)
+        self.setFont(font)
+
     def patching_text_color(self, color):
         return color
 
@@ -3123,7 +3155,8 @@ class FCLabel(QtWidgets.QLabel):
         return self.text()
 
     def set_value(self, val):
-        self.setText(str(val))
+        self._title = str(val)
+        self.setText(self._title)
 
 
 class FCMenu(QtWidgets.QMenu):
@@ -5635,7 +5668,7 @@ class AppInfoBar(QtWidgets.QWidget):
         self.text.setText(text)
         self.text.setToolTip(text)
         if color:
-            self.text.setStyleSheet('color: %s' % str(color))
+            self.text.color = color
 
     def set_status(self, text, level="info"):
         level = str(level)
@@ -5703,7 +5736,7 @@ class CoordsToolbar(QtWidgets.QToolBar):
 
     def set_color(self, color):
         if color:
-            self.setStyleSheet('QtWidgets.QToolBar {color: %s}' % str(color))
+            self.setStyleSheet('QtWidgets.QToolBar {color: %s;}' % str(color))
 
 
 class AppSystemTray(QtWidgets.QSystemTrayIcon):

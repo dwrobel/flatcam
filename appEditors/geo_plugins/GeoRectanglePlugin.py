@@ -6,13 +6,13 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
-class RectangleEditorTool(AppTool):
+class RectangleEditorTool(AppToolEditor):
     """
     Simple input for buffer distance.
     """
 
     def __init__(self, app, draw_app, plugin_name):
-        AppTool.__init__(self, app)
+        AppToolEditor.__init__(self, app)
 
         self.draw_app = draw_app
         self.decimals = app.decimals
@@ -30,7 +30,7 @@ class RectangleEditorTool(AppTool):
 
     def run(self):
         self.app.defaults.report_usage("Geo Editor RectangleTool()")
-        AppTool.run(self)
+        super().run()
 
         # if the splitter us hidden, display it
         if self.app.ui.splitter.sizes()[0] == 0:
@@ -301,7 +301,7 @@ class RectangleEditorUI:
         size_frame.setLayout(size_grid)
 
         # Length
-        self.length_lbl = FCLabel('%s:' % _("Projection"))
+        self.length_lbl = FCLabel('%s:' % _("Length"))
         self.length_entry = NumericalEvalEntry()
         size_grid.addWidget(self.length_lbl, 0, 0)
         size_grid.addWidget(self.length_entry, 0, 1)

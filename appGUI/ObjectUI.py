@@ -1508,11 +1508,7 @@ class ScriptObjectUI(ObjectUI):
         self.autocomplete_cb.setToolTip(
             _("This selects if the auto completer is enabled in the Script Editor.")
         )
-        self.autocomplete_cb.setStyleSheet(
-            """
-            QCheckBox {font-weight: bold; color: black}
-            """
-        )
+        self.autocomplete_cb.setStyleSheet("")
         h_lay.addWidget(self.autocomplete_cb)
         h_lay.addStretch()
 
@@ -1582,11 +1578,7 @@ class DocumentObjectUI(ObjectUI):
         self.autocomplete_cb.setToolTip(
             _("This selects if the auto completer is enabled in the Document Editor.")
         )
-        self.autocomplete_cb.setStyleSheet(
-            """
-            QCheckBox {font-weight: bold; color: black}
-            """
-        )
+        self.autocomplete_cb.setStyleSheet("")
         h_lay.addWidget(self.autocomplete_cb)
         h_lay.addStretch()
 

@@ -7,6 +7,15 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+11.05.2022
+
+- fixed a crash when creating a Document object due of changes in Qt6 (missing QtGui.Qt)
+- in Document object fixed the issue with not setting selection color when in a dark theme (essentially got rid of using QPalette)
+- in dark theme stylesheet changed the indent of the QCheckBox (and in Radio buttons too)
+- updated the FClabel widget with some more properties
+- updated the hack to make sure that the Editor sub-tools do not lose the stylesheet of the background
+- updated the disabled project item color default value for the dark theme
+
 10.05.2022
 
 - upgraded the Geometry Editor main UI

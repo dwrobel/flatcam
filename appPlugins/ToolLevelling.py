@@ -161,7 +161,7 @@ class ToolLevelling(AppTool, CNCjob):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
-        AppTool.run(self)
+        super().run()
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Levelling"))
@@ -2117,21 +2117,15 @@ class LevelUI:
 
         self.gr_ctrl_tab_layout.addStretch(1)
 
-        jog_title_label = FCLabel(_("Jog"))
-        jog_title_label.setStyleSheet("""
-                                FCLabel
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
+        jog_title_label = FCLabel(_("Jog"), bold=True)
 
-        zero_title_label = FCLabel(_("Zero Axes"))
-        zero_title_label.setStyleSheet("""
-                                FCLabel
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
+        zero_title_label = FCLabel(_("Zero Axes"), bold=True)
+        # zero_title_label.setStyleSheet("""
+        #                         FCLabel
+        #                         {
+        #                             font-weight: bold;
+        #                         }
+        #                         """)
 
         grbl_ctrl_grid.addWidget(jog_title_label, 0, 0)
         grbl_ctrl_grid.addWidget(zero_title_label, 0, 2)

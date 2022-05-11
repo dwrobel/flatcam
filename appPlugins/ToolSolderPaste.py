@@ -103,7 +103,7 @@ class SolderPaste(AppTool):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
-        AppTool.run(self)
+        super().run()
         self.set_tool_ui()
         self.build_ui()
 

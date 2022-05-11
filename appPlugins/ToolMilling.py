@@ -203,7 +203,7 @@ class ToolMilling(AppTool, Excellon):
 
         self.set_tool_ui()
 
-        AppTool.run(self)
+        super().run()
 
         # reset those objects on a new run
         self.target_obj = None

@@ -133,7 +133,7 @@ class Distance(AppTool):
             except AttributeError:
                 pass
 
-            AppTool.run(self)
+            super().run()
         else:
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])

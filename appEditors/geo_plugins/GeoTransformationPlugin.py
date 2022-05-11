@@ -6,13 +6,13 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
-class TransformEditorTool(AppTool):
+class TransformEditorTool(AppToolEditor):
     """
     Inputs to specify how to paint the selected polygons.
     """
 
     def __init__(self, app, draw_app):
-        AppTool.__init__(self, app)
+        AppToolEditor.__init__(self, app)
 
         self.app = app
         self.draw_app = draw_app
@@ -84,7 +84,7 @@ class TransformEditorTool(AppTool):
             except AttributeError:
                 pass
 
-        AppTool.run(self)
+        super().run()
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Transformation"))

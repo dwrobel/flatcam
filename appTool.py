@@ -114,47 +114,6 @@ class AppTool(QtWidgets.QWidget):
         # Put ourselves in the appGUI
         self.app.ui.plugin_scroll_area.setWidget(self)
 
-        # TODO Hack, should find the root cause and fix
-        # for whatever reason the stylesheet for dark mode is lost at some point here, so we should reapply it for the
-        # QWidget
-        if self.app.options['global_theme'] not in ['default', 'light']:
-            self.setStyleSheet(
-                '''
-                QWidget {
-                    background-color: rgba(32.000, 33.000, 36.000, 1.000);
-                    color: rgba(170.000, 170.000, 170.000, 1.000);
-                    selection-background-color: rgba(138.000, 180.000, 247.000, 1.000);
-                    selection-color: rgba(32.000, 33.000, 36.000, 1.000);
-                }
-                QWidget:disabled {
-                    color: rgba(105.000, 113.000, 119.000, 1.000);
-                    selection-background-color: rgba(83.000, 87.000, 91.000, 1.000);
-                    selection-color: rgba(105.000, 113.000, 119.000, 1.000);
-                }
-                QWidget {
-                    backward-icon: url(${path}/themes/dark/svg/arrow_upward__icon-foreground__rotate-270.svg);
-                    forward-icon: url(${path}/themes/dark/svg/arrow_upward__icon-foreground__rotate-90.svg);
-                    leftarrow-icon: url(${path}/themes/dark/svg/arrow_upward__icon-foreground__rotate-270.svg);
-                    rightarrow-icon: url(${path}/themes/dark/svg/arrow_upward__icon-foreground__rotate-90.svg);
-                    dialog-ok-icon: url(${path}/themes/dark/svg/check__icon-foreground.svg);
-                    dialog-cancel-icon: url(${path}/themes/dark/svg/close__icon-foreground.svg);
-                    dialog-yes-icon: url(${path}/themes/dark/svg/check_circle__icon-foreground.svg);
-                    dialog-no-icon: url(${path}/themes/dark/svg/cancel__icon-foreground.svg);
-                    dialog-apply-icon: url(${path}/themes/dark/svg/check__icon-foreground.svg);
-                    dialog-reset-icon: url(${path}/themes/dark/svg/restart_alt__icon-foreground.svg);
-                    dialog-save-icon: url(${path}/themes/dark/svg/save__icon-foreground.svg);
-                    dialog-discard-icon: url(${path}/themes/dark/svg/delete__icon-foreground.svg);
-                    dialog-close-icon: url(${path}/themes/dark/svg/close__icon-foreground.svg);
-                    dialog-open-icon: url(${path}/themes/dark/svg/folder_open__icon-foreground.svg);
-                    dialog-help-icon: url(${path}/themes/dark/svg/help__icon-foreground.svg);
-                    filedialog-parent-directory-icon: url(${path}/themes/dark/svg/arrow_upward__icon-foreground.svg);
-                    filedialog-new-directory-icon: url(${path}/themes/dark/svg/create_new_folder__icon-foreground.svg);
-                    titlebar-close-icon: url(${path}/themes/dark/svg/close__icon-foreground.svg);
-                    titlebar-normal-icon: url(${path}/themes/dark/svg/flip_to_front__icon-foreground.svg);
-                }
-                '''
-            )
-
         # Switch notebook to tool page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
 
@@ -393,3 +352,24 @@ class AppTool(QtWidgets.QWidget):
         """
         default_hint_size = super(AppTool, self).sizeHint()
         return QtCore.QSize(default_hint_size.width(), default_hint_size.height())
+
+
+class AppToolEditor(AppTool):
+
+    def run(self):
+        super(AppToolEditor, self).run()
+
+        # TODO Hack, should find the root cause and fix
+        # for whatever reason the stylesheet for dark mode is lost at some point here, so we should reapply it for the
+        # QWidget
+        if self.app.options['global_theme'] not in ['default', 'light']:
+            super(AppTool, self).setStyleSheet(
+                '''
+                QWidget {
+                    background-color: rgba(32.000, 33.000, 36.000, 1.000);
+                    color: rgba(170.000, 170.000, 170.000, 1.000);
+                    selection-background-color: rgba(138.000, 180.000, 247.000, 1.000);
+                    selection-color: rgba(32.000, 33.000, 36.000, 1.000);
+                }
+                '''
+            )

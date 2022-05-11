@@ -7,13 +7,13 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
-class TextInputTool(AppTool):
+class TextInputTool(AppToolEditor):
     """
     Simple input for buffer distance.
     """
 
     def __init__(self, app, draw_app):
-        AppTool.__init__(self, app)
+        AppToolEditor.__init__(self, app)
 
         self.app = app
         self.draw_app = draw_app
@@ -33,7 +33,7 @@ class TextInputTool(AppTool):
 
     def run(self):
         self.app.defaults.report_usage("Geo Editor TextInputTool()")
-        AppTool.run(self)
+        super().run()
 
         # if the splitter us hidden, display it
         if self.app.ui.splitter.sizes()[0] == 0:

@@ -135,15 +135,22 @@ class DocumentObject(FlatCAMObj):
         # self.document_editor_tab.handleTextChanged()
         self.ser_attrs = ['options', 'kind', 'source_file']
 
-        if QtGui.Qt.mightBeRichText(self.source_file):
-            # self.document_editor_tab.code_editor.setHtml(self.source_file)
+        try:
+            if QtGui.Qt.mightBeRichText(self.source_file):
+                # self.document_editor_tab.code_editor.setHtml(self.source_file)
+                self.document_editor_tab.load_text(self.source_file, move_to_start=True, clear_text=True, as_html=True)
+            else:
+                # for line in self.source_file.splitlines():
+                #     self.document_editor_tab.code_editor.append(line)
+                self.document_editor_tab.load_text(self.source_file, move_to_start=True, clear_text=True, as_html=False)
+        except AttributeError:
             self.document_editor_tab.load_text(self.source_file, move_to_start=True, clear_text=True, as_html=True)
-        else:
-            # for line in self.source_file.splitlines():
-            #     self.document_editor_tab.code_editor.append(line)
-            self.document_editor_tab.load_text(self.source_file, move_to_start=True, clear_text=True, as_html=False)
 
         self.build_ui()
+
+        # TODO does not work, why?
+        # switch the notebook area to Properties Tab
+        # self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
     @property
     def read_only(self):
@@ -269,19 +276,19 @@ class DocumentObject(FlatCAMObj):
     # Setting font colors handlers
     def on_font_color_entry(self):
         self.app.options['document_font_color'] = self.ui.font_color_entry.get_value()
-        self.ui.font_color_button.setStyleSheet("background-color:%s" % str(self.app.options['document_font_color']))
+        self.ui.font_color_button.setStyleSheet("background-color:%s;" % str(self.app.options['document_font_color']))
 
     def on_font_color_button(self):
         current_color = QtGui.QColor(self.app.options['document_font_color'])
 
-        c_dialog = QtWidgets.QColorDialog()
+        c_dialog = QtWidgets.QColorDialog(parent=self.app.ui)
         font_color = c_dialog.getColor(initial=current_color)
 
         if font_color.isValid() is False:
             return
 
         self.document_editor_tab.code_editor.setTextColor(font_color)
-        self.ui.font_color_button.setStyleSheet("background-color:%s" % str(font_color.name()))
+        self.ui.font_color_button.setStyleSheet("background-color:%s;" % str(font_color.name()))
 
         new_val = str(font_color.name())
         self.ui.font_color_entry.set_value(new_val)
@@ -290,24 +297,31 @@ class DocumentObject(FlatCAMObj):
     # Setting selection colors handlers
     def on_selection_color_entry(self):
         self.app.options['document_sel_color'] = self.ui.sel_color_entry.get_value()
-        self.ui.sel_color_button.setStyleSheet("background-color:%s" % str(self.app.options['document_sel_color']))
+        self.ui.sel_color_button.setStyleSheet("background-color:%s;" % str(self.app.options['document_sel_color']))
 
     def on_selection_color_button(self):
         current_color = QtGui.QColor(self.app.options['document_sel_color'])
 
-        c_dialog = QtWidgets.QColorDialog()
+        c_dialog = QtWidgets.QColorDialog(parent=self.app.ui)
         sel_color = c_dialog.getColor(initial=current_color)
 
         if sel_color.isValid() is False:
             return
 
-        p = QtGui.QPalette()
-        p.setColor(QtGui.QPalette.ColorRole.Highlight, sel_color)
-        p.setColor(QtGui.QPalette.ColorRole.HighlightedText, QtGui.QColor('white'))
+        # p = QtGui.QPalette()
+        # p.setColor(QtGui.QPalette.ColorRole.Highlight, sel_color)
+        # p.setColor(QtGui.QPalette.ColorRole.HighlightedText, QtGui.QColor('white'))
+        # self.document_editor_tab.code_editor.setPalette(p)
 
-        self.document_editor_tab.code_editor.setPalette(p)
+        self.document_editor_tab.code_editor.setStyleSheet(
+            """
+                QTextEdit {selection-background-color:%s;
+                           selection-color:white;
+                }
+            """ % sel_color.name()
+        )
 
-        self.ui.sel_color_button.setStyleSheet("background-color:%s" % str(sel_color.name()))
+        self.ui.sel_color_button.setStyleSheet("background-color:%s;" % str(sel_color.name()))
 
         new_val = str(sel_color.name())
         self.ui.sel_color_entry.set_value(new_val)

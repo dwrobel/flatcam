@@ -176,7 +176,7 @@ class ToolIsolation(AppTool, Gerber):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
-        AppTool.run(self)
+        super().run()
         self.set_tool_ui()
 
         # reset those objects on a new run
@@ -2138,8 +2138,8 @@ class ToolIsolation(AppTool, Gerber):
                 return 'fail'
             else:
                 if self.validation_status:
-                    msg = '[success] %s: %s' % (_("Isolation geometry created"), geo_obj.obj_options["name"])
-                    app_obj.inform.emit(msg)
+                    mssg = '[success] %s: %s' % (_("Isolation geometry created"), geo_obj.obj_options["name"])
+                    app_obj.inform.emit(mssg)
 
         a_select = True if self.validation_status else False
         self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot, autoselected=a_select)

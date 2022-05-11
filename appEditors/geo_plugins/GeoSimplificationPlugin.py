@@ -6,7 +6,7 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
-class SimplificationTool(AppTool):
+class SimplificationTool(AppToolEditor):
     """
     Do a shape simplification for the selected geometry.
     """
@@ -14,7 +14,7 @@ class SimplificationTool(AppTool):
     update_ui = pyqtSignal(object, int)
 
     def __init__(self, app, draw_app):
-        AppTool.__init__(self, app)
+        AppToolEditor.__init__(self, app)
 
         self.draw_app = draw_app
         self.decimals = app.decimals
@@ -33,7 +33,7 @@ class SimplificationTool(AppTool):
 
     def run(self):
         self.app.defaults.report_usage("Geo Editor SimplificationTool()")
-        AppTool.run(self)
+        super().run()
 
         # if the splitter us hidden, display it
         if self.app.ui.splitter.sizes()[0] == 0:

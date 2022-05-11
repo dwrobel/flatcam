@@ -165,7 +165,7 @@ class ToolDrilling(AppTool, Excellon):
 
         self.set_tool_ui()
 
-        AppTool.run(self)
+        super().run()
 
         self.on_object_changed()
         # self.build_tool_ui()

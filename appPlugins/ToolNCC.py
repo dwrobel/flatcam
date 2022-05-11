@@ -177,7 +177,7 @@ class NonCopperClear(AppTool, Gerber):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
-        AppTool.run(self)
+        super().run()
         self.set_tool_ui()
 
         # reset those objects on a new run

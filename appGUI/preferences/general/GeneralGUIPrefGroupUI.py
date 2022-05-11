@@ -35,7 +35,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         par_frame.setLayout(grid0)
 
         # Theme selection
-        self.appearance_label = FCLabel('%s' % _('Theme'), bold=True)
+        self.appearance_label = FCLabel('%s' % _("Theme"), bold=True)
         self.appearance_label.setToolTip(
             _("Select a theme for the application.\n"
               "It will theme the plot area.")
@@ -277,11 +277,13 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid1.addWidget(separator_line, 26, 0, 1, 2)
 
+        proj_item_lbl = FCLabel('%s' % _("Project Items Color"), bold=True, color='green')
+        grid1.addWidget(proj_item_lbl, 27, 0, 1, 2)
         # ------------------------------------------------------------------
         # ----------------------- Project Settings -----------------------------
         # ------------------------------------------------------------------
         # Light Theme
-        self.proj_settings_l_label = FCLabel('%s' % _("Light"), bold=True)
+        self.proj_settings_l_label = FCLabel('%s %s' % (_("Light"), _("Theme")), bold=True)
         grid1.addWidget(self.proj_settings_l_label, 28, 0, 1, 2)
 
         # Project Tab items color
@@ -313,7 +315,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(separator_line, 33, 0, 1, 2)
 
         # Dark Theme
-        self.proj_settings_d_label = FCLabel('%s' % _("Dark"), bold=True)
+        self.proj_settings_d_label = FCLabel('%s %s' % (_("Dark"), _("Theme")), bold=True)
         grid1.addWidget(self.proj_settings_d_label, 34, 0, 1, 2)
 
         # Project Tab items color

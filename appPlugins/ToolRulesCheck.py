@@ -99,7 +99,7 @@ class RulesCheck(AppTool):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
-        AppTool.run(self)
+        super().run()
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Check Rules"))
