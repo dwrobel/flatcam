@@ -57,19 +57,22 @@ class AppTextEditor(QtWidgets.QWidget):
             self.editor_class = FCTextAreaLineNumber(color_dict=color_dict)
             self.code_editor = self.editor_class.edit
 
+            sel_color = 'black'
             stylesheet = """
                             QPlainTextEdit { selection-background-color:yellow;
-                                             selection-color:black;
+                                             selection-color:%s;
                             }
-                         """
+                         """ % sel_color
             self.work_editor_layout.addWidget(self.editor_class, 0, 0, 1, 5)
         else:
             self.code_editor = FCTextAreaExtended()
+
+            sel_color = 'black'
             stylesheet = """
                             QTextEdit { selection-background-color:yellow;
-                                        selection-color:black;
+                                        selection-color:%s;
                             }
-                         """
+                         """ % sel_color
             self.work_editor_layout.addWidget(self.code_editor, 0, 0, 1, 5)
 
         self.code_editor.setStyleSheet(stylesheet)

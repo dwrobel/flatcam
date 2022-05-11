@@ -22,7 +22,7 @@ from appObjects.DocumentObject import DocumentObject
 from appObjects.ExcellonObject import ExcellonObject
 from appObjects.GeometryObject import GeometryObject
 from appObjects.GerberObject import GerberObject
-from appObjects.FlatCAMScript import ScriptObject
+from appObjects.ScriptObject import ScriptObject
 
 import inspect  # TODO: Remove
 

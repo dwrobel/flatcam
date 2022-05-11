@@ -13,7 +13,7 @@ from appObjects.DocumentObject import DocumentObject
 from appObjects.ExcellonObject import ExcellonObject
 from appObjects.GeometryObject import GeometryObject
 from appObjects.GerberObject import GerberObject
-from appObjects.FlatCAMScript import ScriptObject
+from appObjects.ScriptObject import ScriptObject
 
 import time
 import traceback
@@ -521,11 +521,11 @@ class AppObject(QtCore.QObject):
         #                 "SaveSys, Scale, SetActive, SetSys, SetOrigin, Skew, SubtractPoly,\n" \
         #                 "# SubtractRectangle, Version, WriteGCode\n"
 
-        new_source_file = '# %s\n' % _('CREATE A NEW FLATCAM TCL SCRIPT') + \
+        new_source_file = '# %s\n' % _('CREATE A NEW TCL SCRIPT') + \
                           '# %s:\n' % _('TCL Tutorial is here') + \
                           '# https://www.tcl.tk/man/tcl8.5/tutorial/tcltutorial.html\n' + '\n\n' + \
-                          '# %s:\n' % _("FlatCAM commands list")
-        new_source_file += '# %s\n\n' % _("Type >help< followed by Run Code for a list of FlatCAM Tcl Commands "
+                          '# %s:\n' % _("Commands list")
+        new_source_file += '# %s\n\n' % _("Type >help< followed by Run Code for a list of Tcl Commands "
                                           "(displayed in Tcl Shell).")
 
         def initialize(new_obj, app):
