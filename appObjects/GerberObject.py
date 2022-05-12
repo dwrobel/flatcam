@@ -1678,14 +1678,16 @@ class GerberObject(FlatCAMObj, Gerber):
 
         return gerber_code
 
-    def merge(self, grb_list, grb_final):
+    @staticmethod
+    def merge(grb_list, grb_final, app):
         """
         Merges the geometry of objects in geo_list into
         the geometry of geo_final.
 
-        :param grb_list: List of GerberObject Objects to join.
-        :param grb_final: Destination GeometryObject object.
-        :return: None
+        :param grb_list:    List of GerberObject Objects to join.
+        :param grb_final:   Destination GeometryObject object.
+        :param app:         the App class
+        :return:            None
         """
 
         if grb_final.solid_geometry is None:
@@ -1710,7 +1712,7 @@ class GerberObject(FlatCAMObj, Gerber):
                         try:
                             grb_final.obj_options[option] = grb.obj_options[option]
                         except KeyError:
-                            self.app.log.warning("Failed to copy option.", option)
+                            app.log.warning("Failed to copy option.", option)
 
                 try:
                     for geos in grb.solid_geometry:

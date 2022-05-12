@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+13.05.2022
+
+- fixed the join-as-gerber functionality
+
 12.05.2022
 
 - changed the syntax highlighting for the AppTextEditor such that the strings are not color marked

@@ -4681,7 +4681,7 @@ class App(QtCore.QObject):
             return 'fail'
 
         def initialize(grb_obj, app):
-            GerberObject.merge(grb_list=objs, grb_final=grb_obj)
+            GerberObject.merge(grb_list=objs, grb_final=grb_obj, app=self)
             app.inform.emit('[success] %s.' % _("Gerber merging finished"))
 
         self.app_obj.new_object("gerber", 'Combo_Gerber', initialize)
