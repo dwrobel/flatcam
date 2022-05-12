@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+12.05.2022
+
+- changed the syntax highlighting for the AppTextEditor such that the strings are not color marked
+- changed the syntax highlighting such that for a dark theme the colors are inverted
+- made sure that in the AppTextEditor, when a line is highlighted then the text foreground color is black such that the writing can be read over the line highlight
+
 11.05.2022
 
 - fixed a crash when creating a Document object due of changes in Qt6 (missing QtGui.Qt)

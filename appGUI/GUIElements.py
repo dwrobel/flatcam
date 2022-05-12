@@ -4922,10 +4922,12 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
         and from here: https://doc.qt.io/qt-5/qtwidgets-widgets-codeeditor-example.html
         """
 
-        def __init__(self, *args, color_dict=None):
+        def __init__(self, *args, color_dict=None, theme='default'):
             FCPlainTextAreaExtended.__init__(self, *args)
 
             self.color_storage = color_dict if color_dict else {}
+            self.theme = theme
+
 
             # self.setFrameStyle(QFrame.NoFrame)
             self.setFrameStyle(QtWidgets.QFrame.Shape.NoFrame)
@@ -4933,13 +4935,14 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
             # self.setLineWrapMode(QPlainTextEdit.NoWrap)
             self.cursorPositionChanged.connect(self.highlight)
 
-            self.highlighter = self.MyHighlighter(self.document())
+            self.highlighter = self.MyHighlighter(parent=self.document(), theme=self.theme)
 
         class MyHighlighter(QtGui.QSyntaxHighlighter):
 
-            def __init__(self, parent, highlight_rules=None):
+            def __init__(self, parent, theme, highlight_rules=None):
                 QtGui.QSyntaxHighlighter.__init__(self, parent)
                 self.parent = parent
+                self.theme = theme
                 self.highlightingRules = []
 
                 if highlight_rules is None:
@@ -4953,32 +4956,55 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     singleQuotedString = QtGui.QTextCharFormat()
                     x_chars = QtGui.QTextCharFormat()
                     y_chars = QtGui.QTextCharFormat()
-
                     comment = QtGui.QTextCharFormat()
+
                     # comment
-                    brush = QtGui.QBrush(Qt.GlobalColor.gray, Qt.BrushStyle.SolidPattern)
+                    color = self.get_custom_color(QtGui.QColor(Qt.GlobalColor.gray))
+                    brush = QtGui.QBrush(color, Qt.BrushStyle.SolidPattern)
                     pattern = QtCore.QRegularExpression("\(.*\)")
                     comment.setForeground(brush)
                     rule = (pattern, comment)
                     self.highlightingRules.append(rule)
 
                     # Marlin comment
-                    brush = QtGui.QBrush(Qt.GlobalColor.gray, Qt.BrushStyle.SolidPattern)
+                    color = self.get_custom_color(QtGui.QColor(Qt.GlobalColor.gray))
+                    brush = QtGui.QBrush(color, Qt.BrushStyle.SolidPattern)
                     pattern = QtCore.QRegularExpression("^;\s*.*$")
                     comment.setForeground(brush)
                     rule = (pattern, comment)
                     self.highlightingRules.append(rule)
 
                     # Python comment
-                    brush = QtGui.QBrush(Qt.GlobalColor.gray, Qt.BrushStyle.SolidPattern)
+                    color = self.get_custom_color(QtGui.QColor(Qt.GlobalColor.gray))
+                    brush = QtGui.QBrush(color, Qt.BrushStyle.SolidPattern)
                     pattern = QtCore.QRegularExpression("^\#\s*.*$")
                     comment.setForeground(brush)
                     rule = (pattern, comment)
                     self.highlightingRules.append(rule)
 
+                    # string
+                    color = self.get_custom_color(QtGui.QColor("tomato"))
+                    brush = QtGui.QBrush(color, Qt.BrushStyle.SolidPattern)
+                    pattern = QtCore.QRegularExpression("\".*\"")
+                    # pattern.setMinimal
+                    pattern.setPatternOptions(QtCore.QRegularExpression.PatternOption.InvertedGreedinessOption)
+                    string.setForeground(brush)
+                    rule = (pattern, string)
+                    self.highlightingRules.append(rule)
+
+                    # singleQuotedString
+                    pattern = QtCore.QRegularExpression("\'.*\'")
+                    # pattern.setMinimal(True)
+                    pattern.setPatternOptions(QtCore.QRegularExpression.PatternOption.InvertedGreedinessOption)
+
+                    singleQuotedString.setForeground(brush)
+                    rule = (pattern, singleQuotedString)
+                    self.highlightingRules.append(rule)
+
                     keyword = QtGui.QTextCharFormat()
                     # keyword
-                    brush = QtGui.QBrush(Qt.GlobalColor.blue, Qt.BrushStyle.SolidPattern)
+                    color = self.get_custom_color(QtGui.QColor(Qt.GlobalColor.blue))
+                    brush = QtGui.QBrush(color, Qt.BrushStyle.SolidPattern)
                     keyword.setForeground(brush)
                     keyword.setFontWeight(QtGui.QFont.Weight.Bold)
                     keywords = ["G", "T"]
@@ -4990,7 +5016,8 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
 
                     keyword1 = QtGui.QTextCharFormat()
                     # keyword 1
-                    brush = QtGui.QBrush(QtGui.QColor("teal"), Qt.BrushStyle.SolidPattern)
+                    color = self.get_custom_color(QtGui.QColor("teal"))
+                    brush = QtGui.QBrush(color, Qt.BrushStyle.SolidPattern)
                     keyword1.setForeground(brush)
                     keyword1.setFontWeight(QtGui.QFont.Weight.Bold)
                     keywords = ["F"]
@@ -5003,7 +5030,8 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     # keyword 2
                     keyword2 = QtGui.QTextCharFormat()
                     # SVG colors: https://doc.qt.io/qt-5/qml-color.html#svg-color-reference
-                    brush = QtGui.QBrush(QtGui.QColor("coral"), Qt.BrushStyle.SolidPattern)
+                    color = self.get_custom_color(QtGui.QColor("coral"))
+                    brush = QtGui.QBrush(color, Qt.BrushStyle.SolidPattern)
                     keyword2.setForeground(brush)
                     keyword2.setFontWeight(QtGui.QFont.Weight.Bold)
                     keywords = ["M"]
@@ -5016,7 +5044,8 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     # keyword 3
                     keyword3 = QtGui.QTextCharFormat()
                     # SVG colors: https://doc.qt.io/qt-5/qml-color.html#svg-color-reference
-                    brush = QtGui.QBrush(QtGui.QColor("purple"), Qt.BrushStyle.SolidPattern)
+                    color = self.get_custom_color(QtGui.QColor("purple"))
+                    brush = QtGui.QBrush(color, Qt.BrushStyle.SolidPattern)
                     keyword3.setForeground(brush)
                     keyword3.setFontWeight(QtGui.QFont.Weight.Bold)
                     keywords = ["Z"]
@@ -5028,7 +5057,8 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
 
                     keyword4 = QtGui.QTextCharFormat()
                     # keyword 4
-                    brush = QtGui.QBrush(QtGui.QColor("green"), Qt.BrushStyle.SolidPattern)
+                    color = self.get_custom_color(QtGui.QColor("green"))
+                    brush = QtGui.QBrush(color, Qt.BrushStyle.SolidPattern)
                     keyword4.setForeground(brush)
                     keyword4.setFontWeight(QtGui.QFont.Weight.Bold)
                     keywords = ["LPC", "LPD"]
@@ -5041,7 +5071,8 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     # keyword 5
                     keyword5 = QtGui.QTextCharFormat()
                     # SVG colors: https://doc.qt.io/qt-5/qml-color.html#svg-color-reference
-                    brush = QtGui.QBrush(QtGui.QColor("red"), Qt.BrushStyle.SolidPattern)
+                    color = self.get_custom_color(QtGui.QColor("red"))
+                    brush = QtGui.QBrush(color, Qt.BrushStyle.SolidPattern)
                     keyword5.setForeground(brush)
                     keyword5.setFontWeight(QtGui.QFont.Weight.Bold)
                     keywords = ["D"]
@@ -5054,15 +5085,19 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     # reservedClasses
                     reservedClasses.setForeground(brush)
                     reservedClasses.setFontWeight(QtGui.QFont.Weight.Bold)
-                    keywords = ["array", "character", "complex", "data.frame", "double", "factor",
-                                "function", "integer", "list", "logical", "matrix", "numeric", "vector"]
+                    keywords = [
+                        "array", "character", "complex", "data.frame", "double", "factor",
+                        "function", "integer", "list", "logical", "matrix", "numeric", "vector", "for", "if", "then",
+                        "elif", "else", "in", "while", "do"
+                    ]
                     for word in keywords:
                         pattern = QtCore.QRegularExpression("\\b" + word + "\\b")
                         rule = (pattern, reservedClasses)
                         self.highlightingRules.append(rule)
 
                     # parameter
-                    brush = QtGui.QBrush(Qt.GlobalColor.darkBlue, Qt.BrushStyle.SolidPattern)
+                    color = self.get_custom_color(QtGui.QColor(Qt.GlobalColor.darkBlue))
+                    brush = QtGui.QBrush(color, Qt.BrushStyle.SolidPattern)
                     pattern = QtCore.QRegularExpression("\-[0-9a-zA-Z_]*\s")
                     parameterOperator.setForeground(brush)
                     parameterOperator.setFontWeight(QtGui.QFont.Weight.Bold)
@@ -5077,7 +5112,8 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     self.highlightingRules.append(rule)
 
                     # specialConstant
-                    brush = QtGui.QBrush(Qt.GlobalColor.green, Qt.BrushStyle.SolidPattern)
+                    color = self.get_custom_color(QtGui.QColor("green"))
+                    brush = QtGui.QBrush(color, Qt.BrushStyle.SolidPattern)
                     specialConstant.setForeground(brush)
                     keywords = ["Inf", "NA", "NaN", "NULL"]
                     for word in keywords:
@@ -5100,26 +5136,9 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     # rule = (pattern, number)
                     # self.highlightingRules.append(rule)
 
-                    # string
-                    brush = QtGui.QBrush(Qt.GlobalColor.red, Qt.BrushStyle.SolidPattern)
-                    pattern = QtCore.QRegularExpression("\".*\"")
-                    # pattern.setMinimal
-                    pattern.setPatternOptions(QtCore.QRegularExpression.PatternOption.InvertedGreedinessOption)
-                    string.setForeground(brush)
-                    rule = (pattern, string)
-                    self.highlightingRules.append(rule)
-
-                    # singleQuotedString
-                    pattern = QtCore.QRegularExpression("\'.*\'")
-                    # pattern.setMinimal(True)
-                    pattern.setPatternOptions(QtCore.QRegularExpression.PatternOption.InvertedGreedinessOption)
-
-                    singleQuotedString.setForeground(brush)
-                    rule = (pattern, singleQuotedString)
-                    self.highlightingRules.append(rule)
-
                     # X coordinate
-                    brush = QtGui.QBrush(Qt.GlobalColor.darkBlue, Qt.BrushStyle.SolidPattern)
+                    color = self.get_custom_color(QtGui.QColor("forestgreen"))
+                    brush = QtGui.QBrush(color, Qt.BrushStyle.SolidPattern)
                     pattern = QtCore.QRegularExpression("X")
                     # pattern.setMinimal(True)
                     pattern.setPatternOptions(QtCore.QRegularExpression.PatternOption.InvertedGreedinessOption)
@@ -5130,7 +5149,8 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     self.highlightingRules.append(rule)
 
                     # Y coordinate
-                    brush = QtGui.QBrush(Qt.GlobalColor.darkBlue, Qt.BrushStyle.SolidPattern)
+                    color = self.get_custom_color(QtGui.QColor("forestgreen"))
+                    brush = QtGui.QBrush(color, Qt.BrushStyle.SolidPattern)
                     pattern = QtCore.QRegularExpression("Y")
                     # pattern.setMinimal(True)
                     pattern.setPatternOptions(QtCore.QRegularExpression.PatternOption.InvertedGreedinessOption)
@@ -5169,6 +5189,33 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
 
                 self.setCurrentBlockState(0)
 
+            def get_custom_color(self, orig_color):
+                """
+                Invert a given color in hexa format: #RRGGBB
+
+                :param orig_color:  color in the format #RRGGBB or QtGui.QColor
+                :type orig_color:   str | QtGui.QColor
+                :return:            inverted color
+                :rtype:             QtGui.QColor
+                """
+                if self.theme in ['default', 'light']:
+                    return orig_color
+
+                if isinstance(orig_color, str):
+                    lowered_color = orig_color.lower()
+                elif isinstance(orig_color, QtGui.QColor):
+                    lowered_color = str(orig_color.name()).lower()
+                else:   #
+                    return orig_color
+
+                # in the "dark" theme we invert the color
+                group1 = "#0123456789abcdef"
+                group2 = "#fedcba9876543210"
+                # create color dict
+                color_dict = {group1[i]: group2[i] for i in range(len(group1))}
+                new_color = ''.join([color_dict[j] for j in lowered_color])
+                return QtGui.QColor(new_color)
+
         # def format_text_color(self):
         #     cursor = self.textCursor()
         #     c_format = cursor.charFormat()
@@ -5181,6 +5228,8 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
             hi_selection = QTextEdit.ExtraSelection()
 
             hi_selection.format.setBackground(self.palette().alternateBase())
+            if self.theme not in ['default', 'light']:
+                hi_selection.format.setForeground(QtGui.QColor('black'))
             hi_selection.format.setProperty(QtGui.QTextFormat.Property.FullWidthSelection, True)
             hi_selection.cursor = self.textCursor()
             hi_selection.cursor.clearSelection()
@@ -5231,12 +5280,15 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
 
             painter.end()
 
-    def __init__(self, *args, color_dict=None):
+    def __init__(self, *args, color_dict=None, **kwargs):
+        self.theme = kwargs.pop('theme')
+        if self.theme is None:
+            self.theme = 'default'
         QtWidgets.QFrame.__init__(self, *args)
 
         self.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Sunken)
 
-        self.edit = self.PlainTextEdit(color_dict=color_dict)
+        self.edit = self.PlainTextEdit(color_dict=color_dict, theme=self.theme)
         self.number_bar = self.NumberBar(self.edit)
 
         hbox = QtWidgets.QHBoxLayout(self)

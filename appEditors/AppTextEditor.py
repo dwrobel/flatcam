@@ -54,7 +54,7 @@ class AppTextEditor(QtWidgets.QWidget):
 
         # CODE Editor
         if self.plain_text:
-            self.editor_class = FCTextAreaLineNumber(color_dict=color_dict)
+            self.editor_class = FCTextAreaLineNumber(color_dict=color_dict, theme=self.app.options['global_theme'])
             self.code_editor = self.editor_class.edit
 
             sel_color = 'black'
