@@ -4706,7 +4706,7 @@ class _BrowserTextEdit(QTextEdit):
     def clear(self):
         QTextEdit.clear(self)
 
-        text = "!FlatCAM %s? - %s" % (self.version, _("Type >help< to get started"))
+        text = "!FlatCAM Evo %s? - %s" % (self.version, _("Type >help< to get started"))
         text = html.escape(text)
         # hack so I can make text bold because the escape method will replace the '<' and '>' signs with html code
         text = text.replace('!', '<b>')
