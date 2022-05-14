@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+15.05.2022
+
+- fixed the Tcl command `drillcncjob` so it can use positive or zero depth of cuts
+- fixed the Drilling Plugin such that when the Z_CUt (depth of cut) is positive value then the up-to-zero feature will not be used
+
 13.05.2022
 
 - fixed the join-as-gerber functionality

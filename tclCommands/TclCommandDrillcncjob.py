@@ -62,7 +62,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             ('drilled_dias',
              'Comma separated tool diameters of the drills to be drilled (example: 0.6,1.0 or 3.125). '
              'WARNING: No space allowed. Can also take the value "all" which will drill the holes for all tools.'),
-            ('drillz', 'Drill depth into material (example: -2.0). Negative value.'),
+            ('drillz', 'Drill depth into material (example: -2.0).'),
             ('dpp', 'Progressive drilling into material with a specified step (example: 0.7). Positive value.'),
             ('travelz', 'Travel distance above material (example: 2.0).'),
             ('feedrate_z', 'Drilling feed rate. It is the speed on the Z axis.'),
@@ -206,9 +206,6 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 self.app.log.error("Bad tools: %s" % str(e))
                 return "fail"
 
-            used_tools_info = []
-            used_tools_info.insert(0, [_("Tool_nr"), _("Diameter"), _("Drills_Nr"), _("Slots_Nr")])
-
             # populate the information's list for used tools
             if tools == 'all':
                 sort = []
@@ -216,22 +213,6 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                     sort.append((k, v.get('tooldia')))
                 sorted_tools = sorted(sort, key=lambda t1: t1[1])
                 use_tools = [i[0] for i in sorted_tools]
-
-                for tool_no in use_tools:
-                    tool_dia_used = obj.tools[tool_no]['tooldia']
-
-                    drill_cnt = 0  # variable to store the nr of drills per tool
-                    slot_cnt = 0  # variable to store the nr of slots per tool
-
-                    # Find no of drills for the current tool
-                    if 'drills' in obj.tools[tool_no] and obj.tools[tool_no]['drills']:
-                        drill_cnt = len(obj.tools[tool_no]['drills'])
-
-                    # Find no of slots for the current tool
-                    if 'slots' in obj.tools[tool_no] and obj.tools[tool_no]['slots']:
-                        slot_cnt = len(obj.tools[tool_no]['slots'])
-
-                    used_tools_info.append([str(tool_no), str(tool_dia_used), str(drill_cnt), str(slot_cnt)])
 
             drillz = args["drillz"] if "drillz" in args and args["drillz"] is not None else \
                 obj.obj_options["tools_drill_cutz"]
@@ -370,7 +351,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             # Excellon optimization
             cnc_job_obj.excellon_optimization_type = opt_type
 
-            ret_val = cnc_job_obj.tcl_gcode_from_excellon_by_tool(obj, tools, is_first=True, use_ui=False)
+            ret_val = cnc_job_obj.tcl_gcode_from_excellon_by_tool(obj, tools, is_first=True)
             if ret_val == 'fail':
                 return 'fail'
 
