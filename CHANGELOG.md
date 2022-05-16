@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM Evo beta
 16.05.2022
 
 - finished upgrading the UI in Geometry Editor sub-tools
+- fixed an issue that left some parts of the Geometry Editor UI linked to the `Move` context menu action
 
 15.05.2022
 
