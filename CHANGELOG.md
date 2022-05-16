@@ -11,6 +11,9 @@ CHANGELOG for FlatCAM Evo beta
 
 - finished upgrading the UI in Geometry Editor sub-tools
 - fixed an issue that left some parts of the Geometry Editor UI linked to the `Move` context menu action
+- started to lay ground for upgrading the UI in the Gerber Editor
+- fixed and upgraded the Buffer sub-tool in the Gerber Editor
+- fixed adding same aperture multiple times
 
 15.05.2022
 

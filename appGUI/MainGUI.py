@@ -851,6 +851,10 @@ class MainGUI(QtWidgets.QMainWindow):
         self.grb_add_buffer_menuitem = self.grb_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'),
             '%s\t%s' % (_('Buffer'), _('B')))
+        self.grb_simplification_menuitem = self.geo_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/simplify32.png'),
+            '%s\t%s' % (_("Simplification"), '')
+        )
         self.grb_add_scale_menuitem = self.grb_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/scale32.png'),
             '%s\t%s' % (_('Scale'), _('S')))
@@ -1331,6 +1335,8 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.aperture_buffer_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'), _('Buffer'))
+        self.aperture_simplify_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/simplify32.png'), _('Simplification'))
         self.aperture_scale_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/scale32.png'), _('Scale'))
         self.aperture_markarea_btn = self.grb_edit_toolbar.addAction(
@@ -2717,6 +2723,8 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.aperture_buffer_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'), _('Buffer'))
+        self.aperture_simplify_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/simplify32.png'), _('Simplification'))
         self.aperture_scale_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/scale32.png'), _('Scale'))
         self.aperture_markarea_btn = self.grb_edit_toolbar.addAction(

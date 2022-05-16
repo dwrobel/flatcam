@@ -9,6 +9,7 @@ from appEditors.AppTextEditor import AppTextEditor
 from appObjects.CNCJobObject import CNCJobObject
 from appGUI.GUIElements import FCTextArea, FCEntry, FCButton, FCTable, GLay, FCLabel
 from PyQt6 import QtWidgets, QtCore, QtGui
+from PyQt6.QtCore import Qt
 
 # from io import StringIO
 
@@ -794,6 +795,7 @@ class AppGCodeEditorUI:
         name_label = FCLabel(_("Name:"))
         self.name_box.addWidget(name_label)
         self.name_entry = FCEntry()
+        self.name_entry.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.name_box.addWidget(self.name_entry)
 
         separator_line = QtWidgets.QFrame()
