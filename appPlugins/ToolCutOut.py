@@ -2360,7 +2360,7 @@ class CutoutUI:
         # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         # obj_grid.addWidget(separator_line, 18, 0, 1, 2)
 
-        self.param_label = FCLabel('%s' % _("Tool Parameters"), color='blue', bold=True)
+        self.param_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.tools_box.addWidget(self.param_label)
 
         # #############################################################################################################

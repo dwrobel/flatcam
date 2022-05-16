@@ -204,6 +204,7 @@ class TextEditorUI:
         self.text_tool_frame = QtWidgets.QFrame()
         self.text_tool_frame.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.text_tool_frame)
+
         self.text_tools_box = QtWidgets.QVBoxLayout()
         self.text_tools_box.setContentsMargins(0, 0, 0, 0)
         self.text_tool_frame.setLayout(self.text_tools_box)
@@ -212,13 +213,22 @@ class TextEditorUI:
         title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
         self.text_tools_box.addWidget(title_label)
 
+        self.param_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
+        self.text_tools_box.addWidget(self.param_label)
+
+        # #############################################################################################################
+        # Tool Params Frame
+        # #############################################################################################################
+        tool_par_frame = FCFrame()
+        self.text_tools_box.addWidget(tool_par_frame)
+
         # Grid Layout
-        self.grid_text = GLay(v_spacing=5, h_spacing=3)
-        self.text_tools_box.addLayout(self.grid_text)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
+        tool_par_frame.setLayout(param_grid)
 
         self.font_type_cb = QtWidgets.QFontComboBox()
-        self.grid_text.addWidget(FCLabel('%s:' % _("Font")), 0, 0)
-        self.grid_text.addWidget(self.font_type_cb, 0, 1)
+        param_grid.addWidget(FCLabel('%s:' % _("Font")), 0, 0)
+        param_grid.addWidget(self.font_type_cb, 0, 1)
 
         # Font size
         hlay = QtWidgets.QHBoxLayout()
@@ -249,21 +259,30 @@ class TextEditorUI:
         self.font_italic_tb.setIcon(QtGui.QIcon(self.app.resource_location + '/italic32.png'))
         hlay.addWidget(self.font_italic_tb)
 
-        self.grid_text.addWidget(FCLabel('%s:' % _("Size")), 2, 0)
-        self.grid_text.addLayout(hlay, 2, 1)
+        param_grid.addWidget(FCLabel('%s:' % _("Size")), 2, 0)
+        param_grid.addLayout(hlay, 2, 1)
 
         # Text input
-        self.grid_text.addWidget(FCLabel('%s:' % _("Text")), 4, 0, 1, 2)
+        self.text_tools_box.addWidget(FCLabel('%s:' % _("Text"), bold=True, color='green'))
+        # #############################################################################################################
+        # Text Frame
+        # #############################################################################################################
+        text_frame = FCFrame()
+        self.text_tools_box.addWidget(text_frame)
+
+        # Grid Layout
+        text_grid = GLay(v_spacing=5, h_spacing=3)
+        text_frame.setLayout(text_grid)
 
         self.text_input_entry = FCTextAreaRich()
         self.text_input_entry.setTabStopDistance(12)
         self.text_input_entry.setMinimumHeight(200)
         # self.text_input_entry.setMaximumHeight(150)
 
-        self.grid_text.addWidget(self.text_input_entry, 6, 0, 1, 2)
+        text_grid.addWidget(self.text_input_entry, 0, 0, 1, 2)
 
         # Buttons
         self.apply_button = FCButton(_("Apply"))
-        self.grid_text.addWidget(self.apply_button, 8, 0, 1, 2)
+        self.text_tools_box.addWidget(self.apply_button)
 
         # self.layout.addStretch()

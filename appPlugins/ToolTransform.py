@@ -664,7 +664,7 @@ class TransformUI:
         # #############################################################################################################
         # Rotate Frame
         # #############################################################################################################
-        rotate_title_lbl = FCLabel('%s' % _("Rotate"), color='tomato', bold=True)
+        rotate_title_lbl = FCLabel('%s' % self.rotateName, color='tomato', bold=True)
         self.layout.addWidget(rotate_title_lbl)
 
         rot_frame = FCFrame()
@@ -707,7 +707,7 @@ class TransformUI:
         s_t_lay = QtWidgets.QHBoxLayout()
         self.layout.addLayout(s_t_lay)
 
-        skew_title_lbl = FCLabel('%s' % _("Skew"), color='teal', bold=True)
+        skew_title_lbl = FCLabel('%s' % self.skewName, color='teal', bold=True)
         s_t_lay.addWidget(skew_title_lbl)
 
         s_t_lay.addStretch()
@@ -778,7 +778,7 @@ class TransformUI:
         sc_t_lay = QtWidgets.QHBoxLayout()
         self.layout.addLayout(sc_t_lay)
 
-        scale_title_lbl = FCLabel('%s' % _("Scale"), color='magenta', bold=True)
+        scale_title_lbl = FCLabel('%s' % self.scaleName, color='magenta', bold=True)
         sc_t_lay.addWidget(scale_title_lbl)
 
         sc_t_lay.addStretch()
@@ -874,7 +874,7 @@ class TransformUI:
         # #############################################################################################################
         # Offset Frame
         # #############################################################################################################
-        offset_title_lbl = FCLabel('%s' % _("Offset"), color='green', bold=True)
+        offset_title_lbl = FCLabel('%s' % self.offsetName, color='green', bold=True)
         self.layout.addWidget(offset_title_lbl)
 
         off_frame = FCFrame()
@@ -929,7 +929,7 @@ class TransformUI:
         b_t_lay = QtWidgets.QHBoxLayout()
         self.layout.addLayout(b_t_lay)
 
-        buffer_title_lbl = FCLabel('%s' % _("Buffer"), color='indigo', bold=True)
+        buffer_title_lbl = FCLabel('%s' % self.bufferName, color='indigo', bold=True)
         b_t_lay.addWidget(buffer_title_lbl)
 
         b_t_lay.addStretch()

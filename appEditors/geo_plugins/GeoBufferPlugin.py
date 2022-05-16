@@ -353,24 +353,34 @@ class BufferEditorUI:
         title_label = FCLabel("%s" % ('Editor ' + self.pluginName), size=16, bold=True)
         self.layout.addWidget(title_label)
 
+        self.param_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
+        self.layout.addWidget(self.param_label)
+
         # this way I can hide/show the frame
         self.buffer_tool_frame = QtWidgets.QFrame()
         self.buffer_tool_frame.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.buffer_tool_frame)
+
         self.buffer_tools_box = QtWidgets.QVBoxLayout()
         self.buffer_tools_box.setContentsMargins(0, 0, 0, 0)
         self.buffer_tool_frame.setLayout(self.buffer_tools_box)
 
+        # #############################################################################################################
+        # Tool Params Frame
+        # #############################################################################################################
+        tool_par_frame = FCFrame()
+        self.buffer_tools_box.addWidget(tool_par_frame)
+
         # Grid Layout
-        grid_buffer = GLay(v_spacing=5, h_spacing=3)
-        self.buffer_tools_box.addLayout(grid_buffer)
+        param_grid = GLay(v_spacing=5, h_spacing=3)
+        tool_par_frame.setLayout(param_grid)
 
         # Buffer distance
         self.buffer_distance_entry = FCDoubleSpinner()
         self.buffer_distance_entry.set_precision(self.decimals)
         self.buffer_distance_entry.set_range(0.0000, 10000.0000)
-        grid_buffer.addWidget(FCLabel('%s:' % _("Buffer distance")), 0, 0)
-        grid_buffer.addWidget(self.buffer_distance_entry, 0, 1)
+        param_grid.addWidget(FCLabel('%s:' % _("Buffer distance")), 0, 0)
+        param_grid.addWidget(self.buffer_distance_entry, 0, 1)
 
         self.buffer_corner_lbl = FCLabel('%s:' % _("Buffer corner"))
         self.buffer_corner_lbl.setToolTip(
@@ -383,12 +393,12 @@ class BufferEditorUI:
         self.buffer_corner_cb.addItem(_("Round"))
         self.buffer_corner_cb.addItem(_("Square"))
         self.buffer_corner_cb.addItem(_("Beveled"))
-        grid_buffer.addWidget(self.buffer_corner_lbl, 2, 0)
-        grid_buffer.addWidget(self.buffer_corner_cb, 2, 1)
+        param_grid.addWidget(self.buffer_corner_lbl, 2, 0)
+        param_grid.addWidget(self.buffer_corner_cb, 2, 1)
 
         # Buttons
         hlay = QtWidgets.QHBoxLayout()
-        grid_buffer.addLayout(hlay, 4, 0, 1, 2)
+        self.buffer_tools_box.addLayout(hlay)
 
         self.buffer_int_button = FCButton(_("Buffer Interior"))
         hlay.addWidget(self.buffer_int_button)
@@ -396,7 +406,7 @@ class BufferEditorUI:
         hlay.addWidget(self.buffer_ext_button)
 
         hlay1 = QtWidgets.QHBoxLayout()
-        grid_buffer.addLayout(hlay1, 6, 0, 1, 2)
+        self.buffer_tools_box.addLayout(hlay1)
 
         self.buffer_button = FCButton(_("Full Buffer"))
         hlay1.addWidget(self.buffer_button)

@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+16.05.2022
+
+- finished upgrading the UI in Geometry Editor sub-tools
+
 15.05.2022
 
 - fixed the Tcl command `drillcncjob` so it can use positive or zero depth of cuts

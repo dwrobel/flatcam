@@ -228,20 +228,30 @@ class PaintEditorUI:
         title_label = FCLabel("%s" % self.pluginName, size=16, bold=True)
         self.layout.addWidget(title_label)
 
-        grid = GLay(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid)
+        self.param_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
+        self.layout.addWidget(self.param_label)
+
+        # #############################################################################################################
+        # Tool Params Frame
+        # #############################################################################################################
+        tool_par_frame = FCFrame()
+        self.layout.addWidget(tool_par_frame)
+
+        # Grid Layout
+        param_grid = GLay(v_spacing=5, h_spacing=3)
+        tool_par_frame.setLayout(param_grid)
 
         # Tool dia
         ptdlabel = FCLabel('%s:' % _('Tool Dia'))
         ptdlabel.setToolTip(
             _("Diameter of the tool to be used in the operation.")
         )
-        grid.addWidget(ptdlabel, 0, 0)
+        param_grid.addWidget(ptdlabel, 0, 0)
 
         self.painttooldia_entry = FCDoubleSpinner()
         self.painttooldia_entry.set_range(-10000.0000, 10000.0000)
         self.painttooldia_entry.set_precision(self.decimals)
-        grid.addWidget(self.painttooldia_entry, 0, 1)
+        param_grid.addWidget(self.painttooldia_entry, 0, 1)
 
         # Overlap
         ovlabel = FCLabel('%s:' % _('Overlap'))
@@ -260,8 +270,8 @@ class PaintEditorUI:
         self.paintoverlap_entry.setWrapping(True)
         self.paintoverlap_entry.setSingleStep(1)
 
-        grid.addWidget(ovlabel, 1, 0)
-        grid.addWidget(self.paintoverlap_entry, 1, 1)
+        param_grid.addWidget(ovlabel, 1, 0)
+        param_grid.addWidget(self.paintoverlap_entry, 1, 1)
 
         # Margin
         marginlabel = FCLabel('%s:' % _('Margin'))
@@ -274,8 +284,8 @@ class PaintEditorUI:
         self.paintmargin_entry.set_range(-10000.0000, 10000.0000)
         self.paintmargin_entry.set_precision(self.decimals)
 
-        grid.addWidget(marginlabel, 2, 0)
-        grid.addWidget(self.paintmargin_entry, 2, 1)
+        param_grid.addWidget(marginlabel, 2, 0)
+        param_grid.addWidget(self.paintmargin_entry, 2, 1)
 
         # Method
         methodlabel = FCLabel('%s:' % _('Method'))
@@ -295,8 +305,8 @@ class PaintEditorUI:
             [_("Standard"), _("Seed"), _("Lines")]
         )
 
-        grid.addWidget(methodlabel, 3, 0)
-        grid.addWidget(self.paintmethod_combo, 3, 1)
+        param_grid.addWidget(methodlabel, 3, 0)
+        param_grid.addWidget(self.paintmethod_combo, 3, 1)
 
         # Connect lines
         pathconnectlabel = FCLabel('%s:' % _("Connect"))
@@ -306,8 +316,8 @@ class PaintEditorUI:
         )
         self.pathconnect_cb = FCCheckBox()
 
-        grid.addWidget(pathconnectlabel, 4, 0)
-        grid.addWidget(self.pathconnect_cb, 4, 1)
+        param_grid.addWidget(pathconnectlabel, 4, 0)
+        param_grid.addWidget(self.pathconnect_cb, 4, 1)
 
         contourlabel = FCLabel('%s:' % _("Contour"))
         contourlabel.setToolTip(
@@ -316,8 +326,8 @@ class PaintEditorUI:
         )
         self.paintcontour_cb = FCCheckBox()
 
-        grid.addWidget(contourlabel, 5, 0)
-        grid.addWidget(self.paintcontour_cb, 5, 1)
+        param_grid.addWidget(contourlabel, 5, 0)
+        param_grid.addWidget(self.paintcontour_cb, 5, 1)
 
         # Buttons
         hlay = QtWidgets.QHBoxLayout()
