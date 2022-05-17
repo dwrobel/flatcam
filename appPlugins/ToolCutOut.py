@@ -744,6 +744,8 @@ class CutOut(AppTool):
                             object_geo = Polygon(object_geo)
                         if margin >= 0:
                             geo_buf = object_geo.buffer(margin)
+                            if geo_buf.is_empty:
+                                geo_buf = object_geo.buffer(margin + 0.0000001)
                             geo = geo_buf.exterior
                         else:
                             geo_buf = object_geo.buffer(0.0000001)
@@ -771,6 +773,8 @@ class CutOut(AppTool):
                         else:
                             if margin >= 0:
                                 geo_buf = geom_struct.buffer(margin)
+                                if geo_buf.is_empty:
+                                    geo_buf = geom_struct.buffer(margin + 0.0000001)
                                 geom_struct = geo_buf.exterior
                             else:
                                 geo_buf = geom_struct.buffer(0.0000001)
@@ -1126,6 +1130,8 @@ class CutOut(AppTool):
                     else:
                         if margin >= 0:
                             geo_buf = geo.buffer(margin)
+                            if geo_buf.is_empty:
+                                geo_buf = geo.buffer(margin + 0.0000001)
                             geo = geo_buf.exterior
                         else:
                             geo_buf = geo.buffer(0.0000001)
@@ -1147,6 +1153,8 @@ class CutOut(AppTool):
                             geom_struct = box(xmin, ymin, xmax, ymax)
                             if margin >= 0:
                                 geo_buf = geom_struct.buffer(margin)
+                                if geo_buf.is_empty:
+                                    geo_buf = geom_struct.buffer(margin + 0.0000001)
                                 geom_struct = geo_buf.exterior
                             else:
                                 geo_buf = geom_struct.buffer(0.0000001)
