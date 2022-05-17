@@ -734,7 +734,7 @@ class CutOut(AppTool):
                             geo_buf = object_geo.buffer(margin + abs(cut_dia / 2))
                             geo = geo_buf.exterior
                         else:
-                            geo_buf = object_geo.buffer(- margin + abs(cut_dia / 2))
+                            geo_buf = object_geo.buffer(-margin + abs(cut_dia / 2))
                             geo = unary_union(geo_buf.interiors)
                     else:
                         if isinstance(object_geo, (MultiPolygon, MultiLineString)):
@@ -742,8 +742,14 @@ class CutOut(AppTool):
                             object_geo = box(x0, y0, x1, y1)
                         if isinstance(object_geo, (LinearRing, LineString)):
                             object_geo = Polygon(object_geo)
-                        geo_buf = object_geo.buffer(0)
-                        geo = geo_buf.exterior
+                        if margin >= 0:
+                            geo_buf = object_geo.buffer(margin)
+                            geo = geo_buf.exterior
+                        else:
+                            geo_buf = object_geo.buffer(0.0000001)
+                            geo_ext = geo_buf.exterior
+                            buff_geo_ext = geo_ext.buffer(-margin)
+                            geo = unary_union(buff_geo_ext.interiors)
 
                     if geo.is_empty:
                         self.app.log.debug("Cutout.on_freeform_cutout() -> Empty geometry.")
@@ -762,6 +768,15 @@ class CutOut(AppTool):
                             else:
                                 geom_struct_buff = geom_struct.buffer(-margin + abs(cut_dia / 2))
                                 geom_struct = geom_struct_buff.interiors
+                        else:
+                            if margin >= 0:
+                                geo_buf = geom_struct.buffer(margin)
+                                geom_struct = geo_buf.exterior
+                            else:
+                                geo_buf = geom_struct.buffer(0.0000001)
+                                geo_ext = geo_buf.exterior
+                                buff_geo_ext = geo_ext.buffer(-margin)
+                                geom_struct = unary_union(buff_geo_ext.interiors)
 
                         c_geo, r_geo = self.any_cutout_handler(geom_struct, cut_dia, gaps, gapsize, margin)
                         solid_geo += c_geo
@@ -800,7 +815,7 @@ class CutOut(AppTool):
                             if isinstance(mb_object_geo, MultiPolygon):
                                 x0, y0, x1, y1 = mb_object_geo.bounds
                                 mb_object_geo = box(x0, y0, x1, y1)
-                            geo_buf = mb_object_geo.buffer(0)
+                            geo_buf = mb_object_geo.buffer(0.0000001)
                             mb_geo = geo_buf.exterior
 
                         __, rest_geo = self.any_cutout_handler(mb_geo, cut_dia, gaps, gapsize, margin)
@@ -920,7 +935,6 @@ class CutOut(AppTool):
 
         # Get min and max data for each object as we just cut rectangles across X or Y
         xxmin, yymin, xxmax, yymax = CutOut.recursive_bounds(geom)
-
         px = 0.5 * (xxmax - xxmin) + xxmin  # center X
         py = 0.5 * (yymax - yymin) + yymin  # center Y
         lenx = (xxmax - xxmin) + (margin * 2)
@@ -1109,6 +1123,15 @@ class CutOut(AppTool):
                         else:
                             work_margin = margin - abs(cut_dia / 2)
                         geo = geo.buffer(work_margin)
+                    else:
+                        if margin >= 0:
+                            geo_buf = geo.buffer(margin)
+                            geo = geo_buf.exterior
+                        else:
+                            geo_buf = geo.buffer(0.0000001)
+                            geo_ext = geo_buf.exterior
+                            buff_geo_ext = geo_ext.buffer(-margin)
+                            geo = unary_union(buff_geo_ext.interiors)
 
                     # w_gapsize = gapsize - abs(cut_dia)
                     solid_geo = self.rect_cutout_handler(geo, cut_dia, gaps, gapsize, margin, xmin, ymin, xmax, ymax)
@@ -1121,8 +1144,15 @@ class CutOut(AppTool):
                         for geom_struct in object_geo:
                             geom_struct = unary_union(geom_struct)
                             xmin, ymin, xmax, ymax = geom_struct.bounds
-                            # for geometry we don't buffer this with `margin` parameter
                             geom_struct = box(xmin, ymin, xmax, ymax)
+                            if margin >= 0:
+                                geo_buf = geom_struct.buffer(margin)
+                                geom_struct = geo_buf.exterior
+                            else:
+                                geo_buf = geom_struct.buffer(0.0000001)
+                                geo_ext = geo_buf.exterior
+                                buff_geo_ext = geo_ext.buffer(-margin)
+                                geom_struct = unary_union(buff_geo_ext.interiors)
 
                             c_geo = self.rect_cutout_handler(geom_struct, cut_dia, gaps, gapsize, margin,
                                                              xmin, ymin, xmax, ymax)
@@ -1184,7 +1214,7 @@ class CutOut(AppTool):
                             else:
                                 mb_geo = mb_geo.buffer(margin - mb_buff_val)
                         else:
-                            mb_geo = mb_geo.buffer(0)
+                            mb_geo = mb_geo.buffer(0.0000001)
 
                         mb_solid_geo = self.rect_cutout_handler(mb_geo, cut_dia, gaps, gapsize, margin,
                                                                 xmin, ymin, xmax, ymax)
