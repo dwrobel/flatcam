@@ -451,7 +451,7 @@ class App(QtCore.QObject):
         # ############################################################################################################
         # ################# Setup the listening thread for another instance launching with args ######################
         # ############################################################################################################
-        if sys.platform == 'win32' or sys.platform == 'linux':
+        if sys.platform == 'win32':
             # make sure the thread is stored by using a self. otherwise it's garbage collected
             self.listen_th = QtCore.QThread()
             self.listen_th.start(priority=QtCore.QThread.Priority.LowestPriority)
@@ -4180,7 +4180,7 @@ class App(QtCore.QObject):
         # try to quit the QThread that run ArgsThread class
         try:
             # del self.new_launch
-            if sys.platform == 'win32' or sys.platform == 'linux':
+            if sys.platform == 'win32':
                 self.listen_th.quit()
         except Exception as e:
             if silent is False:
@@ -4194,7 +4194,7 @@ class App(QtCore.QObject):
         # self.close_app_signal.emit()
         # sys.exit(0)
         QtWidgets.QApplication.quit()
-        if sys.platform == 'win32' or sys.platform == 'linux':
+        if sys.platform == 'win32':
             try:
                 self.new_launch.close_command()
             except Exception:
@@ -9449,7 +9449,6 @@ class App(QtCore.QObject):
         dec_nr = dec if dec is not None else self.decimals
 
         return float('%.*f' % (dec_nr, float(val)))
-
 
 
 class ArgsThread(QtCore.QObject):
