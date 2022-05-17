@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM Evo beta
 17.05.2020
 
 - in Cutout Plugin added ability to use the margin (full range of values: negative, zero, positive) when applying the cutout over a Geometry source object
+- updated the Turkish language strings (by Mehmet Kaya)
 
 16.05.2022
 
