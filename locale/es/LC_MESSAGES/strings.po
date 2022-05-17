@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2022-05-11 23:13+0300\n"
-"PO-Revision-Date: 2022-05-11 23:13+0300\n"
+"POT-Creation-Date: 2022-05-17 14:36+0300\n"
+"PO-Revision-Date: 2022-05-17 14:36+0300\n"
 "Last-Translator: Marius Stanciu - Google Translate\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -126,7 +126,7 @@ msgstr "Marcadores"
 #: appMain.py:10067 appMain.py:10112 appMain.py:10170 appMain.py:10202
 #: appMain.py:10232 appMain.py:10454 appMain.py:10491 appMain.py:10534
 #: appMain.py:10610 appMain.py:10669 appMain.py:10950 appMain.py:10985
-#: appObjects/ObjectCollection.py:155 appPlugins/ToolCutOut.py:2045
+#: appObjects/ObjectCollection.py:155 appPlugins/ToolCutOut.py:2075
 #: appPlugins/ToolDistance.py:625 appPlugins/ToolFilm.py:411
 #: appPlugins/ToolFilm.py:561 appPlugins/ToolImage.py:180
 #: appPlugins/ToolImage.py:206 appPlugins/ToolLevelling.py:1572
@@ -325,7 +325,7 @@ msgstr "Objetivo"
 #: appPlugins/ToolMilling.py:4032 appPlugins/ToolNCC.py:4127
 #: appPlugins/ToolPaint.py:3009 appPlugins/ToolPcbWizard.py:425
 #: appPlugins/ToolReport.py:430 appPlugins/ToolReport.py:499
-#: appPlugins/ToolSolderPaste.py:1295 tclCommands/TclCommandDrillcncjob.py:210
+#: appPlugins/ToolSolderPaste.py:1295
 msgid "Diameter"
 msgstr "Diámetro"
 
@@ -439,7 +439,7 @@ msgstr "Perforación"
 
 #: appDatabase.py:271 appDatabase.py:1762 appDatabase.py:2234
 #: appDatabase.py:2410 appEditors/geo_plugins/GeoPaintPlugin.py:220
-#: appEditors/geo_plugins/GeoPaintPlugin.py:325 appGUI/MainGUI.py:771
+#: appEditors/geo_plugins/GeoPaintPlugin.py:335 appGUI/MainGUI.py:771
 #: appGUI/MainGUI.py:1163 appGUI/MainGUI.py:1852 appGUI/MainGUI.py:2557
 #: appGUI/ObjectUI.py:1046 appPlugins/ToolPaint.py:195
 #: appPlugins/ToolPaint.py:879 appPlugins/ToolPaint.py:2898
@@ -456,7 +456,7 @@ msgstr "NCC"
 #: appDatabase.py:271 appDatabase.py:1764 appDatabase.py:2250
 #: appDatabase.py:2412 appGUI/MainGUI.py:1168 appGUI/MainGUI.py:2562
 #: appGUI/ObjectUI.py:382 appPlugins/ToolCutOut.py:170
-#: appPlugins/ToolCutOut.py:466 appPlugins/ToolCutOut.py:2212
+#: appPlugins/ToolCutOut.py:466 appPlugins/ToolCutOut.py:2242
 msgid "Cutout"
 msgstr "Separar"
 
@@ -468,7 +468,7 @@ msgstr "Separar"
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:464
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:321
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:285
-#: appPlugins/ToolCutOut.py:2585 appPlugins/ToolFollow.py:734
+#: appPlugins/ToolCutOut.py:2615 appPlugins/ToolFollow.py:734
 #: appPlugins/ToolIsolation.py:3580 appPlugins/ToolIsolation.py:3948
 #: appPlugins/ToolMilling.py:4404 appPlugins/ToolNCC.py:4127
 #: appPlugins/ToolNCC.py:4563 appPlugins/ToolPaint.py:3009
@@ -582,7 +582,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:97
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:100
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:108
-#: appPlugins/ToolCalculators.py:626 appPlugins/ToolCutOut.py:2392
+#: appPlugins/ToolCalculators.py:626 appPlugins/ToolCutOut.py:2422
 #: appPlugins/ToolDrilling.py:2514 appPlugins/ToolIsolation.py:3647
 #: appPlugins/ToolMilling.py:1428 appPlugins/ToolMilling.py:4550
 msgid "Cut Z"
@@ -841,7 +841,7 @@ msgid "Conventional"
 msgstr "Convencional"
 
 #: appDatabase.py:621 appDatabase.py:727 appDatabase.py:827 appDatabase.py:1076
-#: appEditors/geo_plugins/GeoPaintPlugin.py:247
+#: appEditors/geo_plugins/GeoPaintPlugin.py:257
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:254
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:189
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:532
@@ -855,7 +855,7 @@ msgid "Overlap"
 msgstr "Superposición"
 
 #: appDatabase.py:623 appDatabase.py:729
-#: appEditors/geo_plugins/GeoPaintPlugin.py:249
+#: appEditors/geo_plugins/GeoPaintPlugin.py:259
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:614
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:170
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:153
@@ -880,7 +880,7 @@ msgstr ""
 "debido a demasiados caminos."
 
 #: appDatabase.py:642 appDatabase.py:1118
-#: appEditors/geo_plugins/GeoPaintPlugin.py:267
+#: appEditors/geo_plugins/GeoPaintPlugin.py:277
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:70
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:277
 #: appGUI/preferences/tools/Tools2ExtractPrefGroupUI.py:296
@@ -894,7 +894,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:171
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:67
 #: appPlugins/ToolCopperThieving.py:1318 appPlugins/ToolCopperThieving.py:1600
-#: appPlugins/ToolCutOut.py:2433 appPlugins/ToolCutOut.py:2746
+#: appPlugins/ToolCutOut.py:2463 appPlugins/ToolCutOut.py:2776
 #: appPlugins/ToolExtract.py:1380 appPlugins/ToolFiducials.py:1073
 #: appPlugins/ToolInvertGerber.py:249 appPlugins/ToolInvertGerber.py:257
 #: appPlugins/ToolMilling.py:4454 appPlugins/ToolNCC.py:4365
@@ -916,7 +916,7 @@ msgid "Bounding box margin."
 msgstr "Margen de cuadro delimitador."
 
 #: appDatabase.py:655 appDatabase.py:763
-#: appEditors/geo_plugins/GeoPaintPlugin.py:281
+#: appEditors/geo_plugins/GeoPaintPlugin.py:291
 #: appGUI/preferences/tools/Tools2ExtractPrefGroupUI.py:104
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:105
 #: appGUI/preferences/tools/ToolsLevelPrefGroupUI.py:55
@@ -943,7 +943,7 @@ msgstr ""
 "- Basado en líneas: líneas paralelas."
 
 #: appDatabase.py:665 appDatabase.py:777
-#: appEditors/geo_plugins/GeoPaintPlugin.py:295
+#: appEditors/geo_plugins/GeoPaintPlugin.py:305
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:556
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:216
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:205
@@ -955,7 +955,7 @@ msgstr "Estándar"
 #: appDatabase.py:665 appDatabase.py:777
 #: appEditors/geo_plugins/GeoPaintPlugin.py:89
 #: appEditors/geo_plugins/GeoPaintPlugin.py:180
-#: appEditors/geo_plugins/GeoPaintPlugin.py:295
+#: appEditors/geo_plugins/GeoPaintPlugin.py:305
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:556
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:216
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:205
@@ -966,7 +966,7 @@ msgstr "Semilla"
 
 #: appDatabase.py:665 appDatabase.py:777
 #: appEditors/geo_plugins/GeoPaintPlugin.py:185
-#: appEditors/geo_plugins/GeoPaintPlugin.py:295
+#: appEditors/geo_plugins/GeoPaintPlugin.py:305
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:556
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:216
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:205
@@ -984,7 +984,7 @@ msgid "Combo"
 msgstr "Combo"
 
 #: appDatabase.py:673 appDatabase.py:788
-#: appEditors/geo_plugins/GeoPaintPlugin.py:302
+#: appEditors/geo_plugins/GeoPaintPlugin.py:312
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:633
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:223
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:212
@@ -996,7 +996,7 @@ msgid "Connect"
 msgstr "Conectar"
 
 #: appDatabase.py:677 appDatabase.py:791
-#: appEditors/geo_plugins/GeoPaintPlugin.py:304
+#: appEditors/geo_plugins/GeoPaintPlugin.py:314
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:636
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:225
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:214
@@ -1010,7 +1010,7 @@ msgstr ""
 "Segmentos para minimizar elevaciones de herramientas."
 
 #: appDatabase.py:683 appDatabase.py:795
-#: appEditors/geo_plugins/GeoPaintPlugin.py:312
+#: appEditors/geo_plugins/GeoPaintPlugin.py:322
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:232
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:219
 #: appPlugins/ToolNCC.py:4388 appPlugins/ToolNCC.py:4490
@@ -1019,7 +1019,7 @@ msgid "Contour"
 msgstr "Contorno"
 
 #: appDatabase.py:687 appDatabase.py:798
-#: appEditors/geo_plugins/GeoPaintPlugin.py:314
+#: appEditors/geo_plugins/GeoPaintPlugin.py:324
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:234
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:221
 #: appPlugins/ToolNCC.py:4392 appPlugins/ToolNCC.py:4492
@@ -1050,7 +1050,7 @@ msgstr ""
 #: appPlugins/ToolMarkers.py:1606 appPlugins/ToolMarkers.py:1611
 #: appPlugins/ToolNCC.py:4398 appPlugins/ToolNCC.py:4498
 #: appPlugins/ToolPaint.py:3165 appPlugins/ToolPaint.py:3262
-#: appPlugins/ToolTransform.py:568 appPlugins/ToolTransform.py:877
+#: appPlugins/ToolTransform.py:568
 msgid "Offset"
 msgstr "Compensar"
 
@@ -1066,7 +1066,7 @@ msgstr ""
 "El claro de cobre terminará a distancia\n"
 "de las características de cobre."
 
-#: appDatabase.py:750 appEditors/geo_plugins/GeoPaintPlugin.py:269
+#: appDatabase.py:750 appEditors/geo_plugins/GeoPaintPlugin.py:279
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:173
 #: appPlugins/ToolPaint.py:3167 appPlugins/ToolPaint.py:3264
 msgid ""
@@ -1199,7 +1199,7 @@ msgstr ""
 #: appDatabase.py:926 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:87
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:73
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:103
-#: appPlugins/ToolCutOut.py:2409 appPlugins/ToolDrilling.py:2534
+#: appPlugins/ToolCutOut.py:2439 appPlugins/ToolDrilling.py:2534
 #: appPlugins/ToolMilling.py:4570
 msgid ""
 "Use multiple passes to limit\n"
@@ -1215,7 +1215,7 @@ msgstr ""
 #: appDatabase.py:948 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:99
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:85
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:114
-#: appPlugins/ToolCutOut.py:2420 appPlugins/ToolDrilling.py:2547
+#: appPlugins/ToolCutOut.py:2450 appPlugins/ToolDrilling.py:2547
 #: appPlugins/ToolMilling.py:4583
 msgid "Depth of each pass (positive)."
 msgstr "Profundidad de cada pase (positivo)."
@@ -1311,7 +1311,7 @@ msgstr ""
 #: appDatabase.py:1120 appGUI/preferences/tools/Tools2ExtractPrefGroupUI.py:298
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:124
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:310
-#: appPlugins/ToolCutOut.py:2435 appPlugins/ToolCutOut.py:2748
+#: appPlugins/ToolCutOut.py:2465 appPlugins/ToolCutOut.py:2778
 #: appPlugins/ToolExtract.py:1382
 msgid ""
 "Margin over bounds. A positive value here\n"
@@ -1327,7 +1327,7 @@ msgid "Gap size"
 msgstr "Tamaño de la brecha"
 
 #: appDatabase.py:1134 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:152
-#: appPlugins/ToolCutOut.py:2458
+#: appPlugins/ToolCutOut.py:2488
 msgid ""
 "The size of the bridge gaps in the cutout\n"
 "used to keep the board connected to\n"
@@ -1344,7 +1344,7 @@ msgid "Gap type"
 msgstr "Tipo de brecha"
 
 #: appDatabase.py:1145 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:169
-#: appPlugins/ToolCutOut.py:2474
+#: appPlugins/ToolCutOut.py:2504
 msgid ""
 "The type of gap:\n"
 "- Bridge -> the cutout will be interrupted by bridges\n"
@@ -1359,22 +1359,22 @@ msgstr ""
 "- M-Bites -> 'Mouse Bites' - igual que el 'puente' pero cubierto con agujeros"
 
 #: appDatabase.py:1153 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:176
-#: appPlugins/ToolCutOut.py:2489 appPlugins/ToolCutOut.py:2540
+#: appPlugins/ToolCutOut.py:2519 appPlugins/ToolCutOut.py:2570
 msgid "Bridge"
 msgstr "Puente"
 
 #: appDatabase.py:1154 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:176
-#: appPlugins/ToolCutOut.py:2489
+#: appPlugins/ToolCutOut.py:2519
 msgid "Thin"
 msgstr "Delgado"
 
 #: appDatabase.py:1165 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:187
-#: appPlugins/ToolCutOut.py:2495
+#: appPlugins/ToolCutOut.py:2525
 msgid "Depth"
 msgstr "Profundidad"
 
 #: appDatabase.py:1167 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:189
-#: appPlugins/ToolCutOut.py:2497
+#: appPlugins/ToolCutOut.py:2527
 msgid ""
 "The depth until the milling is done\n"
 "in order to thin the gaps."
@@ -1383,7 +1383,7 @@ msgstr ""
 "para adelgazar los huecos."
 
 #: appDatabase.py:1183 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:208
-#: appPlugins/ToolCutOut.py:2511
+#: appPlugins/ToolCutOut.py:2541
 msgid "The drill hole diameter when doing mouse bites."
 msgstr "El diámetro del taladro al hacer 'mouse bytes'."
 
@@ -1394,23 +1394,23 @@ msgstr "El diámetro del taladro al hacer 'mouse bytes'."
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:247
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:218
 #: appPlugins/ToolCopperThieving.py:1462 appPlugins/ToolCopperThieving.py:1508
-#: appPlugins/ToolCopperThieving.py:1554 appPlugins/ToolCutOut.py:2521
+#: appPlugins/ToolCopperThieving.py:1554 appPlugins/ToolCutOut.py:2551
 msgid "Spacing"
 msgstr "Spacing"
 
 #: appDatabase.py:1196 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:220
-#: appPlugins/ToolCutOut.py:2523
+#: appPlugins/ToolCutOut.py:2553
 msgid "The spacing between drill holes when doing mouse bites."
 msgstr "El espacio entre los taladros al hacer 'mouse bites'."
 
 #: appDatabase.py:1215 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:59
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:198
-#: appPlugins/ToolCutOut.py:2378 appPlugins/ToolFilm.py:1521
+#: appPlugins/ToolCutOut.py:2408 appPlugins/ToolFilm.py:1521
 msgid "Convex Shape"
 msgstr "Forma convexa"
 
 #: appDatabase.py:1218 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:61
-#: appPlugins/ToolCutOut.py:2380 appPlugins/ToolCutOut.py:2385
+#: appPlugins/ToolCutOut.py:2410 appPlugins/ToolCutOut.py:2415
 msgid ""
 "Create a convex shape surrounding the entire PCB.\n"
 "Used only if the source object type is Gerber."
@@ -1420,12 +1420,12 @@ msgstr ""
 
 #: appDatabase.py:1226 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:137
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:234
-#: appPlugins/ToolCutOut.py:2442 appPlugins/ToolCutOut.py:2561
-#: appPlugins/ToolCutOut.py:2660
+#: appPlugins/ToolCutOut.py:2472 appPlugins/ToolCutOut.py:2591
+#: appPlugins/ToolCutOut.py:2690
 msgid "Gaps"
 msgstr "Brechas"
 
-#: appDatabase.py:1228 appPlugins/ToolCutOut.py:2563
+#: appDatabase.py:1228 appPlugins/ToolCutOut.py:2593
 msgid ""
 "Number of gaps used for the Automatic cutout.\n"
 "There can be maximum 8 bridges/gaps.\n"
@@ -1536,8 +1536,8 @@ msgstr "Cancelar"
 #: appGUI/ObjectUI.py:169 appPlugins/ToolAlignObjects.py:541
 #: appPlugins/ToolAlignObjects.py:552 appPlugins/ToolCalculators.py:1055
 #: appPlugins/ToolCalculators.py:1066 appPlugins/ToolCopperThieving.py:1759
-#: appPlugins/ToolCopperThieving.py:1770 appPlugins/ToolCutOut.py:2805
-#: appPlugins/ToolCutOut.py:2816 appPlugins/ToolDblSided.py:1134
+#: appPlugins/ToolCopperThieving.py:1770 appPlugins/ToolCutOut.py:2835
+#: appPlugins/ToolCutOut.py:2846 appPlugins/ToolDblSided.py:1134
 #: appPlugins/ToolDblSided.py:1145 appPlugins/ToolDistance.py:999
 #: appPlugins/ToolDistance.py:1010 appPlugins/ToolDrilling.py:3021
 #: appPlugins/ToolDrilling.py:3032 appPlugins/ToolEtchCompensation.py:498
@@ -1572,8 +1572,8 @@ msgstr "El valor editado está fuera de rango"
 #: appGUI/ObjectUI.py:171 appPlugins/ToolAlignObjects.py:547
 #: appPlugins/ToolAlignObjects.py:554 appPlugins/ToolCalculators.py:1061
 #: appPlugins/ToolCalculators.py:1068 appPlugins/ToolCopperThieving.py:1765
-#: appPlugins/ToolCopperThieving.py:1772 appPlugins/ToolCutOut.py:2811
-#: appPlugins/ToolCutOut.py:2818 appPlugins/ToolDblSided.py:1140
+#: appPlugins/ToolCopperThieving.py:1772 appPlugins/ToolCutOut.py:2841
+#: appPlugins/ToolCutOut.py:2848 appPlugins/ToolDblSided.py:1140
 #: appPlugins/ToolDblSided.py:1147 appPlugins/ToolDistance.py:1005
 #: appPlugins/ToolDistance.py:1012 appPlugins/ToolDrilling.py:3027
 #: appPlugins/ToolDrilling.py:3034 appPlugins/ToolEtchCompensation.py:504
@@ -1776,7 +1776,7 @@ msgstr "Taladros"
 #: appParsers/ParseGerber.py:2448 appParsers/ParseGerber.py:2510
 #: appPlugins/ToolAlignObjects.py:276 appPlugins/ToolAlignObjects.py:298
 #: appPlugins/ToolCalculators.py:332 appPlugins/ToolCalculators.py:342
-#: appPlugins/ToolCutOut.py:1493 appPlugins/ToolDistance.py:374
+#: appPlugins/ToolCutOut.py:1523 appPlugins/ToolDistance.py:374
 #: appPlugins/ToolDistance.py:401 appPlugins/ToolDistance.py:633
 #: appPlugins/ToolFiducials.py:673 appPlugins/ToolFiducials.py:688
 #: appPlugins/ToolFollow.py:322 appPlugins/ToolFollow.py:390
@@ -1807,10 +1807,10 @@ msgstr "Hecho."
 #: appMain.py:12252 appMain.py:12266 appMain.py:12276 appMain.py:12293
 #: appObjects/CNCJobObject.py:842 appPlugins/ToolCopperThieving.py:337
 #: appPlugins/ToolCopperThieving.py:932 appPlugins/ToolCopperThieving.py:1144
-#: appPlugins/ToolCutOut.py:750 appPlugins/ToolCutOut.py:773
-#: appPlugins/ToolCutOut.py:905 appPlugins/ToolCutOut.py:1159
-#: appPlugins/ToolCutOut.py:1310 appPlugins/ToolCutOut.py:1429
-#: appPlugins/ToolCutOut.py:1447 appPlugins/ToolCutOut.py:1461
+#: appPlugins/ToolCutOut.py:756 appPlugins/ToolCutOut.py:788
+#: appPlugins/ToolCutOut.py:920 appPlugins/ToolCutOut.py:1189
+#: appPlugins/ToolCutOut.py:1340 appPlugins/ToolCutOut.py:1459
+#: appPlugins/ToolCutOut.py:1477 appPlugins/ToolCutOut.py:1491
 #: appPlugins/ToolDblSided.py:586 appPlugins/ToolDblSided.py:599
 #: appPlugins/ToolDrilling.py:2013 appPlugins/ToolExtract.py:424
 #: appPlugins/ToolExtract.py:790 appPlugins/ToolExtract.py:839
@@ -1826,7 +1826,7 @@ msgstr "Hecho."
 #: appPlugins/ToolMove.py:195 appPlugins/ToolPaint.py:2309
 #: appPlugins/ToolSolderPaste.py:824 appPlugins/ToolSolderPaste.py:1151
 #: camlib.py:1224 camlib.py:2464 camlib.py:2537 camlib.py:2605 camlib.py:2677
-#: camlib.py:2680 camlib.py:5554 camlib.py:5973
+#: camlib.py:2680 camlib.py:4931 camlib.py:5350
 msgid "Failed."
 msgstr "Ha fallado."
 
@@ -2093,7 +2093,7 @@ msgstr "Excellon Editor"
 
 #: appEditors/AppExcEditor.py:5182 appEditors/AppGeoEditor.py:5258
 #: appEditors/AppGerberEditor.py:6168 appEditors/appGCodeEditor.py:782
-#: appGUI/ObjectUI.py:72 appPlugins/ToolCutOut.py:2242
+#: appGUI/ObjectUI.py:72 appPlugins/ToolCutOut.py:2272
 #: appPlugins/ToolDblSided.py:704 appPlugins/ToolDrilling.py:2384
 #: appPlugins/ToolFiducials.py:912 appPlugins/ToolFilm.py:1251
 #: appPlugins/ToolFollow.py:680 appPlugins/ToolIsolation.py:3376
@@ -2153,10 +2153,10 @@ msgstr ""
 "Agregar / Eliminar una herramienta a la lista de herramientas\n"
 "para este objeto Excellon."
 
-#: appEditors/AppExcEditor.py:5254 appEditors/geo_plugins/GeoPaintPlugin.py:235
+#: appEditors/AppExcEditor.py:5254 appEditors/geo_plugins/GeoPaintPlugin.py:245
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:44
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:127
-#: appPlugins/ToolCutOut.py:2323 appPlugins/ToolCutOut.py:2509
+#: appPlugins/ToolCutOut.py:2353 appPlugins/ToolCutOut.py:2539
 #: appPlugins/ToolIsolation.py:3482 appPlugins/ToolMilling.py:4193
 #: appPlugins/ToolNCC.py:4193 appPlugins/ToolNCC.py:4206
 #: appPlugins/ToolPaint.py:3069
@@ -2182,7 +2182,7 @@ msgstr "Diámetro para la nueva herramienta"
 #: appEditors/geo_plugins/GeoCopyPlugin.py:434
 #: appEditors/geo_plugins/GeoRectanglePlugin.py:161
 #: appEditors/geo_plugins/GeoRectanglePlugin.py:316
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:648
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:656
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:388
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:340 appMain.py:7264
 #: appPlugins/ToolCopperThieving.py:1714 appPlugins/ToolDblSided.py:918
@@ -2445,7 +2445,7 @@ msgstr "Crear geometría de búfer ..."
 #: appGUI/MainGUI.py:853 appGUI/MainGUI.py:1333 appGUI/MainGUI.py:1850
 #: appGUI/MainGUI.py:1895 appGUI/MainGUI.py:2719 appGUI/MainGUI.py:5556
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:257
-#: appPlugins/ToolTransform.py:569 appPlugins/ToolTransform.py:932
+#: appPlugins/ToolTransform.py:569
 msgid "Buffer"
 msgstr "Buffer"
 
@@ -2505,7 +2505,7 @@ msgid "Last selected shape ID"
 msgstr "ID de la última forma seleccionada"
 
 #: appEditors/AppGeoEditor.py:3601 appEditors/AppGerberEditor.py:2681
-#: appEditors/AppGerberEditor.py:5010 appPlugins/ToolCutOut.py:1485
+#: appEditors/AppGerberEditor.py:5010 appPlugins/ToolCutOut.py:1515
 #: appPlugins/ToolDistance.py:257 appPlugins/ToolExtract.py:434
 #: appPlugins/ToolExtract.py:807 appPlugins/ToolExtract.py:882
 #: appPlugins/ToolOptimal.py:216 appPlugins/ToolPanelize.py:1102
@@ -2607,8 +2607,8 @@ msgstr "La lista de elementos geométricos dentro del objeto editado."
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:57
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:116
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:40
-#: appPlugins/ToolCopperThieving.py:1367 appPlugins/ToolCutOut.py:2286
-#: appPlugins/ToolCutOut.py:2472 appPlugins/ToolDblSided.py:1039
+#: appPlugins/ToolCopperThieving.py:1367 appPlugins/ToolCutOut.py:2316
+#: appPlugins/ToolCutOut.py:2502 appPlugins/ToolDblSided.py:1039
 #: appPlugins/ToolExtract.py:1101 appPlugins/ToolFilm.py:1279
 #: appPlugins/ToolFilm.py:1350 appPlugins/ToolFilm.py:1420
 #: appPlugins/ToolImage.py:593 appPlugins/ToolIsolation.py:3895
@@ -2629,7 +2629,11 @@ msgstr "Zoom en la selección"
 #: appEditors/exc_plugins/ExcDrillArrayPlugin.py:163
 #: appEditors/exc_plugins/ExcSlotArrayPlugin.py:225
 #: appEditors/exc_plugins/ExcSlotPlugin.py:170
+#: appEditors/geo_plugins/GeoBufferPlugin.py:356
+#: appEditors/geo_plugins/GeoPaintPlugin.py:231
 #: appEditors/geo_plugins/GeoSimplificationPlugin.py:225
+#: appEditors/geo_plugins/GeoTextPlugin.py:216
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:618
 #: appGUI/ObjectUI.py:1270 appGUI/ObjectUI.py:1585
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:26
 #: appGUI/preferences/cncjob/CNCJobEditorPrefGroupUI.py:28
@@ -2661,15 +2665,15 @@ msgstr "Zoom en la selección"
 #: appGUI/preferences/tools/ToolsSubPrefGroupUI.py:24
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:28
 #: appPlugins/ToolAlignObjects.py:488 appPlugins/ToolCopperThieving.py:1292
-#: appPlugins/ToolDistance.py:832 appPlugins/ToolEtchCompensation.py:385
-#: appPlugins/ToolFiducials.py:1044 appPlugins/ToolFilm.py:1510
-#: appPlugins/ToolFollow.py:709 appPlugins/ToolImage.py:522
-#: appPlugins/ToolImage.py:854 appPlugins/ToolInvertGerber.py:237
-#: appPlugins/ToolLevelling.py:1832 appPlugins/ToolMarkers.py:1283
-#: appPlugins/ToolObjectDistance.py:447 appPlugins/ToolOptimal.py:504
-#: appPlugins/ToolPanelize.py:1327 appPlugins/ToolQRCode.py:794
-#: appPlugins/ToolSolderPaste.py:1347 appPlugins/ToolSub.py:803
-#: appPlugins/ToolTransform.py:586
+#: appPlugins/ToolCutOut.py:2393 appPlugins/ToolDistance.py:832
+#: appPlugins/ToolEtchCompensation.py:385 appPlugins/ToolFiducials.py:1044
+#: appPlugins/ToolFilm.py:1510 appPlugins/ToolFollow.py:709
+#: appPlugins/ToolImage.py:522 appPlugins/ToolImage.py:854
+#: appPlugins/ToolInvertGerber.py:237 appPlugins/ToolLevelling.py:1832
+#: appPlugins/ToolMarkers.py:1283 appPlugins/ToolObjectDistance.py:447
+#: appPlugins/ToolOptimal.py:504 appPlugins/ToolPanelize.py:1327
+#: appPlugins/ToolQRCode.py:794 appPlugins/ToolSolderPaste.py:1347
+#: appPlugins/ToolSub.py:803 appPlugins/ToolTransform.py:586
 msgid "Parameters"
 msgstr "Parámetros"
 
@@ -2946,7 +2950,7 @@ msgstr "Código"
 #: appEditors/exc_plugins/ExcSlotArrayPlugin.py:255
 #: appEditors/geo_plugins/GeoCopyPlugin.py:185
 #: appEditors/geo_plugins/GeoRectanglePlugin.py:292
-#: appEditors/geo_plugins/GeoTextPlugin.py:252 appGUI/ObjectUI.py:322
+#: appEditors/geo_plugins/GeoTextPlugin.py:262 appGUI/ObjectUI.py:322
 #: appGUI/ObjectUI.py:1619
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:110
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:195
@@ -2954,7 +2958,7 @@ msgstr "Código"
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:40
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:150
 #: appPlugins/ToolCopperThieving.py:1495 appPlugins/ToolCopperThieving.py:1541
-#: appPlugins/ToolCutOut.py:2456 appPlugins/ToolExtract.py:1101
+#: appPlugins/ToolCutOut.py:2486 appPlugins/ToolExtract.py:1101
 #: appPlugins/ToolFiducials.py:1057 appPlugins/ToolPunchGerber.py:2113
 msgid "Size"
 msgstr "Tamaño"
@@ -3237,13 +3241,13 @@ msgid "Buffer a aperture in the aperture list"
 msgstr "Buffer de apertura en la lista de apertura"
 
 #: appEditors/AppGerberEditor.py:6473
-#: appEditors/geo_plugins/GeoBufferPlugin.py:372
+#: appEditors/geo_plugins/GeoBufferPlugin.py:382
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:226
 msgid "Buffer distance"
 msgstr "Dist. de buffer"
 
 #: appEditors/AppGerberEditor.py:6477
-#: appEditors/geo_plugins/GeoBufferPlugin.py:375
+#: appEditors/geo_plugins/GeoBufferPlugin.py:385
 msgid "Buffer corner"
 msgstr "Rincón del búfer"
 
@@ -3262,13 +3266,13 @@ msgstr ""
 "funciones que se encuentran en la esquina"
 
 #: appEditors/AppGerberEditor.py:6485
-#: appEditors/geo_plugins/GeoBufferPlugin.py:383
+#: appEditors/geo_plugins/GeoBufferPlugin.py:393
 #: appEditors/geo_plugins/GeoRectanglePlugin.py:276
 msgid "Round"
 msgstr "Redondo"
 
 #: appEditors/AppGerberEditor.py:6486
-#: appEditors/geo_plugins/GeoBufferPlugin.py:384
+#: appEditors/geo_plugins/GeoBufferPlugin.py:394
 #: appEditors/geo_plugins/GeoRectanglePlugin.py:277
 #: appGUI/preferences/tools/Tools2ExtractPrefGroupUI.py:59
 #: appGUI/preferences/tools/Tools2ExtractPrefGroupUI.py:188
@@ -3291,7 +3295,7 @@ msgid "Square"
 msgstr "Cuadrado"
 
 #: appEditors/AppGerberEditor.py:6487
-#: appEditors/geo_plugins/GeoBufferPlugin.py:385
+#: appEditors/geo_plugins/GeoBufferPlugin.py:395
 #: appEditors/geo_plugins/GeoRectanglePlugin.py:278
 msgid "Beveled"
 msgstr "Biselado"
@@ -3324,7 +3328,6 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:42
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:171
 #: appPlugins/ToolFilm.py:1342 appPlugins/ToolTransform.py:566
-#: appPlugins/ToolTransform.py:781
 msgid "Scale"
 msgstr "Escala"
 
@@ -3458,7 +3461,7 @@ msgstr ""
 #: appEditors/exc_plugins/ExcSlotPlugin.py:208
 #: appEditors/geo_plugins/GeoCirclePlugin.py:196
 #: appEditors/geo_plugins/GeoCopyPlugin.py:236
-#: appEditors/geo_plugins/GeoRectanglePlugin.py:241 appGUI/GUIElements.py:5412
+#: appEditors/geo_plugins/GeoRectanglePlugin.py:241 appGUI/GUIElements.py:5464
 #: appGUI/MainGUI.py:531 appGUI/MainGUI.py:747 appGUI/MainGUI.py:4733
 #: appGUI/MainGUI.py:5313
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:99
@@ -3482,7 +3485,7 @@ msgstr "X"
 #: appEditors/exc_plugins/ExcSlotPlugin.py:209
 #: appEditors/geo_plugins/GeoCirclePlugin.py:204
 #: appEditors/geo_plugins/GeoCopyPlugin.py:237
-#: appEditors/geo_plugins/GeoRectanglePlugin.py:249 appGUI/GUIElements.py:5419
+#: appEditors/geo_plugins/GeoRectanglePlugin.py:249 appGUI/GUIElements.py:5471
 #: appGUI/MainGUI.py:534 appGUI/MainGUI.py:4734 appGUI/MainGUI.py:5314
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:100
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:211
@@ -3512,7 +3515,7 @@ msgstr "Y"
 #: appEditors/geo_plugins/GeoCopyPlugin.py:238
 #: appEditors/geo_plugins/GeoCopyPlugin.py:258
 #: appEditors/geo_plugins/GeoCopyPlugin.py:422
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:663
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:683
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:101
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:120
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:212
@@ -3538,7 +3541,7 @@ msgstr "Ángulo"
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:277
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:148
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:295
-#: appPlugins/ToolCutOut.py:2733
+#: appPlugins/ToolCutOut.py:2763
 msgid "Pitch"
 msgstr "Paso"
 
@@ -3635,10 +3638,9 @@ msgstr "Transformaciones"
 
 #: appEditors/AppGerberEditor.py:6783 appEditors/AppGerberEditor.py:6865
 #: appEditors/geo_plugins/GeoTransformationPlugin.py:599
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:679
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:699
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:88
-#: appPlugins/ToolTransform.py:564 appPlugins/ToolTransform.py:667
-#: appPlugins/ToolTransform.py:692
+#: appPlugins/ToolTransform.py:564 appPlugins/ToolTransform.py:692
 msgid "Rotate"
 msgstr "Girar"
 
@@ -3657,7 +3659,7 @@ msgid "Mirror"
 msgstr "Espejo"
 
 #: appEditors/AppGerberEditor.py:6809
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:623
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:631
 #: appGUI/GUIElements.py:4462
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:89
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:147
@@ -3671,7 +3673,7 @@ msgid "Reference"
 msgstr "Referencia"
 
 #: appEditors/AppGerberEditor.py:6811
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:625
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:633
 msgid ""
 "The reference point for Rotate, Skew, Scale, Mirror.\n"
 "Can be:\n"
@@ -3691,7 +3693,7 @@ msgstr ""
 "selección"
 
 #: appEditors/AppGerberEditor.py:6819
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:633
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:641
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:52
 #: appPlugins/ToolTransform.py:608
 msgid "Origin"
@@ -3699,7 +3701,7 @@ msgstr "Origen"
 
 #: appEditors/AppGerberEditor.py:6819 appEditors/AppGerberEditor.py:7234
 #: appEditors/geo_plugins/GeoTransformationPlugin.py:103
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:633
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:641
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:266
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:120
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:313
@@ -3715,7 +3717,7 @@ msgid "Selection"
 msgstr "Selección"
 
 #: appEditors/AppGerberEditor.py:6819
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:633
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:641
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:107
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:52
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:58
@@ -3724,7 +3726,7 @@ msgid "Point"
 msgstr "Punto"
 
 #: appEditors/AppGerberEditor.py:6819
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:633
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:641
 msgid "Minimum"
 msgstr "Mínimo"
 
@@ -3736,8 +3738,8 @@ msgstr "Mínimo"
 #: appEditors/exc_plugins/ExcSlotArrayPlugin.py:123
 #: appEditors/exc_plugins/ExcSlotPlugin.py:132
 #: appEditors/geo_plugins/GeoCirclePlugin.py:276
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:639
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:935
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:647
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:985
 #: appGUI/preferences/tools/Tools2ExtractPrefGroupUI.py:136
 #: appGUI/preferences/tools/Tools2InvertPrefGroupUI.py:73
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:133
@@ -3764,20 +3766,20 @@ msgid "Value"
 msgstr "Valor"
 
 #: appEditors/AppGerberEditor.py:6827
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:641
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:649
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:60
 #: appPlugins/ToolTransform.py:616
 msgid "A point of reference in format X,Y."
 msgstr "Un punto de referencia en formato X, Y."
 
 #: appEditors/AppGerberEditor.py:6836
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:650
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:658
 #: appPlugins/ToolTransform.py:625
 msgid "Add point coordinates from clipboard."
 msgstr "Agregar coordenadas de puntos desde el portapapeles."
 
 #: appEditors/AppGerberEditor.py:6851
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:665
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:685
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:104
 #: appPlugins/ToolTransform.py:678
 msgid ""
@@ -3792,7 +3794,7 @@ msgstr ""
 "Números negativos para movimiento CCW."
 
 #: appEditors/AppGerberEditor.py:6867
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:681
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:701
 #: appPlugins/ToolTransform.py:694
 msgid ""
 "Rotate the selected object(s).\n"
@@ -3804,8 +3806,8 @@ msgstr ""
 "el cuadro delimitador para todos los objetos seleccionados."
 
 #: appEditors/AppGerberEditor.py:6887 appEditors/AppGerberEditor.py:6949
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:701
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:763
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:724
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:794
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:125
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:177
 #: appPlugins/ToolTransform.py:717 appPlugins/ToolTransform.py:787
@@ -3813,8 +3815,8 @@ msgid "Link"
 msgstr "Enlazar"
 
 #: appEditors/AppGerberEditor.py:6889 appEditors/AppGerberEditor.py:6951
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:703
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:765
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:726
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:796
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:127
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:179
 #: appPlugins/ToolTransform.py:719 appPlugins/ToolTransform.py:789
@@ -3822,15 +3824,15 @@ msgid "Link the Y entry to X entry and copy its content."
 msgstr "Enlace la entrada Y a la entrada X y copie su contenido."
 
 #: appEditors/AppGerberEditor.py:6894
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:708
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:737
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:143
 #: appPlugins/ToolTransform.py:730
 msgid "X angle"
 msgstr "Ángulo X"
 
 #: appEditors/AppGerberEditor.py:6896 appEditors/AppGerberEditor.py:6917
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:710
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:731
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:739
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:760
 #: appPlugins/ToolTransform.py:732 appPlugins/ToolTransform.py:753
 msgid ""
 "Angle for Skew action, in degrees.\n"
@@ -3840,14 +3842,14 @@ msgstr ""
 "Número Real entre -360 y 360."
 
 #: appEditors/AppGerberEditor.py:6904
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:718
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:747
 #: appPlugins/ToolTransform.py:740
 msgid "Skew X"
 msgstr "Inclinar X"
 
 #: appEditors/AppGerberEditor.py:6906 appEditors/AppGerberEditor.py:6927
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:720
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:741
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:749
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:770
 #: appPlugins/ToolTransform.py:742 appPlugins/ToolTransform.py:763
 msgid ""
 "Skew/shear the selected object(s).\n"
@@ -3859,41 +3861,41 @@ msgstr ""
 "el cuadro delimitador para todos los objetos seleccionados."
 
 #: appEditors/AppGerberEditor.py:6915
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:729
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:758
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:157
 #: appPlugins/ToolTransform.py:751
 msgid "Y angle"
 msgstr "Ángulo Y"
 
 #: appEditors/AppGerberEditor.py:6925
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:739
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:768
 #: appPlugins/ToolTransform.py:761
 msgid "Skew Y"
 msgstr "Inclinar Y"
 
 #: appEditors/AppGerberEditor.py:6956
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:770
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:806
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:194
 #: appPlugins/ToolTransform.py:799
 msgid "X factor"
 msgstr "Factor X"
 
 #: appEditors/AppGerberEditor.py:6958
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:772
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:808
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:196
 #: appPlugins/ToolTransform.py:801
 msgid "Factor for scaling on X axis."
 msgstr "Factor de escalado en eje X."
 
 #: appEditors/AppGerberEditor.py:6965
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:779
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:815
 #: appPlugins/ToolTransform.py:808
 msgid "Scale X"
 msgstr "Escala x"
 
 #: appEditors/AppGerberEditor.py:6967 appEditors/AppGerberEditor.py:6987
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:781
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:801
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:817
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:837
 #: appPlugins/ToolTransform.py:810 appPlugins/ToolTransform.py:830
 msgid ""
 "Scale the selected object(s).\n"
@@ -3905,46 +3907,46 @@ msgstr ""
 "el estado de la casilla de verificación Escalar referencia."
 
 #: appEditors/AppGerberEditor.py:6976
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:790
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:826
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:207
 #: appPlugins/ToolTransform.py:819
 msgid "Y factor"
 msgstr "Factor Y"
 
 #: appEditors/AppGerberEditor.py:6978
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:792
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:828
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:209
 #: appPlugins/ToolTransform.py:821
 msgid "Factor for scaling on Y axis."
 msgstr "Factor de escalado en eje Y."
 
 #: appEditors/AppGerberEditor.py:6985
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:799
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:835
 #: appPlugins/ToolTransform.py:828
 msgid "Scale Y"
 msgstr "Escala Y"
 
 #: appEditors/AppGerberEditor.py:7012
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:826
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:865
 #: appPlugins/ToolTransform.py:858
 msgid "Flip on X"
 msgstr "Voltear en X"
 
 #: appEditors/AppGerberEditor.py:7014 appEditors/AppGerberEditor.py:7019
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:828
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:833
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:867
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:872
 #: appPlugins/ToolTransform.py:860 appPlugins/ToolTransform.py:865
 msgid "Flip the selected object(s) over the X axis."
 msgstr "Voltee los objetos seleccionados sobre el eje X."
 
 #: appEditors/AppGerberEditor.py:7017
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:831
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:870
 #: appPlugins/ToolTransform.py:863
 msgid "Flip on Y"
 msgstr "Voltear en Y"
 
 #: appEditors/AppGerberEditor.py:7037
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:851
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:893
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:69
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:128
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:231
@@ -3954,21 +3956,21 @@ msgid "X val"
 msgstr "Valor X"
 
 #: appEditors/AppGerberEditor.py:7039
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:853
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:895
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:233
 #: appPlugins/ToolTransform.py:888
 msgid "Distance to offset on X axis. In current units."
 msgstr "Distancia a desplazamiento en el eje X. En unidades actuales."
 
 #: appEditors/AppGerberEditor.py:7046
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:860
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:902
 #: appPlugins/ToolTransform.py:895
 msgid "Offset X"
 msgstr "Offset X"
 
 #: appEditors/AppGerberEditor.py:7048 appEditors/AppGerberEditor.py:7068
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:862
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:882
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:904
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:924
 #: appPlugins/ToolTransform.py:897 appPlugins/ToolTransform.py:917
 msgid ""
 "Offset the selected object(s).\n"
@@ -3980,7 +3982,7 @@ msgstr ""
 "el cuadro delimitador para todos los objetos seleccionados.\n"
 
 #: appEditors/AppGerberEditor.py:7057
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:871
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:913
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:79
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:137
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:244
@@ -3990,20 +3992,20 @@ msgid "Y val"
 msgstr "Valor Y"
 
 #: appEditors/AppGerberEditor.py:7059
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:873
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:915
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:246
 #: appPlugins/ToolTransform.py:908
 msgid "Distance to offset on Y axis. In current units."
 msgstr "Distancia a desplazamiento en el eje Y. En unidades actuales."
 
 #: appEditors/AppGerberEditor.py:7066
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:880
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:922
 #: appPlugins/ToolTransform.py:915
 msgid "Offset Y"
 msgstr "Offset Y"
 
 #: appEditors/AppGerberEditor.py:7086
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:900 appGUI/ObjectUI.py:495
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:944 appGUI/ObjectUI.py:495
 #: appGUI/ObjectUI.py:537
 #: appGUI/preferences/tools/Tools2InvertPrefGroupUI.py:76
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:139
@@ -4015,7 +4017,7 @@ msgid "Rounded"
 msgstr "Redondeado"
 
 #: appEditors/AppGerberEditor.py:7088
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:902
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:946
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:265
 #: appPlugins/ToolTransform.py:940
 msgid ""
@@ -4030,7 +4032,7 @@ msgstr ""
 "de la forma amortiguada."
 
 #: appEditors/AppGerberEditor.py:7096
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:910
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:960
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:279
 #: appPlugins/ToolDistance.py:181 appPlugins/ToolDistance.py:817
 #: appPlugins/ToolTransform.py:954
@@ -4038,7 +4040,7 @@ msgid "Distance"
 msgstr "Distancia"
 
 #: appEditors/AppGerberEditor.py:7098
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:912
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:962
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:281
 #: appPlugins/ToolTransform.py:956
 msgid ""
@@ -4053,13 +4055,13 @@ msgstr ""
 "o disminuido con la 'distancia'."
 
 #: appEditors/AppGerberEditor.py:7110
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:924
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:974
 #: appPlugins/ToolTransform.py:968
 msgid "Buffer D"
 msgstr "Buffer D"
 
 #: appEditors/AppGerberEditor.py:7112
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:926
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:976
 #: appPlugins/ToolTransform.py:970
 msgid ""
 "Create the buffer effect on each geometry,\n"
@@ -4069,7 +4071,7 @@ msgstr ""
 "elemento del objeto seleccionado, utilizando la distancia."
 
 #: appEditors/AppGerberEditor.py:7123
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:937
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:987
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:298
 #: appPlugins/ToolTransform.py:981
 msgid ""
@@ -4086,13 +4088,13 @@ msgstr ""
 "de la dimensión inicial."
 
 #: appEditors/AppGerberEditor.py:7136
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:950
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:1000
 #: appPlugins/ToolTransform.py:994
 msgid "Buffer F"
 msgstr "Buffer F"
 
 #: appEditors/AppGerberEditor.py:7138
-#: appEditors/geo_plugins/GeoTransformationPlugin.py:952
+#: appEditors/geo_plugins/GeoTransformationPlugin.py:1002
 #: appPlugins/ToolTransform.py:996
 msgid ""
 "Create the buffer effect on each geometry,\n"
@@ -4401,7 +4403,7 @@ msgid "String to replace the one in the Find box throughout the text."
 msgstr "Cadena para reemplazar la del cuadro Buscar en todo el texto."
 
 #: appEditors/AppTextEditor.py:114 appEditors/appGCodeEditor.py:160
-#: appGUI/GUIElements.py:5440 appGUI/ObjectUI.py:1220
+#: appGUI/GUIElements.py:5492 appGUI/ObjectUI.py:1220
 #: appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:59
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:323
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:279
@@ -4611,7 +4613,7 @@ msgstr ""
 #: appEditors/exc_plugins/ExcCopyPlugin.py:167
 #: appEditors/geo_plugins/GeoCopyPlugin.py:165
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:116
-#: appPlugins/ToolCutOut.py:2274
+#: appPlugins/ToolCutOut.py:2304
 msgid "Single"
 msgstr "Soltero"
 
@@ -4871,7 +4873,7 @@ msgstr "Fallido, el resultado está vacío."
 msgid "Negative buffer value is not accepted."
 msgstr "No se acepta el valor negativo del búfer."
 
-#: appEditors/geo_plugins/GeoBufferPlugin.py:377
+#: appEditors/geo_plugins/GeoBufferPlugin.py:387
 msgid ""
 "There are 3 types of corners:\n"
 " - 'Round': the corner is rounded for exterior buffer.\n"
@@ -4886,21 +4888,21 @@ msgstr ""
 " - 'Biselado:' la esquina es una línea que conecta directamente las "
 "funciones que se encuentran en la esquina"
 
-#: appEditors/geo_plugins/GeoBufferPlugin.py:393
+#: appEditors/geo_plugins/GeoBufferPlugin.py:403
 msgid "Buffer Interior"
 msgstr "Interior del amortiguador"
 
-#: appEditors/geo_plugins/GeoBufferPlugin.py:395
+#: appEditors/geo_plugins/GeoBufferPlugin.py:405
 msgid "Buffer Exterior"
 msgstr "Amortiguador exterior"
 
-#: appEditors/geo_plugins/GeoBufferPlugin.py:401
+#: appEditors/geo_plugins/GeoBufferPlugin.py:411
 msgid "Full Buffer"
 msgstr "Buffer lleno"
 
 #: appEditors/geo_plugins/GeoCirclePlugin.py:131
 #: appEditors/geo_plugins/GeoRectanglePlugin.py:164
-#: appEditors/geo_plugins/GeoTextPlugin.py:266 appGUI/MainGUI.py:1717
+#: appEditors/geo_plugins/GeoTextPlugin.py:285 appGUI/MainGUI.py:1717
 msgid "Apply"
 msgstr "Aplicar"
 
@@ -4939,11 +4941,11 @@ msgstr ""
 "No se pudo pintar. Pruebe con una combinación diferente de parámetros. O un "
 "método diferente de pintura"
 
-#: appEditors/geo_plugins/GeoPaintPlugin.py:237
+#: appEditors/geo_plugins/GeoPaintPlugin.py:247
 msgid "Diameter of the tool to be used in the operation."
 msgstr "Diámetro de la herramienta a utilizar en la operación."
 
-#: appEditors/geo_plugins/GeoPaintPlugin.py:283
+#: appEditors/geo_plugins/GeoPaintPlugin.py:293
 msgid ""
 "Algorithm to paint the polygons:\n"
 "- Standard: Fixed step inwards.\n"
@@ -5021,11 +5023,11 @@ msgid "Text Tool"
 msgstr "Herramienta de texto"
 
 #: appEditors/geo_plugins/GeoTextPlugin.py:195
-#: appEditors/geo_plugins/GeoTextPlugin.py:256 appGUI/MainGUI.py:1846
+#: appEditors/geo_plugins/GeoTextPlugin.py:266 appGUI/MainGUI.py:1846
 msgid "Text"
 msgstr "Texto"
 
-#: appEditors/geo_plugins/GeoTextPlugin.py:220 appGUI/ObjectUI.py:1597
+#: appEditors/geo_plugins/GeoTextPlugin.py:230 appGUI/ObjectUI.py:1597
 msgid "Font"
 msgstr "Font"
 
@@ -5231,68 +5233,68 @@ msgstr "Shift+Del"
 msgid "Type >help< to get started"
 msgstr "Escriba >help< para comenzar"
 
-#: appGUI/GUIElements.py:5337 appGUI/GUIElements.py:5354
+#: appGUI/GUIElements.py:5389 appGUI/GUIElements.py:5406
 msgid "Jog the Y axis."
 msgstr "Mueva el eje Y."
 
-#: appGUI/GUIElements.py:5345 appGUI/MainGUI.py:482 appGUI/MainGUI.py:1105
+#: appGUI/GUIElements.py:5397 appGUI/MainGUI.py:482 appGUI/MainGUI.py:1105
 #: appGUI/MainGUI.py:2501
 msgid "Move to Origin"
 msgstr "Mover al origen"
 
-#: appGUI/GUIElements.py:5362 appGUI/GUIElements.py:5370
+#: appGUI/GUIElements.py:5414 appGUI/GUIElements.py:5422
 msgid "Jog the X axis."
 msgstr "Mueva el eje X."
 
-#: appGUI/GUIElements.py:5380 appGUI/GUIElements.py:5390
+#: appGUI/GUIElements.py:5432 appGUI/GUIElements.py:5442
 msgid "Jog the Z axis."
 msgstr "Mueva el eje Z."
 
-#: appGUI/GUIElements.py:5414
+#: appGUI/GUIElements.py:5466
 msgid "Zero the CNC X axes at current position."
 msgstr "Ponga a cero el eje X del CNC en la posición actual."
 
-#: appGUI/GUIElements.py:5422
+#: appGUI/GUIElements.py:5474
 msgid "Zero the CNC Y axes at current position."
 msgstr "Ponga a cero el eje Y del CNC en la posición actual."
 
-#: appGUI/GUIElements.py:5427
+#: appGUI/GUIElements.py:5479
 msgid "Z"
 msgstr "Z"
 
-#: appGUI/GUIElements.py:5430
+#: appGUI/GUIElements.py:5482
 msgid "Zero the CNC Z axes at current position."
 msgstr "Ponga a cero el eje Z del CNC en la posición actual."
 
-#: appGUI/GUIElements.py:5434
+#: appGUI/GUIElements.py:5486
 msgid "Do Home"
 msgstr "Hacer homing"
 
-#: appGUI/GUIElements.py:5436
+#: appGUI/GUIElements.py:5488
 msgid "Perform a homing cycle on all axis."
 msgstr "Realice un ciclo de referenciado en todos los ejes."
 
-#: appGUI/GUIElements.py:5445
+#: appGUI/GUIElements.py:5497
 msgid "Zero all CNC axes at current position."
 msgstr "Ponga a cero todos los ejes del CNC en la posición actual."
 
-#: appGUI/GUIElements.py:5604 appGUI/GUIElements.py:5613
+#: appGUI/GUIElements.py:5656 appGUI/GUIElements.py:5665
 msgid "Idle."
 msgstr "Ocioso."
 
-#: appGUI/GUIElements.py:5656
+#: appGUI/GUIElements.py:5708
 msgid "Application started ..."
 msgstr "Aplicacion iniciada ..."
 
-#: appGUI/GUIElements.py:5657
+#: appGUI/GUIElements.py:5709
 msgid "Hello!"
 msgstr "¡Hola!"
 
-#: appGUI/GUIElements.py:5767
+#: appGUI/GUIElements.py:5819
 msgid "Run Script ..."
 msgstr "Ejecutar Script ..."
 
-#: appGUI/GUIElements.py:5769 appGUI/MainGUI.py:246
+#: appGUI/GUIElements.py:5821 appGUI/MainGUI.py:246
 msgid ""
 "Will run the opened Tcl Script thus\n"
 "enabling the automation of certain\n"
@@ -5302,50 +5304,50 @@ msgstr ""
 "permitiendo la automatización de ciertos\n"
 "Funciones de FlatCAM."
 
-#: appGUI/GUIElements.py:5777
+#: appGUI/GUIElements.py:5829
 msgid "Toggle GUI ..."
 msgstr "Alternar GUI ..."
 
-#: appGUI/GUIElements.py:5779
+#: appGUI/GUIElements.py:5831
 msgid "Will show/hide the GUI."
 msgstr "Mostrará / ocultará la GUI."
 
-#: appGUI/GUIElements.py:5786 appGUI/MainGUI.py:168
+#: appGUI/GUIElements.py:5838 appGUI/MainGUI.py:168
 #: appPlugins/ToolPcbWizard.py:409 appPlugins/ToolPcbWizard.py:417
 msgid "Open"
 msgstr "Abierto"
 
-#: appGUI/GUIElements.py:5790 appGUI/MainGUI.py:173 appGUI/MainGUI.py:1068
+#: appGUI/GUIElements.py:5842 appGUI/MainGUI.py:173 appGUI/MainGUI.py:1068
 #: appGUI/MainGUI.py:2464 appGUI/MainGUI.py:4801 appMain.py:9694
 #: appMain.py:9697
 msgid "Open Project"
 msgstr "Proyecto abierto"
 
-#: appGUI/GUIElements.py:5796 appGUI/MainGUI.py:180 appGUI/MainGUI.py:1063
+#: appGUI/GUIElements.py:5848 appGUI/MainGUI.py:180 appGUI/MainGUI.py:1063
 #: appGUI/MainGUI.py:2459 appMain.py:9577 appMain.py:9582
 msgid "Open Gerber"
 msgstr "Abrir gerber"
 
-#: appGUI/GUIElements.py:5796 appGUI/MainGUI.py:180 appGUI/MainGUI.py:4798
+#: appGUI/GUIElements.py:5848 appGUI/MainGUI.py:180 appGUI/MainGUI.py:4798
 msgid "Ctrl+G"
 msgstr "Ctrl+G"
 
-#: appGUI/GUIElements.py:5801 appGUI/MainGUI.py:185 appGUI/MainGUI.py:1065
+#: appGUI/GUIElements.py:5853 appGUI/MainGUI.py:185 appGUI/MainGUI.py:1065
 #: appGUI/MainGUI.py:2461 appMain.py:9616 appMain.py:9621
 msgid "Open Excellon"
 msgstr "Abierto Excellon"
 
-#: appGUI/GUIElements.py:5801 appGUI/MainGUI.py:185 appGUI/MainGUI.py:862
+#: appGUI/GUIElements.py:5853 appGUI/MainGUI.py:185 appGUI/MainGUI.py:862
 #: appGUI/MainGUI.py:4797 appGUI/MainGUI.py:5573
 msgid "Ctrl+E"
 msgstr "Ctrl+E"
 
-#: appGUI/GUIElements.py:5806 appGUI/MainGUI.py:190 appMain.py:9658
+#: appGUI/GUIElements.py:5858 appGUI/MainGUI.py:190 appMain.py:9658
 #: appMain.py:9663
 msgid "Open G-Code"
 msgstr "Código G abierto"
 
-#: appGUI/GUIElements.py:5816 appGUI/MainGUI.py:377
+#: appGUI/GUIElements.py:5868 appGUI/MainGUI.py:377
 msgid "Exit"
 msgstr "Salida"
 
@@ -5378,7 +5380,7 @@ msgstr "Nueva"
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:76
 #: appObjects/ObjectCollection.py:266 appPlugins/ToolCopperThieving.py:195
 #: appPlugins/ToolCopperThieving.py:1373 appPlugins/ToolCopperThieving.py:1384
-#: appPlugins/ToolCutOut.py:2283 appPlugins/ToolCutOut.py:2699
+#: appPlugins/ToolCutOut.py:2313 appPlugins/ToolCutOut.py:2729
 #: appPlugins/ToolDblSided.py:734 appPlugins/ToolDblSided.py:943
 #: appPlugins/ToolFilm.py:1277 appPlugins/ToolFilm.py:1300
 #: appPlugins/ToolImage.py:221 appPlugins/ToolImage.py:251
@@ -5409,7 +5411,7 @@ msgstr "Creará un nuevo objeto vacío de geometría."
 #: appObjects/ObjectCollection.py:264 appPlugins/ToolAlignObjects.py:428
 #: appPlugins/ToolAlignObjects.py:467 appPlugins/ToolCopperThieving.py:195
 #: appPlugins/ToolCopperThieving.py:1373 appPlugins/ToolCopperThieving.py:1384
-#: appPlugins/ToolCutOut.py:2282 appPlugins/ToolDblSided.py:734
+#: appPlugins/ToolCutOut.py:2312 appPlugins/ToolDblSided.py:734
 #: appPlugins/ToolDblSided.py:941 appPlugins/ToolFilm.py:1276
 #: appPlugins/ToolFilm.py:1299 appPlugins/ToolImage.py:253
 #: appPlugins/ToolImage.py:543 appPlugins/ToolIsolation.py:3848
@@ -6442,7 +6444,7 @@ msgstr "Seguir"
 
 #: appGUI/MainGUI.py:1170 appGUI/MainGUI.py:2564
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:117
-#: appPlugins/ToolCutOut.py:2275
+#: appPlugins/ToolCutOut.py:2305
 msgid "Panel"
 msgstr "Panel"
 
@@ -7665,7 +7667,7 @@ msgstr ""
 msgid "Resulting geometry will have rounded corners."
 msgstr "La geometría resultante tendrá esquinas redondeadas."
 
-#: appGUI/ObjectUI.py:500 appGUI/ObjectUI.py:545 appPlugins/ToolCutOut.py:2669
+#: appGUI/ObjectUI.py:500 appGUI/ObjectUI.py:545 appPlugins/ToolCutOut.py:2699
 #: appPlugins/ToolFollow.py:748 appPlugins/ToolIsolation.py:3967
 #: appPlugins/ToolNCC.py:4592 appPlugins/ToolPaint.py:3339
 #: appPlugins/ToolSolderPaste.py:1654
@@ -10076,7 +10078,7 @@ msgstr "Formato Autodesk DXF utilizado al exportar geometría como DXF."
 #: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:40
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:70
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:86
-#: appPlugins/ToolCutOut.py:2394 appPlugins/ToolIsolation.py:3649
+#: appPlugins/ToolCutOut.py:2424 appPlugins/ToolIsolation.py:3649
 #: appPlugins/ToolMilling.py:1959 appPlugins/ToolMilling.py:4552
 msgid ""
 "Cutting depth (negative)\n"
@@ -10987,7 +10989,7 @@ msgstr "Grosor de la línea"
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:133
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:67
 #: appGUI/preferences/tools/ToolsLevelPrefGroupUI.py:48
-#: appPlugins/ToolCutOut.py:2547 appPlugins/ToolDblSided.py:1050
+#: appPlugins/ToolCutOut.py:2577 appPlugins/ToolDblSided.py:1050
 #: appPlugins/ToolFiducials.py:1155 appPlugins/ToolLevelling.py:1897
 #: appPlugins/ToolMarkers.py:1457 appPlugins/ToolPunchGerber.py:2333
 msgid "Manual"
@@ -11504,7 +11506,7 @@ msgstr ""
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:47
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:282
 #: appGUI/preferences/tools/ToolsMarkersPrefGroupUI.py:81
-#: appPlugins/ToolCutOut.py:2720 appPlugins/ToolDblSided.py:1023
+#: appPlugins/ToolCutOut.py:2750 appPlugins/ToolDblSided.py:1023
 #: appPlugins/ToolMarkers.py:1503
 msgid "Drill Dia"
 msgstr "Diá. del Taladro"
@@ -11708,7 +11710,7 @@ msgstr ""
 "El tablero original."
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:46
-#: appPlugins/ToolCutOut.py:2325
+#: appPlugins/ToolCutOut.py:2355
 msgid ""
 "Diameter of the tool used to cutout\n"
 "the PCB shape out of the surrounding material."
@@ -11719,18 +11721,18 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:84
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:70
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:100
-#: appPlugins/ToolCutOut.py:2407 appPlugins/ToolDrilling.py:2531
+#: appPlugins/ToolCutOut.py:2437 appPlugins/ToolDrilling.py:2531
 #: appPlugins/ToolMilling.py:4567
 msgid "Multi-Depth"
 msgstr "Profund. Múlti"
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:107
-#: appPlugins/ToolCutOut.py:2266
+#: appPlugins/ToolCutOut.py:2296
 msgid "Kind"
 msgstr "Tipo"
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:109
-#: appPlugins/ToolCutOut.py:2268
+#: appPlugins/ToolCutOut.py:2298
 msgid ""
 "Choice of what kind the object we want to cutout is.\n"
 "- Single: contain a single PCB Gerber outline object.\n"
@@ -11743,7 +11745,7 @@ msgstr ""
 "de muchos esquemas de PCB individuales."
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:176
-#: appPlugins/ToolCutOut.py:2489
+#: appPlugins/ToolCutOut.py:2519
 msgid "Mouse Bytes"
 msgstr "Mouse Bytes"
 
@@ -11772,28 +11774,28 @@ msgstr ""
 "- 8 - 2 * izquierda + 2 * derecha + 2 * arriba + 2 * abajo"
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:257
-#: appPlugins/ToolCutOut.py:2612 appPlugins/ToolDistance.py:855
+#: appPlugins/ToolCutOut.py:2642 appPlugins/ToolDistance.py:855
 #: appPlugins/ToolFiducials.py:1166 appPlugins/ToolMarkers.py:1462
 msgid "Big cursor"
 msgstr "Cursor grande"
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:259
-#: appPlugins/ToolCutOut.py:2614
+#: appPlugins/ToolCutOut.py:2644
 msgid "Use a big cursor when adding manual gaps."
 msgstr "Use un cursor grande cuando agregue espacios manuales."
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:263
-#: appPlugins/ToolCutOut.py:2684 appPlugins/ToolCutOut.py:2758
+#: appPlugins/ToolCutOut.py:2714 appPlugins/ToolCutOut.py:2788
 msgid "Cut by Drilling"
 msgstr "Cortar perforando"
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:264
-#: appPlugins/ToolCutOut.py:2685 appPlugins/ToolCutOut.py:2761
+#: appPlugins/ToolCutOut.py:2715 appPlugins/ToolCutOut.py:2791
 msgid "Create a series of drill holes following a geometry line."
 msgstr "Cree una serie de taladros siguiendo una línea geométrica."
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:284
-#: appPlugins/ToolCutOut.py:2722
+#: appPlugins/ToolCutOut.py:2752
 msgid ""
 "Diameter of the tool used to cutout\n"
 "the PCB by drilling."
@@ -11802,7 +11804,7 @@ msgstr ""
 "la placa de circuito impreso perforando."
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:297
-#: appPlugins/ToolCutOut.py:2735
+#: appPlugins/ToolCutOut.py:2765
 msgid ""
 "Distance between the center of\n"
 "two neighboring drill holes."
@@ -12261,7 +12263,7 @@ msgstr "Arriba a la derecha"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:102
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:118
-#: appPlugins/ToolFilm.py:1412 appPlugins/ToolTransform.py:710
+#: appPlugins/ToolFilm.py:1412
 msgid "Skew"
 msgstr "Inclinar"
 
@@ -12531,7 +12533,6 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:138
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:158
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:141
-#: appPlugins/ToolCutOut.py:2363
 msgid "Tool Parameters"
 msgstr "Parámetros de Herramienta"
 
@@ -15494,7 +15495,7 @@ msgstr ""
 "Si se utilizan estos puntos, se supone traslación y rotación."
 
 #: appPlugins/ToolAlignObjects.py:529 appPlugins/ToolCalculators.py:1043
-#: appPlugins/ToolCopperThieving.py:1747 appPlugins/ToolCutOut.py:2768
+#: appPlugins/ToolCopperThieving.py:1747 appPlugins/ToolCutOut.py:2798
 #: appPlugins/ToolDblSided.py:1121 appPlugins/ToolDrilling.py:3010
 #: appPlugins/ToolEtchCompensation.py:486 appPlugins/ToolExtract.py:1424
 #: appPlugins/ToolFiducials.py:1194 appPlugins/ToolFilm.py:1787
@@ -15511,7 +15512,7 @@ msgid "Reset Tool"
 msgstr "Restablecer la Herramienta"
 
 #: appPlugins/ToolAlignObjects.py:532 appPlugins/ToolCalculators.py:1046
-#: appPlugins/ToolCopperThieving.py:1750 appPlugins/ToolCutOut.py:2771
+#: appPlugins/ToolCopperThieving.py:1750 appPlugins/ToolCutOut.py:2801
 #: appPlugins/ToolDblSided.py:1124 appPlugins/ToolDrilling.py:3013
 #: appPlugins/ToolEtchCompensation.py:489 appPlugins/ToolExtract.py:1427
 #: appPlugins/ToolFiducials.py:1197 appPlugins/ToolFilm.py:1790
@@ -15784,9 +15785,9 @@ msgid "Copper Thieving Tool done."
 msgstr "Herramienta Copper Thieving hecha."
 
 #: appPlugins/ToolCopperThieving.py:368 appPlugins/ToolCopperThieving.py:388
-#: appPlugins/ToolCutOut.py:642 appPlugins/ToolCutOut.py:1023
-#: appPlugins/ToolCutOut.py:1411 appPlugins/ToolCutOut.py:1503
-#: appPlugins/ToolCutOut.py:1547 appPlugins/ToolCutOut.py:1650
+#: appPlugins/ToolCutOut.py:642 appPlugins/ToolCutOut.py:1037
+#: appPlugins/ToolCutOut.py:1441 appPlugins/ToolCutOut.py:1533
+#: appPlugins/ToolCutOut.py:1577 appPlugins/ToolCutOut.py:1680
 #: appPlugins/ToolDrilling.py:923 appPlugins/ToolDrilling.py:1938
 #: appPlugins/ToolEtchCompensation.py:181 appPlugins/ToolFollow.py:194
 #: appPlugins/ToolFollow.py:244 appPlugins/ToolInvertGerber.py:130
@@ -15869,7 +15870,7 @@ msgid "Copper Thieving Tool exit."
 msgstr "Salida de herramienta de Copper Thieving."
 
 #: appPlugins/ToolCopperThieving.py:1273 appPlugins/ToolCopperThieving.py:1647
-#: appPlugins/ToolCutOut.py:2251 appPlugins/ToolDblSided.py:716
+#: appPlugins/ToolCutOut.py:2281 appPlugins/ToolDblSided.py:716
 #: appPlugins/ToolDrilling.py:2396 appPlugins/ToolEtchCompensation.py:309
 #: appPlugins/ToolExtract.py:1008 appPlugins/ToolFiducials.py:933
 #: appPlugins/ToolFilm.py:1263 appPlugins/ToolFollow.py:691
@@ -15980,7 +15981,7 @@ msgstr ""
 "Las geometrías de Copper Thieving y / o\n"
 "la Robber Bar si esos fueron generados."
 
-#: appPlugins/ToolCutOut.py:411 appPlugins/ToolCutOut.py:2590
+#: appPlugins/ToolCutOut.py:411 appPlugins/ToolCutOut.py:2620
 msgid "Any"
 msgstr "Ninguno"
 
@@ -16020,7 +16021,7 @@ msgstr "Se agregó la herramienta predeterminada."
 msgid "Tool updated from Tools Database."
 msgstr "Herramienta actualizada desde Base de datos de herramientas."
 
-#: appPlugins/ToolCutOut.py:647 appPlugins/ToolCutOut.py:1416
+#: appPlugins/ToolCutOut.py:647 appPlugins/ToolCutOut.py:1446
 msgid ""
 "There is no object selected for Cutout.\n"
 "Select one and try again."
@@ -16028,16 +16029,16 @@ msgstr ""
 "No hay ningún objeto seleccionado para Recorte.\n"
 "Seleccione uno e intente nuevamente."
 
-#: appPlugins/ToolCutOut.py:653 appPlugins/ToolCutOut.py:1033
-#: appPlugins/ToolCutOut.py:1519 tclCommands/TclCommandGeoCutout.py:181
+#: appPlugins/ToolCutOut.py:653 appPlugins/ToolCutOut.py:1047
+#: appPlugins/ToolCutOut.py:1549 tclCommands/TclCommandGeoCutout.py:181
 msgid "Tool Diameter is zero value. Change it to a positive real number."
 msgstr "Diá. de herramienta es valor cero. Cámbielo a un número real positivo."
 
-#: appPlugins/ToolCutOut.py:666 appPlugins/ToolCutOut.py:1047
+#: appPlugins/ToolCutOut.py:666 appPlugins/ToolCutOut.py:1061
 msgid "Number of gaps value is missing. Add it and retry."
 msgstr "Falta el valor del número de huecos. Añádelo y vuelve a intentarlo."
 
-#: appPlugins/ToolCutOut.py:671 appPlugins/ToolCutOut.py:1051
+#: appPlugins/ToolCutOut.py:671 appPlugins/ToolCutOut.py:1065
 msgid ""
 "Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8.\n"
 "Fill in a correct value and retry."
@@ -16046,16 +16047,16 @@ msgstr ""
 "'2tb', 4 u 8.\n"
 "Complete un valor correcto y vuelva a intentarlo."
 
-#: appPlugins/ToolCutOut.py:899 appPlugins/ToolCutOut.py:1305
-#: appPlugins/ToolCutOut.py:1871
+#: appPlugins/ToolCutOut.py:914 appPlugins/ToolCutOut.py:1335
+#: appPlugins/ToolCutOut.py:1901
 msgid "Mouse bites failed."
 msgstr "'Mouse Bites' fallaron."
 
-#: appPlugins/ToolCutOut.py:909 tclCommands/TclCommandGeoCutout.py:295
+#: appPlugins/ToolCutOut.py:924 tclCommands/TclCommandGeoCutout.py:295
 msgid "Any-form Cutout operation finished."
 msgstr "Operación de recorte de cualquier forma finalizada."
 
-#: appPlugins/ToolCutOut.py:1027 appPlugins/ToolDrilling.py:1942
+#: appPlugins/ToolCutOut.py:1041 appPlugins/ToolDrilling.py:1942
 #: appPlugins/ToolEtchCompensation.py:187 appPlugins/ToolFollow.py:198
 #: appPlugins/ToolFollow.py:248 appPlugins/ToolInvertGerber.py:136
 #: appPlugins/ToolIsolation.py:1166 appPlugins/ToolIsolation.py:1230
@@ -16069,42 +16070,42 @@ msgstr "Operación de recorte de cualquier forma finalizada."
 msgid "Object not found"
 msgstr "Objeto no encontrado"
 
-#: appPlugins/ToolCutOut.py:1153 appPlugins/ToolCutOut.py:1227
+#: appPlugins/ToolCutOut.py:1183 appPlugins/ToolCutOut.py:1257
 msgid "Rectangular cutout with negative margin is not possible."
 msgstr "El corte rectangular con margen negativo no es posible."
 
-#: appPlugins/ToolCutOut.py:1314
+#: appPlugins/ToolCutOut.py:1344
 msgid "Rectangular CutOut operation finished."
 msgstr "Operación de corte rectangular terminada."
 
-#: appPlugins/ToolCutOut.py:1429 appPlugins/ToolCutOut.py:1447
-#: appPlugins/ToolCutOut.py:1461
+#: appPlugins/ToolCutOut.py:1459 appPlugins/ToolCutOut.py:1477
+#: appPlugins/ToolCutOut.py:1491
 msgid "Could not add drills."
 msgstr "No se pudieron agregar ejercicios."
 
-#: appPlugins/ToolCutOut.py:1508 appPlugins/ToolCutOut.py:1578
+#: appPlugins/ToolCutOut.py:1538 appPlugins/ToolCutOut.py:1608
 msgid "Geometry object for manual cutout not found"
 msgstr "Objeto de geometría para corte manual no encontrado"
 
-#: appPlugins/ToolCutOut.py:1511
+#: appPlugins/ToolCutOut.py:1541
 msgid ""
 "Click on the selected geometry object perimeter to create a bridge gap ..."
 msgstr ""
 "Haga clic en el perímetro del objeto de geometría seleccionado para crear un "
 "espacio de puente ..."
 
-#: appPlugins/ToolCutOut.py:1617
+#: appPlugins/ToolCutOut.py:1647
 msgid "No tool in the Geometry object."
 msgstr "No hay herramienta en el objeto Geometry."
 
-#: appPlugins/ToolCutOut.py:1638
+#: appPlugins/ToolCutOut.py:1668
 msgid ""
 "Added manual Bridge Gap. Left click to add another or right click to finish."
 msgstr ""
 "Se agregó un espacio manual. Haga clic izquierdo para agregar otro o clic "
 "derecho para terminar."
 
-#: appPlugins/ToolCutOut.py:1655
+#: appPlugins/ToolCutOut.py:1685
 msgid ""
 "There is no Gerber object selected for Cutout.\n"
 "Select one and try again."
@@ -16112,7 +16113,7 @@ msgstr ""
 "No hay ningún objeto Gerber seleccionado para Recorte.\n"
 "Seleccione uno e intente nuevamente."
 
-#: appPlugins/ToolCutOut.py:1661
+#: appPlugins/ToolCutOut.py:1691
 msgid ""
 "The selected object has to be of Gerber type.\n"
 "Select a Gerber file and try again."
@@ -16120,19 +16121,19 @@ msgstr ""
 "El objeto seleccionado debe ser del tipo Gerber.\n"
 "Seleccione un archivo Gerber e intente nuevamente."
 
-#: appPlugins/ToolCutOut.py:1707
+#: appPlugins/ToolCutOut.py:1737
 msgid "Geometry not supported"
 msgstr "Geometría no admitida"
 
-#: appPlugins/ToolCutOut.py:1784
+#: appPlugins/ToolCutOut.py:1814
 msgid "Making manual bridge gap..."
 msgstr "Hacer un puente manual ..."
 
-#: appPlugins/ToolCutOut.py:1876
+#: appPlugins/ToolCutOut.py:1906
 msgid "Finished manual adding of gaps."
 msgstr "Terminada la adición manual de huecos."
 
-#: appPlugins/ToolCutOut.py:2233
+#: appPlugins/ToolCutOut.py:2263
 msgid ""
 "Create a Geometry object with toolpaths\n"
 "for cutting out the object from the surrounding material."
@@ -16140,11 +16141,11 @@ msgstr ""
 "Crea un objeto de geometría con trayectorias de herramientas\n"
 "para cortar el objeto del material circundante."
 
-#: appPlugins/ToolCutOut.py:2252
+#: appPlugins/ToolCutOut.py:2282
 msgid "Object to be cutout"
 msgstr "Objeto a recortar"
 
-#: appPlugins/ToolCutOut.py:2288
+#: appPlugins/ToolCutOut.py:2318
 msgid ""
 "Specify the type of object to be cutout.\n"
 "It can be of type: Gerber or Geometry.\n"
@@ -16156,17 +16157,17 @@ msgstr ""
 "Lo que se seleccione aquí dictará el tipo\n"
 "de objetos que llenarán el cuadro combinado 'Objeto'."
 
-#: appPlugins/ToolCutOut.py:2305
+#: appPlugins/ToolCutOut.py:2335
 msgid "Cutout Tool"
 msgstr "Herramienta de Corte"
 
-#: appPlugins/ToolCutOut.py:2334 appPlugins/ToolIsolation.py:202
+#: appPlugins/ToolCutOut.py:2364 appPlugins/ToolIsolation.py:202
 #: appPlugins/ToolIsolation.py:3513 appPlugins/ToolMilling.py:4214
 #: appPlugins/ToolNCC.py:4229 appPlugins/ToolPaint.py:3091
 msgid "Search and Add"
 msgstr "Buscar y agregar"
 
-#: appPlugins/ToolCutOut.py:2337 appPlugins/ToolIsolation.py:3516
+#: appPlugins/ToolCutOut.py:2367 appPlugins/ToolIsolation.py:3516
 #: appPlugins/ToolMilling.py:4217 appPlugins/ToolNCC.py:4232
 #: appPlugins/ToolPaint.py:3094
 msgid ""
@@ -16183,14 +16184,14 @@ msgstr ""
 "en la base de datos de herramientas, se agrega una herramienta "
 "predeterminada."
 
-#: appPlugins/ToolCutOut.py:2346 appPlugins/ToolIsolation.py:207
+#: appPlugins/ToolCutOut.py:2376 appPlugins/ToolIsolation.py:207
 #: appPlugins/ToolIsolation.py:3525 appPlugins/ToolMilling.py:399
 #: appPlugins/ToolMilling.py:4226 appPlugins/ToolNCC.py:4241
 #: appPlugins/ToolPaint.py:3103
 msgid "Pick from DB"
 msgstr "Elija de DB"
 
-#: appPlugins/ToolCutOut.py:2349 appPlugins/ToolIsolation.py:3528
+#: appPlugins/ToolCutOut.py:2379 appPlugins/ToolIsolation.py:3528
 #: appPlugins/ToolMilling.py:4229 appPlugins/ToolNCC.py:4244
 #: appPlugins/ToolPaint.py:3106
 msgid ""
@@ -16204,15 +16205,15 @@ msgstr ""
 "Herramientas de administración de bases de datos en:\n"
 "Menú: Opciones -> Base de datos de herramientas"
 
-#: appPlugins/ToolCutOut.py:2542
+#: appPlugins/ToolCutOut.py:2572
 msgid "Selection of the type of cutout."
 msgstr "Selección del tipo de recorte."
 
-#: appPlugins/ToolCutOut.py:2546 appPlugins/ToolPunchGerber.py:2332
+#: appPlugins/ToolCutOut.py:2576 appPlugins/ToolPunchGerber.py:2332
 msgid "Automatic"
 msgstr "Auto"
 
-#: appPlugins/ToolCutOut.py:2587
+#: appPlugins/ToolCutOut.py:2617
 msgid ""
 "Checked: the cutout shape is rectangular.\n"
 "Unchecked: any-form cutout shape."
@@ -16220,23 +16221,23 @@ msgstr ""
 "Comprobado: la forma del recorte es rectangular.\n"
 "Sin marcar: forma de recorte de cualquier forma."
 
-#: appPlugins/ToolCutOut.py:2627
+#: appPlugins/ToolCutOut.py:2657
 msgid "Manual cutout Geometry"
 msgstr "Geometría de corte manual"
 
-#: appPlugins/ToolCutOut.py:2629 appPlugins/ToolCutOut.py:2701
+#: appPlugins/ToolCutOut.py:2659 appPlugins/ToolCutOut.py:2731
 msgid "Geometry object used to create the manual cutout."
 msgstr "Objeto de geometría utilizado para crear el recorte manual."
 
-#: appPlugins/ToolCutOut.py:2644
+#: appPlugins/ToolCutOut.py:2674
 msgid "Manual Geometry"
 msgstr "Geometría manual"
 
-#: appPlugins/ToolCutOut.py:2647
+#: appPlugins/ToolCutOut.py:2677
 msgid "Generate a Geometry to be used as cutout."
 msgstr "Genere una geometría para usarla como recorte."
 
-#: appPlugins/ToolCutOut.py:2662
+#: appPlugins/ToolCutOut.py:2692
 msgid ""
 "Add new gaps on the selected Geometry object\n"
 "by clicking mouse left button on the Geometry outline."
@@ -16244,7 +16245,7 @@ msgstr ""
 "Agregar nuevos espacios en el objeto de geometría seleccionado\n"
 "haciendo clic con el botón izquierdo del mouse en el contorno de geometría."
 
-#: appPlugins/ToolCutOut.py:2672
+#: appPlugins/ToolCutOut.py:2702
 msgid "Generate the cutout geometry."
 msgstr "Genere la geometría de corte."
 
@@ -16692,11 +16693,11 @@ msgstr "Solo se permite una fila seleccionada."
 msgid "Value edited in Exclusion Table."
 msgstr "Valor editado en la tabla de exclusión."
 
-#: appPlugins/ToolDrilling.py:1960 camlib.py:4291
+#: appPlugins/ToolDrilling.py:1960 camlib.py:4317
 msgid "The loaded Excellon file has no drills"
 msgstr "El archivo Excellon cargado no tiene perforaciones"
 
-#: appPlugins/ToolDrilling.py:2006 camlib.py:4211
+#: appPlugins/ToolDrilling.py:2006 camlib.py:4237
 msgid "Creating a list of points to drill..."
 msgstr "Crear una lista de puntos para explorar ..."
 
@@ -16704,7 +16705,7 @@ msgstr "Crear una lista de puntos para explorar ..."
 msgid "Drill points inside the exclusion zones."
 msgstr "Puntos de perforación dentro de las zonas de exclusión."
 
-#: appPlugins/ToolDrilling.py:2029 camlib.py:4281 camlib.py:5729 camlib.py:6168
+#: appPlugins/ToolDrilling.py:2029 camlib.py:4307 camlib.py:5106 camlib.py:5545
 msgid "Starting G-Code"
 msgstr "Iniciando el código G"
 
@@ -16712,7 +16713,7 @@ msgstr "Iniciando el código G"
 msgid "Generating CNCJob..."
 msgstr "Generando CNCJob ..."
 
-#: appPlugins/ToolDrilling.py:2185 camlib.py:3363 camlib.py:3850 camlib.py:6025
+#: appPlugins/ToolDrilling.py:2185 camlib.py:3381 camlib.py:3888 camlib.py:5402
 msgid "The Toolchange X,Y format has to be (x, y)."
 msgstr "El formato Toolchange X, Y debe ser (x, y)."
 
@@ -20092,11 +20093,11 @@ msgstr "El objeto fue almacenado"
 msgid "There is no such parameter"
 msgstr "No hay tal parámetro"
 
-#: camlib.py:3154 camlib.py:3198 camlib.py:5668 camlib.py:6097
+#: camlib.py:3154 camlib.py:3198 camlib.py:5045 camlib.py:5474
 msgid "Indexing geometry before generating G-Code..."
 msgstr "Indexación de la geometría antes de generar código G ..."
 
-#: camlib.py:3231 camlib.py:4342 camlib.py:4601
+#: camlib.py:3231
 msgid ""
 "The Cut Z parameter has positive value. It is the depth value to drill into "
 "material.\n"
@@ -20114,25 +20115,25 @@ msgstr ""
 msgid "The Cut Z parameter is zero. There will be no cut, aborting"
 msgstr "El parámetro Cut Z es cero. No habrá corte, abortando"
 
-#: camlib.py:3388 camlib.py:3830
+#: camlib.py:3406 camlib.py:3868
 msgid "The End X,Y format has to be (x, y)."
 msgstr "El formato End X, Y tiene que ser (x, y)."
 
-#: camlib.py:3473 camlib.py:3924 camlib.py:4437 camlib.py:4688 camlib.py:5742
-#: camlib.py:6179
+#: camlib.py:3491 camlib.py:3962 camlib.py:4431 camlib.py:4664 camlib.py:5119
+#: camlib.py:5556
 msgid "Starting G-Code for tool with diameter"
 msgstr "Código G inicial para herramienta con diámetro"
 
-#: camlib.py:3600 camlib.py:4564 camlib.py:4811 camlib.py:7163 camlib.py:7440
-#: camlib.py:7589
+#: camlib.py:3638 camlib.py:4572 camlib.py:4803 camlib.py:6540 camlib.py:6817
+#: camlib.py:6966
 msgid "G91 coordinates not implemented"
 msgstr "Coordenadas G91 no implementadas"
 
-#: camlib.py:3609
+#: camlib.py:3647
 msgid "Finished G-Code generation for tool:"
 msgstr "Generación de código G finalizada para herramienta:"
 
-#: camlib.py:3734 camlib.py:5615 camlib.py:6037
+#: camlib.py:3772 camlib.py:4992 camlib.py:5414
 msgid ""
 "Cut_Z parameter is None or zero. Most likely a bad combinations of other "
 "parameters."
@@ -20140,7 +20141,7 @@ msgstr ""
 "El parámetro Cut_Z es Ninguno o cero. Lo más probable es una mala "
 "combinación de otros parámetros."
 
-#: camlib.py:3742 camlib.py:5623 camlib.py:6046
+#: camlib.py:3780 camlib.py:5000 camlib.py:5423
 msgid ""
 "The Cut Z parameter has positive value. It is the depth value to cut into "
 "material.\n"
@@ -20154,15 +20155,15 @@ msgstr ""
 "tipográfico, por lo tanto, la aplicación convertirá el valor a negativo. "
 "Verifique el código CNC resultante (Gcode, etc.)."
 
-#: camlib.py:3750 camlib.py:4352 camlib.py:4611 camlib.py:5631 camlib.py:6054
+#: camlib.py:3788 camlib.py:5008 camlib.py:5431
 msgid "The Cut Z parameter is zero. There will be no cut, skipping file"
 msgstr "El parámetro Cut Z es cero. No habrá corte, saltando archivo"
 
-#: camlib.py:3755 camlib.py:5636 camlib.py:6060
+#: camlib.py:3793 camlib.py:5013 camlib.py:5437
 msgid "Travel Z parameter is None or zero."
 msgstr "El parámetro Travel Z des Ninguno o cero."
 
-#: camlib.py:3760 camlib.py:5641 camlib.py:6066
+#: camlib.py:3798 camlib.py:5018 camlib.py:5443
 msgid ""
 "The Travel Z parameter has negative value. It is the height value to travel "
 "between cuts.\n"
@@ -20176,20 +20177,20 @@ msgstr ""
 "error tipográfico, por lo tanto, la aplicación convertirá el valor a "
 "positivo. Verifique el código CNC resultante (Gcode, etc.)."
 
-#: camlib.py:3768 camlib.py:5649 camlib.py:6074
+#: camlib.py:3806 camlib.py:5026 camlib.py:5451
 msgid "The Z Travel parameter is zero. This is dangerous, skipping file"
 msgstr ""
 "El parámetro Z Travel es cero. Esto es peligroso, saltando el archive %s"
 
-#: camlib.py:4049 camlib.py:5484 camlib.py:5815 camlib.py:6260
+#: camlib.py:4087 camlib.py:4861 camlib.py:5192 camlib.py:5637
 msgid "Finished G-Code generation"
 msgstr "Generación de código G terminada"
 
-#: camlib.py:4049 camlib.py:5815 camlib.py:6260 camlib.py:6383
+#: camlib.py:4087 camlib.py:5192 camlib.py:5637 camlib.py:5760
 msgid "paths traced"
 msgstr "caminos trazados"
 
-#: camlib.py:4108
+#: camlib.py:4140
 msgid ""
 "The Toolchange X,Y field in Edit -> Preferences has to be in the format (x, "
 "y) \n"
@@ -20199,7 +20200,7 @@ msgstr ""
 "formato (x, y)\n"
 "pero ahora solo hay un valor, no dos. "
 
-#: camlib.py:4120 camlib.py:5578 camlib.py:6002
+#: camlib.py:4152 camlib.py:4955 camlib.py:5379
 msgid ""
 "The End Move X,Y field in Edit -> Preferences has to be in the format (x, y) "
 "but now there is only one value, not two."
@@ -20207,11 +20208,11 @@ msgstr ""
 "El campo de movimiento final X, Y en Editar -> Preferencias debe estar en el "
 "formato (x, y) pero ahora solo hay un valor, no dos."
 
-#: camlib.py:4240
+#: camlib.py:4266
 msgid "Failed. Drill points inside the exclusion zones."
 msgstr "Ha fallado. Puntos de perforación dentro de las zonas de exclusión."
 
-#: camlib.py:5601
+#: camlib.py:4978
 msgid ""
 "The Toolchange X,Y field in Edit -> Preferences has to be in the format (x, "
 "y) \n"
@@ -20221,14 +20222,14 @@ msgstr ""
 "formato (x, y)\n"
 "pero ahora solo hay un valor, no dos."
 
-#: camlib.py:5870
+#: camlib.py:5247
 msgid ""
 "Trying to generate a CNC Job from a Geometry object without solid_geometry."
 msgstr ""
 "Intentando generar un trabajo de CNC desde un objeto de geometría sin "
 "solid_geometry."
 
-#: camlib.py:5921
+#: camlib.py:5298
 msgid ""
 "The Tool Offset value is too negative to use for the current_geometry.\n"
 "Raise the value (in module) and try again."
@@ -20237,37 +20238,37 @@ msgstr ""
 "en current_geometry.\n"
 "Aumente el valor (en el módulo) e intente nuevamente."
 
-#: camlib.py:6291
+#: camlib.py:5668
 msgid "There is no tool data in the SolderPaste geometry."
 msgstr "No hay datos de herramientas en la geometría SolderPaste."
 
-#: camlib.py:6383
+#: camlib.py:5760
 msgid "Finished SolderPaste G-Code generation"
 msgstr "Generación de código G de soldadura soldada terminada"
 
-#: camlib.py:6735
+#: camlib.py:6112
 msgid "Parsing GCode file. Number of lines"
 msgstr "Analizando el archivo GCode. Número de líneas"
 
-#: camlib.py:6847
+#: camlib.py:6224
 msgid "Creating Geometry from the parsed GCode file. "
 msgstr "Crear geometría a partir del archivo GCode analizado. "
 
-#: camlib.py:6904
+#: camlib.py:6281
 msgid "Parsing GCode file for tool diameter"
 msgstr "Análisis del archivo GCode para el diámetro de la herramienta"
 
-#: camlib.py:6905
+#: camlib.py:6282
 msgid "Number of lines"
 msgstr "Número de líneas"
 
-#: camlib.py:6994
+#: camlib.py:6371
 msgid "Creating Geometry from the parsed GCode file for tool diameter"
 msgstr ""
 "Creación de geometría a partir del archivo GCode analizado para el diámetro "
 "de la herramienta"
 
-#: camlib.py:7758
+#: camlib.py:7135
 msgid "G91 coordinates not implemented ..."
 msgstr "Coordenadas G91 no implementadas ..."
 
@@ -20294,18 +20295,6 @@ msgstr "Se esperaba -dist <value>."
 #: tclCommands/TclCommandCopperClear.py:276
 msgid "Expected either -box <value> or -all."
 msgstr "Se esperaba -box <valor> o -all."
-
-#: tclCommands/TclCommandDrillcncjob.py:210
-msgid "Tool_nr"
-msgstr "Herramienta_nu"
-
-#: tclCommands/TclCommandDrillcncjob.py:210
-msgid "Drills_Nr"
-msgstr "Taladros_nu"
-
-#: tclCommands/TclCommandDrillcncjob.py:210
-msgid "Slots_Nr"
-msgstr "Ranuras_nu"
 
 #: tclCommands/TclCommandGeoCutout.py:142
 msgid ""
@@ -20380,6 +20369,15 @@ msgstr "Origen establecido al compensar todos los objetos cargados con "
 msgid "No Geometry name in args. Provide a name and try again."
 msgstr ""
 "Sin nombre de geometría en args. Proporcione un nombre e intente nuevamente."
+
+#~ msgid "Tool_nr"
+#~ msgstr "Herramienta_nu"
+
+#~ msgid "Drills_Nr"
+#~ msgstr "Taladros_nu"
+
+#~ msgid "Slots_Nr"
+#~ msgstr "Ranuras_nu"
 
 #~ msgid "Ctrl+Q"
 #~ msgstr "Ctrl+Q"
