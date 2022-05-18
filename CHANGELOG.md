@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM Evo beta
 18.05.2022
 
 - added some safeguards in Cutout Plugin
+- fixed the `Toggle Grid Lines` functionality for dark mode
 
 17.05.2020
 

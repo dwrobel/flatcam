@@ -534,11 +534,11 @@ class PlotCanvasLegacy(QtCore.QObject):
             self.text = hud_text
 
     def on_toggle_grid_lines(self, signal=None, silent=None):
-        state = not self.grid_lines_enabled
+        state = self.grid_lines_enabled
 
         if state:
             self.app.options['global_grid_lines'] = True
-            self.grid_lines_enabled = True
+            self.grid_lines_enabled = False
             self.axes.grid(True)
             try:
                 self.canvas.draw()
@@ -548,7 +548,7 @@ class PlotCanvasLegacy(QtCore.QObject):
                 self.app.inform[str, bool].emit(_("Grid enabled."), False)
         else:
             self.app.options['global_grid_lines'] = False
-            self.grid_lines_enabled = False
+            self.grid_lines_enabled = True
             self.axes.grid(False)
             try:
                 self.canvas.draw()
