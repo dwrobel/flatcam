@@ -651,7 +651,6 @@ class CutOut(AppTool):
         if 0 in {cut_dia}:
             self.app.inform.emit('[WARNING_NOTCL] %s' %
                                  _("Tool Diameter is zero value. Change it to a positive real number."))
-            return "Tool Diameter is zero value. Change it to a positive real number."
 
         try:
             kind = self.ui.obj_kind_combo.get_value()
@@ -695,7 +694,7 @@ class CutOut(AppTool):
                 convex_box = self.ui.convex_box_cb.get_value()
                 gapsize = self.ui.gapsize.get_value()
                 # real gapsize has to be bigger because it will be made less by the cutting tool diameter
-                gapsize = gapsize + cut_dia
+                gapsize = gapsize + abs(cut_dia)
 
                 mb_dia = self.ui.mb_dia_entry.get_value()
                 mb_buff_val = mb_dia / 2.0
@@ -705,7 +704,7 @@ class CutOut(AppTool):
 
                 if cutout_obj.kind == 'gerber':
                     if isinstance(cutout_obj.solid_geometry, list):
-                        cutout_obj.solid_geometry = MultiPolygon(cutout_obj.solid_geometry)
+                        cutout_obj.solid_geometry = unary_union(cutout_obj.solid_geometry)
                     try:
                         if convex_box:
                             object_geo = cutout_obj.solid_geometry.convex_hull
@@ -758,7 +757,7 @@ class CutOut(AppTool):
                         self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                         return 'fail'
 
-                    solid_geo, rest_geo = self.any_cutout_handler(geo, cut_dia, gaps, gapsize, margin)
+                    solid_geo, rest_geo = self.any_cutout_handler(geo, abs(cut_dia), gaps, gapsize, margin)
                     if gap_type == 1 and thin_entry != 0:   # "Thin gaps"
                         gaps_solid_geo = rest_geo
                 else:
@@ -782,7 +781,7 @@ class CutOut(AppTool):
                                 buff_geo_ext = geo_ext.buffer(-margin)
                                 geom_struct = unary_union(buff_geo_ext.interiors)
 
-                        c_geo, r_geo = self.any_cutout_handler(geom_struct, cut_dia, gaps, gapsize, margin)
+                        c_geo, r_geo = self.any_cutout_handler(geom_struct, abs(cut_dia), gaps, gapsize, margin)
                         solid_geo += c_geo
                         if gap_type == 1 and thin_entry != 0:   # "Thin gaps"
                             gaps_solid_geo += r_geo
@@ -800,7 +799,7 @@ class CutOut(AppTool):
 
                 # If it has mouse bytes
                 if has_mouse_bites is True:
-                    gapsize -= cut_dia / 2
+                    gapsize -= abs(cut_dia) / 2
                     mb_object_geo = deepcopy(object_geo)
                     if kind == 'single':
                         mb_object_geo = unary_union(mb_object_geo)
@@ -822,7 +821,7 @@ class CutOut(AppTool):
                             geo_buf = mb_object_geo.buffer(0.0000001)
                             mb_geo = geo_buf.exterior
 
-                        __, rest_geo = self.any_cutout_handler(mb_geo, cut_dia, gaps, gapsize, margin)
+                        __, rest_geo = self.any_cutout_handler(mb_geo, abs(cut_dia), gaps, gapsize, margin)
                         mouse_bites_geo = rest_geo
                     else:
                         mb_object_geo = flatten_shapely_geometry(mb_object_geo)
@@ -835,7 +834,7 @@ class CutOut(AppTool):
                                     mb_geom_struct = mb_geom_struct.buffer(-margin + mb_buff_val)
                                     mb_geom_struct = mb_geom_struct.interiors
 
-                            __, mb_r_geo = self.any_cutout_handler(mb_geom_struct, cut_dia, gaps, gapsize, margin)
+                            __, mb_r_geo = self.any_cutout_handler(mb_geom_struct, abs(cut_dia), gaps, gapsize, margin)
                             mouse_bites_geo += mb_r_geo
 
                     # list of Shapely Points to mark the drill points centers
@@ -851,11 +850,11 @@ class CutOut(AppTool):
                     geo_obj.solid_geometry = deepcopy(solid_geo)
 
                     geo_obj.tools[1] = deepcopy(self.cut_tool_dict)
-                    geo_obj.tools[1]['tooldia'] = str(cut_dia)
+                    geo_obj.tools[1]['tooldia'] = str(abs(cut_dia))
                     geo_obj.tools[1]['solid_geometry'] = geo_obj.solid_geometry
 
                     geo_obj.tools[1]['data']['name'] = outname
-                    geo_obj.tools[1]['data']['tools_mill_tooldia'] = str(cut_dia)
+                    geo_obj.tools[1]['data']['tools_mill_tooldia'] = str(abs(cut_dia))
                     geo_obj.tools[1]['data']['tools_mill_cutz'] = self.ui.cutz_entry.get_value()
 
                     geo_obj.tools[1]['data']['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
@@ -864,11 +863,11 @@ class CutOut(AppTool):
                     # if there are "thin gaps"
                     if gaps_solid_geo:
                         geo_obj.tools[99] = deepcopy(self.cut_tool_dict)
-                        geo_obj.tools[99]['tooldia'] = str(cut_dia)
+                        geo_obj.tools[99]['tooldia'] = str(abs(cut_dia))
                         geo_obj.tools[99]['solid_geometry'] = gaps_solid_geo
 
                         geo_obj.tools[99]['data']['name'] = outname
-                        geo_obj.tools[99]['data']['tools_mill_tooldia'] = str(cut_dia)
+                        geo_obj.tools[99]['data']['tools_mill_tooldia'] = str(abs(cut_dia))
                         geo_obj.tools[99]['data']['tools_mill_cutz'] = self.ui.thin_depth_entry.get_value()
                         geo_obj.tools[99]['data']['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
                         geo_obj.tools[99]['data']['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
@@ -881,7 +880,7 @@ class CutOut(AppTool):
                     geo_obj.obj_options['xmax'] = xmax
                     geo_obj.obj_options['ymax'] = ymax
 
-                    geo_obj.obj_options['tools_mill_tooldia'] = str(cut_dia)
+                    geo_obj.obj_options['tools_mill_tooldia'] = str(abs(cut_dia))
                     geo_obj.obj_options['tools_mill_cutz'] = self.ui.cutz_entry.get_value()
                     geo_obj.obj_options['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
                     geo_obj.obj_options['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
@@ -1049,7 +1048,6 @@ class CutOut(AppTool):
         if 0 in {cut_dia_val}:
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("Tool Diameter is zero value. Change it to a positive real number."))
-            return "Tool Diameter is zero value. Change it to a positive real number."
 
         try:
             kind = self.ui.obj_kind_combo.get_value()
@@ -1096,7 +1094,7 @@ class CutOut(AppTool):
                 mb_buff_val = mb_dia / 2.0
 
                 # real gapsize has to be bigger because it will be made less by the cutting tool diameter
-                gapsize = gapsize + cut_dia
+                gapsize = gapsize + abs(cut_dia)
 
                 if cutout_obj.multigeo is False:
                     object_geo = cutout_obj.solid_geometry
@@ -1140,7 +1138,7 @@ class CutOut(AppTool):
                             geo = unary_union(buff_geo_ext.interiors)
 
                     # w_gapsize = gapsize - abs(cut_dia)
-                    solid_geo = self.rect_cutout_handler(geo, cut_dia, gaps, gapsize, margin, xmin, ymin, xmax, ymax)
+                    solid_geo = self.rect_cutout_handler(geo, abs(cut_dia), gaps, gapsize, margin, xmin, ymin, xmax, ymax)
 
                     if gap_type == 1 and thin_entry != 0:   # "Thin gaps"
                         gaps_solid_geo = self_c.subtract_geo(geo, deepcopy(solid_geo))
@@ -1162,7 +1160,7 @@ class CutOut(AppTool):
                                 buff_geo_ext = geo_ext.buffer(-margin)
                                 geom_struct = unary_union(buff_geo_ext.interiors)
 
-                            c_geo = self.rect_cutout_handler(geom_struct, cut_dia, gaps, gapsize, margin,
+                            c_geo = self.rect_cutout_handler(geom_struct, abs(cut_dia), gaps, gapsize, margin,
                                                              xmin, ymin, xmax, ymax)
                             solid_geo += c_geo
                             if gap_type == 1 and thin_entry != 0:   # "Thin gaps"
@@ -1179,7 +1177,7 @@ class CutOut(AppTool):
 
                             geom_struct = geom_struct.buffer(margin + abs(cut_dia / 2))
 
-                            c_geo = self.rect_cutout_handler(geom_struct, cut_dia, gaps, gapsize, margin,
+                            c_geo = self.rect_cutout_handler(geom_struct, abs(cut_dia), gaps, gapsize, margin,
                                                              xmin, ymin, xmax, ymax)
                             solid_geo += c_geo
                             if gap_type == 1 and thin_entry != 0:   # "Thin gaps"
@@ -1188,7 +1186,8 @@ class CutOut(AppTool):
                                 except TypeError:
                                     gaps_solid_geo.append(self_c.subtract_geo(geom_struct, c_geo))
                     elif cutout_obj.kind == 'gerber' and margin < 0:
-                        mesg = '[WARNING_NOTCL] %s' % _("Rectangular cutout with negative margin is not possible.")
+                        app_obj.log.error("Rectangular cutout with negative margin is not possible.")
+                        mesg = '[ERROR_NOTCL] %s' % _("Failed.")
                         app_obj.inform.emit(mesg)
                         return "fail"
 
@@ -1204,7 +1203,7 @@ class CutOut(AppTool):
                     pass
 
                 if has_mouse_bites is True:
-                    gapsize -= cut_dia / 2
+                    gapsize -= abs(cut_dia) / 2
                     mb_object_geo = deepcopy(object_geo)
 
                     if kind == 'single':
@@ -1224,7 +1223,7 @@ class CutOut(AppTool):
                         else:
                             mb_geo = mb_geo.buffer(0.0000001)
 
-                        mb_solid_geo = self.rect_cutout_handler(mb_geo, cut_dia, gaps, gapsize, margin,
+                        mb_solid_geo = self.rect_cutout_handler(mb_geo, abs(cut_dia), gaps, gapsize, margin,
                                                                 xmin, ymin, xmax, ymax)
 
                         mouse_bites_geo = self_c.subtract_geo(mb_geo, mb_solid_geo)
@@ -1236,7 +1235,7 @@ class CutOut(AppTool):
                                 xmin, ymin, xmax, ymax = mb_geom_struct.bounds
                                 mb_geom_struct = box(xmin, ymin, xmax, ymax)
 
-                                c_geo = self.rect_cutout_handler(mb_geom_struct, cut_dia, gaps, gapsize, margin,
+                                c_geo = self.rect_cutout_handler(mb_geom_struct, abs(cut_dia), gaps, gapsize, margin,
                                                                  xmin, ymin, xmax, ymax)
                                 solid_geo += c_geo
 
@@ -1252,7 +1251,7 @@ class CutOut(AppTool):
                                 mb_geom_struct = box(xmin, ymin, xmax, ymax)
                                 mb_geom_struct = mb_geom_struct.buffer(margin + mb_buff_val)
 
-                                c_geo = self.rect_cutout_handler(mb_geom_struct, cut_dia, gaps, gapsize, margin,
+                                c_geo = self.rect_cutout_handler(mb_geom_struct, abs(cut_dia), gaps, gapsize, margin,
                                                                  xmin, ymin, xmax, ymax)
                                 solid_geo += c_geo
 
@@ -1261,8 +1260,8 @@ class CutOut(AppTool):
                                 except TypeError:
                                     mouse_bites_geo.append(self_c.subtract_geo(mb_geom_struct, c_geo))
                         elif cutout_obj.kind == 'gerber' and margin < 0:
-                            msg2 = '[WARNING_NOTCL] %s' % \
-                                  _("Rectangular cutout with negative margin is not possible.")
+                            app_obj.log.error("Rectangular cutout with negative margin is not possible.")
+                            msg2 = '[ERROR_NOTCL] %s' % _("Failed.")
                             app_obj.inform.emit(msg2)
                             return "fail"
 
@@ -1279,22 +1278,22 @@ class CutOut(AppTool):
                     geo_obj.solid_geometry = deepcopy(solid_geo)
 
                     geo_obj.tools[1] = deepcopy(self_c.cut_tool_dict)
-                    geo_obj.tools[1]['tooldia'] = str(cut_dia)
+                    geo_obj.tools[1]['tooldia'] = str(abs(cut_dia))
                     geo_obj.tools[1]['solid_geometry'] = geo_obj.solid_geometry
 
                     geo_obj.tools[1]['data']['name'] = outname
-                    geo_obj.tools[1]['data']['tools_mill_tooldia'] = str(cut_dia)
+                    geo_obj.tools[1]['data']['tools_mill_tooldia'] = str(abs(cut_dia))
                     geo_obj.tools[1]['data']['tools_mill_cutz'] = self_c.ui.cutz_entry.get_value()
                     geo_obj.tools[1]['data']['tools_mill_multidepth'] = self_c.ui.mpass_cb.get_value()
                     geo_obj.tools[1]['data']['tools_mill_depthperpass'] = self_c.ui.maxdepth_entry.get_value()
 
                     if gaps_solid_geo:
                         geo_obj.tools[99] = deepcopy(self_c.cut_tool_dict)
-                        geo_obj.tools[99]['tooldia'] = str(cut_dia)
+                        geo_obj.tools[99]['tooldia'] = str(abs(cut_dia))
                         geo_obj.tools[99]['solid_geometry'] = gaps_solid_geo
 
                         geo_obj.tools[99]['data']['name'] = outname
-                        geo_obj.tools[99]['data']['tools_mill_tooldia'] = str(cut_dia)
+                        geo_obj.tools[99]['data']['tools_mill_tooldia'] = str(abs(cut_dia))
                         geo_obj.tools[99]['data']['tools_mill_cutz'] = self_c.ui.thin_depth_entry.get_value()
                         geo_obj.tools[99]['data']['tools_mill_multidepth'] = self_c.ui.mpass_cb.get_value()
                         geo_obj.tools[99]['data']['tools_mill_depthperpass'] = self_c.ui.maxdepth_entry.get_value()
@@ -1306,7 +1305,7 @@ class CutOut(AppTool):
                     geo_obj.obj_options['xmax'] = xmax
                     geo_obj.obj_options['ymax'] = ymax
 
-                    geo_obj.obj_options['tools_mill_tooldia'] = str(cut_dia)
+                    geo_obj.obj_options['tools_mill_tooldia'] = str(abs(cut_dia))
                     geo_obj.obj_options['tools_mill_cutz'] = self_c.ui.cutz_entry.get_value()
                     geo_obj.obj_options['tools_mill_multidepth'] = self_c.ui.mpass_cb.get_value()
                     geo_obj.obj_options['tools_mill_depthperpass'] = self_c.ui.maxdepth_entry.get_value()
