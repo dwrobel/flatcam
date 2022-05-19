@@ -137,6 +137,13 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(self.selection_cb, 12, 0, 1, 3)
 
+        # Enable Selection box
+        self.selection_outline_cb = FCCheckBox('%s' % _('Selection Outline'))
+        self.selection_outline_cb.setToolTip(
+            _("If checked, the selection shape is an outline.")
+        )
+        grid0.addWidget(self.selection_outline_cb, 13, 0, 1, 3)
+
         # Select the GUI layout
         self.ui_lay_lbl = FCLabel('%s:' % _('GUI Layout'))
         self.ui_lay_lbl.setToolTip(

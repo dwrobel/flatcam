@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+19.05.2022
+
+- added a new setting that control the selection shape creation, in the Preferences. If the checkbox Selection Outline is checked then the selection shape is only an outline.
+- fixed the Move Plugin to use the new setting of outline for the selection shape
+
 18.05.2022
 
 - added some safeguards in Cutout Plugin

@@ -8059,6 +8059,9 @@ class App(QtCore.QObject):
         if b_sel_rect.is_empty or not b_sel_rect.is_valid or b_sel_rect is None:
             b_sel_rect = sel_rect
 
+        if self.options['global_selection_shape_as_line'] is True:
+            b_sel_rect = b_sel_rect.exterior
+
         if color:
             face = color[:-2] + str(hex(int(0.2 * 255)))[2:]
             outline = color[:-2] + str(hex(int(0.8 * 255)))[2:]
@@ -8112,6 +8115,9 @@ class App(QtCore.QObject):
         pt3 = (x1, y1)
         pt4 = (x0, y1)
         sel_rect = Polygon([pt1, pt2, pt3, pt4])
+
+        if self.options['global_selection_shape_as_line'] is True:
+            sel_rect = sel_rect.exterior
 
         # color_t = Color(face_color)
         # color_t.alpha = face_alpha
