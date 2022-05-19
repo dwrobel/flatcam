@@ -340,6 +340,9 @@ class ToolMove(AppTool):
         # face = Color('blue')
         # face.alpha = 0.2
 
+        if self.app.options['global_selection_shape_as_line'] is True:
+            proc_shape = proc_shape.exterior
+
         face = '#0000FF' + str(hex(int(0.2 * 255)))[2:]
         outline = '#0000FFAF'
 
