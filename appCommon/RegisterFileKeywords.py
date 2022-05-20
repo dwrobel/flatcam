@@ -4,11 +4,13 @@ from PyQt6 import QtCore
 
 from dataclasses import dataclass
 import ctypes
-import winreg
 from copy import deepcopy
 import os
 import sys
 import typing
+
+if sys.platform == 'win32':
+    import winreg
 
 if typing.TYPE_CHECKING:
     import appMain
