@@ -1692,7 +1692,7 @@ class FCSelect(DrawTool):
         # self.selected = self.draw_app.selected
 
         # make sure that the cursor text from the FCPath is deleted
-        if self.draw_app.app.plotcanvas.text_cursor.parent and self.draw_app.app.use_3d_engine:
+        if self.draw_app.app.use_3d_engine and self.draw_app.app.plotcanvas.text_cursor.parent:
             self.draw_app.app.plotcanvas.text_cursor.parent = None
             self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
 

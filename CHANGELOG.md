@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+20.05.2022
+
+- small fix for a bug that interfere with running the 2D graphic mode
+
 19.05.2022
 
 - added a new setting that control the selection shape creation, in the Preferences. If the checkbox Selection Outline is checked then the selection shape is only an outline.
