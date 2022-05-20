@@ -646,8 +646,8 @@ class FCCircle(FCShapeTool):
                         QtCore.Qt.Key.Key_Plus, QtCore.Qt.Key.Key_Comma, QtCore.Qt.Key.Key_Period,
                         QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
 
-            if self.draw_app.app.mouse[0] != self.points[-1][0] or (
-                    self.draw_app.app.mouse[1] != self.points[-1][1] and
+            if self.draw_app.app.mouse_pos[0] != self.points[-1][0] or (
+                    self.draw_app.app.mouse_pos[1] != self.points[-1][1] and
                     self.circle_tool.ui.radius_link_btn.isChecked()):
                 try:
                     # VisPy keys
@@ -662,8 +662,8 @@ class FCCircle(FCShapeTool):
                     else:
                         self.circle_tool.radius_x = str(self.circle_tool.radius_x) + chr(key)
 
-            if self.draw_app.app.mouse[1] != self.points[-1][1] or (
-                    self.draw_app.app.mouse[0] != self.points[-1][0] and
+            if self.draw_app.app.mouse_pos[1] != self.points[-1][1] or (
+                    self.draw_app.app.mouse_pos[0] != self.points[-1][0] and
                     self.circle_tool.ui.radius_link_btn.isChecked()):
                 try:
                     # VisPy keys
@@ -1180,7 +1180,7 @@ class FCRectangle(FCShapeTool):
                         QtCore.Qt.Key.Key_Plus, QtCore.Qt.Key.Key_Comma, QtCore.Qt.Key.Key_Period,
                         QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
 
-            if self.draw_app.app.mouse[0] != self.points[-1][0]:
+            if self.draw_app.app.mouse_pos[0] != self.points[-1][0]:
                 try:
                     # VisPy keys
                     if self.rect_tool.length == 0:
@@ -1193,7 +1193,7 @@ class FCRectangle(FCShapeTool):
                         self.rect_tool.length = chr(key)
                     else:
                         self.rect_tool.length = str(self.rect_tool.length) + chr(key)
-            if self.draw_app.app.mouse[1] != self.points[-1][1]:
+            if self.draw_app.app.mouse_pos[1] != self.points[-1][1]:
                 try:
                     # VisPy keys
                     if self.rect_tool.width == 0:
@@ -1423,7 +1423,7 @@ class FCPolygon(FCShapeTool):
                     return _("Failed.")
 
                 first_pt = self.points[-1]
-                last_pt = self.draw_app.app.mouse
+                last_pt = self.draw_app.app.mouse_pos
 
                 seg_length = math.sqrt((last_pt[0] - first_pt[0])**2 + (last_pt[1] - first_pt[1])**2)
                 if seg_length == 0.0:
@@ -1636,7 +1636,7 @@ class FCPath(FCShapeTool):
                     return _("Failed.")
 
                 first_pt = self.points[-1]
-                last_pt = self.draw_app.app.mouse
+                last_pt = self.draw_app.app.mouse_pos
 
                 seg_length = math.sqrt((last_pt[0] - first_pt[0])**2 + (last_pt[1] - first_pt[1])**2)
                 if seg_length == 0.0:
@@ -2172,7 +2172,7 @@ class FCMove(FCShapeTool):
                     return _("Failed.")
 
                 first_pt = self.points[-1]
-                last_pt = self.draw_app.app.mouse
+                last_pt = self.draw_app.app.mouse_pos
 
                 seg_length = math.sqrt((last_pt[0] - first_pt[0])**2 + (last_pt[1] - first_pt[1])**2)
                 if seg_length == 0.0:
@@ -2688,7 +2688,7 @@ class FCCopy(FCShapeTool):
                     return _("Failed.")
 
                 first_pt = self.points[-1]
-                last_pt = self.draw_app.app.mouse
+                last_pt = self.draw_app.app.mouse_pos
 
                 seg_length = math.sqrt((last_pt[0] - first_pt[0])**2 + (last_pt[1] - first_pt[1])**2)
                 if seg_length == 0.0:
@@ -4303,7 +4303,7 @@ class AppGeoEditor(QtCore.QObject):
 
         self.snap_x = x
         self.snap_y = y
-        self.app.mouse = [x, y]
+        self.app.mouse_pos = [x, y]
 
         if self.pos is None:
             self.pos = (0, 0)

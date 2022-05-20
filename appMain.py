@@ -316,14 +316,13 @@ class App(QtCore.QObject):
         self.rel_point2 = (0, 0)
 
         # variable to store coordinates
-        self.pos = (0, 0)
-        self.pos_canvas = (0, 0)
         self.pos_jump = (0, 0)
 
         # variable to store mouse coordinates
-        self.mouse = [0, 0]
+        self._mouse_click_pos = [0, 0]
+        self._mouse_pos = [0, 0]
 
-        # variable to store the delta positions on cavnas
+        # variable to store the delta positions on canvas
         self.dx = 0
         self.dy = 0
 
@@ -5132,8 +5131,8 @@ class App(QtCore.QObject):
                         return
 
                     if dia_box.reference == 'rel':
-                        rel_x = self.mouse[0] + location[0]
-                        rel_y = self.mouse[1] + location[1]
+                        rel_x = self.mouse_pos[0] + location[0]
+                        rel_y = self.mouse_pos[1] + location[1]
                         location = (rel_x, rel_y)
                     self.options['global_jump_ref'] = dia_box.reference
                 except Exception:
@@ -6767,27 +6766,27 @@ class App(QtCore.QObject):
             was clicked, the pixel coordinates and the axes coordinates.
         :return: None
         """
-        self.pos = []
-
         event_pos = event.pos if self.use_3d_engine else (event.xdata, event.ydata)
-        self.pos_canvas = self.plotcanvas.translate_coords(event_pos)
+        pos_canvas = self.plotcanvas.translate_coords(event_pos)
 
         # So it can receive key presses
         self.plotcanvas.native.setFocus()
 
         if self.grid_status():
-            self.pos = self.geo_editor.snap(self.pos_canvas[0], self.pos_canvas[1])
+            pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
         else:
-            self.pos = (self.pos_canvas[0], self.pos_canvas[1])
+            pos = (pos_canvas[0], pos_canvas[1])
+
+        self.mouse_click_pos = [pos[0], pos[1]]
 
         try:
             if event.button == 1:
                 # Reset here the relative coordinates so there is a new reference on the click position
                 if self.rel_point1 is None:
-                    self.rel_point1 = self.pos
+                    self.rel_point1 = self.mouse_click_pos
                 else:
                     self.rel_point2 = copy(self.rel_point1)
-                    self.rel_point1 = self.pos
+                    self.rel_point1 = self.mouse_click_pos
 
             self.on_mouse_move_over_plot(event, origin_click=True)
         except Exception as e:
@@ -6861,7 +6860,7 @@ class App(QtCore.QObject):
                 self.ui.update_location_labels(self.dx, self.dy, pos[0], pos[1])
                 self.plotcanvas.on_update_text_hud(self.dx, self.dy, pos[0], pos[1])
 
-                self.mouse = [pos[0], pos[1]]
+                self.mouse_pos = [pos[0], pos[1]]
 
                 if self.options['global_selection_shape'] is False:
                     self.selection_type = None
@@ -6876,11 +6875,12 @@ class App(QtCore.QObject):
                 if self.event_is_dragging == 1 and event.button == 1:
                     self.delete_selection_shape()
                     if self.dx < 0:
-                        self.draw_moving_selection_shape(self.pos, pos, color=self.options['global_alt_sel_line'],
+                        self.draw_moving_selection_shape(self.mouse_click_pos, self.mouse_pos,
+                                                         color=self.options['global_alt_sel_line'],
                                                          face_color=self.options['global_alt_sel_fill'])
                         self.selection_type = False
                     elif self.dx >= 0:
-                        self.draw_moving_selection_shape(self.pos, pos)
+                        self.draw_moving_selection_shape(self.mouse_click_pos, self.mouse_pos)
                         self.selection_type = True
                     else:
                         self.selection_type = None
@@ -6923,7 +6923,7 @@ class App(QtCore.QObject):
                 # self.ui.position_label.setText("")
                 # self.ui.rel_position_label.setText("")
                 self.ui.update_location_labels(0.0, 0.0, 0.0, 0.0)
-                self.mouse = None
+                self.mouse_pos = [None, None]
 
     def on_mouse_click_release_over_plot(self, event):
         """
@@ -6965,18 +6965,31 @@ class App(QtCore.QObject):
             ctrl_shift_modifier_key = ctrl_modifier_key | shift_modifier_key
 
             if key_modifier == shift_modifier_key or key_modifier == ctrl_shift_modifier_key:
-                self.on_mouse_and_key_modifiers(position=self.pos, modifiers=key_modifier)
+                self.on_mouse_and_key_modifiers(position=self.mouse_click_pos, modifiers=key_modifier)
                 self.on_plugin_mouse_click_release(pos=pos)
+                self.mouse_click_pos = [pos[0], pos[1]]
                 return
             else:
                 self.on_plugin_mouse_click_release(pos=pos)
 
             # the object selection on canvas will not work for App Tools or for Editors
             if self.call_source != 'app':
+                self.mouse_click_pos = [pos[0], pos[1]]
                 return
 
             if self.doubleclick is True:
-                self.on_mouse_double_click()
+                self.doubleclick = False
+                if self.collection.get_selected():
+                    self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
+                    if self.ui.splitter.sizes()[0] == 0:
+                        self.ui.splitter.setSizes([1, 1])
+                    try:
+                        # delete the selection shape(S) as it may be in the way
+                        self.delete_selection_shape()
+                        self.delete_hover_shape()
+                    except Exception as e:
+                        self.log.error("App.on_mouse_click_release_over_plot() double click --> Error: %s" % str(e))
+                self.mouse_click_pos = [pos[0], pos[1]]
                 return
 
             # WORKAROUND for LEGACY MODE
@@ -6987,11 +7000,11 @@ class App(QtCore.QObject):
 
             if self.selection_type is not None:
                 try:
-                    self.selection_area_handler(self.pos, pos, self.selection_type)
+                    self.selection_area_handler(self.mouse_click_pos, pos, self.selection_type)
                     self.selection_type = None
                 except Exception as e:
-                    self.log.error(
-                        "FlatCAMApp.on_mouse_click_release_over_plot() select area --> Error: %s" % str(e))
+                    self.log.error("App.on_mouse_click_release_over_plot() select area --> Error: %s" % str(e))
+                    self.mouse_click_pos = [pos[0], pos[1]]
                 return
 
             if key_modifier == shift_modifier_key:
@@ -7014,28 +7027,11 @@ class App(QtCore.QObject):
 
                     self.delete_hover_shape()
             except Exception as e:
-                self.log.error(
-                    "FlatCAMApp.on_mouse_click_release_over_plot() select click --> Error: %s" % str(e))
+                self.log.error("App.on_mouse_click_release_over_plot() select click --> Error: %s" % str(e))
+                self.mouse_click_pos = [pos[0], pos[1]]
                 return
 
-    def on_mouse_double_click(self):
-        """
-        Called when mouse double clicking on canvas.
-
-        :return:
-        """
-        self.doubleclick = False
-        if self.collection.get_selected():
-            self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
-            if self.ui.splitter.sizes()[0] == 0:
-                self.ui.splitter.setSizes([1, 1])
-            try:
-                # delete the selection shape(S) as it may be in the way
-                self.delete_selection_shape()
-                self.delete_hover_shape()
-            except Exception as e:
-                self.log.error(
-                    "FlatCAMApp.on_mouse_click_release_over_plot() double click --> Error: %s" % str(e))
+        self.mouse_click_pos = [pos[0], pos[1]]
 
     def on_mouse_and_key_modifiers(self, position, modifiers):
         """
@@ -7113,6 +7109,22 @@ class App(QtCore.QObject):
                 self.ui.popmenu_move2origin.setDisabled(True)
                 self.ui.popmenu_move.setDisabled(True)
 
+    @property
+    def mouse_click_pos(self) -> list[float]:
+        return [self._mouse_click_pos[0], self._mouse_click_pos[1]]
+
+    @mouse_click_pos.setter
+    def mouse_click_pos(self, m_pos: list[float] | tuple[float]):
+        self._mouse_click_pos = m_pos
+
+    @property
+    def mouse_pos(self) -> list[float]:
+        return [self._mouse_pos[0], self._mouse_pos[1]]
+
+    @mouse_pos.setter
+    def mouse_pos(self, m_pos: list[float] | tuple[float]):
+        self._mouse_pos = m_pos
+
     def selection_area_handler(self, start_pos, end_pos, sel_type):
         """
         Called when the mouse selects by dragging left mouse button on canvas.
@@ -7179,7 +7191,7 @@ class App(QtCore.QObject):
             self.objects_under_the_click_list = []
 
         # Populate the list with the overlapped objects on the click position
-        curr_x, curr_y = self.pos
+        curr_x, curr_y = self.mouse_click_pos
 
         try:
             for obj in self.all_objects_list:

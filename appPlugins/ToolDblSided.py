@@ -532,7 +532,7 @@ class DblSidedTool(AppTool):
 
     def on_point_add(self):
         val = self.app.options["global_point_clipboard_format"] % \
-              (self.decimals, self.app.pos[0], self.decimals, self.app.pos[1])
+              (self.decimals, self.app.mouse_click_pos[0], self.decimals, self.app.mouse_click_pos[1])
         self.ui.point_entry.set_value(val)
 
     def on_drill_delete_last(self):

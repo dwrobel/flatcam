@@ -3456,11 +3456,11 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Zoom In
                 if key == QtCore.Qt.Key.Key_Equal:
-                    self.app.plotcanvas.zoom(1 / self.app.defaults['global_zoom_ratio'], self.app.mouse)
+                    self.app.plotcanvas.zoom(1 / self.app.defaults['global_zoom_ratio'], self.app.mouse_pos)
 
                 # Zoom Out
                 if key == QtCore.Qt.Key.Key_Minus:
-                    self.app.plotcanvas.zoom(self.app.defaults['global_zoom_ratio'], self.app.mouse)
+                    self.app.plotcanvas.zoom(self.app.defaults['global_zoom_ratio'], self.app.mouse_pos)
 
                 # toggle display of Notebook area
                 if key == QtCore.Qt.Key.Key_QuoteLeft:
@@ -3904,8 +3904,8 @@ class MainGUI(QtWidgets.QMainWindow):
                         self.app.inform.emit("Click on target point.")
                         self.app.ui.add_pad_ar_btn.setChecked(True)
 
-                        self.app.grb_editor.x = self.app.mouse[0]
-                        self.app.grb_editor.y = self.app.mouse[1]
+                        self.app.grb_editor.x = self.app.mouse_pos[0]
+                        self.app.grb_editor.y = self.app.mouse_pos[1]
 
                         self.app.grb_editor.select_tool('array')
                         return
@@ -3989,8 +3989,8 @@ class MainGUI(QtWidgets.QMainWindow):
                         self.app.inform.emit(_("Click on target point."))
                         self.app.ui.add_pad_ar_btn.setChecked(True)
 
-                        self.app.grb_editor.x = self.app.mouse[0]
-                        self.app.grb_editor.y = self.app.mouse[1]
+                        self.app.grb_editor.x = self.app.mouse_pos[0]
+                        self.app.grb_editor.y = self.app.mouse_pos[1]
 
                         self.app.grb_editor.select_tool('pad')
                         return
@@ -4177,8 +4177,8 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.app.inform.emit(_("Click on target point."))
                     self.app.ui.add_slot_btn.setChecked(True)
 
-                    self.app.exc_editor.x = self.app.mouse[0]
-                    self.app.exc_editor.y = self.app.mouse[1]
+                    self.app.exc_editor.x = self.app.mouse_pos[0]
+                    self.app.exc_editor.y = self.app.mouse_pos[1]
 
                     self.app.exc_editor.select_tool('slot_add')
                     return
@@ -4202,8 +4202,8 @@ class MainGUI(QtWidgets.QMainWindow):
                         self.app.inform.emit("Click on target point.")
                         self.app.ui.add_drill_array_btn.setChecked(True)
 
-                        self.app.exc_editor.x = self.app.mouse[0]
-                        self.app.exc_editor.y = self.app.mouse[1]
+                        self.app.exc_editor.x = self.app.mouse_pos[0]
+                        self.app.exc_editor.y = self.app.mouse_pos[1]
 
                         self.app.exc_editor.select_tool('drill_array')
                         return
@@ -4228,8 +4228,8 @@ class MainGUI(QtWidgets.QMainWindow):
                         self.app.inform.emit(_("Click on target point."))
                         self.app.ui.add_drill_btn.setChecked(True)
 
-                        self.app.exc_editor.x = self.app.mouse[0]
-                        self.app.exc_editor.y = self.app.mouse[1]
+                        self.app.exc_editor.x = self.app.mouse_pos[0]
+                        self.app.exc_editor.y = self.app.mouse_pos[1]
 
                         self.app.exc_editor.select_tool('drill_add')
                         return
@@ -4258,8 +4258,8 @@ class MainGUI(QtWidgets.QMainWindow):
                         self.app.inform.emit("Click on target point.")
                         self.app.ui.add_slot_array_btn.setChecked(True)
 
-                        self.app.exc_editor.x = self.app.mouse[0]
-                        self.app.exc_editor.y = self.app.mouse[1]
+                        self.app.exc_editor.x = self.app.mouse_pos[0]
+                        self.app.exc_editor.y = self.app.mouse_pos[1]
 
                         self.app.exc_editor.select_tool('slot_array')
                         return

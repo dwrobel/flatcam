@@ -2518,7 +2518,7 @@ class ToolIsolation(AppTool, Gerber):
                 clicked_poly = self.find_polygon(point=(curr_pos[0], curr_pos[1]), geoset=self.grb_obj.solid_geometry)
 
             if self.app.selection_type is not None:
-                self.selection_area_handler(self.app.pos, curr_pos, self.app.selection_type)
+                self.selection_area_handler(self.app.mouse_pos, curr_pos, self.app.selection_type)
                 self.app.selection_type = None
             elif clicked_poly:
                 if clicked_poly not in self.poly_dict.values():

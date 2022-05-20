@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM Evo beta
 21.05.2022
 
 - more code refactored in the appMain.py
+- added properties for the mouse position and mouse clicked position (and setters) and cleaned up the code regarding this data
 
 20.05.2022
 

@@ -2846,7 +2846,7 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
         self.snap_x = x
         self.snap_y = y
 
-        self.app.mouse = [x, y]
+        self.app.mouse_pos = [x, y]
 
         if self.pos is None:
             self.pos = (0, 0)
@@ -5395,7 +5395,7 @@ class AppGerberEditor(QtCore.QObject):
         self.snap_x = x
         self.snap_y = y
 
-        self.app.mouse = [x, y]
+        self.app.mouse_pos = [x, y]
 
         if self.pos is None:
             self.pos = (0, 0)
