@@ -175,7 +175,7 @@ class AppTextEditor(QtWidgets.QWidget):
 
         # self.button_copy_all.clicked.connect(self.handleCopyAll)
 
-        self.code_editor.set_model_data(self.app.myKeywords)
+        self.code_editor.set_model_data(self.app.regFK.myKeywords)
 
         self.code_edited = ''
 

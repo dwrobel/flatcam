@@ -1117,7 +1117,7 @@ class PreferencesUIManager(QtCore.QObject):
         self.ui.pref_apply_button.setStyleSheet("")
         self.ui.pref_apply_button.setIcon(QtGui.QIcon(self.ui.app.resource_location + '/apply32.png'))
 
-        self.inform.emit('%s' % _("Preferences applied."))
+        self.inform.emit('%s' % _("Preferences applied."))  # noqa
 
         # make sure we update the self.current_defaults dict used to undo changes to self.defaults
         self.defaults.current_defaults.update(self.defaults)

@@ -336,11 +336,6 @@ class AppObject(QtCore.QObject):
             except Exception as e:
                 self.app.log.error("AppObject.new_object() -> setting colors error. %s" % str(e))
 
-        # #############################################################################################################
-        # update the SHELL auto-completer model with the name of the new object
-        # #############################################################################################################
-        self.app.shell.command_line().set_model_data(self.app.myKeywords)
-
         if auto_select or self.app.ui.notebook.currentWidget() is self.app.ui.properties_tab:
             # select the just opened object but deselect the previous ones
             self.app.collection.set_all_inactive()

@@ -10,6 +10,8 @@ CHANGELOG for FlatCAM Evo beta
 20.05.2022
 
 - small fix for a bug that interfere with running the 2D graphic mode
+- refactored the code for the file registration and for the keywords update into its own class to make the main class smaller
+- when creating new files the file names are added to the beginning of the keywords list for the usage of Qt auto-completer
 
 19.05.2022
 

@@ -312,8 +312,6 @@ class FCShell(TermWidget):
 
         self.init_tcl()
 
-        self._edit.set_model_data(self.app.myKeywords)
-
         app_icon = QtGui.QIcon()
         app_icon.addFile(self.app.resource_location + '/app16.png', QtCore.QSize(16, 16))
         app_icon.addFile(self.app.resource_location + '/app24.png', QtCore.QSize(24, 24))

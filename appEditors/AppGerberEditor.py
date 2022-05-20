@@ -2522,7 +2522,7 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
             self.draw_app.visible = True
 
         # make sure that the cursor text from the FCPath is deleted
-        if self.draw_app.app.plotcanvas.text_cursor.parent and self.draw_app.app.use_3d_engine:
+        if self.draw_app.app.use_3d_engine and self.draw_app.app.plotcanvas.text_cursor.parent:
             self.draw_app.app.plotcanvas.text_cursor.parent = None
             self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
 
@@ -5258,17 +5258,17 @@ class AppGerberEditor(QtCore.QObject):
 
     def draw_selection_area_handler(self, start_pos, end_pos, sel_type):
         """
-        :param start_pos: mouse position when the selection LMB click was done
-        :param end_pos: mouse position when the left mouse button is released
-        :param sel_type: if True it's a left to right selection (enclosure), if False it's a 'touch' selection
+        :param start_pos:   mouse position when the selection LMB click was done
+        :param end_pos:     mouse position when the left mouse button is released
+        :param sel_type:    if True it's a left to right selection (enclosure), if False it's a 'touch' selection
         :return:
         """
 
         poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
         sel_aperture = set()
         self.ui.apertures_table.clearSelection()
-
         self.app.delete_selection_shape()
+
         for storage in self.storage_dict:
             for obj in self.storage_dict[storage]['geometry']:
                 if 'solid' in obj.geo:
