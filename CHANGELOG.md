@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+22.05.2022
+
+- in Gerber Editor upgraded the PadAdd GUI
+
 21.05.2022
 
 - more code refactored in the appMain.py

@@ -3064,7 +3064,7 @@ class AppExcEditor(QtCore.QObject):
         self.ui.deltool_btn.clicked.connect(self.on_tool_delete)
         # self.ui.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
         self.ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
-        self.ui.tools_table_exc.selectionModel().selectionChanged.connect(self.on_table_selection)
+        self.ui.tools_table_exc.selectionModel().selectionChanged.connect(self.on_table_selection)  # noqa
 
         self.app.ui.exc_add_array_drill_menuitem.triggered.connect(self.exc_add_drill_array)
         self.app.ui.exc_add_drill_menuitem.triggered.connect(self.exc_add_drill)
@@ -4634,7 +4634,7 @@ class AppExcEditor(QtCore.QObject):
         self.app.plotcanvas.on_update_text_hud(self.app.dx, self.app.dy, x, y)
 
         # ## Utility geometry (animated)
-        self.update_utility_geometry(data=(x, y))
+        # self.update_utility_geometry(data=(x, y))
 
         self.update_utility_geometry(data=(x, y))
         if self.active_tool.name in [

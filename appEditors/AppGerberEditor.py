@@ -11,6 +11,8 @@ from camlib import distance, arc, three_point_circle, flatten_shapely_geometry
 from appGUI.GUIElements import *
 
 from appTool import AppTool
+from appEditors.grb_plugins.GrbPadPlugin import PadEditorTool
+
 from appEditors.grb_plugins.GrbBufferPlugin import BufferEditorTool
 from appEditors.grb_plugins.GrbTransformationPlugin import TransformEditorTool
 from appEditors.grb_plugins.GrbSimplificationPlugin import SimplificationTool
@@ -39,6 +41,7 @@ class PadEditorGrb(ShapeToolEditorGrb):
         DrawTool.__init__(self, draw_app)
         self.name = 'pad'
         self.draw_app = draw_app
+        self.app = self.draw_app.app
         self.dont_execute = False
 
         try:
@@ -63,6 +66,15 @@ class PadEditorGrb(ShapeToolEditorGrb):
             self.draw_app.select_tool('select')
             return
 
+        if self.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = self.draw_cursor_data
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
+        self.pad_tool = PadEditorTool(self.app, self.draw_app, plugin_name=_("Pad"))
+        self.pad_tool.run()
+        self.pad_tool.length = self.draw_app.last_length
+        self.ui = self.pad_tool.ui
+
         if self.radius == 0:
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
                                           _("Aperture size is zero. It needs to be greater than zero."))
@@ -84,30 +96,57 @@ class PadEditorGrb(ShapeToolEditorGrb):
         except KeyError:
             pass
 
-        geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+        geo = self.utility_geometry(data=self.draw_app.app.mouse_pos)
         if isinstance(geo, DrawToolShape) and geo.geo is not None:
             self.draw_app.draw_utility_geometry(geo_shape=geo)
 
-        self.draw_app.app.inform.emit(_("Click to place ..."))
-
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
-        # Switch notebook to Properties page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
+        self.app.ui.notebook.setTabText(2, _("Pad"))
+        if self.draw_app.app.ui.splitter.sizes()[0] == 0:
+            self.draw_app.app.ui.splitter.setSizes([1, 1])
 
+        self.set_plugin_ui()
+
+        # Signals
+        try:
+            self.ui.add_btn.clicked.disconnect()
+        except (AttributeError, TypeError):
+            pass
+        self.ui.add_btn.clicked.connect(self.on_add_pad)
+
+        self.draw_app.app.inform.emit(_("Click to place ..."))
         self.start_msg = _("Click to place ...")
 
+    def set_plugin_ui(self):
+        dia = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
+        self.ui.dia_entry.set_value(dia)
+        self.ui.x_entry.set_value(float(self.draw_app.snap_x))
+        self.ui.y_entry.set_value(float(self.draw_app.snap_y))
+
     def click(self, point):
+        self.points = point
+        self.draw_app.last_length = self.pad_tool.length
+        self.ui.x_entry.set_value(float(self.draw_app.snap_x))
+        self.ui.y_entry.set_value(float(self.draw_app.snap_y))
         self.make()
         return "Done."
+
+    def on_add_pad(self):
+        self.draw_app.last_length = self.pad_tool.length
+        self.points = self.ui.x_entry.get_value(), self.ui.y_entry.get_value()
+        self.make()
+        self.draw_app.on_grb_shape_complete(self.draw_app.current_storage)
+        self.draw_app.build_ui()
+        self.draw_app.select_tool("pad")
 
     def utility_geometry(self, data=None):
         if self.dont_execute is True:
             self.draw_app.select_tool('select')
             return
 
-        self.points = data
-        geo_data = self.util_shape(data)
+        pos = data if data else self.points
+        geo_data = self.util_shape(pos)
         if geo_data:
             return DrawToolUtilityShape(geo_data)
         else:
@@ -128,7 +167,6 @@ class PadEditorGrb(ShapeToolEditorGrb):
             self.half_height = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['height']) / 2
         except KeyError:
             pass
-
         if point[0] is None and point[1] is None:
             point_x = self.draw_app.x
             point_y = self.draw_app.y
@@ -230,13 +268,129 @@ class PadEditorGrb(ShapeToolEditorGrb):
 
         self.draw_app.in_action = False
         self.complete = True
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
-        self.draw_app.app.jump_signal.disconnect()
+
+    def draw_cursor_data(self, pos=None, delete=False):
+        if pos is None:
+            pos = self.draw_app.snap_x, self.draw_app.snap_y
+
+        if delete:
+            if self.draw_app.app.use_3d_engine:
+                self.draw_app.app.plotcanvas.text_cursor.parent = None
+                self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+            return
+
+        # font size
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("hud_font_size"):
+            fsize = qsettings.value('hud_font_size', type=int)
+        else:
+            fsize = 8
+
+        old_x = self.ui.x_entry.get_value()
+        old_y = self.ui.y_entry.get_value()
+
+        x = pos[0]
+        y = pos[1]
+        try:
+            length = abs(np.sqrt((x - old_x) ** 2 + (y - old_y) ** 2))
+        except IndexError:
+            length = self.draw_app.app.dec_format(0.0, self.draw_app.app.decimals)
+        units = self.draw_app.app.app_units.lower()
+
+        x_dec = str(self.draw_app.app.dec_format(x, self.draw_app.app.decimals)) if x else '0.0'
+        y_dec = str(self.draw_app.app.dec_format(y, self.draw_app.app.decimals)) if y else '0.0'
+        length_dec = str(self.draw_app.app.dec_format(length, self.draw_app.app.decimals)) if length else '0.0'
+
+        l1_txt = 'X:   %s [%s]' % (x_dec, units)
+        l2_txt = 'Y:   %s [%s]' % (y_dec, units)
+        l3_txt = 'L:   %s [%s]' % (length_dec, units)
+        cursor_text = '%s\n%s\n\n%s' % (l1_txt, l2_txt, l3_txt)
+
+        if self.draw_app.app.use_3d_engine:
+            new_pos = self.draw_app.app.plotcanvas.translate_coords_2((x, y))
+            x, y, __, ___ = self.draw_app.app.plotcanvas.translate_coords((new_pos[0]+30, new_pos[1]))
+
+            # text
+            self.draw_app.app.plotcanvas.text_cursor.font_size = fsize
+            self.draw_app.app.plotcanvas.text_cursor.text = cursor_text
+            self.draw_app.app.plotcanvas.text_cursor.pos = x, y
+            self.draw_app.app.plotcanvas.text_cursor.anchors = 'left', 'top'
+
+            if self.draw_app.app.plotcanvas.text_cursor.parent is None:
+                self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
+
+    def on_key(self, key):
+        # Jump to coords
+        if key == QtCore.Qt.Key.Key_J or key == 'J':
+            self.draw_app.app.on_jump_to()
+
+        if key in [str(i) for i in range(10)] + ['.', ',', '+', '-', '/', '*'] or \
+                key in [QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_1, QtCore.Qt.Key.Key_2,
+                        QtCore.Qt.Key.Key_3, QtCore.Qt.Key.Key_4, QtCore.Qt.Key.Key_5, QtCore.Qt.Key.Key_6,
+                        QtCore.Qt.Key.Key_7, QtCore.Qt.Key.Key_8, QtCore.Qt.Key.Key_9, QtCore.Qt.Key.Key_Minus,
+                        QtCore.Qt.Key.Key_Plus, QtCore.Qt.Key.Key_Comma, QtCore.Qt.Key.Key_Period,
+                        QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
+            try:
+                # VisPy keys
+                if self.pad_tool.length == self.draw_app.last_length:
+                    self.pad_tool.length = str(key.name)
+                    self.new_segment = False
+                else:
+                    self.pad_tool.length = str(self.pad_tool.length) + str(key.name)
+            except AttributeError:
+                # Qt keys
+                if self.pad_tool.length == self.draw_app.last_length:
+                    self.pad_tool.length = chr(key)
+                else:
+                    self.pad_tool.length = str(self.pad_tool.length) + chr(key)
+
+        if key == 'Enter' or key == QtCore.Qt.Key.Key_Return or key == QtCore.Qt.Key.Key_Enter:
+            if self.pad_tool.length != 0:
+                target_length = self.pad_tool.length
+                if target_length is None:
+                    self.pad_tool.length = 0.0
+                    return _("Failed.")
+
+                first_pt = self.ui.x_entry.get_value(), self.ui.y_entry.get_value()
+                last_pt = self.draw_app.app.mouse_pos
+
+                seg_length = math.sqrt((last_pt[0] - first_pt[0])**2 + (last_pt[1] - first_pt[1])**2)
+                if seg_length == 0.0:
+                    self.draw_app.app.log.debug("PadEditorGrb.on_key() --> 'ENTER'. Segment is zero.")
+                    return
+                try:
+                    new_x = first_pt[0] + (last_pt[0] - first_pt[0]) / seg_length * target_length
+                    new_y = first_pt[1] + (last_pt[1] - first_pt[1]) / seg_length * target_length
+                except ZeroDivisionError as err:
+                    self.clean_up()
+                    return '[ERROR_NOTCL] %s %s' % (_("Failed."), str(err).capitalize())
+
+                if first_pt != (new_x, new_y):
+                    self.draw_app.app.on_jump_to(custom_location=(new_x, new_y), fit_center=False)
+                    if len(self.points) > 0:
+                        msg = '%s: %s. %s' % (
+                            _("Projected"), str(self.pad_tool.length),
+                            _("Click on next Point or click right mouse button to complete ..."))
+                        self.draw_app.app.inform.emit(msg)
+                        # self.interpolate_length = ''
+                        # return "Click on next point or hit ENTER to complete ..."
 
     def clean_up(self):
         self.draw_app.selected = []
         self.draw_app.ui.apertures_table.clearSelection()
         self.draw_app.plot_all()
+
+        if self.draw_app.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.text_cursor.parent = None
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+
         try:
             self.draw_app.app.jump_signal.disconnect()
         except (TypeError, AttributeError):
@@ -3275,6 +3429,20 @@ class AppGerberEditor(QtCore.QObject):
         self.snap_y = None
         self.pos = None
 
+        # #############################################################################################################
+        # Plugin Attributes
+        # #############################################################################################################
+        self.last_length = 0.0
+
+        self.last_parray_type = None
+        self.last_parray_size = None
+        self.last_parray_lin_dir = None
+        self.last_parray_circ_dir = None
+        self.last_parray_pitch = None
+        self.last_parray_lin_angle = None
+        self.last_parray_circ_angle = None
+        self.last_parray_radius = None
+
         # used in RegionEditorGrb and TrackEditorGrb. Will store the bending mode
         self.bend_mode = 1
 
@@ -5418,13 +5586,21 @@ class AppGerberEditor(QtCore.QObject):
         self.app.plotcanvas.on_update_text_hud(self.app.dx, self.app.dy, x, y)
 
         self.update_utility_geometry(data=(x, y))
+        if self.active_tool.name in [
+            'pad',
+        ]:
+            try:
+                self.active_tool.draw_cursor_data(pos=self.app.mouse_pos)
+            except AttributeError:
+                # this can happen if the method is not implemented yet for the active_tool
+                pass
 
         # # ## Selection area on canvas section # ##
         if event_is_dragging == 1 and event.button == 1:
             # I make an exception for RegionEditorGrb and TrackEditorGrb because clicking and dragging while making 
             # regions can create strange issues like missing a point in a track/region
             if isinstance(self.active_tool, RegionEditorGrb) or isinstance(self.active_tool, TrackEditorGrb):
-                pass
+                self.app.selection_type = None
             else:
                 dx = pos_canvas[0] - self.pos[0]
                 self.app.delete_selection_shape()
@@ -5556,6 +5732,9 @@ class AppGerberEditor(QtCore.QObject):
                 color = color[:7] + 'AF'
 
             self.shapes.add(shape=geometry, color=color, face_color=color, layer=0, tolerance=self.tolerance)
+
+    def on_shape_complete(self):
+        pass
 
     @property
     def visible(self):

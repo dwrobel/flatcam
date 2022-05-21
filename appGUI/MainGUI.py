@@ -3868,23 +3868,23 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.on_toggle_notebook()
                     return
 
-                # Switch to Project Tab
-                if key == QtCore.Qt.Key.Key_1 or key == '1':
-                    self.app.grb_editor.launched_from_shortcuts = True
-                    self.on_select_tab('project')
-                    return
-
-                # Switch to Selected Tab
-                if key == QtCore.Qt.Key.Key_2 or key == '2':
-                    self.app.grb_editor.launched_from_shortcuts = True
-                    self.on_select_tab('selected')
-                    return
-
-                # Switch to Tool Tab
-                if key == QtCore.Qt.Key.Key_3 or key == '3':
-                    self.app.grb_editor.launched_from_shortcuts = True
-                    self.on_select_tab('tool')
-                    return
+                # # Switch to Project Tab
+                # if key == QtCore.Qt.Key.Key_1 or key == '1':
+                #     self.app.grb_editor.launched_from_shortcuts = True
+                #     self.on_select_tab('project')
+                #     return
+                #
+                # # Switch to Selected Tab
+                # if key == QtCore.Qt.Key.Key_2 or key == '2':
+                #     self.app.grb_editor.launched_from_shortcuts = True
+                #     self.on_select_tab('selected')
+                #     return
+                #
+                # # Switch to Tool Tab
+                # if key == QtCore.Qt.Key.Key_3 or key == '3':
+                #     self.app.grb_editor.launched_from_shortcuts = True
+                #     self.on_select_tab('tool')
+                #     return
 
                 # we do this so we can reuse the following keys while inside a Tool
                 # the above keys are general enough so were left outside
