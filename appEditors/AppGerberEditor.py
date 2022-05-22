@@ -16,6 +16,7 @@ from appEditors.grb_plugins.GrbPadPlugin import PadEditorTool
 from appEditors.grb_plugins.GrbBufferPlugin import BufferEditorTool
 from appEditors.grb_plugins.GrbTransformationPlugin import TransformEditorTool
 from appEditors.grb_plugins.GrbPadArrayPlugin import GrbPadArrayEditorTool
+from appEditors.grb_plugins.GrbTrackPlugin import GrbTrackEditorTool
 from appEditors.grb_plugins.GrbSimplificationPlugin import SimplificationTool
 from appEditors.grb_plugins.GrbCopyPlugin import CopyEditorTool
 
@@ -342,7 +343,6 @@ class PadEditorGrb(ShapeToolEditorGrb):
                 # VisPy keys
                 if self.pad_tool.length == self.draw_app.last_length:
                     self.pad_tool.length = str(key.name)
-                    self.new_segment = False
                 else:
                     self.pad_tool.length = str(self.pad_tool.length) + str(key.name)
             except AttributeError:
@@ -1476,12 +1476,13 @@ class TrackEditorGrb(ShapeToolEditorGrb):
         DrawTool.__init__(self, draw_app)
         self.name = 'track'
         self.draw_app = draw_app
+        self.app = self.draw_app.app
         self.dont_execute = False
 
         self.steps_per_circle = self.draw_app.app.options["gerber_circle_steps"]
 
         try:
-            size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
+            self.size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
         except KeyError:
             self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
                                           _("You need to preselect a aperture in the Aperture Table that has a size."))
@@ -1495,7 +1496,7 @@ class TrackEditorGrb(ShapeToolEditorGrb):
             self.draw_app.select_tool('select')
             return
 
-        self.buf_val = (size_ap / 2) if size_ap > 0 else 0.0000001
+        self.buf_val = (self.size_ap / 2) if self.size_ap > 0 else 0.0000001
 
         self.gridx_size = float(self.draw_app.app.ui.grid_gap_x_entry.get_value())
         self.gridy_size = float(self.draw_app.app.ui.grid_gap_y_entry.get_value())
@@ -1514,17 +1515,54 @@ class TrackEditorGrb(ShapeToolEditorGrb):
                                                   '/aero_path%s.png' % self.draw_app.bend_mode))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
+        # #############################################################################################################
+        # Plugin UI
+        # #############################################################################################################
+        self.track_tool = GrbTrackEditorTool(self.app, self.draw_app, plugin_name=_("Track"))
+        self.ui = self.track_tool.ui
+        self.track_tool.run()
+
+        if self.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = self.draw_cursor_data
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
+        self.track_tool.length = self.draw_app.last_length
+        if not self.draw_app.snap_x:
+            self.draw_app.snap_x = 0.0
+        if not self.draw_app.snap_y:
+            self.draw_app.snap_y = 0.0
+
+        self.app.ui.notebook.setTabText(2, _("Track"))
+        if self.app.ui.splitter.sizes()[0] == 0:
+            self.app.ui.splitter.setSizes([1, 1])
+
+        self.set_plugin_ui()
+
+        # Signals
+        try:
+            self.ui.add_btn.clicked.disconnect()
+        except (AttributeError, TypeError):
+            pass
+        self.ui.add_btn.clicked.connect(self.on_add_track)
+
+        # self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
         self.draw_app.app.inform.emit(_('Track Mode 1: 45 degrees ...'))
 
+    def set_plugin_ui(self):
+        self.ui.dia_entry.set_value(self.size_ap)
+        self.ui.x_entry.set_value(float(self.draw_app.snap_x))
+        self.ui.y_entry.set_value(float(self.draw_app.snap_y))
+
     def click(self, point):
         self.draw_app.in_action = True
-
         self.current_point = point
 
         if not self.points or point != self.points[-1]:
             self.points.append(point)
+            self.draw_app.last_length = self.track_tool.length
+            self.ui.x_entry.set_value(float(self.draw_app.snap_x))
+            self.ui.y_entry.set_value(float(self.draw_app.snap_y))
         else:
             return
 
@@ -1650,8 +1688,67 @@ class TrackEditorGrb(ShapeToolEditorGrb):
 
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.jump_signal.disconnect()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
+
+    def draw_cursor_data(self, pos=None, delete=False):
+        if pos is None:
+            pos = self.draw_app.snap_x, self.draw_app.snap_y
+
+        if delete:
+            if self.draw_app.app.use_3d_engine:
+                self.draw_app.app.plotcanvas.text_cursor.parent = None
+                self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+            return
+
+        # font size
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("hud_font_size"):
+            fsize = qsettings.value('hud_font_size', type=int)
+        else:
+            fsize = 8
+
+        if not self.points:
+            old_x = self.draw_app.snap_x
+            old_y = self.draw_app.snap_y
+        else:
+            old_x = self.points[-1][0]
+            old_y = self.points[-1][1]
+
+        x = pos[0]
+        y = pos[1]
+        try:
+            length = abs(np.sqrt((x - old_x) ** 2 + (y - old_y) ** 2))
+        except IndexError:
+            length = self.draw_app.app.dec_format(0.0, self.draw_app.app.decimals)
+
+        x_dec = str(self.draw_app.app.dec_format(x, self.draw_app.app.decimals)) if x else '0.0'
+        y_dec = str(self.draw_app.app.dec_format(y, self.draw_app.app.decimals)) if y else '0.0'
+        length_dec = str(self.draw_app.app.dec_format(length, self.draw_app.app.decimals)) if length else '0.0'
+
+        units = self.draw_app.app.app_units.lower()
+        l1_txt = 'X:   %s [%s]' % (x_dec, units)
+        l2_txt = 'Y:   %s [%s]' % (y_dec, units)
+        l3_txt = 'L:   %s [%s]' % (length_dec, units)
+        cursor_text = '%s\n%s\n\n%s' % (l1_txt, l2_txt, l3_txt)
+
+        if self.draw_app.app.use_3d_engine:
+            new_pos = self.draw_app.app.plotcanvas.translate_coords_2((x, y))
+            x, y, __, ___ = self.draw_app.app.plotcanvas.translate_coords((new_pos[0]+30, new_pos[1]))
+
+            # text
+            self.draw_app.app.plotcanvas.text_cursor.font_size = fsize
+            self.draw_app.app.plotcanvas.text_cursor.text = cursor_text
+            self.draw_app.app.plotcanvas.text_cursor.pos = x, y
+            self.draw_app.app.plotcanvas.text_cursor.anchors = 'left', 'top'
+
+            if self.draw_app.app.plotcanvas.text_cursor.parent is None:
+                self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
 
     def on_key(self, key):
         if key == 'Backspace' or key == QtCore.Qt.Key.Key_Backspace:
@@ -1748,6 +1845,61 @@ class TrackEditorGrb(ShapeToolEditorGrb):
             self.draw_app.draw_utility_geometry(geo_shape=geo)
 
             return msg
+
+        if key in [str(i) for i in range(10)] + ['.', ',', '+', '-', '/', '*'] or \
+                key in [QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_1, QtCore.Qt.Key.Key_2,
+                        QtCore.Qt.Key.Key_3, QtCore.Qt.Key.Key_4, QtCore.Qt.Key.Key_5, QtCore.Qt.Key.Key_6,
+                        QtCore.Qt.Key.Key_7, QtCore.Qt.Key.Key_8, QtCore.Qt.Key.Key_9, QtCore.Qt.Key.Key_Minus,
+                        QtCore.Qt.Key.Key_Plus, QtCore.Qt.Key.Key_Comma, QtCore.Qt.Key.Key_Period,
+                        QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
+            try:
+                # VisPy keys
+                if self.track_tool.length == self.draw_app.last_length:
+                    self.track_tool.length = str(key.name)
+                else:
+                    self.track_tool.length = str(self.track_tool.length) + str(key.name)
+            except AttributeError:
+                # Qt keys
+                if self.track_tool.length == self.draw_app.last_length:
+                    self.track_tool.length = chr(key)
+                else:
+                    self.track_tool.length = str(self.track_tool.length) + chr(key)
+
+        if key == 'Enter' or key == QtCore.Qt.Key.Key_Return or key == QtCore.Qt.Key.Key_Enter:
+            if self.track_tool.length != 0:
+                target_length = self.track_tool.length
+                if target_length is None:
+                    self.track_tool.length = 0.0
+                    return _("Failed.")
+
+                first_pt = self.ui.x_entry.get_value(), self.ui.y_entry.get_value()
+                last_pt = self.draw_app.snap_x, self.draw_app.snap_y
+
+                seg_length = math.sqrt((last_pt[0] - first_pt[0])**2 + (last_pt[1] - first_pt[1])**2)
+                if seg_length == 0.0:
+                    return
+                try:
+                    new_x = first_pt[0] + (last_pt[0] - first_pt[0]) / seg_length * target_length
+                    new_y = first_pt[1] + (last_pt[1] - first_pt[1]) / seg_length * target_length
+                except ZeroDivisionError as err:
+                    self.clean_up()
+                    return '[ERROR_NOTCL] %s %s' % (_("Failed."), str(err).capitalize())
+
+                if first_pt != (new_x, new_y):
+                    self.draw_app.app.on_jump_to(custom_location=(new_x, new_y), fit_center=False)
+                    self.add_track(track_pos=(new_x, new_y))
+
+    def add_track(self, track_pos):
+        self.draw_app.last_length = self.track_tool.length
+        self.click(track_pos)
+        self.ui.x_entry.set_value(track_pos[0])
+        self.ui.y_entry.set_value(track_pos[1])
+        self.draw_app.clicked_pos = track_pos
+
+    def on_add_track(self):
+        x = self.ui.x_entry.get_value()
+        y = self.ui.y_entry.get_value()
+        self.add_track(track_pos=(x, y))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -3681,7 +3833,7 @@ class AppGerberEditor(QtCore.QObject):
 
         self.ui.delaperture_btn.clicked.connect(lambda: self.on_aperture_delete())
         self.ui.apertures_table.cellPressed.connect(self.on_row_selected)
-        self.ui.apertures_table.selectionModel().selectionChanged.connect(self.on_table_selection)  #noqa
+        self.ui.apertures_table.selectionModel().selectionChanged.connect(self.on_table_selection)  # noqa
 
         self.ui.simplification_btn.clicked.connect(self.on_simplification_click)
         self.ui.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
@@ -5720,7 +5872,7 @@ class AppGerberEditor(QtCore.QObject):
 
         self.update_utility_geometry(data=(x, y))
         if self.active_tool.name in [
-            'pad', 'array'
+            'pad', 'array', 'track'
         ]:
             try:
                 self.active_tool.draw_cursor_data(pos=self.app.mouse_pos)
@@ -7030,22 +7182,22 @@ class TransformEditorTool(AppTool):
         self.ref_combo.currentIndexChanged.connect(self.on_reference_changed)
         self.point_button.clicked.connect(self.on_add_coords)
 
-        self.rotate_button.clicked.connect(self.on_rotate)
+        self.rotate_button.clicked.connect(lambda: self.on_rotate())
 
-        self.skewx_button.clicked.connect(self.on_skewx)
-        self.skewy_button.clicked.connect(self.on_skewy)
+        self.skewx_button.clicked.connect(lambda: self.on_skewx())
+        self.skewy_button.clicked.connect(lambda: self.on_skewy)
 
-        self.scalex_button.clicked.connect(self.on_scalex)
-        self.scaley_button.clicked.connect(self.on_scaley)
+        self.scalex_button.clicked.connect(lambda: self.on_scalex())
+        self.scaley_button.clicked.connect(lambda: self.on_scaley())
 
-        self.offx_button.clicked.connect(self.on_offx)
-        self.offy_button.clicked.connect(self.on_offy)
+        self.offx_button.clicked.connect(lambda: self.on_offx())
+        self.offy_button.clicked.connect(lambda: self.on_offy())
 
-        self.flipx_button.clicked.connect(self.on_flipx)
-        self.flipy_button.clicked.connect(self.on_flipy)
+        self.flipx_button.clicked.connect(lambda: self.on_flipx())
+        self.flipy_button.clicked.connect(lambda: self.on_flipy())
 
-        self.buffer_button.clicked.connect(self.on_buffer_by_distance)
-        self.buffer_factor_button.clicked.connect(self.on_buffer_by_factor)
+        self.buffer_button.clicked.connect(lambda: self.on_buffer_by_distance())
+        self.buffer_factor_button.clicked.connect(lambda: self.on_buffer_by_factor())
 
         # self.rotate_entry.editingFinished.connect(self.on_rotate)
         # self.skewx_entry.editingFinished.connect(self.on_skewx)
@@ -7206,7 +7358,7 @@ class TransformEditorTool(AppTool):
         val = self.app.clipboard.text()
         self.point_entry.set_value(val)
 
-    def on_rotate(self, sig=None, val=None, ref=None):
+    def on_rotate(self, val=None, ref=None):
         value = float(self.rotate_entry.get_value()) if val is None else val
         if value == 0:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Rotate transformation can not be done for a value of 0."))
@@ -7216,21 +7368,21 @@ class TransformEditorTool(AppTool):
             return
         self.app.worker_task.emit({'fcn': self.on_rotate_action, 'params': [value, point]})
 
-    def on_flipx(self, signal=None, ref=None):
+    def on_flipx(self, ref=None):
         axis = 'Y'
         point = self.on_calculate_reference() if ref is None else self.on_calculate_reference(ref_index=ref)
         if point == 'fail':
             return
         self.app.worker_task.emit({'fcn': self.on_flip, 'params': [axis, point]})
 
-    def on_flipy(self, signal=None, ref=None):
+    def on_flipy(self, ref=None):
         axis = 'X'
         point = self.on_calculate_reference() if ref is None else self.on_calculate_reference(ref_index=ref)
         if point == 'fail':
             return
         self.app.worker_task.emit({'fcn': self.on_flip, 'params': [axis, point]})
 
-    def on_skewx(self, signal=None, val=None, ref=None):
+    def on_skewx(self, val=None, ref=None):
         xvalue = float(self.skewx_entry.get_value()) if val is None else val
 
         if xvalue == 0:
@@ -7248,7 +7400,7 @@ class TransformEditorTool(AppTool):
 
         self.app.worker_task.emit({'fcn': self.on_skew, 'params': [axis, xvalue, yvalue, point]})
 
-    def on_skewy(self, signal=None, val=None, ref=None):
+    def on_skewy(self, val=None, ref=None):
         xvalue = 0
         yvalue = float(self.skewy_entry.get_value()) if val is None else val
 
@@ -7262,7 +7414,7 @@ class TransformEditorTool(AppTool):
 
         self.app.worker_task.emit({'fcn': self.on_skew, 'params': [axis, xvalue, yvalue, point]})
 
-    def on_scalex(self, signal=None, val=None, ref=None):
+    def on_scalex(self, val=None, ref=None):
         xvalue = float(self.scalex_entry.get_value()) if val is None else val
 
         if xvalue == 0 or xvalue == 1:
@@ -7282,7 +7434,7 @@ class TransformEditorTool(AppTool):
 
         self.app.worker_task.emit({'fcn': self.on_scale, 'params': [axis, xvalue, yvalue, point]})
 
-    def on_scaley(self, signal=None, val=None, ref=None):
+    def on_scaley(self, val=None, ref=None):
         xvalue = 1
         yvalue = float(self.scaley_entry.get_value()) if val is None else val
 
@@ -7298,7 +7450,7 @@ class TransformEditorTool(AppTool):
 
         self.app.worker_task.emit({'fcn': self.on_scale, 'params': [axis, xvalue, yvalue, point]})
 
-    def on_offx(self, signal=None, val=None):
+    def on_offx(self, val=None):
         value = float(self.offx_entry.get_value()) if val is None else val
         if value == 0:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Offset transformation can not be done for a value of 0."))
@@ -7307,7 +7459,7 @@ class TransformEditorTool(AppTool):
 
         self.app.worker_task.emit({'fcn': self.on_offset, 'params': [axis, value]})
 
-    def on_offy(self, signal=None, val=None):
+    def on_offy(self, val=None):
         value = float(self.offy_entry.get_value()) if val is None else val
         if value == 0:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Offset transformation can not be done for a value of 0."))

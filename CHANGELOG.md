@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM Evo beta
 
 - in Gerber Editor upgraded the PadAdd GUI
 - in Gerber Editor upgraded the PadArray GUI
+- in Gerber Editor upgraded the Track sub-tool GUI
 
 21.05.2022
 
