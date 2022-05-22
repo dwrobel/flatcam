@@ -175,7 +175,7 @@ class PreferencesUIManager(QtCore.QObject):
             "gerber_editor_newtype": self.ui.gerber_pref_form.gerber_editor_group.addtype_combo,
             "gerber_editor_newdim": self.ui.gerber_pref_form.gerber_editor_group.adddim_entry,
             "gerber_editor_array_size": self.ui.gerber_pref_form.gerber_editor_group.grb_array_size_entry,
-            "gerber_editor_lin_axis": self.ui.gerber_pref_form.gerber_editor_group.grb_axis_radio,
+            "gerber_editor_lin_dir": self.ui.gerber_pref_form.gerber_editor_group.grb_axis_radio,
             "gerber_editor_lin_pitch": self.ui.gerber_pref_form.gerber_editor_group.grb_pitch_entry,
             "gerber_editor_lin_angle": self.ui.gerber_pref_form.gerber_editor_group.grb_angle_entry,
             "gerber_editor_circ_dir": self.ui.gerber_pref_form.gerber_editor_group.grb_circular_dir_radio,

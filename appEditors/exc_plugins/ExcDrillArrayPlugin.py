@@ -110,7 +110,7 @@ class ExcDrillArrayEditorUI:
         self.darray_frame.setLayout(self.editor_vbox)
 
         # Position
-        self.tool_lbl = FCLabel('%s' % _("Tool Diameter"), bold=True, color='blue')
+        self.tool_lbl = FCLabel('%s' % _("Diameter"), bold=True, color='blue')
         self.editor_vbox.addWidget(self.tool_lbl)
         # #############################################################################################################
         # Diameter Frame

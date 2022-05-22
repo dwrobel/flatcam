@@ -236,7 +236,7 @@ class AppDefaults:
         "gerber_editor_newtype": 'C',
         "gerber_editor_newdim": "0.5, 0.5",
         "gerber_editor_array_size": 5,
-        "gerber_editor_lin_axis": 'X',
+        "gerber_editor_lin_dir": 'X',
         "gerber_editor_lin_pitch": 0.1,
         "gerber_editor_lin_angle": 0.0,
         "gerber_editor_circ_dir": 'CW',

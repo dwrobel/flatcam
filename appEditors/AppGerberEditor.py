@@ -15,6 +15,7 @@ from appEditors.grb_plugins.GrbPadPlugin import PadEditorTool
 
 from appEditors.grb_plugins.GrbBufferPlugin import BufferEditorTool
 from appEditors.grb_plugins.GrbTransformationPlugin import TransformEditorTool
+from appEditors.grb_plugins.GrbPadArrayPlugin import GrbPadArrayEditorTool
 from appEditors.grb_plugins.GrbSimplificationPlugin import SimplificationTool
 from appEditors.grb_plugins.GrbCopyPlugin import CopyEditorTool
 
@@ -406,6 +407,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
         DrawTool.__init__(self, draw_app)
         self.name = 'array'
         self.draw_app = draw_app
+        self.app = self.draw_app.app
         self.dont_execute = False
 
         try:
@@ -448,18 +450,15 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
         except KeyError:
             pass
 
-        self.draw_app.ui.array_frame.show()
-
         self.selected_size = None
-        self.pad_axis = 'X'
-        self.pad_array = 'linear'  # 'linear'
+        self.pad_array_dir = 'X'
+        self.array_type = 'linear'  # 'linear'
         self.pad_array_size = None
         self.pad_pitch = None
         self.pad_linear_angle = None
 
-        self.pad_angle = None
+        self.pad_circular_angle = None
         self.pad_direction = None
-        self.pad_radius = None
 
         self.origin = None
         self.destination = None
@@ -470,36 +469,82 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
 
         self.pt = []
 
+        # #############################################################################################################
+        # Plugin UI
+        # #############################################################################################################
+        self.parray_tool = GrbPadArrayEditorTool(self.app, self.draw_app, plugin_name=_("Pad Array"))
+        self.ui = self.parray_tool.ui
+        self.parray_tool.run()
+
         geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y), static=True)
 
         if isinstance(geo, DrawToolShape) and geo.geo is not None:
             self.draw_app.draw_utility_geometry(geo_shape=geo)
 
-        self.draw_app.app.inform.emit(_("Click on target location ..."))
-
+        if self.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = self.draw_cursor_data
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
-        # Switch notebook to Properties page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
+        if not self.draw_app.snap_x:
+            self.draw_app.snap_x = 0.0
+        if not self.draw_app.snap_y:
+            self.draw_app.snap_y = 0.0
+
+        self.app.ui.notebook.setTabText(2, _("Pad Array"))
+        if self.app.ui.splitter.sizes()[0] == 0:
+            self.app.ui.splitter.setSizes([1, 1])
+
+        self.set_plugin_ui()
+
+        # Signals
+        try:
+            self.ui.add_btn.clicked.disconnect()
+        except (AttributeError, TypeError):
+            pass
+        self.ui.add_btn.clicked.connect(self.on_add_pad_array)
+
+        if self.ui.array_type_radio.get_value() == 'linear':
+            self.draw_app.app.inform.emit(_("Click on target location ..."))
+        else:
+            self.draw_app.app.inform.emit(_("Click on the circular array Center position"))
+
+    def set_plugin_ui(self):
+        dia = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
+        self.ui.dia_entry.set_value(dia)
+        self.ui.x_entry.set_value(float(self.draw_app.snap_x))
+        self.ui.y_entry.set_value(float(self.draw_app.snap_y))
+
+        self.ui.array_type_radio.set_value(self.draw_app.last_parray_type)
+        self.ui.on_array_type_radio(val=self.ui.array_type_radio.get_value())
+
+        self.ui.array_size_entry.set_value(self.draw_app.last_parray_size)
+        self.ui.axis_radio.set_value(self.draw_app.last_parray_lin_dir)
+        self.ui.pitch_entry.set_value(self.draw_app.last_parray_pitch)
+        self.ui.linear_angle_entry.set_value(self.draw_app.last_parray_lin_angle)
+        self.ui.array_dir_radio.set_value(self.draw_app.last_parray_circ_dir)
+        self.ui.circular_angle_entry.set_value(self.draw_app.last_parray_circ_angle)
+        self.ui.radius_entry.set_value(self.draw_app.last_parray_radius)
 
     def click(self, point):
-
-        if self.draw_app.ui.array_type_radio.get_value() == 0:  # 'Linear'
+        if self.ui.array_type_radio.get_value() == 'linear':  # 'Linear'
             self.make()
+            self.ui.x_entry.set_value(float(self.draw_app.snap_x))
+            self.ui.y_entry.set_value(float(self.draw_app.snap_y))
             return
-        else:
-            if self.flag_for_circ_array is None:
-                self.draw_app.in_action = True
-                self.pt.append(point)
 
-                self.flag_for_circ_array = True
-                self.set_origin(point)
-                self.draw_app.app.inform.emit(_("Click on the Pad Circular Array Start position"))
-            else:
-                self.destination = point
-                self.make()
-                self.flag_for_circ_array = None
-                return
+        self.ui.x_entry.set_value(float(self.draw_app.snap_x))
+        self.ui.y_entry.set_value(float(self.draw_app.snap_y))
+        if self.flag_for_circ_array is None:
+            self.draw_app.in_action = True
+            self.pt.append(point)
+
+            self.flag_for_circ_array = True
+            self.set_origin(point)
+            self.draw_app.app.inform.emit(_("Click on the circular array Center position"))
+        else:
+            self.destination = point
+            self.make()
+            self.flag_for_circ_array = None
 
     def set_origin(self, origin):
         self.origin = origin
@@ -517,25 +562,26 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
             self.draw_app.select_tool('select')
             return
 
-        self.pad_axis = self.draw_app.ui.pad_axis_radio.get_value()
-        self.pad_direction = self.draw_app.ui.pad_direction_radio.get_value()
-        self.pad_array = self.draw_app.ui.array_type_radio.get_value()
+        self.pad_array_dir = self.ui.axis_radio.get_value()
+        self.pad_direction = self.ui.array_dir_radio.get_value()
+        self.array_type = self.ui.array_type_radio.get_value()
 
         try:
-            self.pad_array_size = int(self.draw_app.ui.pad_array_size_entry.get_value())
-            try:
-                self.pad_pitch = self.draw_app.ui.pad_pitch_entry.get_value()
-                self.pad_linear_angle = self.draw_app.ui.linear_angle_spinner.get_value()
-                self.pad_angle = self.draw_app.ui.pad_angle_entry.get_value()
-            except TypeError:
-                self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
-                                              _("The value is not Float. Check for comma instead of dot separator."))
-                return
+            self.pad_array_size = self.ui.array_size_entry.get_value()
         except Exception:
             self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("The value is mistyped. Check the value."))
             return
 
-        if self.pad_array == 'linear':  # 'Linear'
+        try:
+            self.pad_pitch = self.ui.pitch_entry.get_value()
+            self.pad_linear_angle = self.ui.linear_angle_entry.get_value()
+            self.pad_circular_angle = self.ui.circular_angle_entry.get_value()
+        except TypeError:
+            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
+                                          _("The value is not Float. Check for comma instead of dot separator."))
+            return
+
+        if self.array_type == 'linear':  # 'Linear'
             if data[0] is None and data[1] is None:
                 dx = self.draw_app.x
                 dy = self.draw_app.y
@@ -548,11 +594,11 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
             self.points = [dx, dy]
 
             for item in range(self.pad_array_size):
-                if self.pad_axis == 'X':
+                if self.pad_array_dir == 'X':
                     geo_el = self.util_shape(((dx + (self.pad_pitch * item)), dy))
-                if self.pad_axis == 'Y':
+                if self.pad_array_dir == 'Y':
                     geo_el = self.util_shape((dx, (dy + (self.pad_pitch * item))))
-                if self.pad_axis == 'A':
+                if self.pad_array_dir == 'A':
                     x_adj = self.pad_pitch * math.cos(math.radians(self.pad_linear_angle))
                     y_adj = self.pad_pitch * math.sin(math.radians(self.pad_linear_angle))
                     geo_el = self.util_shape(
@@ -579,7 +625,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
             self.last_dx = dx
             self.last_dy = dy
             return DrawToolUtilityShape(geo_el_list)
-        elif self.pad_array == 'circular':  # 'Circular'
+        elif self.array_type == 'circular':  # 'Circular'
             if data[0] is None and data[1] is None:
                 cdx = self.draw_app.x
                 cdy = self.draw_app.y
@@ -593,9 +639,9 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
                 radius = distance((cdx, cdy), self.origin)
             except Exception:
                 radius = 0
-
             if radius == 0:
                 self.draw_app.delete_utility_geometry()
+            self.ui.radius_entry.set_value(radius)
 
             if len(self.pt) >= 1 and radius > 0:
                 try:
@@ -732,13 +778,13 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
             return None
 
     def circular_util_shape(self, radius, angle):
-        self.pad_direction = self.draw_app.ui.pad_direction_radio.get_value()
-        self.pad_angle = self.draw_app.ui.pad_angle_entry.get_value()
+        self.pad_direction = self.ui.array_dir_radio.get_value()
+        self.pad_circular_angle = self.ui.circular_angle_entry.get_value()
 
         circular_geo = []
         if self.pad_direction == 'CW':
             for i in range(self.pad_array_size):
-                angle_radians = math.radians(self.pad_angle * i)
+                angle_radians = math.radians(self.pad_circular_angle * i)
                 x = self.origin[0] + radius * math.cos(-angle_radians + angle)
                 y = self.origin[1] + radius * math.sin(-angle_radians + angle)
 
@@ -752,7 +798,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
                 circular_geo.append(DrawToolShape(geo_el))
         else:
             for i in range(self.pad_array_size):
-                angle_radians = math.radians(self.pad_angle * i)
+                angle_radians = math.radians(self.pad_circular_angle * i)
                 x = self.origin[0] + radius * math.cos(angle_radians + angle)
                 y = self.origin[1] + radius * math.sin(angle_radians + angle)
 
@@ -773,13 +819,13 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
 
         self.draw_app.current_storage = self.storage_obj
 
-        if self.pad_array == 'linear':  # 'Linear'
+        if self.array_type == 'linear':  # 'Linear'
             for item in range(self.pad_array_size):
-                if self.pad_axis == 'X':
+                if self.pad_array_dir == 'X':
                     geo = self.util_shape(((self.points[0] + (self.pad_pitch * item)), self.points[1]))
-                if self.pad_axis == 'Y':
+                if self.pad_array_dir == 'Y':
                     geo = self.util_shape((self.points[0], (self.points[1] + (self.pad_pitch * item))))
-                if self.pad_axis == 'A':
+                if self.pad_array_dir == 'A':
                     x_adj = self.pad_pitch * math.cos(math.radians(self.pad_linear_angle))
                     y_adj = self.pad_pitch * math.sin(math.radians(self.pad_linear_angle))
                     geo = self.util_shape(
@@ -788,7 +834,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
 
                 self.geometry.append(DrawToolShape(geo))
         else:  # 'Circular'
-            if (self.pad_angle * self.pad_array_size) > 360:
+            if (self.pad_circular_angle * self.pad_array_size) > 360:
                 self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
                                               _("Too many items for the selected spacing angle."))
                 return
@@ -810,8 +856,70 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
         self.complete = True
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         self.draw_app.in_action = False
-        self.draw_app.ui.array_frame.hide()
-        self.draw_app.app.jump_signal.disconnect()
+
+        self.draw_app.last_parray_type = self.ui.array_type_radio.get_value()
+        self.draw_app.last_parray_size = self.ui.array_size_entry.get_value()
+        self.draw_app.last_parray_lin_dir = self.ui.axis_radio.get_value()
+        self.draw_app.last_parray_circ_dir = self.ui.array_dir_radio.get_value()
+        self.draw_app.last_parray_pitch = self.ui.pitch_entry.get_value()
+        self.draw_app.last_parray_lin_angle = self.ui.linear_angle_entry.get_value()
+        self.draw_app.last_parray_circ_angle = self.ui.circular_angle_entry.get_value()
+        self.draw_app.last_parray_radius = self.ui.radius_entry.get_value()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (AttributeError, TypeError):
+            pass
+
+    def draw_cursor_data(self, pos=None, delete=False):
+        if pos is None:
+            pos = self.draw_app.snap_x, self.draw_app.snap_y
+
+        if delete:
+            if self.draw_app.app.use_3d_engine:
+                self.draw_app.app.plotcanvas.text_cursor.parent = None
+                self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+            return
+
+        if not self.points:
+            self.points = self.draw_app.snap_x, self.draw_app.snap_y
+
+        # font size
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("hud_font_size"):
+            fsize = qsettings.value('hud_font_size', type=int)
+        else:
+            fsize = 8
+
+        x = pos[0]
+        y = pos[1]
+        try:
+            length = abs(self.ui.radius_entry.get_value())
+        except IndexError:
+            length = self.draw_app.app.dec_format(0.0, self.draw_app.app.decimals)
+
+        x_dec = str(self.draw_app.app.dec_format(x, self.draw_app.app.decimals)) if x else '0.0'
+        y_dec = str(self.draw_app.app.dec_format(y, self.draw_app.app.decimals)) if y else '0.0'
+        length_dec = str(self.draw_app.app.dec_format(length, self.draw_app.app.decimals)) if length else '0.0'
+
+        units = self.draw_app.app.app_units.lower()
+        l1_txt = 'X:   %s [%s]' % (x_dec, units)
+        l2_txt = 'Y:   %s [%s]' % (y_dec, units)
+        l3_txt = 'L:   %s [%s]' % (length_dec, units)
+        cursor_text = '%s\n%s\n\n%s' % (l1_txt, l2_txt, l3_txt)
+
+        if self.draw_app.app.use_3d_engine:
+            new_pos = self.draw_app.app.plotcanvas.translate_coords_2((x, y))
+            x, y, __, ___ = self.draw_app.app.plotcanvas.translate_coords((new_pos[0]+30, new_pos[1]))
+
+            # text
+            self.draw_app.app.plotcanvas.text_cursor.font_size = fsize
+            self.draw_app.app.plotcanvas.text_cursor.text = cursor_text
+            self.draw_app.app.plotcanvas.text_cursor.pos = x, y
+            self.draw_app.app.plotcanvas.text_cursor.anchors = 'left', 'top'
+
+            if self.draw_app.app.plotcanvas.text_cursor.parent is None:
+                self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
 
     def on_key(self, key):
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
@@ -828,20 +936,55 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
         elif mod_key is None:
             # Toggle Drill Array Direction
             if key == QtCore.Qt.Key.Key_Space:
-                if self.draw_app.ui.pad_axis_radio.get_value() == 'X':
-                    self.draw_app.ui.pad_axis_radio.set_value('Y')
-                elif self.draw_app.ui.pad_axis_radio.get_value() == 'Y':
-                    self.draw_app.ui.pad_axis_radio.set_value('A')
-                elif self.draw_app.ui.pad_axis_radio.get_value() == 'A':
-                    self.draw_app.ui.pad_axis_radio.set_value('X')
+                if self.ui.pad_dir_radio.get_value() == 'X':
+                    self.ui.pad_dir_radio.set_value('Y')
+                elif self.ui.pad_axis_radio.get_value() == 'Y':
+                    self.ui.pad_axis_radio.set_value('A')
+                elif self.ui.pad_axis_radio.get_value() == 'A':
+                    self.ui.pad_axis_radio.set_value('X')
 
                 # ## Utility geometry (animated)
                 self.draw_app.update_utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+
+    def add_pad_array(self, array_pos):
+        self.radius = self.ui.radius_entry.get_value()
+        self.array_type = self.ui.array_type_radio.get_value()
+
+        curr_pos = self.draw_app.app.geo_editor.snap(array_pos[0], array_pos[1])
+        self.draw_app.snap_x = curr_pos[0]
+        self.draw_app.snap_y = curr_pos[1]
+
+        self.points = [self.draw_app.snap_x, self.draw_app.snap_y]
+        self.origin = [self.draw_app.snap_x, self.draw_app.snap_y]
+        self.destination = ((self.origin[0] + self.radius), self.origin[1])
+        self.flag_for_circ_array = True
+        self.make()
+
+        if self.draw_app.current_storage is not None:
+            self.draw_app.on_grb_shape_complete(self.draw_app.current_storage)
+            self.draw_app.build_ui()
+
+        if self.draw_app.active_tool.complete:
+            self.draw_app.on_shape_complete()
+
+        self.draw_app.select_tool("select")
+
+        self.draw_app.clicked_pos = curr_pos
+
+    def on_add_pad_array(self):
+        x = self.ui.x_entry.get_value()
+        y = self.ui.y_entry.get_value()
+        self.add_pad_array(array_pos=(x, y))
 
     def clean_up(self):
         self.draw_app.selected = []
         self.draw_app.ui.apertures_table.clearSelection()
         self.draw_app.plot_all()
+
+        if self.draw_app.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.text_cursor.parent = None
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+
         try:
             self.draw_app.app.jump_signal.disconnect()
         except (TypeError, AttributeError):
@@ -3538,10 +3681,7 @@ class AppGerberEditor(QtCore.QObject):
 
         self.ui.delaperture_btn.clicked.connect(lambda: self.on_aperture_delete())
         self.ui.apertures_table.cellPressed.connect(self.on_row_selected)
-        self.ui.apertures_table.selectionModel().selectionChanged.connect(self.on_table_selection)
-
-        self.ui.array_type_radio.activated_custom.connect(self.on_array_type_radio)
-        self.ui.pad_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
+        self.ui.apertures_table.selectionModel().selectionChanged.connect(self.on_table_selection)  #noqa
 
         self.ui.simplification_btn.clicked.connect(self.on_simplification_click)
         self.ui.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
@@ -3639,21 +3779,14 @@ class AppGerberEditor(QtCore.QObject):
         self.ui.apdim_entry.set_value(self.app.options["gerber_editor_newdim"])
 
         # PAD Array
-        self.ui.array_type_radio.set_value('linear')  # Linear
-        self.on_array_type_radio(val=self.ui.array_type_radio.get_value())
-        self.ui.pad_array_size_entry.set_value(int(self.app.options["gerber_editor_array_size"]))
-
-        # linear array
-        self.ui.pad_axis_radio.set_value('X')
-        self.on_linear_angle_radio(val=self.ui.pad_axis_radio.get_value())
-        self.ui.pad_axis_radio.set_value(self.app.options["gerber_editor_lin_axis"])
-        self.ui.pad_pitch_entry.set_value(float(self.app.options["gerber_editor_lin_pitch"]))
-        self.ui.linear_angle_spinner.set_value(self.app.options["gerber_editor_lin_angle"])
-
-        # circular array
-        self.ui.pad_direction_radio.set_value('CW')
-        self.ui.pad_direction_radio.set_value(self.app.options["gerber_editor_circ_dir"])
-        self.ui.pad_angle_entry.set_value(float(self.app.options["gerber_editor_circ_angle"]))
+        self.last_parray_type = 'linear'
+        self.last_parray_size = int(self.app.options['gerber_editor_array_size'])
+        self.last_parray_lin_dir = self.app.options['gerber_editor_lin_dir']
+        self.last_parray_circ_dir = self.app.options['gerber_editor_circ_dir']
+        self.last_parray_pitch = float(self.app.options['gerber_editor_lin_pitch'])
+        self.last_parray_lin_angle = float(self.app.options['gerber_editor_lin_angle'])
+        self.last_parray_circ_angle = float(self.app.options['gerber_editor_circ_angle'])
+        self.last_parray_radius = 0.0
 
         self.ui.geo_coords_entry.setText('')
         self.ui.geo_vertex_entry.set_value(0.0)
@@ -5587,7 +5720,7 @@ class AppGerberEditor(QtCore.QObject):
 
         self.update_utility_geometry(data=(x, y))
         if self.active_tool.name in [
-            'pad',
+            'pad', 'array'
         ]:
             try:
                 self.active_tool.draw_cursor_data(pos=self.app.mouse_pos)
@@ -5919,48 +6052,6 @@ class AppGerberEditor(QtCore.QObject):
     def set_unselected(self, geo_el):
         if geo_el in self.selected:
             self.selected.remove(geo_el)
-
-    def on_array_type_radio(self, val):
-        if val == 'linear':
-            self.ui.pad_axis_label.show()
-            self.ui.pad_axis_radio.show()
-            self.ui.pad_pitch_label.show()
-            self.ui.pad_pitch_entry.show()
-            self.ui.linear_angle_label.show()
-            self.ui.linear_angle_spinner.show()
-            self.ui.lin_separator_line.show()
-
-            self.ui.pad_direction_label.hide()
-            self.ui.pad_direction_radio.hide()
-            self.ui.pad_angle_label.hide()
-            self.ui.pad_angle_entry.hide()
-            self.ui.circ_separator_line.hide()
-        else:
-            self.delete_utility_geometry()
-
-            self.ui.pad_axis_label.hide()
-            self.ui.pad_axis_radio.hide()
-            self.ui.pad_pitch_label.hide()
-            self.ui.pad_pitch_entry.hide()
-            self.ui.linear_angle_label.hide()
-            self.ui.linear_angle_spinner.hide()
-            self.ui.lin_separator_line.hide()
-
-            self.ui.pad_direction_label.show()
-            self.ui.pad_direction_radio.show()
-            self.ui.pad_angle_label.show()
-            self.ui.pad_angle_entry.show()
-            self.ui.circ_separator_line.show()
-
-            self.app.inform.emit(_("Click on the circular array Center position"))
-
-    def on_linear_angle_radio(self, val):
-        if val == 'A':
-            self.ui.linear_angle_spinner.show()
-            self.ui.linear_angle_label.show()
-        else:
-            self.ui.linear_angle_spinner.hide()
-            self.ui.linear_angle_label.hide()
 
     def on_copy_button(self):
         self.select_tool('copy')
@@ -6548,145 +6639,6 @@ class AppGerberEditorUI:
             _("Clear all the markings.")
         )
         hlay_ma.addWidget(self.ma_clear_button)
-
-        # #############################################################################################################
-        # ######################################### Add Pad Array #####################################################
-        # #############################################################################################################
-        self.array_frame = QtWidgets.QFrame()
-        self.array_frame.setContentsMargins(0, 0, 0, 0)
-        self.custom_box.addWidget(self.array_frame)
-        self.array_box = QtWidgets.QVBoxLayout()
-        self.array_box.setContentsMargins(0, 0, 0, 0)
-        self.array_frame.setLayout(self.array_box)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.array_box.addWidget(separator_line)
-
-        array_grid = GLay(v_spacing=5, h_spacing=3)
-        self.array_box.addLayout(array_grid)
-
-        # Title
-        self.padarray_label = FCLabel('%s' % _("Add Pad Array"), bold=True)
-        self.padarray_label.setToolTip(
-            _("Add an array of pads (linear or circular array)")
-        )
-        array_grid.addWidget(self.padarray_label, 0, 0, 1, 2)
-
-        # Array Type
-        array_type_lbl = FCLabel('%s:' % _("Type"))
-        array_type_lbl.setToolTip(
-            _("Select the type of pads array to create.\n"
-              "It can be Linear X(Y) or Circular")
-        )
-
-        self.array_type_radio = RadioSet([{'label': _('Linear'), 'value': 'linear'},
-                                          {'label': _('Circular'), 'value': 'circular'}])
-
-        array_grid.addWidget(array_type_lbl, 2, 0)
-        array_grid.addWidget(self.array_type_radio, 2, 1)
-
-        # Number of Pads in Array
-        pad_array_size_label = FCLabel('%s:' % _('Nr of pads'))
-        pad_array_size_label.setToolTip(
-            _("Specify how many pads to be in the array.")
-        )
-
-        self.pad_array_size_entry = FCSpinner()
-        self.pad_array_size_entry.set_range(1, 10000)
-
-        array_grid.addWidget(pad_array_size_label, 4, 0)
-        array_grid.addWidget(self.pad_array_size_entry, 4, 1)
-
-        # #############################################################################################################
-        # ############################ Linear Pad Array ###############################################################
-        # #############################################################################################################
-        self.lin_separator_line = QtWidgets.QFrame()
-        self.lin_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        self.lin_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        array_grid.addWidget(self.lin_separator_line, 6, 0, 1, 2)
-
-        # Linear Direction
-        self.pad_axis_label = FCLabel('%s:' % _('Direction'))
-        self.pad_axis_label.setToolTip(
-            _("Direction on which the linear array is oriented:\n"
-              "- 'X' - horizontal axis \n"
-              "- 'Y' - vertical axis or \n"
-              "- 'Angle' - a custom angle for the array inclination")
-        )
-
-        self.pad_axis_radio = RadioSet([{'label': _('X'), 'value': 'X'},
-                                        {'label': _('Y'), 'value': 'Y'},
-                                        {'label': _('Angle'), 'value': 'A'}])
-
-        array_grid.addWidget(self.pad_axis_label, 8, 0)
-        array_grid.addWidget(self.pad_axis_radio, 8, 1)
-
-        # Linear Pitch
-        self.pad_pitch_label = FCLabel('%s:' % _('Pitch'))
-        self.pad_pitch_label.setToolTip(
-            _("Pitch = Distance between elements of the array.")
-        )
-
-        self.pad_pitch_entry = FCDoubleSpinner()
-        self.pad_pitch_entry.set_precision(self.decimals)
-        self.pad_pitch_entry.set_range(0.0000, 10000.0000)
-        self.pad_pitch_entry.setSingleStep(0.1)
-
-        array_grid.addWidget(self.pad_pitch_label, 10, 0)
-        array_grid.addWidget(self.pad_pitch_entry, 10, 1)
-
-        # Linear Angle
-        self.linear_angle_label = FCLabel('%s:' % _('Angle'))
-        self.linear_angle_label.setToolTip(
-            _("Angle at which the linear array is placed.\n"
-              "The precision is of max 2 decimals.\n"
-              "Min value is: -360.00 degrees.\n"
-              "Max value is: 360.00 degrees.")
-        )
-
-        self.linear_angle_spinner = FCDoubleSpinner()
-        self.linear_angle_spinner.set_precision(self.decimals)
-        self.linear_angle_spinner.setRange(-360.00, 360.00)
-
-        array_grid.addWidget(self.linear_angle_label, 12, 0)
-        array_grid.addWidget(self.linear_angle_spinner, 12, 1)
-
-        # #############################################################################################################
-        # ################################### Circular Pad Array ######################################################
-        # #############################################################################################################
-        self.circ_separator_line = QtWidgets.QFrame()
-        self.circ_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        self.circ_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        array_grid.addWidget(self.circ_separator_line, 14, 0, 1, 2)
-
-        # Circular Direction
-        self.pad_direction_label = FCLabel('%s:' % _('Direction'))
-        self.pad_direction_label.setToolTip(
-            _("Direction for circular array.\n"
-              "Can be CW = clockwise or CCW = counter clockwise.")
-        )
-
-        self.pad_direction_radio = RadioSet([{'label': _('CW'), 'value': 'CW'},
-                                             {'label': _('CCW'), 'value': 'CCW'}])
-
-        array_grid.addWidget(self.pad_direction_label, 16, 0)
-        array_grid.addWidget(self.pad_direction_radio, 16, 1)
-
-        # Circular Angle
-        self.pad_angle_label = FCLabel('%s:' % _('Angle'))
-        self.pad_angle_label.setToolTip(
-            _("Angle at which each element in circular array is placed.")
-        )
-
-        self.pad_angle_entry = FCDoubleSpinner()
-        self.pad_angle_entry.set_precision(self.decimals)
-        self.pad_angle_entry.set_range(-360.00, 360.00)
-        self.pad_angle_entry.setSingleStep(0.1)
-
-        array_grid.addWidget(self.pad_angle_label, 18, 0)
-        array_grid.addWidget(self.pad_angle_entry, 18, 1)
 
         self.custom_box.addStretch()
         layout.addStretch()

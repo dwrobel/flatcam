@@ -584,6 +584,10 @@ class DrillArray(FCShapeTool):
             pass
         self.ui.add_btn.clicked.connect(self.on_add_drill_array)
 
+        if self.ui.array_type_radio.get_value() == 'linear':
+            self.draw_app.app.inform.emit(_("Click on target location ..."))
+        else:
+            self.draw_app.app.inform.emit(_("Click on the circular array Center position"))
         # self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
     def set_plugin_ui(self):
