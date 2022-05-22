@@ -28,8 +28,7 @@ class SimplificationTool(AppToolEditor):
 
     def connect_signals_at_init(self):
         # Signals
-        self.ui.simplification_btn.clicked.connect(self.on_simplification_click)
-        self.update_ui.connect(self.on_update_ui)
+        self.update_ui.connect(self.on_update_ui)   # noqa
 
     def run(self):
         self.app.defaults.report_usage("Geo Editor SimplificationTool()")
@@ -69,90 +68,34 @@ class SimplificationTool(AppToolEditor):
     def set_tool_ui(self):
         # Init appGUI
         self.ui.geo_tol_entry.set_value(0.01 if self.draw_app.units == 'MM' else 0.0004)
-
-        selected_shapes_geos = []
-        selected_tree_items = self.draw_app.ui.tw.selectedItems()
-        for sel in selected_tree_items:
-            for obj_shape in self.draw_app.storage.get_objects():
-                try:
-                    if id(obj_shape) == int(sel.text(0)):
-                        selected_shapes_geos.append(obj_shape.geo)
-                except ValueError:
-                    pass
-        if selected_shapes_geos:
+        if self.draw_app.selected:
             # those are displayed by triggering the signal self.update_ui
-            self.calculate_coords_vertex(selected_shapes_geos[-1])
+            self.calculate_coords_vertex()
 
     def on_tab_close(self):
         self.draw_app.select_tool("select")
         self.app.ui.notebook.callback_on_close = lambda: None
 
-    def on_simplification_click(self):
-        self.app.log.debug("FCSimplification.on_simplification_click()")
+    def calculate_coords_vertex(self):
+        vertex_nr = 0
+        coords = []
+        for sha in self.draw_app.selected:
+            sha_geo = sha.geo
+            if 'solid' in sha_geo:
+                sha_geo_solid = sha_geo['solid']
+                if sha_geo_solid.geom_type == 'Polygon':
+                    sha_geo_solid_coords = list(sha_geo_solid.exterior.coords)
+                elif sha_geo_solid.geom_type in ['LinearRing', 'LineString']:
+                    sha_geo_solid_coords = list(sha_geo_solid.coords)
+                else:
+                    sha_geo_solid_coords = []
+                coords += sha_geo_solid_coords
 
-        selected_shapes_geos = []
-        tol = self.ui.geo_tol_entry.get_value()
+                vertex_nr += len(sha_geo_solid_coords)
 
-        def task_job(self):
-            with self.app.proc_container.new('%s...' % _("Simplify")):
-                selected_shapes = self.draw_app.get_selected()
-                self.draw_app.interdict_selection = True
-                for obj_shape in selected_shapes:
-                    selected_shapes_geos.append(obj_shape.geo.simplify(tolerance=tol))
+        self.ui.geo_vertex_entry.set_value(vertex_nr)
 
-                if not selected_shapes:
-                    self.app.inform.emit('%s' % _("Failed."))
-                    return
-
-                for shape in selected_shapes:
-                    self.draw_app.delete_shape(shape=shape)
-
-                for geo in selected_shapes_geos:
-                    self.draw_app.add_shape(geo, build_ui=False)
-
-                self.draw_app.selected = []
-
-                last_sel_geo = selected_shapes_geos[-1]
-                self.calculate_coords_vertex(last_sel_geo)
-
-                self.app.inform.emit('%s' % _("Done."))
-
-                self.draw_app.plot_all()
-                self.draw_app.interdict_selection = False
-                self.draw_app.build_ui_sig.emit()
-
-        self.app.worker_task.emit({'fcn': task_job, 'params': [self]})
-
-    def calculate_coords_vertex(self, last_sel_geo):
-        if last_sel_geo:
-            if last_sel_geo.geom_type == 'MultiLineString':
-                coords = ''
-                vertex_nr = 0
-                for idx, line in enumerate(last_sel_geo.geoms):
-                    line_coords = list(line.coords)
-                    vertex_nr += len(line_coords)
-                    coords += 'Line %s\n' % str(idx)
-                    coords += str(line_coords) + '\n'
-            elif last_sel_geo.geom_type == 'MultiPolygon':
-                coords = ''
-                vertex_nr = 0
-                for idx, poly in enumerate(last_sel_geo.geoms):
-                    poly_coords = list(poly.exterior.coords) + [list(i.coords) for i in poly.interiors]
-                    vertex_nr += len(poly_coords)
-
-                    coords += 'Polygon %s\n' % str(idx)
-                    coords += str(poly_coords) + '\n'
-            elif last_sel_geo.geom_type in ['LinearRing', 'LineString']:
-                coords = list(last_sel_geo.coords)
-                vertex_nr = len(coords)
-            elif last_sel_geo.geom_type == 'Polygon':
-                coords = list(last_sel_geo.exterior.coords)
-                vertex_nr = len(coords)
-            else:
-                coords = 'None'
-                vertex_nr = 0
-
-            self.update_ui.emit(coords, vertex_nr)
+        self.update_ui.emit(coords, vertex_nr)  # noqa
 
     def on_update_ui(self, coords, vertex_nr):
         self.ui.geo_coords_entry.set_value(str(coords))

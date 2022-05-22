@@ -2411,31 +2411,139 @@ class SimplifyEditorGrb(ShapeToolEditorGrb):
         self.draw_app = draw_app
         self.app = draw_app.app
 
-        self.draw_app.app.inform.emit(_("Buffer the selected apertures ..."))
+        self.draw_app.app.inform.emit(_("Simplify the selected apertures ..."))
         self.origin = (0, 0)
 
+        self.simp_tool = SimplificationTool(self.app, self.draw_app)
+        self.simp_tool.run()
+        self.ui = self.simp_tool.ui
+
+        self.app.ui.notebook.setTabText(2, _("Simplification"))
         if self.draw_app.app.ui.splitter.sizes()[0] == 0:
             self.draw_app.app.ui.splitter.setSizes([1, 1])
-        self.activate_buffer()
+        self.activate()
 
-    def activate_buffer(self):
-        self.draw_app.hide_tool('all')
-
+    def activate(self):
         try:
-            self.draw_app.ui.buffer_button.clicked.disconnect()
+            self.draw_app.ui.simplification_btn.clicked.disconnect()
         except (TypeError, AttributeError):
             pass
-        self.draw_app.ui.buffer_button.clicked.connect(self.on_buffer_click)
+        self.ui.simplification_btn.clicked.connect(self.on_simplify_click)
 
-    def deactivate_buffer(self):
-        self.draw_app.ui.buffer_button.clicked.disconnect()
+    def deactivate(self):
+        self.draw_app.ui.simplification_btn.clicked.disconnect()
         self.complete = True
         self.draw_app.select_tool("select")
         self.draw_app.hide_tool(self.name)
 
-    def on_buffer_click(self):
-        self.draw_app.on_buffer()
-        self.deactivate_buffer()
+    def on_simplify_click(self):
+        self.on_simplification_click()
+        # self.deactivate()
+
+    def set_origin(self, origin):
+        self.origin = origin
+
+    def click(self, point):
+        key_modifier = QtWidgets.QApplication.keyboardModifiers()
+
+        if key_modifier == QtCore.Qt.KeyboardModifier.ShiftModifier:
+            mod_key = 'Shift'
+        elif key_modifier == QtCore.Qt.KeyboardModifier.ControlModifier:
+            mod_key = 'Control'
+        else:
+            mod_key = None
+
+        if mod_key == self.draw_app.app.options["global_mselect_key"]:
+            pass
+        else:
+            self.draw_app.selected = []
+
+    def click_release(self, point):
+        self.draw_app.ui.apertures_table.clearSelection()
+        key_modifier = QtWidgets.QApplication.keyboardModifiers()
+
+        if key_modifier == QtCore.Qt.KeyboardModifier.ShiftModifier:
+            mod_key = 'Shift'
+        elif key_modifier == QtCore.Qt.KeyboardModifier.ControlModifier:
+            mod_key = 'Control'
+        else:
+            mod_key = None
+
+        if mod_key != self.draw_app.app.options["global_mselect_key"]:
+            self.draw_app.selected.clear()
+
+        for storage_val in self.draw_app.storage_dict.values():
+            for shape_stored in storage_val['geometry']:
+                if 'solid' in shape_stored.geo:
+                    geometric_data = shape_stored.geo['solid']
+                    if Point(point).intersects(geometric_data):
+                        if shape_stored in self.draw_app.selected:
+                            self.draw_app.selected.remove(shape_stored)
+                        else:
+                            self.draw_app.selected.append(shape_stored)
+
+        self.draw_app.plot_all()
+        self.simp_tool.calculate_coords_vertex()
+
+    def on_simplification_click(self):
+        self.app.log.debug("SimplifyEditorGrb.on_simplification_click()")
+
+        selected_shapes = []
+        selected_shapes_geos = []
+        tol = self.ui.geo_tol_entry.get_value()
+
+        # init the coordinates text field and vertex points field
+        self.ui.geo_coords_entry.set_value('')
+        self.ui.geo_vertex_entry.set_value(0)
+
+        def task_job():
+            with self.app.proc_container.new('%s...' % _("Simplify")):
+                for obj_shape in self.draw_app.selected:
+                    try:
+                        selected_shapes.append(obj_shape)
+
+                        new_geo = {
+                            'apid': '',
+                            'geo': {}
+                        }
+
+                        # find the aperture where the shape is stored
+                        current_apid = None
+                        for apid in self.draw_app.storage_dict:
+                            if obj_shape in self.draw_app.storage_dict[apid]['geometry']:
+                                current_apid = apid
+                                break
+
+                        if current_apid is None:
+                            current_apid = self.draw_app.last_aperture_selected
+
+                        new_geo['apid'] = deepcopy(current_apid)
+
+                        if 'solid' in obj_shape.geo:
+                            new_geo['geo']['solid'] = obj_shape.geo['solid'].simplify(tolerance=tol)
+                        if 'follow' in obj_shape.geo:
+                            new_geo['geo']['follow'] = obj_shape.geo['follow'].simplify(tolerance=tol)
+                        if 'clear' in obj_shape.geo:
+                            new_geo['geo']['clear'] = obj_shape.geo['clear'].simplify(tolerance=tol)
+
+                        selected_shapes_geos.append(deepcopy(new_geo))
+                    except ValueError:
+                        pass
+
+                for shape in selected_shapes:
+                    self.draw_app.delete_shape(geo_el=shape)
+
+                for geo in selected_shapes_geos:
+                    stora = self.draw_app.storage_dict[geo['apid']]['geometry']
+                    geo_el = geo['geo']
+                    self.draw_app.add_gerber_shape(DrawToolShape(geo_el), storage=stora)
+
+                is_sel_all = self.draw_app.on_table_selection()
+                if is_sel_all:
+                    return
+                self.draw_app.plot_all()
+
+        self.app.worker_task.emit({'fcn': task_job, 'params': []})
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -3835,7 +3943,6 @@ class AppGerberEditor(QtCore.QObject):
         self.ui.apertures_table.cellPressed.connect(self.on_row_selected)
         self.ui.apertures_table.selectionModel().selectionChanged.connect(self.on_table_selection)  # noqa
 
-        self.ui.simplification_btn.clicked.connect(self.on_simplification_click)
         self.ui.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
 
         self.conversion_factor = 1
@@ -3850,15 +3957,9 @@ class AppGerberEditor(QtCore.QObject):
         # ############################### TOOLS TABLE context menu ####################################################
         # #############################################################################################################
         self.ui.apertures_table.setupContextMenu()
-        # self.ui.apertures_table.addContextMenu(
-        #     _("Add"), self.on_aperture_add,
-        #     icon=QtGui.QIcon(self.app.resource_location + "/plus16.png"))
         self.ui.apertures_table.addContextMenu(
             _("Delete"), lambda: self.on_aperture_delete(),
             icon=QtGui.QIcon(self.app.resource_location + "/trash16.png"))
-        # self.ui.apertures_table.addContextMenu(
-        #     _("Simplify"), self.on_simplification_click,
-        #     icon=QtGui.QIcon(self.app.resource_location + "/simplify32.png"))
         self.app.log.debug("Initialization of the Gerber Editor is finished ...")
 
     def make_callback(self, the_tool):
@@ -3942,7 +4043,6 @@ class AppGerberEditor(QtCore.QObject):
 
         self.ui.geo_coords_entry.setText('')
         self.ui.geo_vertex_entry.set_value(0.0)
-        self.ui.geo_tol_entry.set_value(0.01)
         self.ui.geo_zoom.set_value(False)
 
         # Show/Hide Advanced Options
@@ -4446,66 +4546,6 @@ class AppGerberEditor(QtCore.QObject):
         # we reactivate the signals after the after the tool editing
         self.ui.apertures_table.itemChanged.connect(self.on_tool_edit)
         # self.ui.apertures_table.cellPressed.connect(self.on_row_selected)
-
-    def on_simplification_click(self):
-        self.app.log.debug("AppGrbEditor.on_simplification_click()")
-
-        selected_shapes = []
-        selected_shapes_geos = []
-        tol = self.ui.geo_tol_entry.get_value()
-
-        # init the coordinates text field and vertex points field
-        self.ui.geo_coords_entry.set_value('')
-        self.ui.geo_vertex_entry.set_value(0)
-
-        def task_job():
-            with self.app.proc_container.new('%s...' % _("Simplify")):
-                for obj_shape in self.selected:
-                    try:
-                        selected_shapes.append(obj_shape)
-
-                        new_geo = {
-                            'apid': '',
-                            'geo': {}
-                        }
-
-                        # find the aperture where the shape is stored
-                        current_apid = None
-                        for apid in self.storage_dict:
-                            if obj_shape in self.storage_dict[apid]['geometry']:
-                                current_apid = apid
-                                break
-
-                        if current_apid is None:
-                            current_apid = self.last_aperture_selected
-
-                        new_geo['apid'] = deepcopy(current_apid)
-
-                        if 'solid' in obj_shape.geo:
-                            new_geo['geo']['solid'] = obj_shape.geo['solid'].simplify(tolerance=tol)
-                        if 'follow' in obj_shape.geo:
-                            new_geo['geo']['follow'] = obj_shape.geo['follow'].simplify(tolerance=tol)
-                        if 'clear' in obj_shape.geo:
-                            new_geo['geo']['clear'] = obj_shape.geo['clear'].simplify(tolerance=tol)
-
-                        selected_shapes_geos.append(deepcopy(new_geo))
-                    except ValueError:
-                        pass
-
-                for shape in selected_shapes:
-                    self.delete_shape(geo_el=shape)
-
-                for geo in selected_shapes_geos:
-                    stora = self.storage_dict[geo['apid']]['geometry']
-                    geo_el = geo['geo']
-                    self.add_gerber_shape(DrawToolShape(geo_el), storage=stora)
-
-                is_sel_all = self.on_table_selection()
-                if is_sel_all:
-                    return
-                self.plot_all()
-
-        self.app.worker_task.emit({'fcn': task_job, 'params': []})
 
     def update_ui(self):
         is_zoom_selected = self.ui.geo_zoom.get_value()
@@ -5605,7 +5645,7 @@ class AppGerberEditor(QtCore.QObject):
                         modifier_to_use = Qt.KeyboardModifier.ShiftModifier
 
                     # if modifier key is pressed then we add to the selected list the current shape but if it's already
-                    # in the selected list, we removed it. Therefore first click selects, second deselects.
+                    # in the selected list, we removed it. Therefore, first click selects, second deselects.
                     if key_modifier == modifier_to_use:
                         self.select_tool(self.active_tool.name)
                     else:
@@ -5698,8 +5738,10 @@ class AppGerberEditor(QtCore.QObject):
                 if self.app.selection_type is not None:
                     self.draw_selection_area_handler(self.pos, pos, self.app.selection_type)
                     self.app.selection_type = None
+                    if isinstance(self.active_tool, (SimplifyEditorGrb)):
+                        self.active_tool.simp_tool.calculate_coords_vertex()
 
-                elif isinstance(self.active_tool, SelectEditorGrb):
+                elif isinstance(self.active_tool, (SelectEditorGrb, SimplifyEditorGrb)):
                     self.active_tool.click_release((self.pos[0], self.pos[1]))
 
                     # # if there are selected objects then plot them
@@ -6235,7 +6277,7 @@ class AppGerberEditor(QtCore.QObject):
         self.select_tool('semidisc')
 
     def on_simplification(self):
-        pass
+        self.select_tool('simplify')
 
     def on_scale(self):
         scale_factor = 1.0
@@ -6638,37 +6680,6 @@ class AppGerberEditorUI:
 
         self.shape_grid.addWidget(vertex_lbl, 8, 0)
         self.shape_grid.addWidget(self.geo_vertex_entry, 8, 1, 1, 2)
-
-        # Simplification Title
-        simplif_lbl = FCLabel('%s' % _("Simplification"), bold=True)
-        simplif_lbl.setToolTip(
-            _("Simplify a geometry by reducing its vertex points number.")
-        )
-        self.custom_box.addWidget(simplif_lbl)
-
-        # Simplification Tolerance
-        simplification_tol_lbl = FCLabel('%s:' % _("Tolerance"))
-        simplification_tol_lbl.setToolTip(
-            _("All points in the simplified object will be\n"
-              "within the tolerance distance of the original geometry.")
-        )
-        self.geo_tol_entry = FCDoubleSpinner()
-        self.geo_tol_entry.set_precision(self.decimals)
-        self.geo_tol_entry.setSingleStep(10 ** -self.decimals)
-        self.geo_tol_entry.set_range(0.0000, 10000.0000)
-        self.geo_tol_entry.set_value(10 ** -self.decimals)
-
-        self.custom_box.addWidget(simplification_tol_lbl)
-        self.custom_box.addWidget(self.geo_tol_entry)
-
-        # Simplification button
-        self.simplification_btn = FCButton(_("Simplify"), bold=True)
-        self.simplification_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/simplify32.png'))
-        self.simplification_btn.setToolTip(
-            _("Simplify a geometry element by reducing its vertex points number.")
-        )
-
-        self.custom_box.addWidget(self.simplification_btn)
 
         # #############################################################################################################
         # ########################################### SCALE TOOL ######################################################
