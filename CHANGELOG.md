@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+26.05.2022
+
+- upgraded the UI of Region sub-tool in the Gerber Editor
+
 22.05.2022
 
 - in Gerber Editor upgraded the PadAdd GUI
