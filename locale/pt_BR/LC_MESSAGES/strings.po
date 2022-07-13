@@ -2,16 +2,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2020-11-07 06:57+0200\n"
-"PO-Revision-Date: 2020-11-07 06:57+0200\n"
+"PO-Revision-Date: 2022-07-13 09:54-0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: pygettext.py 1.5\n"
-"X-Generator: Poedit 2.4.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Generated-By: pygettext.py 1.5\n"
+"X-Generator: Poedit 3.1.1\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: build\n"
@@ -1883,7 +1883,7 @@ msgstr ""
 
 #: appEditors/AppExcEditor.py:4054
 msgid "Resize Tool"
-msgstr "Ferramenta de Redimens."
+msgstr "Ferramenta de Redimensionamento"
 
 #: appEditors/AppExcEditor.py:4056
 msgid "Resize a drill or a selection of drills."
@@ -4807,7 +4807,7 @@ msgstr "F4"
 
 #: appGUI/MainGUI.py:622 app_Main.py:3241
 msgid "How To"
-msgstr "Como posso..."
+msgstr "Como posso"
 
 #: appGUI/MainGUI.py:626 app_Main.py:2913
 msgid "About"
@@ -17935,7 +17935,7 @@ msgstr "Em breve ..."
 
 #: app_Main.py:3375
 msgid "How To's"
-msgstr "Como..."
+msgstr "Como"
 
 #: app_Main.py:3487
 msgid ""
@@ -18001,7 +18001,7 @@ msgstr ""
 
 #: app_Main.py:4080 app_Main.py:4090
 msgid "Geometry merging finished"
-msgstr "Fusão de geometria concluída"
+msgstr "Mescla de geometria concluída"
 
 #: app_Main.py:4113
 msgid "Failed. Excellon joining works only on Excellon objects."
@@ -18009,7 +18009,7 @@ msgstr "Falha. A união de Excellon funciona apenas em objetos Excellon."
 
 #: app_Main.py:4125
 msgid "Excellon merging finished"
-msgstr "Fusão de Excellon concluída"
+msgstr "Mescla de Excellon concluída"
 
 #: app_Main.py:4143
 msgid "Failed. Gerber joining works only on Gerber objects."
@@ -18017,7 +18017,7 @@ msgstr "Falha. A união de Gerber funciona apenas em objetos Gerber."
 
 #: app_Main.py:4153
 msgid "Gerber merging finished"
-msgstr "Fusão de Gerber concluída"
+msgstr "Mescla de Gerber concluída"
 
 #: app_Main.py:4173 app_Main.py:4210
 msgid "Failed. Select a Geometry Object and try again."
@@ -18151,7 +18151,7 @@ msgid ""
 "One or more Tools are edited.\n"
 "Do you want to update the Tools Database?"
 msgstr ""
-"Um ou mais Ferramentas foram editadas.\n"
+"Uma ou mais Ferramentas foram editadas.\n"
 "Você deseja salvar o Banco de Dados de Ferramentas?"
 
 #: app_Main.py:5976
@@ -18184,7 +18184,7 @@ msgstr "Nova Grade ..."
 
 #: app_Main.py:6317
 msgid "Enter a Grid Value:"
-msgstr "Digite um valor para grade:"
+msgstr "Digite um valor para a grade:"
 
 #: app_Main.py:6326 app_Main.py:6351
 msgid "Please enter a grid value with non-zero value, in Float format."
@@ -18247,7 +18247,7 @@ msgstr "Falha ao ler o código fonte do objeto selecionado"
 
 #: app_Main.py:7278
 msgid "Go to Line ..."
-msgstr "Ir para Linha ..."
+msgstr "Ir para a Linha ..."
 
 #: app_Main.py:7309
 msgid "Redrawing all objects"
@@ -18409,7 +18409,7 @@ msgstr "Abrir HPGL2"
 
 #: app_Main.py:8470
 msgid "Opening HPGL2 file."
-msgstr "Abrindo Arquivo HPGL2 ."
+msgstr "Abrindo Arquivo HPGL2."
 
 #: app_Main.py:8493 app_Main.py:8496
 msgid "Open Configuration File"
@@ -18624,9 +18624,9 @@ msgid ""
 " Attempting to create a FlatCAM CNCJob Object from G-Code file failed during "
 "processing"
 msgstr ""
-"Falha ao criar o objeto Trabalho CNC. Provavelmente não é um arquivo G-"
-"Code.  Tente ler a usando o menu.\n"
-"A tentativa de criar um objeto de Trabalho CNC do arquivo G-Code falhou "
+"Falha ao criar o objeto Trabalho CNC. Provavelmente não é um arquivo G-Code. "
+"Tente ler usando o menu.\n"
+"A tentativa de criar um objeto de Trabalho CNC com o arquivo G-Code falhou "
 "durante o processamento"
 
 #: app_Main.py:10381
@@ -18661,7 +18661,7 @@ msgstr "Carregando projeto ... Por favor aguarde ..."
 
 #: app_Main.py:10535
 msgid "Opening FlatCAM Project file."
-msgstr "Abrindo Projeto FlatCAM."
+msgstr "Abrindo arquivo de Projeto."
 
 #: app_Main.py:10550 app_Main.py:10554 app_Main.py:10572
 msgid "Failed to open project file"
@@ -18711,7 +18711,7 @@ msgstr "FlatCAM Beta"
 
 #: assets/linux/flatcam-beta.desktop:8
 msgid "G-Code from GERBERS"
-msgstr "G-Code de Gerbers"
+msgstr "G-Code de GERBERS"
 
 #: camlib.py:707
 msgid "self.solid_geometry is neither BaseGeometry or list."
@@ -18757,9 +18757,10 @@ msgid ""
 "therefore the app will convert the value to negative. Check the resulting "
 "CNC code (Gcode etc)."
 msgstr ""
-"O parâmetro Profundidade de Corte está positivo. Este valor é a\n"
-"profundidade para furar o material, e deve ser negativo. Supondo que seja\n"
-"um erro de digitação, o aplicativo converterá o valor para negativo.\n"
+"O parâmetro Profundidade de Corte está positivo. Este valor é a profundidade "
+"para furar o material,\n"
+"e deve ser negativo. Supondo que seja um erro de digitação, o aplicativo "
+"converterá o valor para negativo.\n"
 "Verifique o código CNC resultante (G-Code, etc.)."
 
 #: camlib.py:3110
@@ -18768,7 +18769,7 @@ msgstr "O parâmetro Profundidade de Corte é zero. Não haverá corte, abortand
 
 #: camlib.py:3239 camlib.py:3624
 msgid "The End X,Y format has to be (x, y)."
-msgstr "O formato X, Y final deve ser (x, y)."
+msgstr "O formato X, Y Final deve ser (x, y)."
 
 #: camlib.py:3315 camlib.py:3715 camlib.py:4209 camlib.py:4442 camlib.py:5476
 #: camlib.py:5883
@@ -18800,9 +18801,10 @@ msgid ""
 "therefore the app will convert the value to negative.Check the resulting CNC "
 "code (Gcode etc)."
 msgstr ""
-"O parâmetro Profundidade de Corte está positivo. Este valor é a\n"
-"profundidade para cortar o material, e deve ser negativo. Supondo que seja\n"
-"um erro de digitação, o aplicativo converterá o valor para negativo.\n"
+"O parâmetro Profundidade de Corte está positivo. Este valor é a profundidade "
+"para furar o material,\n"
+"e deve ser negativo. Supondo que seja um erro de digitação, o aplicativo "
+"converterá o valor para negativo.\n"
 "Verifique o código CNC resultante (G-Code, etc.)."
 
 #: camlib.py:3560 camlib.py:4135 camlib.py:4371 camlib.py:5365 camlib.py:5760
@@ -18822,10 +18824,10 @@ msgid ""
 "therefore the app will convert the value to positive.Check the resulting CNC "
 "code (Gcode etc)."
 msgstr ""
-"O parâmetro Altura de Deslocamento tem valor negativo. Este valor\n"
-"é a altura nos deslocamentos entre os cortes, e deve ser positivo. Supondo\n"
-"que seja um erro de digitação, o aplicativo converterá o valor para "
-"positivo.\n"
+"O parâmetro Altura de Deslocamento está negativo. Este valor é a altura nos "
+"deslocamentos entre os cortes,\n"
+"e deve ser positivo. Supondo que seja um erro de digitação, o aplicativo "
+"converterá o valor para positivo.\n"
 "Verifique o código CNC resultante (G-Code, etc.)."
 
 #: camlib.py:3578 camlib.py:5383 camlib.py:5779
@@ -18857,7 +18859,8 @@ msgid ""
 "but now there is only one value, not two."
 msgstr ""
 "O campo Movimento Final X, Y em Editar -> Preferências deve estar no formato "
-"(x, y), mas agora está com apenas um valor, não dois."
+"(x, y).\n"
+"Agora existe apenas um valor, não dois. "
 
 #: camlib.py:5334
 msgid ""
@@ -18883,7 +18886,7 @@ msgid ""
 msgstr ""
 "O valor de Deslocamento é muito negativo para ser usado na "
 "current_geometry.\n"
-"Aumente o valor (em módulo) e tente novamente."
+"Altere o valor (em módulo) e tente novamente."
 
 #: camlib.py:5987
 msgid "There is no tool data in the SolderPaste geometry."
@@ -18912,7 +18915,7 @@ msgstr "Número de linhas"
 #: camlib.py:6660
 msgid "Creating Geometry from the parsed GCode file for tool diameter"
 msgstr ""
-"Criação de geometria a partir do arquivo G-Code analisado para o diâmetro da "
+"Criando geometria a partir do arquivo G-Code analisado para o diâmetro da "
 "ferramenta"
 
 #: camlib.py:7413
@@ -18995,7 +18998,7 @@ msgstr "Esperando -x <value> -y <value>."
 
 #: tclCommands/TclCommandSetOrigin.py:95
 msgid "Expected a pair of (x, y) coordinates. Got"
-msgstr "Esperando um par de coordenadas (x, y). Recebeu"
+msgstr "Esperando um par de coordenadas (x, y). Recebido"
 
 #: tclCommands/TclCommandSetOrigin.py:101
 msgid "Origin set by offsetting all loaded objects with "
