@@ -4522,44 +4522,44 @@ class MainGUI(QtWidgets.QMainWindow):
                 else:
                     extension = self.filename.lower().rpartition('.')[-1]
 
-                    if extension in self.app.grb_list:
+                    if extension in self.app.regFK.grb_list:
                         self.app.worker_task.emit({'fcn': self.app.f_handlers.open_gerber,
                                                    'params': [self.filename]})
                     else:
                         event.ignore()
 
-                    if extension in self.app.exc_list:
+                    if extension in self.app.regFK.exc_list:
                         self.app.worker_task.emit({'fcn': self.app.f_handlers.open_excellon,
                                                    'params': [self.filename]})
                     else:
                         event.ignore()
 
-                    if extension in self.app.gcode_list:
+                    if extension in self.app.regFK.gcode_list:
                         self.app.worker_task.emit({'fcn': self.app.f_handlers.open_gcode,
                                                    'params': [self.filename]})
                     else:
                         event.ignore()
 
-                    if extension in self.app.svg_list:
+                    if extension in self.app.regFK.svg_list:
                         object_type = 'geometry'
                         self.app.worker_task.emit({'fcn': self.app.f_handlers.import_svg,
                                                    'params': [self.filename, object_type, None]})
 
-                    if extension in self.app.dxf_list:
+                    if extension in self.app.regFK.dxf_list:
                         object_type = 'geometry'
                         self.app.worker_task.emit({'fcn': self.app.f_handlers.import_dxf,
                                                    'params': [self.filename, object_type, None]})
 
-                    if extension in self.app.pdf_list:
+                    if extension in self.app.regFK.pdf_list:
                         self.app.pdf_tool.periodic_check(1000)
                         self.app.worker_task.emit({'fcn': self.app.pdf_tool.open_pdf,
                                                    'params': [self.filename]})
 
-                    if extension in self.app.prj_list:
+                    if extension in self.app.regFK.prj_list:
                         # self.app.open_project() is not Thread Safe
                         self.app.f_handlers.open_project(self.filename)
 
-                    if extension in self.app.conf_list:
+                    if extension in self.app.regFK.conf_list:
                         self.app.f_handlers.open_config_file(self.filename)
                     else:
                         event.ignore()

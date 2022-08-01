@@ -11,7 +11,11 @@ from shapely.affinity import rotate
 from ezdxf.math import Vec3 as ezdxf_vector
 
 from appParsers.ParseFont import *
-from appParsers.ParseDXF_Spline import *
+from appParsers.ParseDXF_Spline import spline2Polyline, normalize_2
+from appParsers.ParseDXF_Spline import Vector as DxfVector
+
+import math
+
 import logging
 
 log = logging.getLogger('base2')
@@ -176,7 +180,7 @@ def dxfellipse2shapely(ellipse, ellipse_segments=100):
     ratio = ellipse.dxf.ratio
 
     points_list = []
-    major_axis = Vector(list(major_axis))
+    major_axis = DxfVector(list(major_axis))
 
     major_x = major_axis[0]
     major_y = major_axis[1]
@@ -191,7 +195,7 @@ def dxfellipse2shapely(ellipse, ellipse_segments=100):
     for step in range(line_seg + 1):
         if direction == 'CW':
             major_dim = normalize_2(major_axis)
-            minor_dim = normalize_2(Vector([ratio * k for k in major_axis]))
+            minor_dim = normalize_2(DxfVector([ratio * k for k in major_axis]))
             vx = (major_dim[0] + major_dim[1]) * math.cos(angle)
             vy = (minor_dim[0] - minor_dim[1]) * math.sin(angle)
             x = center[0] + major_x * vx - major_y * vy
@@ -199,7 +203,7 @@ def dxfellipse2shapely(ellipse, ellipse_segments=100):
             angle += step_angle
         else:
             major_dim = normalize_2(major_axis)
-            minor_dim = (Vector([ratio * k for k in major_dim]))
+            minor_dim = (DxfVector([ratio * k for k in major_dim]))
             vx = (major_dim[0] + major_dim[1]) * math.cos(angle)
             vy = (minor_dim[0] + minor_dim[1]) * math.sin(angle)
             x = center[0] + major_x * vx + major_y * vy

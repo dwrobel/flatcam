@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+1.08.2022
+
+- fixed some bugs in Geometry Editor in regards of Buffer Tool
+- fixed some issues in the Cutout Plugin by adding more checks
+- fixed issues when loading files by dragging in the UI (caused by recent code refactoring)
+
 26.05.2022
 
 - upgraded the UI of Region sub-tool in the Gerber Editor

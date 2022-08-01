@@ -2847,7 +2847,7 @@ class FCBuffer(FCShapeTool):
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
         join_style = self.buff_tool.ui.buffer_corner_cb.currentIndex() + 1
-        ret_val = self.draw_app.buffer(buffer_distance, join_style)
+        ret_val = self.buff_tool.buffer(buffer_distance, join_style)
 
         self.deactivate()
         if ret_val == 'fail':
@@ -2873,7 +2873,7 @@ class FCBuffer(FCShapeTool):
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
         join_style = self.buff_tool.ui.buffer_corner_cb.currentIndex() + 1
-        ret_val = self.draw_app.buffer_int(buffer_distance, join_style)
+        ret_val = self.buff_tool.buffer_int(buffer_distance, join_style)
 
         self.deactivate()
         if ret_val == 'fail':
@@ -2899,7 +2899,7 @@ class FCBuffer(FCShapeTool):
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
         join_style = self.buff_tool.ui.buffer_corner_cb.currentIndex() + 1
-        ret_val = self.draw_app.buffer_ext(buffer_distance, join_style)
+        ret_val = self.buff_tool.buffer_ext(buffer_distance, join_style)
         # self.app.ui.notebook.setTabText(2, _("Tools"))
         # self.draw_app.app.ui.splitter.setSizes([0, 1])
 

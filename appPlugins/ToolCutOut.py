@@ -756,8 +756,13 @@ class CutOut(AppTool):
                         self.app.log.debug("Cutout.on_freeform_cutout() -> Empty geometry.")
                         self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                         return 'fail'
+                    try:
+                        solid_geo, rest_geo = self.any_cutout_handler(geo, abs(cut_dia), gaps, gapsize, margin)
+                    except Exception as err:
+                        self.app.log.error("Cutout.on_freeform_cutout() -> %s" % str(err))
+                        self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                        return
 
-                    solid_geo, rest_geo = self.any_cutout_handler(geo, abs(cut_dia), gaps, gapsize, margin)
                     if gap_type == 1 and thin_entry != 0:   # "Thin gaps"
                         gaps_solid_geo = rest_geo
                 else:
@@ -779,9 +784,21 @@ class CutOut(AppTool):
                                 geo_buf = geom_struct.buffer(0.0000001)
                                 geo_ext = geo_buf.exterior
                                 buff_geo_ext = geo_ext.buffer(-margin)
-                                geom_struct = unary_union(buff_geo_ext.interiors)
+                                if isinstance(buff_geo_ext, MultiPolygon):
+                                    self.app.log.debug(
+                                        "Cutout.on_freeform_cutout() -> The source geometry cannot be used.")
+                                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                                    unary_union(buff_geo_ext)
+                                else:
+                                    geom_struct = unary_union(buff_geo_ext.interiors)
 
-                        c_geo, r_geo = self.any_cutout_handler(geom_struct, abs(cut_dia), gaps, gapsize, margin)
+                        try:
+                            c_geo, r_geo = self.any_cutout_handler(geom_struct, abs(cut_dia), gaps, gapsize, margin)
+                        except Exception as err:
+                            self.app.log.error("Cutout.on_freeform_cutout() -> %s" % str(err))
+                            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                            continue
+
                         solid_geo += c_geo
                         if gap_type == 1 and thin_entry != 0:   # "Thin gaps"
                             gaps_solid_geo += r_geo
@@ -2178,6 +2195,8 @@ class CutOut(AppTool):
 
                 work_geo = obj.geoms if isinstance(obj, (MultiPolygon, MultiLineString)) else obj
                 for k in work_geo:
+                    if k.is_empty or not k.is_valid:
+                        continue
                     minx_, miny_, maxx_, maxy_ = bounds_rec(k)
                     minx = min(minx, minx_)
                     miny = min(miny, miny_)
@@ -2185,7 +2204,7 @@ class CutOut(AppTool):
                     maxy = max(maxy, maxy_)
                 return minx, miny, maxx, maxy
             except TypeError:
-                # it's a Shapely object, return it's bounds
+                # it's a Shapely object, return its bounds
                 if obj:
                     return obj.bounds
 

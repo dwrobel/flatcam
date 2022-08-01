@@ -154,35 +154,35 @@ class EventSensitiveListView(QtWidgets.QTreeView):
                     if self.filename == "":
                         self.app.inform.emit(_("Cancelled."))
                     else:
-                        if self.filename.lower().rpartition('.')[-1] in self.app.grb_list:
+                        if self.filename.lower().rpartition('.')[-1] in self.app.regFK.grb_list:
                             self.app.worker_task.emit({'fcn': self.app.f_handlers.open_gerber,
                                                        'params': [self.filename]})
                         else:
                             event.ignore()
 
-                        if self.filename.lower().rpartition('.')[-1] in self.app.exc_list:
+                        if self.filename.lower().rpartition('.')[-1] in self.app.regFK.exc_list:
                             self.app.worker_task.emit({'fcn': self.app.f_handlers.open_excellon,
                                                        'params': [self.filename]})
                         else:
                             event.ignore()
 
-                        if self.filename.lower().rpartition('.')[-1] in self.app.gcode_list:
+                        if self.filename.lower().rpartition('.')[-1] in self.app.regFK.gcode_list:
                             self.app.worker_task.emit({'fcn': self.app.f_handlers.open_gcode,
                                                        'params': [self.filename]})
                         else:
                             event.ignore()
 
-                        if self.filename.lower().rpartition('.')[-1] in self.app.svg_list:
+                        if self.filename.lower().rpartition('.')[-1] in self.app.regFK.svg_list:
                             object_type = 'geometry'
                             self.app.worker_task.emit({'fcn': self.app.f_handlers.import_svg,
                                                        'params': [self.filename, object_type, None]})
 
-                        if self.filename.lower().rpartition('.')[-1] in self.app.dxf_list:
+                        if self.filename.lower().rpartition('.')[-1] in self.app.regFK.dxf_list:
                             object_type = 'geometry'
                             self.app.worker_task.emit({'fcn': self.app.f_handlers.import_dxf,
                                                        'params': [self.filename, object_type, None]})
 
-                        if self.filename.lower().rpartition('.')[-1] in self.app.prj_list:
+                        if self.filename.lower().rpartition('.')[-1] in self.app.regFK.prj_list:
                             # self.app.open_project() is not Thread Safe
                             self.app.f_handlers.open_project(self.filename)
                         else:
@@ -558,7 +558,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                     try:
                         self.app.regFK.remove_keyword(old_name, update=False)
                         self.app.regFK.prepend_keyword(new_name)
-                        self.app.shell._edit.set_model_data(self.app.myKeywords)
+                        self.app.shell._edit.set_model_data(self.app.regFK.myKeywords)
                     except Exception as e:
                         self.app.log.error(
                             "setData() --> Could not remove the old object name from auto-completer model list. %s" %

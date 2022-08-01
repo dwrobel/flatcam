@@ -319,6 +319,11 @@ class RegisterFK(QtCore.QObject):
         self.exc_list = extensions.exc_list
         self.grb_list = extensions.grb_list
         self.gcode_list = extensions.gcode_list
+        self.svg_list = extensions.svg_list
+        self.dxf_list = extensions.dxf_list
+        self.pdf_list = extensions.pdf_list
+        self.prj_list = extensions.prj_list
+        self.conf_list = extensions.conf_list
 
         autocomplete_kw_list = self.options['util_autocomplete_keywords'].replace(' ', '').split(',')
         self.myKeywords = self.tcl_commands_list + autocomplete_kw_list + self.tcl_keywords
