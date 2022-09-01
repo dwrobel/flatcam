@@ -267,6 +267,7 @@ class PreferencesUIManager(QtCore.QObject):
 
             # Geometry Export
             "geometry_dxf_format":      self.ui.geo_pref_form.geometry_exp_group.dxf_format_combo,
+            "geometry_paths_only":      self.ui.geo_pref_form.geometry_exp_group.svg_paths_only_cb,
 
             # Geometry Editor
             "geometry_editor_sel_limit":        self.ui.geo_pref_form.geometry_editor_group.sel_limit_entry,

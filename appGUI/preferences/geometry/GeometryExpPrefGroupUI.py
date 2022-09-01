@@ -1,6 +1,7 @@
+
 from PyQt6 import QtWidgets, QtCore
 
-from appGUI.GUIElements import FCLabel, FCComboBox, GLay, FCFrame
+from appGUI.GUIElements import FCLabel, FCComboBox, GLay, FCFrame, FCCheckBox
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -36,7 +37,7 @@ class GeometryExpPrefGroupUI(OptionsGroupUI):
         export_grid = GLay(v_spacing=5, h_spacing=3)
         export_frame.setLayout(export_grid)
 
-        # Excellon non-decimal format
+        # DXF format
         self.dxf_format_label = FCLabel("%s:" % _("Format"))
         self.dxf_format_label.setToolTip(
             _("Autodesk DXF Format used when exporting Geometry as DXF.")
@@ -47,5 +48,12 @@ class GeometryExpPrefGroupUI(OptionsGroupUI):
 
         export_grid.addWidget(self.dxf_format_label, 0, 0)
         export_grid.addWidget(self.dxf_format_combo, 0, 1)
+
+        # SVG format
+        self.svg_paths_only_cb = FCCheckBox(_("SVG Paths-Only"))
+        self.svg_paths_only_cb.setToolTip(
+            _("SVG Format. When checked it will export only paths.")
+        )
+        export_grid.addWidget(self.svg_paths_only_cb, 2, 0, 1, 2)
 
         self.layout.addStretch()

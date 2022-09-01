@@ -2326,12 +2326,13 @@ class Geometry(object):
             flat_geo = []
             if self.multigeo:
                 for tool in self.tools:
-                    flat_geo += self.flatten(self.tools[tool]['solid_geometry'])
+                    flat_geo += self.flatten(self.tools[tool]['solid_geometry'],
+                                             pathonly=self.app.options["geometry_paths_only"])
                 geom_svg = unary_union(flat_geo)
             else:
-                geom_svg = unary_union(self.flatten())
+                geom_svg = unary_union(self.flatten(pathonly=self.app.options["geometry_paths_only"]))
         else:
-            geom_svg = unary_union(self.flatten())
+            geom_svg = unary_union(self.flatten(pathonly=self.app.options["geometry_paths_only"]))
 
         xmin, ymin, xmax, ymax = geom_svg.bounds
 

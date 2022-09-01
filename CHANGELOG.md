@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+1.09.2022
+
+- added a new feature for Geometry export-as-SVG, the ability to export only the paths (outlines); the new feature is controlled from a new parameter in Preferences -> Geometry -> Export
+
 1.08.2022
 
 - fixed some bugs in Geometry Editor in regards of Buffer Tool

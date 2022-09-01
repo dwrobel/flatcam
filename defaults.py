@@ -322,6 +322,7 @@ class AppDefaults:
 
         # Geometry Export
         "geometry_dxf_format": 'R2010',
+        "geometry_paths_only": True,
 
         # Geometry Editor
         "geometry_editor_sel_limit": 30,
