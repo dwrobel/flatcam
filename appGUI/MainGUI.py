@@ -2272,7 +2272,7 @@ class MainGUI(QtWidgets.QMainWindow):
     def restore_toolbar_view(self):
         """
         Some toolbars may be hidden by user and here we restore the state of the toolbars visibility that
-        was saved in the options dictionary.
+        was saved in the 'options' dictionary.
 
         :return: None
         """

@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM Evo beta
 - added a way to terminate QThreads safely by waiting; should be much safer
 - made sure that the ArgsThread class receive the signal to stop
 - made sure that on application shutdown, all workers will quit before the actual exit
+- added insurance that the QThread where the ArgThread class is running, really receive the interruption request and it is finished
 
 1.09.2022
 

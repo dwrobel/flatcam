@@ -3767,10 +3767,23 @@ class App(QtCore.QObject):
         :return: None
         """
 
+        # make sure that any change we made while working in the app is saved to the defaults
+        # WARNING !!! Do not hide UI before saving the state of the UI in the defaults file !!!
+        # TODO in the future we need to make a difference between settings that need to be persistent all the time
+        self.defaults.update(self.options)
+        self.preferencesUiManager.save_defaults(silent=True)
+
+        if silent is False:
+            self.log.debug("App.quit_application() --> App Defaults saved.")
+
         # hide the UI so the user experiments a faster shutdown
         self.ui.hide()
 
         self.new_launch.stop.emit()     # noqa
+        # https://forum.qt.io/topic/108777/stop-a-loop-in-object-that-has-been-moved-to-a-qthread/7
+        if self.listen_th.isRunning():
+            self.listen_th.requestInterruption()
+            self.log.debug("ArgThread QThread requested an interruption.")
 
         # close editors before quiting the app, if they are open
         if self.call_source == 'geo_editor':
@@ -3814,14 +3827,6 @@ class App(QtCore.QObject):
             self.plotcanvas.graph_event_disconnect(self.mr)
             self.plotcanvas.graph_event_disconnect(self.mdc)
             self.plotcanvas.graph_event_disconnect(self.kp)
-
-        # make sure that any change we made while working in the app is saved to the defaults
-        # TODO in the future we need to make a difference between settings that need to be persistent all the time
-        self.defaults.update(self.options)
-        self.preferencesUiManager.save_defaults(silent=True)
-
-        if silent is False:
-            self.log.debug("App.quit_application() --> App Defaults saved.")
 
         if self.cmd_line_headless != 1:
             # save app state to file
@@ -8901,6 +8906,7 @@ class ArgsThread(QtCore.QObject):
     def __init__(self):
         super().__init__()
         self.listener = None
+        self.conn = None
         self.thread_exit = False
 
         self.start.connect(self.run)    # noqa
@@ -8910,13 +8916,13 @@ class ArgsThread(QtCore.QObject):
         try:
             self.listener = Listener(*address)
             while self.thread_exit is False:
-                conn = self.listener.accept()
-                self.serve(conn)
+                self.conn = self.listener.accept()
+                self.serve(self.conn)
         except socket.error:
             try:
-                conn = Client(*address)
-                conn.send(sys.argv)
-                conn.send('close')
+                self.conn = Client(*address)
+                self.conn.send(sys.argv)
+                self.conn.send('close')
                 # close the current instance only if there are args
                 if len(sys.argv) > 1:
                     try:
@@ -8940,6 +8946,8 @@ class ArgsThread(QtCore.QObject):
     def serve(self, conn):
         while self.thread_exit is False:
             QtCore.QCoreApplication.processEvents()
+            if QtCore.QThread.currentThread().isInterruptionRequested():
+                break
             msg = conn.recv()
             if msg == 'close':
                 break
@@ -8955,6 +8963,10 @@ class ArgsThread(QtCore.QObject):
     @pyqtSlot()
     def close_listener(self):
         self.thread_exit = True
+        try:
+            self.conn.close()
+        except Exception:
+            pass
         try:
             self.listener.close()
         except Exception:
