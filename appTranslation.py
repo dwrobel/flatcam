@@ -208,6 +208,7 @@ def restart_program(app, ask=None):
     # try to quit the QThread that run ArgsThread class
     try:
         app.listen_th.quit()
+        app.listen_th.wait(1000)
     except Exception as err:
         log.error("FlatCAMTranslation.restart_program() --> %s" % str(err))
 

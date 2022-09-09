@@ -7,6 +7,13 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+10.09.2022
+
+- hided the main UI on application quit to create a user experience of a shutdown without lag
+- added a way to terminate QThreads safely by waiting; should be much safer
+- made sure that the ArgsThread class receive the signal to stop
+- made sure that on application shutdown, all workers will quit before the actual exit
+
 1.09.2022
 
 - added a new feature for Geometry export-as-SVG, the ability to export only the paths (outlines); the new feature is controlled from a new parameter in Preferences -> Geometry -> Export

@@ -3994,7 +3994,7 @@ class AppGerberEditor(QtCore.QObject):
         self.plot_thread = None
 
         # a QThread for the edit process
-        self.thread = QtCore.QThread()
+        # self.thread = QtCore.QThread()
 
         # def entry2option(option, entry):
         #     self.editor_options[option] = float(entry.text())
@@ -5044,7 +5044,11 @@ class AppGerberEditor(QtCore.QObject):
             pass
 
     def clear(self):
-        self.thread.quit()
+        # try:
+        #     self.thread.quit()
+        #     self.thread.wait()
+        # except Exception as erp:
+        #     self.app.log.error("AppGerberEditor.clear() -> %s" % str(erp))
 
         self.active_tool = None
         self.selected = []

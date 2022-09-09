@@ -24,7 +24,6 @@ from io import StringIO
 
 import gc
 
-
 from multiprocessing.connection import Listener, Client
 from multiprocessing import Pool
 import socket
@@ -2701,7 +2700,7 @@ class App(QtCore.QObject):
         """
         Informs the user. Normally on the status bar, optionally also on the shell.
 
-        :param msg:         Text to write. Composed from a first part between brackets which is the level and the rest
+        :param msg:         Text to write. Composed of a first part between brackets which is the level and the rest
                             which is the message. The level part will control the text color and the used icon
         :type msg:          str
         :param shell_echo:  Control if to display the message msg in the Shell
@@ -2710,7 +2709,7 @@ class App(QtCore.QObject):
         """
 
         # Type of message in brackets at the beginning of the message.
-        match = re.search(r"^\[(.*?)\](.*)", msg)
+        match = re.search(r"^\[(.*?)](.*)", msg)
         if match:
             level = match.group(1)
             msg_ = match.group(2)
@@ -3768,6 +3767,11 @@ class App(QtCore.QObject):
         :return: None
         """
 
+        # hide the UI so the user experiments a faster shutdown
+        self.ui.hide()
+
+        self.new_launch.stop.emit()     # noqa
+
         # close editors before quiting the app, if they are open
         if self.call_source == 'geo_editor':
             self.geo_editor.deactivate()
@@ -3815,6 +3819,7 @@ class App(QtCore.QObject):
         # TODO in the future we need to make a difference between settings that need to be persistent all the time
         self.defaults.update(self.options)
         self.preferencesUiManager.save_defaults(silent=True)
+
         if silent is False:
             self.log.debug("App.quit_application() --> App Defaults saved.")
 
@@ -3852,21 +3857,12 @@ class App(QtCore.QObject):
         if silent is False:
             self.log.debug("App.quit_application() --> App UI state saved.")
 
-        # try to quit the Socket opened by ArgsThread class
-        # try:
-        #     # self.new_launch.thread_exit = True
-        #     # self.new_launch.listener.close()
-        #     if sys.platform == 'win32' or sys.platform == 'linux':
-        #         self.new_launch.close_listener()
-        #         # self.new_launch.stop.emit()
-        # except Exception as err:
-        #     self.log.error("App.quit_application() --> %s" % str(err))
-
         # try to quit the QThread that run ArgsThread class
         try:
             # del self.new_launch
             if sys.platform == 'win32':
                 self.listen_th.quit()
+                self.listen_th.wait(1000)
         except Exception as e:
             if silent is False:
                 self.log.error("App.quit_application() --> %s" % str(e))
@@ -3874,6 +3870,8 @@ class App(QtCore.QObject):
         # terminate workers
         # self.workers.__del__()
         self.clear_pool()
+
+        self.workers.quit()
 
         # quit app by signalling for self.kill_app() method
         # self.close_app_signal.emit()
@@ -8906,7 +8904,7 @@ class ArgsThread(QtCore.QObject):
         self.thread_exit = False
 
         self.start.connect(self.run)    # noqa
-        self.stop.connect(self.close_listener)  # noqa
+        self.stop.connect(self.close_listener, type=Qt.ConnectionType.QueuedConnection)  # noqa
 
     def my_loop(self, address):
         try:
@@ -8941,6 +8939,7 @@ class ArgsThread(QtCore.QObject):
 
     def serve(self, conn):
         while self.thread_exit is False:
+            QtCore.QCoreApplication.processEvents()
             msg = conn.recv()
             if msg == 'close':
                 break

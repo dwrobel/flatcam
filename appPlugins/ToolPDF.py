@@ -378,7 +378,7 @@ class ToolPDF(AppTool):
             pass
 
         self.check_thread.timeout.connect(self.periodic_check_handler)
-        self.check_thread.start(QtCore.QThread.Priority.HighPriority)
+        self.check_thread.start(QtCore.QThread.Priority.HighPriority)   # noqa
 
     def periodic_check_handler(self):
         """

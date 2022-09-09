@@ -41,3 +41,8 @@ class WorkerStack(QtCore.QObject):
 
     def on_task_completed(self, worker_name):
         self.load[str(worker_name)] -= 1
+
+    def quit(self):
+        for thread in self.threads:
+            thread.quit()
+            thread.wait()
