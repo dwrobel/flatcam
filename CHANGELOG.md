@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM Evo beta
 25.09.2022
 
 - added a new setting in Preferences ("3D compatibility") controlled by a checkbox. If the checkbox is checked then multithreading is disabled for the 3D mode (lower performance but perhaps more compatibility, especially for Linux) - this was done from the research done by Matti Eiden on bitbucket
+- small fix in ToolCutout Plugin when trying to set a checkbox state with a float value which still works in Windows but creates issues in other OS's
 
 10.09.2022
 
