@@ -102,6 +102,12 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.ge_label, 0, 0)
         grid1.addWidget(self.ge_radio, 0, 1)
 
+        self.ge_comp_cb = FCCheckBox(_("3D Compatibility"))
+        self.ge_comp_cb.setToolTip(_("Check this if you have problems in 3D mode. Works only for 3D mode.\n"
+                                     "It will disable performance mods but perhaps add more compatibility."))
+
+        grid1.addWidget(self.ge_comp_cb, 1, 0, 1, 2)
+
         # separator_line = QtWidgets.QFrame()
         # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)

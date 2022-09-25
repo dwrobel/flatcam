@@ -94,7 +94,8 @@ class FlatCAMObj(QtCore.QObject):
 
         if self.app.use_3d_engine:
             self.shapes = self.app.plotcanvas.new_shape_group()
-            self.mark_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1, pool=self.app.pool)
+            self.mark_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1, pool=self.app.pool,
+                                               fcoptions=self.app.options)
         else:
             self.shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=name)
             self.mark_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=name + "_mark_shapes")

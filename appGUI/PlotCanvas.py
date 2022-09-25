@@ -511,7 +511,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         # sc = ShapeCollection(parent=self.view.scene, pool=self.app.pool, **kwargs)
         # self.shape_collections.append(sc)
         # return sc
-        return ShapeCollection(parent=self.view.scene, pool=self.fcapp.pool, **kwargs)
+        return ShapeCollection(parent=self.view.scene, pool=self.fcapp.pool, fcoptions=self.fcapp.options, **kwargs)
 
     def new_cursor(self, big=None):
         """
