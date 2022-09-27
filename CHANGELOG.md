@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+27.09.2022
+
+- in Milling Plugin, for Excellon target, re-enabled the control over the Feedrate X-Y parameter
+
 25.09.2022
 
 - added a new setting in Preferences ("3D compatibility") controlled by a checkbox. If the checkbox is checked then multithreading is disabled for the 3D mode (lower performance but perhaps more compatibility, especially for Linux) - this was done from the research done by Matti Eiden on bitbucket

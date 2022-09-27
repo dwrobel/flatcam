@@ -1280,8 +1280,6 @@ class ToolMilling(AppTool, Excellon):
             self.ui.overlap_entry.show()
             self.ui.connect_cb.show()
 
-            self.ui.frxylabel.hide()
-            self.ui.xyfeedrate_entry.hide()
             self.ui.extracut_cb.hide()
             self.ui.e_cut_entry.hide()
 
@@ -4620,9 +4618,6 @@ class MillingUI:
 
         param_grid.addWidget(self.frxylabel, 36, 0)
         param_grid.addWidget(self.xyfeedrate_entry, 36, 1)
-
-        self.frxylabel.hide()
-        self.xyfeedrate_entry.hide()
 
         # Feedrate Z
         self.frzlabel = FCLabel('%s:' % _('Feedrate Z'))
