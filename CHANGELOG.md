@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+2.10.2022
+
+- really small UI change in 2-Sided Plugin
+
 27.09.2022
 
 - in Milling Plugin, for Excellon target, re-enabled the control over the Feedrate X-Y parameter

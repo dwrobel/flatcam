@@ -871,7 +871,7 @@ class DsidedUI:
         grid_mirror.addWidget(separator_line, 3, 0, 1, 3)
 
         # ## Reference
-        self.axloc_label = FCLabel('%s' % _("Reference"), bold=True)
+        self.axloc_label = FCLabel('%s:' % _("Reference"), bold=True)
         self.axloc_label.setToolTip(
             _("The coordinates used as reference for the mirror operation.\n"
               "Can be:\n"
