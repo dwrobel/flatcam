@@ -335,13 +335,29 @@ class ApertureMacro:
         """
 
         pol = mods[0]
-        n = mods[1]
-        points = [(0, 0)] * (n + 1)
 
-        for i in range(n + 1):
-            points[i] = mods[2 * i + 2:2 * i + 4]
+        # n = mods[1]
+        # points = [(0, 0)] * (n + 1)
+        #
+        # for i in range(n + 1):
+        #     points[i] = mods[2 * i + 2:2 * i + 4]
+        #
+        # angle = mods[2 * n + 4]
 
-        angle = mods[2 * n + 4]
+        # ---------------------------
+        # added to fix the issue on Allegro 17.2 Gerber's which have fewer points than declared
+        # discard first 2 values (exposure and vertex points number) and last one (rotation)
+        vertex_list = mods[2:-1]
+        # rotation is the last value
+        angle = mods[-1]
+        n = int(len(vertex_list) / 2)
+        points = [(0, 0)] * n
+
+        for i in range(n):
+            start = 2 * i
+            stop = (2 * i) + 2
+            points[i] = vertex_list[start:stop]
+        # ---------------------------
 
         poly = Polygon(points)
         poly_rotated = affinity.rotate(poly, angle, origin=(0, 0))

@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+19.10.2022
+
+- added a hack so the Gerber files from Allegro 17.2 (which do not follow the Gerber specifications) can be loaded
+
 2.10.2022
 
 - really small UI change in 2-Sided Plugin
