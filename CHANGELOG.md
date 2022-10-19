@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM Evo beta
 19.10.2022
 
 - added a hack so the Gerber files from Allegro 17.2 (which do not follow the Gerber specifications) can be loaded
+- fixed an issue when exporting huge SVG files from the Film Tool by adding a fallback and using a custom XML parser with the 'huge_tree' option set
 
 2.10.2022
 

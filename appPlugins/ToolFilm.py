@@ -707,8 +707,13 @@ class Film(AppTool):
         # Change the attributes of the exported SVG
         # We don't need stroke-width - wrong, we do when we have lines with certain width
         # We set opacity to maximum
-        # We set the color to the inversed color
-        root = ET.fromstring(svg_geo)
+        # We set the color to the inverted color
+        try:
+            root = ET.fromstring(svg_geo)
+        except Exception:
+            self.app.log.debug("Film.create_negative_svg() getting XML root failed. Trying to use huge_tree option.")
+            root = ET.fromstring(svg_geo, parser=ET.XMLParser(huge_tree=True))
+
         for child in root:
             child.set('fill', self.get_complementary(color))
             child.set('opacity', str(opacity))
@@ -925,13 +930,17 @@ class Film(AppTool):
             make_positive_film(color=color, transparency_level=transparency_level,
                                scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y)
 
-    @staticmethod
-    def create_positive_svg(svg_geo, box_bounds, margin,  color, opacity, svg_units):
+    def create_positive_svg(self, svg_geo, box_bounds, margin,  color, opacity, svg_units):
         # Change the attributes of the exported SVG
         # We don't need stroke-width
         # We set opacity to maximum
         # We set the colour to WHITE
-        root = ET.fromstring(svg_geo)
+        try:
+            root = ET.fromstring(svg_geo)
+        except Exception:
+            self.app.log.debug("Film.create_positive_svg() getting XML root failed. Trying to use huge_tree option.")
+            root = ET.fromstring(svg_geo, parser=ET.XMLParser(huge_tree=True))
+
         for child in root:
             child.set('fill', str(color))
             child.set('opacity', str(opacity))
@@ -939,7 +948,7 @@ class Film(AppTool):
 
         exported_svg = ET.tostring(root)
 
-        # This contain the measure units
+        # This contains the measure units
         uom = svg_units
 
         # Convert everything to strings for use in the xml doc
@@ -1208,7 +1217,7 @@ class Film(AppTool):
         if scale_stroke_factor <= 0:
             scale_stroke_factor = 0.01
 
-        # Convert to a SVG
+        # Convert to a SVG file
         svg_elem = geom.svg(scale_factor=scale_stroke_factor)
         return svg_elem
 
