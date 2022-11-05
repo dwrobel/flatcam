@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+6.11.2022
+
+- if PikePDF module is not available then show an error but run the app (currently, for Python 3.11 is the only module not available)
+
 19.10.2022
 
 - added a hack so the Gerber files from Allegro 17.2 (which do not follow the Gerber specifications) can be loaded

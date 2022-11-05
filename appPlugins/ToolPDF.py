@@ -7,8 +7,14 @@
 
 from appTool import *
 from appParsers.ParsePDF import PdfParser
-from pikepdf import Pdf, parse_content_stream
+
 from camlib import grace
+
+HAS_PIKE_MODULE = True
+try:
+    from pikepdf import Pdf, parse_content_stream
+except ModuleNotFoundError:
+    HAS_PIKE_MODULE = False
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -94,6 +100,11 @@ class ToolPDF(AppTool):
     def open_pdf(self, filename):
         if not os.path.exists(filename):
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
+            return
+
+        if HAS_PIKE_MODULE is False:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+            self.app.log.error("PikePDF module is not available.")
             return
 
         short_name = filename.split('/')[-1].split('\\')[-1]
