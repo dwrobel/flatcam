@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+7.11.2022
+
+- in Drilling Plugin fixed a situation when having tools with the same diameter will get them multiplied by the number of those tools
+
 6.11.2022
 
 - if PikePDF module is not available then show an error but run the app (currently, for Python 3.11 is the only module not available)
