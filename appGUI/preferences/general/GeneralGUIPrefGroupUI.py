@@ -396,6 +396,9 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         qsettings = QSettings("Open Source", "FlatCAM")
         qsettings.setValue('style', str(style))
 
+        new_style = QtWidgets.QStyleFactory.keys()[int(style)]
+        QtWidgets.QApplication.setStyle(new_style)
+
         # This will write the setting to the platform specific storage.
         del qsettings
 

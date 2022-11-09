@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+9.11.2022
+
+- when changing the style for the decorations from Preferences, now change is applied immediately
+
 7.11.2022
 
 - in Drilling Plugin fixed a situation when having tools with the same diameter will get them multiplied by the number of those tools

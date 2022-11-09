@@ -157,6 +157,8 @@ if __name__ == '__main__':
             idx = 0
         style = QtWidgets.QStyleFactory.keys()[idx]
         app.setStyle(style)
+    else:
+        app.setStyle('windowsvista')
 
     fc = App(qapp=app)
 
