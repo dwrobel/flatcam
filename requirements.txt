@@ -40,7 +40,7 @@ pyopengl
 pyqt6>=6.1.0
 freetype-py
 vispy>=0.9.0
-pyqtdarktheme=1.1.1
+pyqtdarktheme==1.1.1
 
 gdal
 rasterio
