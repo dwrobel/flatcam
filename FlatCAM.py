@@ -134,13 +134,19 @@ if __name__ == '__main__':
                 msgbox.setIcon(QtWidgets.QMessageBox.Icon.Critical)
 
                 bt_yes = msgbox.addButton("Quit", QtWidgets.QMessageBox.ButtonRole.YesRole)
+                bt_ret = msgbox.addButton("Return", QtWidgets.QMessageBox.ButtonRole.NoRole)
 
                 msgbox.setDefaultButton(bt_yes)
                 # msgbox.setTextFormat(Qt.TextFormat.RichText)
                 msgbox.exec()
+
+                response = msgbox.clickedButton()
+                if response == bt_ret:
+                    pass
             except Exception:
-                pass
-        QtWidgets.QApplication.quit()
+                QtWidgets.QApplication.quit()
+        else:
+            QtWidgets.QApplication.quit()
         # or QtWidgets.QApplication.exit(0)
 
     sys.excepthook = excepthook

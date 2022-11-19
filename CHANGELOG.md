@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+19.11.2022
+
+- added a 'return' button when a fatal error is encountered allowing the user to continue the work
+- fixed a crash in Milling Plugin when trying to mill slots that do not have drills in the same file
+
 9.11.2022
 
 - when changing the style for the decorations from Preferences, now change is applied immediately

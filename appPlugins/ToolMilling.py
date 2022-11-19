@@ -2819,17 +2819,26 @@ class ToolMilling(AppTool, Excellon):
 
             buff_dia = float(tools_dict[tool]['tooldia']) / 2.0 + offset
             if mill_type in ['drills', 'both']:
-                drills_tool_geo = [
-                    d_p.buffer(buff_dia) for d_p in tools_dict[tool]['drills']
-                ]
-                total_paint_geo = drills_tool_geo
-            elif mill_type in ['slots', 'both']:
-                slots_tool_geo = [
-                    LineString(s_l).buffer(buff_dia) for s_l in tools_dict[tool]['slots']
-                ]
-                total_paint_geo = slots_tool_geo
-            elif mill_type == 'both':
+                try:
+                    drills_tool_geo = [
+                        d_p.buffer(buff_dia) for d_p in tools_dict[tool]['drills']
+                    ]
+                    total_paint_geo = drills_tool_geo
+                except KeyError:
+                    total_paint_geo = []
+            if mill_type in ['slots', 'both']:
+                try:
+                    slots_tool_geo = [
+                        LineString(s_l).buffer(buff_dia) for s_l in tools_dict[tool]['slots']
+                    ]
+                    total_paint_geo = slots_tool_geo
+                except KeyError:
+                    total_paint_geo = []
+            if mill_type == 'both':
                 total_paint_geo = drills_tool_geo + slots_tool_geo
+
+            if not total_paint_geo:
+                continue
 
             pol_nr = 0
             geo_len = len(total_paint_geo)
