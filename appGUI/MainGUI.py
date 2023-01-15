@@ -2945,7 +2945,7 @@ class MainGUI(QtWidgets.QMainWindow):
     def keyPressEvent(self, event):
         """
         Key event handler for the entire app.
-        Some of the key events are also treated locally in the FlatCAM editors
+        Some key events are also treated locally in the FlatCAM editors
 
         :param event: QT event
         :return:
@@ -5133,8 +5133,8 @@ class ShortcutsTab(QtWidgets.QWidget):
             _('Esc'), _("Deselects all objects")
         )
 
-        self.app_sh_msg = self.app_sh_title + self.app_sh_no_mod + self.app_sh_ctrl_mod + self.app_sh_shift_mod + \
-                          self.app_sh_alt_mod + self.app_sh_combo_mod + self.app_sh_div
+        self.app_sh_msg = self.app_sh_title + self.app_sh_no_mod + self.app_sh_ctrl_mod \
+                          + self.app_sh_shift_mod + self.app_sh_alt_mod + self.app_sh_combo_mod + self.app_sh_div
         self.sh_app = QtWidgets.QTextEdit()
         self.sh_app.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
 
