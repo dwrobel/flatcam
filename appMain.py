@@ -229,7 +229,7 @@ class App(QtCore.QObject):
 
     message = QtCore.pyqtSignal(str, str, str)
 
-    # Emmited when shell command is finished(one command only)
+    # Emitted when a shell command is finished(one command only)
     shell_command_finished = QtCore.pyqtSignal(object)
     # Emitted when multiprocess pool has been recreated
     pool_recreated = QtCore.pyqtSignal(object)
@@ -239,7 +239,7 @@ class App(QtCore.QObject):
     # used to signal that there are arguments for the app
     args_at_startup = QtCore.pyqtSignal(list)
     # a reusable signal to replot a list of objects
-    # should be disconnected after use so it can be reused
+    # should be disconnected after use, so it can be reused
     replot_signal = pyqtSignal(list)
     # signal emitted when jumping
     jump_signal = pyqtSignal(tuple)
@@ -334,7 +334,7 @@ class App(QtCore.QObject):
         # variable to store if a command is active (then the var is not None) and which one it is
         self.command_active = None
         # variable to store the status of moving selection action
-        # None value means that it's not an selection action
+        # None value means that it's not a selection action
         # True value = a selection from left to right
         # False value = a selection from right to left
         self.selection_type = None
@@ -371,7 +371,7 @@ class App(QtCore.QObject):
 
         self.text_editor_tab = None
 
-        # here store the color of a Tab text before it is changed so it can be restored in the future
+        # here store the color of a Tab text before it is changed, so it can be restored in the future
         self.old_tab_text_color = None
 
         # reference for the self.ui.code_editor
@@ -901,7 +901,7 @@ class App(QtCore.QObject):
                                     color=QtGui.QColor("lightgray"))
         start_plot_time = time.time()  # debug
 
-        # setup the PlotCanvas
+        # set up the PlotCanvas
         self.plotcanvas = self.on_plotcanvas_setup()
         if self.plotcanvas == 'fail':
             self.splash.finish(self.ui)
@@ -1059,7 +1059,7 @@ class App(QtCore.QObject):
         # ################################## ADDING FlatCAM EDITORS section #########################################
         # ###########################################################################################################
 
-        # watch out for the position of the editors instantiation ... if it is done before a save of the default values
+        # watch out for the position of the editor instantiation ... if it is done before a save of the default values
         # at the first launch of the App , the editors will not be functional.
         try:
             self.geo_editor = AppGeoEditor(self)
@@ -1154,7 +1154,7 @@ class App(QtCore.QObject):
 
         # signals for displaying messages in the Tcl Shell are now connected in the ToolShell class
 
-        # loading an project
+        # loading a project
         self.restore_project.connect(self.f_handlers.restore_project_handler)   # noqa
         self.restore_project_objects_sig.connect(self.f_handlers.restore_project_objects)   # noqa
         # signal to be called when the app is quiting
@@ -2903,9 +2903,10 @@ class App(QtCore.QObject):
                 QtWidgets.QDialog.__init__(self, parent=parent)
 
                 self.app = app
+                self.app_icon = self.app.ui.app_icon
 
                 # Icon and title
-                self.setWindowIcon(parent.app_icon)
+                self.setWindowIcon(self.app_icon)
                 self.setWindowTitle(_("About"))
                 self.resize(600, 200)
                 # self.setStyleSheet("background-image: url(share/flatcam_icon256.png); background-attachment: fixed")
@@ -3424,6 +3425,7 @@ class App(QtCore.QObject):
                 QtWidgets.QDialog.__init__(self, parent=parent)
 
                 self.app = app
+                self.app_icon = self.app.ui.app_icon
 
                 open_source_link = "<a href = 'https://opensource.org/'<b>Open Source</b></a>"
                 new_features_link = "<a href = 'https://bitbucket.org/jpcgt/flatcam/pull-requests/'" \
@@ -3434,7 +3436,7 @@ class App(QtCore.QObject):
                                 "donations&business=WLTJJ3Q77D98L&currency_code=USD&source=url'<b>click</b></a>"
 
                 # Icon and title
-                self.setWindowIcon(parent.app_icon)
+                self.setWindowIcon(self.app_icon)
                 self.setWindowTitle('%s ...' % _("How To"))
                 self.resize(750, 375)
 
@@ -5373,7 +5375,7 @@ class App(QtCore.QObject):
                 if obj:
                     return obj.bounds()
 
-        bounds = bounds_rec(obj_list)
+        bounds = bounds_rec(obj_list)   # noqa
 
         if not val:
             dia_box_location = (0.0, 0.0)
@@ -5698,9 +5700,9 @@ class App(QtCore.QObject):
 
             # create solid_geometry
             solid_geometry = []
-            for apid in apertures:
-                for geo_el in apertures[apid]['geometry']:
-                    solid_geometry.append(geo_el['solid'])
+            for apid_val in apertures.values():
+                for geo_el in apid_val['geometry']:
+                    solid_geometry.append(geo_el['solid'])  # noqa
 
             solid_geometry = MultiPolygon(solid_geometry)
             solid_geometry = solid_geometry.buffer(0.0000001)
@@ -6306,7 +6308,7 @@ class App(QtCore.QObject):
         self.ui.toggle_coords(checked=self.options["global_coordsbar_show"])
         self.ui.toggle_delta_coords(checked=self.options["global_delta_coordsbar_show"])
 
-    def on_notebook_closed(self, tab_obj_name):
+    def on_notebook_closed(self):
 
         # closed_plugin_name = self.ui.plugin_scroll_area.widget().objectName()
         # # print(closed_plugin_name)

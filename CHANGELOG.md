@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+15.01.2023
+
+- PEP8 changes
+
 19.11.2022
 
 - added a 'return' button when a fatal error is encountered allowing the user to continue the work
