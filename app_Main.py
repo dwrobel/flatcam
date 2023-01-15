@@ -292,7 +292,7 @@ class App(QtCore.QObject):
         if sys.platform == 'win32' or sys.platform == 'linux':
             # make sure the thread is stored by using a self. otherwise it's garbage collected
             self.listen_th = QtCore.QThread()
-            self.listen_th.start(priority=QtCore.QThread.LowestPriority)
+            self.listen_th.start(priority=QtCore.QThread.Priority.LowestPriority)
 
             self.new_launch = ArgsThread()
             self.new_launch.open_signal[list].connect(self.on_startup_args)
@@ -590,15 +590,16 @@ class App(QtCore.QObject):
         # add ToolTips for the Preprocessor ComboBoxes in Preferences
         for it in range(self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo.count()):
             self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo.setItemData(
-                it, self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo.itemText(it), QtCore.Qt.ToolTipRole)
+                it, self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo.itemText(it),
+                QtCore.Qt.ItemDataRole.ToolTipRole)
         for it in range(self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.count()):
             self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.setItemData(
                 it, self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.itemText(it),
-                QtCore.Qt.ToolTipRole)
+                QtCore.Qt.ItemDataRole.ToolTipRole)
         for it in range(self.ui.tools_defaults_form.tools_drill_group.pp_excellon_name_cb.count()):
             self.ui.tools_defaults_form.tools_drill_group.pp_excellon_name_cb.setItemData(
                 it, self.ui.tools_defaults_form.tools_drill_group.pp_excellon_name_cb.itemText(it),
-                QtCore.Qt.ToolTipRole)
+                QtCore.Qt.ItemDataRole.ToolTipRole)
 
         # ###########################################################################################################
         # ##################################### UPDATE PREFERENCES GUI FORMS ########################################

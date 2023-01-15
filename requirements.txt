@@ -14,11 +14,11 @@ setuptools
 dill
 rtree
 pyopengl
-vispy
+vispy=0.7.3
 ortools>=7.0
 svg.path>=4.0
 simplejson
-shapely>=1.7.0
+shapely=1.8.5
 freetype-py
 fontTools
 rasterio

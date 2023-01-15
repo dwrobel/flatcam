@@ -55,7 +55,7 @@ if __name__ == '__main__':
         sys.exit(0)
 
     debug_trace()
-    VisPyPatches.apply_patches()
+    # VisPyPatches.apply_patches()
 
     # apply High DPI support
     settings = QSettings("Open Source", "FlatCAM")

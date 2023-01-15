@@ -1161,7 +1161,7 @@ class FCDoubleSlider(QtWidgets.QSlider):
 
 class FCSliderWithDoubleSpinner(QtWidgets.QFrame):
 
-    def __init__(self, min=0, max=10000.0000, step=1, precision=4, orientation='horizontal', **kwargs):
+    def __init__(self, min=0, max=10000, step=1, precision=4, orientation='horizontal', **kwargs):
         super().__init__(**kwargs)
 
         self.slider = FCDoubleSlider(orientation=orientation)
@@ -4159,7 +4159,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                         painter.setFont(font)
 
                     # Draw the line number right justified at the position of the line.
-                    paint_rect = QtCore.QRect(0, block_top, number_bar.width(), font_metrics.height())
+                    paint_rect = QtCore.QRect(0, int(block_top), int(number_bar.width()), int(font_metrics.height()))
                     # I add some spaces to the line_count to prettify; make sure to remember adjust the width in the
                     # NumberBar() class above
                     painter.drawText(paint_rect, Qt.AlignRight, ' ' + str(line_count) + '  ')
