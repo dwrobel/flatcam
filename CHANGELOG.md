@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 15.01.2023
 
 - a number of fixes so the 8.994 version will work in current configurations
+- minor fixes
 
 7.11.2020
 
