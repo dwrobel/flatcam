@@ -21,17 +21,23 @@ from io import StringIO
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
+# try:
+#     from foronoi import Voronoi
+#     from foronoi import Polygon as voronoi_poly
+#     VORONOI_ENABLED = True
+# except Exception:
+#     try:
+#         from shapely.ops import voronoi_diagram
+#         VORONOI_ENABLED = True
+#         # from appCommon.Common import voronoi_diagram
+#     except Exception:
+#         VORONOI_ENABLED = False
 try:
-    from foronoi import Voronoi
-    from foronoi import Polygon as voronoi_poly
+    from shapely.ops import voronoi_diagram
     VORONOI_ENABLED = True
+    # from appCommon.Common import voronoi_diagram
 except Exception:
-    try:
-        from shapely.ops import voronoi_diagram
-        VORONOI_ENABLED = True
-        # from appCommon.Common import voronoi_diagram
-    except Exception:
-        VORONOI_ENABLED = False
+    VORONOI_ENABLED = False
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -548,7 +554,7 @@ class ToolLevelling(AppTool, CNCjob):
             al_method = self.ui.al_method_radio.get_value()
             if al_method == 'v':
                 if VORONOI_ENABLED is True:
-                    self.generate_voronoi_geometry_2(pts=vor_pts_list)
+                    self.generate_voronoi_geometry(pts=vor_pts_list)
                     # generate Probing GCode
                     self.probing_gcode_text = self.probing_gcode(storage=self.al_voronoi_geo_storage)
                 else:
@@ -736,7 +742,7 @@ class ToolLevelling(AppTool, CNCjob):
                 return
 
         new_voronoi = []
-        for p in voronoi_union:
+        for p in voronoi_union.geoms:
             new_voronoi.append(p.intersection(env))
 
         for pt_key in list(self.al_voronoi_geo_storage.keys()):
@@ -744,52 +750,55 @@ class ToolLevelling(AppTool, CNCjob):
                 if self.al_voronoi_geo_storage[pt_key]['point'].within(poly):
                     self.al_voronoi_geo_storage[pt_key]['geo'] = poly
 
-    def generate_voronoi_geometry_2(self, pts):
-        env = self.solid_geo.envelope
-        fact = 1 if self.units == 'MM' else 0.039
-        env = env.buffer(fact)
-        env_poly = voronoi_poly(list(env.exterior.coords))
-
-        new_pts = [[pt.x, pt.y] for pt in pts]
-
-        # Initialize the algorithm
-        v = Voronoi(env_poly)
-
-        # calculate the Voronoi diagram
-        try:
-            v.create_diagram(new_pts)
-        except AttributeError as e:
-            self.app.log.error("CNCJobObject.generate_voronoi_geometry_2() --> %s" % str(e))
-            new_pts_2 = []
-            for pt_index in range(len(new_pts)):
-                new_pts_2.append([
-                    new_pts[pt_index][0] + random.random() * 1e-03,
-                    new_pts[pt_index][1] + random.random() * 1e-03
-                ])
-
-            try:
-                v.create_diagram(new_pts_2)
-            except Exception:
-                print("Didn't work.")
-                return
-
-        new_voronoi = []
-        for p in v.points:
-            p_coords = [(coord.x, coord.y) for coord in p.get_coordinates()]
-            new_pol = Polygon(p_coords)
-            new_voronoi.append(new_pol)
-
-        new_voronoi = MultiPolygon(new_voronoi)
-
-        # new_voronoi = []
-        # for p in voronoi_union:
-        #     new_voronoi.append(p.intersection(env))
-        #
-        for pt_key in list(self.al_voronoi_geo_storage.keys()):
-            for poly in new_voronoi:
-                if self.al_voronoi_geo_storage[pt_key]['point'].within(poly) or \
-                        self.al_voronoi_geo_storage[pt_key]['point'].intersects(poly):
-                    self.al_voronoi_geo_storage[pt_key]['geo'] = poly
+    # def generate_voronoi_geometry_2(self, pts):
+    #     env = self.solid_geo.envelope
+    #     fact = 1 if self.units == 'MM' else 0.039
+    #     env = env.buffer(fact)
+    #     env_poly = voronoi_poly(tuple(env.exterior.coords))
+    #
+    #     new_pts = [[pt.x, pt.y] for pt in pts]
+    #     print(new_pts)
+    #     print(env_poly)
+    #
+    #     # Initialize the algorithm
+    #     v = Voronoi(env_poly)
+    #
+    #     # calculate the Voronoi diagram
+    #     try:
+    #         v.create_diagram(new_pts)
+    #     except AttributeError as e:
+    #         self.app.log.error("CNCJobObject.generate_voronoi_geometry_2() --> %s" % str(e))
+    #         new_pts_2 = []
+    #         for pt_index in range(len(new_pts)):
+    #             new_pts_2.append([
+    #                 new_pts[pt_index][0] + random.random() * 1e-03,
+    #                 new_pts[pt_index][1] + random.random() * 1e-03
+    #             ])
+    #
+    #         try:
+    #             v.create_diagram(new_pts_2)
+    #         except Exception:
+    #             print("Didn't work.")
+    #             return
+    #
+    #     new_voronoi = []
+    #     for p in v.sites:
+    #         # p_coords = [(coord.x, coord.y) for coord in p.get_coordinates()]
+    #         p_coords = [(p.x, p.y)]
+    #         new_pol = Polygon(p_coords)
+    #         new_voronoi.append(new_pol)
+    #
+    #     new_voronoi = MultiPolygon(new_voronoi)
+    #
+    #     # new_voronoi = []
+    #     # for p in voronoi_union:
+    #     #     new_voronoi.append(p.intersection(env))
+    #     #
+    #     for pt_key in list(self.al_voronoi_geo_storage.keys()):
+    #         for poly in new_voronoi:
+    #             if self.al_voronoi_geo_storage[pt_key]['point'].within(poly) or \
+    #                     self.al_voronoi_geo_storage[pt_key]['point'].intersects(poly):
+    #                 self.al_voronoi_geo_storage[pt_key]['geo'] = poly
 
     def generate_bilinear_geometry(self, pts):
         self.al_bilinear_geo_storage = pts
@@ -878,7 +887,7 @@ class ToolLevelling(AppTool, CNCjob):
                     pts_list = []
                     for k in self.al_voronoi_geo_storage:
                         pts_list.append(self.al_voronoi_geo_storage[k]['point'])
-                    self.generate_voronoi_geometry_2(pts=pts_list)
+                    self.generate_voronoi_geometry(pts=pts_list)
 
                     self.probing_gcode_text = self.probing_gcode(self.al_voronoi_geo_storage)
                 else:
