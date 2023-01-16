@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+16.01.2023
+
+- fixed an encoding error in the Excellon parser
+
 20.05.2022
 
 - small fix for a bug that interfere with running the 2D graphic mode
