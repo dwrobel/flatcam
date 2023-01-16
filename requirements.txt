@@ -17,7 +17,7 @@ simplejson
 qrcode>=6.1
 
 rtree
-foronoi>=1.0.3
+# foronoi>=1.0.3
 shapely>=1.8.0
 
 # ###############################

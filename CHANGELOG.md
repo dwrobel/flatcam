@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM Evo beta
 16.01.2023
 
 - fixed a decoding error in the Excellon parser
+- fixed the Voronoi generation in the Autolevelling Tool (removed the Foronoi package due of issues and now using the embedded functionality from Shapely)
 
 20.05.2022
 
