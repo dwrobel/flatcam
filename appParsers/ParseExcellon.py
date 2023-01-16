@@ -82,7 +82,7 @@ class Excellon(Geometry):
 
         self.source_file = ''
 
-        # it serve to flag if a start routing or a stop routing was encountered
+        # it serves to flag if a start routing or a stop routing was encountered
         # if a stop is encounter and this flag is still 0 (so there is no stop for a previous start) issue error
         self.routing_flag = 1
 
@@ -361,8 +361,8 @@ class Excellon(Geometry):
 
                         self.excellon_format_upper_in = match.group(1)
                         self.excellon_format_lower_in = match.group(2)
-                        self.app.log.warning("Excellon format preset found in comments: %s:%s" %
-                                    (match.group(1), match.group(2)))
+                        aef_msg = "Excellon format preset found in comments: %s:%s" % (match.group(1), match.group(2))
+                        self.app.log.warning(aef_msg)
                         continue
                     else:
                         self.app.log.warning("Line ignored, it's a comment: %s" % eline)
@@ -542,8 +542,8 @@ class Excellon(Geometry):
 
                             # we have a slot
                             self.app.log.debug('Parsed a slot with coordinates: ' + str([slot_start_x,
-                                                                                slot_start_y, slot_stop_x,
-                                                                                slot_stop_y]))
+                                                                                         slot_start_y, slot_stop_x,
+                                                                                         slot_stop_y]))
 
                             # store current tool diameter as slot diameter
                             slot_dia = 0.05
@@ -616,8 +616,8 @@ class Excellon(Geometry):
 
                             # we have a slot
                             self.app.log.debug('Parsed a slot with coordinates: ' + str([slot_start_x,
-                                                                                slot_start_y, slot_stop_x,
-                                                                                slot_stop_y]))
+                                                                                         slot_start_y, slot_stop_x,
+                                                                                         slot_stop_y]))
 
                             # store current tool diameter as slot diameter
                             slot_dia = 0.05
@@ -897,11 +897,13 @@ class Excellon(Geometry):
                         self.app.log.warning("UNITS found inline - Value after conversion: %s" % self.units)
 
                         if self.units == 'MM':
-                            self.app.log.warning("Excellon format preset is: %s:%s" %
-                                        (str(self.excellon_format_upper_mm), str(self.excellon_format_lower_mm)))
+                            b_msg = "Excellon format preset is: %s:%s" % \
+                                    (str(self.excellon_format_upper_mm), str(self.excellon_format_lower_mm))
+                            self.app.log.warning(b_msg)
                         else:
-                            self.app.log.warning("Excellon format preset is: %s:%s" %
-                                        (str(self.excellon_format_upper_in), str(self.excellon_format_lower_in)))
+                            a_msg = "Excellon format preset is: %s:%s" % \
+                                    (str(self.excellon_format_upper_in), str(self.excellon_format_lower_in))
+                            self.app.log.warning(a_msg)
                         self.app.log.warning("Type of ZEROS found inline, in header: %s" % self.zeros)
                         continue
 
@@ -909,21 +911,25 @@ class Excellon(Geometry):
                     if "INCH" in eline:
                         line_units = "IN"
                         # Modified for issue #80
-                        self.app.log.warning("Type of UNITS found inline, in header, before conversion: %s" % line_units)
+                        f_msg = "Type of UNITS found inline, in header, before conversion: %s" % line_units
+                        self.app.log.warning(f_msg)
                         self.convert_units(line_units)
                         self.app.log.warning("Type of UNITS found inline, in header, after conversion: %s" % self.units)
-                        self.app.log.warning("Excellon format preset is: %s:%s" %
-                                    (str(self.excellon_format_upper_in), str(self.excellon_format_lower_in)))
+                        ff_msg = "Excellon format preset is: %s:%s" % \
+                                 (str(self.excellon_format_upper_in), str(self.excellon_format_lower_in))
+                        self.app.log.warning(ff_msg)
                         self.excellon_units_found = "IN"
                         continue
                     elif "METRIC" in eline:
                         line_units = "MM"
                         # Modified for issue #80
-                        self.app.log.warning("Type of UNITS found inline, in header, before conversion: %s" % line_units)
+                        f_msg = "Type of UNITS found inline, in header, before conversion: %s" % line_units
+                        self.app.log.warning(f_msg)
                         self.convert_units(line_units)
                         self.app.log.warning("Type of UNITS found inline, in header, after conversion: %s" % self.units)
-                        self.app.log.warning("Excellon format preset is: %s:%s" %
-                                    (str(self.excellon_format_upper_mm), str(self.excellon_format_lower_mm)))
+                        ff_msg = "Excellon format preset is: %s:%s" % \
+                                 (str(self.excellon_format_upper_mm), str(self.excellon_format_lower_mm))
+                        self.app.log.warning(ff_msg)
                         self.excellon_units_found = "MM"
                         continue
 
@@ -953,16 +959,19 @@ class Excellon(Geometry):
                             self.excellon_format_lower_in = lower
 
                     # Modified for issue #80
-                    self.app.log.warning("Type of UNITS found outside header, inline before conversion: %s" % self.units)
+                    c_msg = "Type of UNITS found outside header, inline before conversion: %s" % self.units
+                    self.app.log.warning(c_msg)
                     self.convert_units(self.units)
                     self.app.log.warning("Type of UNITS found outside header, inline after conversion: %s" % self.units)
 
                     if self.units == 'MM':
-                        self.app.log.warning("Excellon format preset is: %s:%s" %
-                                    (str(self.excellon_format_upper_mm), str(self.excellon_format_lower_mm)))
+                        cc_msg = "Excellon format preset is: %s:%s" % \
+                                 (str(self.excellon_format_upper_mm), str(self.excellon_format_lower_mm))
+                        self.app.log.warning(cc_msg)
                     else:
-                        self.app.log.warning("Excellon format preset is: %s:%s" %
-                                    (str(self.excellon_format_upper_in), str(self.excellon_format_lower_in)))
+                        cc_msg = "Excellon format preset is: %s:%s" % \
+                                 (str(self.excellon_format_upper_in), str(self.excellon_format_lower_in))
+                        self.app.log.warning(cc_msg)
                     self.app.log.warning("Type of ZEROS found outside header, inline: %s" % self.zeros)
                     continue
 
@@ -1096,8 +1105,9 @@ class Excellon(Geometry):
                         self.solid_geometry.append(poly)
 
         except Exception as e:
-            self.app.log.error("appParsers.ParseExcellon.Excellon.create_geometry() -> "
-                      "Excellon geometry creation failed due of ERROR: %s" % str(e))
+            err_msg = "appParsers.ParseExcellon.Excellon.create_geometry() -> " \
+                      "Excellon geometry creation failed due of ERROR: %s" % str(e)
+            self.app.log.error(err_msg)
             return "fail"
 
     def bounds(self, flatten=None):

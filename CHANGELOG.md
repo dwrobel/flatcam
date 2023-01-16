@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM Evo beta
 16.01.2023
 
 - fixed a decoding error in the Excellon parser
+- some PEP8 fixes
 
 15.01.2023
 
