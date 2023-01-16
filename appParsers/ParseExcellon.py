@@ -230,9 +230,20 @@ class Excellon(Geometry):
         else:
             if filename is None:
                 return "fail"
-            efile = open(filename, 'r')
-            estr = efile.readlines()
-            efile.close()
+
+            estr = ""
+            decoded = False
+            encodings_types = ('cp1252', 'cp850', 'utf-8', 'utf8')
+            for enc in encodings_types:
+                try:
+                    with open(filename, 'r', encoding=enc) as efile:
+                        estr = efile.readlines()
+                        decoded = True
+                        break
+                except UnicodeDecodeError:
+                    pass
+            if decoded is False:
+                return 'fail'
 
         try:
             self.parse_lines(estr)
