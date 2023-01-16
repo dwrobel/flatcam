@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM Evo beta
 
 - fixed a decoding error in the Excellon parser
 - some PEP8 fixes
+- fixed the Voronoi generation in the Autolevelling Tool (removed the Foronoi package due of issues and now using the embedded functionality from Shapely)
+- fixed the enable of Levelling Tool only for CNCJob objects that were made from geometries that were segmented
 
 15.01.2023
 

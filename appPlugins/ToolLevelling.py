@@ -118,7 +118,7 @@ class ToolLevelling(AppTool, CNCjob):
         AppTool.install(self, icon, separator, shortcut='', **kwargs)
 
     def run(self, toggle=True):
-        self.app.defaults.report_usage("ToolFollow()")
+        self.app.defaults.report_usage("ToolLevelling()")
 
         if toggle:
             # if the splitter is hidden, display it
@@ -294,18 +294,8 @@ class ToolLevelling(AppTool, CNCjob):
         self.ui.al_columns_entry.setDisabled(True)
         self.ui.al_columns_label.setDisabled(True)
         self.ui.al_method_lbl.setDisabled(True)
-        self.ui.al_method_radio.setDisabled(True)
         self.ui.al_method_radio.set_value('v')
-
-        if loaded_obj and loaded_obj.is_segmented_gcode is True and loaded_obj.obj_options["type"] == 'Geometry':
-            self.ui.al_frame.setDisabled(False)
-            self.ui.al_mode_radio.set_value(loaded_obj.obj_options['tools_al_mode'])
-            self.on_controller_change()
-
-            self.on_mode_radio(val=loaded_obj.obj_options['tools_al_mode'])
-            self.on_method_radio(val=loaded_obj.obj_options['tools_al_method'])
-        else:
-            self.ui.al_frame.setDisabled(True)
+        self.ui.al_method_radio.setDisabled(True)
 
         # Show/Hide Advanced Options
         app_mode = self.app.options["global_app_level"]
@@ -318,6 +308,16 @@ class ToolLevelling(AppTool, CNCjob):
         self.ui.object_combo.currentIndexChanged.connect(self.on_object_changed)
 
         self.build_tool_ui()
+
+        if loaded_obj and loaded_obj.is_segmented_gcode is True and loaded_obj.obj_options["type"] == 'Geometry':
+            self.ui.al_frame.setDisabled(False)
+            self.ui.al_mode_radio.set_value(loaded_obj.obj_options['tools_al_mode'])
+            self.on_controller_change()
+
+            self.on_mode_radio(val=loaded_obj.obj_options['tools_al_mode'])
+            self.on_method_radio(val=loaded_obj.obj_options['tools_al_method'])
+        else:
+            self.ui.al_frame.setDisabled(True)
 
     def on_object_changed(self):
 
@@ -342,9 +342,8 @@ class ToolLevelling(AppTool, CNCjob):
                                                       pool=self.app.pool)
             else:
                 self.probing_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=obj_name + "_probing_shapes")
-            return
-
-        self.ui.al_frame.setDisabled(True)
+        else:
+            self.ui.al_frame.setDisabled(True)
 
     def on_object_selection_changed(self, current, previous):
         found_idx = None
@@ -997,13 +996,13 @@ class ToolLevelling(AppTool, CNCjob):
         self.build_al_table()
 
         if val == "manual":
+            self.ui.al_method_radio.set_value('v')
             self.ui.al_rows_entry.setDisabled(True)
             self.ui.al_rows_label.setDisabled(True)
             self.ui.al_columns_entry.setDisabled(True)
             self.ui.al_columns_label.setDisabled(True)
             self.ui.al_method_lbl.setDisabled(True)
             self.ui.al_method_radio.setDisabled(True)
-            self.ui.al_method_radio.set_value('v')
         else:
             self.ui.al_rows_entry.setDisabled(False)
             self.ui.al_rows_label.setDisabled(False)
@@ -1792,6 +1791,7 @@ class LevelUI:
         self.al_box = QtWidgets.QVBoxLayout()
         self.al_box.setContentsMargins(0, 0, 0, 0)
         self.al_frame.setLayout(self.al_box)
+        self.al_frame.setDisabled(True)
 
         grid0 = GLay(v_spacing=5, h_spacing=3)
         self.al_box.addLayout(grid0)
@@ -1814,7 +1814,7 @@ class LevelUI:
         # Tool Table Frame
         # #############################################################################################################
         tt_frame = FCFrame()
-        self.tools_box.addWidget(tt_frame)
+        self.al_box.addWidget(tt_frame)
 
         # Grid Layout
         tool_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
@@ -1844,10 +1844,10 @@ class LevelUI:
               "either through a file or directly, with the intent to get the height map\n"
               "that is to modify the original GCode to level the cutting height.")
         )
-        self.tools_box.addWidget(self.probe_gc_label)
+        self.al_box.addWidget(self.probe_gc_label)
 
         tp_frame = FCFrame()
-        self.tools_box.addWidget(tp_frame)
+        self.al_box.addWidget(tp_frame)
 
         # Grid Layout
         param_grid = GLay(v_spacing=5, h_spacing=3)
@@ -1950,7 +1950,7 @@ class LevelUI:
         param_grid.addWidget(self.al_rows_entry, 14, 1)
 
         self.al_add_button = FCButton(_("Add Probe Points"))
-        self.tools_box.addWidget(self.al_add_button)
+        self.al_box.addWidget(self.al_add_button)
 
         # #############################################################################################################
         # Controller Frame
@@ -1960,10 +1960,10 @@ class LevelUI:
             _("The kind of controller for which to generate\n"
               "height map gcode.")
         )
-        self.tools_box.addWidget(self.al_controller_label)
+        self.al_box.addWidget(self.al_controller_label)
 
         self.c_frame = FCFrame()
-        self.tools_box.addWidget(self.c_frame)
+        self.al_box.addWidget(self.c_frame)
 
         ctrl_grid = GLay(v_spacing=5, h_spacing=3)
         self.c_frame.setLayout(ctrl_grid)
@@ -2306,7 +2306,7 @@ class LevelUI:
         # height_lay.addStretch()
         height_lay.addWidget(self.view_h_gcode_button)
 
-        self.tools_box.addLayout(height_lay)
+        self.al_box.addLayout(height_lay)
 
         self.import_heights_button = FCButton(_("Import Height Map"))
         self.import_heights_button.setToolTip(
@@ -2315,7 +2315,7 @@ class LevelUI:
               "over the original GCode therefore\n"
               "doing autolevelling.")
         )
-        self.tools_box.addWidget(self.import_heights_button)
+        self.al_box.addWidget(self.import_heights_button)
 
         # self.h_gcode_button.hide()
         # self.import_heights_button.hide()
