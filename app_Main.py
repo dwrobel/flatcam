@@ -2908,7 +2908,7 @@ class App(QtCore.QObject):
                 QtWidgets.QDialog.__init__(self, parent)
 
                 self.app = app
-                self.app_icon = self.app.app_icon
+                self.app_icon = self.app.ui.app_icon
 
                 # Icon and title
                 self.setWindowIcon(self.app_icon)
@@ -3229,7 +3229,7 @@ class App(QtCore.QObject):
                 QtWidgets.QDialog.__init__(self, parent)
 
                 self.app = app
-                self.app_icon = self.app.app_icon
+                self.app_icon = self.app.ui.app_icon
 
                 open_source_link = "<a href = 'https://opensource.org/'<b>Open Source</b></a>"
                 new_features_link = "<a href = 'https://bitbucket.org/jpcgt/flatcam/pull-requests/'" \
