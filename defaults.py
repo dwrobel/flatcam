@@ -503,6 +503,8 @@ class AppDefaults:
         "tools_mill_search_time": 3,
 
         # Autolevelling Plugin
+        "tools_al_plot_points": False,
+        "tools_al_avoid_exc_holes": False,
         "tools_al_status": False,
         "tools_al_mode": 'grid',
         "tools_al_method": 'v',

@@ -10,7 +10,7 @@ CHANGELOG for FlatCAM Evo beta
 18.01.2023
 
 - in Autolevelling Tool made sure that when adding manual probe points mouse dragging with the right button is not counted as end of adding operation
-
+- in Autolevelling Tool, when adding manual probe points, added an option that prevent adding a probe point within a drill hole of an Excellon object that is plotted on canvas
 
 16.01.2023
 

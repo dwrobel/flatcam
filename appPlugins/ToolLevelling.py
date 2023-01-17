@@ -828,7 +828,6 @@ class ToolLevelling(AppTool, CNCjob):
 
     # To be called after clicking on the plot.
     def on_mouse_click_release(self, event):
-
         if self.app.use_3d_engine:
             event_pos = event.pos
             right_button = 2
@@ -845,8 +844,9 @@ class ToolLevelling(AppTool, CNCjob):
 
         # do paint single only for left mouse clicks
         if event.button == 1:
-            pos = self.app.plotcanvas.translate_coords(event_pos)
+            check_for_exc_hole = self.ui.avoid_exc_holes_cb.get_value()
 
+            pos = self.app.plotcanvas.translate_coords(event_pos)
             # use the snapped position as reference
             snapped_pos = self.app.geo_editor.snap(pos[0], pos[1])
 
@@ -855,6 +855,7 @@ class ToolLevelling(AppTool, CNCjob):
             if (snapped_pos[0], snapped_pos[1]) in old_points_coords:
                 return
 
+            # Clicked Point
             probe_pt = Point(snapped_pos)
 
             xxmin, yymin, xxmax, yymax = self.solid_geo.bounds
@@ -862,6 +863,16 @@ class ToolLevelling(AppTool, CNCjob):
             if not probe_pt.within(box_geo):
                 self.app.inform.emit(_("Point is not within the object area. Choose another point."))
                 return
+
+            # check if chosen point is within an Excellon drill hole geometry
+            if check_for_exc_hole is True:
+                for obj_in_collection in self.app.collection.get_list():
+                    if obj_in_collection.kind == 'excellon' and obj_in_collection.obj_options['plot'] is True:
+                        exc_solid_geometry = MultiPolygon(obj_in_collection.solid_geometry)
+                        for exc_geo in exc_solid_geometry.geoms:
+                            if probe_pt.within(exc_geo):
+                                self.app.inform.emit(_("Point on an Excellon drill hole. Choose another point."))
+                                return
 
             int_keys = [int(k) for k in self.al_voronoi_geo_storage.keys()]
             new_id = max(int_keys) + 1 if int_keys else 1
@@ -1847,6 +1858,7 @@ class LevelUI:
         tool_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
         tt_frame.setLayout(tool_grid)
 
+        # Probe Points table
         self.al_probe_points_table = FCTable()
         self.al_probe_points_table.setColumnCount(3)
         self.al_probe_points_table.setColumnWidth(0, 20)
@@ -1854,6 +1866,7 @@ class LevelUI:
 
         tool_grid.addWidget(self.al_probe_points_table, 0, 0, 1, 2)
 
+        # Plot Probe Points
         self.plot_probing_pts_cb = FCCheckBox(_("Plot probing points"))
         self.plot_probing_pts_cb.setToolTip(
             _("Plot the probing points in the table.\n"
@@ -1861,6 +1874,13 @@ class LevelUI:
               "the Voronoi areas are also plotted.")
         )
         tool_grid.addWidget(self.plot_probing_pts_cb, 2, 0, 1, 2)
+
+        # Avoid Excellon holes
+        self.avoid_exc_holes_cb = FCCheckBox(_("Avoid Excellon holes"))
+        self.avoid_exc_holes_cb.setToolTip(
+            _("When active, the user cannot add probe points over a drill hole.")
+        )
+        tool_grid.addWidget(self.avoid_exc_holes_cb, 4, 0, 1, 2)
 
         # #############################################################################################################
         # ############### Probe GCode Generation ######################################################################
@@ -2364,6 +2384,9 @@ class LevelUI:
         # ############################ FINISHED GUI ###################################
         # #############################################################################
 
+        self.plot_probing_pts_cb.stateChanged.connect(self.on_plot_points_changed)
+        self.avoid_exc_holes_cb.stateChanged.connect(self.on_avoid_exc_holes_changed)
+
     def confirmation_message(self, accepted, minval, maxval):
         if accepted is False:
             self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%.*f, %.*f]' % (_("Edited value is out of range"),
@@ -2380,3 +2403,9 @@ class LevelUI:
                                             (_("Edited value is out of range"), minval, maxval), False)
         else:
             self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)
+
+    def on_plot_points_changed(self, state):
+        self.app.defaults["tools_al_plot_points"] = False if not state else True
+
+    def on_avoid_exc_holes_changed(self, state):
+        self.app.defaults["tools_al_avoid_exc_holes"] = False if not state else True
