@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+18.01.2023
+
+- in Autolevelling Tool made sure that when adding manual probe points mouse dragging with the right button is not counted as end of adding operation
+
+
 16.01.2023
 
 - fixed a decoding error in the Excellon parser

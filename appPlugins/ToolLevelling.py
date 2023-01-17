@@ -68,7 +68,6 @@ class ToolLevelling(AppTool, CNCjob):
 
         self.first_click = False
         self.cursor_pos = None
-        self.mouse_is_dragging = False
 
         # if mouse is dragging set the object True
         self.mouse_is_dragging = False
@@ -509,107 +508,114 @@ class ToolLevelling(AppTool, CNCjob):
         # reset the al dict
         self.al_voronoi_geo_storage.clear()
 
+        if self.ui.al_mode_radio.get_value() == 'grid':
+            self.on_add_grid_points()
+        else:
+            self.on_add_manual_points()
+
+    def on_add_grid_points(self):
         xmin, ymin, xmax, ymax = self.solid_geo.bounds
 
-        if self.ui.al_mode_radio.get_value() == 'grid':
-            width = abs(xmax - xmin)
-            height = abs(ymax - ymin)
-            cols = self.ui.al_columns_entry.get_value()
-            rows = self.ui.al_rows_entry.get_value()
+        width = abs(xmax - xmin)
+        height = abs(ymax - ymin)
+        cols = self.ui.al_columns_entry.get_value()
+        rows = self.ui.al_rows_entry.get_value()
 
-            dx = 0 if cols == 1 else width / (cols - 1)
-            dy = 0 if rows == 1 else height / (rows - 1)
+        dx = 0 if cols == 1 else width / (cols - 1)
+        dy = 0 if rows == 1 else height / (rows - 1)
 
-            points = []
-            new_y = ymin
-            for x in range(rows):
-                new_x = xmin
-                for y in range(cols):
-                    formatted_point = (
-                        self.app.dec_format(new_x, self.app.decimals),
-                        self.app.dec_format(new_y, self.app.decimals)
-                    )
-                    # do not add the point if is already added
-                    if formatted_point not in points:
-                        points.append(formatted_point)
-                    new_x += dx
-                new_y += dy
+        points = []
+        new_y = ymin
+        for x in range(rows):
+            new_x = xmin
+            for y in range(cols):
+                formatted_point = (
+                    self.app.dec_format(new_x, self.app.decimals),
+                    self.app.dec_format(new_y, self.app.decimals)
+                )
+                # do not add the point if is already added
+                if formatted_point not in points:
+                    points.append(formatted_point)
+                new_x += dx
+            new_y += dy
 
-            pt_id = 0
-            vor_pts_list = []
-            bl_pts_list = []
-            for point in points:
-                pt_id += 1
-                pt = Point(point)
-                vor_pts_list.append(pt)
-                bl_pts_list.append((point[0], point[1], 0.0))
-                new_dict = {
-                    'point': pt,
-                    'geo': None,
-                    'height': 0.0
-                }
-                self.al_voronoi_geo_storage[pt_id] = deepcopy(new_dict)
-
-            al_method = self.ui.al_method_radio.get_value()
-            if al_method == 'v':
-                if VORONOI_ENABLED is True:
-                    self.generate_voronoi_geometry(pts=vor_pts_list)
-                    # generate Probing GCode
-                    self.probing_gcode_text = self.probing_gcode(storage=self.al_voronoi_geo_storage)
-                else:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Voronoi function can not be loaded.\n"
-                                                                "Shapely >= 1.8 is required"))
-            else:
-                self.generate_bilinear_geometry(pts=bl_pts_list)
-                # generate Probing GCode
-                self.probing_gcode_text = self.probing_gcode(storage=self.al_bilinear_geo_storage)
-
-            self.build_al_table_sig.emit()
-            if self.ui.plot_probing_pts_cb.get_value():
-                self.show_probing_geo(state=True, reset=True)
-            else:
-                # clear probe shapes
-                self.plot_probing_geo(None, False)
-
-        else:
-            f_probe_pt = Point([xmin, xmin])
-            int_keys = [int(k) for k in self.al_voronoi_geo_storage.keys()]
-            new_id = max(int_keys) + 1 if int_keys else 1
+        pt_id = 0
+        vor_pts_list = []
+        bl_pts_list = []
+        for point in points:
+            pt_id += 1
+            pt = Point(point)
+            vor_pts_list.append(pt)
+            bl_pts_list.append((point[0], point[1], 0.0))
             new_dict = {
-                'point': f_probe_pt,
+                'point': pt,
                 'geo': None,
                 'height': 0.0
             }
-            self.al_voronoi_geo_storage[new_id] = deepcopy(new_dict)
+            self.al_voronoi_geo_storage[pt_id] = deepcopy(new_dict)
 
-            radius = 0.3 if self.units == 'MM' else 0.012
-            fprobe_pt_buff = f_probe_pt.buffer(radius)
-
-            self.app.inform.emit(_("Click on canvas to add a Probe Point..."))
-            self.app.options['global_selection_shape'] = False
-
-            if self.app.use_3d_engine:
-                self.app.plotcanvas.graph_event_disconnect('key_press', self.app.ui.keyPressEvent)
-                self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
-                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+        al_method = self.ui.al_method_radio.get_value()
+        if al_method == 'v':
+            if VORONOI_ENABLED is True:
+                self.generate_voronoi_geometry(pts=vor_pts_list)
+                # generate Probing GCode
+                self.probing_gcode_text = self.probing_gcode(storage=self.al_voronoi_geo_storage)
             else:
-                self.app.plotcanvas.graph_event_disconnect(self.app.kp)
-                self.app.plotcanvas.graph_event_disconnect(self.app.mp)
-                self.app.plotcanvas.graph_event_disconnect(self.app.mr)
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Voronoi function can not be loaded.\n"
+                                                            "Shapely >= 1.8 is required"))
+        else:
+            self.generate_bilinear_geometry(pts=bl_pts_list)
+            # generate Probing GCode
+            self.probing_gcode_text = self.probing_gcode(storage=self.al_bilinear_geo_storage)
 
-            self.kp = self.app.plotcanvas.graph_event_connect('key_press', self.on_key_press)
-            self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_click_release)
+        self.build_al_table_sig.emit()
+        if self.ui.plot_probing_pts_cb.get_value():
+            self.show_probing_geo(state=True, reset=True)
+        else:
+            # clear probe shapes
+            self.plot_probing_geo(None, False)
 
-            self.mouse_events_connected = True
+    def on_add_manual_points(self):
+        xmin, ymin, xmax, ymax = self.solid_geo.bounds
+        f_probe_pt = Point([xmin, xmin])
+        int_keys = [int(k) for k in self.al_voronoi_geo_storage.keys()]
+        new_id = max(int_keys) + 1 if int_keys else 1
+        new_dict = {
+            'point': f_probe_pt,
+            'geo': None,
+            'height': 0.0
+        }
+        self.al_voronoi_geo_storage[new_id] = deepcopy(new_dict)
 
-            self.build_al_table_sig.emit()
-            if self.ui.plot_probing_pts_cb.get_value():
-                self.show_probing_geo(state=True, reset=True)
-            else:
-                # clear probe shapes
-                self.plot_probing_geo(None, False)
+        radius = 0.3 if self.units == 'MM' else 0.012
+        fprobe_pt_buff = f_probe_pt.buffer(radius)
 
-            self.plot_probing_geo(geometry=fprobe_pt_buff, visibility=True, custom_color="#0000FFFA")
+        self.app.inform.emit(_("Click on canvas to add a Probe Point..."))
+        self.app.options['global_selection_shape'] = False
+
+        if self.app.use_3d_engine:
+            self.app.plotcanvas.graph_event_disconnect('key_press', self.app.ui.keyPressEvent)
+            self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
+            self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+        else:
+            self.app.plotcanvas.graph_event_disconnect(self.app.kp)
+            self.app.plotcanvas.graph_event_disconnect(self.app.mp)
+            self.app.plotcanvas.graph_event_disconnect(self.app.mr)
+
+        self.kp = self.app.plotcanvas.graph_event_connect('key_press', self.on_key_press)
+        self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_click_release)
+        self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
+
+        self.mouse_events_connected = True
+
+        self.build_al_table_sig.emit()
+        if self.ui.plot_probing_pts_cb.get_value():
+            self.show_probing_geo(state=True, reset=True)
+        else:
+            # clear probe shapes
+            self.plot_probing_geo(None, False)
+
+        self.plot_probing_geo(geometry=fprobe_pt_buff, visibility=True, custom_color="#0000FFFA")
 
     def show_probing_geo(self, state, reset=False):
         self.app.log.debug("ToolLevelling.show_probing_geo() -> %s" % ('cleared' if state is False else 'displayed'))
@@ -802,6 +808,24 @@ class ToolLevelling(AppTool, CNCjob):
     def generate_bilinear_geometry(self, pts):
         self.al_bilinear_geo_storage = pts
 
+    def on_mouse_move(self, event):
+        """
+        Callback for the mouse motion event over the plot.
+
+        :param event: Contains information about the event.
+        :return: None
+        """
+
+        if self.app.use_3d_engine:
+            self.mouse_is_dragging = event.is_dragging
+        else:
+            self.mouse_is_dragging = self.app.plotcanvas.is_dragging
+
+        # So it can receive key presses but not when the Tcl Shell is active
+        if not self.app.ui.shell_dock.isVisible():
+            if not self.app.plotcanvas.native.hasFocus():
+                self.app.plotcanvas.native.setFocus()
+
     # To be called after clicking on the plot.
     def on_mouse_click_release(self, event):
 
@@ -863,9 +887,11 @@ class ToolLevelling(AppTool, CNCjob):
             if self.app.use_3d_engine:
                 self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
                 self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_click_release)
+                self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
             else:
                 self.app.plotcanvas.graph_event_disconnect(self.kp)
                 self.app.plotcanvas.graph_event_disconnect(self.mr)
+                self.app.plotcanvas.graph_event_disconnect(self.mm)
 
             self.app.kp = self.app.plotcanvas.graph_event_connect('key_press', self.app.ui.keyPressEvent)
             self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press', self.app.on_mouse_click_over_plot)
@@ -941,6 +967,7 @@ class ToolLevelling(AppTool, CNCjob):
                 if self.app.use_3d_engine:
                     self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
                     self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_click_release)
+                    self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
                 else:
                     self.app.plotcanvas.graph_event_disconnect(self.kp)
                     self.app.plotcanvas.graph_event_disconnect(self.mr)
