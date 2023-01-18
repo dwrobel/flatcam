@@ -269,6 +269,9 @@ class ToolLevelling(AppTool, CNCjob):
         self.to_form()
         self.on_controller_change_alter_ui()
 
+        self.ui.plot_probing_pts_cb.set_value(self.app.options["tools_al_plot_points"])
+        self.ui.avoid_exc_holes_cb.set_value(self.app.options["tools_al_avoid_exc_holes"])
+
         self.ui.al_probe_points_table.setRowCount(0)
         self.ui.al_probe_points_table.resizeColumnsToContents()
         self.ui.al_probe_points_table.resizeRowsToContents()
@@ -1041,6 +1044,7 @@ class ToolLevelling(AppTool, CNCjob):
             self.ui.al_columns_label.setDisabled(True)
             self.ui.al_method_lbl.setDisabled(True)
             self.ui.al_method_radio.setDisabled(True)
+            self.ui.avoid_exc_holes_cb.setDisabled(False)
         else:
             self.ui.al_rows_entry.setDisabled(False)
             self.ui.al_rows_label.setDisabled(False)
@@ -1049,6 +1053,7 @@ class ToolLevelling(AppTool, CNCjob):
             self.ui.al_method_lbl.setDisabled(False)
             self.ui.al_method_radio.setDisabled(False)
             self.ui.al_method_radio.set_value(self.app.options['tools_al_method'])
+            self.ui.avoid_exc_holes_cb.setDisabled(True)
 
     def on_method_radio(self, val):
         if val == 'b':
@@ -2405,7 +2410,7 @@ class LevelUI:
             self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)
 
     def on_plot_points_changed(self, state):
-        self.app.defaults["tools_al_plot_points"] = False if not state else True
+        self.app.options["tools_al_plot_points"] = False if not state else True
 
     def on_avoid_exc_holes_changed(self, state):
-        self.app.defaults["tools_al_avoid_exc_holes"] = False if not state else True
+        self.app.options["tools_al_avoid_exc_holes"] = False if not state else True

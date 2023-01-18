@@ -3964,6 +3964,9 @@ class IsoUI:
         # #############################################################################################################
         # Generate Geometry object
         # #############################################################################################################
+        gen_hlay = QtWidgets.QHBoxLayout()
+        self.tools_box.addLayout(gen_hlay)
+
         self.generate_iso_button = FCButton("%s" % _("Generate Geometry"), bold=True)
         self.generate_iso_button.setIcon(QtGui.QIcon(self.app.resource_location + '/geometry32.png'))
         self.generate_iso_button.setToolTip(
@@ -3977,7 +3980,15 @@ class IsoUI:
               "inside the actual Gerber feature, use a negative tool\n"
               "diameter above.")
         )
-        self.tools_box.addWidget(self.generate_iso_button)
+        gen_hlay.addWidget(self.generate_iso_button, stretch=1)
+
+        # Milling Plugin shortcut
+        self.milling_button = QtWidgets.QToolButton()
+        self.milling_button.setIcon(QtGui.QIcon(self.app.resource_location + '/milling_tool32.png'))
+        self.milling_button.setToolTip(
+            _("Generate a CNCJob by milling a Geometry.")
+        )
+        gen_hlay.addWidget(self.milling_button)
 
         self.create_buffer_button = FCButton(_('Buffer Solid Geometry'))
         self.create_buffer_button.setToolTip(
@@ -3999,6 +4010,8 @@ class IsoUI:
         self.tools_box.addWidget(self.reset_button)
         # ############################ FINSIHED GUI ###################################
         # #############################################################################
+
+        self.milling_button.clicked.connect(lambda: self.app.milling_tool.run())
 
     def confirmation_message(self, accepted, minval, maxval):
         if accepted is False:
