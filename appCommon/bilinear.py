@@ -69,12 +69,6 @@ class BilinearInterpolation(object):
         self.values = values
         self.x_length = x_length
         self.y_length = y_length
-        self.extrapolate = True
-
-        # slopes = self.slopes = []
-        # for j in range(y_length):
-        #     intervals = zip(x_index, x_index[1:], values[j], values[j][1:])
-        #     slopes.append([(y2 - y1) / (x2 - x1) for x1, x2, y1, y2 in intervals])
 
     def __call__(self, x, y):
         # local lookups
@@ -83,29 +77,23 @@ class BilinearInterpolation(object):
         i = bisect_left(x_index, x) - 1
         j = bisect_left(y_index, y) - 1
 
-        if self.extrapolate:
-            # fix x index
-            if i == -1:
-                x_slice = slice(None, 2)
-            elif i == self.x_length - 1:
-                x_slice = slice(-2, None)
-            else:
-                x_slice = slice(i, i + 2)
-
-            # fix y index
-            if j == -1:
-                j = 0
-                y_slice = slice(None, 2)
-            elif j == self.y_length - 1:
-                j = -2
-                y_slice = slice(-2, None)
-            else:
-                y_slice = slice(j, j + 2)
+        # fix x index
+        if i == -1:
+            x_slice = slice(None, 2)
+        elif i == self.x_length - 1:
+            x_slice = slice(-2, None)
         else:
-            if i == -1 or i == self.x_length - 1:
-                raise ValueError("Extrapolation not allowed!")
-            if j == -1 or j == self.y_length - 1:
-                raise ValueError("Extrapolation not allowed!")
+            x_slice = slice(i, i + 2)
+
+        # fix y index
+        if j == -1:
+            j = 0
+            y_slice = slice(None, 2)
+        elif j == self.y_length - 1:
+            j = -2
+            y_slice = slice(-2, None)
+        else:
+            y_slice = slice(j, j + 2)
 
         # if the extrapolations is False this will fail
         x1, x2 = x_index[x_slice]
@@ -117,3 +105,36 @@ class BilinearInterpolation(object):
                 z21 * (x - x1) * (y2 - y) +
                 z12 * (x2 - x) * (y - y1) +
                 z22 * (x - x1) * (y - y1)) / ((x2 - x1) * (y2 - y1))
+
+
+def bilinear_interpolation(x, y, points):
+    """
+    https://stackoverflow.com/questions/8661537/how-to-perform-bilinear-interpolation-in-python
+
+    Interpolate (x,y) from values associated with four points.
+
+    The four points are a list of four triplets:  (x, y, value).
+    The four points can be in any order.  They should form a rectangle.
+
+        >>> bilinear_interpolation(12, 5.5,
+        ...                        [(10, 4, 100),
+        ...                         (20, 4, 200),
+        ...                         (10, 6, 150),
+        ...                         (20, 6, 300)])
+        165.0
+    """
+    # See formula at:  http://en.wikipedia.org/wiki/Bilinear_interpolation
+
+    points = sorted(points)               # order points by x, then by y
+    (x1, y1, q11), (_x1, y2, q12), (x2, _y1, q21), (_x2, _y2, q22) = points
+
+    if x1 != _x1 or x2 != _x2 or y1 != _y1 or y2 != _y2:
+        raise ValueError('points do not form a rectangle')
+    if not x1 <= x <= x2 or not y1 <= y <= y2:
+        raise ValueError('(x, y) not within the rectangle')
+
+    return (q11 * (x2 - x) * (y2 - y) +
+            q21 * (x - x1) * (y2 - y) +
+            q12 * (x2 - x) * (y - y1) +
+            q22 * (x - x1) * (y - y1)
+            ) / ((x2 - x1) * (y2 - y1) + 0.0)

@@ -7,12 +7,16 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+19.01.2023
+
+- added a new method for bilinear interpolation
+
 18.01.2023
 
 - in Autolevelling Plugin made sure that when adding manual probe points mouse dragging with the right button is not counted as end of adding operation
 - in Autolevelling Plugin, when adding manual probe points, added an option that prevent adding a probe point within a drill hole of an Excellon object that is plotted on canvas
 - in Autolevelling Plugin, preventing the add of a probe point on Excellon hole checkbox is not disabled except for the Manual mode
-- in Autolevelling Plugin, the status of soem checkoxes (avoid Excellon holes and plot points) is stored between app restarts
+- in Autolevelling Plugin, the status of some checkboxes (avoid Excellon holes and plot points) is stored between app restarts
 - in Isolation Plugin, added an convenience shortcut button to launch the Milling Plugin.
 
 16.01.2023
