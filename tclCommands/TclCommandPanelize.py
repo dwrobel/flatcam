@@ -6,6 +6,14 @@ import logging
 from copy import deepcopy
 import collections
 
+import gettext
+import appTranslation as fcTranslate
+import builtins
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
+
 log = logging.getLogger('base')
 
 
@@ -293,7 +301,7 @@ class TclCommandPanelize(TclCommand):
             def job_thread(app_obj):
                 try:
                     panelize_2()
-                    app_obj.inform.emit('[success]' % _("Done."))
+                    app_obj.inform.emit('[success] %s' % _("Done."))
                 except Exception as ee:
                     log.debug(str(ee))
                     return
@@ -302,4 +310,4 @@ class TclCommandPanelize(TclCommand):
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
         else:
             panelize_2()
-            self.app.inform.emit('[success]' % _("Done."))
+            self.app.inform.emit('[success] %s' % _("Done."))

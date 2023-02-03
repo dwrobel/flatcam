@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+3.02.2023
+
+- minor fix in the panelization TclCommand
+
 15.01.2023
 
 - a number of fixes so the 8.994 version will work in current configurations

@@ -18,7 +18,7 @@ vispy
 ortools>=7.0
 svg.path>=4.0
 simplejson
-shapely=1.8.5
+shapely==1.8.5
 freetype-py
 fontTools
 rasterio
