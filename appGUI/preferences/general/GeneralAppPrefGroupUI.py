@@ -119,15 +119,28 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             _("The number of Qthreads made available to the App.\n"
               "A bigger number may finish the jobs more quickly but\n"
               "depending on your computer speed, may make the App\n"
-              "unresponsive. Can have a value between 2 and 16.\n"
+              "unresponsive. Can have a value between 2 and 32.\n"
               "Default value is 2.\n"
               "After change, it will be applied at next App start.")
         )
         self.worker_number_sb = FCSpinner()
-        self.worker_number_sb.set_range(2, 16)
+        self.worker_number_sb.set_range(2, 32)
 
         grid1.addWidget(self.worker_number_label, 2, 0)
         grid1.addWidget(self.worker_number_sb, 2, 1)
+
+        # Process Numbers
+        self.process_number_label = FCLabel('%s:' % _('Process number'))
+        self.process_number_label.setToolTip(
+            _("The number of processes.\n"
+              "A larger number may improve performance but it will require more memory.\n"
+              "After change, it will be applied at next App start.")
+        )
+        self.process_number_sb = FCSpinner()
+        self.process_number_sb.set_range(2, 32)
+
+        grid1.addWidget(self.process_number_label, 4, 0)
+        grid1.addWidget(self.process_number_sb, 4, 1)
 
         # Geometric tolerance
         tol_label = FCLabel('%s:' % _("Geo Tolerance"))
@@ -143,8 +156,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.tol_entry.setSingleStep(0.001)
         self.tol_entry.set_precision(6)
 
-        grid1.addWidget(tol_label, 4, 0)
-        grid1.addWidget(self.tol_entry, 4, 1)
+        grid1.addWidget(tol_label, 6, 0)
+        grid1.addWidget(self.tol_entry, 6, 1)
 
         # Portability
         self.portability_cb = FCCheckBox('%s' % _('Portable app'))
@@ -153,7 +166,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
                                          "which means that the preferences files will be saved\n"
                                          "in the application folder, in the lib\\config subfolder."))
 
-        grid1.addWidget(self.portability_cb, 6, 0, 1, 2)
+        grid1.addWidget(self.portability_cb, 8, 0, 1, 2)
 
         # Verbose Log
         self.verbose_label = FCLabel('%s:' % _('Verbose log'))
@@ -166,8 +179,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.verbose_combo = FCComboBox2()
         self.verbose_combo.addItems(['0','1', '2'])
 
-        grid1.addWidget(self.verbose_label, 8, 0)
-        grid1.addWidget(self.verbose_combo, 8, 1)
+        grid1.addWidget(self.verbose_label, 10, 0)
+        grid1.addWidget(self.verbose_combo, 10, 1)
 
         # #############################################################################################################
         # Grid0 Frame

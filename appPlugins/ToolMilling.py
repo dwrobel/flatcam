@@ -402,7 +402,7 @@ class ToolMilling(AppTool, Excellon):
             _("Copy"), self.on_tool_copy,
             icon=QtGui.QIcon(self.app.resource_location + "/copy16.png"))
         self.ui.geo_tools_table.addContextMenu(
-            _("Delete"), lambda: self.on_tool_delete(clicked_signal=None, all_tools=None),
+            _("Delete"), lambda: self.on_tool_delete(all_tools=None),
             icon=QtGui.QIcon(self.app.resource_location + "/trash16.png"))
 
         # #############################################################################################################

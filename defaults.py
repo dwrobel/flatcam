@@ -100,6 +100,7 @@ class AppDefaults:
         "global_version_check": True,
         "global_send_stats": True,
         "global_worker_number": int((os.cpu_count()) / 2) if os.cpu_count() > 4 else 1,
+        "global_process_number": int((os.cpu_count()) / 4) if os.cpu_count() > 4 else 1,
         "global_tolerance": 0.005,
 
         "global_save_compressed": True,

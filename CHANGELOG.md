@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+01.03.2023
+
+- in Tool Milling made sure that deleting the only tool will not crash the application
+- added a new parameter in Preferences to control the number of processes created by the Pool() - more processes better performance but also a lot of memory consumed
+- made sure that the display of messages in the Status Bar is done asap
+
 19.01.2023
 
 - added a new method for bilinear interpolation

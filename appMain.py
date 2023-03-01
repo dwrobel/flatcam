@@ -634,7 +634,7 @@ class App(QtCore.QObject):
         # ###########################################################################################################
         # ###################################### CREATE MULTIPROCESSING POOL #######################################
         # ###########################################################################################################
-        self.pool = Pool()
+        self.pool = Pool(processes=self.options["global_process_number"])
 
         # ###########################################################################################################
         # ###################################### Clear GUI Settings - once at first start ###########################
@@ -1564,7 +1564,7 @@ class App(QtCore.QObject):
         """
         self.pool.close()
 
-        self.pool = Pool()
+        self.pool = Pool(processes=self.options["global_process_number"])
         self.pool_recreated.emit(self.pool)
 
         gc.collect()
@@ -2743,6 +2743,7 @@ class App(QtCore.QObject):
             # is not printed over and over on the shell
             if msg != '' and shell_echo is True:
                 self.shell_message(msg)
+        QtWidgets.QApplication.processEvents()
 
     def info_shell(self, msg, new_line=True):
         """

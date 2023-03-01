@@ -71,6 +71,7 @@ class PreferencesUIManager(QtCore.QObject):
             "global_send_stats": self.ui.general_pref_form.general_app_group.send_stats_cb,
 
             "global_worker_number": self.ui.general_pref_form.general_app_group.worker_number_sb,
+            "global_process_number": self.ui.general_pref_form.general_app_group.process_number_sb,
             "global_tolerance": self.ui.general_pref_form.general_app_group.tol_entry,
 
             "global_compression_level": self.ui.general_pref_form.general_app_group.compress_spinner,
