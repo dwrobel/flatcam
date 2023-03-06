@@ -3,6 +3,7 @@ from PyQt6 import QtWidgets, QtCore
 
 from appGUI.GUIElements import FCLabel, FCComboBox, GLay, FCFrame, FCCheckBox
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
+
 import gettext
 import appTranslation as fcTranslate
 import builtins

@@ -5,8 +5,21 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
+    FCEntry, FCTextArea, FCSpinner, OptionalHideInputSection
 from camlib import grace
+
+import logging
+import numpy as np
+
+from shapely.geometry import MultiPolygon
+from shapely.ops import nearest_points
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -575,7 +588,7 @@ class OptimalUI:
         self.locations_textb.setStyleSheet(stylesheet)
         res_grid.addWidget(self.locations_textb, 6, 0, 1, 3)
 
-        # Jump button
+        # "Jump" button
         self.locate_button = FCButton(_("Jump to selected position"))
         self.locate_button.setToolTip(
             _("Select a position in the Locations text box and then\n"
@@ -660,7 +673,7 @@ class OptimalUI:
         self.locations_sec_textb.setStyleSheet(stylesheet)
         self.distances_box.addWidget(self.locations_sec_textb)
 
-        # Jump button
+        # "Jump" button
         self.locate_sec_button = FCButton(_("Jump to selected position"))
         self.locate_sec_button.setToolTip(
             _("Select a position in the Locations text box and then\n"

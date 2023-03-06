@@ -1,5 +1,12 @@
 
-from appTool import *
+from PyQt6 import QtGui, QtWidgets, QtCore
+from appTool import AppToolEditor
+from appGUI.GUIElements import VerticalScrollArea, GLay, FCLabel, FCButton, FCFrame, FCTextEdit, FCEntry, \
+    FCDoubleSpinner
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -11,7 +18,7 @@ class SimplificationTool(AppToolEditor):
     Do a shape simplification for the selected geometry.
     """
 
-    update_ui = pyqtSignal(object, int)
+    update_ui = QtCore.pyqtSignal(object, int)
 
     def __init__(self, app, draw_app):
         AppToolEditor.__init__(self, app)
@@ -93,33 +100,33 @@ class SimplificationTool(AppToolEditor):
         selected_shapes_geos = []
         tol = self.ui.geo_tol_entry.get_value()
 
-        def task_job(self):
-            with self.app.proc_container.new('%s...' % _("Simplify")):
-                selected_shapes = self.draw_app.get_selected()
-                self.draw_app.interdict_selection = True
+        def task_job(self_class):
+            with self_class.app.proc_container.new('%s...' % _("Simplify")):
+                selected_shapes = self_class.draw_app.get_selected()
+                self_class.draw_app.interdict_selection = True
                 for obj_shape in selected_shapes:
                     selected_shapes_geos.append(obj_shape.geo.simplify(tolerance=tol))
 
                 if not selected_shapes:
-                    self.app.inform.emit('%s' % _("Failed."))
+                    self_class.app.inform.emit('%s' % _("Failed."))
                     return
 
                 for shape in selected_shapes:
-                    self.draw_app.delete_shape(shape=shape)
+                    self_class.draw_app.delete_shape(shape=shape)
 
                 for geo in selected_shapes_geos:
-                    self.draw_app.add_shape(geo, build_ui=False)
+                    self_class.draw_app.add_shape(geo, build_ui=False)
 
-                self.draw_app.selected = []
+                self_class.draw_app.selected = []
 
                 last_sel_geo = selected_shapes_geos[-1]
-                self.calculate_coords_vertex(last_sel_geo)
+                self_class.calculate_coords_vertex(last_sel_geo)
 
-                self.app.inform.emit('%s' % _("Done."))
+                self_class.app.inform.emit('%s' % _("Done."))
 
-                self.draw_app.plot_all()
-                self.draw_app.interdict_selection = False
-                self.draw_app.build_ui_sig.emit()
+                self_class.draw_app.plot_all()
+                self_class.draw_app.interdict_selection = False
+                self_class.draw_app.build_ui_sig.emit()
 
         self.app.worker_task.emit({'fcn': task_job, 'params': [self]})
 

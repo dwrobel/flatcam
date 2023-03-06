@@ -1,11 +1,16 @@
+
 from PyQt6 import QtCore
+from PyQt6.QtCore import QSettings
+
 from appGUI.GUIElements import OptionalInputSection
-from appGUI.preferences.OptionUI import *
+from appGUI.preferences.OptionUI import OptionUI, HeadingOptionUI, SeparatorOptionUI, DoubleSpinnerOptionUI, \
+    SpinnerOptionUI, CheckboxOptionUI, ComboboxOptionUI, RadioSetOptionUI, ColorOptionUI
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI2
 
 import gettext
 import appTranslation as fcTranslate
 import builtins
+
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext

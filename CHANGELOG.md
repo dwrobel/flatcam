@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+6.03.2023
+
+- fixed some possible issues due of changes in version 2.0 of Shapely
+- removed the import * statement from most of the app
+
 01.03.2023
 
 - in Tool Milling made sure that deleting the only tool will not crash the application

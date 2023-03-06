@@ -18,7 +18,6 @@ import sys
 from shapely.ops import unary_union
 from shapely.geometry import LineString, Point
 
-# import AppTranslation as fcTranslate
 import gettext
 import builtins
 

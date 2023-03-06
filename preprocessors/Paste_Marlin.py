@@ -6,7 +6,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appPreProcessor import *
+from appPreProcessor import AppPreProcTools
 
 
 class Paste_Marlin(AppPreProcTools):

@@ -5,9 +5,24 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
-from appParsers.ParsePDF import PdfParser
+from PyQt6 import QtWidgets, QtCore
+from appTool import AppTool
 
+import logging
+from copy import deepcopy
+import os
+import time
+import re
+import traceback
+
+from shapely.geometry import Point, MultiPolygon
+from shapely.ops import unary_union
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
+
+from appParsers.ParsePDF import PdfParser
 from camlib import grace
 
 HAS_PIKE_MODULE = True
@@ -367,7 +382,7 @@ class ToolPDF(AppTool):
 
     def periodic_check(self, check_period):
         """
-        This function starts an QTimer and it will periodically check if parsing was done
+        This function starts an QTimer, and it will periodically check if parsing was done
 
         :param check_period: time at which to check periodically if all plots finished to be plotted
         :return:
@@ -428,7 +443,7 @@ class ToolPDF(AppTool):
                                 else:
                                     self.app.worker_task.emit({'fcn': self.layer_rendering_as_gerber,
                                                                'params': [filename, ap_dict, layer_nr]})
-                    # delete the object already processed so it will not be processed again for other objects
+                    # delete the object already processed, so it will not be processed again for other objects
                     # that were opened at the same time; like in drag & drop on appGUI
                     for obj_name in obj_to_delete:
                         if obj_name in self.pdf_parsed:

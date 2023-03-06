@@ -11,11 +11,14 @@
 # Date: 3/10/2019                                          #
 # ##########################################################
 
+from PyQt6 import QtGui, QtCore, QtWidgets
+from PyQt6.QtCore import Qt
 # import inspect
 import math
 
 from camlib import distance, arc, three_point_circle, Geometry, AppRTreeStorage, flatten_shapely_geometry
-from appGUI.GUIElements import *
+from appGUI.GUIElements import FCLabel, GLay, FCDoubleSpinner, FCTree, FCButton, FCFrame, FCCheckBox, FCEntry, \
+    FCTextEdit
 from appGUI.VisPyVisuals import ShapeCollection
 
 from appEditors.geo_plugins.GeoBufferPlugin import BufferSelectionTool
@@ -44,6 +47,7 @@ from rtree import index as rtindex
 
 from copy import deepcopy
 # from vispy.io import read_png
+
 import gettext
 import appTranslation as fcTranslate
 import builtins

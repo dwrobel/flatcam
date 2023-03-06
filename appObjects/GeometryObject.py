@@ -10,17 +10,22 @@
 # File modified by: Marius Stanciu                         #
 # ##########################################################
 
-from shapely.geometry import MultiLineString, LinearRing
-import shapely.affinity as affinity
+from PyQt6 import QtWidgets, QtCore
+from appObjects.AppObjectTemplate import FlatCAMObj, ObjectDeleted
+from appGUI.GUIElements import FCCheckBox
+from appGUI.ObjectUI import GeometryObjectUI
+
+from shapely.geometry import MultiLineString, LinearRing, Polygon, MultiPolygon, LineString
+from shapely.affinity import scale, translate
+from shapely.ops import unary_union
 
 from camlib import Geometry, flatten_shapely_geometry
 
-from appObjects.AppObjectTemplate import *
-
+import re
 import ezdxf
 import numpy as np
-from copy import deepcopy
 import traceback
+from copy import deepcopy
 from collections import defaultdict
 from functools import reduce
 
@@ -1193,7 +1198,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number
 
-                    return affinity.scale(geom, xfactor, yfactor, origin=(px, py))
+                    return scale(geom, xfactor, yfactor, origin=(px, py))
                 except AttributeError:
                     return geom
 
@@ -1269,7 +1274,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number
 
-                    return affinity.translate(geom, xoff=dx, yoff=dy)
+                    return translate(geom, xoff=dx, yoff=dy)
                 except AttributeError:
                     return geom
 

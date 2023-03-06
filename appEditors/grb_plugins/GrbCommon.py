@@ -4,16 +4,9 @@
 # ###########################################################################################
 
 from PyQt6.QtCore import Qt
-from shapely.geometry import LineString, LinearRing, MultiLineString, Point, Polygon, MultiPolygon, box
-from shapely.ops import unary_union
-import shapely.affinity as affinity
+from shapely.geometry import MultiLineString, Polygon
 
-import math
 import numpy as np
-from numpy.linalg import norm as numpy_norm
-
-from vispy.geometry import Rect
-from copy import deepcopy
 
 import logging
 

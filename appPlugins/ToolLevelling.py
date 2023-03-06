@@ -5,7 +5,26 @@
 # License:  MIT Licence                                    #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtCore, QtGui
+from PyQt6.QtCore import Qt
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
+    FCJog, RadioSet, FCDoubleSpinner, FCSpinner, FCFileSaveDialog, FCDetachableTab, FCTable, \
+    FCZeroAxes, FCSliderWithDoubleSpinner, FCEntry, RotatedToolButton
+
+import logging
+from copy import deepcopy
+import sys
+
+from shapely.geometry import Point, MultiPoint, MultiPolygon, box
+from shapely.ops import unary_union
+from shapely.affinity import translate
+from datetime import datetime as dt
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
+
 from appObjects.AppObjectTemplate import ObjectDeleted
 from appGUI.VisPyVisuals import *
 from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
@@ -1391,7 +1410,7 @@ class ToolLevelling(AppTool, CNCjob):
 
         p_gcode = ''
         header = ''
-        time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
+        time_str = "{:%A, %d %B %Y at %H:%M}".format(dt.now())
 
         coords = []
         al_method = self.ui.al_method_radio.get_value()
@@ -1492,7 +1511,7 @@ class ToolLevelling(AppTool, CNCjob):
                 str(self.app.dec_format(probe_fr, target_obj.fr_decimals)),
             )
             # store in a global numeric variable the value of the detected probe Z
-            # I offset the global numeric variable by 500 so it does not conflict with something else
+            # I offset the global numeric variable by 500 so, it does not conflict with something else
             # temp_var = int(idx + 500)
             # p_gcode += "#%d = %s\n" % (temp_var, probing_var)
 

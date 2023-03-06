@@ -6,19 +6,36 @@
 # MIT Licence                                               #
 # Modified by Marius Stanciu (2019)                         #
 # ###########################################################
+
+from PyQt6 import QtGui, QtWidgets
+from PyQt6.QtCore import QSettings, pyqtSlot
+from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtGui import QAction, QTextCursor
+
 import os.path
+import sys
+
 import urllib.request
 import urllib.parse
 import urllib.error
+
+from datetime import datetime as dt
+from copy import deepcopy, copy
+import numpy as np
 
 import getopt
 import random
 import simplejson as json
 import shutil
-from datetime import datetime
 import traceback
+import logging
+import time
+import webbrowser
+import platform
+import re
+import subprocess
 
-from shapely.geometry import Point, MultiPolygon, MultiLineString
+from shapely.geometry import Point, MultiPolygon, MultiLineString, Polygon, LinearRing, LineString
 from shapely.ops import unary_union
 from io import StringIO
 
@@ -38,9 +55,18 @@ import qdarktheme.themes.light.stylesheet as qlightsheet
 # ###################################      Imports part of FlatCAM       #############################################
 # ####################################################################################################################
 
-# Various
+# App appGUI
+from appGUI.PlotCanvas import PlotCanvas
+from appGUI.PlotCanvasLegacy import PlotCanvasLegacy
+from appGUI.PlotCanvas3d import PlotCanvas3d
+from appGUI.MainGUI import MainGUI
+from appGUI.VisPyVisuals import ShapeCollection
+from appGUI.GUIElements import FCMessageBox, FCInputSpinner, FCButton, DialogBoxRadio, Dialog_box, FCTree, \
+    FCInputDoubleSpinner, FCFileSaveDialog, message_dialog, AppSystemTray, FCInputDialogSlider, \
+    GLay, FCLabel, DialogBoxChoice, VerticalScrollArea
 from appGUI.themes import dark_style_sheet, light_style_sheet
 
+# Various
 from appCommon.Common import color_variant
 from appCommon.Common import ExclusionAreas
 from appCommon.Common import AppLogging
@@ -58,7 +84,8 @@ from defaults import AppOptions
 # App Objects
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 from appGUI.preferences.PreferencesUIManager import PreferencesUIManager
-from appObjects.ObjectCollection import *
+from appObjects.ObjectCollection import ObjectCollection, GerberObject, ExcellonObject, GeometryObject, \
+    CNCJobObject, ScriptObject, DocumentObject
 from appObjects.AppObjectTemplate import FlatCAMObj
 from appObjects.AppObject import AppObject
 
@@ -66,14 +93,6 @@ from appObjects.AppObject import AppObject
 from appParsers.ParseExcellon import Excellon
 from appParsers.ParseGerber import Gerber
 from camlib import to_dict, Geometry, CNCjob
-
-# App appGUI
-from appGUI.PlotCanvas import *
-from appGUI.PlotCanvasLegacy import *
-from appGUI.PlotCanvas3d import *
-from appGUI.MainGUI import *
-from appGUI.GUIElements import FCFileSaveDialog, message_dialog, AppSystemTray, FCInputDialogSlider, \
-    GLay, FCLabel, DialogBoxChoice
 
 # App Pre-processors
 from appPreProcessor import load_preprocessors
@@ -91,6 +110,8 @@ from appWorkerStack import WorkerStack
 
 # App Plugins
 from appPlugins import *
+
+from numpy import Inf
 
 # App Translation
 import gettext
@@ -158,7 +179,7 @@ class App(QtCore.QObject):
     engine = '3D'
 
     # current date now
-    date = str(datetime.today()).rpartition('.')[0]
+    date = str(dt.today()).rpartition('.')[0]
     date = ''.join(c for c in date if c not in ':-')
     date = date.replace(' ', '_')
 
@@ -258,8 +279,8 @@ class App(QtCore.QObject):
         """
         Starts the application.
 
-        :return: app
-        :rtype: App
+        :return:    the application
+        :rtype:     QtCore.QObject
         """
 
         super().__init__()
@@ -1357,7 +1378,7 @@ class App(QtCore.QObject):
                 sys.exit(2)
 
         # accept some type file as command line parameter: FlatCAM project, FlatCAM preferences or scripts
-        # the path/file_name must be enclosed in quotes if it contain spaces
+        # the path/file_name must be enclosed in quotes, if it contains spaces
         if App.args:
             self.args_at_startup.emit(App.args)
 
@@ -1573,13 +1594,13 @@ class App(QtCore.QObject):
         """
         This installs the FlatCAM tools (plugin-like) which reside in their own classes.
         Instantiation of the Tools classes.
-        The order that the tools are installed is important as they can depend on each other install position.
+        The order that the tools are installed is important as they can depend on each other installing position.
 
         :return: None
         """
 
         if init_tcl:
-            # shell tool has to be initialized always first because other tools print messages in the Shell Dock
+            # Tcl Shell tool has to be initialized always first because other tools print messages in the Shell Dock
             self.shell = FCShell(app=self, version=self.version)
             self.log.debug("TCL was re-instantiated. TCL variables are reset.")
 
@@ -2259,7 +2280,7 @@ class App(QtCore.QObject):
 
     def object2editor(self):
         """
-        Send the current Geometry, Gerber, Excellon object or CNCJob (if any) into the it's editor.
+        Send the current Geometry, Gerber, Excellon object or CNCJob (if any) its editor.
 
         :return: None
         """
@@ -2286,7 +2307,7 @@ class App(QtCore.QObject):
                 self.inform.emit('[ERROR_NOTCL] %s' % _("The Editor could not start."))
                 return
 
-            # store the Geometry Editor Toolbar visibility before entering in the Editor
+            # store the Geometry Editor Toolbar visibility before entering the Editor
             self.geo_editor.toolbar_old_state = True if self.ui.geo_edit_toolbar.isVisible() else False
 
             # we set the notebook to hidden
@@ -2329,7 +2350,7 @@ class App(QtCore.QObject):
                 self.inform.emit('[ERROR_NOTCL] %s' % _("The Editor could not start."))
                 return
 
-            # store the Excellon Editor Toolbar visibility before entering in the Editor
+            # store the Excellon Editor Toolbar visibility before entering the Editor
             self.exc_editor.toolbar_old_state = True if self.ui.exc_edit_toolbar.isVisible() else False
 
             if self.ui.splitter.sizes()[0] == 0:
@@ -2345,7 +2366,7 @@ class App(QtCore.QObject):
                 self.inform.emit('[ERROR_NOTCL] %s' % _("The Editor could not start."))
                 return
 
-            # store the Gerber Editor Toolbar visibility before entering in the Editor
+            # store the Gerber Editor Toolbar visibility before entering the Editor
             self.grb_editor.toolbar_old_state = True if self.ui.grb_edit_toolbar.isVisible() else False
 
             if self.ui.splitter.sizes()[0] == 0:
@@ -2410,9 +2431,9 @@ class App(QtCore.QObject):
 
     def editor2object(self, cleanup=None, force_cancel=None):
         """
-        Transfers the Geometry or Excellon from it's editor to the current object.
+        Transfers the Geometry or Excellon from its editor to the current object.
 
-        :param cleanup:         if True then we closed the app when the editor was open so we close first the editor
+        :param cleanup:         if True then we closed the app when the editor was open, so we close first the editor
         :param force_cancel:    if True always add Cancel button
         :return:                None
         """
@@ -2430,7 +2451,7 @@ class App(QtCore.QObject):
         except Exception:
             pass
 
-        # This is the object that exit from the Editor. It may be the edited object but it can be a new object
+        # This is the object that exit from the Editor. It may be the edited object, but it can be a new object
         # created by the Editor
         edited_obj = self.collection.get_active()
 
@@ -2480,7 +2501,7 @@ class App(QtCore.QObject):
                     # Remove anything else in the appGUI
                     self.ui.plugin_scroll_area.takeWidget()
 
-                    # update the geo object options so it is including the bounding box values
+                    # update the geo object options, so it is including the bounding box values
                     try:
                         xmin, ymin, xmax, ymax = edited_obj.bounds(flatten=True)
                         edited_obj.obj_options['xmin'] = xmin
@@ -2753,8 +2774,8 @@ class App(QtCore.QObject):
         :type msg:          str
         :param new_line:    if True then after printing the message add a new line char
         :type new_line:     bool
-        :return:            None
-        :rtype:             None
+        :return:
+        :rtype:
         """
         self.shell_message(msg=msg, new_line=new_line)
 
@@ -2766,13 +2787,13 @@ class App(QtCore.QObject):
         :type content_to_save:  str
         :param txt_content:     text that is not HTML
         :type txt_content:      str
-        :return:                None
-        :rtype:                 None
+        :return:
+        :rtype:
         """
         self.defaults.report_usage("save_to_file")
         self.log.debug("save_to_file()")
 
-        date = str(datetime.today()).rpartition('.')[0]
+        date = str(dt.today()).rpartition('.')[0]
         date = ''.join(c for c in date if c not in ':-')
         date = date.replace(' ', '_')
 
@@ -2834,7 +2855,7 @@ class App(QtCore.QObject):
 
     def register_recent(self, kind, filename):
         """
-        Will register the files opened into record dictionaries. The FlatCAM projects has it's own
+        Will register the files opened into record dictionaries. The FlatCAM projects has its own
         dictionary.
 
         :param kind:        type of file that was opened
@@ -3687,8 +3708,8 @@ class App(QtCore.QObject):
         """
         Called when the user click on the menu entry Help -> Bookmarks -> Backup Site
 
-        :return:    None
-        :rtype:     None
+        :return:
+        :rtype:
         """
         msgbox = FCMessageBox(parent=self.ui)
         title = _("Alternative website")
@@ -3913,7 +3934,7 @@ class App(QtCore.QObject):
         data = None
 
         if sys.platform != 'win32':
-            # this won't work in Linux or MacOS
+            # this won't work in Linux or macOS
             return
 
         # test if the app was frozen and choose the path for the configuration file
@@ -4117,7 +4138,7 @@ class App(QtCore.QObject):
         Called for converting a Geometry object from single-geo to multi-geo.
         Single-geo Geometry objects store their geometry data into self.solid_geometry.
         Multi-geo Geometry objects store their geometry data into the self.tools dictionary, each key (a tool actually)
-        having as a value another dictionary. This value dictionary has one of it's keys 'solid_geometry' which holds
+        having as a value another dictionary. This value dictionary has one of its keys 'solid_geometry' which holds
         the solid-geometry of that tool.
 
         :return: None
@@ -4153,7 +4174,7 @@ class App(QtCore.QObject):
         Called for converting a Geometry object from multi-geo to single-geo.
         Single-geo Geometry objects store their geometry data into self.solid_geometry.
         Multi-geo Geometry objects store their geometry data into the self.tools dictionary, each key (a tool actually)
-        having as a value another dictionary. This value dictionary has one of it's keys 'solid_geometry' which holds
+        having as a value another dictionary. This value dictionary has one of its keys 'solid_geometry' which holds
         the solid-geometry of that tool.
 
         :return: None
@@ -4191,8 +4212,8 @@ class App(QtCore.QObject):
         Called whenever a key changed in the self.options dictionary. It will set the required GUI element in the
         Edit -> Preferences tab window.
 
-        :param field: the key of the self.options dictionary that was changed.
-        :return: None
+        :param field:   the key of the self.options dictionary that was changed.
+        :return:        None
         """
         self.preferencesUiManager.defaults_write_form_field(field=field)
 
@@ -4213,7 +4234,7 @@ class App(QtCore.QObject):
             new_units, factor = self.on_toggle_units()
         except TypeError:
             # hen the self.on_toggle_units() return only one value (maybe None) it means something went wrong,
-            # it will end up in this exception and and we should return
+            # it will end up in this exception, and we should return
             return
 
         if self.ui.plot_tab_area.currentWidget().objectName() == "preferences_tab":
@@ -4230,7 +4251,7 @@ class App(QtCore.QObject):
     def scale_preferences(self, sfactor, new_units):
         self.preferencesUiManager.defaults_read_form()
 
-        # update the defaults from form, some may assume that the conversion is enough and it's not
+        # update the defaults from form, some may assume that the conversion is enough, and it's not
         self.on_defaults2options()
 
         # Keys in self.options for which to scale their values
@@ -4404,7 +4425,7 @@ class App(QtCore.QObject):
         """
         Callback for the Units radio-button change in the Preferences tab.
         Changes the application's default units adn for the project too.
-        If changing the project's units, the change propagates to all of
+        If changing the project's units, the change propagates to all
         the objects in the project.
 
         :return: The new application units. String: "IN" or "MM" with caps lock
@@ -4477,14 +4498,14 @@ class App(QtCore.QObject):
             self.plot_all()
             self.set_screen_units(new_units)
 
-            # flag for the app that we changed the object properties and it should save the project
+            # flag for the app that we changed the object properties, and it should save the project
             self.should_we_save = True
 
             self.inform.emit('[success] %s: %s' % (_("Converted units to"), new_units))
         else:
             factor = 1
 
-            # store the grid values so they are not changed in the next step
+            # store the grid values, so they are not changed in the next step
             val_x = float(self.options['global_gridx'])
             val_y = float(self.options['global_gridy'])
 
@@ -4667,7 +4688,7 @@ class App(QtCore.QObject):
         else:
             self.on_delete()
 
-    # It's meant to delete selected objects. It work also activated by a shortcut key 'Delete' same as above so in
+    # It's meant to delete selected objects. It may work also activated by a shortcut key 'Delete' same as above so in
     # some screens you have to be careful where you hover with your mouse.
     # Hovering over Selected tab, if the selected tab is a Geometry it will delete tools in tool table. But even if
     # there is a Selected tab in focus with a Geometry inside, if you hover over canvas it will delete an object.
@@ -5156,8 +5177,8 @@ class App(QtCore.QObject):
         cursor = QtGui.QCursor()
 
         if self.use_3d_engine:
-            # I don't know where those differences come from but they are constant for the current
-            # execution of the application and they are multiples of a value around 0.0263mm.
+            # I don't know where those differences come from, but they are constant for the current
+            # execution of the application, and they are multiples of a value around 0.0263mm.
             # In a random way sometimes they are more sometimes they are less
             # if units == 'MM':
             #     cal_factor = 0.0263
@@ -5272,8 +5293,8 @@ class App(QtCore.QObject):
         cursor = QtGui.QCursor()
 
         if self.use_3d_engine:
-            # I don't know where those differences come from but they are constant for the current
-            # execution of the application and they are multiples of a value around 0.0263mm.
+            # I don't know where those differences come from, but they are constant for the current
+            # execution of the application, and they are multiples of a value around 0.0263mm.
             # In a random way sometimes they are more sometimes they are less
             # if units == 'MM':
             #     cal_factor = 0.0263
@@ -5339,7 +5360,7 @@ class App(QtCore.QObject):
 
     def on_numeric_move(self, val=None):
         """
-        Move to a specific location (absolute or relative against current position)'
+        Move to a specific location (absolute or relative against current position)
 
         :param val: custom offset value, (x, y)
         :type val:  tuple
@@ -5372,7 +5393,7 @@ class App(QtCore.QObject):
                     maxy = max(maxy, maxy_)
                 return minx, miny, maxx, maxy
             except TypeError:
-                # it's a App object, return its bounds
+                # it's an App object, return its bounds
                 if obj:
                     return obj.bounds()
 
@@ -6806,9 +6827,9 @@ class App(QtCore.QObject):
         """
         Callback for the mouse motion event over the plot.
 
-        :param event: Contains information about the event.
-        :param origin_click
-        :return: None
+        :param event:           Contains information about the event.
+        :param origin_click:
+        :return:                None
         """
 
         if self.use_3d_engine:
@@ -6918,7 +6939,7 @@ class App(QtCore.QObject):
                                             obj.isHovering = False
                                             self.delete_hover_shape()
                         except Exception:
-                            # the Exception here will happen if we try to select on screen and we have an
+                            # the Exception here will happen if we try to select on screen, and we have a
                             # newly (and empty) just created Geometry or Excellon object that do not have the
                             # xmin, xmax, ymin, ymax options.
                             # In this case poly_obj creation (see above) will fail
@@ -7028,7 +7049,7 @@ class App(QtCore.QObject):
                         self.select_objects(key='multisel')
                     else:
                         # If there is no active command (self.command_active is None) then we check if
-                        # we clicked on a object by checking the bounding limits against mouse click position
+                        # we clicked on an object by checking the bounding limits against mouse click position
                         self.select_objects()
 
                     self.delete_hover_shape()
@@ -7179,7 +7200,7 @@ class App(QtCore.QObject):
                             self.collection.set_active(obj.obj_options['name'])
                     obj.selection_shape_drawn = True
             except Exception as e:
-                # the Exception here will happen if we try to select on screen and we have an newly (and empty)
+                # the Exception here will happen if we try to select on screen, and we have a newly (and empty)
                 # just created Geometry or Excellon object that do not have the xmin, xmax, ymin, ymax options.
                 # In this case poly_obj creation (see above) will fail
                 self.log.error("App.selection_area_handler() --> %s" % str(e))
@@ -7221,7 +7242,7 @@ class App(QtCore.QObject):
 
         if self.objects_under_the_click_list:
             curr_sel_obj = self.collection.get_active()
-            # case when there is only an object under the click and we toggle it
+            # case when there is only an object under the click, and we toggle it
             if len(self.objects_under_the_click_list) == 1:
                 try:
                     if curr_sel_obj is None:
@@ -7265,7 +7286,7 @@ class App(QtCore.QObject):
                         self.collection.get_by_name(self.objects_under_the_click_list[0]).selection_shape_drawn = True
 
                     name_sel_obj = self.collection.get_active().obj_options['name']
-                    # In case that there is a selected object but it is not in the overlapped object list
+                    # In case that there is a selected object, but it is not in the overlapped object list
                     # make that object inactive and activate the first element in the overlapped object list
                     if name_sel_obj not in self.objects_under_the_click_list:
                         self.collection.set_inactive(name_sel_obj)
@@ -7324,8 +7345,8 @@ class App(QtCore.QObject):
 
         :param curr_sel_obj:    Application object that have geometry: Geometry, Gerber, Excellon, CNCJob
         :type curr_sel_obj:
-        :return:                None
-        :rtype:                 None
+        :return:
+        :rtype:
         """
         if curr_sel_obj:
             if curr_sel_obj.kind == 'gerber':
@@ -7803,7 +7824,7 @@ class App(QtCore.QObject):
             line = 0
 
         if dia_box.ok:
-            # make sure to move first the cursor at the end so after finding the line the line will be positioned
+            # make sure to move first the cursor at the end so after finding the line, the line will be positioned
             # at the top of the window
             self.ui.plot_tab_area.currentWidget().code_editor.moveCursor(QTextCursor.MoveOperation.End)
             # get the document() of the AppTextEditor
@@ -7883,7 +7904,7 @@ class App(QtCore.QObject):
 
     def setup_recent_items(self):
         """
-        Setup a dictionary with the recent files accessed, organized by type
+        Set up a dictionary with the recent files accessed, organized by type
 
         :return:
         """
@@ -7956,7 +7977,7 @@ class App(QtCore.QObject):
         fp.close()
 
         # Closure needed to create callbacks in a loop.
-        # Otherwise late binding occurs.
+        # Otherwise, late binding occurs.
         def make_callback(func, fname):
             def opener():
                 func(fname)
@@ -8286,7 +8307,7 @@ class App(QtCore.QObject):
     def on_plotcanvas_add(plotcanvas_obj, container):
         """
 
-        :param plotcanvas_obj:  the class that setup the canvas
+        :param plotcanvas_obj:  the class that set up the canvas
         :type plotcanvas_obj:   class
         :param container:       a layout where to add the native widget of the plotcanvas_obj class
         :type container:
@@ -8686,8 +8707,8 @@ class App(QtCore.QObject):
         :type fill_color:           str
         :param outline_color:       the outline color that will be set for the selected objects
         :type outline_color:        str
-        :return:                    None
-        :rtype:                     None
+        :return:
+        :rtype:
         """
 
         # make sure to set the color in the Gerber colors storage self.options["gerber_color_list"]
@@ -8794,8 +8815,8 @@ class App(QtCore.QObject):
         :param msg:         Message to display.
         :param show:        Opens the shell.
         :param error:       Shows the message as an error.
-        :param warning:     Shows the message as an warning.
-        :param success:     Shows the message as an success.
+        :param warning:     Shows the message as a warning.
+        :param success:     Shows the message as a success.
         :param selected:    Indicate that something was selected on canvas
         :return: None
         """

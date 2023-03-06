@@ -7,7 +7,8 @@
 # Modified by Marius Stanciu (2020)                         #
 # ###########################################################
 
-from appObjects.ObjectCollection import *
+from PyQt6 import QtCore
+
 from appObjects.CNCJobObject import CNCJobObject
 from appObjects.DocumentObject import DocumentObject
 from appObjects.ExcellonObject import ExcellonObject
@@ -17,6 +18,7 @@ from appObjects.ScriptObject import ScriptObject
 
 import time
 import traceback
+from copy import deepcopy
 
 # FlatCAM Translation
 import gettext

@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appEditors.grb_plugins.GrbCommon import *
+from appEditors.grb_plugins.GrbCommon import DrawToolUtilityShape, DrawToolShape, DrawTool, ShapeToolEditorGrb
 
 from camlib import distance, arc, three_point_circle, flatten_shapely_geometry
 from appGUI.GUIElements import *
@@ -24,8 +24,18 @@ from appEditors.grb_plugins.GrberRegionPlugin import GrbRegionEditorTool
 # import inspect
 
 # from vispy.io import read_png
+from vispy.geometry.rect import Rect
 # import pngcanvas
 import traceback
+import numpy as np
+from numpy.linalg import norm as numpy_norm
+import math
+from copy import deepcopy
+
+from shapely.geometry import Point, Polygon, MultiPolygon, LineString, LinearRing, box
+from shapely.ops import unary_union
+from shapely.affinity import translate, scale, skew, rotate
+
 import gettext
 import appTranslation as fcTranslate
 import builtins
@@ -610,11 +620,11 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
                     new_geo_el = {}
 
                     if 'solid' in geo_el:
-                        new_geo_el['solid'] = affinity.translate(
+                        new_geo_el['solid'] = translate(
                             geo_el['solid'], xoff=(dx - self.last_dx), yoff=(dy - self.last_dy)
                         )
                     if 'follow' in geo_el:
-                        new_geo_el['follow'] = affinity.translate(
+                        new_geo_el['follow'] = translate(
                             geo_el['follow'], xoff=(dx - self.last_dx), yoff=(dy - self.last_dy)
                         )
                     geo_el_list.append(new_geo_el)
@@ -790,8 +800,8 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
                 y = self.origin[1] + radius * math.sin(-angle_radians + angle)
 
                 geo = self.util_shape((x, y))
-                geo_sol = affinity.rotate(geo['solid'], angle=(math.pi - angle_radians + angle), use_radians=True)
-                geo_fol = affinity.rotate(geo['follow'], angle=(math.pi - angle_radians + angle), use_radians=True)
+                geo_sol = rotate(geo['solid'], angle=(math.pi - angle_radians + angle), use_radians=True)
+                geo_fol = rotate(geo['follow'], angle=(math.pi - angle_radians + angle), use_radians=True)
                 geo_el = {
                     'solid': geo_sol,
                     'follow': geo_fol
@@ -804,8 +814,8 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
                 y = self.origin[1] + radius * math.sin(angle_radians + angle)
 
                 geo = self.util_shape((x, y))
-                geo_sol = affinity.rotate(geo['solid'], angle=(angle_radians + angle - math.pi), use_radians=True)
-                geo_fol = affinity.rotate(geo['follow'], angle=(angle_radians + angle - math.pi), use_radians=True)
+                geo_sol = rotate(geo['solid'], angle=(angle_radians + angle - math.pi), use_radians=True)
+                geo_fol = rotate(geo['follow'], angle=(angle_radians + angle - math.pi), use_radians=True)
                 geo_el = {
                     'solid': geo_sol,
                     'follow': geo_fol
@@ -1089,7 +1099,7 @@ class PoligonizeEditorGrb(ShapeToolEditorGrb):
         else:
             modifier_to_use = Qt.KeyboardModifier.ShiftModifier
         # if modifier key is pressed then we add to the selected list the current shape but if it's already
-        # in the selected list, we removed it. Therefore first click selects, second deselects.
+        # in the selected list, we removed it. Therefore, first click selects, second deselects.
         if key_modifier == modifier_to_use:
             self.draw_app.select_tool(self.draw_app.active_tool.name)
         else:
@@ -2163,7 +2173,7 @@ class DiscSemiEditorGrb(ShapeToolEditorGrb):
         except KeyError:
             size_ap = 0.0
             # self.draw_app.app.inform.emit(
-            #     '[ERROR_NOTCL] %s' % _("You need to preselect a aperture in the Aperture Table that has a size."))
+            #     '[ERROR_NOTCL] %s' % _("You need to preselect an aperture in the Aperture Table that has a size."))
             # try:
             #     QtGui.QGuiApplication.restoreOverrideCursor()
             # except Exception:
@@ -2839,11 +2849,11 @@ class MoveEditorGrb(ShapeToolEditorGrb):
                     geometric_data = select_shape.geo
                     new_geo_el = {}
                     if 'solid' in geometric_data:
-                        new_geo_el['solid'] = affinity.translate(geometric_data['solid'], xoff=dx, yoff=dy)
+                        new_geo_el['solid'] = translate(geometric_data['solid'], xoff=dx, yoff=dy)
                     if 'follow' in geometric_data:
-                        new_geo_el['follow'] = affinity.translate(geometric_data['follow'], xoff=dx, yoff=dy)
+                        new_geo_el['follow'] = translate(geometric_data['follow'], xoff=dx, yoff=dy)
                     if 'clear' in geometric_data:
-                        new_geo_el['clear'] = affinity.translate(geometric_data['clear'], xoff=dx, yoff=dy)
+                        new_geo_el['clear'] = translate(geometric_data['clear'], xoff=dx, yoff=dy)
 
                     self.geometry.append(DrawToolShape(new_geo_el))
                     self.current_storage.remove(select_shape)
@@ -2892,15 +2902,15 @@ class MoveEditorGrb(ShapeToolEditorGrb):
             for geom in self.draw_app.get_selected():
                 new_geo_el = {}
                 if 'solid' in geom.geo:
-                    new_geo_el['solid'] = affinity.translate(geom.geo['solid'], xoff=dx, yoff=dy)
+                    new_geo_el['solid'] = translate(geom.geo['solid'], xoff=dx, yoff=dy)
                 if 'follow' in geom.geo:
-                    new_geo_el['follow'] = affinity.translate(geom.geo['follow'], xoff=dx, yoff=dy)
+                    new_geo_el['follow'] = translate(geom.geo['follow'], xoff=dx, yoff=dy)
                 if 'clear' in geom.geo:
-                    new_geo_el['clear'] = affinity.translate(geom.geo['clear'], xoff=dx, yoff=dy)
+                    new_geo_el['clear'] = translate(geom.geo['clear'], xoff=dx, yoff=dy)
                 geo_list.append(deepcopy(new_geo_el))
             return DrawToolUtilityShape(geo_list)
         else:
-            ss_el = {'solid': affinity.translate(self.selection_shape, xoff=dx, yoff=dy)}
+            ss_el = {'solid': translate(self.selection_shape, xoff=dx, yoff=dy)}
             return DrawToolUtilityShape(ss_el)
 
 
@@ -2922,11 +2932,11 @@ class CopyEditorGrb(MoveEditorGrb):
                     geometric_data = select_shape.geo
                     new_geo_el = {}
                     if 'solid' in geometric_data:
-                        new_geo_el['solid'] = affinity.translate(geometric_data['solid'], xoff=dx, yoff=dy)
+                        new_geo_el['solid'] = translate(geometric_data['solid'], xoff=dx, yoff=dy)
                     if 'follow' in geometric_data:
-                        new_geo_el['follow'] = affinity.translate(geometric_data['follow'], xoff=dx, yoff=dy)
+                        new_geo_el['follow'] = translate(geometric_data['follow'], xoff=dx, yoff=dy)
                     if 'clear' in geometric_data:
-                        new_geo_el['clear'] = affinity.translate(geometric_data['clear'], xoff=dx, yoff=dy)
+                        new_geo_el['clear'] = translate(geometric_data['clear'], xoff=dx, yoff=dy)
                     self.geometry.append(DrawToolShape(new_geo_el))
 
                     sel_shapes_to_be_deleted.append(select_shape)
@@ -3121,11 +3131,11 @@ class EraserEditorGrb(ShapeToolEditorGrb):
         for geom in self.draw_app.get_selected():
             new_geo_el = {}
             if 'solid' in geom.geo:
-                new_geo_el['solid'] = affinity.translate(geom.geo['solid'], xoff=dx, yoff=dy)
+                new_geo_el['solid'] = translate(geom.geo['solid'], xoff=dx, yoff=dy)
             if 'follow' in geom.geo:
-                new_geo_el['follow'] = affinity.translate(geom.geo['follow'], xoff=dx, yoff=dy)
+                new_geo_el['follow'] = translate(geom.geo['follow'], xoff=dx, yoff=dy)
             if 'clear' in geom.geo:
-                new_geo_el['clear'] = affinity.translate(geom.geo['clear'], xoff=dx, yoff=dy)
+                new_geo_el['clear'] = translate(geom.geo['clear'], xoff=dx, yoff=dy)
             geo_list.append(deepcopy(new_geo_el))
         return DrawToolUtilityShape(geo_list)
 
@@ -4558,14 +4568,11 @@ class AppGerberEditor(QtCore.QObject):
                         geometric_data = geo_el.geo
                         new_geo_el = {}
                         if 'solid' in geometric_data:
-                            new_geo_el['solid'] = deepcopy(affinity.scale(geometric_data['solid'],
-                                                                          xfact=factor, yfact=factor))
+                            new_geo_el['solid'] = deepcopy(scale(geometric_data['solid'], xfact=factor, yfact=factor))
                         if 'follow' in geometric_data:
-                            new_geo_el['follow'] = deepcopy(affinity.scale(geometric_data['follow'],
-                                                                           xfact=factor, yfact=factor))
+                            new_geo_el['follow'] = deepcopy(scale(geometric_data['follow'], xfact=factor, yfact=factor))
                         if 'clear' in geometric_data:
-                            new_geo_el['clear'] = deepcopy(affinity.scale(geometric_data['clear'],
-                                                                          xfact=factor, yfact=factor))
+                            new_geo_el['clear'] = deepcopy(scale(geometric_data['clear'], xfact=factor, yfact=factor))
                         geometry.append(new_geo_el)
 
                     self.add_gerber_shape(geometry, self.storage_dict[val_edited])
@@ -5848,7 +5855,7 @@ class AppGerberEditor(QtCore.QObject):
                 if self.app.selection_type is not None:
                     self.draw_selection_area_handler(self.pos, pos, self.app.selection_type)
                     self.app.selection_type = None
-                    if isinstance(self.active_tool, (SimplifyEditorGrb)):
+                    if isinstance(self.active_tool, SimplifyEditorGrb):
                         self.active_tool.simp_tool.calculate_coords_vertex()
 
                 elif isinstance(self.active_tool, (SelectEditorGrb, SimplifyEditorGrb)):
@@ -6416,15 +6423,15 @@ class AppGerberEditor(QtCore.QObject):
                     geometric_data = geom_el.geo
                     scaled_geom_el = {}
                     if 'solid' in geometric_data:
-                        scaled_geom_el['solid'] = affinity.scale(
+                        scaled_geom_el['solid'] = scale(
                             geometric_data['solid'], scale_factor, scale_factor, origin='center'
                         )
                     if 'follow' in geometric_data:
-                        scaled_geom_el['follow'] = affinity.scale(
+                        scaled_geom_el['follow'] = scale(
                             geometric_data['follow'], scale_factor, scale_factor, origin='center'
                         )
                     if 'clear' in geometric_data:
-                        scaled_geom_el['clear'] = affinity.scale(
+                        scaled_geom_el['clear'] = scale(
                             geometric_data['clear'], scale_factor, scale_factor, origin='center'
                         )
 
@@ -7625,11 +7632,11 @@ class TransformEditorTool(AppTool):
                 for sel_el_shape in elem_list:
                     sel_el = sel_el_shape.geo
                     if 'solid' in sel_el:
-                        sel_el['solid'] = affinity.rotate(sel_el['solid'], angle=-val, origin=(px, py))
+                        sel_el['solid'] = rotate(sel_el['solid'], angle=-val, origin=(px, py))
                     if 'follow' in sel_el:
-                        sel_el['follow'] = affinity.rotate(sel_el['follow'], angle=-val, origin=(px, py))
+                        sel_el['follow'] = rotate(sel_el['follow'], angle=-val, origin=(px, py))
                     if 'clear' in sel_el:
-                        sel_el['clear'] = affinity.rotate(sel_el['clear'], angle=-val, origin=(px, py))
+                        sel_el['clear'] = rotate(sel_el['clear'], angle=-val, origin=(px, py))
                 self.draw_app.plot_all()
 
                 self.app.inform.emit('[success] %s' % _("Done."))
@@ -7660,19 +7667,19 @@ class TransformEditorTool(AppTool):
                     sel_el = sel_el_shape.geo
                     if axis == 'X':
                         if 'solid' in sel_el:
-                            sel_el['solid'] = affinity.scale(sel_el['solid'], xfact=1, yfact=-1, origin=(px, py))
+                            sel_el['solid'] = scale(sel_el['solid'], xfact=1, yfact=-1, origin=(px, py))
                         if 'follow' in sel_el:
-                            sel_el['follow'] = affinity.scale(sel_el['follow'], xfact=1, yfact=-1, origin=(px, py))
+                            sel_el['follow'] = scale(sel_el['follow'], xfact=1, yfact=-1, origin=(px, py))
                         if 'clear' in sel_el:
-                            sel_el['clear'] = affinity.scale(sel_el['clear'], xfact=1, yfact=-1, origin=(px, py))
+                            sel_el['clear'] = scale(sel_el['clear'], xfact=1, yfact=-1, origin=(px, py))
                         self.app.inform.emit('[success] %s...' % _('Flip on Y axis done'))
                     elif axis == 'Y':
                         if 'solid' in sel_el:
-                            sel_el['solid'] = affinity.scale(sel_el['solid'], xfact=-1, yfact=1, origin=(px, py))
+                            sel_el['solid'] = scale(sel_el['solid'], xfact=-1, yfact=1, origin=(px, py))
                         if 'follow' in sel_el:
-                            sel_el['follow'] = affinity.scale(sel_el['follow'], xfact=-1, yfact=1, origin=(px, py))
+                            sel_el['follow'] = scale(sel_el['follow'], xfact=-1, yfact=1, origin=(px, py))
                         if 'clear' in sel_el:
-                            sel_el['clear'] = affinity.scale(sel_el['clear'], xfact=-1, yfact=1, origin=(px, py))
+                            sel_el['clear'] = scale(sel_el['clear'], xfact=-1, yfact=1, origin=(px, py))
                         self.app.inform.emit('[success] %s...' % _('Flip on X axis done'))
                 self.draw_app.plot_all()
             except Exception as e:
@@ -7703,11 +7710,11 @@ class TransformEditorTool(AppTool):
                     sel_el = sel_el_shape.geo
 
                     if 'solid' in sel_el:
-                        sel_el['solid'] = affinity.skew(sel_el['solid'], xval, yval, origin=(px, py))
+                        sel_el['solid'] = skew(sel_el['solid'], xval, yval, origin=(px, py))
                     if 'follow' in sel_el:
-                        sel_el['follow'] = affinity.skew(sel_el['follow'], xval, yval, origin=(px, py))
+                        sel_el['follow'] = skew(sel_el['follow'], xval, yval, origin=(px, py))
                     if 'clear' in sel_el:
-                        sel_el['clear'] = affinity.skew(sel_el['clear'], xval, yval, origin=(px, py))
+                        sel_el['clear'] = skew(sel_el['clear'], xval, yval, origin=(px, py))
 
                 self.draw_app.plot_all()
 
@@ -7742,11 +7749,11 @@ class TransformEditorTool(AppTool):
                     for sel_el_shape in elem_list:
                         sel_el = sel_el_shape.geo
                         if 'solid' in sel_el:
-                            sel_el['solid'] = affinity.scale(sel_el['solid'], xfactor, yfactor, origin=(px, py))
+                            sel_el['solid'] = scale(sel_el['solid'], xfactor, yfactor, origin=(px, py))
                         if 'follow' in sel_el:
-                            sel_el['follow'] = affinity.scale(sel_el['follow'], xfactor, yfactor, origin=(px, py))
+                            sel_el['follow'] = scale(sel_el['follow'], xfactor, yfactor, origin=(px, py))
                         if 'clear' in sel_el:
-                            sel_el['clear'] = affinity.scale(sel_el['clear'], xfactor, yfactor, origin=(px, py))
+                            sel_el['clear'] = scale(sel_el['clear'], xfactor, yfactor, origin=(px, py))
                     self.draw_app.plot_all()
 
                     if str(axis) == 'X':
@@ -7779,18 +7786,18 @@ class TransformEditorTool(AppTool):
                     sel_el = sel_el_shape.geo
                     if axis == 'X':
                         if 'solid' in sel_el:
-                            sel_el['solid'] = affinity.translate(sel_el['solid'], num, 0)
+                            sel_el['solid'] = translate(sel_el['solid'], num, 0)
                         if 'follow' in sel_el:
-                            sel_el['follow'] = affinity.translate(sel_el['follow'], num, 0)
+                            sel_el['follow'] = translate(sel_el['follow'], num, 0)
                         if 'clear' in sel_el:
-                            sel_el['clear'] = affinity.translate(sel_el['clear'], num, 0)
+                            sel_el['clear'] = translate(sel_el['clear'], num, 0)
                     elif axis == 'Y':
                         if 'solid' in sel_el:
-                            sel_el['solid'] = affinity.translate(sel_el['solid'], 0, num)
+                            sel_el['solid'] = translate(sel_el['solid'], 0, num)
                         if 'follow' in sel_el:
-                            sel_el['follow'] = affinity.translate(sel_el['follow'], 0, num)
+                            sel_el['follow'] = translate(sel_el['follow'], 0, num)
                         if 'clear' in sel_el:
-                            sel_el['clear'] = affinity.translate(sel_el['clear'], 0, num)
+                            sel_el['clear'] = translate(sel_el['clear'], 0, num)
                     self.draw_app.plot_all()
 
                 if str(axis) == 'X':
@@ -7816,11 +7823,11 @@ class TransformEditorTool(AppTool):
 
                     if factor:
                         if 'solid' in sel_el:
-                            sel_el['solid'] = affinity.scale(sel_el['solid'], value, value, origin='center')
+                            sel_el['solid'] = scale(sel_el['solid'], value, value, origin='center')
                         if 'follow' in sel_el:
-                            sel_el['follow'] = affinity.scale(sel_el['solid'], value, value, origin='center')
+                            sel_el['follow'] = scale(sel_el['solid'], value, value, origin='center')
                         if 'clear' in sel_el:
-                            sel_el['clear'] = affinity.scale(sel_el['solid'], value, value, origin='center')
+                            sel_el['clear'] = scale(sel_el['solid'], value, value, origin='center')
                     else:
                         if 'solid' in sel_el:
                             sel_el['solid'] = sel_el['solid'].buffer(

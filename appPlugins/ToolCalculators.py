@@ -5,11 +5,23 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, NumericalEvalEntry, RadioSet, \
+    FCDoubleSpinner, FCSpinner
+
+import logging
+import math
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class ToolCalculator(AppTool):

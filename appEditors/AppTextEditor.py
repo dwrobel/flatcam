@@ -5,9 +5,9 @@
 # MIT Licence                                              #
 # ##########################################################
 
+from PyQt6 import QtPrintSupport, QtWidgets, QtCore, QtGui
 from appGUI.GUIElements import FCFileSaveDialog, FCEntry, FCTextAreaExtended, FCTextAreaLineNumber, FCButton, \
     FCCheckBox, FCMessageBox
-from PyQt6 import QtPrintSupport, QtWidgets, QtCore, QtGui
 
 from reportlab.platypus import SimpleDocTemplate, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet

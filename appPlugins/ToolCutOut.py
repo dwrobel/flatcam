@@ -5,10 +5,28 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
-from camlib import grace, flatten_shapely_geometry
-from matplotlib.backend_bases import KeyEvent as mpl_key_event
+from PyQt6 import QtWidgets, QtGui, QtCore
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, RadioSet, \
+    FCDoubleSpinner, FCComboBox2, OptionalInputSection, FCCheckBox
+from camlib import flatten_shapely_geometry
+
+import math
+import logging
+from copy import deepcopy
+import simplejson as json
+import sys
 from numpy import Inf
+
+from shapely.geometry import Polygon, MultiPolygon, box, Point, LineString, MultiLineString, LinearRing
+from shapely.ops import unary_union, linemerge
+from shapely.affinity import rotate
+
+from matplotlib.backend_bases import KeyEvent as mpl_key_event
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:

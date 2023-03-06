@@ -6,7 +6,8 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appPreProcessor import *
+from appPreProcessor import PreProc
+import math
 
 
 class Line_xyz(PreProc):

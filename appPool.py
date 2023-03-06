@@ -1,3 +1,4 @@
+
 from PyQt6 import QtCore
 from multiprocessing import Pool, cpu_count
 import dill

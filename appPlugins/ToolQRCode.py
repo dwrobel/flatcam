@@ -5,9 +5,27 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
-from appParsers.ParseSVG import *
+from PyQt6 import QtWidgets, QtCore, QtGui
+from PyQt6.QtCore import Qt
+
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
+    FCFileSaveDialog, RadioSet, FCTextArea, FCSpinner, FCEntry
+
+import logging
+from copy import deepcopy
 from io import StringIO, BytesIO
+from typing import Iterable
+import math
+
+from shapely.geometry import MultiPolygon, box, Polygon
+from shapely.ops import unary_union
+from shapely.affinity import translate, scale
+import gettext
+import appTranslation as fcTranslate
+import builtins
+
+from appParsers.ParseSVG import getsvggeo, getsvgtext, svgparselength, svgparse_viewbox
 
 import qrcode
 import qrcode.image.svg
@@ -399,7 +417,7 @@ class QRCode(AppTool):
         offset_geo = []
 
         # I use the len of self.qrcode_geometry instead of the utility one because the complexity of the polygons is
-        # better seen in this (bit what if the sel.qrcode_geometry is just one geo element? len will fail ...
+        # better seen in this (bit what if the sel.qrcode_geometry is just one geo element? len will fail ...)
 
         qrcode_geometry_len = len(self.qrcode_geometry.geoms) if isinstance(self.qrcode_geometry, MultiPolygon) else \
             len(self.qrcode_geometry)
@@ -480,11 +498,11 @@ class QRCode(AppTool):
         """
         Convert shapes from an SVG file into a geometry list.
 
-        :param filename: A String Stream file.
+        :param filename:    A String Stream file.
         :param object_type: parameter passed further along. What kind the object will receive the SVG geometry
-        :param flip: Flip the vertically.
-        :type flip: bool
-        :param units: FlatCAM units
+        :param flip:        Flip this vertically.
+        :type flip:         bool
+        :param units:       FlatCAM units
         :return: None
         """
 

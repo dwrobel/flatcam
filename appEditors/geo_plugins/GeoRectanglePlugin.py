@@ -1,5 +1,14 @@
 
-from appTool import *
+from PyQt6 import QtWidgets, QtGui
+from appTool import AppToolEditor
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, GLay, FCFrame, FCDoubleSpinner, RadioSetCross, \
+    RadioSet, NumericalEvalEntry
+
+from shapely.geometry import box, base
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:

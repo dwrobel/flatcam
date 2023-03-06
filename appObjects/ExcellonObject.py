@@ -10,14 +10,18 @@
 # File modified by: Marius Stanciu                         #
 # ##########################################################
 
-
-from shapely.geometry import LineString
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appParsers.ParseExcellon import Excellon
-from appObjects.AppObjectTemplate import *
+from appObjects.AppObjectTemplate import FlatCAMObj, ObjectDeleted
+from appGUI.GUIElements import FCCheckBox
+from appGUI.ObjectUI import ExcellonObjectUI
 
 import itertools
 import numpy as np
+from copy import deepcopy
+
+from shapely.geometry import LineString
 
 import gettext
 import appTranslation as fcTranslate

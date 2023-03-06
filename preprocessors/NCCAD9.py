@@ -10,7 +10,8 @@
 # http://www.max-computer.de/x5e/adaption-of-post-processor.html
 # https://github.com/FreeCAD/FreeCAD/pull/2876/files
 
-from appPreProcessor import *
+from appPreProcessor import PreProc
+import math
 
 
 class NCCAD9(PreProc):

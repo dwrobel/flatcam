@@ -1,3 +1,4 @@
+
 from PyQt6 import QtGui, QtCore, QtWidgets
 from appGUI.GUIElements import FCEntry, FCButton, FCDoubleSpinner, FCComboBox, FCCheckBox, FCSpinner, \
     FCTree, RadioSet, FCFileSaveDialog, FCLabel, FCComboBox2, GLay
@@ -3091,7 +3092,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #         multidepth_item.set_value(data['multidepth'])
 #         widget.setCellWidget(row, 8, multidepth_item)
 #
-#         # to make the checkbox centered but it can no longer have it's value accessed - needs a fix using findchild()
+#         # to make the checkbox centered, but it can no longer have its value accessed - needs a fix using findchild()
 #         # multidepth_item = QtWidgets.QWidget()
 #         # cb = FCCheckBox()
 #         # cb.set_value(data['multidepth'])

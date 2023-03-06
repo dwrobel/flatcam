@@ -5,11 +5,28 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtGui, QtCore
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, RadioSet, \
+    FCDoubleSpinner, FCComboBox2, FCEntry, FCCheckBox
+
 from appCommon.Common import LoudDict
 from appCommon.Common import GracefulException as grace
-from  camlib import flatten_shapely_geometry
+from camlib import flatten_shapely_geometry
+
+import logging
+from copy import deepcopy
+import numpy as np
+from typing import Iterable
+
 import shapely.geometry.base as base
+from shapely.geometry import Polygon, MultiPolygon, box, Point, LineString
+from shapely.ops import unary_union
+from shapely.affinity import translate
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:

@@ -1,5 +1,13 @@
 
-from appTool import *
+from PyQt6 import QtWidgets, QtGui
+
+from appTool import AppToolEditor
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, NumericalEvalEntry, GLay, FCFrame, FCSpinner, \
+    RadioSet, FCDoubleSpinner
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:

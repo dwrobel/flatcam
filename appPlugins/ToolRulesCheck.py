@@ -5,8 +5,21 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
-from appPool import *
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
+    FCDoubleSpinner, OptionalInputSection
+from appObjects import GerberObject
+
+import logging
+from copy import deepcopy
+
+from shapely.geometry import Polygon, MultiPolygon
+from shapely.ops import nearest_points
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -37,7 +50,7 @@ class RulesCheck(AppTool):
         # final name for the panel object
         self.outname = ""
 
-        # flag to signal the constrain was activated
+        # flag to signal that the constraint was activated
         self.constrain_flag = False
 
         # Multiprocessing Process Pool
@@ -249,7 +262,7 @@ class RulesCheck(AppTool):
         return rule_title, violations
 
     @staticmethod
-    def check_gerber_clearance(gerber_list, size, rule):
+    def check_gerber_clearance(gerber_list: list[GerberObject], size, rule):
         # log.debug("RulesCheck.check_gerber_clearance()")
         rule_title = rule
 
@@ -262,7 +275,7 @@ class RulesCheck(AppTool):
 
         if len(gerber_list) == 2:
             gerber_1 = gerber_list[0]
-            # added it so I won't have errors of using before declaring
+            # added it, so I won't have errors of using before declaring
             gerber_2 = {}
 
             gerber_3 = gerber_list[1]
@@ -488,7 +501,7 @@ class RulesCheck(AppTool):
             'points': list()
         })
 
-        # added it so I won't have errors of using before declaring
+        # added it so, I won't have errors of using before declaring
         gerber_obj = {}
         gerber_extra_obj = {}
         exc_obj = {}
@@ -1572,7 +1585,7 @@ class RulesUI:
         self.silk_grid = GLay(v_spacing=5, h_spacing=3)
         silk_frame.setLayout(self.silk_grid)
 
-        # Silkscreen2silkscreen clearance
+        # "Silkscreen2silkscreen" clearance
         self.clearance_silk2silk_cb = FCCheckBox('%s:' % _("Silk to Silk Clearance"))
         self.clearance_silk2silk_cb.setToolTip(
             _("This checks if the minimum clearance between silkscreen\n"
@@ -1622,7 +1635,7 @@ class RulesUI:
         self.s2sm = OptionalInputSection(
             self.clearance_silk2sm_cb, [self.clearance_silk2sm_lbl, self.clearance_silk2sm_entry])
 
-        # Silk2outline clearance
+        # "Silk2outline" clearance
         self.clearance_silk2ol_cb = FCCheckBox('%s:' % _("Silk to Outline Clearance"))
         self.clearance_silk2ol_cb.setToolTip(
             _("This checks if the minimum clearance between silk\n"

@@ -5,9 +5,22 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
-import shapely.geometry
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
+    FCComboBox2, RadioSet, FCDoubleSpinner, EvalEntry, FCTable
 from appCommon.Common import LoudDict
+
+import logging
+from copy import deepcopy
+import math
+
+from shapely.geometry import LineString, Polygon, MultiPolygon, box, Point, base
+from shapely.ops import unary_union
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -541,7 +554,7 @@ class ToolFiducials(AppTool):
             geo_buff_list = []
             if aperture_found:
                 for geo in geo_list:
-                    assert isinstance(geo, shapely.geometry.base.BaseGeometry)
+                    assert isinstance(geo, base.BaseGeometry)
                     geo_buff_list.append(geo)
 
                     dict_el = {'follow': geo.centroid, 'solid': geo}
@@ -562,7 +575,7 @@ class ToolFiducials(AppTool):
                 }
 
                 for geo in geo_list:
-                    assert isinstance(geo, shapely.geometry.base.BaseGeometry)
+                    assert isinstance(geo, base.BaseGeometry)
                     geo_buff_list.append(geo)
 
                     dict_el = {'follow': geo.centroid, 'solid': geo}

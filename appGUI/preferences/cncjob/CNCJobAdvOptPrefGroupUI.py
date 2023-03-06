@@ -2,6 +2,7 @@ from PyQt6 import QtGui
 
 from appGUI.GUIElements import FCSpinner, FCColorEntry, FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
+
 import gettext
 import appTranslation as fcTranslate
 import builtins

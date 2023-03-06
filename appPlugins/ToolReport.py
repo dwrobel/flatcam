@@ -5,7 +5,19 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCTree
+import logging
+from copy import deepcopy
+import math
+
+from shapely.geometry import MultiPolygon, Polygon, MultiLineString
+from shapely.ops import unary_union
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -303,11 +315,12 @@ class ObjectReport(AppTool):
                                 for geo_el in obj_prop.tools[tool_k]['solid_geometry']:
                                     geo_tools.append(geo_el)
 
+                        geo_tools_mp = MultiPolygon(geo_tools)
                         try:
-                            for geo_el in geo_tools:
+                            for geo_el in geo_tools_mp.geoms:
                                 copper_area += geo_el.area
                         except TypeError:
-                            copper_area += geo_tools.area
+                            copper_area += geo_tools_mp.area
                         copper_area /= 100
                 except Exception as err:
                     self.app.log.error("Properties.addItems() --> %s" % str(err))
@@ -319,7 +332,7 @@ class ObjectReport(AppTool):
                     if isinstance(geo, list) and geo[0] is not None:
                         if isinstance(geo, MultiPolygon):
                             env_obj = geo.convex_hull
-                        elif (isinstance(geo, MultiPolygon) and len(geo) == 1) or \
+                        elif (isinstance(geo, MultiPolygon) and len(geo.geoms) == 1) or \
                                 (isinstance(geo, list) and len(geo) == 1) and isinstance(geo[0], Polygon):
                             env_obj = unary_union(geo)
                             env_obj = env_obj.convex_hull

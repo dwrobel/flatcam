@@ -34,6 +34,7 @@ ezdxf
 reportlab>=3.5
 pyserial>=3.4
 pikepdf>=2.0
+pyppeteer
 
 matplotlib>=3.5.0
 pyopengl

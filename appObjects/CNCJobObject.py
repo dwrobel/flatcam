@@ -10,17 +10,22 @@
 # File modified by: Marius Stanciu                         #
 # ##########################################################
 
-from io import StringIO
-from datetime import datetime
+from PyQt6 import QtCore, QtWidgets
 
 from appEditors.AppTextEditor import AppTextEditor
-from appObjects.AppObjectTemplate import *
-
+from appObjects.AppObjectTemplate import FlatCAMObj, ObjectDeleted
+from appGUI.GUIElements import FCFileSaveDialog, FCCheckBox
+from appGUI.ObjectUI import CNCObjectUI
 from camlib import CNCjob
 
 import os
 import sys
 import math
+import re
+
+from io import StringIO
+from datetime import datetime as dt
+from copy import deepcopy
 
 import gettext
 import appTranslation as fcTranslate
@@ -855,7 +860,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         """
 
         self.app.log.debug("FlatCAMCNCJob.gcode_header()")
-        time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
+        time_str = "{:%A, %d %B %Y at %H:%M}".format(dt.now())
         marlin = False
         hpgl = False
         probe_pp = False

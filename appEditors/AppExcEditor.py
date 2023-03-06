@@ -7,7 +7,9 @@
 
 from camlib import distance, arc, AppRTreeStorage
 
-from appEditors.exc_plugins.ExcDrillPlugin import *
+from PyQt6 import QtCore, QtWidgets, QtGui
+from PyQt6.QtCore import Qt
+from appEditors.exc_plugins.ExcDrillPlugin import ExcDrillEditorTool
 from appEditors.exc_plugins.ExcSlotPlugin import ExcSlotEditorTool
 from appEditors.exc_plugins.ExcDrillArrayPlugin import ExcDrillArrayEditorTool
 from appEditors.exc_plugins.ExcSlotArrayPlugin import ExcSlotArrayEditorTool
@@ -3102,7 +3104,7 @@ class AppExcEditor(QtCore.QObject):
 
         return f
 
-    def connect_exc_toolbar_signals(self):
+    def connect_exc_toolbar_signals(self) -> None:
         self.tools_exc.update({
             "drill_select":     {"button": self.app.ui.select_drill_btn,    "constructor": SelectEditorExc},
             "drill_add":        {"button": self.app.ui.add_drill_btn,       "constructor": DrillAdd},

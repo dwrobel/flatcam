@@ -1,5 +1,11 @@
 
-from appTool import *
+from PyQt6 import QtWidgets, QtGui
+from appTool import AppToolEditor
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, NumericalEvalEntry, \
+    FCDoubleSpinner, FCSpinner, RadioSet
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -304,7 +310,7 @@ class GrbPadArrayEditorUI:
         self.radius_entry = FCDoubleSpinner(policy=False)
         self.radius_entry.set_precision(self.decimals)
         self.radius_entry.setSingleStep(1.0)
-        self.radius_entry.setRange(-10000.0000,10000.000)
+        self.radius_entry.setRange(-10000.0000, 10000.000)
 
         self.circ_grid.addWidget(self.radius_lbl, 4, 0)
         self.circ_grid.addWidget(self.radius_entry, 4, 1)

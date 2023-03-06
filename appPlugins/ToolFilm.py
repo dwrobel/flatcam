@@ -5,7 +5,22 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
+    FCComboBox2, RadioSet, FCDoubleSpinner, FCSpinner, FCFileSaveDialog, OptionalHideInputSection
+
+import logging
+from copy import deepcopy
+import math
+
+from shapely.geometry import LineString, MultiPolygon, Point, Polygon, LinearRing
+from shapely.affinity import scale, skew
+from shapely.ops import unary_union
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 from reportlab.graphics import renderPDF
 from reportlab.pdfgen import canvas

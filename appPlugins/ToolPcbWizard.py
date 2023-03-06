@@ -5,12 +5,25 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtCore
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, GLay, RadioSet, FCSpinner, FCTable
+import logging
 from io import StringIO
+import os
+import re
+
+from datetime import datetime as dt
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class PcbWizard(AppTool):
@@ -290,7 +303,7 @@ class PcbWizard(AppTool):
 
     def on_file_loaded(self, signal, filename):
         self.build_ui()
-        time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
+        time_str = "{:%A, %d %B %Y at %H:%M}".format(dt.now())
 
         if signal == 'inf':
             self.inf_loaded = True

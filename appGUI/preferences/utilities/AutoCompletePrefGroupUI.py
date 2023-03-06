@@ -1,3 +1,4 @@
+
 from PyQt6 import QtWidgets, QtGui
 from PyQt6.QtCore import QSettings
 

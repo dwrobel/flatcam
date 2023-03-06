@@ -5,11 +5,12 @@
 # MIT Licence                                              #
 # ##########################################################
 
+from PyQt6 import QtWidgets, QtCore, QtGui
+from PyQt6.QtCore import Qt
+
 from appEditors.AppTextEditor import AppTextEditor
 from appObjects.CNCJobObject import CNCJobObject
 from appGUI.GUIElements import FCTextArea, FCEntry, FCButton, FCTable, GLay, FCLabel
-from PyQt6 import QtWidgets, QtCore, QtGui
-from PyQt6.QtCore import Qt
 
 # from io import StringIO
 

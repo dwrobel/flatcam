@@ -1,5 +1,9 @@
+
 from PyQt6 import QtWidgets
 from camlib import Geometry, arc, arc_angle, ApertureMacro, grace, flatten_shapely_geometry
+
+from appParsers.ParseDXF import getdxfgeo
+from appParsers.ParseSVG import svgparselength, getsvggeo, svgparse_viewbox
 
 import numpy as np
 import traceback
@@ -8,13 +12,13 @@ from copy import deepcopy
 from shapely.ops import unary_union, linemerge
 import shapely.affinity as affinity
 from shapely.geometry import box as shply_box
-from shapely.geometry import LinearRing, MultiLineString
+from shapely.geometry import LinearRing, MultiLineString, LineString, Polygon, MultiPolygon, Point
 
 from lxml import etree as ET
 import ezdxf
-
-from appParsers.ParseDXF import *
-from appParsers.ParseSVG import svgparselength, getsvggeo, svgparse_viewbox
+import logging
+import re
+import sys
 
 import gettext
 import builtins
@@ -1422,7 +1426,8 @@ class Gerber(Geometry):
                         j = 0
 
                     if quadrant_mode is None:
-                        self.app.log.error("Found arc without preceding quadrant specification G74 or G75. (%d)" % line_num)
+                        self.app.log.error(
+                            "Found arc without preceding quadrant specification G74 or G75. (%d)" % line_num)
                         self.app.log.error(gline)
                         continue
 
@@ -1959,7 +1964,7 @@ class Gerber(Geometry):
         self.app.log.debug("appParsers.ParseGerber.Gerber.import_svg(). Finished parsing the SVG geometry.")
 
         if flip:
-            geos = [translate(scale(g, 1.0, -1.0, origin=(0, 0)), yoff=h) for g in geos]
+            geos = [affinity.translate(affinity.scale(g, 1.0, -1.0, origin=(0, 0)), yoff=h) for g in geos]
             self.app.log.debug("appParsers.ParseGerber.Gerber.import_svg(). SVG geometry was flipped.")
 
         # Add to object
@@ -2529,7 +2534,7 @@ class Gerber(Geometry):
         try:
             if isinstance(self.solid_geometry, (MultiPolygon, MultiLineString)):
                 self.geo_len = len(self.solid_geometry.geoms)
-            else:
+            if isinstance(self.solid_geometry, list):
                 self.geo_len = len(self.solid_geometry)
         except (TypeError, ValueError, RuntimeError):
             self.geo_len = 1
@@ -2634,8 +2639,8 @@ class Gerber(Geometry):
                                         geo_p = shply_box(minx, miny, maxx, maxy)
                                         new_geo_el['solid'] = geo_p
                                     else:
-                                        self.app.log.debug("appParsers.ParseGerber.Gerber.buffer() --> "
-                                                  "ap type not supported")
+                                        self.app.log.debug(
+                                            "appParsers.ParseGerber.Gerber.buffer() --> ap type not supported")
                                 else:
                                     new_geo_el['solid'] = geo_el['follow'].buffer(
                                         size/1.9999,

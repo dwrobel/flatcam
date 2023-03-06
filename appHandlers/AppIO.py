@@ -1,4 +1,7 @@
 
+from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtCore import Qt, QSettings
+
 from appEditors.AppExcEditor import AppExcEditor
 from appEditors.AppGeoEditor import AppGeoEditor
 from appEditors.AppGerberEditor import AppGerberEditor
@@ -7,7 +10,7 @@ from appGUI.GUIElements import FCFileSaveDialog, FCMessageBox
 from camlib import to_dict, dict2obj, ET, ParseError
 from appParsers.ParseHPGL2 import HPGL2
 
-from appObjects.ObjectCollection import *
+from appObjects.ObjectCollection import GerberObject, ExcellonObject, GeometryObject, ScriptObject, CNCJobObject
 
 from reportlab.graphics import renderPDF
 from reportlab.pdfgen import canvas

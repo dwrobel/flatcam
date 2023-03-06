@@ -9,8 +9,10 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import QSettings
 from PyQt6.QtGui import QTextCursor, QPixmap
-from PyQt6.QtWidgets import QVBoxLayout, QWidget, QHBoxLayout, QLabel
+from PyQt6.QtWidgets import QVBoxLayout, QWidget, QHBoxLayout
+
 from appGUI.GUIElements import _BrowserTextEdit, _ExpandableTextEdit, FCLabel
+
 import html
 import sys
 import traceback
@@ -73,7 +75,7 @@ class TermWidget(QWidget):
 
         hlay = QHBoxLayout()
         hlay.addWidget(self._delete_line)
-        hlay.addWidget(QLabel(" "))
+        hlay.addWidget(FCLabel(" "))
         hlay.addWidget(self._edit)
         layout.addLayout(hlay)
 

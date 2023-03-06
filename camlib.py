@@ -6,27 +6,37 @@
 # MIT Licence                                                 #
 # ########################################################## ##
 
-
 from PyQt6 import QtWidgets
-from io import StringIO
 
-from numpy.linalg import solve, norm
+from appCommon.Common import GracefulException as grace
+
+# from scipy.spatial import KDTree, Delaunay
+# from scipy.spatial import Delaunay
+
+from appParsers.ParseSVG import svgparselength, svgparse_viewbox, getsvggeo, getsvgtext
+from appParsers.ParseDXF import getdxfgeo
+
+from numpy.linalg import solve
 
 import platform
-from copy import deepcopy
-
 import traceback
 from decimal import Decimal
+from copy import deepcopy
+from collections.abc import Iterable
+from copy import copy
 
 from rtree import index as rtindex
 from lxml import etree as ET
+from io import StringIO
+import ezdxf
 
 # See: http://toblerity.org/shapely/manual.html
-from shapely.geometry import Polygon, Point, LinearRing, MultiPoint
+from shapely.geometry import Polygon, Point, LinearRing, MultiPoint, MultiLineString, MultiPolygon, LineString
 
 from shapely.geometry import box as shply_box
 from shapely.ops import unary_union, substring, linemerge
 import shapely.affinity as affinity
+from shapely.affinity import scale, translate
 from shapely.wkt import loads as sloads
 from shapely.wkt import dumps as sdumps
 from shapely.geometry.base import BaseGeometry
@@ -37,25 +47,13 @@ from shapely.geometry.base import BaseGeometry
 from descartes.patch import PolygonPatch
 # ---------------------------------------
 
-from collections.abc import Iterable
-
-import ezdxf
-
-from appCommon.Common import GracefulException as grace
-
-# from scipy.spatial import KDTree, Delaunay
-# from scipy.spatial import Delaunay
-
-from appParsers.ParseSVG import *
-from appParsers.ParseDXF import *
-
 import logging
+import re
+import numpy as np
 
 import gettext
 import appTranslation as fcTranslate
 import builtins
-
-import copy
 
 HAS_ORTOOLS = True
 
@@ -2299,7 +2297,7 @@ class Geometry(object):
         # d = {}
         # for attr in self.ser_attrs:
         #     d[attr] = getattr(self, attr)
-        return {attr: copy.copy(getattr(self, attr)) for attr in self.ser_attrs}
+        return {attr: copy(getattr(self, attr)) for attr in self.ser_attrs}
 
     def from_dict(self, d):
         """

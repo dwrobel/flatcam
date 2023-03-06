@@ -5,7 +5,28 @@
 # License:  MIT Licence                                    #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
+    FCComboBox2, RadioSet, FCDoubleSpinner, FCSpinner, FCInputDialogSpinnerButton, FCTable, \
+    OptionalInputSection
+
+import logging
+from copy import deepcopy
+from typing import Iterable
+
+import numpy as np
+import simplejson as json
+import sys
+import math
+
+from shapely.geometry import LineString, MultiLineString, Polygon, MultiPolygon, Point, LinearRing
+from shapely.ops import unary_union, nearest_points
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
+
 from appParsers.ParseGerber import Gerber
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 from camlib import grace
@@ -2397,7 +2418,7 @@ class ToolIsolation(AppTool, Gerber):
                         if new_geo and not new_geo.is_empty:
                             new_geometry.append(new_geo)
                 elif isinstance(geo_elem, MultiPolygon):
-                    for poly in geo_elem:
+                    for poly in geo_elem.geoms:
                         for ring in self.poly2rings(poly):
                             new_geo = ring.difference(sub_union)
                             if new_geo and not new_geo.is_empty:
@@ -2408,7 +2429,7 @@ class ToolIsolation(AppTool, Gerber):
                         if not new_geo.is_empty:
                             new_geometry.append(new_geo)
                 elif isinstance(geo_elem, MultiLineString):
-                    for line_elem in geo_elem:
+                    for line_elem in geo_elem.geoms:
                         new_geo = line_elem.difference(sub_union)
                         if new_geo and not new_geo.is_empty:
                             new_geometry.append(new_geo)
@@ -2424,7 +2445,7 @@ class ToolIsolation(AppTool, Gerber):
                 if new_geo and not new_geo.is_empty:
                     new_geometry.append(new_geo)
             elif isinstance(target_geo, MultiLineString):
-                for line_elem in target_geo:
+                for line_elem in target_geo.geoms:
                     new_geo = line_elem.difference(sub_union)
                     if new_geo and not new_geo.is_empty:
                         new_geometry.append(new_geo)
@@ -2451,7 +2472,7 @@ class ToolIsolation(AppTool, Gerber):
                         if new_geo and not new_geo.is_empty:
                             new_geometry.append(new_geo)
                 elif isinstance(geo_elem, MultiPolygon):
-                    for poly in geo_elem:
+                    for poly in geo_elem.geoms:
                         for ring in self.poly2rings(poly):
                             new_geo = ring.intersection(intersect_union)
                             if new_geo and not new_geo.is_empty:
@@ -2462,7 +2483,7 @@ class ToolIsolation(AppTool, Gerber):
                         if not new_geo.is_empty:
                             new_geometry.append(new_geo)
                 elif isinstance(geo_elem, MultiLineString):
-                    for line_elem in geo_elem:
+                    for line_elem in geo_elem.geoms:
                         new_geo = line_elem.intersection(intersect_union)
                         if new_geo and not new_geo.is_empty:
                             new_geometry.append(new_geo)
@@ -2478,7 +2499,7 @@ class ToolIsolation(AppTool, Gerber):
                 if new_geo and not new_geo.is_empty:
                     new_geometry.append(new_geo)
             elif isinstance(target_geo, MultiLineString):
-                for line_elem in target_geo:
+                for line_elem in target_geo.geoms:
                     new_geo = line_elem.intersection(intersect_union)
                     if new_geo and not new_geo.is_empty:
                         new_geometry.append(new_geo)

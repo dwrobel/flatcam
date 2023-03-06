@@ -1,8 +1,10 @@
-import os
+
 from PyQt6 import QtGui, QtCore, QtWidgets
 from PyQt6.QtCore import QSettings
-from defaults import AppDefaults
 
+import os
+
+from defaults import AppDefaults
 from appGUI.GUIElements import FCMessageBox
 
 import gettext

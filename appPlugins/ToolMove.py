@@ -5,8 +5,18 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
-from appGUI.VisPyVisuals import *
+from PyQt6 import QtWidgets, QtCore
+from appTool import AppTool
+from appGUI.VisPyVisuals import ShapeCollection
+
+import logging
+from copy import copy
+
+from shapely.geometry import Polygon
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -87,7 +97,7 @@ class ToolMove(AppTool):
             return
         else:
             self.setVisible(True)
-            # signal that there is a command active and it is 'Move'
+            # signal that there is a command active, and it is 'Move'
             self.app.command_active = "Move"
 
             sel_obj_list = self.app.collection.get_selected()

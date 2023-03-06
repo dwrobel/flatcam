@@ -10,12 +10,16 @@
 # File modified by: Marius Stanciu                         #
 # ##########################################################
 
+from PyQt6 import QtWidgets, QtCore
+from appGUI.GUIElements import FCCheckBox
+from appGUI.ObjectUI import GerberObjectUI
+from appParsers.ParseGerber import Gerber
+from appObjects.AppObjectTemplate import FlatCAMObj, ObjectDeleted, ValidationError
 
-from shapely.geometry import MultiLineString, LinearRing
 from camlib import flatten_shapely_geometry
 
-from appParsers.ParseGerber import Gerber
-from appObjects.AppObjectTemplate import *
+from shapely.geometry import MultiLineString, LinearRing, MultiPolygon, Polygon, LineString, Point
+from shapely.ops import unary_union
 
 import numpy as np
 from copy import deepcopy

@@ -5,9 +5,28 @@
 # License:  MIT Licence                                    #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
+    FCComboBox2, RadioSet, FCDoubleSpinner, FCSpinner, NumericalEvalTupleEntry, NumericalEvalEntry, FCTable, \
+    OptionalInputSection, OptionalHideInputSection
 from appParsers.ParseExcellon import Excellon
+
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
+
+import logging
+from copy import deepcopy
+import numpy as np
+import simplejson as json
+import sys
+import platform
+import re
+
+from shapely.geometry import LineString
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:

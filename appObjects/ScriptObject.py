@@ -10,9 +10,11 @@
 # File modified by: Marius Stanciu                         #
 # ##########################################################
 
+from PyQt6 import QtCore
+
 from appEditors.AppTextEditor import AppTextEditor
-from appObjects.AppObjectTemplate import *
-from appGUI.ObjectUI import *
+from appObjects.AppObjectTemplate import FlatCAMObj
+from appGUI.ObjectUI import ScriptObjectUI
 
 import gettext
 import appTranslation as fcTranslate

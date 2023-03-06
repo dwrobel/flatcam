@@ -1,3 +1,4 @@
+
 from PyQt6 import QtGui, QtCore, QtWidgets
 from appGUI.GUIElements import FCTable, FCEntry, FCButton, FCFileSaveDialog, GLay, FCLabel
 
@@ -5,7 +6,8 @@ import sys
 import webbrowser
 
 from copy import deepcopy
-from datetime import datetime
+from datetime import datetime as dt
+
 import gettext
 import appTranslation as fcTranslate
 import builtins
@@ -284,7 +286,7 @@ class BookmarkManager(QtWidgets.QWidget):
         self.app.defaults.report_usage("on_export_bookmarks")
         self.app.log.debug("on_export_bookmarks()")
 
-        date = str(datetime.today()).rpartition('.')[0]
+        date = str(dt.today()).rpartition('.')[0]
         date = ''.join(c for c in date if c not in ':-')
         date = date.replace(' ', '_')
 

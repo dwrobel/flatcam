@@ -9,8 +9,12 @@
 # ##########################################################
 # File modified by: Marius Stanciu                         #
 # ##########################################################
+
+from PyQt6.QtCore import Qt
+
 from appEditors.AppTextEditor import AppTextEditor
 from appObjects.AppObjectTemplate import *
+from appGUI.ObjectUI import DocumentObjectUI
 
 import gettext
 import appTranslation as fcTranslate

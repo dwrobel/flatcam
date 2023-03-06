@@ -5,7 +5,21 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
+    FCComboBox2, RadioSet, FCDoubleSpinner, NumericalEvalTupleEntry
+
+import logging
+from copy import deepcopy
+
+from shapely.geometry import LineString, Point, MultiPolygon
+from shapely.ops import unary_union
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
+
 from appCommon.Common import LoudDict
 from camlib import flatten_shapely_geometry
 

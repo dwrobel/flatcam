@@ -1,3 +1,4 @@
+
 from PyQt6 import QtWidgets
 
 from appGUI.GUIElements import FCDoubleSpinner, FCSpinner, RadioSet, FCLabel, FCComboBox, GLay, FCFrame

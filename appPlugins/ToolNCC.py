@@ -5,7 +5,26 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
+    FCComboBox2, RadioSet, FCDoubleSpinner, FCInputDialogSpinnerButton, FCTable, \
+    OptionalInputSection
+
+import logging
+from copy import deepcopy
+import numpy as np
+import simplejson as json
+import sys
+import traceback
+
+from shapely.geometry import LineString, Polygon, MultiPolygon, MultiLineString, base, LinearRing
+from shapely.ops import unary_union, nearest_points
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
+
 from appParsers.ParseGerber import Gerber
 from camlib import grace, flatten_shapely_geometry
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
@@ -523,7 +542,7 @@ class NonCopperClear(AppTool, Gerber):
         sel_model = self.ui.tools_table.selectionModel()
         sel_indexes = sel_model.selectedIndexes()
 
-        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        # it will iterate over all indexes which means all items in all columns too, but I'm interested only on rows
         sel_rows = set()
         for idx in sel_indexes:
             sel_rows.add(idx.row())
@@ -543,7 +562,7 @@ class NonCopperClear(AppTool, Gerber):
         sel_model = self.ui.tools_table.selectionModel()
         sel_indexes = sel_model.selectedIndexes()
 
-        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        # it will iterate over all indexes which means all items in all columns too, but I'm interested only on rows
         sel_rows = set()
         for idx in sel_indexes:
             sel_rows.add(idx.row())
@@ -619,7 +638,7 @@ class NonCopperClear(AppTool, Gerber):
 
     def form_to_storage(self):
         if self.ui.tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the GUI elements values to storage
+            # there is no tool in tool table, so we can't save the GUI elements values to storage
             return
 
         self.blockSignals(True)
@@ -647,7 +666,7 @@ class NonCopperClear(AppTool, Gerber):
 
     def on_apply_param_to_all_clicked(self):
         if self.ui.tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the GUI elements values to storage
+            # there is no tool in tool table, so we can't save the GUI elements values to storage
             self.app.log.debug("NonCopperClear.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
             return
 
@@ -1033,7 +1052,7 @@ class NonCopperClear(AppTool, Gerber):
                         self.app.inform.emit('[ERROR_NOTCL] %s' % msg)
                         return 'fail'
 
-                    # check if the tools diameters are less then the safe tool diameter
+                    # check if the tools diameters are less than the safe tool diameter
                     suitable_tools = []
                     for tool in sorted_tools:
                         tool_dia = float(self.ncc_tools[tool]['tooldia'])
@@ -1873,7 +1892,7 @@ class NonCopperClear(AppTool, Gerber):
             try:
                 if isinstance(geo_n, MultiPolygon):
                     env_obj = geo_n.convex_hull
-                elif (isinstance(geo_n, MultiPolygon) and len(geo_n) == 1) or \
+                elif (isinstance(geo_n, MultiPolygon) and len(geo_n.geoms) == 1) or \
                         (isinstance(geo_n, list) and len(geo_n) == 1) and isinstance(geo_n[0], Polygon):
                     env_obj = unary_union(geo_n)
                 else:
@@ -2070,7 +2089,7 @@ class NonCopperClear(AppTool, Gerber):
                                 if new_geo and not new_geo.is_empty:
                                     new_geometry.append(new_geo)
                         elif isinstance(geo_elem, MultiPolygon):
-                            for poly in geo_elem:
+                            for poly in geo_elem.geoms:
                                 for ring in self.poly2rings(poly):
                                     new_geo = ring.intersection(bounding_box)
                                     if new_geo and not new_geo.is_empty:
@@ -2081,7 +2100,7 @@ class NonCopperClear(AppTool, Gerber):
                                 if not new_geo.is_empty:
                                     new_geometry.append(new_geo)
                         elif isinstance(geo_elem, MultiLineString):
-                            for line_elem in geo_elem:
+                            for line_elem in geo_elem.geoms:
                                 new_geo = line_elem.intersection(bounding_box)
                                 if new_geo and not new_geo.is_empty:
                                     new_geometry.append(new_geo)
@@ -2097,7 +2116,7 @@ class NonCopperClear(AppTool, Gerber):
                         if new_geo and not new_geo.is_empty:
                             new_geometry.append(new_geo)
                     elif isinstance(isolated_geo, MultiLineString):
-                        for line_elem in isolated_geo:
+                        for line_elem in isolated_geo.geoms:
                             new_geo = line_elem.intersection(bounding_box)
                             if new_geo and not new_geo.is_empty:
                                 new_geometry.append(new_geo)
@@ -2921,7 +2940,7 @@ class NonCopperClear(AppTool, Gerber):
             try:
                 if isinstance(geo_n, MultiPolygon):
                     env_obj = geo_n.convex_hull
-                elif (isinstance(geo_n, MultiPolygon) and len(geo_n) == 1) or \
+                elif (isinstance(geo_n, MultiPolygon) and len(geo_n.geoms) == 1) or \
                         (isinstance(geo_n, list) and len(geo_n) == 1) and isinstance(geo_n[0], Polygon):
                     env_obj = unary_union(geo_n)
                 else:
@@ -3089,7 +3108,7 @@ class NonCopperClear(AppTool, Gerber):
                                         if new_geo and not new_geo.is_empty:
                                             new_geometry.append(new_geo)
                                 elif isinstance(geo_elem, MultiPolygon):
-                                    for a_poly in geo_elem:
+                                    for a_poly in geo_elem.geoms:
                                         for ring in self.poly2rings(a_poly):
                                             new_geo = ring.intersection(bounding_box)
                                             if new_geo and not new_geo.is_empty:
@@ -3100,7 +3119,7 @@ class NonCopperClear(AppTool, Gerber):
                                         if not new_geo.is_empty:
                                             new_geometry.append(new_geo)
                                 elif isinstance(geo_elem, MultiLineString):
-                                    for line_elem in geo_elem:
+                                    for line_elem in geo_elem.geoms:
                                         new_geo = line_elem.intersection(bounding_box)
                                         if new_geo and not new_geo.is_empty:
                                             new_geometry.append(new_geo)
@@ -3116,7 +3135,7 @@ class NonCopperClear(AppTool, Gerber):
                                 if new_geo and not new_geo.is_empty:
                                     new_geometry.append(new_geo)
                             elif isinstance(isolated_geo, MultiLineString):
-                                for line_elem in isolated_geo:
+                                for line_elem in isolated_geo.geoms:
                                     new_geo = line_elem.intersection(bounding_box)
                                     if new_geo and not new_geo.is_empty:
                                         new_geometry.append(new_geo)
@@ -3470,7 +3489,7 @@ class NonCopperClear(AppTool, Gerber):
                                         if new_geo and not new_geo.is_empty:
                                             new_geometry.append(new_geo)
                                 elif isinstance(geo_elem, MultiPolygon):
-                                    for poly_g in geo_elem:
+                                    for poly_g in geo_elem.geoms:
                                         for ring in self.poly2rings(poly_g):
                                             new_geo = ring.intersection(bounding_box)
                                             if new_geo and not new_geo.is_empty:
@@ -3481,7 +3500,7 @@ class NonCopperClear(AppTool, Gerber):
                                         if not new_geo.is_empty:
                                             new_geometry.append(new_geo)
                                 elif isinstance(geo_elem, MultiLineString):
-                                    for line_elem in geo_elem:
+                                    for line_elem in geo_elem.geoms:
                                         new_geo = line_elem.intersection(bounding_box)
                                         if new_geo and not new_geo.is_empty:
                                             new_geometry.append(new_geo)
@@ -3498,7 +3517,7 @@ class NonCopperClear(AppTool, Gerber):
                                     if new_geo and not new_geo.is_empty:
                                         new_geometry.append(new_geo)
                                 elif isinstance(isolated_geo, MultiLineString):
-                                    for line_elem in isolated_geo:
+                                    for line_elem in isolated_geo.geoms:
                                         new_geo = line_elem.intersection(bounding_box)
                                         if new_geo and not new_geo.is_empty:
                                             new_geometry.append(new_geo)
@@ -3653,7 +3672,7 @@ class NonCopperClear(AppTool, Gerber):
                                         # a smaller tool
                                         rest_geo.append(p)
                                 elif isinstance(p, MultiPolygon):
-                                    for poly_p in p:
+                                    for poly_p in p.geoms:
                                         if poly_p is not None:
                                             # provide the app with a way to process the GUI events when
                                             # in a blocking loop

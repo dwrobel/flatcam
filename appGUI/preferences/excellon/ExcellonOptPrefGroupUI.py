@@ -1,7 +1,9 @@
+
 from PyQt6 import QtWidgets
 
 from appGUI.GUIElements import FCDoubleSpinner, FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
+
 import gettext
 import appTranslation as fcTranslate
 import builtins

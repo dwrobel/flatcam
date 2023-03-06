@@ -5,11 +5,25 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
-from appParsers.ParseGerber import Gerber
-from camlib import Geometry
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
+    RadioSet, FCDoubleSpinner, FCTable
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
+
+import logging
+from copy import deepcopy
+
+from shapely.geometry import Point, MultiPolygon
+from shapely.ops import unary_union
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
+
+from appParsers.ParseGerber import Gerber
+from camlib import Geometry
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -642,7 +656,7 @@ class ToolPunchGerber(AppTool, Gerber):
             punched_solid_geometry.append(geo)
         punched_solid_geometry = unary_union(punched_solid_geometry)
 
-        # update the gerber apertures to include the clear geometry so it can be exported successfully
+        # update the gerber apertures to include the clear geometry, so it can be exported successfully
         new_apertures = deepcopy(grb_obj.tools)
         new_apertures_items = new_apertures.items()
 
@@ -756,7 +770,7 @@ class ToolPunchGerber(AppTool, Gerber):
             punched_solid_geometry.append(geo)
         punched_solid_geometry = unary_union(punched_solid_geometry)
 
-        # update the gerber apertures to include the clear geometry so it can be exported successfully
+        # update the gerber apertures to include the clear geometry, so it can be exported successfully
         new_apertures = deepcopy(self.grb_obj.tools)
         new_apertures_items = new_apertures.items()
 
@@ -900,7 +914,7 @@ class ToolPunchGerber(AppTool, Gerber):
             self.app.inform.emit(msg)
             return 'fail'
 
-        # update the gerber apertures to include the clear geometry so it can be exported successfully
+        # update the gerber apertures to include the clear geometry, so it can be exported successfully
         new_apertures = deepcopy(grb_obj.tools)
         new_apertures_items = new_apertures.items()
 
@@ -995,7 +1009,7 @@ class ToolPunchGerber(AppTool, Gerber):
             self.app.inform.emit(msg)
             return 'fail'
 
-        # update the gerber apertures to include the clear geometry so it can be exported successfully
+        # update the gerber apertures to include the clear geometry, so it can be exported successfully
         new_apertures = deepcopy(self.grb_obj.tools)
         new_apertures_items = new_apertures.items()
 
@@ -1143,7 +1157,7 @@ class ToolPunchGerber(AppTool, Gerber):
                             if isinstance(elem['follow'], Point):
                                 punching_geo.append(elem['follow'].buffer(dia / 2))
 
-            # if dia is None then none of the above applied so we skip the following
+            # if dia is None then none of the above applied, so we skip the following
             if dia is None:
                 continue
 
@@ -1154,12 +1168,12 @@ class ToolPunchGerber(AppTool, Gerber):
 
             punched_solid_geometry = punched_solid_geometry.difference(punching_geo)
 
-            # update the gerber apertures to include the clear geometry so it can be exported successfully
+            # update the gerber apertures to include the clear geometry, so it can be exported successfully
             for elem in apid_value['geometry']:
                 # make it work only for Gerber Flashes who are Points in 'follow'
                 if 'solid' in elem and isinstance(elem['follow'], Point):
                     clear_apid_size = dia
-                    for geo in punching_geo:
+                    for geo in punching_geo.geoms:
 
                         # since there may be drills that do not drill into a pad we test only for geos in a pad
                         if geo.within(elem['solid']):
@@ -1283,7 +1297,7 @@ class ToolPunchGerber(AppTool, Gerber):
                         pad_point = self.grb_obj.tools[apid]['geometry'][pad_idx]['follow']
                         punching_geo.append(pad_point.buffer(dia / 2))
 
-            # if dia is None then none of the above applied so we skip the following
+            # if dia is None then none of the above applied, so we skip the following
             if dia is None:
                 continue
 
@@ -1294,12 +1308,12 @@ class ToolPunchGerber(AppTool, Gerber):
 
             punched_solid_geometry = punched_solid_geometry.difference(punching_geo)
 
-            # update the gerber apertures to include the clear geometry so it can be exported successfully
+            # update the gerber apertures to include the clear geometry, so it can be exported successfully
             for elem in apid_value['geometry']:
                 # make it work only for Gerber Flashes who are Points in 'follow'
                 if 'solid' in elem and isinstance(elem['follow'], Point):
                     clear_apid_size = dia
-                    for geo in punching_geo:
+                    for geo in punching_geo.geoms:
 
                         # since there may be drills that do not drill into a pad we test only for geos in a pad
                         if geo.within(elem['solid']):
@@ -1427,7 +1441,7 @@ class ToolPunchGerber(AppTool, Gerber):
                             if isinstance(elem['follow'], Point):
                                 punching_geo.append(elem['follow'].buffer(dia / 2))
 
-            # if dia is None then none of the above applied so we skip the following
+            # if dia is None then none of the above applied, so we skip the following
             if dia is None:
                 continue
 
@@ -1438,12 +1452,12 @@ class ToolPunchGerber(AppTool, Gerber):
 
             punched_solid_geometry = punched_solid_geometry.difference(punching_geo)
 
-            # update the gerber apertures to include the clear geometry so it can be exported successfully
+            # update the gerber apertures to include the clear geometry, so it can be exported successfully
             for elem in apid_value['geometry']:
                 # make it work only for Gerber Flashes who are Points in 'follow'
                 if 'solid' in elem and isinstance(elem['follow'], Point):
                     clear_apid_size = dia
-                    for geo in punching_geo:
+                    for geo in punching_geo.geoms:
 
                         # since there may be drills that do not drill into a pad we test only for geos in a pad
                         if geo.within(elem['solid']):
@@ -1563,7 +1577,7 @@ class ToolPunchGerber(AppTool, Gerber):
                         pad_point = self.grb_obj.tools[apid]['geometry'][pad_idx]['follow']
                         punching_geo.append(pad_point.buffer(dia / 2))
 
-            # if dia is None then none of the above applied so we skip the following
+            # if dia is None then none of the above applied, so we skip the following
             if dia is None:
                 continue
 
@@ -1574,12 +1588,12 @@ class ToolPunchGerber(AppTool, Gerber):
 
             punched_solid_geometry = punched_solid_geometry.difference(punching_geo)
 
-            # update the gerber apertures to include the clear geometry so it can be exported successfully
+            # update the gerber apertures to include the clear geometry, so it can be exported successfully
             for elem in apid_value['geometry']:
                 # make it work only for Gerber Flashes who are Points in 'follow'
                 if 'solid' in elem and isinstance(elem['follow'], Point):
                     clear_apid_size = dia
-                    for geo in punching_geo:
+                    for geo in punching_geo.geoms:
 
                         # since there may be drills that do not drill into a pad we test only for geos in a pad
                         if geo.within(elem['solid']):

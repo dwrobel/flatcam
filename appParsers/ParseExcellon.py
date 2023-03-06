@@ -419,10 +419,10 @@ class Excellon(Geometry):
                     self.app.log.debug("ALternative M71/M72 units found, after conversion: %s" % self.units)
                     if self.units == 'MM':
                         self.app.log.warning("Excellon format preset is: %s:%s" %
-                                    (str(self.excellon_format_upper_mm), str(self.excellon_format_lower_mm)))
+                                             (str(self.excellon_format_upper_mm), str(self.excellon_format_lower_mm)))
                     else:
                         self.app.log.warning("Excellon format preset is: %s:%s" %
-                                    (str(self.excellon_format_upper_in), str(self.excellon_format_lower_in)))
+                                             (str(self.excellon_format_upper_in), str(self.excellon_format_lower_in)))
                     continue
 
                 # ### Body ####

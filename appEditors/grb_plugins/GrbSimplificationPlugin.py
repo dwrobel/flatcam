@@ -1,5 +1,11 @@
 
-from appTool import *
+from PyQt6 import QtWidgets, QtGui, QtCore
+from appTool import AppToolEditor
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCTextEdit, FCEntry, \
+    FCDoubleSpinner
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -11,7 +17,7 @@ class SimplificationTool(AppToolEditor):
     Do a shape simplification for the selected geometry.
     """
 
-    update_ui = pyqtSignal(object, int)
+    update_ui = QtCore.pyqtSignal(object, int)
 
     def __init__(self, app, draw_app):
         AppToolEditor.__init__(self, app)

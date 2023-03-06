@@ -22,6 +22,7 @@ import freetype as ft
 from fontTools import ttLib
 
 import logging
+
 import gettext
 import appTranslation as fcTranslate
 import builtins

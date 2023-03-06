@@ -1,3 +1,4 @@
+
 from PyQt6 import QtCore
 from appWorker import Worker
 

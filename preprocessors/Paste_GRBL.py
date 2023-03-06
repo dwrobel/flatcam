@@ -6,7 +6,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appPreProcessor import *
+from appPreProcessor import AppPreProcTools
 
 
 class Paste_GRBL(AppPreProcTools):
@@ -134,7 +134,7 @@ class Paste_GRBL(AppPreProcTools):
                ' F%s' % str(p['frz_dispense'])
 
     def down_z_stop_code(self, p):
-        return 'G01 Z' + self.coordinate_format % (p.coords_decimals, float(p['z_stop']))  + ' F%s' % str(p['frz'])
+        return 'G01 Z' + self.coordinate_format % (p.coords_decimals, float(p['z_stop'])) + ' F%s' % str(p['frz'])
 
     def toolchange_code(self, p):
         fr_rapids = float(p['fr_rapids'])

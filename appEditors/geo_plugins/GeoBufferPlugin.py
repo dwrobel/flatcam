@@ -1,5 +1,13 @@
 
-from appTool import *
+from PyQt6 import QtWidgets
+from appTool import AppToolEditor
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCDoubleSpinner, FCComboBox
+
+from shapely.geometry import Polygon
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
