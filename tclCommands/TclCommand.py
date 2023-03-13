@@ -1,6 +1,6 @@
 import sys
 import re
-import appMain
+
 import abc
 import collections
 from PyQt6 import QtCore

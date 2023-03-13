@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+13.03.2023
+
+- in Tcl Commands: export_dxf and export_gerber, fixed a mistake in declaring a wrong name of a required option
+- in Tcl Command set_path added an optional parameter which allows to create a directory where path is to be set, if the directory does not exist
+
 6.03.2023
 
 - fixed some possible issues due of changes in version 2.0 of Shapely

@@ -29,7 +29,7 @@ class TclCommandSetPath(TclCommand):
 
     """
 
-    # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
+    # List of all command aliases, to be able to use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['set_path']
 
     description = '%s %s' % ("--", "Set the folder path to the specified path.")
@@ -41,6 +41,7 @@ class TclCommandSetPath(TclCommand):
 
     # Dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
     option_types = collections.OrderedDict([
+        ('create', str),
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -53,6 +54,7 @@ class TclCommandSetPath(TclCommand):
         'args': collections.OrderedDict([
             ('path', 'A folder path to where the user is supposed to have the file that he will work with.\n'
                      'WARNING: No spaces allowed. Use quotes around the path if it contains spaces.'),
+            ('create', 'If set to True, if the folder does not exist it will create it.'),
         ]),
         'examples': ['set_path D:\\Project_storage_path']
     }
@@ -81,6 +83,20 @@ class TclCommandSetPath(TclCommand):
                     "is a path to file and not a directory as expected.")
                 self.app.inform_shell.emit(msg)
                 return "Failed. The Tcl command set_path was used but it was not a directory."
+
+            if 'create' in args:
+                option = args['create'].capitalize()
+                try:
+                    eval_option = eval(option)
+                except NameError:
+                    eval_option = False
+
+                if eval_option:
+                    self.app.inform_shell.emit("Path not found, let's create it.")
+                    os.mkdir(path)
+                else:
+                    return "Failed. The Tcl command set_path has options but could not be recognized: -create %s." % \
+                        str(args['create'])
             else:
                 msg = '[ERROR] %s: %s, %s' % (
                     "The provided path", str(path), "do not exist. Check for typos.")
