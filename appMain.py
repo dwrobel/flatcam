@@ -2094,10 +2094,10 @@ class App(QtCore.QObject):
         self.ui.delete_btn.triggered.connect(self.on_delete)
 
         self.ui.distance_btn.triggered.connect(lambda: self.distance_tool.run(toggle=True))
-        self.ui.distance_min_btn.triggered.connect(lambda: self.distance_min_tool.run(toggle=True))
+        # self.ui.distance_min_btn.triggered.connect(lambda: self.distance_min_tool.run(toggle=True))
         self.ui.origin_btn.triggered.connect(self.on_set_origin)
-        self.ui.move2origin_btn.triggered.connect(self.on_move2origin)
-        self.ui.center_in_origin_btn.triggered.connect(self.on_custom_origin)
+        # self.ui.move2origin_btn.triggered.connect(self.on_move2origin)
+        # self.ui.center_in_origin_btn.triggered.connect(self.on_custom_origin)
 
         self.ui.jmp_btn.triggered.connect(self.on_jump_to)
         self.ui.locate_btn.triggered.connect(lambda: self.on_locate(obj=self.collection.get_active()))
@@ -3877,9 +3877,6 @@ class App(QtCore.QObject):
                 'hud_font_size',
                 self.ui.general_pref_form.general_app_set_group.hud_font_size_spinner.get_value()
             )
-
-            stgs.setValue('toolbar_lock', self.ui.lock_action.isChecked())
-
             # This will write the setting to the platform specific storage.
             del stgs
 

@@ -1267,9 +1267,6 @@ class PreferencesUIManager(QtCore.QObject):
 
         self.defaults.propagate_defaults()
 
-        if first_time is False:
-            self.save_toolbar_view()
-
         # Save the options to disk
         filename = os.path.join(data_path, "current_defaults_%s.FlatConfig" % self.defaults.version)
 
@@ -1285,44 +1282,6 @@ class PreferencesUIManager(QtCore.QObject):
 
         # update the autosave timer
         self.ui.app.save_project_auto_update()
-
-    def save_toolbar_view(self):
-        """
-        Will save the toolbar view state to the defaults
-
-        :return:            None
-        """
-
-        # Save the toolbar view
-        tb_status = 0
-        if self.ui.toolbarfile.isVisible():
-            tb_status += 1
-
-        if self.ui.toolbaredit.isVisible():
-            tb_status += 2
-
-        if self.ui.toolbarview.isVisible():
-            tb_status += 4
-
-        if self.ui.toolbarplugins.isVisible():
-            tb_status += 8
-
-        if self.ui.exc_edit_toolbar.isVisible():
-            tb_status += 16
-
-        if self.ui.geo_edit_toolbar.isVisible():
-            tb_status += 32
-
-        if self.ui.grb_edit_toolbar.isVisible():
-            tb_status += 64
-
-        if self.ui.status_toolbar.isVisible():
-            tb_status += 128
-
-        if self.ui.toolbarshell.isVisible():
-            tb_status += 256
-
-        self.defaults["global_toolbar_view"] = tb_status
 
     def on_preferences_edited(self):
         """

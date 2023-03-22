@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+22.03.2023
+
+- in the toolbars now there is text under the icons (which can be turned off from the toolbar context menu)
+- the GUI state is now saved and restored through QSettings
+
 13.03.2023
 
 - in Tcl Commands: export_dxf and export_gerber, fixed a mistake in declaring a wrong name of a required option

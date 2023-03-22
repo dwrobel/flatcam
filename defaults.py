@@ -42,7 +42,6 @@ class AppDefaults:
 
         "global_move_ref": 'abs',
 
-        "global_toolbar_view": 511,
         "global_gui_layout": 0,  # can be 0:"normal" or 1:"columnar"
 
         "global_background_timeout": 300000,  # Default value is 5 minutes
@@ -59,13 +58,6 @@ class AppDefaults:
         # Persistence
         "global_last_folder": None,
         "global_last_save_folder": None,
-
-        # Default window geometry
-        "global_def_win_x": 100,
-        "global_def_win_y": 100,
-        "global_def_win_w": 1024,
-        "global_def_win_h": 650,
-        "global_def_notebook_width": 1,
 
         # Constants...
         "global_defaults_save_period_ms": 20000,  # Time between default saves.
@@ -952,18 +944,13 @@ class AppDefaults:
         except IOError:
             log.error("Could not load defaults file.")
             inform.emit('[ERROR] %s' % _("Could not load the file."))
-            # in case the defaults file can't be loaded, show all toolbars
-            self.defaults["global_toolbar_view"] = 511
             return
 
         # Parse the JSON
         try:
             defaults = simplejson.loads(options)
         except Exception:
-            # in case the defaults file can't be loaded, show all toolbars
-            self.defaults["global_toolbar_view"] = 511
-            e = sys.exc_info()[0]
-            log.error(str(e))
+            log.error(str(sys.exc_info()[0]))
             inform.emit('[ERROR] %s' % _("Failed to parse defaults file."))
             return
         if defaults is None:
@@ -1123,8 +1110,6 @@ class AppOptions:
         except IOError:
             log.error("Could not load defaults file.")
             inform.emit('[ERROR] %s' % _("Could not load the file."))
-            # in case the defaults file can't be loaded, show all toolbars
-            self.options["global_toolbar_view"] = 511
             return
 
         # Parse the JSON
@@ -1132,9 +1117,7 @@ class AppOptions:
             options = simplejson.loads(options)
         except Exception:
             # in case the defaults file can't be loaded, show all toolbars
-            self.defaults["global_toolbar_view"] = 511
-            e = sys.exc_info()[0]
-            log.error(str(e))
+            log.error(str(sys.exc_info()[0]))
             inform.emit('[ERROR] %s' % _("Failed to parse defaults file."))
             return
         if options is None:

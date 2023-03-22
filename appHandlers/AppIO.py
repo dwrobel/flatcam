@@ -2854,13 +2854,6 @@ class AppIO(QtCore.QObject):
                                           str(filename),
                                           _("Retry to save it.")))  # noqa
 
-                tb_settings = QSettings("Open Source", "FlatCAM")
-                lock_state = self.app.ui.lock_action.isChecked()
-                tb_settings.setValue('toolbar_lock', lock_state)
-
-                # This will write the setting to the platform specific storage.
-                del tb_settings
-
             # if quit:
             # t = threading.Thread(target=lambda: self.check_project_file_size(1, filename=filename))
             # t.start()

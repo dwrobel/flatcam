@@ -49,8 +49,6 @@ if '_' not in builtins.__dict__:
 
 
 class MainGUI(QtWidgets.QMainWindow):
-    # Emitted when persistent window geometry needs to be retained
-    geom_update = QtCore.pyqtSignal(int, int, int, int, int, name='geomUpdate')
     final_save = QtCore.pyqtSignal(name='saveBeforeExit')
     # screenChanged = QtCore.pyqtSignal(QtGui.QScreen, QtGui.QScreen)
 
@@ -1064,14 +1062,18 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################## File Toolbar# ###############################
         # ########################################################################
         self.file_open_gerber_btn = self.toolbarfile.addAction(
-            QtGui.QIcon(self.app.resource_location + '/open_gerber32.png'), _("Open Gerber"))
+            QtGui.QIcon(self.app.resource_location + '/open_gerber32.png'), _("Gerber"))
+        self.file_open_gerber_btn.setToolTip(_("Open a Gerber file."))
         self.file_open_excellon_btn = self.toolbarfile.addAction(
-            QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'), _("Open Excellon"))
+            QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'), _("Excellon"))
+        self.file_open_excellon_btn.setToolTip(_("Open a Excellon file."))
         self.toolbarfile.addSeparator()
         self.file_open_btn = self.toolbarfile.addAction(
-            QtGui.QIcon(self.app.resource_location + '/folder32.png'), _("Open Project"))
+            QtGui.QIcon(self.app.resource_location + '/folder32.png'), _("Open"))
+        self.file_open_btn.setToolTip(_("Open a project."))
         self.file_save_btn = self.toolbarfile.addAction(
-            QtGui.QIcon(self.app.resource_location + '/save_as.png'), _("Save project"))
+            QtGui.QIcon(self.app.resource_location + '/save_as.png'), _("Save"))
+        self.file_save_btn.setToolTip(_("Save the current project."))
 
         # ########################################################################
         # ########################## Edit Toolbar# ###############################
@@ -1096,24 +1098,33 @@ class MainGUI(QtWidgets.QMainWindow):
         self.toolbaredit.addSeparator()
         self.copy_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/copy_file32.png'), _("Copy"))
+        self.copy_btn.setToolTip(_("Copy a selection of objects."))
         self.delete_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete"))
+        self.delete_btn.setToolTip(_("Delete a selection of objects."))
         self.toolbaredit.addSeparator()
         self.distance_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/distance32.png'), _("Distance Tool"))
-        self.distance_min_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/distance_min32.png'), _("Distance Min Tool"))
+            QtGui.QIcon(self.app.resource_location + '/distance32.png'), _("Distance"))
+        self.distance_btn.setToolTip(_("Measure a distance between two or more points."))
+        # self.distance_min_btn = self.toolbaredit.addAction(
+        #     QtGui.QIcon(self.app.resource_location + '/distance_min32.png'), _("Min Distance"))
+        # self.distance_min_btn.setToolTip(_("Measure the minimum distance between two objects."))
         self.origin_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/origin32.png'), _('Set Origin'))
-        self.move2origin_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/move2origin32.png'), _('Move to Origin'))
-        self.center_in_origin_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/custom_origin32.png'), _('Custom Origin'))
+        self.origin_btn.setToolTip(_("Set an origin to a custom location."))
+        # self.move2origin_btn = self.toolbaredit.addAction(
+        #     QtGui.QIcon(self.app.resource_location + '/move2origin32.png'), _('To Orig.'))
+        # self.move2origin_btn.setToolTip(_("Move selected objects to the origin."))
+        # self.center_in_origin_btn = self.toolbaredit.addAction(
+        #     QtGui.QIcon(self.app.resource_location + '/custom_origin32.png'), _('C Origin'))
+        # self.center_in_origin_btn.setToolTip(_("Move the selected objects to custom positions."))
 
         self.jmp_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/jump_to32.png'), _('Jump to Location'))
+            QtGui.QIcon(self.app.resource_location + '/jump_to32.png'), _('Jump to'))
+        self.jmp_btn.setToolTip(_("Move the mouse cursor to a defined position and center into view."))
         self.locate_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/locate32.png'), _('Locate in Object'))
+            QtGui.QIcon(self.app.resource_location + '/locate32.png'), _('Locate'))
+        self.locate_btn.setToolTip(_("Locate a predefined position on a selected object."))
 
         # ########################################################################
         # ########################## View Toolbar# ###############################
@@ -1180,20 +1191,20 @@ class MainGUI(QtWidgets.QMainWindow):
         self.toolbarplugins.addSeparator()
 
         self.align_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects"))
+            QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align"))
         # self.sub_btn = self.toolbarplugins.addAction(
         #     QtGui.QIcon(self.app.resource_location + '/sub32.png'), _("Subtract Tool"))
 
         self.toolbarplugins.addSeparator()
 
-        self.extract_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/extract32.png'), _("Extract"))
+        # self.extract_btn = self.toolbarplugins.addAction(
+        #     QtGui.QIcon(self.app.resource_location + '/extract32.png'), _("Extract"))
         self.copperfill_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/copperfill32.png'), _("Copper Thieving"))
+            QtGui.QIcon(self.app.resource_location + '/copperfill32.png'), _("Thieving"))
         self.markers_tool_btn = self.toolbarplugins.addAction(
             QtGui.QIcon(self.app.resource_location + '/corners_32.png'), _("Markers"))
         self.punch_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/punch32.png'), _("Punch Gerber"))
+            QtGui.QIcon(self.app.resource_location + '/punch32.png'), _("Punch"))
         self.calculators_btn = self.toolbarplugins.addAction(
             QtGui.QIcon(self.app.resource_location + '/calculator32.png'), _("Calculators"))
 
@@ -1997,7 +2008,6 @@ class MainGUI(QtWidgets.QMainWindow):
         self.app_icon.addFile(self.app.resource_location + '/app256.png', QtCore.QSize(256, 256))
         self.setWindowIcon(self.app_icon)
 
-        self.setGeometry(100, 100, 1024, 650)
         self.setWindowTitle('FlatCAM Evo %s %s - %s' %
                             (self.app.version,
                              ('BETA' if self.app.beta else ''),
@@ -2023,6 +2033,20 @@ class MainGUI(QtWidgets.QMainWindow):
         self.e_editor_cmenu.menuAction().setVisible(False)
 
         # ########################################################################
+        # construct the Toolbar Lock menu entry to the context menu of the QMainWindow
+        # ########################################################################
+        self.lock_action = QtGui.QAction()
+        self.lock_action.setText(_("Lock Toolbars"))
+        self.lock_action.setCheckable(True)
+
+        # ########################################################################
+        # construct the Show Text menu entry to the context menu of the QMainWindow
+        # ########################################################################
+        self.show_text_action = QtGui.QAction()
+        self.show_text_action.setText(_("Show Text"))
+        self.show_text_action.setCheckable(True)
+
+        # ########################################################################
         # ######################## BUILD PREFERENCES #############################
         # ########################################################################
         self.general_pref_form = GeneralPreferencesUI(app=self.app)
@@ -2039,19 +2063,18 @@ class MainGUI(QtWidgets.QMainWindow):
         QtCore.QCoreApplication.instance().installEventFilter(self)
 
         # ########################################################################
-        # ################## RESTORE THE TOOLBAR STATE from file #################
+        # ################## RESTORE UI from QSettings #################
         # ########################################################################
-        flat_settings = QSettings("Open Source", "FlatCAM")
-        if flat_settings.contains("saved_gui_state"):
-            saved_gui_state = flat_settings.value('saved_gui_state')
-            self.restoreState(saved_gui_state)
-            self.app.log.debug("MainGUI.__init__() --> UI state restored from QSettings.")
+        qsettings = QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("saved_gui_state"):
+            self.restoreState(qsettings.value('saved_gui_state'), 0)
+        tb_lock_state = qsettings.value('toolbar_lock', "true")
+        show_text_state = qsettings.value('menu_show_text', "true")
+        win_geo = qsettings.value('window_geometry', (100, 100, 800, 400))
+        splitter_left = qsettings.value('splitter_left', 1)
 
-        self.corner_snap_btn.setVisible(False)
-        self.snap_magnet.setVisible(False)
-
-        if flat_settings.contains("layout"):
-            layout = flat_settings.value('layout', type=str)
+        if qsettings.contains("layout"):
+            layout = qsettings.value('layout', type=str)
             self.exc_edit_toolbar.setDisabled(True)
             self.geo_edit_toolbar.setDisabled(True)
             self.grb_edit_toolbar.setDisabled(True)
@@ -2062,36 +2085,27 @@ class MainGUI(QtWidgets.QMainWindow):
             self.geo_edit_toolbar.setDisabled(True)
             self.grb_edit_toolbar.setDisabled(True)
 
-            flat_settings.setValue('layout', "standard")
-            # This will write the setting to the platform specific storage.
-            del flat_settings
-            self.app.log.debug("MainGUI.__init__() --> UI layout restored from options. QSettings set to 'standard'")
-
-        # construct the Toolbar Lock menu entry to the context menu of the QMainWindow
-        self.lock_action = QtGui.QAction()
-        self.lock_action.setText(_("Lock Toolbars"))
-        self.lock_action.setCheckable(True)
-
-        qsettings = QSettings("Open Source", "FlatCAM")
-        if qsettings.contains("toolbar_lock"):
-            lock_val = qsettings.value('toolbar_lock')
-            if lock_val == 'true':
-                lock_state = True
-                self.lock_action.setChecked(True)
-            else:
-
-                lock_state = False
-                self.lock_action.setChecked(False)
-        else:
-            lock_state = True
-            qsettings.setValue('toolbar_lock', lock_state)
-
+            qsettings.setValue('layout', "standard")
             # This will write the setting to the platform specific storage.
             del qsettings
+            self.app.log.debug("MainGUI.__init__() --> UI layout restored from options. QSettings set to 'standard'")
 
-        self.lock_toolbar(lock=lock_state)
+        self.lock_action.setChecked(True if tb_lock_state == 'true' else False)
+        self.show_text_action.setChecked(True if show_text_state == 'true' else False)
+
+        self.setGeometry(win_geo[0], win_geo[1], win_geo[2], win_geo[3])
+        self.app.log.debug("MainGUI.__init__() --> UI state restored from QSettings.")
+
+        self.splitter.setSizes([splitter_left, 0])
+
+        self.lock_toolbar(lock=True if tb_lock_state == 'true' else False)
+        self.show_text_under_action(show_text=True if show_text_state == 'true' else False)
+
+        self.corner_snap_btn.setVisible(False)
+        self.snap_magnet.setVisible(False)
 
         self.lock_action.triggered[bool].connect(self.lock_toolbar)
+        self.show_text_action.triggered.connect(self.show_text_under_action)
 
         self.pref_open_button.clicked.connect(self.on_preferences_open_folder)
         self.clear_btn.clicked.connect(lambda: self.on_gui_clear())
@@ -2105,12 +2119,6 @@ class MainGUI(QtWidgets.QMainWindow):
         # self.plot_tab_area.tab_attached.connect(lambda x: print(x))
         # self.plot_tab_area.tab_detached.connect(lambda x: print(x))
 
-        # restore the toolbar view
-        self.restore_toolbar_view()
-
-        # restore the GUI geometry
-        self.restore_main_win_geom()
-
         # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # %%%%%%%%%%%%%%%%% GUI Building FINISHED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2123,7 +2131,6 @@ class MainGUI(QtWidgets.QMainWindow):
         self.height = None
         self.titlebar_height = None
 
-        self.geom_update[int, int, int, int, int].connect(self.save_geometry)
         self.final_save.connect(self.app.final_save)
 
         # Notebook and Plot Tab Area signals
@@ -2238,92 +2245,6 @@ class MainGUI(QtWidgets.QMainWindow):
                 self.show()
         else:
             self.hide()
-
-    def save_geometry(self, x, y, width, height, notebook_width):
-        """
-        Will save the application geometry and positions in the options dicitionary to be restored at the next
-        launch of the application.
-
-        :param x:               X position of the main window
-        :param y:               Y position of the main window
-        :param width:           width of the main window
-        :param height:          height of the main window
-        :param notebook_width:  the notebook width is adjustable so it get saved here, too.
-
-        :return: None
-        """
-        self.app.options["global_def_win_x"] = x
-        self.app.options["global_def_win_y"] = y
-        self.app.options["global_def_win_w"] = width
-        self.app.options["global_def_win_h"] = height
-        self.app.options["global_def_notebook_width"] = notebook_width
-        # self.app.preferencesUiManager.save_defaults()
-
-    def restore_main_win_geom(self):
-        try:
-            self.setGeometry(self.app.options["global_def_win_x"],
-                             self.app.options["global_def_win_y"],
-                             self.app.options["global_def_win_w"],
-                             self.app.options["global_def_win_h"])
-            self.splitter.setSizes([self.app.options["global_def_notebook_width"], 0])
-        except KeyError as e:
-            self.app.log.debug("appGUI.MainGUI.restore_main_win_geom() --> %s" % str(e))
-
-    def restore_toolbar_view(self):
-        """
-        Some toolbars may be hidden by user and here we restore the state of the toolbars visibility that
-        was saved in the 'options' dictionary.
-
-        :return: None
-        """
-        tb = self.app.options["global_toolbar_view"]
-
-        if tb & 1:
-            self.toolbarfile.setVisible(True)
-        else:
-            self.toolbarfile.setVisible(False)
-
-        if tb & 2:
-            self.toolbaredit.setVisible(True)
-        else:
-            self.toolbaredit.setVisible(False)
-
-        if tb & 4:
-            self.toolbarview.setVisible(True)
-        else:
-            self.toolbarview.setVisible(False)
-
-        if tb & 8:
-            self.toolbarplugins.setVisible(True)
-        else:
-            self.toolbarplugins.setVisible(False)
-
-        if tb & 16:
-            self.exc_edit_toolbar.setVisible(True)
-        else:
-            self.exc_edit_toolbar.setVisible(False)
-
-        if tb & 32:
-            self.geo_edit_toolbar.setVisible(True)
-        else:
-            self.geo_edit_toolbar.setVisible(False)
-
-        if tb & 64:
-            self.grb_edit_toolbar.setVisible(True)
-        else:
-            self.grb_edit_toolbar.setVisible(False)
-
-        # if tb & 128:
-        #     self.ui.grid_toolbar.setVisible(True)
-        # else:
-        #     self.ui.grid_toolbar.setVisible(False)
-
-        # Grid Toolbar is controlled by its own setting
-
-        if tb & 256:
-            self.toolbarshell.setVisible(True)
-        else:
-            self.toolbarshell.setVisible(False)
 
     def on_tab_setup_context_menu(self):
         initial_checked = self.app.defaults["global_tabs_detachable"]
@@ -2462,14 +2383,18 @@ class MainGUI(QtWidgets.QMainWindow):
         # ##################### File Toolbar #####################################
         # ########################################################################
         self.file_open_gerber_btn = self.toolbarfile.addAction(
-            QtGui.QIcon(self.app.resource_location + '/open_gerber32.png'), _("Open Gerber"))
+            QtGui.QIcon(self.app.resource_location + '/open_gerber32.png'), _("Gerber"))
+        self.file_open_gerber_btn.setToolTip(_("Open a Gerber file."))
         self.file_open_excellon_btn = self.toolbarfile.addAction(
-            QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'), _("Open Excellon"))
+            QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'), _("Excellon"))
+        self.file_open_excellon_btn.setToolTip(_("Open a Excellon file."))
         self.toolbarfile.addSeparator()
         self.file_open_btn = self.toolbarfile.addAction(
-            QtGui.QIcon(self.app.resource_location + '/folder32.png'), _("Open Project"))
+            QtGui.QIcon(self.app.resource_location + '/folder32.png'), _("Open"))
+        self.file_open_btn.setToolTip(_("Open a project."))
         self.file_save_btn = self.toolbarfile.addAction(
-            QtGui.QIcon(self.app.resource_location + '/save_as.png'), _("Save Project"))
+            QtGui.QIcon(self.app.resource_location + '/save_as.png'), _("Save"))
+        self.file_save_btn.setToolTip(_("Save the current project."))
 
         # ########################################################################
         # ######################### Edit Toolbar #################################
@@ -2491,27 +2416,35 @@ class MainGUI(QtWidgets.QMainWindow):
         # in order to hide it we hide the returned action
         self.editor_exit_btn_ret_action = self.toolbaredit.addWidget(self.editor_exit_btn)
 
-        self.toolbaredit.addSeparator()
         self.copy_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/copy_file32.png'), _("Copy"))
+        self.copy_btn.setToolTip(_("Copy a selection of objects."))
         self.delete_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete"))
+        self.delete_btn.setToolTip(_("Delete a selection of objects."))
         self.toolbaredit.addSeparator()
         self.distance_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/distance32.png'), _("Distance Tool"))
-        self.distance_min_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/distance_min32.png'), _("Distance Min Tool"))
+            QtGui.QIcon(self.app.resource_location + '/distance32.png'), _("Distance"))
+        self.distance_btn.setToolTip(_("Measure a distance between two or more points."))
+        # self.distance_min_btn = self.toolbaredit.addAction(
+        #     QtGui.QIcon(self.app.resource_location + '/distance_min32.png'), _("Min Distance"))
+        # self.distance_min_btn.setToolTip(_("Measure the minimum distance between two objects."))
         self.origin_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/origin32.png'), _('Set Origin'))
-        self.move2origin_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/move2origin32.png'), _('Move to Origin'))
-        self.center_in_origin_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/custom_origin32.png'), _('Custom Origin'))
+        self.origin_btn.setToolTip(_("Set an origin to a custom location."))
+        # self.move2origin_btn = self.toolbaredit.addAction(
+        #     QtGui.QIcon(self.app.resource_location + '/move2origin32.png'), _('To Orig.'))
+        # self.move2origin_btn.setToolTip(_("Move selected objects to the origin."))
+        # self.center_in_origin_btn = self.toolbaredit.addAction(
+        #     QtGui.QIcon(self.app.resource_location + '/custom_origin32.png'), _('C Origin'))
+        # self.center_in_origin_btn.setToolTip(_("Move the selected objects to custom positions."))
 
         self.jmp_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/jump_to32.png'), _('Jump to Location'))
+            QtGui.QIcon(self.app.resource_location + '/jump_to32.png'), _('Jump to'))
+        self.jmp_btn.setToolTip(_("Move the mouse cursor to a defined position and center into view."))
         self.locate_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/locate32.png'), _('Locate in Object'))
+            QtGui.QIcon(self.app.resource_location + '/locate32.png'), _('Locate'))
+        self.locate_btn.setToolTip(_("Locate a predefined position on a selected object."))
 
         # ########################################################################
         # ########################## View Toolbar# ###############################
@@ -2576,16 +2509,16 @@ class MainGUI(QtWidgets.QMainWindow):
         self.toolbarplugins.addSeparator()
 
         self.align_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects"))
+            QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align"))
         # self.sub_btn = self.toolbarplugins.addAction(
         #     QtGui.QIcon(self.app.resource_location + '/sub32.png'), _("Subtract"))
 
         self.toolbarplugins.addSeparator()
 
-        self.extract_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/extract32.png'), _("Extract"))
+        # self.extract_btn = self.toolbarplugins.addAction(
+        #     QtGui.QIcon(self.app.resource_location + '/extract32.png'), _("Extract"))
         self.copperfill_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/copperfill32.png'), _("Copper Thieving"))
+            QtGui.QIcon(self.app.resource_location + '/copperfill32.png'), _("Thieving"))
         self.markers_tool_btn = self.toolbarplugins.addAction(
             QtGui.QIcon(self.app.resource_location + '/corners_32.png'), _("Markers"))
         self.punch_btn = self.toolbarplugins.addAction(
@@ -2798,6 +2731,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         menu.addSeparator()
         menu.addAction(self.lock_action)
+        menu.addAction(self.show_text_action)
         return menu
 
     def lock_toolbar(self, lock=False):
@@ -2816,6 +2750,26 @@ class MainGUI(QtWidgets.QMainWindow):
             for widget in self.children():
                 if isinstance(widget, QtWidgets.QToolBar):
                     widget.setMovable(True)
+
+        qsettings = QSettings("Open Source", "FlatCAM")
+        qsettings.setValue('toolbar_lock', lock)
+        # This will write the setting to the platform specific storage.
+        del qsettings
+
+    def show_text_under_action(self, show_text=True):
+        if show_text:
+            for widget in self.children():
+                if isinstance(widget, QtWidgets.QToolBar):
+                    widget.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+        else:
+            for widget in self.children():
+                if isinstance(widget, QtWidgets.QToolBar):
+                    widget.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+
+        qsettings = QSettings("Open Source", "FlatCAM")
+        qsettings.setValue('menu_show_text', show_text)
+        # This will write the setting to the platform specific storage.
+        del qsettings
 
     def on_fullscreen(self, disable=False):
         """
@@ -4570,12 +4524,17 @@ class MainGUI(QtWidgets.QMainWindow):
         if self.app.save_in_progress:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Application is saving the project. Please wait ..."))
         else:
-            grect = self.geometry()
+            g_rect = self.geometry()
 
-            # self.splitter.sizes()[0] is actually the size of the "notebook"
+            qsettings = QSettings("Open Source", "FlatCAM")
+            qsettings.setValue('saved_gui_state', self.saveState(0))
+            qsettings.setValue('toolbar_lock', self.lock_action.isChecked())
+            qsettings.setValue('menu_show_text', self.show_text_action.isChecked())
             if not self.isMaximized():
-                self.geom_update.emit(grect.x(), grect.y(), grect.width(), grect.height(), self.splitter.sizes()[0])
-
+                qsettings.setValue('window_geometry', (g_rect.x(), g_rect.y(), g_rect.width(), g_rect.height()))
+            qsettings.setValue('splitter_left', self.splitter.sizes()[0])
+            # This will write the setting to the platform specific storage.
+            del qsettings
             try:
                 self.final_save.emit()
             except SystemError:
