@@ -658,7 +658,7 @@ class App(QtCore.QObject):
         # ###########################################################################################################
         if self.options["first_run"] is True:
             # on first run clear the previous QSettings, therefore clearing the GUI settings
-            qsettings = QSettings("Open Source", "FlatCAM")
+            qsettings = QSettings("Open Source", "FlatCAM_EVO")
             for key in qsettings.allKeys():
                 qsettings.remove(key)
             # This will write the setting to the platform specific storage.
@@ -667,7 +667,7 @@ class App(QtCore.QObject):
         # ###########################################################################################################
         # ###################################### Setting the Splash Screen ##########################################
         # ###########################################################################################################
-        splash_settings = QSettings("Open Source", "FlatCAM")
+        splash_settings = QSettings("Open Source", "FlatCAM_EVO")
         if splash_settings.contains("splash_screen"):
             show_splash = splash_settings.value("splash_screen")
         else:
@@ -779,7 +779,7 @@ class App(QtCore.QObject):
         self.FC_light_blue = '#a5a5ffbf'
         self.FC_dark_blue = '#0000ffbf'
 
-        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        theme_settings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         theme_settings.setValue("appearance", self.options["global_appearance"])
         theme_settings.setValue("theme", self.options["global_theme"])
         theme_settings.setValue("dark_canvas", self.options["global_dark_canvas"])
@@ -1300,7 +1300,7 @@ class App(QtCore.QObject):
                 # finish the splash
                 self.splash.finish(self.ui)
 
-            mgui_settings = QSettings("Open Source", "FlatCAM")
+            mgui_settings = QSettings("Open Source", "FlatCAM_EVO")
             if mgui_settings.contains("maximized_gui"):
                 maximized_ui = mgui_settings.value('maximized_gui', type=bool)
                 if maximized_ui is True:
@@ -2124,7 +2124,7 @@ class App(QtCore.QObject):
         else:
             current_layout = self.ui.general_pref_form.general_gui_group.layout_combo.get_value()
 
-        lay_settings = QSettings("Open Source", "FlatCAM")
+        lay_settings = QSettings("Open Source", "FlatCAM_EVO")
         lay_settings.setValue('layout', current_layout)
 
         # This will write the setting to the platform specific storage.
@@ -3847,7 +3847,7 @@ class App(QtCore.QObject):
 
         if self.cmd_line_headless != 1:
             # save app state to file
-            stgs = QSettings("Open Source", "FlatCAM")
+            stgs = QSettings("Open Source", "FlatCAM_EVO")
             stgs.setValue('saved_gui_state', self.ui.saveState())
             stgs.setValue('maximized_gui', self.ui.isMaximized())
             stgs.setValue(

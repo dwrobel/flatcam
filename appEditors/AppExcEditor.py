@@ -385,7 +385,7 @@ class DrillAdd(FCShapeTool):
             self.points = self.draw_app.snap_x, self.draw_app.snap_y
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -849,7 +849,7 @@ class DrillArray(FCShapeTool):
             self.points = self.draw_app.snap_x, self.draw_app.snap_y
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -1187,7 +1187,7 @@ class SlotAdd(FCShapeTool):
             self.points = self.draw_app.snap_x, self.draw_app.snap_y
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -1769,7 +1769,7 @@ class SlotArray(FCShapeTool):
             self.points = self.draw_app.snap_x, self.draw_app.snap_y
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -2196,7 +2196,7 @@ class ResizeEditorExc(FCShapeTool):
             self.points = self.draw_app.snap_x, self.draw_app.snap_y
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -2780,7 +2780,7 @@ class CopyEditorExc(FCShapeTool):
             return
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:

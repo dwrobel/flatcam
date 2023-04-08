@@ -155,7 +155,7 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
 
     # apply style
-    settings = QSettings("Open Source", "FlatCAM")
+    settings = QSettings("Open Source", "FlatCAM_EVO")
     if settings.contains("style"):
         style_index = settings.value('style', type=str)
         try:

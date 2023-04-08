@@ -300,7 +300,7 @@ class PadEditorGrb(ShapeToolEditorGrb):
             return
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -896,7 +896,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
             self.points = self.draw_app.snap_x, self.draw_app.snap_y
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -1419,7 +1419,7 @@ class RegionEditorGrb(ShapeToolEditorGrb):
             return
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -1823,7 +1823,7 @@ class TrackEditorGrb(ShapeToolEditorGrb):
             return
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:

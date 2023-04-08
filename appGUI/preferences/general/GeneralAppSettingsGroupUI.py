@@ -75,7 +75,7 @@ class GeneralAppSettingsGroupUI(OptionsGroupUI2):
 
         self.setTitle(str(_("App Settings")))
 
-        qsettings = QSettings("Open Source", "FlatCAM")
+        qsettings = QSettings("Open Source", "FlatCAM_EVO")
 
         self.notebook_font_size_field = self.option_dict()["notebook_font_size"].get_field()
         if qsettings.contains("notebook_font_size"):
@@ -293,7 +293,7 @@ class GeneralAppSettingsGroupUI(OptionsGroupUI2):
         if val:
             self.app.cursor_color_3D = self.app.options["global_cursor_color"]
         else:
-            theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+            theme_settings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
             if theme_settings.contains("theme"):
                 theme = theme_settings.value('theme', type=str)
             else:

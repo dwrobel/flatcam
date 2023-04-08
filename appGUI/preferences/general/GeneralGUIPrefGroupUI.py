@@ -96,7 +96,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.layout_combo, 6, 1)
 
         # Set the current index for layout_combo
-        qsettings = QSettings("Open Source", "FlatCAM")
+        qsettings = QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("layout"):
             layout = qsettings.value('layout', type=str)
             idx = self.layout_combo.findText(layout.capitalize())
@@ -394,7 +394,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
     @staticmethod
     def handle_style(style):
         # set current style
-        qsettings = QSettings("Open Source", "FlatCAM")
+        qsettings = QSettings("Open Source", "FlatCAM_EVO")
         qsettings.setValue('style', str(style))
 
         new_style = QtWidgets.QStyleFactory.keys()[int(style)]

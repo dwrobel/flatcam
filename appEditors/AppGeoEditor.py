@@ -602,7 +602,7 @@ class FCCircle(FCShapeTool):
             return
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -1136,7 +1136,7 @@ class FCRectangle(FCShapeTool):
             return
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -1345,7 +1345,7 @@ class FCPolygon(FCShapeTool):
             return
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -1550,7 +1550,7 @@ class FCPath(FCShapeTool):
             return
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -2108,7 +2108,7 @@ class FCMove(FCShapeTool):
             return
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -2624,7 +2624,7 @@ class FCCopy(FCShapeTool):
             return
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:

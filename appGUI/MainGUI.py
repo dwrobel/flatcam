@@ -2064,7 +2064,7 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################################################################
         # ################## RESTORE UI from QSettings #################
         # ########################################################################
-        qsettings = QSettings("Open Source", "FlatCAM")
+        qsettings = QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("saved_gui_state"):
             self.restoreState(qsettings.value('saved_gui_state'), 0)
         tb_lock_state = qsettings.value('toolbar_lock', "true")
@@ -2233,7 +2233,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
     def on_toggle_gui(self):
         if self.isHidden():
-            mgui_settings = QSettings("Open Source", "FlatCAM")
+            mgui_settings = QSettings("Open Source", "FlatCAM_EVO")
             if mgui_settings.contains("maximized_gui"):
                 maximized_ui = mgui_settings.value('maximized_gui', type=bool)
                 if maximized_ui is True:
@@ -2339,7 +2339,7 @@ class MainGUI(QtWidgets.QMainWindow):
         """
         self.app.log.debug("Clearing the settings in QSettings. GUI settings cleared.")
 
-        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        theme_settings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         theme_settings.setValue('theme', 'light')
 
         del theme_settings
@@ -2364,7 +2364,7 @@ class MainGUI(QtWidgets.QMainWindow):
             response = msgbox.clickedButton()
 
         if forced_clear is True or response == bt_yes:
-            qsettings = QSettings("Open Source", "FlatCAM")
+            qsettings = QSettings("Open Source", "FlatCAM_EVO")
             for key in qsettings.allKeys():
                 qsettings.remove(key)
             # This will write the setting to the platform specific storage.
@@ -2682,7 +2682,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.snap_magnet.setVisible(False)
         self.editor_exit_btn_ret_action.setVisible(False)
 
-        qsettings = QSettings("Open Source", "FlatCAM")
+        qsettings = QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("layout"):
             layout = qsettings.value('layout', type=str)
 
@@ -2750,7 +2750,7 @@ class MainGUI(QtWidgets.QMainWindow):
                 if isinstance(widget, QtWidgets.QToolBar):
                     widget.setMovable(True)
 
-        qsettings = QSettings("Open Source", "FlatCAM")
+        qsettings = QSettings("Open Source", "FlatCAM_EVO")
         qsettings.setValue('toolbar_lock', lock)
         # This will write the setting to the platform specific storage.
         del qsettings
@@ -2765,7 +2765,7 @@ class MainGUI(QtWidgets.QMainWindow):
                 if isinstance(widget, QtWidgets.QToolBar):
                     widget.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
 
-        qsettings = QSettings("Open Source", "FlatCAM")
+        qsettings = QSettings("Open Source", "FlatCAM_EVO")
         qsettings.setValue('menu_show_text', show_text)
         # This will write the setting to the platform specific storage.
         del qsettings
@@ -4519,7 +4519,7 @@ class MainGUI(QtWidgets.QMainWindow):
         else:
             g_rect = self.geometry()
 
-            qsettings = QSettings("Open Source", "FlatCAM")
+            qsettings = QSettings("Open Source", "FlatCAM_EVO")
             qsettings.setValue('saved_gui_state', self.saveState(0))
             qsettings.setValue('toolbar_lock', self.lock_action.isChecked())
             qsettings.setValue('menu_show_text', self.show_text_action.isChecked())

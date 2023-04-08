@@ -62,7 +62,7 @@ class PlotCanvas3d(QtCore.QObject, scene.SceneCanvas):
         # Parent container
         self.container = container
 
-        settings = QtCore.QSettings("Open Source", "FlatCAM")
+        settings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if settings.contains("theme"):
             theme = settings.value('theme', type=str)
         else:
@@ -162,7 +162,7 @@ class PlotCanvas3d(QtCore.QObject, scene.SceneCanvas):
             c_color = self.line_color
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:

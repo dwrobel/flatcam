@@ -43,7 +43,7 @@ class AutoCompletePrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.grb_list_label)
 
-        qsettings = QSettings("Open Source", "FlatCAM")
+        qsettings = QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("textbox_font_size"):
             tb_fsize = qsettings.value('textbox_font_size', type=int)
         else:

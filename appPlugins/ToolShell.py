@@ -44,7 +44,7 @@ class TermWidget(QWidget):
 
         self._browser = _BrowserTextEdit(version=version, app=app)
 
-        qsettings = QSettings("Open Source", "FlatCAM")
+        qsettings = QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("textbox_font_size"):
             tb_fsize = qsettings.value('textbox_font_size', type=int)
         else:

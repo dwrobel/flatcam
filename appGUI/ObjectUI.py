@@ -36,7 +36,7 @@ class ObjectUI(QtWidgets.QWidget):
         self.app = app
         self.decimals = app.decimals
 
-        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        theme_settings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if theme_settings.contains("theme"):
             theme = theme_settings.value('theme', type=str)
         else:
@@ -561,7 +561,7 @@ class ExcellonObjectUI(ObjectUI):
         self.decimals = app.decimals
         self.app = app
 
-        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        theme_settings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if theme_settings.contains("theme"):
             theme = theme_settings.value('theme', type=str)
         else:
@@ -856,7 +856,7 @@ class GeometryObjectUI(ObjectUI):
         self.decimals = app.decimals
         self.app = app
 
-        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        theme_settings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if theme_settings.contains("theme"):
             theme = theme_settings.value('theme', type=str)
         else:
@@ -1173,7 +1173,7 @@ class CNCObjectUI(ObjectUI):
         self.decimals = app.decimals
         self.app = app
 
-        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        theme_settings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if theme_settings.contains("theme"):
             theme = theme_settings.value('theme', type=str)
         else:
@@ -1473,7 +1473,7 @@ class ScriptObjectUI(ObjectUI):
         self.decimals = app.decimals
         self.app = app
 
-        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        theme_settings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if theme_settings.contains("theme"):
             theme = theme_settings.value('theme', type=str)
         else:
@@ -1536,7 +1536,7 @@ class DocumentObjectUI(ObjectUI):
         self.decimals = app.decimals
         self.app = app
 
-        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        theme_settings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if theme_settings.contains("theme"):
             theme = theme_settings.value('theme', type=str)
         else:

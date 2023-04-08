@@ -50,7 +50,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         self.fcapp = fcapp
 
-        settings = QtCore.QSettings("Open Source", "FlatCAM")
+        settings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if settings.contains("theme"):
             theme = settings.value('theme', type=str)
         else:
@@ -337,7 +337,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         hud_text = '%s\n%s\n\n%s\n%s' % (l1_hud_text, l2_hud_text, l3_hud_text, l4_hud_text)
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -385,7 +385,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
     def on_toggle_grid_lines(self, signal=None, silent=None):
         state = self.grid_lines_enabled
 
-        settings = QtCore.QSettings("Open Source", "FlatCAM")
+        settings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if settings.contains("theme"):
             theme = settings.value('theme', type=str)
         else:
