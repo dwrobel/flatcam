@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+08.04.2023
+
+- fixed some really long strings in the Geometry Editor toolbar actions
+- modified the paint and buffer icons
+- optimized the editor menu/toolbar action names
+
 22.03.2023
 
 - in the toolbars now there is text under the icons (which can be turned off from the toolbar context menu)

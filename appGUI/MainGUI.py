@@ -703,37 +703,37 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.geo_add_circle_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/circle32.png'),
-            '%s\t%s' % (_('Add Circle'), _('O'))
+            '%s\t%s' % (_('Circle'), _('O'))
         )
         self.geo_add_arc_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/arc16.png'),
-            '%s\t%s' % (_('Add Arc'), _('A')))
+            '%s\t%s' % (_('Arc'), _('A')))
         self.geo_editor_menu.addSeparator()
         self.geo_add_rectangle_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/rectangle32.png'),
-            '%s\t%s' % (_('Add Rectangle'), _('R'))
+            '%s\t%s' % (_('Rectangle'), _('R'))
         )
         self.geo_add_polygon_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/polygon32.png'),
-            '%s\t%s' % (_('Add Polygon'), _('N'))
+            '%s\t%s' % (_('Polygon'), _('N'))
         )
         self.geo_add_path_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/path32.png'),
-            '%s\t%s' % (_('Add Path'), _('P')))
+            '%s\t%s' % (_('Path'), _('P')))
         self.geo_editor_menu.addSeparator()
         self.geo_add_text_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/text32.png'),
-            '%s\t%s' % (_('Add Text'), _('T')))
+            '%s\t%s' % (_('Text'), _('T')))
         self.geo_editor_menu.addSeparator()
         self.geo_union_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/union16.png'),
-            '%s\t%s' % (_('Polygon Union'), _('U')))
+            '%s\t%s' % (_('Union'), _('U')))
         self.geo_intersection_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/intersection16.png'),
-            '%s\t%s' % (_('Polygon Intersection'), _('E')))
+            '%s\t%s' % (_('Intersection'), _('E')))
         self.geo_subtract_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/subtract16.png'),
-            '%s\t%s' % (_('Polygon Subtraction'), _('S'))
+            '%s\t%s' % (_('Subtraction'), _('S'))
         )
         self.geo_subtract_alt_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/subtract16.png'),
@@ -747,7 +747,7 @@ class MainGUI(QtWidgets.QMainWindow):
         #   QtGui.QIcon(self.app.resource_location + '/move16.png'), "Move Objects 'm'")
         self.geo_copy_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/copy16.png'),
-            '%s\t%s' % (_("Copy Geom"), _('C')))
+            '%s\t%s' % (_("Copy"), _('C')))
         self.geo_delete_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/deleteshape16.png'),
             '%s\t%s' % (_("Delete"), _('DEL'))
@@ -757,7 +757,7 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/move32.png'),
             '%s\t%s' % (_("Move"), _('M')))
         self.geo_buffer_menuitem = self.geo_editor_menu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/buffer16.png'),
+            QtGui.QIcon(self.app.resource_location + '/buffer32.png'),
             '%s\t%s' % (_("Buffer"), _('B'))
         )
         self.geo_simplification_menuitem = self.geo_editor_menu.addAction(
@@ -770,7 +770,7 @@ class MainGUI(QtWidgets.QMainWindow):
         )
         self.geo_transform_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/transform.png'),
-            '%s\t%s' % (_("Transformation"), _('Alt+R'))
+            '%s\t%s' % (_("Transform"), _('Alt+R'))
         )
         self.geo_editor_menu.addSeparator()
         self.geo_cornersnap_menuitem = self.geo_editor_menu.addAction(
@@ -786,18 +786,18 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.exc_add_array_drill_menuitem = self.exc_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/rectangle32.png'),
-            '%s\t%s' % (_('Add Drill Array'), _('A')))
+            '%s\t%s' % (_('Drill Array'), _('A')))
         self.exc_add_drill_menuitem = self.exc_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/plus16.png'),
-            '%s\t%s' % (_('Add Drill'), _('D')))
+            '%s\t%s' % (_('Drill'), _('D')))
         self.exc_editor_menu.addSeparator()
 
         self.exc_add_array_slot_menuitem = self.exc_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/slot_array26.png'),
-            '%s\t%s' % (_('Add Slot Array'), _('Q')))
+            '%s\t%s' % (_('Slot Array'), _('Q')))
         self.exc_add_slot_menuitem = self.exc_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/slot26.png'),
-            '%s\t%s' % (_('Add Slot'), _('W')))
+            '%s\t%s' % (_('Slot'), _('W')))
         self.exc_editor_menu.addSeparator()
 
         self.exc_resize_drill_menuitem = self.exc_editor_menu.addAction(
@@ -825,16 +825,16 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.grb_add_pad_menuitem = self.grb_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/aperture16.png'),
-            '%s\t%s' % (_('Add Pad'), _('P')))
+            '%s\t%s' % (_('Pad'), _('P')))
         self.grb_add_pad_array_menuitem = self.grb_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/padarray32.png'),
-            '%s\t%s' % (_('Add Pad Array'), _('A')))
+            '%s\t%s' % (_('Pad Array'), _('A')))
         self.grb_add_track_menuitem = self.grb_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/track32.png'),
-            '%s\t%s' % (_('Add Track'), _('T')))
+            '%s\t%s' % (_('Track'), _('T')))
         self.grb_add_region_menuitem = self.grb_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/rectangle32.png'),
-            '%s\t%s' % (_('Add Region'), _('N')))
+            '%s\t%s' % (_('Region'), _('N')))
         self.grb_editor_menu.addSeparator()
 
         self.grb_convert_poly_menuitem = self.grb_editor_menu.addAction(
@@ -842,12 +842,12 @@ class MainGUI(QtWidgets.QMainWindow):
             '%s\t%s' % (_("Poligonize"), _('Alt+N')))
         self.grb_add_semidisc_menuitem = self.grb_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/semidisc32.png'),
-            '%s\t%s' % (_("Add SemiDisc"), _('E')))
+            '%s\t%s' % (_("SemiDisc"), _('E')))
         self.grb_add_disc_menuitem = self.grb_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/disc32.png'),
-            '%s\t%s' % (_("Add Disc"), _('D')))
+            '%s\t%s' % (_("Disc"), _('D')))
         self.grb_add_buffer_menuitem = self.grb_editor_menu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'),
+            QtGui.QIcon(self.app.resource_location + '/buffer32.png'),
             '%s\t%s' % (_('Buffer'), _('B')))
         self.grb_simplification_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/simplify32.png'),
@@ -1266,44 +1266,46 @@ class MainGUI(QtWidgets.QMainWindow):
         self.geo_select_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/pointer32.png'), _("Select"))
         self.geo_add_circle_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/circle32.png'), _('Add Circle'))
+            QtGui.QIcon(self.app.resource_location + '/circle32.png'), _('Circle'))
         self.geo_add_arc_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/arc32.png'), _('Add Arc'))
+            QtGui.QIcon(self.app.resource_location + '/arc32.png'), _('Arc'))
         self.geo_add_rectangle_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/rectangle32.png'), _('Add Rectangle'))
+            QtGui.QIcon(self.app.resource_location + '/rectangle32.png'), _('Rectangle'))
 
         self.geo_edit_toolbar.addSeparator()
         self.geo_add_path_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/path32.png'), _('Add Path'))
+            QtGui.QIcon(self.app.resource_location + '/path32.png'), _('Path'))
         self.geo_add_polygon_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/polygon32.png'), _('Add Polygon'))
+            QtGui.QIcon(self.app.resource_location + '/polygon32.png'), _('Polygon'))
         self.geo_edit_toolbar.addSeparator()
         self.geo_add_text_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/text32.png'), _('Add Text'))
+            QtGui.QIcon(self.app.resource_location + '/text32.png'), _('Text'))
         self.geo_add_simplification_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/simplify32.png'), _('Simplify'))
         self.geo_add_buffer_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'), _('Add Buffer'))
+            QtGui.QIcon(self.app.resource_location + '/buffer32.png'), _('Buffer'))
         self.geo_add_paint_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/paint32.png'), _('Paint Shape'))
+            QtGui.QIcon(self.app.resource_location + '/paint32.png'), _('Paint'))
         self.geo_eraser_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/eraser26.png'), _('Eraser'))
 
         self.geo_edit_toolbar.addSeparator()
         self.geo_union_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/union32.png'), _('Polygon Union'))
+            QtGui.QIcon(self.app.resource_location + '/union32.png'), _('Union'))
         self.geo_explode_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/explode32.png'), _('Polygon Explode'))
+            QtGui.QIcon(self.app.resource_location + '/explode32.png'), _('Explode'))
 
         self.geo_intersection_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/intersection32.png'), _('Polygon Intersection'))
+            QtGui.QIcon(self.app.resource_location + '/intersection32.png'), _('Intersection'))
         self.geo_subtract_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/subtract32.png'),
+            QtGui.QIcon(self.app.resource_location + '/subtract32.png'), _('Subtraction'))
+        self.geo_subtract_btn.setToolTip(
             _('Polygon Subtraction. First selected is the target.\n'
               'The rest of the selected is subtracted from the first.\n'
               'First selected is replaced by the result.'))
         self.geo_alt_subtract_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/subtract_alt32.png'),
+            QtGui.QIcon(self.app.resource_location + '/subtract_alt32.png'), _('Alt Subtraction'))
+        self.geo_alt_subtract_btn.setToolTip(
             _('Alt Subtraction. First selected is the target.\n'
               'The rest of the selected is subtracted from the first.\n'
               'First selected is kept besides the result.'))
@@ -1312,15 +1314,15 @@ class MainGUI(QtWidgets.QMainWindow):
         self.geo_cutpath_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/cutpath32.png'), _('Cut Path'))
         self.geo_copy_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _("Copy Shape(s)"))
+            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _("Copy"))
 
         self.geo_delete_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete"))
         self.geo_transform_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transformations"))
+            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transform"))
         self.geo_edit_toolbar.addSeparator()
         self.geo_move_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move Objects"))
+            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move"))
 
         # ########################################################################
         # ########################## Gerber Editor Toolbar# ######################
@@ -1328,13 +1330,13 @@ class MainGUI(QtWidgets.QMainWindow):
         self.grb_select_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/pointer32.png'), _("Select"))
         self.grb_add_pad_btn = self.grb_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/aperture32.png'), _("Add Pad"))
+            QtGui.QIcon(self.app.resource_location + '/aperture32.png'), _("Pad"))
         self.add_pad_ar_btn = self.grb_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/padarray32.png'), _('Add Pad Array'))
+            QtGui.QIcon(self.app.resource_location + '/padarray32.png'), _('Pad Array'))
         self.grb_add_track_btn = self.grb_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/track32.png'), _("Add Track"))
+            QtGui.QIcon(self.app.resource_location + '/track32.png'), _("Track"))
         self.grb_add_region_btn = self.grb_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/polygon32.png'), _("Add Region"))
+            QtGui.QIcon(self.app.resource_location + '/polygon32.png'), _("Region"))
         self.grb_convert_poly_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/poligonize32.png'), _("Poligonize"))
 
@@ -1345,7 +1347,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.grb_edit_toolbar.addSeparator()
 
         self.aperture_buffer_btn = self.grb_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'), _('Buffer'))
+            QtGui.QIcon(self.app.resource_location + '/buffer32.png'), _('Buffer'))
         self.aperture_simplify_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/simplify32.png'), _('Simplification'))
         self.aperture_scale_btn = self.grb_edit_toolbar.addAction(
@@ -1353,7 +1355,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.aperture_markarea_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/markarea32.png'), _('Mark Area'))
         self.grb_import_btn = self.grb_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/import.png'), _('Import Shape'))
+            QtGui.QIcon(self.app.resource_location + '/import.png'), _('Import'))
 
         self.aperture_eraser_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/eraser26.png'), _('Eraser'))
@@ -1364,7 +1366,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.aperture_delete_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete"))
         self.grb_transform_btn = self.grb_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transformations"))
+            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transform"))
         self.grb_edit_toolbar.addSeparator()
         self.aperture_move_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move"))
@@ -1864,7 +1866,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.draw_simplification = self.g_editor_cmenu.addAction(
             QtGui.QIcon(self.app.resource_location + '/simplify32.png'), _("Simplification"))
         self.draw_buffer = self.g_editor_cmenu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'), _("Buffer"))
+            QtGui.QIcon(self.app.resource_location + '/buffer32.png'), _("Buffer"))
         self.draw_paint = self.g_editor_cmenu.addAction(
             QtGui.QIcon(self.app.resource_location + '/paint32.png'), _("Paint"))
         self.draw_eraser = self.g_editor_cmenu.addAction(
@@ -1882,7 +1884,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.draw_cut = self.g_editor_cmenu.addAction(
             QtGui.QIcon(self.app.resource_location + '/cutpath32.png'), _("Cut"))
         self.draw_transform = self.g_editor_cmenu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transformations"))
+            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transform"))
 
         self.g_editor_cmenu.addSeparator()
         self.draw_move = self.g_editor_cmenu.addAction(
@@ -1909,7 +1911,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.grb_editor_cmenu.addSeparator()
 
         self.grb_draw_buffer = self.grb_editor_cmenu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'), _("Buffer"))
+            QtGui.QIcon(self.app.resource_location + '/buffer32.png'), _("Buffer"))
         self.grb_draw_scale = self.grb_editor_cmenu.addAction(
             QtGui.QIcon(self.app.resource_location + '/scale32.png'), _("Scale"))
         self.grb_draw_markarea = self.grb_editor_cmenu.addAction(
@@ -1919,19 +1921,19 @@ class MainGUI(QtWidgets.QMainWindow):
         self.grb_editor_cmenu.addSeparator()
 
         self.grb_draw_transformations = self.grb_editor_cmenu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transformations"))
+            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transform"))
 
         self.e_editor_cmenu = self.popMenu.addMenu(
             QtGui.QIcon(self.app.resource_location + '/drill32.png'), _("Exc Editor"))
         self.drill = self.e_editor_cmenu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'), _("Add Drill"))
+            QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'), _("Drill"))
         self.drill_array = self.e_editor_cmenu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/addarray32.png'), _("Add Drill Array"))
+            QtGui.QIcon(self.app.resource_location + '/addarray32.png'), _("Drill Array"))
         self.e_editor_cmenu.addSeparator()
         self.slot = self.e_editor_cmenu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/slot26.png'), _("Add Slot"))
+            QtGui.QIcon(self.app.resource_location + '/slot26.png'), _("Slot"))
         self.slot_array = self.e_editor_cmenu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/slot_array26.png'), _("Add Slot Array"))
+            QtGui.QIcon(self.app.resource_location + '/slot_array26.png'), _("Slot Array"))
         self.e_editor_cmenu.addSeparator()
         self.drill_resize = self.e_editor_cmenu.addAction(
             QtGui.QIcon(self.app.resource_location + '/resize16.png'), _("Resize Drill"))
@@ -2584,37 +2586,37 @@ class MainGUI(QtWidgets.QMainWindow):
         self.geo_select_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/pointer32.png'), _("Select"))
         self.geo_add_circle_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/circle32.png'), _('Add Circle'))
+            QtGui.QIcon(self.app.resource_location + '/circle32.png'), _('Circle'))
         self.geo_add_arc_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/arc32.png'), _('Add Arc'))
+            QtGui.QIcon(self.app.resource_location + '/arc32.png'), _('Arc'))
         self.geo_add_rectangle_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/rectangle32.png'), _('Add Rectangle'))
+            QtGui.QIcon(self.app.resource_location + '/rectangle32.png'), _('Rectangle'))
 
         self.geo_edit_toolbar.addSeparator()
         self.geo_add_path_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/path32.png'), _('Add Path'))
+            QtGui.QIcon(self.app.resource_location + '/path32.png'), _('Path'))
         self.geo_add_polygon_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/polygon32.png'), _('Add Polygon'))
+            QtGui.QIcon(self.app.resource_location + '/polygon32.png'), _('Polygon'))
         self.geo_edit_toolbar.addSeparator()
         self.geo_add_text_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/text32.png'), _('Add Text'))
+            QtGui.QIcon(self.app.resource_location + '/text32.png'), _('Text'))
         self.geo_add_buffer_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'), _('Add Buffer'))
+            QtGui.QIcon(self.app.resource_location + '/buffer32.png'), _('Buffer'))
         self.geo_add_paint_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/paint32.png'), _('Paint Shape'))
+            QtGui.QIcon(self.app.resource_location + '/paint32.png'), _('Paint'))
         self.geo_eraser_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/eraser26.png'), _('Eraser'))
 
         self.geo_edit_toolbar.addSeparator()
         self.geo_union_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/union32.png'), _('Polygon Union'))
+            QtGui.QIcon(self.app.resource_location + '/union32.png'), _('Union'))
         self.geo_explode_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/explode32.png'), _('Polygon Explode'))
+            QtGui.QIcon(self.app.resource_location + '/explode32.png'), _('Explode'))
 
         self.geo_intersection_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/intersection32.png'), _('Polygon Intersection'))
+            QtGui.QIcon(self.app.resource_location + '/intersection32.png'), _('Intersection'))
         self.geo_subtract_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/subtract32.png'), _('Polygon Subtraction'))
+            QtGui.QIcon(self.app.resource_location + '/subtract32.png'), _('Subtraction'))
         self.geo_alt_subtract_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/subtract_alt32.png'), _('Alt Subtraction'))
 
@@ -2622,15 +2624,15 @@ class MainGUI(QtWidgets.QMainWindow):
         self.geo_cutpath_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/cutpath32.png'), _('Cut Path'))
         self.geo_copy_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _("Copy Objects"))
+            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _("Copy"))
         self.geo_delete_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete"))
         self.geo_transform_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transformations"))
+            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transform"))
 
         self.geo_edit_toolbar.addSeparator()
         self.geo_move_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move Objects"))
+            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move"))
 
         # ########################################################################
         # ################### Gerber Editor Toolbar ##############################
@@ -2638,13 +2640,13 @@ class MainGUI(QtWidgets.QMainWindow):
         self.grb_select_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/pointer32.png'), _("Select"))
         self.grb_add_pad_btn = self.grb_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/aperture32.png'), _("Add Pad"))
+            QtGui.QIcon(self.app.resource_location + '/aperture32.png'), _("Pad"))
         self.add_pad_ar_btn = self.grb_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/padarray32.png'), _('Add Pad Array'))
+            QtGui.QIcon(self.app.resource_location + '/padarray32.png'), _('Pad Array'))
         self.grb_add_track_btn = self.grb_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/track32.png'), _("Add Track"))
+            QtGui.QIcon(self.app.resource_location + '/track32.png'), _("Track"))
         self.grb_add_region_btn = self.grb_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/polygon32.png'), _("Add Region"))
+            QtGui.QIcon(self.app.resource_location + '/polygon32.png'), _("Region"))
         self.grb_convert_poly_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/poligonize32.png'), _("Poligonize"))
 
@@ -2655,7 +2657,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.grb_edit_toolbar.addSeparator()
 
         self.aperture_buffer_btn = self.grb_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'), _('Buffer'))
+            QtGui.QIcon(self.app.resource_location + '/buffer32.png'), _('Buffer'))
         self.aperture_simplify_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/simplify32.png'), _('Simplification'))
         self.aperture_scale_btn = self.grb_edit_toolbar.addAction(
@@ -2674,7 +2676,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.aperture_delete_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete"))
         self.grb_transform_btn = self.grb_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transformations"))
+            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transform"))
         self.grb_edit_toolbar.addSeparator()
         self.aperture_move_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move"))
@@ -4991,7 +4993,7 @@ class ShortcutsTab(QtWidgets.QWidget):
             _('Alt+Q'), _("QRCode"),
             _('Alt+R'), _("Rules Check"),
             _('Alt+S'), _("View File Source"),
-            _('Alt+T'), _("Transformations"),
+            _('Alt+T'), _("Transform"),
             _('Alt+W'), _("Subtract"),
             _('Alt+X'), _("Cutout PCB"),
             _('Alt+Z'), _("Panelize PCB"),

@@ -2034,7 +2034,7 @@ class App(QtCore.QObject):
         self.ui.align_btn.triggered.connect(lambda: self.align_objects_tool.run(toggle=True))
         # self.ui.sub_btn.triggered.connect(lambda: self.sub_tool.run(toggle=True))
 
-        self.ui.extract_btn.triggered.connect(lambda: self.extract_tool.run(toggle=True))
+        # self.ui.extract_btn.triggered.connect(lambda: self.extract_tool.run(toggle=True))
         self.ui.copperfill_btn.triggered.connect(lambda: self.copper_thieving_tool.run(toggle=True))
         self.ui.markers_tool_btn.triggered.connect(lambda: self.markers_tool.run(toggle=True))
         self.ui.punch_btn.triggered.connect(lambda: self.punch_tool.run(toggle=True))
