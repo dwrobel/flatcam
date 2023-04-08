@@ -74,7 +74,6 @@ class AppDefaults:
         "global_tcl_path": '',
 
         # General APP Preferences
-        "decimals_inch": 4,
         "decimals_metric": 4,
         "global_graphic_engine": '3D',
         "global_graphic_engine_3d_no_mp": False,

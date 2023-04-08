@@ -30,9 +30,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # Grid0 Frame
         # #############################################################################################################
         self.unitslabel = FCLabel('%s' % _("Units"), color='red', bold=True)
-        self.unitslabel.setToolTip(_("The default value for the application units.\n"
-                                     "Whatever is selected here is set every time\n"
-                                     "the application is started."))
+        self.unitslabel.setToolTip(_("The application dimensional units is millimeter."))
         self.layout.addWidget(self.unitslabel)
 
         grid0_frame = FCFrame()
@@ -41,19 +39,10 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0 = GLay(v_spacing=5, h_spacing=3)
         grid0_frame.setLayout(grid0)
 
-        # Units for FlatCAM
-        self.units_radio = RadioSetDefaults(
-            choices=[{'label': _('mm'), 'value': 'MM'}, {'label': _('inch'), 'value': 'IN'}],
-            compact=True
-        )
-
-        grid0.addWidget(self.units_radio, 0, 0, 1, 2)
-
         # Precision Metric
-        self.precision_metric_label = FCLabel('%s:' % _('Precision MM'))
+        self.precision_metric_label = FCLabel('%s:' % _('Dim. Precision'))
         self.precision_metric_label.setToolTip(
-            _("The number of decimals used throughout the application\n"
-              "when the set units are in METRIC system.\n"
+            _("The number of decimals used throughout the application.\n"
               "Any change here require an application restart.")
         )
         self.precision_metric_entry = FCSpinner()
@@ -62,20 +51,6 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
         grid0.addWidget(self.precision_metric_label, 2, 0)
         grid0.addWidget(self.precision_metric_entry, 2, 1)
-
-        # Precision Inch
-        self.precision_inch_label = FCLabel('%s:' % _('Precision Inch'))
-        self.precision_inch_label.setToolTip(
-            _("The number of decimals used throughout the application\n"
-              "when the set units are in INCH system.\n"
-              "Any change here require an application restart.")
-        )
-        self.precision_inch_entry = FCSpinner()
-        self.precision_inch_entry.set_range(2, 16)
-        self.precision_inch_entry.setWrapping(True)
-
-        grid0.addWidget(self.precision_inch_label, 4, 0)
-        grid0.addWidget(self.precision_inch_entry, 4, 1)
 
         self.par_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.layout.addWidget(self.par_label)

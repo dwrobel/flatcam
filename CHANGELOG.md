@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM Evo beta
 - fixed some really long strings in the Geometry Editor toolbar actions
 - modified the paint and buffer icons
 - optimized the editor menu/toolbar action names
+- major change: from now on the only dimensional units available are those from ISO METRIC system
 
 22.03.2023
 

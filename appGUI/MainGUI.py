@@ -491,9 +491,6 @@ class MainGUI(QtWidgets.QMainWindow):
 
         # Separator
         self.menuedit.addSeparator()
-        self.menuedittoggleunits = self.menuedit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/toggle_units16.png'),
-            '%s\t%s' % (_('Toggle Units'), _('Q')))
         self.menueditselectall = self.menuedit.addAction(
             QtGui.QIcon(self.app.resource_location + '/select_all.png'),
             '%s\t%s' % (_('Select All'), _('Ctrl+A')))
@@ -1981,7 +1978,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.status_toolbar.setVisible(self.app.defaults["global_statusbar_show"])
 
         self.units_label = FCLabel("[mm]")
-        self.units_label.setToolTip(_("Application units"))
+        self.units_label.setToolTip(_("The application dimensional units is millimeter."))
         self.units_label.setMargin(2)
         self.infobar.addWidget(self.units_label)
 
@@ -3372,12 +3369,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Change Units
                 if key == QtCore.Qt.Key.Key_Q:
-                    # if self.app.app_units == 'MM':
-                    #     self.app.ui.general_pref_form.general_app_group.units_radio.set_value("IN")
-                    # else:
-                    #     self.app.ui.general_pref_form.general_app_group.units_radio.set_value("MM")
-                    # self.app.on_toggle_units(no_pref=True)
-                    self.app.on_toggle_units_click()
+                    pass
 
                 # Rotate Object by 90 degree CW
                 if key == QtCore.Qt.Key.Key_R:
@@ -3960,7 +3952,6 @@ class MainGUI(QtWidgets.QMainWindow):
                     # Add Track
                     if key == QtCore.Qt.Key.Key_T or key == 'T':
                         self.app.grb_editor.launched_from_shortcuts = True
-                        # ## Current application units in Upper Case
                         self.app.grb_editor.select_tool('track')
                         return
 
@@ -4230,7 +4221,7 @@ class MainGUI(QtWidgets.QMainWindow):
                     if key == QtCore.Qt.Key.Key_T or key == 'T':
                         self.app.exc_editor.launched_from_shortcuts = True
                         # ## Current application units in Upper Case
-                        self.units = self.general_pref_form.general_app_group.units_radio.get_value().upper()
+                        self.units = "MM"
                         tool_add_popup = FCInputDoubleSpinner(title='%s ...' % _("New Tool"),
                                                               text='%s:' % _('Enter a Tool Diameter'),
                                                               min=0.0000, max=99.9999, decimals=self.decimals)

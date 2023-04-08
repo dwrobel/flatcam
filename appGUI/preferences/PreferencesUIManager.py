@@ -55,9 +55,7 @@ class PreferencesUIManager(QtCore.QObject):
         # def app_obj.new_object(self, kind, name, initialize, active=True, fit=True, plot=True)
         self.defaults_form_fields = {
             # General App
-            "decimals_inch": self.ui.general_pref_form.general_app_group.precision_inch_entry,
             "decimals_metric": self.ui.general_pref_form.general_app_group.precision_metric_entry,
-            "units": self.ui.general_pref_form.general_app_group.units_radio,
             "global_graphic_engine": self.ui.general_pref_form.general_app_group.ge_radio,
             "global_graphic_engine_3d_no_mp": self.ui.general_pref_form.general_app_group.ge_comp_cb,
             "global_app_level": self.ui.general_pref_form.general_app_group.app_level_radio,

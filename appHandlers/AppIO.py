@@ -2599,8 +2599,6 @@ class AppIO(QtCore.QObject):
 
         # for some reason, setting ui_title does not work when this method is called from Tcl Shell
         # it's because the TclCommand is run in another thread (it inherits TclCommandSignaled)
-        if cli is None:
-            self.app.set_screen_units(self.app.options["units"])
 
         self.app.restore_project_objects_sig.emit(proj_dict, filename, cli, plot)
 
