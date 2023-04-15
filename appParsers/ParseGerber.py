@@ -12,7 +12,7 @@ from copy import deepcopy
 from shapely.ops import unary_union, linemerge
 import shapely.affinity as affinity
 from shapely import box as shply_box
-from shapely import LinearRing, MultiLineString, LineString, Polygon, MultiPolygon, Point
+from shapely import LinearRing, MultiLineString, LineString, Polygon, MultiPolygon, Point, prepare, is_prepared
 
 from lxml import etree as ET
 import ezdxf
@@ -509,6 +509,7 @@ class Gerber(Geometry):
 
                         geo_dict = {}
                         geo_f = LineString(path)
+                        prepare(geo_f)
                         if not geo_f.is_empty:
                             follow_buffer.append(geo_f)
                             geo_dict['follow'] = geo_f
@@ -517,6 +518,7 @@ class Gerber(Geometry):
                         if self.app.options['gerber_simplification']:
                             geo_s = geo_s.simplify(s_tol)
                         if not geo_s.is_empty and geo_s.is_valid:
+                            prepare(geo_s)
                             poly_buffer.append(geo_s)
 
                             if self.is_lpc is True:
@@ -737,8 +739,9 @@ class Gerber(Geometry):
                             if not flash.is_empty:
                                 if self.app.options['gerber_simplification']:
                                     flash = flash.simplify(s_tol)
-                                poly_buffer.append(flash)
 
+                                prepare(flash)
+                                poly_buffer.append(flash)
                                 if self.is_lpc is True:
                                     geo_dict['clear'] = flash
                                 else:
@@ -788,6 +791,7 @@ class Gerber(Geometry):
                         else:
                             geo_dict = {}
                             geo_f = LineString(path)
+                            prepare(geo_f)
                             if not geo_f.is_empty:
                                 follow_buffer.append(geo_f)
                                 geo_dict['follow'] = geo_f
@@ -797,6 +801,7 @@ class Gerber(Geometry):
                             geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle))
                             if self.app.options['gerber_simplification']:
                                 geo_s = geo_s.simplify(s_tol)
+                            prepare(geo_s)
                             if not geo_s.is_empty:
                                 poly_buffer.append(geo_s)
 
@@ -855,6 +860,7 @@ class Gerber(Geometry):
                                         if self.app.options['gerber_simplification']:
                                             pol = pol.simplify(s_tol)
 
+                                        prepare(pol)
                                         poly_buffer.append(pol)
                                         if self.is_lpc is True:
                                             geo_dict['clear'] = pol
@@ -869,6 +875,7 @@ class Gerber(Geometry):
                                     if self.app.options['gerber_simplification']:
                                         geo_s = geo_s.simplify(s_tol)
 
+                                    prepare(geo_s)
                                     poly_buffer.append(geo_s)
                                     if self.is_lpc is True:
                                         geo_dict['clear'] = geo_s
@@ -911,6 +918,7 @@ class Gerber(Geometry):
                             geo_dict = {}
                             if geo_f:
                                 if not geo_f.is_empty:
+                                    prepare(geo_f)
                                     follow_buffer.append(geo_f)
                                     geo_dict['follow'] = geo_f
                             if geo_s:
@@ -920,6 +928,7 @@ class Gerber(Geometry):
 
                                     if not geo_s.is_valid:
                                         print("Not valid: ", line_num)
+                                    prepare(geo_s)
                                     poly_buffer.append(geo_s)
                                     if self.is_lpc is True:
                                         geo_dict['clear'] = geo_s
@@ -974,7 +983,9 @@ class Gerber(Geometry):
                                         if self.app.options['gerber_simplification']:
                                             pol = pol.simplify(s_tol)
 
+                                        prepare(pol)
                                         pol_f = pol.exterior
+                                        prepare(pol_f)
                                         if not pol_f.is_empty:
                                             follow_buffer.append(pol_f)
                                             geo_dict['follow'] = pol
@@ -995,9 +1006,11 @@ class Gerber(Geometry):
 
                                     region_f = region_s.exterior
                                     if not region_f.is_empty:
+                                        prepare(region_f)
                                         follow_buffer.append(region_f)
                                         geo_dict['follow'] = region_f
 
+                                    prepare(region_s)
                                     poly_buffer.append(region_s)
 
                                     if self.is_lpc is True:
@@ -1014,9 +1027,11 @@ class Gerber(Geometry):
 
                             region_f = region_s.exterior
                             if not region_f.is_empty:
+                                prepare(region_f)
                                 follow_buffer.append(region_f)
                                 geo_dict['follow'] = region_f
 
+                            prepare(region_s)
                             poly_buffer.append(region_s)
 
                             if self.is_lpc is True:
@@ -1111,6 +1126,7 @@ class Gerber(Geometry):
                                         if self.app.options['gerber_simplification']:
                                             flash = flash.simplify(s_tol)
 
+                                        prepare(flash)
                                         poly_buffer.append(flash)
 
                                         if self.is_lpc is True:
@@ -1140,6 +1156,7 @@ class Gerber(Geometry):
 
                                         geo_dict = {}
                                         geo_f = Point([current_x, current_y])
+                                        prepare(geo_f)
                                         follow_buffer.append(geo_f)
                                         geo_dict['follow'] = geo_f
 
@@ -1147,6 +1164,7 @@ class Gerber(Geometry):
                                         if self.app.options['gerber_simplification']:
                                             geo_s = geo_s.simplify(s_tol)
 
+                                        prepare(geo_s)
                                         poly_buffer.append(geo_s)
 
                                         if self.is_lpc is True:
@@ -1244,6 +1262,7 @@ class Gerber(Geometry):
                                         if self.app.options['gerber_simplification']:
                                             geo_s = geo_s.simplify(s_tol)
 
+                                        prepare(geo_s)
                                         poly_buffer.append(geo_s)
 
                                         if self.is_lpc is True:
@@ -1255,6 +1274,7 @@ class Gerber(Geometry):
                                 if self.app.options['gerber_simplification']:
                                     geo_s = geo_s.simplify(s_tol)
 
+                                prepare(geo_s)
                                 poly_buffer.append(geo_s)
 
                                 if self.is_lpc is True:
@@ -1312,6 +1332,7 @@ class Gerber(Geometry):
                                         if self.app.options['gerber_simplification']:
                                             geo_s = geo_s.simplify(s_tol)
 
+                                        prepare(geo_s)
                                         poly_buffer.append(geo_s)
 
                                         if self.is_lpc is True:
@@ -1322,6 +1343,7 @@ class Gerber(Geometry):
                                     if self.app.options['gerber_simplification']:
                                         geo_s = geo_s.simplify(s_tol)
 
+                                    prepare(geo_s)
                                     poly_buffer.append(geo_s)
 
                                     if self.is_lpc is True:
@@ -1343,6 +1365,7 @@ class Gerber(Geometry):
                         # this treats the case when we are storing geometry as paths
                         geo_dict = {}
                         geo_flash = Point([linear_x, linear_y])
+                        prepare(geo_flash)
                         follow_buffer.append(geo_flash)
                         geo_dict['follow'] = geo_flash
 
@@ -1357,6 +1380,7 @@ class Gerber(Geometry):
                             if self.app.options['gerber_simplification']:
                                 flash = flash.simplify(s_tol)
 
+                            prepare(flash)
                             poly_buffer.append(flash)
 
                             if self.is_lpc is True:
@@ -1462,6 +1486,7 @@ class Gerber(Geometry):
                             # this treats the case when we are storing geometry as paths
                             geo_f = LineString(path)
                             if not geo_f.is_empty:
+                                prepare(geo_f)
                                 follow_buffer.append(geo_f)
                                 geo_dict['follow'] = geo_f
 
@@ -1471,6 +1496,7 @@ class Gerber(Geometry):
                                 if self.app.options['gerber_simplification']:
                                     buffered = buffered.simplify(s_tol)
 
+                                prepare(buffered)
                                 poly_buffer.append(buffered)
 
                                 if self.is_lpc is True:
@@ -1614,6 +1640,7 @@ class Gerber(Geometry):
                     # this treats the case when we are storing geometry as paths
                     geo_f = LineString(path)
                     if not geo_f.is_empty:
+                        prepare(geo_f)
                         follow_buffer.append(geo_f)
                         geo_dict['follow'] = geo_f
 
@@ -1624,6 +1651,7 @@ class Gerber(Geometry):
                         if self.app.options['gerber_simplification']:
                             geo_s = geo_s.simplify(s_tol)
 
+                        prepare(geo_s)
                         poly_buffer.append(geo_s)
 
                         if self.is_lpc is True:
@@ -1683,6 +1711,10 @@ class Gerber(Geometry):
                 new_poly = new_poly.buffer(0, int(self.steps_per_circle))
                 self.app.log.warning("Union done.")
 
+            # #########################################################################################################
+            prepare(new_poly)
+            # #########################################################################################################
+
             if current_polarity == 'D':
                 self.app.inform.emit('%s' % _("Gerber processing. Applying Gerber polarity."))
                 if new_poly.is_valid:
@@ -1726,6 +1758,13 @@ class Gerber(Geometry):
 
             # flatten the solid geometry
             self.solid_geometry = flatten_shapely_geometry(self.solid_geometry)
+
+            # import time
+            # start = time.time()
+            # #########################################################################################################
+            prepare(self.solid_geometry)
+            # #########################################################################################################
+            # print(f"Time elapsed: {time.time() - start}; Is prepared? {is_prepared(self.solid_geometry)}")
 
             if self.app.options['gerber_clean_apertures']:
                 # clean the Gerber file of apertures with no geometry
@@ -2013,6 +2052,7 @@ class Gerber(Geometry):
             }
 
         for pol in self.solid_geometry:
+            prepare(pol)
             new_el = {'solid': pol, 'follow': LineString(pol.exterior.coords)}
             self.tools[0]['geometry'].append(new_el)
 
@@ -2070,6 +2110,7 @@ class Gerber(Geometry):
         flat_geo = list(self.flatten_list(self.solid_geometry))
         if flat_geo:
             self.solid_geometry = unary_union(flat_geo)
+            prepare(self.solid_geometry)
             self.follow_geometry = self.solid_geometry
         else:
             return "fail"

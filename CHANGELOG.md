@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM Evo beta
 - changed the shapely imports a bit according to the specifications of Shapely 2.0
 - changed the requirements.txt file to reflect the need for at least Shapely in version 2.0
 - some code leftovers are commented
+- when parsing a new Gerber object, I am "preparing" each geometry added therefore making the Gerber object geometry possible faster to process
 
 08.04.2023
 
