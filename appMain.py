@@ -173,9 +173,8 @@ class App(QtCore.QObject):
     # ###############################################################################################################
     version = "Unstable"
     # version = 1.0
-    version_date = "2022/4/31"
+    version_date = "2023/6/31"
     beta = True
-
     engine = '3D'
 
     # current date now

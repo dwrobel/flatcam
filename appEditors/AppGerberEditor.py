@@ -5361,10 +5361,10 @@ class AppGerberEditor(QtCore.QObject):
         new_grb_name = self.edited_obj_name
 
         # if the 'delayed plot' malfunctioned stop the QTimer
-        try:
-            self.plot_thread.stop()
-        except Exception as e:
-            self.app.log.warning("AppGerberEditor.update_fcgerber() Timer malfunctioned --> %s" % str(e))
+        # try:
+        #     self.plot_thread.stop()
+        # except Exception as e:
+        #     self.app.log.warning("AppGerberEditor.update_fcgerber() Timer malfunctioned --> %s" % str(e))
 
         if "_edit" in self.edited_obj_name:
             try:

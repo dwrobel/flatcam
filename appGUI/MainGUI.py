@@ -648,7 +648,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.menuhelp = self.menu.addMenu(_('Help'))
         self.menuhelp_manual = self.menuhelp.addAction(
             QtGui.QIcon(self.app.resource_location + '/globe16.png'),
-            '%s\t%s' % (_('Online Help'), _('F1')))
+            '%s\t%s' % (_('Obsolete Online Help'), _('F1')))
 
         self.menuhelp_bookmarks = self.menuhelp.addMenu(
             QtGui.QIcon(self.app.resource_location + '/bookmarks16.png'), _('Bookmarks'))
