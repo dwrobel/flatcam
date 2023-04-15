@@ -14,7 +14,7 @@ from PyQt6.QtCore import pyqtSignal
 # Used for solid polygons in Matplotlib
 from descartes.patch import PolygonPatch
 
-from shapely.geometry import Polygon, LineString, LinearRing
+from shapely import Polygon, LineString, LinearRing
 
 from copy import deepcopy
 

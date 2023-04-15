@@ -32,7 +32,7 @@ from numpy.linalg import norm as numpy_norm
 import math
 from copy import deepcopy
 
-from shapely.geometry import Point, Polygon, MultiPolygon, LineString, LinearRing, box
+from shapely import Point, Polygon, MultiPolygon, LineString, LinearRing, box
 from shapely.ops import unary_union
 from shapely.affinity import translate, scale, skew, rotate
 

@@ -19,7 +19,7 @@ import sys
 import math
 import traceback
 
-from shapely.geometry import LineString, box
+from shapely import LineString, box
 
 import gettext
 import appTranslation as fcTranslate

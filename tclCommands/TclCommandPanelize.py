@@ -1,7 +1,7 @@
 from tclCommands.TclCommand import TclCommand
 
 import shapely.affinity as affinity
-from shapely.geometry import MultiPolygon, MultiLineString
+from shapely import MultiPolygon, MultiLineString
 
 import logging
 from copy import deepcopy

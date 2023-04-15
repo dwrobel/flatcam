@@ -9,7 +9,7 @@ from PyQt6 import QtCore
 
 from appCommon.Common import GracefulException as grace
 
-from shapely.geometry import Polygon, LineString, MultiPolygon
+from shapely import Polygon, LineString, MultiPolygon
 
 from copy import copy, deepcopy
 import numpy as np

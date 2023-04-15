@@ -7,7 +7,7 @@
 # ########################################################## ##
 
 from PyQt6 import QtGui, QtWidgets, QtCore
-from shapely.geometry import Polygon, LineString
+from shapely import Polygon, LineString
 
 import gettext
 import appTranslation as fcTranslate

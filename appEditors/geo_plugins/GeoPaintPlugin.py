@@ -5,7 +5,7 @@ from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCFrame, FCButton, G
     FCCheckBox
 from camlib import Geometry
 
-from shapely.geometry import Polygon
+from shapely import Polygon
 from shapely.ops import unary_union
 
 import gettext

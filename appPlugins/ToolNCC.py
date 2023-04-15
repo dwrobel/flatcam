@@ -18,7 +18,8 @@ import simplejson as json
 import sys
 import traceback
 
-from shapely.geometry import LineString, Polygon, MultiPolygon, MultiLineString, base, LinearRing
+from shapely import LineString, Polygon, MultiPolygon, MultiLineString, LinearRing
+from shapely.geometry import base
 from shapely.ops import unary_union, nearest_points
 
 import gettext

@@ -14,7 +14,7 @@ from copy import deepcopy
 import numpy as np
 import os
 
-from shapely.geometry import LineString, MultiLineString, Polygon, MultiPolygon, shape
+from shapely import LineString, MultiLineString, Polygon, MultiPolygon, shape
 from shapely.affinity import scale, translate
 import gettext
 import appTranslation as fcTranslate

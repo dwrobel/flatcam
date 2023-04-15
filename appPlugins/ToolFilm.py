@@ -14,7 +14,7 @@ import logging
 from copy import deepcopy
 import math
 
-from shapely.geometry import LineString, MultiPolygon, Point, Polygon, LinearRing
+from shapely import LineString, MultiPolygon, Point, Polygon, LinearRing
 from shapely.affinity import scale, skew
 from shapely.ops import unary_union
 

@@ -14,7 +14,7 @@ from camlib import grace
 import logging
 import numpy as np
 
-from shapely.geometry import MultiPolygon
+from shapely import MultiPolygon
 from shapely.ops import nearest_points
 
 import gettext

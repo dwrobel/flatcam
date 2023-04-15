@@ -3,7 +3,7 @@ from PyQt6 import QtWidgets, QtGui
 from appTool import AppToolEditor
 from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCDoubleSpinner
 
-from shapely.geometry import Point
+from shapely import Point
 from shapely.affinity import scale, rotate
 
 import gettext

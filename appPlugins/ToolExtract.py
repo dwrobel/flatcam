@@ -13,7 +13,7 @@ from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, G
 import logging
 from copy import deepcopy
 
-from shapely.geometry import Polygon, MultiPolygon, Point, box
+from shapely import Polygon, MultiPolygon, Point, box
 
 import gettext
 import appTranslation as fcTranslate

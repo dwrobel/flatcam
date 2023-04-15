@@ -9,7 +9,7 @@ from PyQt6 import QtWidgets, QtGui, QtCore
 from appTool import AppTool
 from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, RadioSet
 
-from shapely.geometry import Point
+from shapely import Point
 from shapely.affinity import translate
 
 import logging

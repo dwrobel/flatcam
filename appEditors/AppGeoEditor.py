@@ -33,7 +33,7 @@ from appEditors.geo_plugins.GeoCopyPlugin import CopyEditorTool
 
 from vispy.geometry import Rect
 
-from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point, box, base
+from shapely import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point, box, base
 from shapely.ops import unary_union, linemerge
 from shapely.affinity import translate, scale, skew, rotate
 from shapely.geometry.polygon import orient

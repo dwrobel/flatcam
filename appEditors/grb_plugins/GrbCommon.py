@@ -4,7 +4,7 @@
 # ###########################################################################################
 
 from PyQt6.QtCore import Qt
-from shapely.geometry import MultiLineString, Polygon
+from shapely import MultiLineString, Polygon
 
 import numpy as np
 

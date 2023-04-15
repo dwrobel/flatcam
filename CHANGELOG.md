@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+15.04.2023
+
+- changed the shapely imports a bit according to the specifications of Shapely 2.0
+- changed the requirements.txt file to reflect the need for at least Shapely in version 2.0
+
 08.04.2023
 
 - fixed some really long strings in the Geometry Editor toolbar actions

@@ -14,7 +14,7 @@ from appObjects import GerberObject
 import logging
 from copy import deepcopy
 
-from shapely.geometry import Polygon, MultiPolygon
+from shapely import Polygon, MultiPolygon
 from shapely.ops import nearest_points
 
 import gettext

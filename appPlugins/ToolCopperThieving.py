@@ -20,7 +20,7 @@ import numpy as np
 from typing import Iterable
 
 import shapely.geometry.base as base
-from shapely.geometry import Polygon, MultiPolygon, box, Point, LineString
+from shapely import Polygon, MultiPolygon, box, Point, LineString
 from shapely.ops import unary_union
 from shapely.affinity import translate
 

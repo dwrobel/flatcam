@@ -18,7 +18,7 @@ import simplejson as json
 import sys
 from numpy import Inf
 
-from shapely.geometry import Polygon, MultiPolygon, box, Point, LineString, MultiLineString, LinearRing
+from shapely import Polygon, MultiPolygon, box, Point, LineString, MultiLineString, LinearRing
 from shapely.ops import unary_union, linemerge
 from shapely.affinity import rotate
 

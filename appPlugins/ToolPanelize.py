@@ -15,7 +15,7 @@ import logging
 from copy import deepcopy
 import numpy as np
 
-from shapely.geometry import LineString, MultiLineString, Polygon, MultiPolygon
+from shapely import LineString, MultiLineString, Polygon, MultiPolygon
 from shapely.ops import unary_union, linemerge, snap
 from shapely.affinity import translate
 

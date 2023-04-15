@@ -15,7 +15,7 @@ import os
 import sys
 import glob
 
-from shapely.geometry import Polygon, MultiPolygon
+from shapely import Polygon, MultiPolygon
 from shapely.affinity import translate, scale
 
 import freetype as ft

@@ -11,8 +11,8 @@ from copy import deepcopy
 
 from shapely.ops import unary_union, linemerge
 import shapely.affinity as affinity
-from shapely.geometry import box as shply_box
-from shapely.geometry import LinearRing, MultiLineString, LineString, Polygon, MultiPolygon, Point
+from shapely import box as shply_box
+from shapely import LinearRing, MultiLineString, LineString, Polygon, MultiPolygon, Point
 
 from lxml import etree as ET
 import ezdxf

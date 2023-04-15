@@ -20,7 +20,7 @@ import simplejson as json
 import sys
 import math
 
-from shapely.geometry import LineString, MultiLineString, Polygon, MultiPolygon, Point, LinearRing
+from shapely import LineString, MultiLineString, Polygon, MultiPolygon, Point, LinearRing
 from shapely.ops import unary_union, nearest_points
 
 import gettext

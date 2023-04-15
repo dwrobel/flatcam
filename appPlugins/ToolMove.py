@@ -12,7 +12,7 @@ from appGUI.VisPyVisuals import ShapeCollection
 import logging
 from copy import copy
 
-from shapely.geometry import Polygon
+from shapely import Polygon
 
 import gettext
 import appTranslation as fcTranslate

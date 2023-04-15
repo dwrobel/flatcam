@@ -16,7 +16,7 @@ import logging
 from copy import deepcopy
 import sys
 
-from shapely.geometry import Point, MultiPoint, MultiPolygon, box
+from shapely import Point, MultiPoint, MultiPolygon, box
 from shapely.ops import unary_union
 from shapely.affinity import translate
 from datetime import datetime as dt

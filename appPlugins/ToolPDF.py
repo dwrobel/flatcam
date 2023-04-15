@@ -15,7 +15,7 @@ import time
 import re
 import traceback
 
-from shapely.geometry import Point, MultiPolygon
+from shapely import Point, MultiPolygon
 from shapely.ops import unary_union
 
 import gettext

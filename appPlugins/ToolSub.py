@@ -14,7 +14,7 @@ from copy import deepcopy
 import time
 import traceback
 
-from shapely.geometry import LineString, Polygon, MultiPolygon, MultiLineString
+from shapely import LineString, Polygon, MultiPolygon, MultiLineString
 from shapely.ops import unary_union
 
 import gettext

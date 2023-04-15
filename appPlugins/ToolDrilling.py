@@ -22,7 +22,7 @@ import sys
 import platform
 import re
 
-from shapely.geometry import LineString
+from shapely import LineString
 
 import gettext
 import appTranslation as fcTranslate

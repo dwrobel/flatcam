@@ -15,7 +15,7 @@ from appObjects.AppObjectTemplate import FlatCAMObj, ObjectDeleted
 from appGUI.GUIElements import FCCheckBox
 from appGUI.ObjectUI import GeometryObjectUI
 
-from shapely.geometry import MultiLineString, LinearRing, Polygon, MultiPolygon, LineString
+from shapely import MultiLineString, LinearRing, Polygon, MultiPolygon, LineString
 from shapely.affinity import scale, translate
 from shapely.ops import unary_union
 

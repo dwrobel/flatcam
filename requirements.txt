@@ -18,7 +18,7 @@ qrcode>=6.1
 
 rtree
 # foronoi>=1.0.3
-shapely>=1.8.0
+shapely>=2.0
 
 # ###############################
 # OR-TOOLS package is now optional

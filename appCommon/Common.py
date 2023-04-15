@@ -12,7 +12,7 @@
 # ##########################################################
 from PyQt6 import QtCore
 
-from shapely.geometry import Polygon, Point, LineString
+from shapely import Polygon, Point, LineString
 from shapely.ops import unary_union
 
 from appGUI.VisPyVisuals import ShapeCollection

@@ -35,7 +35,7 @@ import platform
 import re
 import subprocess
 
-from shapely.geometry import Point, MultiPolygon, MultiLineString, Polygon, LinearRing, LineString
+from shapely import Point, MultiPolygon, MultiLineString, Polygon, LinearRing, LineString
 from shapely.ops import unary_union
 from io import StringIO
 

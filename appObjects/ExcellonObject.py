@@ -21,7 +21,7 @@ import itertools
 import numpy as np
 from copy import deepcopy
 
-from shapely.geometry import LineString
+from shapely import LineString
 
 import gettext
 import appTranslation as fcTranslate

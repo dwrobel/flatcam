@@ -13,7 +13,7 @@ import logging
 from copy import deepcopy
 import numpy as np
 
-from shapely.geometry import Polygon
+from shapely import Polygon
 from shapely.ops import unary_union
 
 import gettext

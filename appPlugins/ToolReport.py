@@ -12,7 +12,7 @@ import logging
 from copy import deepcopy
 import math
 
-from shapely.geometry import MultiPolygon, Polygon, MultiLineString
+from shapely import MultiPolygon, Polygon, MultiLineString
 from shapely.ops import unary_union
 
 import gettext

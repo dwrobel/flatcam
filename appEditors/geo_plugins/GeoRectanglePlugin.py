@@ -4,7 +4,8 @@ from appTool import AppToolEditor
 from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, GLay, FCFrame, FCDoubleSpinner, RadioSetCross, \
     RadioSet, NumericalEvalEntry
 
-from shapely.geometry import box, base
+from shapely import box
+from shapely.geometry import base
 
 import gettext
 import appTranslation as fcTranslate

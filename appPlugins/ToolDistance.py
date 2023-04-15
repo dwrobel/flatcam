@@ -17,7 +17,7 @@ import logging
 from copy import copy
 import numpy as np
 
-from shapely.geometry import Polygon, Point, LineString, MultiLineString
+from shapely import Polygon, Point, LineString, MultiLineString
 from shapely.strtree import STRtree
 
 import gettext

@@ -8,7 +8,7 @@ import logging
 from copy import deepcopy
 from numpy import Inf
 
-from shapely.geometry import Point
+from shapely import Point
 from shapely.affinity import scale
 
 import gettext

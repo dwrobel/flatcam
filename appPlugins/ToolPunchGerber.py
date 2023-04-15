@@ -15,7 +15,7 @@ from matplotlib.backend_bases import KeyEvent as mpl_key_event
 import logging
 from copy import deepcopy
 
-from shapely.geometry import Point, MultiPolygon
+from shapely import Point, MultiPolygon
 from shapely.ops import unary_union
 
 import gettext

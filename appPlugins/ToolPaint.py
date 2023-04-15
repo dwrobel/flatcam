@@ -22,7 +22,8 @@ import sys
 import traceback
 from numpy import Inf
 
-from shapely.geometry import LineString, Polygon, MultiLineString, MultiPolygon, Point, LinearRing, base
+from shapely import LineString, Polygon, MultiLineString, MultiPolygon, Point, LinearRing
+from shapely.geometry import base
 from shapely.ops import unary_union, linemerge
 
 import gettext

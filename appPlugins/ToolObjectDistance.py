@@ -13,7 +13,7 @@ import logging
 from copy import deepcopy
 import math
 
-from shapely.geometry import Point, MultiPolygon
+from shapely import Point, MultiPolygon
 from shapely.ops import nearest_points, unary_union
 
 import gettext

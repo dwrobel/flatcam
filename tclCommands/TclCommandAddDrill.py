@@ -1,6 +1,6 @@
 from tclCommands.TclCommand import *
 from copy import deepcopy
-from shapely.geometry import Point
+from shapely import Point
 
 
 class TclCommandAddDrill(TclCommandSignaled):

@@ -18,7 +18,7 @@ from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
 from appGUI.VisPyVisuals import ShapeCollection
 
 from shapely.ops import unary_union
-from shapely.geometry import Polygon, MultiPolygon, Point, LineString
+from shapely import Polygon, MultiPolygon, Point, LineString
 
 from copy import deepcopy, copy
 import sys

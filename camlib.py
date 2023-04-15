@@ -31,9 +31,9 @@ from io import StringIO
 import ezdxf
 
 # See: http://toblerity.org/shapely/manual.html
-from shapely.geometry import Polygon, Point, LinearRing, MultiPoint, MultiLineString, MultiPolygon, LineString
+from shapely import Polygon, Point, LinearRing, MultiPoint, MultiLineString, MultiPolygon, LineString
 
-from shapely.geometry import box as shply_box
+from shapely import box as shply_box
 from shapely.ops import unary_union, substring, linemerge
 import shapely.affinity as affinity
 from shapely.affinity import scale, translate

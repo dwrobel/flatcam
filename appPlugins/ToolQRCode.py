@@ -18,7 +18,7 @@ from io import StringIO, BytesIO
 from typing import Iterable
 import math
 
-from shapely.geometry import MultiPolygon, box, Polygon
+from shapely import MultiPolygon, box, Polygon
 from shapely.ops import unary_union
 from shapely.affinity import translate, scale
 import gettext

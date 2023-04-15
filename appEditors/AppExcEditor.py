@@ -19,7 +19,7 @@ from appEditors.exc_plugins.ExcCopyPlugin import ExcCopyEditorTool
 from appGUI.GUIElements import FCEntry, FCTable, FCDoubleSpinner, FCButton, FCLabel, GLay
 from appEditors.AppGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, AppGeoEditor
 
-from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point
+from shapely import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point
 from shapely.geometry.base import BaseGeometry
 from shapely.affinity import scale, rotate, translate
 # from appCommon.Common import LoudDict

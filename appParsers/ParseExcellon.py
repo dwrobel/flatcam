@@ -9,7 +9,7 @@
 from camlib import Geometry, grace
 
 import shapely.affinity as affinity
-from shapely.geometry import Point, LineString, LinearRing, MultiLineString, MultiPolygon
+from shapely import Point, LineString, LinearRing, MultiLineString, MultiPolygon
 import numpy as np
 
 import re

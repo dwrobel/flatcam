@@ -18,7 +18,7 @@ from appObjects.AppObjectTemplate import FlatCAMObj, ObjectDeleted, ValidationEr
 
 from camlib import flatten_shapely_geometry
 
-from shapely.geometry import MultiLineString, LinearRing, MultiPolygon, Polygon, LineString, Point
+from shapely import MultiLineString, LinearRing, MultiPolygon, Polygon, LineString, Point
 from shapely.ops import unary_union
 
 import numpy as np
