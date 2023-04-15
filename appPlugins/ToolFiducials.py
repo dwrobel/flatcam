@@ -15,7 +15,7 @@ import logging
 from copy import deepcopy
 import math
 
-from shapely import LineString, Polygon, MultiPolygon, box, Point, base
+from shapely import LineString, Polygon, MultiPolygon, box, Point
 from shapely.geometry import base
 from shapely.ops import unary_union
 
