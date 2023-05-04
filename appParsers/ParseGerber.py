@@ -681,7 +681,7 @@ class Gerber(Geometry):
                 # ################################################################
                 if current_macro is None:  # No macro started yet
                     match = self.am1_re.search(gline)
-                    # Start macro if match, else not an AM, carry on.
+                    # Start macro if there is a match, else not an AM, carry on.
                     if match:
                         self.app.log.debug("Starting macro. Line %d: %s" % (line_num, gline))
                         current_macro = match.group(1)
@@ -1806,7 +1806,7 @@ class Gerber(Geometry):
             maxx = loc[0] + width / 2
             miny = loc[1] - height / 2
             maxy = loc[1] + height / 2
-            return shply_box(minx, miny, maxx, maxy)
+            return shply_box(minx, miny, maxx, maxy).buffer(0.0000001)
 
         if aperture['type'] == 'O':  # Obround
             loc = location.coords[0]
