@@ -51,6 +51,8 @@ import qdarktheme
 import qdarktheme.themes.dark.stylesheet as qdarksheet
 import qdarktheme.themes.light.stylesheet as qlightsheet
 
+from typing import Union
+
 # ####################################################################################################################
 # ###################################      Imports part of FlatCAM       #############################################
 # ####################################################################################################################
@@ -6826,7 +6828,7 @@ class App(QtCore.QObject):
         return [self._mouse_click_pos[0], self._mouse_click_pos[1]]
 
     @mouse_click_pos.setter
-    def mouse_click_pos(self, m_pos: list[float] | tuple[float]):
+    def mouse_click_pos(self, m_pos: Union[list[float], tuple[float]]):
         self._mouse_click_pos = m_pos
 
     @property
@@ -6834,7 +6836,7 @@ class App(QtCore.QObject):
         return [self._mouse_pos[0], self._mouse_pos[1]]
 
     @mouse_pos.setter
-    def mouse_pos(self, m_pos: list[float] | tuple[float]):
+    def mouse_pos(self, m_pos: Union[list[float], tuple[float]]):
         self._mouse_pos = m_pos
 
     def selection_area_handler(self, start_pos, end_pos, sel_type):
