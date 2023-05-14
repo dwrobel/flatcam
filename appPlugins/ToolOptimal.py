@@ -9,7 +9,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 from appTool import AppTool
 from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
     FCEntry, FCTextArea, FCSpinner, OptionalHideInputSection
-from camlib import grace
+from camlib import grace, flatten_shapely_geometry
 
 import logging
 import numpy as np
@@ -253,15 +253,16 @@ class ToolOptimal(AppTool):
                     _("Optimal Tool. Creating a buffer for the object geometry."))
                 total_geo = MultiPolygon(total_geo)
                 total_geo = total_geo.buffer(0)
+                total_geo = flatten_shapely_geometry(total_geo)
 
-                if isinstance(total_geo, MultiPolygon):
-                    geo_len = len(total_geo.geoms)
-                    geo_len = (geo_len * (geo_len - 1)) / 2
-                else:
+                geo_len = len(total_geo)
+                if geo_len == 1:
                     app_obj.inform.emit('[ERROR_NOTCL] %s' %
                                         _("The Gerber object has one Polygon as geometry.\n"
                                           "There are no distances between geometry elements to be found."))
                     return 'fail'
+
+                geo_len = (geo_len * (geo_len - 1)) / 2
 
                 app_obj.inform.emit(
                     '%s: %s' % (_("Optimal Tool. Finding the distances between each two elements. Iterations"),
@@ -269,8 +270,8 @@ class ToolOptimal(AppTool):
 
                 plugin_instance.min_dict = {}
                 idx = 1
-                for geo in total_geo.geoms:
-                    for s_geo in total_geo.geoms[idx:]:
+                for geo in total_geo:
+                    for s_geo in total_geo[idx:]:
                         if app_obj.abort_flag:
                             # graceful abort requested by the user
                             raise grace

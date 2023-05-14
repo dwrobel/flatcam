@@ -972,6 +972,7 @@ class NonCopperClear(AppTool, Gerber):
 
         total_geo = MultiPolygon(total_geo)
         total_geo = total_geo.buffer(0)
+        total_geo = flatten_shapely_geometry(total_geo)
 
         if isinstance(total_geo, Polygon):
             msg = ('[ERROR_NOTCL] %s' % _("The Gerber object has one Polygon as geometry.\n"
@@ -979,8 +980,8 @@ class NonCopperClear(AppTool, Gerber):
             return msg, np.Inf
         min_dict = {}
         idx = 1
-        for geo in total_geo.geoms:
-            for s_geo in total_geo.geoms[idx:]:
+        for geo in total_geo:
+            for s_geo in total_geo[idx:]:
                 # minimize the number of distances by not taking into considerations
                 # those that are too small
                 dist = geo.distance(s_geo)
@@ -1112,20 +1113,21 @@ class NonCopperClear(AppTool, Gerber):
 
                     total_geo = MultiPolygon(total_geo)
                     total_geo = total_geo.buffer(0)
+                    total_geo = flatten_shapely_geometry(total_geo)
 
-                    if isinstance(total_geo, MultiPolygon):
-                        geo_len = len(total_geo.geoms)
-                        geo_len = (geo_len * (geo_len - 1)) / 2
-                    elif isinstance(total_geo, Polygon):
+                    geo_len = len(total_geo)
+                    if geo_len == 1:
                         app_obj.inform.emit('[ERROR_NOTCL] %s' %
                                             _("The Gerber object has one Polygon as geometry.\n"
                                               "There are no distances between geometry elements to be found."))
                         return 'fail'
 
+                    geo_len = (geo_len * (geo_len - 1)) / 2
+
                     min_dict = {}
                     idx = 1
-                    for geo in total_geo.geoms:
-                        for s_geo in total_geo.geoms[idx:]:
+                    for geo in total_geo:
+                        for s_geo in total_geo[idx:]:
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
                                 raise grace
@@ -1537,6 +1539,7 @@ class NonCopperClear(AppTool, Gerber):
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(self.obj_name)))
             return
 
+        # Check tool validity
         if self.ui.valid_cb.get_value() is True:
             # this is done in another Process
             self.find_safe_tooldia_multiprocessing()

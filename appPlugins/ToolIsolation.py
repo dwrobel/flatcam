@@ -29,7 +29,7 @@ import builtins
 
 from appParsers.ParseGerber import Gerber
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
-from camlib import grace
+from camlib import grace, flatten_shapely_geometry
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -1142,7 +1142,7 @@ class ToolIsolation(AppTool, Gerber):
 
         min_dict = {}
         idx = 1
-        w_geo = total_geo.geoms if isinstance(total_geo, (MultiLineString, MultiPolygon)) else total_geo
+        w_geo = flatten_shapely_geometry(total_geo)
         for geo in w_geo:
             for s_geo in w_geo[idx:]:
                 # minimize the number of distances by not taking into considerations
@@ -1271,15 +1271,16 @@ class ToolIsolation(AppTool, Gerber):
 
                     total_geo = MultiPolygon(total_geo)
                     total_geo = total_geo.buffer(0)
+                    total_geo = flatten_shapely_geometry(total_geo)
 
-                    if isinstance(total_geo, MultiPolygon):
-                        geo_len = len(total_geo.geoms)
-                        geo_len = (geo_len * (geo_len - 1)) / 2
-                    elif isinstance(total_geo, Polygon):
+                    geo_len = len(total_geo)
+                    if geo_len == 1:
                         msg = _("The Gerber object has one Polygon as geometry.\n"
                                 "There are no distances between geometry elements to be found.")
                         app_obj.inform.emit('[ERROR_NOTCL] %s' % msg)
                         return 'fail'
+
+                    geo_len = (geo_len * (geo_len - 1)) / 2
 
                     min_dict = {}
                     idx = 1
