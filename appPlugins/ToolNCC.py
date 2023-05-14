@@ -1563,7 +1563,7 @@ class NonCopperClear(AppTool, Gerber):
                         self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                         continue
 
-                # find out which tools is for isolation and which are for copper clearing
+                # find out which tools are for isolation and which are for copper clearing
                 for uid_k, uid_v in self.ncc_tools.items():
                     if round(uid_v['tooldia'], self.decimals) == round(self.tooldia, self.decimals):
                         if uid_v['data']['tools_ncc_operation'] == "iso":
@@ -1587,8 +1587,8 @@ class NonCopperClear(AppTool, Gerber):
                 return "Could not retrieve object: %s with error: %s" % (self.bound_obj_name, str(e))
 
             self.clear_copper(ncc_obj=self.ncc_obj,
-                              ncctooldia=self.ncc_dia_list,
-                              isotooldia=self.iso_dia_list,
+                              ncctd_list=self.ncc_dia_list,
+                              isotd_list=self.iso_dia_list,
                               outname=self.o_name,
                               tools_storage=self.ncc_tools)
         elif self.select_method == 1:   # Area Selection
@@ -1611,7 +1611,6 @@ class NonCopperClear(AppTool, Gerber):
             self.area_sel_disconnect_flag = True
             # disable the "notebook UI" until finished
             self.app.ui.notebook.setDisabled(True)
-
         elif self.select_method == 2:   # Reference Object
             self.bound_obj_name = self.ui.reference_combo.currentText()
             # Get source object.
@@ -1623,8 +1622,8 @@ class NonCopperClear(AppTool, Gerber):
 
             self.clear_copper(ncc_obj=self.ncc_obj,
                               sel_obj=self.bound_obj,
-                              ncctooldia=self.ncc_dia_list,
-                              isotooldia=self.iso_dia_list,
+                              ncctd_list=self.ncc_dia_list,
+                              isotd_list=self.iso_dia_list,
                               outname=self.o_name)
 
     # To be called after clicking on the plot.
@@ -1741,8 +1740,8 @@ class NonCopperClear(AppTool, Gerber):
 
             self.sel_rect = unary_union(self.sel_rect)
 
-            self.clear_copper(ncc_obj=self.ncc_obj, sel_obj=self.bound_obj, ncctooldia=self.ncc_dia_list,
-                              isotooldia=self.iso_dia_list, outname=self.o_name)
+            self.clear_copper(ncc_obj=self.ncc_obj, sel_obj=self.bound_obj, ncctd_list=self.ncc_dia_list,
+                              isotd_list=self.iso_dia_list, outname=self.o_name)
 
             self.app.ui.notebook.setDisabled(False)
 
@@ -2254,17 +2253,17 @@ class NonCopperClear(AppTool, Gerber):
             self.app.inform_shell.emit('%s %s' % (_('Polygon could not be cleared. Location:'), str(coords)))
             return None
 
-    def clear_copper(self, ncc_obj, ncctooldia, isotooldia, sel_obj=None, outname=None, order=None,
+    def clear_copper(self, ncc_obj, ncctd_list, isotd_list, sel_obj=None, outname=None, order=None,
                      tools_storage=None, run_threaded=True):
         """
         Clear the excess copper from the entire object.
 
         :param ncc_obj:         ncc cleared object
         :type ncc_obj:          appObjects.GerberObject.GerberObject
-        :param ncctooldia:      a list of diameters of the tools to be used to ncc clear
-        :type ncctooldia:       list
-        :param isotooldia:      a list of diameters of the tools to be used for isolation
-        :type isotooldia:       list
+        :param ncctd_list:      a list of diameters of the tools to be used to ncc clear
+        :type ncctd_list:       list
+        :param isotd_list:      a list of diameters of the tools to be used for isolation
+        :type isotd_list:       list
         :param sel_obj:
         :type sel_obj:
         :param outname:         name of the resulting object
@@ -2301,7 +2300,7 @@ class NonCopperClear(AppTool, Gerber):
         prog_plot = True if self.app.options["tools_ncc_plotting"] == 'progressive' else False
 
         tools_storage = tools_storage if tools_storage is not None else self.ncc_tools
-        sorted_clear_tools = ncctooldia
+        sorted_clear_tools = ncctd_list
 
         if not sorted_clear_tools:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("There is no copper clearing tool in the selection "
@@ -2389,8 +2388,8 @@ class NonCopperClear(AppTool, Gerber):
                 ncc_offset = float(self.ncc_tools[tool_uid]["data"]["tools_ncc_offset_value"])
 
                 # Area to clear
-                result = self.get_tool_empty_area(name=name, ncc_obj=ncc_obj, geo_obj=geo_obj, isotooldia=isotooldia,
-                                                  ncc_margin=ncc_margin, has_offset=has_offset,  ncc_offset=ncc_offset,
+                result = self.get_tool_empty_area(name=name, ncc_obj=ncc_obj, geo_obj=geo_obj, isotooldia=isotd_list,
+                                                  ncc_margin=ncc_margin, has_offset=has_offset, ncc_offset=ncc_offset,
                                                   tools_storage=tools_storage, bounding_box=bbox)
 
                 area, warning_flag = result
@@ -2603,7 +2602,7 @@ class NonCopperClear(AppTool, Gerber):
 
             # Area to clear
             area, warning_flag = self.get_tool_empty_area(name=name, ncc_obj=ncc_obj, geo_obj=geo_obj,
-                                                          isotooldia=isotooldia,
+                                                          isotooldia=isotd_list,
                                                           has_offset=has_offset, ncc_offset=ncc_offset,
                                                           ncc_margin=ncc_margin, tools_storage=tools_storage,
                                                           bounding_box=bbox)

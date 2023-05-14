@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM Evo beta
 14.05.2023
 
 - Isolation Plugin, NCC Plugin and Find Optimal Plugin: fixed not finding the optimal tool diameter (the one that will isolate completely a Gerber object)
+- NCC Plugin - minor code refactoring
 
 05.05.2023
 

@@ -907,7 +907,7 @@ class GerberObject(FlatCAMObj, Gerber):
 
         Gerber.convert_units(self, units)
 
-        # self.obj_options['isotooldia'] = float(self.obj_options['isotooldia']) * factor
+        # self.obj_options['isotd_list'] = float(self.obj_options['isotd_list']) * factor
         # self.obj_options['bboxmargin'] = float(self.obj_options['bboxmargin']) * factor
 
     def plot(self, kind=None, **kwargs):
