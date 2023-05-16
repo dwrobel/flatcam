@@ -2408,87 +2408,74 @@ class NonCopperClear(AppTool, Gerber):
                 old_disp_number = 0
                 self.app.log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
 
+                tool_empty_area = []
                 if area.geoms:
-                    if len(area.geoms) > 0:
-                        pol_nr = 0
-                        for p in area.geoms:
+                    tool_empty_area = flatten_shapely_geometry(area.geoms)
+
+                if tool_empty_area:
+                    pol_nr = 0
+                    for p in tool_empty_area:
+                        # provide the app with a way to process the GUI events when in a blocking loop
+                        if not run_threaded:
+                            QtWidgets.QApplication.processEvents()
+
+                        if self.app.abort_flag:
+                            # graceful abort requested by the user
+                            raise grace
+
+                        # clean the polygon
+                        p = p.buffer(0.0000001)
+                        p = flatten_shapely_geometry(p)
+
+                        poly_failed = 0
+                        for pol in p:
                             # provide the app with a way to process the GUI events when in a blocking loop
-                            if not run_threaded:
-                                QtWidgets.QApplication.processEvents()
+                            QtWidgets.QApplication.processEvents()
 
-                            if self.app.abort_flag:
-                                # graceful abort requested by the user
-                                raise grace
+                            if pol is not None and pol.is_valid and isinstance(pol, Polygon):
+                                res = self.clear_polygon_worker(pol=pol, tooldia=tool,
+                                                                ncc_method=ncc_method,
+                                                                ncc_overlap=ncc_overlap,
+                                                                ncc_connect=ncc_connect,
+                                                                ncc_contour=ncc_contour,
+                                                                prog_plot=prog_plot)
+                                if res is not None:
+                                    cleared_geo += res
+                                else:
+                                    poly_failed += 1
+                            else:
+                                self.app.log.warning(
+                                    "Expected geo is a Polygon. Instead got a %s" % str(type(pol)))
 
-                            # clean the polygon
-                            p = p.buffer(0)
+                        if poly_failed > 0:
+                            app_obj.poly_not_cleared = True
 
-                            if p is not None and p.is_valid:
-                                poly_failed = 0
-                                try:
-                                    for pol in p:
-                                        # provide the app with a way to process the GUI events when in a blocking loop
-                                        QtWidgets.QApplication.processEvents()
+                        pol_nr += 1
+                        disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
+                        # log.debug("Polygons cleared: %d" % pol_nr)
 
-                                        if pol is not None and isinstance(pol, Polygon):
-                                            res = self.clear_polygon_worker(pol=pol, tooldia=tool,
-                                                                            ncc_method=ncc_method,
-                                                                            ncc_overlap=ncc_overlap,
-                                                                            ncc_connect=ncc_connect,
-                                                                            ncc_contour=ncc_contour,
-                                                                            prog_plot=prog_plot)
-                                            if res is not None:
-                                                cleared_geo += res
-                                            else:
-                                                poly_failed += 1
-                                        else:
-                                            self.app.log.warning(
-                                                "Expected geo is a Polygon. Instead got a %s" % str(type(pol)))
-                                except TypeError:
-                                    if isinstance(p, Polygon):
-                                        res = self.clear_polygon_worker(pol=p, tooldia=tool,
-                                                                        ncc_method=ncc_method,
-                                                                        ncc_overlap=ncc_overlap,
-                                                                        ncc_connect=ncc_connect,
-                                                                        ncc_contour=ncc_contour,
-                                                                        prog_plot=prog_plot)
-                                        if res is not None:
-                                            cleared_geo += res
-                                        else:
-                                            poly_failed += 1
-                                    else:
-                                        self.app.log.warning(
-                                            "Expected geo is a Polygon. Instead got a %s" % str(type(p)))
+                        if old_disp_number < disp_number <= 100:
+                            self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                            old_disp_number = disp_number
+                            # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
 
-                                if poly_failed > 0:
-                                    app_obj.poly_not_cleared = True
+                    # check if there is a geometry at all in the cleared geometry
+                    if cleared_geo:
+                        formatted_tool = self.app.dec_format(tool, self.decimals)
+                        # find the tooluid associated with the current tool_dia so we know where to add the tool
+                        # solid_geometry
+                        for k, v in tools_storage.items():
+                            if self.app.dec_format(v['tooldia'], self.decimals) == formatted_tool:
+                                current_uid = int(k)
 
-                                pol_nr += 1
-                                disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
-                                # log.debug("Polygons cleared: %d" % pol_nr)
-
-                                if old_disp_number < disp_number <= 100:
-                                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
-                                    old_disp_number = disp_number
-                                    # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
-
-                        # check if there is a geometry at all in the cleared geometry
-                        if cleared_geo:
-                            formatted_tool = self.app.dec_format(tool, self.decimals)
-                            # find the tooluid associated with the current tool_dia so we know where to add the tool
-                            # solid_geometry
-                            for k, v in tools_storage.items():
-                                if self.app.dec_format(v['tooldia'], self.decimals) == formatted_tool:
-                                    current_uid = int(k)
-
-                                    # add the solid_geometry to the current too in self.paint_tools dictionary
-                                    # and then reset the temporary list that stored that solid_geometry
-                                    v['solid_geometry'] = deepcopy(cleared_geo)
-                                    v['data']['name'] = name
-                                    geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
-                                    break
-                        else:
-                            self.app.log.debug("There are no geometries in the cleared polygon.")
+                                # add the solid_geometry to the current too in self.paint_tools dictionary
+                                # and then reset the temporary list that stored that solid_geometry
+                                v['solid_geometry'] = deepcopy(cleared_geo)
+                                v['data']['name'] = name
+                                geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
+                                break
+                    else:
+                        self.app.log.debug("There are no geometries in the cleared polygon.")
 
             # clean the progressive plotted shapes if it was used
             if self.app.options["tools_ncc_plotting"] == 'progressive':
@@ -2656,10 +2643,18 @@ class NonCopperClear(AppTool, Gerber):
                 # store here the geometry generated by clear operation
                 cleared_geo = []
 
-                poly_failed = 0
-                if area.geoms and len(area.geoms) > 0:
+                tool_empty_area = []
+                if area.geoms:
+                    tool_empty_area = flatten_shapely_geometry(area.geoms)
+
+                if tool_empty_area:
+                    poly_failed = 0
                     pol_nr = 0
-                    for p in area.geoms:
+                    for p in tool_empty_area:
+                        # provide the app with a way to process the GUI events when in a blocking loop
+                        if not run_threaded:
+                            QtWidgets.QApplication.processEvents()
+
                         if self.app.abort_flag:
                             # graceful abort requested by the user
                             raise grace
@@ -2668,11 +2663,12 @@ class NonCopperClear(AppTool, Gerber):
                             # provide the app with a way to process the GUI events when in a blocking loop
                             QtWidgets.QApplication.processEvents()
 
-                            # speedup the clearing by not trying to clear polygons that is clear they can't be
+                            # speedup the clearing by not trying to clear polygons that is obvious they can't be
                             # cleared with the current tool. this tremendously reduce the clearing time
                             check_dist = -tool / 2
                             check_buff = p.buffer(check_dist, self.circle_steps)
-                            if not check_buff or check_buff.is_empty:
+                            check_buff = flatten_shapely_geometry(check_buff)
+                            if not check_buff:
                                 continue
 
                             # if self.app.dec_format(float(tool), self.decimals) == 0.15:
@@ -2740,6 +2736,7 @@ class NonCopperClear(AppTool, Gerber):
                 new_area = new_area.buffer(0.0000001)
 
                 area = area.difference(new_area)
+                area = flatten_shapely_geometry(area)
 
                 new_area = [pol for pol in area if pol.is_valid and not pol.is_empty]
                 area = MultiPolygon(new_area)

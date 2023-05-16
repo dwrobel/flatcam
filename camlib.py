@@ -1446,10 +1446,8 @@ class Geometry(object):
         """
 
         # log.debug("camlib.clear_polygon()")
-        assert type(polygon) == Polygon or type(polygon) == MultiPolygon, \
-            "Expected a Polygon or MultiPolygon, got %s" % type(polygon)
 
-        # ## The toolpaths
+        # The toolpaths
         # Index first and last points in paths
         def get_pts(o):
             return [o.coords[0], o.coords[-1]]
@@ -1460,58 +1458,71 @@ class Geometry(object):
         # Can only result in a Polygon or MultiPolygon
         # NOTE: The resulting polygon can be "empty".
         current = polygon.buffer((-tooldia / 1.999999), int(steps_per_circle))
-        if current.area == 0:
-            # Otherwise, trying to to insert current.exterior == None
-            # into the FlatCAMStorage will fail.
-            # print("Area is None")
-            return None
+        current = flatten_shapely_geometry(current)
 
-        # current can be a MultiPolygon
-        try:
-            for p in current:
-                geoms.insert(p.exterior)
-                for i in p.interiors:
-                    geoms.insert(i)
+        # if current.area == 0:
+        #     # Otherwise, trying to insert current.exterior == None
+        #     # into the FlatCAMStorage will fail.
+        #     # print("Area is None")
+        #     return None
 
-        # Not a Multipolygon. Must be a Polygon
-        except TypeError:
-            geoms.insert(current.exterior)
-            for i in current.interiors:
+        for p in current:
+            geoms.insert(p.exterior)
+            for i in p.interiors:
                 geoms.insert(i)
 
-        while True:
-            if self.app.abort_flag:
-                # graceful abort requested by the user
-                raise grace
+        if self.app.abort_flag:
+            # graceful abort requested by the user
+            raise grace
 
-            # provide the app with a way to process the GUI events when in a blocking loop
-            QtWidgets.QApplication.processEvents()
+        # provide the app with a way to process the GUI events when in a blocking loop
+        QtWidgets.QApplication.processEvents()
 
-            # Can only result in a Polygon or MultiPolygon
-            current = current.buffer(-tooldia * (1 - overlap), int(steps_per_circle))
-            if current.area > 0:
+        for cl_pol in current:
+            while True:
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise grace
 
-                # current can be a MultiPolygon
-                try:
-                    for p in current.geoms:
-                        geoms.insert(p.exterior)
-                        for i in p.interiors:
+                # provide the app with a way to process the GUI events when in a blocking loop
+                QtWidgets.QApplication.processEvents()
+
+                cl_pol = cl_pol.buffer(-tooldia * (1 - overlap), int(steps_per_circle))
+                if isinstance(cl_pol, MultiPolygon):
+                    cl_pol = flatten_shapely_geometry(cl_pol)
+
+                    added_flag = False
+                    for tiny_pol in cl_pol:
+                        if tiny_pol.area > 0:
+                            added_flag = True
+                            geoms.insert(tiny_pol.exterior)
+                            if prog_plot:
+                                self.plot_temp_shapes(tiny_pol.exterior)
+
+                            for i in tiny_pol.interiors:
+                                geoms.insert(i)
+                                if prog_plot:
+                                    self.plot_temp_shapes(i)
+                    if added_flag is False:
+                        break
+
+                    cl_pol = MultiPolygon(cl_pol)
+                else:
+                    if cl_pol.area > 0:
+                        geoms.insert(cl_pol.exterior)
+                        if prog_plot:
+                            self.plot_temp_shapes(cl_pol.exterior)
+
+                        for i in cl_pol.interiors:
                             geoms.insert(i)
                             if prog_plot:
-                                self.plot_temp_shapes(p)
+                                self.plot_temp_shapes(i)
+                    else:
+                        break
 
-                # Not a Multipolygon. Must be a Polygon
-                except (TypeError, AttributeError):
-                    geoms.insert(current.exterior)
-                    if prog_plot:
-                        self.plot_temp_shapes(current.exterior)
-                    for i in current.interiors:
-                        geoms.insert(i)
-                        if prog_plot:
-                            self.plot_temp_shapes(i)
-            else:
-                self.app.log.debug("camlib.Geometry.clear_polygon() --> Current Area is zero")
-                break
+        if not geoms.objects:
+            self.app.log.debug("camlib.Geometry.clear_polygon() --> Current Area is zero")
+            return
 
         if prog_plot:
             self.temp_shapes.redraw()

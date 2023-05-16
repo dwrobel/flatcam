@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+16.05.2023
+
+- NCC Plugin: fixed the Standard method of copper clearing (both normal and with Rest machining)
+
 14.05.2023
 
 - Isolation Plugin, NCC Plugin and Find Optimal Plugin: fixed not finding the optimal tool diameter (the one that will isolate completely a Gerber object)
