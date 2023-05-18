@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+19.05.2023
+
+- CutOut Plugin - fixed the manual adding of gaps
+
 17.05.2023
 
 - Thieving Plugin: fixed errors due of changes in the Shapely module

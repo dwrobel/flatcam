@@ -1669,7 +1669,7 @@ class CutOut(AppTool):
                 self.mb_manual_cuts.append(rests_geo)
 
         # first subtract geometry for the total solid_geometry
-        new_solid_geometry = CutOut.subtract_geo(self.man_cutout_obj.solid_geometry, cut_poly)
+        new_solid_geometry = self.subtract_geo(self.man_cutout_obj.solid_geometry, cut_poly)
         try:
             new_solid_geometry = linemerge(new_solid_geometry)
         except ValueError:
@@ -2176,7 +2176,7 @@ class CutOut(AppTool):
 
         Results are placed in self.flat_geometry
 
-        :param geometry: Shapely type or list or list of list of such.
+        :param geometry: Shapely type or list or a list of lists of such.
         """
         flat_geo = []
         work_geo = geometry.geoms if isinstance(geometry, (MultiPolygon, MultiLineString)) else geometry
