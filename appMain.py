@@ -930,9 +930,13 @@ class App(QtCore.QObject):
         # add he PlotCanvas setup to the UI
         self.on_plotcanvas_add(self.plotcanvas, self.ui.right_layout)
 
+        # #############################################################################################################
+        # ################   SHAPES STORAGE   #########################################################################
+        # #############################################################################################################
+
         # Storage for shapes, storage that can be used by FlatCAm tools for utility geometry
-        # VisPy visuals
         if self.use_3d_engine:
+            # VisPy visuals
             try:
                 self.tool_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1, pool=self.pool)
             except AttributeError:
@@ -940,12 +944,19 @@ class App(QtCore.QObject):
 
             # Storage for Hover Shapes
             self.hover_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1, pool=self.pool)
+
+            # Storage for Selection shapes
+            self.sel_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1, pool=self.pool)
         else:
             from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.tool_shapes = ShapeCollectionLegacy(obj=self, app=self, name="tool")
 
             # Storage for Hover Shapes will use the default Matplotlib axes
             self.hover_shapes = ShapeCollectionLegacy(obj=self, app=self, name='hover')
+
+            # Storage for Selection shapes
+            self.sel_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name="selection")
+        # #############################################################################################################
 
         end_plot_time = time.time()
         self.used_time = end_plot_time - start_plot_time
@@ -6678,6 +6689,7 @@ class App(QtCore.QObject):
             ctrl_modifier_key = QtCore.Qt.KeyboardModifier.ControlModifier
             ctrl_shift_modifier_key = ctrl_modifier_key | shift_modifier_key
 
+            # this will do click release action for the Plugins
             if key_modifier == shift_modifier_key or key_modifier == ctrl_shift_modifier_key:
                 self.on_mouse_and_key_modifiers(position=self.mouse_click_pos, modifiers=key_modifier)
                 self.on_plugin_mouse_click_release(pos=pos)
@@ -6691,6 +6703,7 @@ class App(QtCore.QObject):
                 self.mouse_click_pos = [pos[0], pos[1]]
                 return
 
+            # it was a double click
             if self.doubleclick is True:
                 self.doubleclick = False
                 if self.collection.get_selected():
@@ -6712,7 +6725,11 @@ class App(QtCore.QObject):
                 if self.dx == 0 or self.dy == 0:
                     self.selection_type = None
 
+            # End moving selection
             if self.selection_type is not None:
+                # delete previous selection shape
+                self.delete_selection_shape()
+
                 try:
                     self.selection_area_handler(self.mouse_click_pos, pos, self.selection_type)
                     self.selection_type = None
@@ -6848,10 +6865,10 @@ class App(QtCore.QObject):
         :param sel_type:    if True it's a left to right selection (enclosure), if False it's a 'touch' selection
         :return:            None
         """
-        poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
-
         # delete previous selection shape
         self.delete_selection_shape()
+
+        poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
 
         # make all objects inactive
         self.collection.set_all_inactive()
@@ -7163,8 +7180,8 @@ class App(QtCore.QObject):
             self.hover_shapes.redraw()
 
     def delete_selection_shape(self):
-        self.move_tool.sel_shapes.clear()
-        self.move_tool.sel_shapes.redraw()
+        self.sel_shapes.clear()
+        self.sel_shapes.redraw()
 
     def draw_selection_shape(self, sel_obj, color=None):
         """
@@ -7219,14 +7236,11 @@ class App(QtCore.QObject):
                 face = self.options['global_sel_fill'][:-2] + str(hex(int(0.4 * 255)))[2:]
                 outline = self.options['global_sel_line'][:-2] + str(hex(int(1.0 * 255)))[2:]
 
-        self.sel_objects_list.append(self.move_tool.sel_shapes.add(b_sel_rect,
-                                                                   color=outline,
-                                                                   face_color=face,
-                                                                   update=True,
-                                                                   layer=0,
-                                                                   tolerance=None))
+        self.sel_objects_list.append(
+            self.sel_shapes.add(b_sel_rect,color=outline, face_color=face, update=True, layer=0, tolerance=None)
+        )
         if self.use_3d_engine is False:
-            self.move_tool.sel_shapes.redraw()
+            self.sel_shapes.redraw()
 
     def draw_moving_selection_shape(self, old_coords, coords, **kwargs):
         """
@@ -7270,10 +7284,9 @@ class App(QtCore.QObject):
 
         color_t = face_color[:-2] + str(hex(int(face_alpha * 255)))[2:]
 
-        self.move_tool.sel_shapes.add(sel_rect, color=color, face_color=color_t, update=True,
-                                      layer=0, tolerance=None)
+        self.sel_shapes.add(sel_rect, color=color, face_color=color_t, update=True, layer=0, tolerance=None)
         if self.use_3d_engine is False:
-            self.move_tool.sel_shapes.redraw()
+            self.sel_shapes.redraw()
 
     def obj_properties(self):
         """

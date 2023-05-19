@@ -10,6 +10,9 @@ CHANGELOG for FlatCAM Evo beta
 19.05.2023
 
 - CutOut Plugin - fixed the manual adding of gaps
+- the selection shapes are now moved from Move Plugin to AppMain
+- Fiducials Plugin: fixed errors due of changes in the Shapely module
+- Fiducials Plugin: fixed an error where in Basic mode the soldermask opening is added incorrectly
 
 17.05.2023
 

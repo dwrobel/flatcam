@@ -67,7 +67,7 @@ class QRCode(AppTool):
         self.mr = None
         self.kr = None
 
-        self.shapes = self.app.move_tool.sel_shapes
+        self.shapes = self.app.sel_shapes
         self.qrcode_geometry = MultiPolygon()
         self.qrcode_utility_geometry = MultiPolygon()
 

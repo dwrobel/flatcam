@@ -71,7 +71,7 @@ class ToolMarkers(AppTool):
         self.handlers_connected = False
 
         # storage for temporary shapes when adding manual markers
-        self.temp_shapes = self.app.move_tool.sel_shapes
+        self.temp_shapes = self.app.sel_shapes
 
     def on_insert_type_changed(self, val):
         obj_type = 2 if val == 'geo' else 0

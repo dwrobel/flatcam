@@ -49,12 +49,7 @@ class ToolMove(AppTool):
         self.sel_rect = None
         self.old_coords = []
 
-        # VisPy visuals
-        if self.app.use_3d_engine:
-            self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1, pool=self.app.pool)
-        else:
-            from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
-            self.sel_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name="move")
+        self.sel_shapes = self.app.sel_shapes
 
         self.mm = None
         self.mp = None

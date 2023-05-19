@@ -1754,10 +1754,9 @@ class ToolDrilling(AppTool, Excellon):
 
         for row in sel_rows:
             sel_rect = self.app.exc_areas.exclusion_areas_storage[row]['shape']
-            self.app.move_tool.sel_shapes.add(sel_rect, color=outline, face_color=face, update=True, layer=0,
-                                              tolerance=None)
+            self.app.sel_shapes.add(sel_rect, color=outline, face_color=face, update=True, layer=0, tolerance=None)
         if self.app.use_3d_engine:
-            self.app.move_tool.sel_shapes.redraw()
+            self.app.sel_shapes.redraw()
 
     def clear_selection(self):
         self.app.delete_selection_shape()

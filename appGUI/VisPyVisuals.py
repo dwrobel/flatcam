@@ -360,7 +360,8 @@ class ShapeCollectionVisual(CompoundVisual):
         self.results_lock.release()
 
         # Remove data
-        del self.data[key]
+        if key in self.data:
+            del self.data[key]
 
         if update:
             self.__update()

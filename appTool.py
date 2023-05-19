@@ -236,7 +236,7 @@ class AppTool(QtWidgets.QWidget):
         if 'shapes_storage' in kwargs:
             s_storage = kwargs['shapes_storage']
         else:
-            s_storage = self.app.move_tool.sel_shapes
+            s_storage = self.app.sel_shapes
 
         if 'color' in kwargs:
             color = kwargs['color']
@@ -289,7 +289,7 @@ class AppTool(QtWidgets.QWidget):
         if 'shapes_storage' in kwargs:
             s_storage = kwargs['shapes_storage']
         else:
-            s_storage = self.app.move_tool.sel_shapes
+            s_storage = self.app.sel_shapes
 
         s_storage.clear()
         s_storage.redraw()
