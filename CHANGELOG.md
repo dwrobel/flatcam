@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM Evo beta
 - the selection shapes are now moved from Move Plugin to AppMain
 - Fiducials Plugin: fixed errors due of changes in the Shapely module
 - Fiducials Plugin: fixed an error where in Basic mode the soldermask opening is added incorrectly
+- Film Tool: fixed the export to PNG to be done at correct DPI
 
 17.05.2023
 
