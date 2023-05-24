@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+25.05.2023
+
+- Geometry Editor: subtool Path: fixed issue of not registering the new click when using the Shift modifier
+- Geometry Editor: subtool Path: the coordinates displayed when using the Shift key modifier are the coordinates for the end of the line and not the mouse cursor
+
 24.05.2023
 
 - for all Editors now there is a shortcut key (key "C") that will toggle the cursor data in case the cursor data is in the way

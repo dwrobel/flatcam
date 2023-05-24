@@ -1526,7 +1526,10 @@ class FCPath(FCShapeTool):
 
         self.path_tool = PathEditorTool(self.app, self.draw_app, plugin_name=_("Path"))
         self.path_tool.run()
+
         self.new_segment = True
+        self.close_x = 0.0
+        self.close_y = 0.0
 
         self.app.ui.notebook.setTabText(2, _("Path"))
         if self.draw_app.app.ui.splitter.sizes()[0] == 0:
@@ -1542,8 +1545,14 @@ class FCPath(FCShapeTool):
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
         self.draw_app.in_action = True
-        if point != self.points[-1:]:
-            self.points.append(point)
+        modifier = QtWidgets.QApplication.keyboardModifiers()
+        if modifier == Qt.KeyboardModifier.ShiftModifier:
+            new_point = self.close_x, self.close_y
+            if new_point != self.points[-1:]:
+                self.points.append(new_point)
+        else:
+            if point != self.points[-1:]:
+                self.points.append(point)
 
         if len(self.points) > 0:
             self.draw_app.app.inform.emit(_("Click on next Point or click right mouse button to complete ..."))
@@ -1596,6 +1605,8 @@ class FCPath(FCShapeTool):
 
                 if 35 <= det_angle <= 55:
                     new_x, new_y = self.closest_point_to_45_degrees(origin=temp_points[-1], current=data)
+
+                self.close_x, self.close_y = new_x, new_y
 
                 temp_points.append([new_x, new_y])
             else:
@@ -4289,7 +4300,9 @@ class AppGeoEditor(QtCore.QObject):
             modifiers = QtWidgets.QApplication.keyboardModifiers()
             # If the SHIFT key is pressed when LMB is clicked then the coordinates are copied to clipboard
             if modifiers == QtCore.Qt.KeyboardModifier.ShiftModifier:
-                if self.active_tool is not None and self.active_tool.name != 'rectangle':
+                if self.active_tool is not None \
+                        and self.active_tool.name != 'rectangle' \
+                        and self.active_tool.name != 'path':
                     self.app.clipboard.setText(
                         self.app.options["global_point_clipboard_format"] %
                         (self.decimals, self.pos[0], self.decimals, self.pos[1])
@@ -4445,7 +4458,19 @@ class AppGeoEditor(QtCore.QObject):
         # # # update the reference position label in the infobar since the APP mouse event handlers are disconnected
         # self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
         #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
-        self.app.ui.update_location_labels(self.app.dx, self.app.dy, x, y)
+
+        if self.active_tool.name == 'path':
+            modifier = QtWidgets.QApplication.keyboardModifiers()
+            if modifier == Qt.KeyboardModifier.ShiftModifier:
+                cl_x = self.active_tool.close_x
+                cl_y = self.active_tool.close_y
+                shift_dx = cl_x - self.pos[0]
+                shift_dy = cl_y - self.pos[1]
+                self.app.ui.update_location_labels(shift_dx, shift_dy, cl_x, cl_y)
+            else:
+                self.app.ui.update_location_labels(self.app.dx, self.app.dy, x, y)
+        else:
+            self.app.ui.update_location_labels(self.app.dx, self.app.dy, x, y)
 
         # units = self.app.app_units.lower()
         # self.app.plotcanvas.text_hud.text = \
