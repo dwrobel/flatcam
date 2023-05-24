@@ -245,6 +245,8 @@ class DrillAdd(FCShapeTool):
         self.draw_app = draw_app
         self.app = self.draw_app.app
 
+        self.cursor_data_control = True
+
         self.selected_dia = None
         try:
             self.draw_app.app.inform.emit(_("Click to place ..."))
@@ -372,6 +374,10 @@ class DrillAdd(FCShapeTool):
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -469,6 +475,9 @@ class DrillAdd(FCShapeTool):
                     self.draw_app.app.on_jump_to(custom_location=(new_x, new_y), fit_center=False)
                     self.add_drill(drill_pos=(new_x, new_y))
 
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
+
     def add_drill(self, drill_pos):
         curr_pos = self.draw_app.app.geo_editor.snap(drill_pos[0], drill_pos[1])
         self.draw_app.snap_x = curr_pos[0]
@@ -532,6 +541,8 @@ class DrillArray(FCShapeTool):
         self.last_dy = 0
 
         self.pt = []
+
+        self.cursor_data_control = True
 
         try:
             self.draw_app.app.inform.emit(_("Click to place ..."))
@@ -836,6 +847,10 @@ class DrillArray(FCShapeTool):
             pass
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -908,6 +923,9 @@ class DrillArray(FCShapeTool):
                 # ## Utility geometry (animated)
                 self.draw_app.update_utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
 
+            if key == 'C' or key == QtCore.Qt.Key.Key_C:
+                self.cursor_data_control = not self.cursor_data_control
+
             # Jump to coords
             if key == QtCore.Qt.Key.Key_J or key == 'J':
                 self.draw_app.app.on_jump_to()
@@ -972,6 +990,9 @@ class SlotAdd(FCShapeTool):
         self.half_width = 0.0
 
         self.selected_dia = None
+
+        self.cursor_data_control = True
+
         try:
             self.draw_app.app.inform.emit(_("Click to place ..."))
             self.selected_dia = self.draw_app.tool2tooldia[self.draw_app.last_tool_selected]
@@ -1174,6 +1195,10 @@ class SlotAdd(FCShapeTool):
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -1283,6 +1308,9 @@ class SlotAdd(FCShapeTool):
                     self.draw_app.app.on_jump_to(custom_location=(new_x, new_y), fit_center=False)
                     self.add_slot(slot_pos=(new_x, new_y))
 
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
+
     def add_slot(self, slot_pos):
         curr_pos = self.draw_app.app.geo_editor.snap(slot_pos[0], slot_pos[1])
         self.draw_app.snap_x = curr_pos[0]
@@ -1352,6 +1380,8 @@ class SlotArray(FCShapeTool):
         self.last_dy = 0
 
         self.pt = []
+
+        self.cursor_data_control = True
 
         try:
             self.draw_app.app.inform.emit(_("Click to place ..."))
@@ -1756,6 +1786,10 @@ class SlotArray(FCShapeTool):
             pass
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -1828,6 +1862,9 @@ class SlotArray(FCShapeTool):
                 # ## Utility geometry (animated)
                 self.draw_app.update_utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
         elif mod_key is None:
+            if key == 'C' or key == QtCore.Qt.Key.Key_C:
+                self.cursor_data_control = not self.cursor_data_control
+
             # Jump to coords
             if key == QtCore.Qt.Key.Key_J or key == 'J':
                 self.draw_app.app.on_jump_to()
@@ -1840,6 +1877,7 @@ class SlotArray(FCShapeTool):
                     self.ui.slot_direction_radio.set_value('A')
                 elif self.ui.slot_direction_radio.get_value() == 'A':
                     self.ui.slot_direction_radio.set_value('X')
+
                 # ## Utility geometry (animated)
                 self.draw_app.update_utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
 
@@ -1912,6 +1950,8 @@ class ResizeEditorExc(FCShapeTool):
         self.current_storage = None
         self.geometry = []
         self.destination_storage = None
+
+        self.cursor_data_control = True
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -2183,6 +2223,10 @@ class ResizeEditorExc(FCShapeTool):
         self.clean_up()
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -2231,6 +2275,10 @@ class ResizeEditorExc(FCShapeTool):
 
             if self.draw_app.app.plotcanvas.text_cursor.parent is None:
                 self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
+
+    def on_key(self, key):
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -2416,6 +2464,8 @@ class CopyEditorExc(FCShapeTool):
 
         self.current_storage = None
         self.geometry = []
+
+        self.cursor_data_control = True
 
         for index in self.draw_app.ui.tools_table_exc.selectedIndexes():
             row = index.row()
@@ -2770,6 +2820,10 @@ class CopyEditorExc(FCShapeTool):
         return circular_geo
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -2818,6 +2872,9 @@ class CopyEditorExc(FCShapeTool):
                 self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
 
     def on_key(self, key):
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
+
         # Jump to coords
         if key == QtCore.Qt.Key.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()

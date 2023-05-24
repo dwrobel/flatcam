@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+24.05.2023
+
+- for all Editors now there is a shortcut key (key "C") that will toggle the cursor data in case the cursor data is in the way
+- Geometry Editor: the Path tool now has a new behavior: when key modifier SHIFT is pressed and the Grid is OFF, when the line is drawn and it is near the 0, 45 and 90 degrees, in each quadrant, then the drawn line will follow the nearest target angle (0 or 45 or 90 degrees) allowing the drawing of straight lines.
+
 19.05.2023
 
 - CutOut Plugin - fixed the manual adding of gaps

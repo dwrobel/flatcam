@@ -57,6 +57,8 @@ class PadEditorGrb(ShapeToolEditorGrb):
         self.app = self.draw_app.app
         self.dont_execute = False
 
+        self.cursor_data_control = True
+
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception:
@@ -290,6 +292,10 @@ class PadEditorGrb(ShapeToolEditorGrb):
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -393,6 +399,8 @@ class PadEditorGrb(ShapeToolEditorGrb):
                         self.draw_app.app.inform.emit(msg)
                         # self.interpolate_length = ''
                         # return "Click on next point or hit ENTER to complete ..."
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -420,6 +428,8 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
         self.draw_app = draw_app
         self.app = self.draw_app.app
         self.dont_execute = False
+
+        self.cursor_data_control = True
 
         try:
             self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
@@ -883,6 +893,10 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
             pass
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -956,6 +970,9 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
 
                 # ## Utility geometry (animated)
                 self.draw_app.update_utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+
+            elif key == 'C' or key == QtCore.Qt.Key.Key_C:
+                self.cursor_data_control = not self.cursor_data_control
 
     def add_pad_array(self, array_pos):
         self.radius = self.ui.radius_entry.get_value()
@@ -1140,6 +1157,8 @@ class RegionEditorGrb(ShapeToolEditorGrb):
         self.temp_points = []
         # this will store the inflexion point in the geometry
         self.inter_point = None
+
+        self.cursor_data_control = True
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -1409,6 +1428,10 @@ class RegionEditorGrb(ShapeToolEditorGrb):
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -1459,6 +1482,9 @@ class RegionEditorGrb(ShapeToolEditorGrb):
                 self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
 
     def on_key(self, key):
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
+
         # Jump to coords
         if key == QtCore.Qt.Key.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
@@ -1622,6 +1648,9 @@ class TrackEditorGrb(ShapeToolEditorGrb):
         self.current_point = None
 
         self.final_click = False
+
+        self.cursor_data_control = True
+
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
@@ -1813,6 +1842,10 @@ class TrackEditorGrb(ShapeToolEditorGrb):
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -1875,6 +1908,9 @@ class TrackEditorGrb(ShapeToolEditorGrb):
                 geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
                 self.draw_app.draw_utility_geometry(geo_shape=geo)
                 return _("Backtracked one point ...")
+
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
 
         # Jump to coords
         if key == QtCore.Qt.Key.Key_G or key == 'G':

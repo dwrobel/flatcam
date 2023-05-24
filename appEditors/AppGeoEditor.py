@@ -49,6 +49,8 @@ from rtree import index as rtindex
 from copy import deepcopy
 # from vispy.io import read_png
 
+from typing import Union
+
 import gettext
 import appTranslation as fcTranslate
 import builtins
@@ -136,6 +138,10 @@ class DrawToolShape(object):
 
         # fixed issue of getting bounds only for one level lists of objects
         # now it can get bounds for nested lists of objects
+
+        if self.geo is None:
+            return 0, 0, 0, 0
+
         def bounds_rec(shape_el):
             if type(shape_el) is list:
                 minx = np.Inf
@@ -388,7 +394,7 @@ class DrawTool(object):
         self.points = []
         self.geometry = None  # DrawToolShape or None
 
-    def click(self, point):
+    def click(self, point: Union[list[float, float], tuple[float, float]]):
         """
         :param point: [x, y] Coordinate pair.
         """
@@ -466,6 +472,8 @@ class FCCircle(FCShapeTool):
         self.plugin_name = _("Circle")
         self.storage = self.draw_app.storage
         self.util_geo = None
+
+        self.cursor_data_control = True
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -593,6 +601,10 @@ class FCCircle(FCShapeTool):
         return None
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -702,6 +714,9 @@ class FCCircle(FCShapeTool):
             self.draw_app.on_shape_complete()
             self.draw_app.select_tool("select")
             return "Done."
+
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
 
     def make(self):
         try:
@@ -997,6 +1012,8 @@ class FCRectangle(FCShapeTool):
 
         self.util_geo = None
 
+        self.cursor_data_control = True
+
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception:
@@ -1127,6 +1144,10 @@ class FCRectangle(FCShapeTool):
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -1174,6 +1195,9 @@ class FCRectangle(FCShapeTool):
                 self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
 
     def on_key(self, key):
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
+
         # Jump to coords
         if key == QtCore.Qt.Key.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
@@ -1281,6 +1305,8 @@ class FCPolygon(FCShapeTool):
         self.polygon_tool.run()
         self.new_segment = True
 
+        self.cursor_data_control = True
+
         self.app.ui.notebook.setTabText(2, self.plugin_name)
         if self.draw_app.app.ui.splitter.sizes()[0] == 0:
             self.draw_app.app.ui.splitter.setSizes([1, 1])
@@ -1336,6 +1362,10 @@ class FCPolygon(FCShapeTool):
             return None
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -1383,6 +1413,9 @@ class FCPolygon(FCShapeTool):
                 self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
 
     def on_key(self, key):
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
+
         # Jump to coords
         if key == QtCore.Qt.Key.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
@@ -1477,6 +1510,9 @@ class FCPath(FCShapeTool):
         self.name = 'path'
         self.app = self.draw_app.app
 
+        # show the cursor data
+        self.cursor_data_control = True
+
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception:
@@ -1534,13 +1570,79 @@ class FCPath(FCShapeTool):
 
     def utility_geometry(self, data=None):
         if len(self.points) > 0:
-            temp_points = [x for x in self.points]
-            temp_points.append(data)
+            modifier = QtWidgets.QApplication.keyboardModifiers()
+            if modifier == Qt.KeyboardModifier.ShiftModifier:
+                temp_points = [x for x in self.points]
+                if not temp_points:
+                    return DrawToolUtilityShape(None)
+
+                x_start = temp_points[-1][0]
+                y_start = temp_points[-1][1]
+                x_end = data[0]
+                y_end = data[1]
+                dx = x_end - x_start
+                dy = y_end - y_start
+                det_angle = self.update_angle(dx, dy)
+
+                new_x, new_y = data
+
+                if 0 <= det_angle <= 10:
+                    new_x = data[0]
+                    new_y = y_start
+
+                if 80 <= det_angle <= 90:
+                    new_x = x_start
+                    new_y = data[1]
+
+                if 35 <= det_angle <= 55:
+                    new_x, new_y = self.closest_point_to_45_degrees(origin=temp_points[-1], current=data)
+
+                temp_points.append([new_x, new_y])
+            else:
+                temp_points = [x for x in self.points]
+                temp_points.append(data)
+
             return DrawToolUtilityShape(LineString(temp_points))
 
         return None
 
+    @staticmethod
+    def closest_point_to_45_degrees(origin, current):
+        # Calculate vector from origin to current point
+        vector_x = current[0] - origin[0]
+        vector_y = current[1] - origin[1]
+
+        # Calculate the angle between the vector and the x-axis
+        angle = math.atan2(vector_y, vector_x)
+
+        # Calculate the angle of the 45-degree line
+        angle_45 = math.radians(45)
+
+        # Determine the angle to the closest point on the 45-degree line
+        closest_angle = round(angle / angle_45) * angle_45
+
+        # Calculate the coordinates of the closest point
+        closest_distance = math.sqrt(vector_x ** 2 + vector_y ** 2)
+        closest_point_x = origin[0] + closest_distance * math.cos(closest_angle)
+        closest_point_y = origin[1] + closest_distance * math.sin(closest_angle)
+
+        return closest_point_x, closest_point_y
+
+    def update_angle(self, dx, dy):
+        try:
+            angle = math.degrees(math.atan2(abs(dy), abs(dx)))
+            # if angle < 0:
+            #     angle += 360
+        except Exception as e:
+            self.app.log.error("FCPath.update_angle() -> %s" % str(e))
+            return None
+        return angle
+
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -1588,6 +1690,9 @@ class FCPath(FCShapeTool):
                 self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
 
     def on_key(self, key):
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
+
         # Jump to coords
         if key == QtCore.Qt.Key.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
@@ -1899,6 +2004,8 @@ class FCMove(FCShapeTool):
         self.sel_limit = self.draw_app.app.options["geometry_editor_sel_limit"]
         self.selection_shape = self.selection_bbox()
 
+        self.cursor_data_control = True
+
         if len(self.draw_app.get_selected()) == 0:
             self.has_selection = False
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s %s' %
@@ -2099,6 +2206,10 @@ class FCMove(FCShapeTool):
             raise
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -2146,6 +2257,9 @@ class FCMove(FCShapeTool):
                 self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
 
     def on_key(self, key):
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
+
         # Jump to coords
         if key == QtCore.Qt.Key.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
@@ -2236,6 +2350,8 @@ class FCCopy(FCShapeTool):
         self.util_geo = None
 
         self.clicked_postion = None
+
+        self.cursor_data_control = True
 
         if len(self.draw_app.get_selected()) == 0:
             self.has_selection = False
@@ -2615,6 +2731,10 @@ class FCCopy(FCShapeTool):
             raise
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -2662,6 +2782,9 @@ class FCCopy(FCShapeTool):
                 self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
 
     def on_key(self, key):
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
+
         # Jump to coords
         if key == QtCore.Qt.Key.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
