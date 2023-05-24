@@ -6,34 +6,12 @@
 # MIT Licence                                              #
 # ########################################################## ##
 
-from shapely.geometry import Polygon, LineString, box, MultiPolygon, MultiPoint, MultiLineString, LinearRing, Point, \
-    shape, base
-from shapely.strtree import STRtree
-from shapely.ops import unary_union, nearest_points, linemerge, snap
-from shapely.affinity import translate, scale, skew, rotate
-
-from appGUI.GUIElements import *
-
-from copy import copy, deepcopy
-import math
-
-import numpy as np
-from numpy import Inf
-
-import simplejson as json
-import os
-import sys
-import re
-import time
-import platform
-from collections.abc import Iterable
-import traceback
-from datetime import datetime
+from PyQt6 import QtGui, QtWidgets, QtCore
+from shapely import Polygon, LineString
 
 import gettext
 import appTranslation as fcTranslate
 import builtins
-import logging
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -258,7 +236,7 @@ class AppTool(QtWidgets.QWidget):
         if 'shapes_storage' in kwargs:
             s_storage = kwargs['shapes_storage']
         else:
-            s_storage = self.app.move_tool.sel_shapes
+            s_storage = self.app.sel_shapes
 
         if 'color' in kwargs:
             color = kwargs['color']
@@ -311,7 +289,7 @@ class AppTool(QtWidgets.QWidget):
         if 'shapes_storage' in kwargs:
             s_storage = kwargs['shapes_storage']
         else:
-            s_storage = self.app.move_tool.sel_shapes
+            s_storage = self.app.sel_shapes
 
         s_storage.clear()
         s_storage.redraw()

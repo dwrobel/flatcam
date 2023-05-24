@@ -5,7 +5,26 @@
 # License:  MIT Licence                                    #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
+    FCComboBox2, RadioSet, FCDoubleSpinner, FCSpinner, NumericalEvalTupleEntry, FCTable, \
+    OptionalInputSection, OptionalHideInputSection
+
+import logging
+from copy import deepcopy
+import numpy as np
+import simplejson as json
+import sys
+import math
+import traceback
+
+from shapely import LineString, box
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
+
 from appParsers.ParseExcellon import Excellon
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 from camlib import grace
@@ -402,7 +421,7 @@ class ToolMilling(AppTool, Excellon):
             _("Copy"), self.on_tool_copy,
             icon=QtGui.QIcon(self.app.resource_location + "/copy16.png"))
         self.ui.geo_tools_table.addContextMenu(
-            _("Delete"), lambda: self.on_tool_delete(clicked_signal=None, all_tools=None),
+            _("Delete"), lambda: self.on_tool_delete(all_tools=None),
             icon=QtGui.QIcon(self.app.resource_location + "/trash16.png"))
 
         # #############################################################################################################
@@ -1280,8 +1299,6 @@ class ToolMilling(AppTool, Excellon):
             self.ui.overlap_entry.show()
             self.ui.connect_cb.show()
 
-            self.ui.frxylabel.hide()
-            self.ui.xyfeedrate_entry.hide()
             self.ui.extracut_cb.hide()
             self.ui.e_cut_entry.hide()
 
@@ -2821,17 +2838,26 @@ class ToolMilling(AppTool, Excellon):
 
             buff_dia = float(tools_dict[tool]['tooldia']) / 2.0 + offset
             if mill_type in ['drills', 'both']:
-                drills_tool_geo = [
-                    d_p.buffer(buff_dia) for d_p in tools_dict[tool]['drills']
-                ]
-                total_paint_geo = drills_tool_geo
-            elif mill_type in ['slots', 'both']:
-                slots_tool_geo = [
-                    LineString(s_l).buffer(buff_dia) for s_l in tools_dict[tool]['slots']
-                ]
-                total_paint_geo = slots_tool_geo
-            elif mill_type == 'both':
+                try:
+                    drills_tool_geo = [
+                        d_p.buffer(buff_dia) for d_p in tools_dict[tool]['drills']
+                    ]
+                    total_paint_geo = drills_tool_geo
+                except KeyError:
+                    total_paint_geo = []
+            if mill_type in ['slots', 'both']:
+                try:
+                    slots_tool_geo = [
+                        LineString(s_l).buffer(buff_dia) for s_l in tools_dict[tool]['slots']
+                    ]
+                    total_paint_geo = slots_tool_geo
+                except KeyError:
+                    total_paint_geo = []
+            if mill_type == 'both':
                 total_paint_geo = drills_tool_geo + slots_tool_geo
+
+            if not total_paint_geo:
+                continue
 
             pol_nr = 0
             geo_len = len(total_paint_geo)
@@ -3803,10 +3829,9 @@ class ToolMilling(AppTool, Excellon):
 
         for row in sel_rows:
             sel_rect = self.app.exc_areas.exclusion_areas_storage[row]['shape']
-            self.app.move_tool.sel_shapes.add(sel_rect, color=outline, face_color=face, update=True, layer=0,
-                                              tolerance=None)
+            self.app.sel_shapes.add(sel_rect, color=outline, face_color=face, update=True, layer=0, tolerance=None)
         if self.app.use_3d_engine:
-            self.app.move_tool.sel_shapes.redraw()
+            self.app.sel_shapes.redraw()
 
     def clear_selection(self):
         self.app.delete_selection_shape()
@@ -4620,9 +4645,6 @@ class MillingUI:
 
         param_grid.addWidget(self.frxylabel, 36, 0)
         param_grid.addWidget(self.xyfeedrate_entry, 36, 1)
-
-        self.frxylabel.hide()
-        self.xyfeedrate_entry.hide()
 
         # Feedrate Z
         self.frzlabel = FCLabel('%s:' % _('Feedrate Z'))

@@ -5,7 +5,7 @@ from tclCommands.TclCommand import TclCommand
 import collections
 from copy import deepcopy
 
-from shapely.geometry import box
+from shapely import box
 from shapely.ops import linemerge
 from camlib import flatten_shapely_geometry
 

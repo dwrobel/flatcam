@@ -6,7 +6,7 @@
 # License:      MIT Licence                                #
 # ##########################################################
 
-from appPreProcessor import *
+from appPreProcessor import PreProc
 
 
 class Marlin_laser_z(PreProc):

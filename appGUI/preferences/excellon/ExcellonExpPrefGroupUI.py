@@ -1,7 +1,9 @@
+
 from PyQt6 import QtWidgets, QtCore
 
 from appGUI.GUIElements import RadioSet, FCSpinner, FCLabel, GLay, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
+
 import gettext
 import appTranslation as fcTranslate
 import builtins

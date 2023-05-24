@@ -1,7 +1,7 @@
 import collections
 from tclCommands.TclCommand import TclCommandSignaled
 
-from shapely.geometry import Point
+from shapely import Point
 import shapely.affinity as affinity
 from copy import deepcopy
 

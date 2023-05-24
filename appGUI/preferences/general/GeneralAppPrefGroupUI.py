@@ -1,3 +1,4 @@
+
 import sys
 
 from PyQt6.QtCore import QSettings
@@ -29,9 +30,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # Grid0 Frame
         # #############################################################################################################
         self.unitslabel = FCLabel('%s' % _("Units"), color='red', bold=True)
-        self.unitslabel.setToolTip(_("The default value for the application units.\n"
-                                     "Whatever is selected here is set every time\n"
-                                     "the application is started."))
+        self.unitslabel.setToolTip(_("The application dimensional units is millimeter."))
         self.layout.addWidget(self.unitslabel)
 
         grid0_frame = FCFrame()
@@ -40,19 +39,10 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0 = GLay(v_spacing=5, h_spacing=3)
         grid0_frame.setLayout(grid0)
 
-        # Units for FlatCAM
-        self.units_radio = RadioSetDefaults(
-            choices=[{'label': _('mm'), 'value': 'MM'}, {'label': _('inch'), 'value': 'IN'}],
-            compact=True
-        )
-
-        grid0.addWidget(self.units_radio, 0, 0, 1, 2)
-
         # Precision Metric
-        self.precision_metric_label = FCLabel('%s:' % _('Precision MM'))
+        self.precision_metric_label = FCLabel('%s:' % _('Dim. Precision'))
         self.precision_metric_label.setToolTip(
-            _("The number of decimals used throughout the application\n"
-              "when the set units are in METRIC system.\n"
+            _("The number of decimals used throughout the application.\n"
               "Any change here require an application restart.")
         )
         self.precision_metric_entry = FCSpinner()
@@ -61,20 +51,6 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
         grid0.addWidget(self.precision_metric_label, 2, 0)
         grid0.addWidget(self.precision_metric_entry, 2, 1)
-
-        # Precision Inch
-        self.precision_inch_label = FCLabel('%s:' % _('Precision Inch'))
-        self.precision_inch_label.setToolTip(
-            _("The number of decimals used throughout the application\n"
-              "when the set units are in INCH system.\n"
-              "Any change here require an application restart.")
-        )
-        self.precision_inch_entry = FCSpinner()
-        self.precision_inch_entry.set_range(2, 16)
-        self.precision_inch_entry.setWrapping(True)
-
-        grid0.addWidget(self.precision_inch_label, 4, 0)
-        grid0.addWidget(self.precision_inch_entry, 4, 1)
 
         self.par_label = FCLabel('%s' % _("Parameters"), color='blue', bold=True)
         self.layout.addWidget(self.par_label)
@@ -102,6 +78,12 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.ge_label, 0, 0)
         grid1.addWidget(self.ge_radio, 0, 1)
 
+        self.ge_comp_cb = FCCheckBox(_("3D Compatibility"))
+        self.ge_comp_cb.setToolTip(_("Check this if you have problems in 3D mode. Works only for 3D mode.\n"
+                                     "It will disable performance mods but perhaps add more compatibility."))
+
+        grid1.addWidget(self.ge_comp_cb, 1, 0, 1, 2)
+
         # separator_line = QtWidgets.QFrame()
         # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
@@ -113,15 +95,28 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             _("The number of Qthreads made available to the App.\n"
               "A bigger number may finish the jobs more quickly but\n"
               "depending on your computer speed, may make the App\n"
-              "unresponsive. Can have a value between 2 and 16.\n"
+              "unresponsive. Can have a value between 2 and 32.\n"
               "Default value is 2.\n"
               "After change, it will be applied at next App start.")
         )
         self.worker_number_sb = FCSpinner()
-        self.worker_number_sb.set_range(2, 16)
+        self.worker_number_sb.set_range(2, 32)
 
         grid1.addWidget(self.worker_number_label, 2, 0)
         grid1.addWidget(self.worker_number_sb, 2, 1)
+
+        # Process Numbers
+        self.process_number_label = FCLabel('%s:' % _('Process number'))
+        self.process_number_label.setToolTip(
+            _("The number of processes.\n"
+              "A larger number may improve performance but it will require more memory.\n"
+              "After change, it will be applied at next App start.")
+        )
+        self.process_number_sb = FCSpinner()
+        self.process_number_sb.set_range(2, 32)
+
+        grid1.addWidget(self.process_number_label, 4, 0)
+        grid1.addWidget(self.process_number_sb, 4, 1)
 
         # Geometric tolerance
         tol_label = FCLabel('%s:' % _("Geo Tolerance"))
@@ -137,8 +132,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.tol_entry.setSingleStep(0.001)
         self.tol_entry.set_precision(6)
 
-        grid1.addWidget(tol_label, 4, 0)
-        grid1.addWidget(self.tol_entry, 4, 1)
+        grid1.addWidget(tol_label, 6, 0)
+        grid1.addWidget(self.tol_entry, 6, 1)
 
         # Portability
         self.portability_cb = FCCheckBox('%s' % _('Portable app'))
@@ -147,7 +142,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
                                          "which means that the preferences files will be saved\n"
                                          "in the application folder, in the lib\\config subfolder."))
 
-        grid1.addWidget(self.portability_cb, 6, 0, 1, 2)
+        grid1.addWidget(self.portability_cb, 8, 0, 1, 2)
 
         # Verbose Log
         self.verbose_label = FCLabel('%s:' % _('Verbose log'))
@@ -160,8 +155,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.verbose_combo = FCComboBox2()
         self.verbose_combo.addItems(['0','1', '2'])
 
-        grid1.addWidget(self.verbose_label, 8, 0)
-        grid1.addWidget(self.verbose_combo, 8, 1)
+        grid1.addWidget(self.verbose_label, 10, 0)
+        grid1.addWidget(self.verbose_combo, 10, 1)
 
         # #############################################################################################################
         # Grid0 Frame
@@ -231,7 +226,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             _("Enable display of the splash screen at application startup.")
         )
 
-        qsettings = QSettings("Open Source", "FlatCAM")
+        qsettings = QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.value("splash_screen"):
             self.splash_cb.set_value(True)
         else:
@@ -444,7 +439,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
     @staticmethod
     def on_splash_changed(state):
-        qsettings = QSettings("Open Source", "FlatCAM")
+        qsettings = QSettings("Open Source", "FlatCAM_EVO")
         qsettings.setValue('splash_screen', 1) if state else qsettings.setValue('splash_screen', 0)
 
         # This will write the setting to the platform specific storage.

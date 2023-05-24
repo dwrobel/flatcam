@@ -1,3 +1,4 @@
+
 from PyQt6 import QtCore, QtGui, QtWidgets
 
 from appGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCButton, FCSliderWithSpinner, FCLabel, \

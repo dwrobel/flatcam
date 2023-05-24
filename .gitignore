@@ -3,6 +3,7 @@
 tests/tmp/
 build/
 /venv/
+/venv/
 
 # General for macOS
 .DS_Store

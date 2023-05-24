@@ -5,7 +5,27 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
+    FCComboBox2, RadioSet, FCDoubleSpinner, FCInputDialogSpinnerButton, FCTable, \
+    OptionalInputSection
+
+import logging
+from copy import deepcopy
+import numpy as np
+import simplejson as json
+import sys
+import traceback
+
+from shapely import LineString, Polygon, MultiPolygon, MultiLineString, LinearRing
+from shapely.geometry import base
+from shapely.ops import unary_union, nearest_points
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
+
 from appParsers.ParseGerber import Gerber
 from camlib import grace, flatten_shapely_geometry
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
@@ -523,7 +543,7 @@ class NonCopperClear(AppTool, Gerber):
         sel_model = self.ui.tools_table.selectionModel()
         sel_indexes = sel_model.selectedIndexes()
 
-        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        # it will iterate over all indexes which means all items in all columns too, but I'm interested only on rows
         sel_rows = set()
         for idx in sel_indexes:
             sel_rows.add(idx.row())
@@ -543,7 +563,7 @@ class NonCopperClear(AppTool, Gerber):
         sel_model = self.ui.tools_table.selectionModel()
         sel_indexes = sel_model.selectedIndexes()
 
-        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        # it will iterate over all indexes which means all items in all columns too, but I'm interested only on rows
         sel_rows = set()
         for idx in sel_indexes:
             sel_rows.add(idx.row())
@@ -619,7 +639,7 @@ class NonCopperClear(AppTool, Gerber):
 
     def form_to_storage(self):
         if self.ui.tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the GUI elements values to storage
+            # there is no tool in tool table, so we can't save the GUI elements values to storage
             return
 
         self.blockSignals(True)
@@ -647,7 +667,7 @@ class NonCopperClear(AppTool, Gerber):
 
     def on_apply_param_to_all_clicked(self):
         if self.ui.tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the GUI elements values to storage
+            # there is no tool in tool table, so we can't save the GUI elements values to storage
             self.app.log.debug("NonCopperClear.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
             return
 
@@ -952,6 +972,7 @@ class NonCopperClear(AppTool, Gerber):
 
         total_geo = MultiPolygon(total_geo)
         total_geo = total_geo.buffer(0)
+        total_geo = flatten_shapely_geometry(total_geo)
 
         if isinstance(total_geo, Polygon):
             msg = ('[ERROR_NOTCL] %s' % _("The Gerber object has one Polygon as geometry.\n"
@@ -959,8 +980,8 @@ class NonCopperClear(AppTool, Gerber):
             return msg, np.Inf
         min_dict = {}
         idx = 1
-        for geo in total_geo.geoms:
-            for s_geo in total_geo.geoms[idx:]:
+        for geo in total_geo:
+            for s_geo in total_geo[idx:]:
                 # minimize the number of distances by not taking into considerations
                 # those that are too small
                 dist = geo.distance(s_geo)
@@ -1033,7 +1054,7 @@ class NonCopperClear(AppTool, Gerber):
                         self.app.inform.emit('[ERROR_NOTCL] %s' % msg)
                         return 'fail'
 
-                    # check if the tools diameters are less then the safe tool diameter
+                    # check if the tools diameters are less than the safe tool diameter
                     suitable_tools = []
                     for tool in sorted_tools:
                         tool_dia = float(self.ncc_tools[tool]['tooldia'])
@@ -1092,20 +1113,21 @@ class NonCopperClear(AppTool, Gerber):
 
                     total_geo = MultiPolygon(total_geo)
                     total_geo = total_geo.buffer(0)
+                    total_geo = flatten_shapely_geometry(total_geo)
 
-                    if isinstance(total_geo, MultiPolygon):
-                        geo_len = len(total_geo.geoms)
-                        geo_len = (geo_len * (geo_len - 1)) / 2
-                    elif isinstance(total_geo, Polygon):
+                    geo_len = len(total_geo)
+                    if geo_len == 1:
                         app_obj.inform.emit('[ERROR_NOTCL] %s' %
                                             _("The Gerber object has one Polygon as geometry.\n"
                                               "There are no distances between geometry elements to be found."))
                         return 'fail'
 
+                    geo_len = (geo_len * (geo_len - 1)) / 2
+
                     min_dict = {}
                     idx = 1
-                    for geo in total_geo.geoms:
-                        for s_geo in total_geo.geoms[idx:]:
+                    for geo in total_geo:
+                        for s_geo in total_geo[idx:]:
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
                                 raise grace
@@ -1517,6 +1539,7 @@ class NonCopperClear(AppTool, Gerber):
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(self.obj_name)))
             return
 
+        # Check tool validity
         if self.ui.valid_cb.get_value() is True:
             # this is done in another Process
             self.find_safe_tooldia_multiprocessing()
@@ -1540,7 +1563,7 @@ class NonCopperClear(AppTool, Gerber):
                         self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                         continue
 
-                # find out which tools is for isolation and which are for copper clearing
+                # find out which tools are for isolation and which are for copper clearing
                 for uid_k, uid_v in self.ncc_tools.items():
                     if round(uid_v['tooldia'], self.decimals) == round(self.tooldia, self.decimals):
                         if uid_v['data']['tools_ncc_operation'] == "iso":
@@ -1564,8 +1587,8 @@ class NonCopperClear(AppTool, Gerber):
                 return "Could not retrieve object: %s with error: %s" % (self.bound_obj_name, str(e))
 
             self.clear_copper(ncc_obj=self.ncc_obj,
-                              ncctooldia=self.ncc_dia_list,
-                              isotooldia=self.iso_dia_list,
+                              ncctd_list=self.ncc_dia_list,
+                              isotd_list=self.iso_dia_list,
                               outname=self.o_name,
                               tools_storage=self.ncc_tools)
         elif self.select_method == 1:   # Area Selection
@@ -1588,7 +1611,6 @@ class NonCopperClear(AppTool, Gerber):
             self.area_sel_disconnect_flag = True
             # disable the "notebook UI" until finished
             self.app.ui.notebook.setDisabled(True)
-
         elif self.select_method == 2:   # Reference Object
             self.bound_obj_name = self.ui.reference_combo.currentText()
             # Get source object.
@@ -1600,8 +1622,8 @@ class NonCopperClear(AppTool, Gerber):
 
             self.clear_copper(ncc_obj=self.ncc_obj,
                               sel_obj=self.bound_obj,
-                              ncctooldia=self.ncc_dia_list,
-                              isotooldia=self.iso_dia_list,
+                              ncctd_list=self.ncc_dia_list,
+                              isotd_list=self.iso_dia_list,
                               outname=self.o_name)
 
     # To be called after clicking on the plot.
@@ -1718,8 +1740,8 @@ class NonCopperClear(AppTool, Gerber):
 
             self.sel_rect = unary_union(self.sel_rect)
 
-            self.clear_copper(ncc_obj=self.ncc_obj, sel_obj=self.bound_obj, ncctooldia=self.ncc_dia_list,
-                              isotooldia=self.iso_dia_list, outname=self.o_name)
+            self.clear_copper(ncc_obj=self.ncc_obj, sel_obj=self.bound_obj, ncctd_list=self.ncc_dia_list,
+                              isotd_list=self.iso_dia_list, outname=self.o_name)
 
             self.app.ui.notebook.setDisabled(False)
 
@@ -1873,7 +1895,7 @@ class NonCopperClear(AppTool, Gerber):
             try:
                 if isinstance(geo_n, MultiPolygon):
                     env_obj = geo_n.convex_hull
-                elif (isinstance(geo_n, MultiPolygon) and len(geo_n) == 1) or \
+                elif (isinstance(geo_n, MultiPolygon) and len(geo_n.geoms) == 1) or \
                         (isinstance(geo_n, list) and len(geo_n) == 1) and isinstance(geo_n[0], Polygon):
                     env_obj = unary_union(geo_n)
                 else:
@@ -2070,7 +2092,7 @@ class NonCopperClear(AppTool, Gerber):
                                 if new_geo and not new_geo.is_empty:
                                     new_geometry.append(new_geo)
                         elif isinstance(geo_elem, MultiPolygon):
-                            for poly in geo_elem:
+                            for poly in geo_elem.geoms:
                                 for ring in self.poly2rings(poly):
                                     new_geo = ring.intersection(bounding_box)
                                     if new_geo and not new_geo.is_empty:
@@ -2081,7 +2103,7 @@ class NonCopperClear(AppTool, Gerber):
                                 if not new_geo.is_empty:
                                     new_geometry.append(new_geo)
                         elif isinstance(geo_elem, MultiLineString):
-                            for line_elem in geo_elem:
+                            for line_elem in geo_elem.geoms:
                                 new_geo = line_elem.intersection(bounding_box)
                                 if new_geo and not new_geo.is_empty:
                                     new_geometry.append(new_geo)
@@ -2097,7 +2119,7 @@ class NonCopperClear(AppTool, Gerber):
                         if new_geo and not new_geo.is_empty:
                             new_geometry.append(new_geo)
                     elif isinstance(isolated_geo, MultiLineString):
-                        for line_elem in isolated_geo:
+                        for line_elem in isolated_geo.geoms:
                             new_geo = line_elem.intersection(bounding_box)
                             if new_geo and not new_geo.is_empty:
                                 new_geometry.append(new_geo)
@@ -2231,17 +2253,17 @@ class NonCopperClear(AppTool, Gerber):
             self.app.inform_shell.emit('%s %s' % (_('Polygon could not be cleared. Location:'), str(coords)))
             return None
 
-    def clear_copper(self, ncc_obj, ncctooldia, isotooldia, sel_obj=None, outname=None, order=None,
+    def clear_copper(self, ncc_obj, ncctd_list, isotd_list, sel_obj=None, outname=None, order=None,
                      tools_storage=None, run_threaded=True):
         """
         Clear the excess copper from the entire object.
 
         :param ncc_obj:         ncc cleared object
         :type ncc_obj:          appObjects.GerberObject.GerberObject
-        :param ncctooldia:      a list of diameters of the tools to be used to ncc clear
-        :type ncctooldia:       list
-        :param isotooldia:      a list of diameters of the tools to be used for isolation
-        :type isotooldia:       list
+        :param ncctd_list:      a list of diameters of the tools to be used to ncc clear
+        :type ncctd_list:       list
+        :param isotd_list:      a list of diameters of the tools to be used for isolation
+        :type isotd_list:       list
         :param sel_obj:
         :type sel_obj:
         :param outname:         name of the resulting object
@@ -2278,7 +2300,7 @@ class NonCopperClear(AppTool, Gerber):
         prog_plot = True if self.app.options["tools_ncc_plotting"] == 'progressive' else False
 
         tools_storage = tools_storage if tools_storage is not None else self.ncc_tools
-        sorted_clear_tools = ncctooldia
+        sorted_clear_tools = ncctd_list
 
         if not sorted_clear_tools:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("There is no copper clearing tool in the selection "
@@ -2366,8 +2388,8 @@ class NonCopperClear(AppTool, Gerber):
                 ncc_offset = float(self.ncc_tools[tool_uid]["data"]["tools_ncc_offset_value"])
 
                 # Area to clear
-                result = self.get_tool_empty_area(name=name, ncc_obj=ncc_obj, geo_obj=geo_obj, isotooldia=isotooldia,
-                                                  ncc_margin=ncc_margin, has_offset=has_offset,  ncc_offset=ncc_offset,
+                result = self.get_tool_empty_area(name=name, ncc_obj=ncc_obj, geo_obj=geo_obj, isotooldia=isotd_list,
+                                                  ncc_margin=ncc_margin, has_offset=has_offset, ncc_offset=ncc_offset,
                                                   tools_storage=tools_storage, bounding_box=bbox)
 
                 area, warning_flag = result
@@ -2386,87 +2408,74 @@ class NonCopperClear(AppTool, Gerber):
                 old_disp_number = 0
                 self.app.log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
 
+                tool_empty_area = []
                 if area.geoms:
-                    if len(area.geoms) > 0:
-                        pol_nr = 0
-                        for p in area.geoms:
+                    tool_empty_area = flatten_shapely_geometry(area.geoms)
+
+                if tool_empty_area:
+                    pol_nr = 0
+                    for p in tool_empty_area:
+                        # provide the app with a way to process the GUI events when in a blocking loop
+                        if not run_threaded:
+                            QtWidgets.QApplication.processEvents()
+
+                        if self.app.abort_flag:
+                            # graceful abort requested by the user
+                            raise grace
+
+                        # clean the polygon
+                        p = p.buffer(0.0000001)
+                        p = flatten_shapely_geometry(p)
+
+                        poly_failed = 0
+                        for pol in p:
                             # provide the app with a way to process the GUI events when in a blocking loop
-                            if not run_threaded:
-                                QtWidgets.QApplication.processEvents()
+                            QtWidgets.QApplication.processEvents()
 
-                            if self.app.abort_flag:
-                                # graceful abort requested by the user
-                                raise grace
+                            if pol is not None and pol.is_valid and isinstance(pol, Polygon):
+                                res = self.clear_polygon_worker(pol=pol, tooldia=tool,
+                                                                ncc_method=ncc_method,
+                                                                ncc_overlap=ncc_overlap,
+                                                                ncc_connect=ncc_connect,
+                                                                ncc_contour=ncc_contour,
+                                                                prog_plot=prog_plot)
+                                if res is not None:
+                                    cleared_geo += res
+                                else:
+                                    poly_failed += 1
+                            else:
+                                self.app.log.warning(
+                                    "Expected geo is a Polygon. Instead got a %s" % str(type(pol)))
 
-                            # clean the polygon
-                            p = p.buffer(0)
+                        if poly_failed > 0:
+                            app_obj.poly_not_cleared = True
 
-                            if p is not None and p.is_valid:
-                                poly_failed = 0
-                                try:
-                                    for pol in p:
-                                        # provide the app with a way to process the GUI events when in a blocking loop
-                                        QtWidgets.QApplication.processEvents()
+                        pol_nr += 1
+                        disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
+                        # log.debug("Polygons cleared: %d" % pol_nr)
 
-                                        if pol is not None and isinstance(pol, Polygon):
-                                            res = self.clear_polygon_worker(pol=pol, tooldia=tool,
-                                                                            ncc_method=ncc_method,
-                                                                            ncc_overlap=ncc_overlap,
-                                                                            ncc_connect=ncc_connect,
-                                                                            ncc_contour=ncc_contour,
-                                                                            prog_plot=prog_plot)
-                                            if res is not None:
-                                                cleared_geo += res
-                                            else:
-                                                poly_failed += 1
-                                        else:
-                                            self.app.log.warning(
-                                                "Expected geo is a Polygon. Instead got a %s" % str(type(pol)))
-                                except TypeError:
-                                    if isinstance(p, Polygon):
-                                        res = self.clear_polygon_worker(pol=p, tooldia=tool,
-                                                                        ncc_method=ncc_method,
-                                                                        ncc_overlap=ncc_overlap,
-                                                                        ncc_connect=ncc_connect,
-                                                                        ncc_contour=ncc_contour,
-                                                                        prog_plot=prog_plot)
-                                        if res is not None:
-                                            cleared_geo += res
-                                        else:
-                                            poly_failed += 1
-                                    else:
-                                        self.app.log.warning(
-                                            "Expected geo is a Polygon. Instead got a %s" % str(type(p)))
+                        if old_disp_number < disp_number <= 100:
+                            self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                            old_disp_number = disp_number
+                            # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
 
-                                if poly_failed > 0:
-                                    app_obj.poly_not_cleared = True
+                    # check if there is a geometry at all in the cleared geometry
+                    if cleared_geo:
+                        formatted_tool = self.app.dec_format(tool, self.decimals)
+                        # find the tooluid associated with the current tool_dia so we know where to add the tool
+                        # solid_geometry
+                        for k, v in tools_storage.items():
+                            if self.app.dec_format(v['tooldia'], self.decimals) == formatted_tool:
+                                current_uid = int(k)
 
-                                pol_nr += 1
-                                disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
-                                # log.debug("Polygons cleared: %d" % pol_nr)
-
-                                if old_disp_number < disp_number <= 100:
-                                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
-                                    old_disp_number = disp_number
-                                    # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
-
-                        # check if there is a geometry at all in the cleared geometry
-                        if cleared_geo:
-                            formatted_tool = self.app.dec_format(tool, self.decimals)
-                            # find the tooluid associated with the current tool_dia so we know where to add the tool
-                            # solid_geometry
-                            for k, v in tools_storage.items():
-                                if self.app.dec_format(v['tooldia'], self.decimals) == formatted_tool:
-                                    current_uid = int(k)
-
-                                    # add the solid_geometry to the current too in self.paint_tools dictionary
-                                    # and then reset the temporary list that stored that solid_geometry
-                                    v['solid_geometry'] = deepcopy(cleared_geo)
-                                    v['data']['name'] = name
-                                    geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
-                                    break
-                        else:
-                            self.app.log.debug("There are no geometries in the cleared polygon.")
+                                # add the solid_geometry to the current too in self.paint_tools dictionary
+                                # and then reset the temporary list that stored that solid_geometry
+                                v['solid_geometry'] = deepcopy(cleared_geo)
+                                v['data']['name'] = name
+                                geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
+                                break
+                    else:
+                        self.app.log.debug("There are no geometries in the cleared polygon.")
 
             # clean the progressive plotted shapes if it was used
             if self.app.options["tools_ncc_plotting"] == 'progressive':
@@ -2580,7 +2589,7 @@ class NonCopperClear(AppTool, Gerber):
 
             # Area to clear
             area, warning_flag = self.get_tool_empty_area(name=name, ncc_obj=ncc_obj, geo_obj=geo_obj,
-                                                          isotooldia=isotooldia,
+                                                          isotooldia=isotd_list,
                                                           has_offset=has_offset, ncc_offset=ncc_offset,
                                                           ncc_margin=ncc_margin, tools_storage=tools_storage,
                                                           bounding_box=bbox)
@@ -2634,10 +2643,18 @@ class NonCopperClear(AppTool, Gerber):
                 # store here the geometry generated by clear operation
                 cleared_geo = []
 
-                poly_failed = 0
-                if area.geoms and len(area.geoms) > 0:
+                tool_empty_area = []
+                if area.geoms:
+                    tool_empty_area = flatten_shapely_geometry(area.geoms)
+
+                if tool_empty_area:
+                    poly_failed = 0
                     pol_nr = 0
-                    for p in area.geoms:
+                    for p in tool_empty_area:
+                        # provide the app with a way to process the GUI events when in a blocking loop
+                        if not run_threaded:
+                            QtWidgets.QApplication.processEvents()
+
                         if self.app.abort_flag:
                             # graceful abort requested by the user
                             raise grace
@@ -2646,11 +2663,12 @@ class NonCopperClear(AppTool, Gerber):
                             # provide the app with a way to process the GUI events when in a blocking loop
                             QtWidgets.QApplication.processEvents()
 
-                            # speedup the clearing by not trying to clear polygons that is clear they can't be
+                            # speedup the clearing by not trying to clear polygons that is obvious they can't be
                             # cleared with the current tool. this tremendously reduce the clearing time
                             check_dist = -tool / 2
                             check_buff = p.buffer(check_dist, self.circle_steps)
-                            if not check_buff or check_buff.is_empty:
+                            check_buff = flatten_shapely_geometry(check_buff)
+                            if not check_buff:
                                 continue
 
                             # if self.app.dec_format(float(tool), self.decimals) == 0.15:
@@ -2718,6 +2736,7 @@ class NonCopperClear(AppTool, Gerber):
                 new_area = new_area.buffer(0.0000001)
 
                 area = area.difference(new_area)
+                area = flatten_shapely_geometry(area)
 
                 new_area = [pol for pol in area if pol.is_valid and not pol.is_empty]
                 area = MultiPolygon(new_area)
@@ -2921,7 +2940,7 @@ class NonCopperClear(AppTool, Gerber):
             try:
                 if isinstance(geo_n, MultiPolygon):
                     env_obj = geo_n.convex_hull
-                elif (isinstance(geo_n, MultiPolygon) and len(geo_n) == 1) or \
+                elif (isinstance(geo_n, MultiPolygon) and len(geo_n.geoms) == 1) or \
                         (isinstance(geo_n, list) and len(geo_n) == 1) and isinstance(geo_n[0], Polygon):
                     env_obj = unary_union(geo_n)
                 else:
@@ -3089,7 +3108,7 @@ class NonCopperClear(AppTool, Gerber):
                                         if new_geo and not new_geo.is_empty:
                                             new_geometry.append(new_geo)
                                 elif isinstance(geo_elem, MultiPolygon):
-                                    for a_poly in geo_elem:
+                                    for a_poly in geo_elem.geoms:
                                         for ring in self.poly2rings(a_poly):
                                             new_geo = ring.intersection(bounding_box)
                                             if new_geo and not new_geo.is_empty:
@@ -3100,7 +3119,7 @@ class NonCopperClear(AppTool, Gerber):
                                         if not new_geo.is_empty:
                                             new_geometry.append(new_geo)
                                 elif isinstance(geo_elem, MultiLineString):
-                                    for line_elem in geo_elem:
+                                    for line_elem in geo_elem.geoms:
                                         new_geo = line_elem.intersection(bounding_box)
                                         if new_geo and not new_geo.is_empty:
                                             new_geometry.append(new_geo)
@@ -3116,7 +3135,7 @@ class NonCopperClear(AppTool, Gerber):
                                 if new_geo and not new_geo.is_empty:
                                     new_geometry.append(new_geo)
                             elif isinstance(isolated_geo, MultiLineString):
-                                for line_elem in isolated_geo:
+                                for line_elem in isolated_geo.geoms:
                                     new_geo = line_elem.intersection(bounding_box)
                                     if new_geo and not new_geo.is_empty:
                                         new_geometry.append(new_geo)
@@ -3470,7 +3489,7 @@ class NonCopperClear(AppTool, Gerber):
                                         if new_geo and not new_geo.is_empty:
                                             new_geometry.append(new_geo)
                                 elif isinstance(geo_elem, MultiPolygon):
-                                    for poly_g in geo_elem:
+                                    for poly_g in geo_elem.geoms:
                                         for ring in self.poly2rings(poly_g):
                                             new_geo = ring.intersection(bounding_box)
                                             if new_geo and not new_geo.is_empty:
@@ -3481,7 +3500,7 @@ class NonCopperClear(AppTool, Gerber):
                                         if not new_geo.is_empty:
                                             new_geometry.append(new_geo)
                                 elif isinstance(geo_elem, MultiLineString):
-                                    for line_elem in geo_elem:
+                                    for line_elem in geo_elem.geoms:
                                         new_geo = line_elem.intersection(bounding_box)
                                         if new_geo and not new_geo.is_empty:
                                             new_geometry.append(new_geo)
@@ -3498,7 +3517,7 @@ class NonCopperClear(AppTool, Gerber):
                                     if new_geo and not new_geo.is_empty:
                                         new_geometry.append(new_geo)
                                 elif isinstance(isolated_geo, MultiLineString):
-                                    for line_elem in isolated_geo:
+                                    for line_elem in isolated_geo.geoms:
                                         new_geo = line_elem.intersection(bounding_box)
                                         if new_geo and not new_geo.is_empty:
                                             new_geometry.append(new_geo)
@@ -3653,7 +3672,7 @@ class NonCopperClear(AppTool, Gerber):
                                         # a smaller tool
                                         rest_geo.append(p)
                                 elif isinstance(p, MultiPolygon):
-                                    for poly_p in p:
+                                    for poly_p in p.geoms:
                                         if poly_p is not None:
                                             # provide the app with a way to process the GUI events when
                                             # in a blocking loop

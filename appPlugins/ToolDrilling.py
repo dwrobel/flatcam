@@ -5,9 +5,28 @@
 # License:  MIT Licence                                    #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
+    FCComboBox2, RadioSet, FCDoubleSpinner, FCSpinner, NumericalEvalTupleEntry, NumericalEvalEntry, FCTable, \
+    OptionalInputSection, OptionalHideInputSection
 from appParsers.ParseExcellon import Excellon
+
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
+
+import logging
+from copy import deepcopy
+import numpy as np
+import simplejson as json
+import sys
+import platform
+import re
+
+from shapely import LineString
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -654,29 +673,47 @@ class ToolDrilling(AppTool, Excellon):
         self.app.log.debug("ToolDrilling.build_tool_ui()")
         self.ui_disconnect()
 
-        # order the tools by tool diameter if it's the case
-        sorted_tools = []
-        for k, v in self.excellon_tools.items():
-            sorted_tools.append(self.dec_format(float(v['tooldia'])))
+        # # order the tools by tool diameter if it's the case
+        # sorted_tools = []
+        # for k, v in self.excellon_tools.items():
+        #     sorted_tools.append(self.dec_format(float(v['tooldia'])))
+        #
+        # order = self.ui.order_combo.get_value()
+        # if order == 1:  # 'fwd'
+        #     sorted_tools.sort(reverse=False)
+        # elif order == 2:    # 'rev'
+        #     sorted_tools.sort(reverse=True)
+        # else:
+        #     pass
+        #
+        # # remake the excellon_tools dict in the order above
+        # new_id = 1
+        # new_tools = {}
+        # for tooldia in sorted_tools:
+        #     for old_tool in self.excellon_tools:
+        #         if self.dec_format(float(self.excellon_tools[old_tool]['tooldia'])) == tooldia:
+        #             new_tools[new_id] = deepcopy(self.excellon_tools[old_tool])
+        #             new_id += 1
 
         order = self.ui.order_combo.get_value()
         if order == 1:  # 'fwd'
-            sorted_tools.sort(reverse=False)
-        elif order == 2:    # 'rev'
-            sorted_tools.sort(reverse=True)
+            new_tools = {
+                k: v for k, v in sorted(self.excellon_tools.items(), key=lambda it: it[1]['tooldia'], reverse=False)
+            }
+            for idx, v in enumerate(new_tools.values(), start=1):
+                self.excellon_tools[idx] = v
+        elif order == 2:  # 'rev'
+            new_tools = {
+                k: v for k, v in sorted(self.excellon_tools.items(), key=lambda it: it[1]['tooldia'], reverse=True)
+            }
+            for idx, v in enumerate(new_tools.values(), start=1):
+                self.excellon_tools[idx] = v
         else:
-            pass
-
-        # remake the excellon_tools dict in the order above
-        new_id = 1
-        new_tools = {}
-        for tooldia in sorted_tools:
-            for old_tool in self.excellon_tools:
-                if self.dec_format(float(self.excellon_tools[old_tool]['tooldia'])) == tooldia:
-                    new_tools[new_id] = deepcopy(self.excellon_tools[old_tool])
-                    new_id += 1
-
-        self.excellon_tools = new_tools
+            try:
+                self.excellon_tools = self.excellon_obj.tools
+            except AttributeError:
+                # when no object was loaded yet
+                pass
 
         if self.excellon_obj and self.excellon_tools:
             self.ui.exc_param_frame.setDisabled(False)
@@ -1717,10 +1754,9 @@ class ToolDrilling(AppTool, Excellon):
 
         for row in sel_rows:
             sel_rect = self.app.exc_areas.exclusion_areas_storage[row]['shape']
-            self.app.move_tool.sel_shapes.add(sel_rect, color=outline, face_color=face, update=True, layer=0,
-                                              tolerance=None)
+            self.app.sel_shapes.add(sel_rect, color=outline, face_color=face, update=True, layer=0, tolerance=None)
         if self.app.use_3d_engine:
-            self.app.move_tool.sel_shapes.redraw()
+            self.app.sel_shapes.redraw()
 
     def clear_selection(self):
         self.app.delete_selection_shape()

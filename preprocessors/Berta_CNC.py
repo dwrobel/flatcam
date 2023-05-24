@@ -10,7 +10,8 @@
 # MIT Licence                                                #
 ##############################################################
 
-from appPreProcessor import *
+from appPreProcessor import PreProc
+import math
 
 
 class Berta_CNC(PreProc):

@@ -16,9 +16,8 @@ from copy import deepcopy
 import sys
 
 from shapely.ops import unary_union
-from shapely.geometry import LineString, Point
+from shapely import LineString, Point
 
-# import AppTranslation as fcTranslate
 import gettext
 import builtins
 

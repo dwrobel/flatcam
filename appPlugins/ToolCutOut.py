@@ -5,10 +5,28 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
-from camlib import grace, flatten_shapely_geometry
-from matplotlib.backend_bases import KeyEvent as mpl_key_event
+from PyQt6 import QtWidgets, QtGui, QtCore
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, RadioSet, \
+    FCDoubleSpinner, FCComboBox2, OptionalInputSection, FCCheckBox
+from camlib import flatten_shapely_geometry
+
+import math
+import logging
+from copy import deepcopy
+import simplejson as json
+import sys
 from numpy import Inf
+
+from shapely import Polygon, MultiPolygon, box, Point, LineString, MultiLineString, LinearRing
+from shapely.ops import unary_union, linemerge
+from shapely.affinity import rotate
+
+from matplotlib.backend_bases import KeyEvent as mpl_key_event
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -379,7 +397,7 @@ class CutOut(AppTool):
         self.ui.gaps.set_value(tool_dict["tools_cutout_gaps_ff"])
 
         self.ui.cutz_entry.set_value(float(tool_dict["tools_cutout_z"]))
-        self.ui.mpass_cb.set_value(float(tool_dict["tools_cutout_mdepth"]))
+        self.ui.mpass_cb.set_value(bool(tool_dict["tools_cutout_mdepth"]))
         self.ui.maxdepth_entry.set_value(float(tool_dict["tools_cutout_depthperpass"]))
 
     def on_cutout_type(self, val):
@@ -756,8 +774,13 @@ class CutOut(AppTool):
                         self.app.log.debug("Cutout.on_freeform_cutout() -> Empty geometry.")
                         self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                         return 'fail'
+                    try:
+                        solid_geo, rest_geo = self.any_cutout_handler(geo, abs(cut_dia), gaps, gapsize, margin)
+                    except Exception as err:
+                        self.app.log.error("Cutout.on_freeform_cutout() -> %s" % str(err))
+                        self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                        return
 
-                    solid_geo, rest_geo = self.any_cutout_handler(geo, abs(cut_dia), gaps, gapsize, margin)
                     if gap_type == 1 and thin_entry != 0:   # "Thin gaps"
                         gaps_solid_geo = rest_geo
                 else:
@@ -779,9 +802,21 @@ class CutOut(AppTool):
                                 geo_buf = geom_struct.buffer(0.0000001)
                                 geo_ext = geo_buf.exterior
                                 buff_geo_ext = geo_ext.buffer(-margin)
-                                geom_struct = unary_union(buff_geo_ext.interiors)
+                                if isinstance(buff_geo_ext, MultiPolygon):
+                                    self.app.log.debug(
+                                        "Cutout.on_freeform_cutout() -> The source geometry cannot be used.")
+                                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                                    unary_union(buff_geo_ext)
+                                else:
+                                    geom_struct = unary_union(buff_geo_ext.interiors)
 
-                        c_geo, r_geo = self.any_cutout_handler(geom_struct, abs(cut_dia), gaps, gapsize, margin)
+                        try:
+                            c_geo, r_geo = self.any_cutout_handler(geom_struct, abs(cut_dia), gaps, gapsize, margin)
+                        except Exception as err:
+                            self.app.log.error("Cutout.on_freeform_cutout() -> %s" % str(err))
+                            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                            continue
+
                         solid_geo += c_geo
                         if gap_type == 1 and thin_entry != 0:   # "Thin gaps"
                             gaps_solid_geo += r_geo
@@ -1634,7 +1669,7 @@ class CutOut(AppTool):
                 self.mb_manual_cuts.append(rests_geo)
 
         # first subtract geometry for the total solid_geometry
-        new_solid_geometry = CutOut.subtract_geo(self.man_cutout_obj.solid_geometry, cut_poly)
+        new_solid_geometry = self.subtract_geo(self.man_cutout_obj.solid_geometry, cut_poly)
         try:
             new_solid_geometry = linemerge(new_solid_geometry)
         except ValueError:
@@ -2141,7 +2176,7 @@ class CutOut(AppTool):
 
         Results are placed in self.flat_geometry
 
-        :param geometry: Shapely type or list or list of list of such.
+        :param geometry: Shapely type or list or a list of lists of such.
         """
         flat_geo = []
         work_geo = geometry.geoms if isinstance(geometry, (MultiPolygon, MultiLineString)) else geometry
@@ -2178,6 +2213,8 @@ class CutOut(AppTool):
 
                 work_geo = obj.geoms if isinstance(obj, (MultiPolygon, MultiLineString)) else obj
                 for k in work_geo:
+                    if k.is_empty or not k.is_valid:
+                        continue
                     minx_, miny_, maxx_, maxy_ = bounds_rec(k)
                     minx = min(minx, minx_)
                     miny = min(miny, miny_)
@@ -2185,7 +2222,7 @@ class CutOut(AppTool):
                     maxy = max(maxy, maxy_)
                 return minx, miny, maxx, maxy
             except TypeError:
-                # it's a Shapely object, return it's bounds
+                # it's a Shapely object, return its bounds
                 if obj:
                     return obj.bounds
 

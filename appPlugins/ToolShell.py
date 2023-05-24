@@ -9,8 +9,10 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import QSettings
 from PyQt6.QtGui import QTextCursor, QPixmap
-from PyQt6.QtWidgets import QVBoxLayout, QWidget, QHBoxLayout, QLabel
+from PyQt6.QtWidgets import QVBoxLayout, QWidget, QHBoxLayout
+
 from appGUI.GUIElements import _BrowserTextEdit, _ExpandableTextEdit, FCLabel
+
 import html
 import sys
 import traceback
@@ -42,7 +44,7 @@ class TermWidget(QWidget):
 
         self._browser = _BrowserTextEdit(version=version, app=app)
 
-        qsettings = QSettings("Open Source", "FlatCAM")
+        qsettings = QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("textbox_font_size"):
             tb_fsize = qsettings.value('textbox_font_size', type=int)
         else:
@@ -73,7 +75,7 @@ class TermWidget(QWidget):
 
         hlay = QHBoxLayout()
         hlay.addWidget(self._delete_line)
-        hlay.addWidget(QLabel(" "))
+        hlay.addWidget(FCLabel(" "))
         hlay.addWidget(self._edit)
         layout.addLayout(hlay)
 
@@ -311,8 +313,6 @@ class FCShell(TermWidget):
         self.tcl = None
 
         self.init_tcl()
-
-        self._edit.set_model_data(self.app.myKeywords)
 
         app_icon = QtGui.QIcon()
         app_icon.addFile(self.app.resource_location + '/app16.png', QtCore.QSize(16, 16))

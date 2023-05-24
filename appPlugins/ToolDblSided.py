@@ -1,5 +1,19 @@
 
-from appTool import *
+from PyQt6 import QtWidgets, QtGui, QtCore
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, RadioSet, \
+    FCDoubleSpinner, FCComboBox2, NumericalEvalTupleEntry
+
+import logging
+from copy import deepcopy
+from numpy import Inf
+
+from shapely import Point
+from shapely.affinity import scale
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -532,7 +546,7 @@ class DblSidedTool(AppTool):
 
     def on_point_add(self):
         val = self.app.options["global_point_clipboard_format"] % \
-              (self.decimals, self.app.pos[0], self.decimals, self.app.pos[1])
+              (self.decimals, self.app.mouse_click_pos[0], self.decimals, self.app.mouse_click_pos[1])
         self.ui.point_entry.set_value(val)
 
     def on_drill_delete_last(self):
@@ -871,7 +885,7 @@ class DsidedUI:
         grid_mirror.addWidget(separator_line, 3, 0, 1, 3)
 
         # ## Reference
-        self.axloc_label = FCLabel('%s' % _("Reference"), bold=True)
+        self.axloc_label = FCLabel('%s:' % _("Reference"), bold=True)
         self.axloc_label.setToolTip(
             _("The coordinates used as reference for the mirror operation.\n"
               "Can be:\n"

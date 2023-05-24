@@ -1,6 +1,16 @@
 
-from appTool import *
+from PyQt6 import QtWidgets
+from appTool import AppToolEditor
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCFrame, FCButton, GLay, FCDoubleSpinner, FCComboBox, \
+    FCCheckBox
 from camlib import Geometry
+
+from shapely import Polygon
+from shapely.ops import unary_union
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -145,7 +155,7 @@ class PaintOptionsTool(AppToolEditor):
                     Creates a list of non-iterable linear geometry objects.
                     Results are placed in self.flat_geometry
 
-                    :param geometry: Shapely type or list or list of list of such.
+                    :param geometry: Shapely type, list or list of lists of such.
                     :param reset: Clears the contents of self.flat_geometry.
                     """
 

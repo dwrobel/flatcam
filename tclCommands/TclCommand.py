@@ -1,6 +1,6 @@
 import sys
 import re
-import appMain
+
 import abc
 import collections
 from PyQt6 import QtCore
@@ -53,8 +53,8 @@ class TclCommand(object):
         if self.app is None:
             raise TypeError('Expected app to be appMain instance.')
 
-        if not isinstance(self.app, appMain.App):
-            raise TypeError('Expected appMain, got %s.' % type(app))
+        # if not isinstance(self.app, appMain.App):
+        #     raise TypeError('Expected appMain, got %s.' % type(app))
 
         self.log = self.app.log
         self.error_info = None

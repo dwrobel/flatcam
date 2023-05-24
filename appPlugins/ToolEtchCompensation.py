@@ -5,8 +5,21 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCEntry, \
+    RadioSet, FCDoubleSpinner, NumericalEvalEntry
 from camlib import flatten_shapely_geometry
+
+import logging
+from copy import deepcopy
+import math
+
+from shapely.ops import unary_union
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -209,7 +222,8 @@ class ToolEtchCompensation(AppTool):
             offset = offset_value / 1000   # in microns
 
         if offset == 0:
-            # no need to do anything for zero value offset isn't it? compensating with zero is the same as the original
+            # no need to do anything for zero value, offset, isn't it?
+            # compensating with zero is the same as the original
             return
 
         grb_obj.solid_geometry = flatten_shapely_geometry(grb_obj.solid_geometry)

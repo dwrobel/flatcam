@@ -5,11 +5,23 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
+    FCDoubleSpinner, NumericalEvalTupleEntry, OptionalInputSection
+
+import logging
+import numpy as np
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class ToolTransform(AppTool):
@@ -552,7 +564,7 @@ class ToolTransform(AppTool):
                         maxy = max(maxy, maxy_)
                 return minx, miny, maxx, maxy
             except TypeError:
-                # it's an object, return it's bounds
+                # it's an object, return its bounds
                 return lst.bounds()
 
         return bounds_rec(obj_list)

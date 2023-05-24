@@ -14,7 +14,7 @@ from vispy.visuals import CompoundVisual, MeshVisual, LineVisual
 from vispy.scene.visuals import VisualNode, generate_docstring, visuals
 from vispy.gloo import set_state
 
-from shapely.geometry import Polygon, LineString, LinearRing
+from shapely import Polygon, LineString, LinearRing
 
 import sys
 

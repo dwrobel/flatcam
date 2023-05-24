@@ -6,7 +6,8 @@
 # MIT Licence                                              #
 # ########################################################## ##
 
-from appPreProcessor import *
+from appPreProcessor import PreProc
+import math
 # This post processor is configured to output code for
 # lasers without Z Axis
 # and to convert excellon drillcodes into arcs

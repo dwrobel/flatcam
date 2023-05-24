@@ -19,7 +19,7 @@ class TclCommandExportDXF(TclCommand):
         export_dxf path/my_geometry filename
     """
 
-    # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
+    # List of all command aliases, to be able to use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['export_dxf', 'edxf']
 
     description = '%s %s' % ("--", "Export a Geometry object as a DXF File.")
@@ -35,7 +35,7 @@ class TclCommandExportDXF(TclCommand):
     ])
 
     # array of mandatory options for current Tcl command: required = ['name','outname']
-    required = ['obj_name']
+    required = ['name']
 
     # structured help for current command, args needs to be ordered
     help = {

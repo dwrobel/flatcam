@@ -5,7 +5,21 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox
+
+import logging
+from copy import deepcopy
+import time
+import traceback
+
+from shapely import LineString, Polygon, MultiPolygon, MultiLineString
+from shapely.ops import unary_union
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -545,7 +559,7 @@ class ToolSub(AppTool):
 
         self.sub_union = unary_union(self.sub_geo_obj.solid_geometry)
 
-        # start the QTimer to check for promises with 0.5 second period check
+        # start the QTimer to check for promises with 0.5 seconds period check
         self.periodic_check(500, reset=True)
 
         if self.target_geo_obj.multigeo:
@@ -582,7 +596,7 @@ class ToolSub(AppTool):
                                 if new_geo and not new_geo.is_empty:
                                     new_geometry.append(new_geo)
                         elif isinstance(geo_elem, MultiPolygon):
-                            for poly in geo_elem:
+                            for poly in geo_elem.geoms:
                                 for ring in self.poly2rings(poly):
                                     new_geo = ring.difference(self.sub_union)
                                     if new_geo and not new_geo.is_empty:
@@ -593,7 +607,7 @@ class ToolSub(AppTool):
                                 if not new_geo.is_empty:
                                     new_geometry.append(new_geo)
                         elif isinstance(geo_elem, MultiLineString):
-                            for line_elem in geo_elem:
+                            for line_elem in geo_elem.geoms:
                                 new_geo = line_elem.difference(self.sub_union)
                                 if new_geo and not new_geo.is_empty:
                                     new_geometry.append(new_geo)
@@ -609,7 +623,7 @@ class ToolSub(AppTool):
                         if new_geo and not new_geo.is_empty:
                             new_geometry.append(new_geo)
                     elif isinstance(geo, MultiLineString):
-                        for line_elem in geo:
+                        for line_elem in geo.geoms:
                             new_geo = line_elem.difference(self.sub_union)
                             if new_geo and not new_geo.is_empty:
                                 new_geometry.append(new_geo)
@@ -625,7 +639,7 @@ class ToolSub(AppTool):
                     time.sleep(0.5)
 
         while True:
-            # removal from list is done in a multithreaded way therefore not always the removal can be done
+            # removal from list is done in a multithreaded way therefore not always the removal can be done,
             # so we keep trying until it's done
             if tool not in self.promises:
                 break
@@ -682,7 +696,7 @@ class ToolSub(AppTool):
 
     def periodic_check(self, check_period, reset=False):
         """
-        This function starts an QTimer and it will periodically check if intersections are done
+        This function starts an QTimer, and it will periodically check if intersections are done
 
         :param check_period: time at which to check periodically
         :param reset: will reset the timer
@@ -704,7 +718,7 @@ class ToolSub(AppTool):
                 pass
 
         self.check_thread.timeout.connect(self.periodic_check_handler)
-        self.check_thread.start(QtCore.QThread.Priority.HighPriority)
+        self.check_thread.start(QtCore.QThread.Priority.HighPriority)   # noqa
 
     def periodic_check_handler(self):
         """

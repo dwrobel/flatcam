@@ -4,7 +4,7 @@ import logging
 import collections
 from copy import deepcopy
 from shapely.ops import unary_union
-from shapely.geometry import Polygon, LineString, LinearRing, MultiPolygon, MultiLineString
+from shapely import Polygon, LineString, LinearRing, MultiPolygon, MultiLineString
 
 import gettext
 import appTranslation as fcTranslate

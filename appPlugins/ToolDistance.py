@@ -5,10 +5,24 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
-from appGUI.VisPyVisuals import *
+from PyQt6 import QtWidgets, QtCore
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCEntry, FCCheckBox
+from appGUI.VisPyVisuals import ShapeCollection
 from camlib import AppRTreeStorage
 from appEditors.AppGeoEditor import DrawToolShape
+
+import math
+import logging
+from copy import copy
+import numpy as np
+
+from shapely import Polygon, Point, LineString, MultiLineString
+from shapely.strtree import STRtree
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -767,7 +781,7 @@ class Distance(AppTool):
         else:
             meas_line = LineString([start_pos, end_pos])
 
-        settings = QtCore.QSettings("Open Source", "FlatCAM")
+        settings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if settings.contains("theme"):
             theme = settings.value('theme', type=str)
         else:

@@ -5,7 +5,21 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
+    FCComboBox2, RadioSet, FCDoubleSpinner, NumericalEvalTupleEntry
+
+import logging
+from copy import deepcopy
+
+from shapely import LineString, Point, MultiPolygon
+from shapely.ops import unary_union
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
+
 from appCommon.Common import LoudDict
 from camlib import flatten_shapely_geometry
 
@@ -57,7 +71,7 @@ class ToolMarkers(AppTool):
         self.handlers_connected = False
 
         # storage for temporary shapes when adding manual markers
-        self.temp_shapes = self.app.move_tool.sel_shapes
+        self.temp_shapes = self.app.sel_shapes
 
     def on_insert_type_changed(self, val):
         obj_type = 2 if val == 'geo' else 0

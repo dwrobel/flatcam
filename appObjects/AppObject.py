@@ -7,7 +7,8 @@
 # Modified by Marius Stanciu (2020)                         #
 # ###########################################################
 
-from appObjects.ObjectCollection import *
+from PyQt6 import QtCore
+
 from appObjects.CNCJobObject import CNCJobObject
 from appObjects.DocumentObject import DocumentObject
 from appObjects.ExcellonObject import ExcellonObject
@@ -17,6 +18,7 @@ from appObjects.ScriptObject import ScriptObject
 
 import time
 import traceback
+from copy import deepcopy
 
 # FlatCAM Translation
 import gettext
@@ -335,11 +337,6 @@ class AppObject(QtCore.QObject):
                         obj.alpha_level = str(hex(int(self.app.options['gerber_plot_fill'][7:9], 16))[2:])
             except Exception as e:
                 self.app.log.error("AppObject.new_object() -> setting colors error. %s" % str(e))
-
-        # #############################################################################################################
-        # update the SHELL auto-completer model with the name of the new object
-        # #############################################################################################################
-        self.app.shell.command_line().set_model_data(self.app.myKeywords)
 
         if auto_select or self.app.ui.notebook.currentWidget() is self.app.ui.properties_tab:
             # select the just opened object but deselect the previous ones

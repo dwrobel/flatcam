@@ -18,7 +18,7 @@ qrcode>=6.1
 
 rtree
 # foronoi>=1.0.3
-shapely>=1.8.0
+shapely>=2.0
 
 # ###############################
 # OR-TOOLS package is now optional
@@ -34,6 +34,7 @@ ezdxf
 reportlab>=3.5
 pyserial>=3.4
 pikepdf>=2.0
+pyppeteer
 
 matplotlib>=3.5.0
 pyopengl

@@ -5,32 +5,37 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtGui, QtCore, QtWidgets
-from PyQt6.QtCore import Qt
-
-from shapely.geometry import LineString, LinearRing, MultiLineString, Point, Polygon, MultiPolygon, box
-from shapely.ops import unary_union
-import shapely.affinity as affinity
-
-from vispy.geometry import Rect
-
-from copy import copy, deepcopy
-import logging
+from appEditors.grb_plugins.GrbCommon import DrawToolUtilityShape, DrawToolShape, DrawTool, ShapeToolEditorGrb
 
 from camlib import distance, arc, three_point_circle, flatten_shapely_geometry
-from appGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, FCSpinner, RadioSet, EvalEntry2, \
-    FCInputDoubleSpinner, FCButton, OptionalInputSection, FCCheckBox, NumericalEvalTupleEntry, FCLabel, FCTextEdit, \
-    VerticalScrollArea, GLay
-from appTool import AppTool
+from appGUI.GUIElements import *
 
+from appTool import AppTool
+from appEditors.grb_plugins.GrbPadPlugin import PadEditorTool
+
+from appEditors.grb_plugins.GrbBufferPlugin import BufferEditorTool
+from appEditors.grb_plugins.GrbTransformationPlugin import TransformEditorTool
+from appEditors.grb_plugins.GrbPadArrayPlugin import GrbPadArrayEditorTool
+from appEditors.grb_plugins.GrbTrackPlugin import GrbTrackEditorTool
+from appEditors.grb_plugins.GrbSimplificationPlugin import SimplificationTool
+from appEditors.grb_plugins.GrbCopyPlugin import CopyEditorTool
+from appEditors.grb_plugins.GrberRegionPlugin import GrbRegionEditorTool
+
+# import inspect
+
+# from vispy.io import read_png
+from vispy.geometry.rect import Rect
+# import pngcanvas
+import traceback
 import numpy as np
 from numpy.linalg import norm as numpy_norm
 import math
-import inspect
+from copy import deepcopy
 
-# from vispy.io import read_png
-# import pngcanvas
-import traceback
+from shapely import Point, Polygon, MultiPolygon, LineString, LinearRing, box
+from shapely.ops import unary_union
+from shapely.affinity import translate, scale, skew, rotate
+
 import gettext
 import appTranslation as fcTranslate
 import builtins
@@ -38,153 +43,6 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
-
-log = logging.getLogger('base')
-
-
-class DrawToolShape(object):
-    """
-    Encapsulates "shapes" under a common class.
-    """
-
-    tolerance = None
-
-    @staticmethod
-    def get_pts(o):
-        """
-        Returns a list of all points in the object, where
-        the object can be a Polygon, Not a polygon, or a list
-        of such. Search is done recursively.
-
-        :param o: geometric object
-        :return: List of points
-        :rtype: list
-        """
-        pts = []
-
-        # ## Iterable: descend into each item.
-        try:
-            for sub_o in o:
-                pts += DrawToolShape.get_pts(sub_o)
-        # Non-iterable
-        except TypeError:
-            if o is None:
-                return
-
-            # DrawToolShape: descend into .geo.
-            if isinstance(o, DrawToolShape):
-                pts += DrawToolShape.get_pts(o.geo)
-            # ## Descend into .exerior and .interiors
-            elif type(o) == Polygon:
-                pts += DrawToolShape.get_pts(o.exterior)
-                for i in o.interiors:
-                    pts += DrawToolShape.get_pts(i)
-            elif type(o) == MultiLineString:
-                for line in o:
-                    pts += DrawToolShape.get_pts(line)
-            # ## Has .coords: list them.
-            else:
-                if DrawToolShape.tolerance is not None:
-                    pts += list(o.simplify(DrawToolShape.tolerance).coords)
-                else:
-                    pts += list(o.coords)
-        return pts
-
-    def __init__(self, geo=None):
-
-        # Shapely type or list of such
-        self.geo = geo
-        self.utility = False
-
-
-class DrawToolUtilityShape(DrawToolShape):
-    """
-    Utility shapes are temporary geometry in the editor
-    to assist in the creation of shapes. For example it
-    will show the outline of a rectangle from the first
-    point to the current mouse pointer before the second
-    point is clicked and the final geometry is created.
-    """
-
-    def __init__(self, geo=None):
-        super(DrawToolUtilityShape, self).__init__(geo=geo)
-        self.utility = True
-
-
-class DrawTool(object):
-    """
-    Abstract Class representing a tool in the drawing
-    program. Can generate geometry, including temporary
-    utility geometry that is updated on user clicks
-    and mouse motion.
-    """
-
-    def __init__(self, draw_app):
-        self.draw_app = draw_app
-        self.complete = False
-        self.points = []
-        self.geometry = None  # DrawToolShape or None
-
-    def click(self, point):
-        """
-        :param point: [x, y] Coordinate pair.
-        """
-        return ""
-
-    def click_release(self, point):
-        """
-        :param point: [x, y] Coordinate pair.
-        """
-        return ""
-
-    def on_key(self, key):
-        # Jump to coords
-        if key == QtCore.Qt.Key.Key_J or key == 'J':
-            self.draw_app.app.on_jump_to()
-
-    def utility_geometry(self, data=None):
-        return None
-
-    @staticmethod
-    def bounds(obj):
-        def bounds_rec(o):
-            if type(o) is list:
-                minx = np.Inf
-                miny = np.Inf
-                maxx = -np.Inf
-                maxy = -np.Inf
-
-                for k in o:
-                    try:
-                        minx_, miny_, maxx_, maxy_ = bounds_rec(k)
-                    except Exception as e:
-                        log.error("camlib.Gerber.bounds() --> %s" % str(e))
-                        return
-
-                    minx = min(minx, minx_)
-                    miny = min(miny, miny_)
-                    maxx = max(maxx, maxx_)
-                    maxy = max(maxy, maxy_)
-                return minx, miny, maxx, maxy
-            else:
-                # it's a Shapely object, return it's bounds
-                if 'solid' in o.geo:
-                    return o.geo['solid'].bounds
-
-        return bounds_rec(obj)
-
-
-class ShapeToolEditorGrb(DrawTool):
-    """
-    Abstract class for tools that create a shape.
-    """
-
-    def __init__(self, draw_app):
-        DrawTool.__init__(self, draw_app)
-        self.name = None
-
-    def make(self):
-        pass
 
 
 class PadEditorGrb(ShapeToolEditorGrb):
@@ -196,7 +54,10 @@ class PadEditorGrb(ShapeToolEditorGrb):
         DrawTool.__init__(self, draw_app)
         self.name = 'pad'
         self.draw_app = draw_app
+        self.app = self.draw_app.app
         self.dont_execute = False
+
+        self.cursor_data_control = True
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -220,6 +81,15 @@ class PadEditorGrb(ShapeToolEditorGrb):
             self.draw_app.select_tool('select')
             return
 
+        if self.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = self.draw_cursor_data
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
+        self.pad_tool = PadEditorTool(self.app, self.draw_app, plugin_name=_("Pad"))
+        self.pad_tool.run()
+        self.pad_tool.length = self.draw_app.last_length
+        self.ui = self.pad_tool.ui
+
         if self.radius == 0:
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
                                           _("Aperture size is zero. It needs to be greater than zero."))
@@ -241,30 +111,57 @@ class PadEditorGrb(ShapeToolEditorGrb):
         except KeyError:
             pass
 
-        geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+        geo = self.utility_geometry(data=self.draw_app.app.mouse_pos)
         if isinstance(geo, DrawToolShape) and geo.geo is not None:
             self.draw_app.draw_utility_geometry(geo_shape=geo)
 
-        self.draw_app.app.inform.emit(_("Click to place ..."))
-
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
-        # Switch notebook to Properties page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
+        self.app.ui.notebook.setTabText(2, _("Pad"))
+        if self.draw_app.app.ui.splitter.sizes()[0] == 0:
+            self.draw_app.app.ui.splitter.setSizes([1, 1])
 
+        self.set_plugin_ui()
+
+        # Signals
+        try:
+            self.ui.add_btn.clicked.disconnect()
+        except (AttributeError, TypeError):
+            pass
+        self.ui.add_btn.clicked.connect(self.on_add_pad)
+
+        self.draw_app.app.inform.emit(_("Click to place ..."))
         self.start_msg = _("Click to place ...")
 
+    def set_plugin_ui(self):
+        dia = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
+        self.ui.dia_entry.set_value(dia)
+        self.ui.x_entry.set_value(float(self.draw_app.snap_x))
+        self.ui.y_entry.set_value(float(self.draw_app.snap_y))
+
     def click(self, point):
+        self.points = point
+        self.draw_app.last_length = self.pad_tool.length
+        self.ui.x_entry.set_value(float(self.draw_app.snap_x))
+        self.ui.y_entry.set_value(float(self.draw_app.snap_y))
         self.make()
         return "Done."
+
+    def on_add_pad(self):
+        self.draw_app.last_length = self.pad_tool.length
+        self.points = self.ui.x_entry.get_value(), self.ui.y_entry.get_value()
+        self.make()
+        self.draw_app.on_grb_shape_complete(self.draw_app.current_storage)
+        self.draw_app.build_ui()
+        self.draw_app.select_tool("pad")
 
     def utility_geometry(self, data=None):
         if self.dont_execute is True:
             self.draw_app.select_tool('select')
             return
 
-        self.points = data
-        geo_data = self.util_shape(data)
+        pos = data if data else self.points
+        geo_data = self.util_shape(pos)
         if geo_data:
             return DrawToolUtilityShape(geo_data)
         else:
@@ -285,7 +182,6 @@ class PadEditorGrb(ShapeToolEditorGrb):
             self.half_height = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['height']) / 2
         except KeyError:
             pass
-
         if point[0] is None and point[1] is None:
             point_x = self.draw_app.x
             point_y = self.draw_app.y
@@ -387,13 +283,134 @@ class PadEditorGrb(ShapeToolEditorGrb):
 
         self.draw_app.in_action = False
         self.complete = True
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
-        self.draw_app.app.jump_signal.disconnect()
+
+    def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
+        if pos is None:
+            pos = self.draw_app.snap_x, self.draw_app.snap_y
+
+        if delete:
+            if self.draw_app.app.use_3d_engine:
+                self.draw_app.app.plotcanvas.text_cursor.parent = None
+                self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+            return
+
+        # font size
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
+        if qsettings.contains("hud_font_size"):
+            fsize = qsettings.value('hud_font_size', type=int)
+        else:
+            fsize = 8
+
+        old_x = self.ui.x_entry.get_value()
+        old_y = self.ui.y_entry.get_value()
+
+        x = pos[0]
+        y = pos[1]
+        try:
+            length = abs(np.sqrt((x - old_x) ** 2 + (y - old_y) ** 2))
+        except IndexError:
+            length = self.draw_app.app.dec_format(0.0, self.draw_app.app.decimals)
+        units = self.draw_app.app.app_units.lower()
+
+        x_dec = str(self.draw_app.app.dec_format(x, self.draw_app.app.decimals)) if x else '0.0'
+        y_dec = str(self.draw_app.app.dec_format(y, self.draw_app.app.decimals)) if y else '0.0'
+        length_dec = str(self.draw_app.app.dec_format(length, self.draw_app.app.decimals)) if length else '0.0'
+
+        l1_txt = 'X:   %s [%s]' % (x_dec, units)
+        l2_txt = 'Y:   %s [%s]' % (y_dec, units)
+        l3_txt = 'L:   %s [%s]' % (length_dec, units)
+        cursor_text = '%s\n%s\n\n%s' % (l1_txt, l2_txt, l3_txt)
+
+        if self.draw_app.app.use_3d_engine:
+            new_pos = self.draw_app.app.plotcanvas.translate_coords_2((x, y))
+            x, y, __, ___ = self.draw_app.app.plotcanvas.translate_coords((new_pos[0]+30, new_pos[1]))
+
+            # text
+            self.draw_app.app.plotcanvas.text_cursor.font_size = fsize
+            self.draw_app.app.plotcanvas.text_cursor.text = cursor_text
+            self.draw_app.app.plotcanvas.text_cursor.pos = x, y
+            self.draw_app.app.plotcanvas.text_cursor.anchors = 'left', 'top'
+
+            if self.draw_app.app.plotcanvas.text_cursor.parent is None:
+                self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
+
+    def on_key(self, key):
+        # Jump to coords
+        if key == QtCore.Qt.Key.Key_J or key == 'J':
+            self.draw_app.app.on_jump_to()
+
+        if key in [str(i) for i in range(10)] + ['.', ',', '+', '-', '/', '*'] or \
+                key in [QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_1, QtCore.Qt.Key.Key_2,
+                        QtCore.Qt.Key.Key_3, QtCore.Qt.Key.Key_4, QtCore.Qt.Key.Key_5, QtCore.Qt.Key.Key_6,
+                        QtCore.Qt.Key.Key_7, QtCore.Qt.Key.Key_8, QtCore.Qt.Key.Key_9, QtCore.Qt.Key.Key_Minus,
+                        QtCore.Qt.Key.Key_Plus, QtCore.Qt.Key.Key_Comma, QtCore.Qt.Key.Key_Period,
+                        QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
+            try:
+                # VisPy keys
+                if self.pad_tool.length == self.draw_app.last_length:
+                    self.pad_tool.length = str(key.name)
+                else:
+                    self.pad_tool.length = str(self.pad_tool.length) + str(key.name)
+            except AttributeError:
+                # Qt keys
+                if self.pad_tool.length == self.draw_app.last_length:
+                    self.pad_tool.length = chr(key)
+                else:
+                    self.pad_tool.length = str(self.pad_tool.length) + chr(key)
+
+        if key == 'Enter' or key == QtCore.Qt.Key.Key_Return or key == QtCore.Qt.Key.Key_Enter:
+            if self.pad_tool.length != 0:
+                target_length = self.pad_tool.length
+                if target_length is None:
+                    self.pad_tool.length = 0.0
+                    return _("Failed.")
+
+                first_pt = self.ui.x_entry.get_value(), self.ui.y_entry.get_value()
+                last_pt = self.draw_app.app.mouse_pos
+
+                seg_length = math.sqrt((last_pt[0] - first_pt[0])**2 + (last_pt[1] - first_pt[1])**2)
+                if seg_length == 0.0:
+                    self.draw_app.app.log.debug("PadEditorGrb.on_key() --> 'ENTER'. Segment is zero.")
+                    return
+                try:
+                    new_x = first_pt[0] + (last_pt[0] - first_pt[0]) / seg_length * target_length
+                    new_y = first_pt[1] + (last_pt[1] - first_pt[1]) / seg_length * target_length
+                except ZeroDivisionError as err:
+                    self.clean_up()
+                    return '[ERROR_NOTCL] %s %s' % (_("Failed."), str(err).capitalize())
+
+                if first_pt != (new_x, new_y):
+                    self.draw_app.app.on_jump_to(custom_location=(new_x, new_y), fit_center=False)
+                    if len(self.points) > 0:
+                        msg = '%s: %s. %s' % (
+                            _("Projected"), str(self.pad_tool.length),
+                            _("Click on next Point or click right mouse button to complete ..."))
+                        self.draw_app.app.inform.emit(msg)
+                        # self.interpolate_length = ''
+                        # return "Click on next point or hit ENTER to complete ..."
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
 
     def clean_up(self):
         self.draw_app.selected = []
         self.draw_app.ui.apertures_table.clearSelection()
         self.draw_app.plot_all()
+
+        if self.draw_app.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.text_cursor.parent = None
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+
         try:
             self.draw_app.app.jump_signal.disconnect()
         except (TypeError, AttributeError):
@@ -409,7 +426,10 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
         DrawTool.__init__(self, draw_app)
         self.name = 'array'
         self.draw_app = draw_app
+        self.app = self.draw_app.app
         self.dont_execute = False
+
+        self.cursor_data_control = True
 
         try:
             self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
@@ -451,18 +471,15 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
         except KeyError:
             pass
 
-        self.draw_app.ui.array_frame.show()
-
         self.selected_size = None
-        self.pad_axis = 'X'
-        self.pad_array = 'linear'  # 'linear'
+        self.pad_array_dir = 'X'
+        self.array_type = 'linear'  # 'linear'
         self.pad_array_size = None
         self.pad_pitch = None
         self.pad_linear_angle = None
 
-        self.pad_angle = None
+        self.pad_circular_angle = None
         self.pad_direction = None
-        self.pad_radius = None
 
         self.origin = None
         self.destination = None
@@ -473,36 +490,82 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
 
         self.pt = []
 
+        # #############################################################################################################
+        # Plugin UI
+        # #############################################################################################################
+        self.parray_tool = GrbPadArrayEditorTool(self.app, self.draw_app, plugin_name=_("Pad Array"))
+        self.ui = self.parray_tool.ui
+        self.parray_tool.run()
+
         geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y), static=True)
 
         if isinstance(geo, DrawToolShape) and geo.geo is not None:
             self.draw_app.draw_utility_geometry(geo_shape=geo)
 
-        self.draw_app.app.inform.emit(_("Click on target location ..."))
-
+        if self.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = self.draw_cursor_data
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
-        # Switch notebook to Properties page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
+        if not self.draw_app.snap_x:
+            self.draw_app.snap_x = 0.0
+        if not self.draw_app.snap_y:
+            self.draw_app.snap_y = 0.0
+
+        self.app.ui.notebook.setTabText(2, _("Pad Array"))
+        if self.app.ui.splitter.sizes()[0] == 0:
+            self.app.ui.splitter.setSizes([1, 1])
+
+        self.set_plugin_ui()
+
+        # Signals
+        try:
+            self.ui.add_btn.clicked.disconnect()
+        except (AttributeError, TypeError):
+            pass
+        self.ui.add_btn.clicked.connect(self.on_add_pad_array)
+
+        if self.ui.array_type_radio.get_value() == 'linear':
+            self.draw_app.app.inform.emit(_("Click on target location ..."))
+        else:
+            self.draw_app.app.inform.emit(_("Click on the circular array Center position"))
+
+    def set_plugin_ui(self):
+        dia = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
+        self.ui.dia_entry.set_value(dia)
+        self.ui.x_entry.set_value(float(self.draw_app.snap_x))
+        self.ui.y_entry.set_value(float(self.draw_app.snap_y))
+
+        self.ui.array_type_radio.set_value(self.draw_app.last_parray_type)
+        self.ui.on_array_type_radio(val=self.ui.array_type_radio.get_value())
+
+        self.ui.array_size_entry.set_value(self.draw_app.last_parray_size)
+        self.ui.axis_radio.set_value(self.draw_app.last_parray_lin_dir)
+        self.ui.pitch_entry.set_value(self.draw_app.last_parray_pitch)
+        self.ui.linear_angle_entry.set_value(self.draw_app.last_parray_lin_angle)
+        self.ui.array_dir_radio.set_value(self.draw_app.last_parray_circ_dir)
+        self.ui.circular_angle_entry.set_value(self.draw_app.last_parray_circ_angle)
+        self.ui.radius_entry.set_value(self.draw_app.last_parray_radius)
 
     def click(self, point):
-
-        if self.draw_app.ui.array_type_radio.get_value() == 0:  # 'Linear'
+        if self.ui.array_type_radio.get_value() == 'linear':  # 'Linear'
             self.make()
+            self.ui.x_entry.set_value(float(self.draw_app.snap_x))
+            self.ui.y_entry.set_value(float(self.draw_app.snap_y))
             return
-        else:
-            if self.flag_for_circ_array is None:
-                self.draw_app.in_action = True
-                self.pt.append(point)
 
-                self.flag_for_circ_array = True
-                self.set_origin(point)
-                self.draw_app.app.inform.emit(_("Click on the Pad Circular Array Start position"))
-            else:
-                self.destination = point
-                self.make()
-                self.flag_for_circ_array = None
-                return
+        self.ui.x_entry.set_value(float(self.draw_app.snap_x))
+        self.ui.y_entry.set_value(float(self.draw_app.snap_y))
+        if self.flag_for_circ_array is None:
+            self.draw_app.in_action = True
+            self.pt.append(point)
+
+            self.flag_for_circ_array = True
+            self.set_origin(point)
+            self.draw_app.app.inform.emit(_("Click on the circular array Center position"))
+        else:
+            self.destination = point
+            self.make()
+            self.flag_for_circ_array = None
 
     def set_origin(self, origin):
         self.origin = origin
@@ -520,25 +583,26 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
             self.draw_app.select_tool('select')
             return
 
-        self.pad_axis = self.draw_app.ui.pad_axis_radio.get_value()
-        self.pad_direction = self.draw_app.ui.pad_direction_radio.get_value()
-        self.pad_array = self.draw_app.ui.array_type_radio.get_value()
+        self.pad_array_dir = self.ui.axis_radio.get_value()
+        self.pad_direction = self.ui.array_dir_radio.get_value()
+        self.array_type = self.ui.array_type_radio.get_value()
 
         try:
-            self.pad_array_size = int(self.draw_app.ui.pad_array_size_entry.get_value())
-            try:
-                self.pad_pitch = self.draw_app.ui.pad_pitch_entry.get_value()
-                self.pad_linear_angle = self.draw_app.ui.linear_angle_spinner.get_value()
-                self.pad_angle = self.draw_app.ui.pad_angle_entry.get_value()
-            except TypeError:
-                self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
-                                              _("The value is not Float. Check for comma instead of dot separator."))
-                return
+            self.pad_array_size = self.ui.array_size_entry.get_value()
         except Exception:
             self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("The value is mistyped. Check the value."))
             return
 
-        if self.pad_array == 'linear':  # 'Linear'
+        try:
+            self.pad_pitch = self.ui.pitch_entry.get_value()
+            self.pad_linear_angle = self.ui.linear_angle_entry.get_value()
+            self.pad_circular_angle = self.ui.circular_angle_entry.get_value()
+        except TypeError:
+            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
+                                          _("The value is not Float. Check for comma instead of dot separator."))
+            return
+
+        if self.array_type == 'linear':  # 'Linear'
             if data[0] is None and data[1] is None:
                 dx = self.draw_app.x
                 dy = self.draw_app.y
@@ -551,11 +615,11 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
             self.points = [dx, dy]
 
             for item in range(self.pad_array_size):
-                if self.pad_axis == 'X':
+                if self.pad_array_dir == 'X':
                     geo_el = self.util_shape(((dx + (self.pad_pitch * item)), dy))
-                if self.pad_axis == 'Y':
+                if self.pad_array_dir == 'Y':
                     geo_el = self.util_shape((dx, (dy + (self.pad_pitch * item))))
-                if self.pad_axis == 'A':
+                if self.pad_array_dir == 'A':
                     x_adj = self.pad_pitch * math.cos(math.radians(self.pad_linear_angle))
                     y_adj = self.pad_pitch * math.sin(math.radians(self.pad_linear_angle))
                     geo_el = self.util_shape(
@@ -566,11 +630,11 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
                     new_geo_el = {}
 
                     if 'solid' in geo_el:
-                        new_geo_el['solid'] = affinity.translate(
+                        new_geo_el['solid'] = translate(
                             geo_el['solid'], xoff=(dx - self.last_dx), yoff=(dy - self.last_dy)
                         )
                     if 'follow' in geo_el:
-                        new_geo_el['follow'] = affinity.translate(
+                        new_geo_el['follow'] = translate(
                             geo_el['follow'], xoff=(dx - self.last_dx), yoff=(dy - self.last_dy)
                         )
                     geo_el_list.append(new_geo_el)
@@ -582,7 +646,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
             self.last_dx = dx
             self.last_dy = dy
             return DrawToolUtilityShape(geo_el_list)
-        elif self.pad_array == 'circular':  # 'Circular'
+        elif self.array_type == 'circular':  # 'Circular'
             if data[0] is None and data[1] is None:
                 cdx = self.draw_app.x
                 cdy = self.draw_app.y
@@ -596,9 +660,9 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
                 radius = distance((cdx, cdy), self.origin)
             except Exception:
                 radius = 0
-
             if radius == 0:
                 self.draw_app.delete_utility_geometry()
+            self.ui.radius_entry.set_value(radius)
 
             if len(self.pt) >= 1 and radius > 0:
                 try:
@@ -735,19 +799,19 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
             return None
 
     def circular_util_shape(self, radius, angle):
-        self.pad_direction = self.draw_app.ui.pad_direction_radio.get_value()
-        self.pad_angle = self.draw_app.ui.pad_angle_entry.get_value()
+        self.pad_direction = self.ui.array_dir_radio.get_value()
+        self.pad_circular_angle = self.ui.circular_angle_entry.get_value()
 
         circular_geo = []
         if self.pad_direction == 'CW':
             for i in range(self.pad_array_size):
-                angle_radians = math.radians(self.pad_angle * i)
+                angle_radians = math.radians(self.pad_circular_angle * i)
                 x = self.origin[0] + radius * math.cos(-angle_radians + angle)
                 y = self.origin[1] + radius * math.sin(-angle_radians + angle)
 
                 geo = self.util_shape((x, y))
-                geo_sol = affinity.rotate(geo['solid'], angle=(math.pi - angle_radians + angle), use_radians=True)
-                geo_fol = affinity.rotate(geo['follow'], angle=(math.pi - angle_radians + angle), use_radians=True)
+                geo_sol = rotate(geo['solid'], angle=(math.pi - angle_radians + angle), use_radians=True)
+                geo_fol = rotate(geo['follow'], angle=(math.pi - angle_radians + angle), use_radians=True)
                 geo_el = {
                     'solid': geo_sol,
                     'follow': geo_fol
@@ -755,13 +819,13 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
                 circular_geo.append(DrawToolShape(geo_el))
         else:
             for i in range(self.pad_array_size):
-                angle_radians = math.radians(self.pad_angle * i)
+                angle_radians = math.radians(self.pad_circular_angle * i)
                 x = self.origin[0] + radius * math.cos(angle_radians + angle)
                 y = self.origin[1] + radius * math.sin(angle_radians + angle)
 
                 geo = self.util_shape((x, y))
-                geo_sol = affinity.rotate(geo['solid'], angle=(angle_radians + angle - math.pi), use_radians=True)
-                geo_fol = affinity.rotate(geo['follow'], angle=(angle_radians + angle - math.pi), use_radians=True)
+                geo_sol = rotate(geo['solid'], angle=(angle_radians + angle - math.pi), use_radians=True)
+                geo_fol = rotate(geo['follow'], angle=(angle_radians + angle - math.pi), use_radians=True)
                 geo_el = {
                     'solid': geo_sol,
                     'follow': geo_fol
@@ -776,13 +840,13 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
 
         self.draw_app.current_storage = self.storage_obj
 
-        if self.pad_array == 'linear':  # 'Linear'
+        if self.array_type == 'linear':  # 'Linear'
             for item in range(self.pad_array_size):
-                if self.pad_axis == 'X':
+                if self.pad_array_dir == 'X':
                     geo = self.util_shape(((self.points[0] + (self.pad_pitch * item)), self.points[1]))
-                if self.pad_axis == 'Y':
+                if self.pad_array_dir == 'Y':
                     geo = self.util_shape((self.points[0], (self.points[1] + (self.pad_pitch * item))))
-                if self.pad_axis == 'A':
+                if self.pad_array_dir == 'A':
                     x_adj = self.pad_pitch * math.cos(math.radians(self.pad_linear_angle))
                     y_adj = self.pad_pitch * math.sin(math.radians(self.pad_linear_angle))
                     geo = self.util_shape(
@@ -791,7 +855,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
 
                 self.geometry.append(DrawToolShape(geo))
         else:  # 'Circular'
-            if (self.pad_angle * self.pad_array_size) > 360:
+            if (self.pad_circular_angle * self.pad_array_size) > 360:
                 self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
                                               _("Too many items for the selected spacing angle."))
                 return
@@ -813,8 +877,74 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
         self.complete = True
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         self.draw_app.in_action = False
-        self.draw_app.ui.array_frame.hide()
-        self.draw_app.app.jump_signal.disconnect()
+
+        self.draw_app.last_parray_type = self.ui.array_type_radio.get_value()
+        self.draw_app.last_parray_size = self.ui.array_size_entry.get_value()
+        self.draw_app.last_parray_lin_dir = self.ui.axis_radio.get_value()
+        self.draw_app.last_parray_circ_dir = self.ui.array_dir_radio.get_value()
+        self.draw_app.last_parray_pitch = self.ui.pitch_entry.get_value()
+        self.draw_app.last_parray_lin_angle = self.ui.linear_angle_entry.get_value()
+        self.draw_app.last_parray_circ_angle = self.ui.circular_angle_entry.get_value()
+        self.draw_app.last_parray_radius = self.ui.radius_entry.get_value()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (AttributeError, TypeError):
+            pass
+
+    def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
+        if pos is None:
+            pos = self.draw_app.snap_x, self.draw_app.snap_y
+
+        if delete:
+            if self.draw_app.app.use_3d_engine:
+                self.draw_app.app.plotcanvas.text_cursor.parent = None
+                self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+            return
+
+        if not self.points:
+            self.points = self.draw_app.snap_x, self.draw_app.snap_y
+
+        # font size
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
+        if qsettings.contains("hud_font_size"):
+            fsize = qsettings.value('hud_font_size', type=int)
+        else:
+            fsize = 8
+
+        x = pos[0]
+        y = pos[1]
+        try:
+            length = abs(self.ui.radius_entry.get_value())
+        except IndexError:
+            length = self.draw_app.app.dec_format(0.0, self.draw_app.app.decimals)
+
+        x_dec = str(self.draw_app.app.dec_format(x, self.draw_app.app.decimals)) if x else '0.0'
+        y_dec = str(self.draw_app.app.dec_format(y, self.draw_app.app.decimals)) if y else '0.0'
+        length_dec = str(self.draw_app.app.dec_format(length, self.draw_app.app.decimals)) if length else '0.0'
+
+        units = self.draw_app.app.app_units.lower()
+        l1_txt = 'X:   %s [%s]' % (x_dec, units)
+        l2_txt = 'Y:   %s [%s]' % (y_dec, units)
+        l3_txt = 'L:   %s [%s]' % (length_dec, units)
+        cursor_text = '%s\n%s\n\n%s' % (l1_txt, l2_txt, l3_txt)
+
+        if self.draw_app.app.use_3d_engine:
+            new_pos = self.draw_app.app.plotcanvas.translate_coords_2((x, y))
+            x, y, __, ___ = self.draw_app.app.plotcanvas.translate_coords((new_pos[0]+30, new_pos[1]))
+
+            # text
+            self.draw_app.app.plotcanvas.text_cursor.font_size = fsize
+            self.draw_app.app.plotcanvas.text_cursor.text = cursor_text
+            self.draw_app.app.plotcanvas.text_cursor.pos = x, y
+            self.draw_app.app.plotcanvas.text_cursor.anchors = 'left', 'top'
+
+            if self.draw_app.app.plotcanvas.text_cursor.parent is None:
+                self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
 
     def on_key(self, key):
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
@@ -831,20 +961,58 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
         elif mod_key is None:
             # Toggle Drill Array Direction
             if key == QtCore.Qt.Key.Key_Space:
-                if self.draw_app.ui.pad_axis_radio.get_value() == 'X':
-                    self.draw_app.ui.pad_axis_radio.set_value('Y')
-                elif self.draw_app.ui.pad_axis_radio.get_value() == 'Y':
-                    self.draw_app.ui.pad_axis_radio.set_value('A')
-                elif self.draw_app.ui.pad_axis_radio.get_value() == 'A':
-                    self.draw_app.ui.pad_axis_radio.set_value('X')
+                if self.ui.pad_dir_radio.get_value() == 'X':
+                    self.ui.pad_dir_radio.set_value('Y')
+                elif self.ui.pad_axis_radio.get_value() == 'Y':
+                    self.ui.pad_axis_radio.set_value('A')
+                elif self.ui.pad_axis_radio.get_value() == 'A':
+                    self.ui.pad_axis_radio.set_value('X')
 
                 # ## Utility geometry (animated)
                 self.draw_app.update_utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+
+            elif key == 'C' or key == QtCore.Qt.Key.Key_C:
+                self.cursor_data_control = not self.cursor_data_control
+
+    def add_pad_array(self, array_pos):
+        self.radius = self.ui.radius_entry.get_value()
+        self.array_type = self.ui.array_type_radio.get_value()
+
+        curr_pos = self.draw_app.app.geo_editor.snap(array_pos[0], array_pos[1])
+        self.draw_app.snap_x = curr_pos[0]
+        self.draw_app.snap_y = curr_pos[1]
+
+        self.points = [self.draw_app.snap_x, self.draw_app.snap_y]
+        self.origin = [self.draw_app.snap_x, self.draw_app.snap_y]
+        self.destination = ((self.origin[0] + self.radius), self.origin[1])
+        self.flag_for_circ_array = True
+        self.make()
+
+        if self.draw_app.current_storage is not None:
+            self.draw_app.on_grb_shape_complete(self.draw_app.current_storage)
+            self.draw_app.build_ui()
+
+        if self.draw_app.active_tool.complete:
+            self.draw_app.on_shape_complete()
+
+        self.draw_app.select_tool("select")
+
+        self.draw_app.clicked_pos = curr_pos
+
+    def on_add_pad_array(self):
+        x = self.ui.x_entry.get_value()
+        y = self.ui.y_entry.get_value()
+        self.add_pad_array(array_pos=(x, y))
 
     def clean_up(self):
         self.draw_app.selected = []
         self.draw_app.ui.apertures_table.clearSelection()
         self.draw_app.plot_all()
+
+        if self.draw_app.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.text_cursor.parent = None
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+
         try:
             self.draw_app.app.jump_signal.disconnect()
         except (TypeError, AttributeError):
@@ -948,7 +1116,7 @@ class PoligonizeEditorGrb(ShapeToolEditorGrb):
         else:
             modifier_to_use = Qt.KeyboardModifier.ShiftModifier
         # if modifier key is pressed then we add to the selected list the current shape but if it's already
-        # in the selected list, we removed it. Therefore first click selects, second deselects.
+        # in the selected list, we removed it. Therefore, first click selects, second deselects.
         if key_modifier == modifier_to_use:
             self.draw_app.select_tool(self.draw_app.active_tool.name)
         else:
@@ -970,24 +1138,10 @@ class RegionEditorGrb(ShapeToolEditorGrb):
         DrawTool.__init__(self, draw_app)
         self.name = 'region'
         self.draw_app = draw_app
+        self.app = self.draw_app.app
         self.dont_execute = False
 
         self.steps_per_circle = self.draw_app.app.options["gerber_circle_steps"]
-
-        # try:
-        #     size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
-        # except KeyError:
-        #     msg = '[ERROR_NOTCL] %s' % _("You need to preselect a aperture in the Aperture Table that has a size.")
-        #     self.draw_app.app.inform.emit(msg)
-        #     try:
-        #         QtGui.QGuiApplication.restoreOverrideCursor()
-        #     except Exception:
-        #         pass
-        #     self.dont_execute = True
-        #     self.draw_app.in_action = False
-        #     self.complete = True
-        #     self.draw_app.select_tool('select')
-        #     return
 
         # regions are added always in the 0 aperture
         if 0 not in self.draw_app.storage_dict:
@@ -1004,6 +1158,8 @@ class RegionEditorGrb(ShapeToolEditorGrb):
         # this will store the inflexion point in the geometry
         self.inter_point = None
 
+        self.cursor_data_control = True
+
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
@@ -1012,11 +1168,27 @@ class RegionEditorGrb(ShapeToolEditorGrb):
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
+        if self.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = self.draw_cursor_data
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
+        self.reg_tool = GrbRegionEditorTool(self.app, self.draw_app, plugin_name=_("Region"))
+        self.reg_tool.run()
+        self.reg_tool.length = self.draw_app.last_length
+        self.ui = self.reg_tool.ui
+
+        self.set_plugin_ui()
+
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
         self.draw_app.app.inform.emit(_('Corner Mode 1: 45 degrees ...'))
-
         self.start_msg = _("Click on 1st point ...")
+
+    def set_plugin_ui(self):
+        dia = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
+        self.ui.dia_entry.set_value(dia)
+        self.ui.x_entry.set_value(float(self.draw_app.snap_x))
+        self.ui.y_entry.set_value(float(self.draw_app.snap_y))
 
     def click(self, point):
         self.draw_app.in_action = True
@@ -1024,6 +1196,9 @@ class RegionEditorGrb(ShapeToolEditorGrb):
         if self.inter_point is not None:
             self.points.append(self.inter_point)
         self.points.append(point)
+        self.draw_app.last_length = self.reg_tool.length
+        self.ui.x_entry.set_value(float(self.draw_app.snap_x))
+        self.ui.y_entry.set_value(float(self.draw_app.snap_y))
 
         if len(self.points) > 0:
             self.draw_app.app.inform.emit(_("Click on next Point or click right mouse button to complete ..."))
@@ -1252,7 +1427,64 @@ class RegionEditorGrb(ShapeToolEditorGrb):
 
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
+    def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
+        if pos is None:
+            pos = self.draw_app.snap_x, self.draw_app.snap_y
+
+        if delete:
+            if self.draw_app.app.use_3d_engine:
+                self.draw_app.app.plotcanvas.text_cursor.parent = None
+                self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+            return
+
+        # font size
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
+        if qsettings.contains("hud_font_size"):
+            fsize = qsettings.value('hud_font_size', type=int)
+        else:
+            fsize = 8
+
+        old_x = self.ui.x_entry.get_value()
+        old_y = self.ui.y_entry.get_value()
+
+        x = pos[0]
+        y = pos[1]
+        try:
+            length = abs(np.sqrt((x - old_x) ** 2 + (y - old_y) ** 2))
+        except IndexError:
+            length = self.draw_app.app.dec_format(0.0, self.draw_app.app.decimals)
+        units = self.draw_app.app.app_units.lower()
+
+        x_dec = str(self.draw_app.app.dec_format(x, self.draw_app.app.decimals)) if x else '0.0'
+        y_dec = str(self.draw_app.app.dec_format(y, self.draw_app.app.decimals)) if y else '0.0'
+        length_dec = str(self.draw_app.app.dec_format(length, self.draw_app.app.decimals)) if length else '0.0'
+
+        l1_txt = 'X:   %s [%s]' % (x_dec, units)
+        l2_txt = 'Y:   %s [%s]' % (y_dec, units)
+        l3_txt = 'L:   %s [%s]' % (length_dec, units)
+        cursor_text = '%s\n%s\n\n%s' % (l1_txt, l2_txt, l3_txt)
+
+        if self.draw_app.app.use_3d_engine:
+            new_pos = self.draw_app.app.plotcanvas.translate_coords_2((x, y))
+            x, y, __, ___ = self.draw_app.app.plotcanvas.translate_coords((new_pos[0]+30, new_pos[1]))
+
+            # text
+            self.draw_app.app.plotcanvas.text_cursor.font_size = fsize
+            self.draw_app.app.plotcanvas.text_cursor.text = cursor_text
+            self.draw_app.app.plotcanvas.text_cursor.pos = x, y
+            self.draw_app.app.plotcanvas.text_cursor.anchors = 'left', 'top'
+
+            if self.draw_app.app.plotcanvas.text_cursor.parent is None:
+                self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
+
     def on_key(self, key):
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
+
         # Jump to coords
         if key == QtCore.Qt.Key.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
@@ -1317,6 +1549,56 @@ class RegionEditorGrb(ShapeToolEditorGrb):
 
             return msg
 
+        if key in [str(i) for i in range(10)] + ['.', ',', '+', '-', '/', '*'] or \
+                key in [QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_1, QtCore.Qt.Key.Key_2,
+                        QtCore.Qt.Key.Key_3, QtCore.Qt.Key.Key_4, QtCore.Qt.Key.Key_5, QtCore.Qt.Key.Key_6,
+                        QtCore.Qt.Key.Key_7, QtCore.Qt.Key.Key_8, QtCore.Qt.Key.Key_9, QtCore.Qt.Key.Key_Minus,
+                        QtCore.Qt.Key.Key_Plus, QtCore.Qt.Key.Key_Comma, QtCore.Qt.Key.Key_Period,
+                        QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
+            try:
+                # VisPy keys
+                if self.reg_tool.length == self.draw_app.last_length:
+                    self.reg_tool.length = str(key.name)
+                else:
+                    self.reg_tool.length = str(self.reg_tool.length) + str(key.name)
+            except AttributeError:
+                # Qt keys
+                if self.reg_tool.length == self.draw_app.last_length:
+                    self.reg_tool.length = chr(key)
+                else:
+                    self.reg_tool.length = str(self.reg_tool.length) + chr(key)
+
+        if key == 'Enter' or key == QtCore.Qt.Key.Key_Return or key == QtCore.Qt.Key.Key_Enter:
+            if self.reg_tool.length != 0:
+                target_length = self.reg_tool.length
+                if target_length is None:
+                    self.reg_tool.length = 0.0
+                    return _("Failed.")
+
+                first_pt = self.ui.x_entry.get_value(), self.ui.y_entry.get_value()
+                last_pt = self.draw_app.app.mouse_pos
+
+                seg_length = math.sqrt((last_pt[0] - first_pt[0])**2 + (last_pt[1] - first_pt[1])**2)
+                if seg_length == 0.0:
+                    self.draw_app.app.log.debug("GrbRegionEditorGrb.on_key() --> 'ENTER'. Segment is zero.")
+                    return
+                try:
+                    new_x = first_pt[0] + (last_pt[0] - first_pt[0]) / seg_length * target_length
+                    new_y = first_pt[1] + (last_pt[1] - first_pt[1]) / seg_length * target_length
+                except ZeroDivisionError as err:
+                    self.clean_up()
+                    return '[ERROR_NOTCL] %s %s' % (_("Failed."), str(err).capitalize())
+
+                if first_pt != (new_x, new_y):
+                    self.draw_app.app.on_jump_to(custom_location=(new_x, new_y), fit_center=False)
+                    if len(self.points) > 0:
+                        msg = '%s: %s. %s' % (
+                            _("Projected"), str(self.reg_tool.length),
+                            _("Click on next Point or click right mouse button to complete ..."))
+                        self.draw_app.app.inform.emit(msg)
+                        # self.interpolate_length = ''
+                        # return "Click on next point or hit ENTER to complete ..."
+
     def clean_up(self):
         self.draw_app.selected = []
         self.draw_app.ui.apertures_table.clearSelection()
@@ -1336,12 +1618,13 @@ class TrackEditorGrb(ShapeToolEditorGrb):
         DrawTool.__init__(self, draw_app)
         self.name = 'track'
         self.draw_app = draw_app
+        self.app = self.draw_app.app
         self.dont_execute = False
 
         self.steps_per_circle = self.draw_app.app.options["gerber_circle_steps"]
 
         try:
-            size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
+            self.size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
         except KeyError:
             self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
                                           _("You need to preselect a aperture in the Aperture Table that has a size."))
@@ -1355,7 +1638,7 @@ class TrackEditorGrb(ShapeToolEditorGrb):
             self.draw_app.select_tool('select')
             return
 
-        self.buf_val = (size_ap / 2) if size_ap > 0 else 0.0000001
+        self.buf_val = (self.size_ap / 2) if self.size_ap > 0 else 0.0000001
 
         self.gridx_size = float(self.draw_app.app.ui.grid_gap_x_entry.get_value())
         self.gridy_size = float(self.draw_app.app.ui.grid_gap_y_entry.get_value())
@@ -1365,6 +1648,9 @@ class TrackEditorGrb(ShapeToolEditorGrb):
         self.current_point = None
 
         self.final_click = False
+
+        self.cursor_data_control = True
+
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
@@ -1374,17 +1660,54 @@ class TrackEditorGrb(ShapeToolEditorGrb):
                                                   '/aero_path%s.png' % self.draw_app.bend_mode))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
+        # #############################################################################################################
+        # Plugin UI
+        # #############################################################################################################
+        self.track_tool = GrbTrackEditorTool(self.app, self.draw_app, plugin_name=_("Track"))
+        self.ui = self.track_tool.ui
+        self.track_tool.run()
+
+        if self.app.use_3d_engine:
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = self.draw_cursor_data
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
+        self.track_tool.length = self.draw_app.last_length
+        if not self.draw_app.snap_x:
+            self.draw_app.snap_x = 0.0
+        if not self.draw_app.snap_y:
+            self.draw_app.snap_y = 0.0
+
+        self.app.ui.notebook.setTabText(2, _("Track"))
+        if self.app.ui.splitter.sizes()[0] == 0:
+            self.app.ui.splitter.setSizes([1, 1])
+
+        self.set_plugin_ui()
+
+        # Signals
+        try:
+            self.ui.add_btn.clicked.disconnect()
+        except (AttributeError, TypeError):
+            pass
+        self.ui.add_btn.clicked.connect(self.on_add_track)
+
+        # self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
         self.draw_app.app.inform.emit(_('Track Mode 1: 45 degrees ...'))
 
+    def set_plugin_ui(self):
+        self.ui.dia_entry.set_value(self.size_ap)
+        self.ui.x_entry.set_value(float(self.draw_app.snap_x))
+        self.ui.y_entry.set_value(float(self.draw_app.snap_y))
+
     def click(self, point):
         self.draw_app.in_action = True
-
         self.current_point = point
 
         if not self.points or point != self.points[-1]:
             self.points.append(point)
+            self.draw_app.last_length = self.track_tool.length
+            self.ui.x_entry.set_value(float(self.draw_app.snap_x))
+            self.ui.y_entry.set_value(float(self.draw_app.snap_y))
         else:
             return
 
@@ -1510,8 +1833,71 @@ class TrackEditorGrb(ShapeToolEditorGrb):
 
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.jump_signal.disconnect()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
+
+    def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
+        if pos is None:
+            pos = self.draw_app.snap_x, self.draw_app.snap_y
+
+        if delete:
+            if self.draw_app.app.use_3d_engine:
+                self.draw_app.app.plotcanvas.text_cursor.parent = None
+                self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+            return
+
+        # font size
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
+        if qsettings.contains("hud_font_size"):
+            fsize = qsettings.value('hud_font_size', type=int)
+        else:
+            fsize = 8
+
+        if not self.points:
+            old_x = self.draw_app.snap_x
+            old_y = self.draw_app.snap_y
+        else:
+            old_x = self.points[-1][0]
+            old_y = self.points[-1][1]
+
+        x = pos[0]
+        y = pos[1]
+        try:
+            length = abs(np.sqrt((x - old_x) ** 2 + (y - old_y) ** 2))
+        except IndexError:
+            length = self.draw_app.app.dec_format(0.0, self.draw_app.app.decimals)
+
+        x_dec = str(self.draw_app.app.dec_format(x, self.draw_app.app.decimals)) if x else '0.0'
+        y_dec = str(self.draw_app.app.dec_format(y, self.draw_app.app.decimals)) if y else '0.0'
+        length_dec = str(self.draw_app.app.dec_format(length, self.draw_app.app.decimals)) if length else '0.0'
+
+        units = self.draw_app.app.app_units.lower()
+        l1_txt = 'X:   %s [%s]' % (x_dec, units)
+        l2_txt = 'Y:   %s [%s]' % (y_dec, units)
+        l3_txt = 'L:   %s [%s]' % (length_dec, units)
+        cursor_text = '%s\n%s\n\n%s' % (l1_txt, l2_txt, l3_txt)
+
+        if self.draw_app.app.use_3d_engine:
+            new_pos = self.draw_app.app.plotcanvas.translate_coords_2((x, y))
+            x, y, __, ___ = self.draw_app.app.plotcanvas.translate_coords((new_pos[0]+30, new_pos[1]))
+
+            # text
+            self.draw_app.app.plotcanvas.text_cursor.font_size = fsize
+            self.draw_app.app.plotcanvas.text_cursor.text = cursor_text
+            self.draw_app.app.plotcanvas.text_cursor.pos = x, y
+            self.draw_app.app.plotcanvas.text_cursor.anchors = 'left', 'top'
+
+            if self.draw_app.app.plotcanvas.text_cursor.parent is None:
+                self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
 
     def on_key(self, key):
         if key == 'Backspace' or key == QtCore.Qt.Key.Key_Backspace:
@@ -1522,6 +1908,9 @@ class TrackEditorGrb(ShapeToolEditorGrb):
                 geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
                 self.draw_app.draw_utility_geometry(geo_shape=geo)
                 return _("Backtracked one point ...")
+
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
 
         # Jump to coords
         if key == QtCore.Qt.Key.Key_G or key == 'G':
@@ -1608,6 +1997,61 @@ class TrackEditorGrb(ShapeToolEditorGrb):
             self.draw_app.draw_utility_geometry(geo_shape=geo)
 
             return msg
+
+        if key in [str(i) for i in range(10)] + ['.', ',', '+', '-', '/', '*'] or \
+                key in [QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_1, QtCore.Qt.Key.Key_2,
+                        QtCore.Qt.Key.Key_3, QtCore.Qt.Key.Key_4, QtCore.Qt.Key.Key_5, QtCore.Qt.Key.Key_6,
+                        QtCore.Qt.Key.Key_7, QtCore.Qt.Key.Key_8, QtCore.Qt.Key.Key_9, QtCore.Qt.Key.Key_Minus,
+                        QtCore.Qt.Key.Key_Plus, QtCore.Qt.Key.Key_Comma, QtCore.Qt.Key.Key_Period,
+                        QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
+            try:
+                # VisPy keys
+                if self.track_tool.length == self.draw_app.last_length:
+                    self.track_tool.length = str(key.name)
+                else:
+                    self.track_tool.length = str(self.track_tool.length) + str(key.name)
+            except AttributeError:
+                # Qt keys
+                if self.track_tool.length == self.draw_app.last_length:
+                    self.track_tool.length = chr(key)
+                else:
+                    self.track_tool.length = str(self.track_tool.length) + chr(key)
+
+        if key == 'Enter' or key == QtCore.Qt.Key.Key_Return or key == QtCore.Qt.Key.Key_Enter:
+            if self.track_tool.length != 0:
+                target_length = self.track_tool.length
+                if target_length is None:
+                    self.track_tool.length = 0.0
+                    return _("Failed.")
+
+                first_pt = self.ui.x_entry.get_value(), self.ui.y_entry.get_value()
+                last_pt = self.draw_app.snap_x, self.draw_app.snap_y
+
+                seg_length = math.sqrt((last_pt[0] - first_pt[0])**2 + (last_pt[1] - first_pt[1])**2)
+                if seg_length == 0.0:
+                    return
+                try:
+                    new_x = first_pt[0] + (last_pt[0] - first_pt[0]) / seg_length * target_length
+                    new_y = first_pt[1] + (last_pt[1] - first_pt[1]) / seg_length * target_length
+                except ZeroDivisionError as err:
+                    self.clean_up()
+                    return '[ERROR_NOTCL] %s %s' % (_("Failed."), str(err).capitalize())
+
+                if first_pt != (new_x, new_y):
+                    self.draw_app.app.on_jump_to(custom_location=(new_x, new_y), fit_center=False)
+                    self.add_track(track_pos=(new_x, new_y))
+
+    def add_track(self, track_pos):
+        self.draw_app.last_length = self.track_tool.length
+        self.click(track_pos)
+        self.ui.x_entry.set_value(track_pos[0])
+        self.ui.y_entry.set_value(track_pos[1])
+        self.draw_app.clicked_pos = track_pos
+
+    def on_add_track(self):
+        x = self.ui.x_entry.get_value()
+        y = self.ui.y_entry.get_value()
+        self.add_track(track_pos=(x, y))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -1765,7 +2209,7 @@ class DiscSemiEditorGrb(ShapeToolEditorGrb):
         except KeyError:
             size_ap = 0.0
             # self.draw_app.app.inform.emit(
-            #     '[ERROR_NOTCL] %s' % _("You need to preselect a aperture in the Aperture Table that has a size."))
+            #     '[ERROR_NOTCL] %s' % _("You need to preselect an aperture in the Aperture Table that has a size."))
             # try:
             #     QtGui.QGuiApplication.restoreOverrideCursor()
             # except Exception:
@@ -2077,29 +2521,181 @@ class BufferEditorGrb(ShapeToolEditorGrb):
         self.draw_app.app.inform.emit(_("Buffer the selected apertures ..."))
         self.origin = (0, 0)
 
+        self.buff_tool = BufferEditorTool(self.app, self.draw_app)
+        self.buff_tool.run()
+        self.app.ui.notebook.setTabText(2, _("Buffer"))
         if self.draw_app.app.ui.splitter.sizes()[0] == 0:
             self.draw_app.app.ui.splitter.setSizes([1, 1])
-        self.activate_buffer()
+        self.activate()
 
-    def activate_buffer(self):
-        self.draw_app.hide_tool('all')
-        self.draw_app.ui.buffer_tool_frame.show()
-
+    def activate(self):
         try:
-            self.draw_app.ui.buffer_button.clicked.disconnect()
+            self.buff_tool.ui.buffer_button.clicked.disconnect()
         except (TypeError, AttributeError):
             pass
-        self.draw_app.ui.buffer_button.clicked.connect(self.on_buffer_click)
+        self.buff_tool.ui.buffer_button.clicked.connect(self.on_buffer_clicked)
 
-    def deactivate_buffer(self):
-        self.draw_app.ui.buffer_button.clicked.disconnect()
+    def on_buffer_clicked(self):
+        self.buff_tool.on_buffer()
+        self.deactivate()
+
+    def deactivate(self):
+        try:
+            self.buff_tool.ui.buffer_button.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
         self.complete = True
         self.draw_app.select_tool("select")
         self.draw_app.hide_tool(self.name)
 
-    def on_buffer_click(self):
-        self.draw_app.on_buffer()
-        self.deactivate_buffer()
+    def clean_up(self):
+        self.draw_app.selected = []
+        self.draw_app.ui.apertures_table.clearSelection()
+        self.draw_app.plot_all()
+
+
+class SimplifyEditorGrb(ShapeToolEditorGrb):
+    def __init__(self, draw_app):
+        ShapeToolEditorGrb.__init__(self, draw_app)
+        self.name = 'simplify'
+
+        # self.shape_buffer = self.draw_app.shape_buffer
+        self.draw_app = draw_app
+        self.app = draw_app.app
+
+        self.draw_app.app.inform.emit(_("Simplify the selected apertures ..."))
+        self.origin = (0, 0)
+
+        self.simp_tool = SimplificationTool(self.app, self.draw_app)
+        self.simp_tool.run()
+        self.ui = self.simp_tool.ui
+
+        self.app.ui.notebook.setTabText(2, _("Simplification"))
+        if self.draw_app.app.ui.splitter.sizes()[0] == 0:
+            self.draw_app.app.ui.splitter.setSizes([1, 1])
+        self.activate()
+
+    def activate(self):
+        try:
+            self.draw_app.ui.simplification_btn.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.ui.simplification_btn.clicked.connect(self.on_simplify_click)
+
+    def deactivate(self):
+        self.draw_app.ui.simplification_btn.clicked.disconnect()
+        self.complete = True
+        self.draw_app.select_tool("select")
+        self.draw_app.hide_tool(self.name)
+
+    def on_simplify_click(self):
+        self.on_simplification_click()
+        # self.deactivate()
+
+    def set_origin(self, origin):
+        self.origin = origin
+
+    def click(self, point):
+        key_modifier = QtWidgets.QApplication.keyboardModifiers()
+
+        if key_modifier == QtCore.Qt.KeyboardModifier.ShiftModifier:
+            mod_key = 'Shift'
+        elif key_modifier == QtCore.Qt.KeyboardModifier.ControlModifier:
+            mod_key = 'Control'
+        else:
+            mod_key = None
+
+        if mod_key == self.draw_app.app.options["global_mselect_key"]:
+            pass
+        else:
+            self.draw_app.selected = []
+
+    def click_release(self, point):
+        self.draw_app.ui.apertures_table.clearSelection()
+        key_modifier = QtWidgets.QApplication.keyboardModifiers()
+
+        if key_modifier == QtCore.Qt.KeyboardModifier.ShiftModifier:
+            mod_key = 'Shift'
+        elif key_modifier == QtCore.Qt.KeyboardModifier.ControlModifier:
+            mod_key = 'Control'
+        else:
+            mod_key = None
+
+        if mod_key != self.draw_app.app.options["global_mselect_key"]:
+            self.draw_app.selected.clear()
+
+        for storage_val in self.draw_app.storage_dict.values():
+            for shape_stored in storage_val['geometry']:
+                if 'solid' in shape_stored.geo:
+                    geometric_data = shape_stored.geo['solid']
+                    if Point(point).intersects(geometric_data):
+                        if shape_stored in self.draw_app.selected:
+                            self.draw_app.selected.remove(shape_stored)
+                        else:
+                            self.draw_app.selected.append(shape_stored)
+
+        self.draw_app.plot_all()
+        self.simp_tool.calculate_coords_vertex()
+
+    def on_simplification_click(self):
+        self.app.log.debug("SimplifyEditorGrb.on_simplification_click()")
+
+        selected_shapes = []
+        selected_shapes_geos = []
+        tol = self.ui.geo_tol_entry.get_value()
+
+        # init the coordinates text field and vertex points field
+        self.ui.geo_coords_entry.set_value('')
+        self.ui.geo_vertex_entry.set_value(0)
+
+        def task_job():
+            with self.app.proc_container.new('%s...' % _("Simplify")):
+                for obj_shape in self.draw_app.selected:
+                    try:
+                        selected_shapes.append(obj_shape)
+
+                        new_geo = {
+                            'apid': '',
+                            'geo': {}
+                        }
+
+                        # find the aperture where the shape is stored
+                        current_apid = None
+                        for apid in self.draw_app.storage_dict:
+                            if obj_shape in self.draw_app.storage_dict[apid]['geometry']:
+                                current_apid = apid
+                                break
+
+                        if current_apid is None:
+                            current_apid = self.draw_app.last_aperture_selected
+
+                        new_geo['apid'] = deepcopy(current_apid)
+
+                        if 'solid' in obj_shape.geo:
+                            new_geo['geo']['solid'] = obj_shape.geo['solid'].simplify(tolerance=tol)
+                        if 'follow' in obj_shape.geo:
+                            new_geo['geo']['follow'] = obj_shape.geo['follow'].simplify(tolerance=tol)
+                        if 'clear' in obj_shape.geo:
+                            new_geo['geo']['clear'] = obj_shape.geo['clear'].simplify(tolerance=tol)
+
+                        selected_shapes_geos.append(deepcopy(new_geo))
+                    except ValueError:
+                        pass
+
+                for shape in selected_shapes:
+                    self.draw_app.delete_shape(geo_el=shape)
+
+                for geo in selected_shapes_geos:
+                    stora = self.draw_app.storage_dict[geo['apid']]['geometry']
+                    geo_el = geo['geo']
+                    self.draw_app.add_gerber_shape(DrawToolShape(geo_el), storage=stora)
+
+                is_sel_all = self.draw_app.on_table_selection()
+                if is_sel_all:
+                    return
+                self.draw_app.plot_all()
+
+        self.app.worker_task.emit({'fcn': task_job, 'params': []})
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -2289,11 +2885,11 @@ class MoveEditorGrb(ShapeToolEditorGrb):
                     geometric_data = select_shape.geo
                     new_geo_el = {}
                     if 'solid' in geometric_data:
-                        new_geo_el['solid'] = affinity.translate(geometric_data['solid'], xoff=dx, yoff=dy)
+                        new_geo_el['solid'] = translate(geometric_data['solid'], xoff=dx, yoff=dy)
                     if 'follow' in geometric_data:
-                        new_geo_el['follow'] = affinity.translate(geometric_data['follow'], xoff=dx, yoff=dy)
+                        new_geo_el['follow'] = translate(geometric_data['follow'], xoff=dx, yoff=dy)
                     if 'clear' in geometric_data:
-                        new_geo_el['clear'] = affinity.translate(geometric_data['clear'], xoff=dx, yoff=dy)
+                        new_geo_el['clear'] = translate(geometric_data['clear'], xoff=dx, yoff=dy)
 
                     self.geometry.append(DrawToolShape(new_geo_el))
                     self.current_storage.remove(select_shape)
@@ -2342,15 +2938,15 @@ class MoveEditorGrb(ShapeToolEditorGrb):
             for geom in self.draw_app.get_selected():
                 new_geo_el = {}
                 if 'solid' in geom.geo:
-                    new_geo_el['solid'] = affinity.translate(geom.geo['solid'], xoff=dx, yoff=dy)
+                    new_geo_el['solid'] = translate(geom.geo['solid'], xoff=dx, yoff=dy)
                 if 'follow' in geom.geo:
-                    new_geo_el['follow'] = affinity.translate(geom.geo['follow'], xoff=dx, yoff=dy)
+                    new_geo_el['follow'] = translate(geom.geo['follow'], xoff=dx, yoff=dy)
                 if 'clear' in geom.geo:
-                    new_geo_el['clear'] = affinity.translate(geom.geo['clear'], xoff=dx, yoff=dy)
+                    new_geo_el['clear'] = translate(geom.geo['clear'], xoff=dx, yoff=dy)
                 geo_list.append(deepcopy(new_geo_el))
             return DrawToolUtilityShape(geo_list)
         else:
-            ss_el = {'solid': affinity.translate(self.selection_shape, xoff=dx, yoff=dy)}
+            ss_el = {'solid': translate(self.selection_shape, xoff=dx, yoff=dy)}
             return DrawToolUtilityShape(ss_el)
 
 
@@ -2372,11 +2968,11 @@ class CopyEditorGrb(MoveEditorGrb):
                     geometric_data = select_shape.geo
                     new_geo_el = {}
                     if 'solid' in geometric_data:
-                        new_geo_el['solid'] = affinity.translate(geometric_data['solid'], xoff=dx, yoff=dy)
+                        new_geo_el['solid'] = translate(geometric_data['solid'], xoff=dx, yoff=dy)
                     if 'follow' in geometric_data:
-                        new_geo_el['follow'] = affinity.translate(geometric_data['follow'], xoff=dx, yoff=dy)
+                        new_geo_el['follow'] = translate(geometric_data['follow'], xoff=dx, yoff=dy)
                     if 'clear' in geometric_data:
-                        new_geo_el['clear'] = affinity.translate(geometric_data['clear'], xoff=dx, yoff=dy)
+                        new_geo_el['clear'] = translate(geometric_data['clear'], xoff=dx, yoff=dy)
                     self.geometry.append(DrawToolShape(new_geo_el))
 
                     sel_shapes_to_be_deleted.append(select_shape)
@@ -2571,11 +3167,11 @@ class EraserEditorGrb(ShapeToolEditorGrb):
         for geom in self.draw_app.get_selected():
             new_geo_el = {}
             if 'solid' in geom.geo:
-                new_geo_el['solid'] = affinity.translate(geom.geo['solid'], xoff=dx, yoff=dy)
+                new_geo_el['solid'] = translate(geom.geo['solid'], xoff=dx, yoff=dy)
             if 'follow' in geom.geo:
-                new_geo_el['follow'] = affinity.translate(geom.geo['follow'], xoff=dx, yoff=dy)
+                new_geo_el['follow'] = translate(geom.geo['follow'], xoff=dx, yoff=dy)
             if 'clear' in geom.geo:
-                new_geo_el['clear'] = affinity.translate(geom.geo['clear'], xoff=dx, yoff=dy)
+                new_geo_el['clear'] = translate(geom.geo['clear'], xoff=dx, yoff=dy)
             geo_list.append(deepcopy(new_geo_el))
         return DrawToolUtilityShape(geo_list)
 
@@ -2592,6 +3188,11 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
         self.draw_app = draw_app
         self.storage = self.draw_app.storage_dict
         # self.selected = self.draw_app.selected
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except Exception as e:
+            log.error("AppGerberEditor.SelectEditorGrb --> %s" % str(e))
 
         # here we store all shapes that were selected
         self.sel_storage = []
@@ -2611,15 +3212,6 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
         except Exception as e:
             log.error("FlatCAMGerbEditor.SelectEditorGrb.__init__() --> %s" % str(e))
 
-        self.draw_app.hide_tool('all')
-        self.draw_app.hide_tool('select')
-        self.draw_app.ui.array_frame.hide()
-
-        try:
-            QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
-            log.error("AppGerberEditor.SelectEditorGrb --> %s" % str(e))
-
         try:
             self.selection_triggered.disconnect()
         except (TypeError, AttributeError):
@@ -2637,6 +3229,17 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
         # if the shapes are not visible make them visible
         if self.draw_app.visible is False:
             self.draw_app.visible = True
+
+        # make sure that the cursor text from the FCPath is deleted
+        if self.draw_app.app.use_3d_engine and self.draw_app.app.plotcanvas.text_cursor.parent:
+            self.draw_app.app.plotcanvas.text_cursor.parent = None
+            self.draw_app.app.plotcanvas.view.camera.zoom_callback = lambda *args: None
+
+        # make sure that the Tools tab is removed
+        try:
+            self.draw_app.app.ui.notebook.removeTab(2)
+        except Exception:
+            pass
 
         self.complete = True
 
@@ -2952,7 +3555,7 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
         self.snap_x = x
         self.snap_y = y
 
-        self.app.mouse = [x, y]
+        self.app.mouse_pos = [x, y]
 
         if self.pos is None:
             self.pos = (0, 0)
@@ -3065,11 +3668,12 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
                                 solid_geo = geo_el['solid']
                                 if Point(pos).within(solid_geo):
                                     if solid_geo not in self.get_selected_geos():
+                                        o_color = self.draw_app.get_sel_color() + 'AF'
+                                        f_color = self.draw_app.get_sel_color() + 'AF'
                                         shape_id = self.app.tool_shapes.add(tolerance=obj.drawing_tolerance, layer=0,
                                                                             shape=solid_geo,
-                                                                            color=self.draw_app.get_sel_color() + 'AF',
-                                                                            face_color=self.draw_app.get_sel_color() +
-                                                                                       'AF',
+                                                                            color=o_color,
+                                                                            face_color=f_color,
                                                                             visible=True)
                                         new_ap_dict = {k: v for k, v in obj.tools[apid].items() if k != 'geometry'}
                                         new_ap_dict['geometry'] = [DrawToolShape(geo_el)]
@@ -3380,6 +3984,20 @@ class AppGerberEditor(QtCore.QObject):
         self.snap_y = None
         self.pos = None
 
+        # #############################################################################################################
+        # Plugin Attributes
+        # #############################################################################################################
+        self.last_length = 0.0
+
+        self.last_parray_type = None
+        self.last_parray_size = None
+        self.last_parray_lin_dir = None
+        self.last_parray_circ_dir = None
+        self.last_parray_pitch = None
+        self.last_parray_lin_angle = None
+        self.last_parray_circ_angle = None
+        self.last_parray_radius = None
+
         # used in RegionEditorGrb and TrackEditorGrb. Will store the bending mode
         self.bend_mode = 1
 
@@ -3422,7 +4040,7 @@ class AppGerberEditor(QtCore.QObject):
         self.plot_thread = None
 
         # a QThread for the edit process
-        self.thread = QtCore.QThread()
+        # self.thread = QtCore.QThread()
 
         # def entry2option(option, entry):
         #     self.editor_options[option] = float(entry.text())
@@ -3451,7 +4069,8 @@ class AppGerberEditor(QtCore.QObject):
         self.app.ui.grb_convert_poly_menuitem.triggered.connect(self.on_poligonize)
         self.app.ui.grb_add_semidisc_menuitem.triggered.connect(self.on_add_semidisc)
         self.app.ui.grb_add_disc_menuitem.triggered.connect(self.on_disc_add)
-        self.app.ui.grb_add_buffer_menuitem.triggered.connect(self.on_buffer)
+        self.app.ui.grb_add_buffer_menuitem.triggered.connect(lambda: self.select_tool('buffer'))
+        self.app.ui.grb_add_buffer_menuitem.triggered.connect(self.on_simplification)
         self.app.ui.grb_add_scale_menuitem.triggered.connect(self.on_scale)
         self.app.ui.grb_add_eraser_menuitem.triggered.connect(self.on_eraser)
         self.app.ui.grb_add_markarea_menuitem.triggered.connect(self.on_markarea)
@@ -3463,7 +4082,6 @@ class AppGerberEditor(QtCore.QObject):
 
         self.app.ui.grb_move_menuitem.triggered.connect(self.on_move_button)
 
-        self.ui.buffer_button.clicked.connect(self.on_buffer)
         self.ui.scale_button.clicked.connect(self.on_scale)
 
         self.app.ui.aperture_delete_btn.triggered.connect(self.on_delete_btn)
@@ -3472,16 +4090,11 @@ class AppGerberEditor(QtCore.QObject):
         self.ui.aptype_cb.currentIndexChanged.connect(self.on_aptype_changed)
 
         self.ui.addaperture_btn.clicked.connect(lambda: self.on_aperture_add())
-        self.ui.apsize_entry.returnPressed.connect(lambda: self.on_aperture_add())
 
         self.ui.delaperture_btn.clicked.connect(lambda: self.on_aperture_delete())
         self.ui.apertures_table.cellPressed.connect(self.on_row_selected)
-        self.ui.apertures_table.selectionModel().selectionChanged.connect(self.on_table_selection)
+        self.ui.apertures_table.selectionModel().selectionChanged.connect(self.on_table_selection)  # noqa
 
-        self.ui.array_type_radio.activated_custom.connect(self.on_array_type_radio)
-        self.ui.pad_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
-
-        self.ui.simplification_btn.clicked.connect(self.on_simplification_click)
         self.ui.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
 
         self.conversion_factor = 1
@@ -3496,15 +4109,9 @@ class AppGerberEditor(QtCore.QObject):
         # ############################### TOOLS TABLE context menu ####################################################
         # #############################################################################################################
         self.ui.apertures_table.setupContextMenu()
-        # self.ui.apertures_table.addContextMenu(
-        #     _("Add"), self.on_aperture_add,
-        #     icon=QtGui.QIcon(self.app.resource_location + "/plus16.png"))
         self.ui.apertures_table.addContextMenu(
             _("Delete"), lambda: self.on_aperture_delete(),
             icon=QtGui.QIcon(self.app.resource_location + "/trash16.png"))
-        # self.ui.apertures_table.addContextMenu(
-        #     _("Simplify"), self.on_simplification_click,
-        #     icon=QtGui.QIcon(self.app.resource_location + "/simplify32.png"))
         self.app.log.debug("Initialization of the Gerber Editor is finished ...")
 
     def make_callback(self, the_tool):
@@ -3524,6 +4131,7 @@ class AppGerberEditor(QtCore.QObject):
             "semidisc": {"button": self.app.ui.grb_add_semidisc_btn, "constructor": DiscSemiEditorGrb},
             "disc": {"button": self.app.ui.grb_add_disc_btn, "constructor": DiscEditorGrb},
             "buffer": {"button": self.app.ui.aperture_buffer_btn, "constructor": BufferEditorGrb},
+            "simplify": {"button": self.app.ui.aperture_simplify_btn, "constructor": SimplifyEditorGrb},
             "scale": {"button": self.app.ui.aperture_scale_btn, "constructor": ScaleEditorGrb},
             "markarea": {"button": self.app.ui.aperture_markarea_btn, "constructor": MarkEditorGrb},
             "import": {"button": self.app.ui.grb_import_btn, "constructor": ImportEditorGrb},
@@ -3567,7 +4175,6 @@ class AppGerberEditor(QtCore.QObject):
         # #############################################################################################################
         # Init appGUI
         # #############################################################################################################
-        self.ui.buffer_distance_entry.set_value(self.app.options["gerber_editor_buff_f"])
         self.ui.scale_factor_entry.set_value(self.app.options["gerber_editor_scale_f"])
         self.ui.ma_upper_threshold_entry.set_value(self.app.options["gerber_editor_ma_high"])
         self.ui.ma_lower_threshold_entry.set_value(self.app.options["gerber_editor_ma_low"])
@@ -3577,25 +4184,17 @@ class AppGerberEditor(QtCore.QObject):
         self.ui.apdim_entry.set_value(self.app.options["gerber_editor_newdim"])
 
         # PAD Array
-        self.ui.array_type_radio.set_value('linear')  # Linear
-        self.on_array_type_radio(val=self.ui.array_type_radio.get_value())
-        self.ui.pad_array_size_entry.set_value(int(self.app.options["gerber_editor_array_size"]))
-
-        # linear array
-        self.ui.pad_axis_radio.set_value('X')
-        self.on_linear_angle_radio(val=self.ui.pad_axis_radio.get_value())
-        self.ui.pad_axis_radio.set_value(self.app.options["gerber_editor_lin_axis"])
-        self.ui.pad_pitch_entry.set_value(float(self.app.options["gerber_editor_lin_pitch"]))
-        self.ui.linear_angle_spinner.set_value(self.app.options["gerber_editor_lin_angle"])
-
-        # circular array
-        self.ui.pad_direction_radio.set_value('CW')
-        self.ui.pad_direction_radio.set_value(self.app.options["gerber_editor_circ_dir"])
-        self.ui.pad_angle_entry.set_value(float(self.app.options["gerber_editor_circ_angle"]))
+        self.last_parray_type = 'linear'
+        self.last_parray_size = int(self.app.options['gerber_editor_array_size'])
+        self.last_parray_lin_dir = self.app.options['gerber_editor_lin_dir']
+        self.last_parray_circ_dir = self.app.options['gerber_editor_circ_dir']
+        self.last_parray_pitch = float(self.app.options['gerber_editor_lin_pitch'])
+        self.last_parray_lin_angle = float(self.app.options['gerber_editor_lin_angle'])
+        self.last_parray_circ_angle = float(self.app.options['gerber_editor_circ_angle'])
+        self.last_parray_radius = 0.0
 
         self.ui.geo_coords_entry.setText('')
         self.ui.geo_vertex_entry.set_value(0.0)
-        self.ui.geo_tol_entry.set_value(0.01)
         self.ui.geo_zoom.set_value(False)
 
         # Show/Hide Advanced Options
@@ -3624,11 +4223,7 @@ class AppGerberEditor(QtCore.QObject):
         self.apertures_row = 0
         # aper_no = self.apertures_row + 1
 
-        sort = []
-        for k, v in list(self.storage_dict.items()):
-            sort.append(int(k))
-
-        sorted_apertures = sorted(sort)
+        sorted_apertures = sorted([int(k) for k in list(self.storage_dict.keys())])
 
         # sort = []
         # for k, v in list(self.gerber_obj.aperture_macros.items()):
@@ -3741,7 +4336,7 @@ class AppGerberEditor(QtCore.QObject):
         # self.ui.apertures_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         self.ui.apertures_table.setSortingEnabled(False)
-        # self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
+        self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
         self.ui.apertures_table.setMaximumHeight(self.ui.apertures_table.getHeight())
 
         # make sure no rows are selected so the user have to click the correct row, meaning selecting the correct tool
@@ -3770,28 +4365,13 @@ class AppGerberEditor(QtCore.QObject):
         if apcode is not None:
             ap_code = apcode
         else:
-            try:
-                ap_code = int(self.ui.apcode_entry.get_value())
-            except ValueError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Aperture code value is missing or wrong format. Add it and retry."))
-                return
+            ap_code = int(self.ui.apcode_entry.get_value())
             if ap_code == '' or ap_code is None:
                 self.app.inform.emit('[WARNING_NOTCL] %s' %
                                      _("Aperture code value is missing or wrong format. Add it and retry."))
                 return
 
-        try:
-            size_val = float(self.ui.apsize_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                size_val = float(self.ui.apsize_entry.get_value().replace(',', '.'))
-                self.ui.apsize_entry.set_value(size_val)
-            except ValueError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Aperture size value is missing or wrong format. Add it and retry."))
-                return
+        size_val = float(self.ui.apsize_entry.get_value())
 
         if size_val == 0.0:
             ap_code = 0
@@ -4024,14 +4604,11 @@ class AppGerberEditor(QtCore.QObject):
                         geometric_data = geo_el.geo
                         new_geo_el = {}
                         if 'solid' in geometric_data:
-                            new_geo_el['solid'] = deepcopy(affinity.scale(geometric_data['solid'],
-                                                                          xfact=factor, yfact=factor))
+                            new_geo_el['solid'] = deepcopy(scale(geometric_data['solid'], xfact=factor, yfact=factor))
                         if 'follow' in geometric_data:
-                            new_geo_el['follow'] = deepcopy(affinity.scale(geometric_data['follow'],
-                                                                           xfact=factor, yfact=factor))
+                            new_geo_el['follow'] = deepcopy(scale(geometric_data['follow'], xfact=factor, yfact=factor))
                         if 'clear' in geometric_data:
-                            new_geo_el['clear'] = deepcopy(affinity.scale(geometric_data['clear'],
-                                                                          xfact=factor, yfact=factor))
+                            new_geo_el['clear'] = deepcopy(scale(geometric_data['clear'], xfact=factor, yfact=factor))
                         geometry.append(new_geo_el)
 
                     self.add_gerber_shape(geometry, self.storage_dict[val_edited])
@@ -4118,66 +4695,6 @@ class AppGerberEditor(QtCore.QObject):
         # we reactivate the signals after the after the tool editing
         self.ui.apertures_table.itemChanged.connect(self.on_tool_edit)
         # self.ui.apertures_table.cellPressed.connect(self.on_row_selected)
-
-    def on_simplification_click(self):
-        self.app.log.debug("AppGrbEditor.on_simplification_click()")
-
-        selected_shapes = []
-        selected_shapes_geos = []
-        tol = self.ui.geo_tol_entry.get_value()
-
-        # init the coordinates text field and vertex points field
-        self.ui.geo_coords_entry.set_value('')
-        self.ui.geo_vertex_entry.set_value(0)
-
-        def task_job():
-            with self.app.proc_container.new('%s...' % _("Simplify")):
-                for obj_shape in self.selected:
-                    try:
-                        selected_shapes.append(obj_shape)
-
-                        new_geo = {
-                            'apid': '',
-                            'geo': {}
-                        }
-
-                        # find the aperture where the shape is stored
-                        current_apid = None
-                        for apid in self.storage_dict:
-                            if obj_shape in self.storage_dict[apid]['geometry']:
-                                current_apid = apid
-                                break
-
-                        if current_apid is None:
-                            current_apid = self.last_aperture_selected
-
-                        new_geo['apid'] = deepcopy(current_apid)
-
-                        if 'solid' in obj_shape.geo:
-                            new_geo['geo']['solid'] = obj_shape.geo['solid'].simplify(tolerance=tol)
-                        if 'follow' in obj_shape.geo:
-                            new_geo['geo']['follow'] = obj_shape.geo['follow'].simplify(tolerance=tol)
-                        if 'clear' in obj_shape.geo:
-                            new_geo['geo']['clear'] = obj_shape.geo['clear'].simplify(tolerance=tol)
-
-                        selected_shapes_geos.append(deepcopy(new_geo))
-                    except ValueError:
-                        pass
-
-                for shape in selected_shapes:
-                    self.delete_shape(geo_el=shape)
-
-                for geo in selected_shapes_geos:
-                    stora = self.storage_dict[geo['apid']]['geometry']
-                    geo_el = geo['geo']
-                    self.add_gerber_shape(DrawToolShape(geo_el), storage=stora)
-
-                is_sel_all = self.on_table_selection()
-                if is_sel_all:
-                    return
-                self.plot_all()
-
-        self.app.worker_task.emit({'fcn': task_job, 'params': []})
 
     def update_ui(self):
         is_zoom_selected = self.ui.geo_zoom.get_value()
@@ -4570,7 +5087,11 @@ class AppGerberEditor(QtCore.QObject):
             pass
 
     def clear(self):
-        self.thread.quit()
+        # try:
+        #     self.thread.quit()
+        #     self.thread.wait()
+        # except Exception as erp:
+        #     self.app.log.error("AppGerberEditor.clear() -> %s" % str(erp))
 
         self.active_tool = None
         self.selected = []
@@ -4876,10 +5397,10 @@ class AppGerberEditor(QtCore.QObject):
         new_grb_name = self.edited_obj_name
 
         # if the 'delayed plot' malfunctioned stop the QTimer
-        try:
-            self.plot_thread.stop()
-        except Exception as e:
-            self.app.log.warning("AppGerberEditor.update_fcgerber() Timer malfunctioned --> %s" % str(e))
+        # try:
+        #     self.plot_thread.stop()
+        # except Exception as e:
+        #     self.app.log.warning("AppGerberEditor.update_fcgerber() Timer malfunctioned --> %s" % str(e))
 
         if "_edit" in self.edited_obj_name:
             try:
@@ -5277,7 +5798,7 @@ class AppGerberEditor(QtCore.QObject):
                         modifier_to_use = Qt.KeyboardModifier.ShiftModifier
 
                     # if modifier key is pressed then we add to the selected list the current shape but if it's already
-                    # in the selected list, we removed it. Therefore first click selects, second deselects.
+                    # in the selected list, we removed it. Therefore, first click selects, second deselects.
                     if key_modifier == modifier_to_use:
                         self.select_tool(self.active_tool.name)
                     else:
@@ -5370,8 +5891,10 @@ class AppGerberEditor(QtCore.QObject):
                 if self.app.selection_type is not None:
                     self.draw_selection_area_handler(self.pos, pos, self.app.selection_type)
                     self.app.selection_type = None
+                    if isinstance(self.active_tool, SimplifyEditorGrb):
+                        self.active_tool.simp_tool.calculate_coords_vertex()
 
-                elif isinstance(self.active_tool, SelectEditorGrb):
+                elif isinstance(self.active_tool, (SelectEditorGrb, SimplifyEditorGrb)):
                     self.active_tool.click_release((self.pos[0], self.pos[1]))
 
                     # # if there are selected objects then plot them
@@ -5383,17 +5906,17 @@ class AppGerberEditor(QtCore.QObject):
 
     def draw_selection_area_handler(self, start_pos, end_pos, sel_type):
         """
-        :param start_pos: mouse position when the selection LMB click was done
-        :param end_pos: mouse position when the left mouse button is released
-        :param sel_type: if True it's a left to right selection (enclosure), if False it's a 'touch' selection
+        :param start_pos:   mouse position when the selection LMB click was done
+        :param end_pos:     mouse position when the left mouse button is released
+        :param sel_type:    if True it's a left to right selection (enclosure), if False it's a 'touch' selection
         :return:
         """
 
         poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
         sel_aperture = set()
         self.ui.apertures_table.clearSelection()
-
         self.app.delete_selection_shape()
+
         for storage in self.storage_dict:
             for obj in self.storage_dict[storage]['geometry']:
                 if 'solid' in obj.geo:
@@ -5408,8 +5931,9 @@ class AppGerberEditor(QtCore.QObject):
                                 self.selected.append(obj)
                                 sel_aperture.add(storage)
                         else:
-                            self.selected.append(obj)
-                            sel_aperture.add(storage)
+                            if obj not in self.selected:
+                                self.selected.append(obj)
+                                sel_aperture.add(storage)
 
         # #############################################################################################################
         # ##########  select the aperture code of the selected geometry, in the tool table  ###########################
@@ -5519,7 +6043,7 @@ class AppGerberEditor(QtCore.QObject):
         self.snap_x = x
         self.snap_y = y
 
-        self.app.mouse = [x, y]
+        self.app.mouse_pos = [x, y]
 
         if self.pos is None:
             self.pos = (0, 0)
@@ -5542,13 +6066,21 @@ class AppGerberEditor(QtCore.QObject):
         self.app.plotcanvas.on_update_text_hud(self.app.dx, self.app.dy, x, y)
 
         self.update_utility_geometry(data=(x, y))
+        if self.active_tool.name in [
+            'pad', 'array', 'track', 'region'
+        ]:
+            try:
+                self.active_tool.draw_cursor_data(pos=self.app.mouse_pos)
+            except AttributeError:
+                # this can happen if the method is not implemented yet for the active_tool
+                pass
 
         # # ## Selection area on canvas section # ##
         if event_is_dragging == 1 and event.button == 1:
             # I make an exception for RegionEditorGrb and TrackEditorGrb because clicking and dragging while making 
             # regions can create strange issues like missing a point in a track/region
             if isinstance(self.active_tool, RegionEditorGrb) or isinstance(self.active_tool, TrackEditorGrb):
-                pass
+                self.app.selection_type = None
             else:
                 dx = pos_canvas[0] - self.pos[0]
                 self.app.delete_selection_shape()
@@ -5629,6 +6161,7 @@ class AppGerberEditor(QtCore.QObject):
                 sel_draw_color = self.get_sel_color() + 'FF'
             else:
                 sel_draw_color = self.get_sel_color()[:-2] + 'FF'
+
             if len(self.get_draw_color()) == 7:
                 draw_color = self.get_draw_color() + 'FF'
             else:
@@ -5679,6 +6212,9 @@ class AppGerberEditor(QtCore.QObject):
                 color = color[:7] + 'AF'
 
             self.shapes.add(shape=geometry, color=color, face_color=color, layer=0, tolerance=self.tolerance)
+
+    def on_shape_complete(self):
+        pass
 
     @property
     def visible(self):
@@ -5864,48 +6400,6 @@ class AppGerberEditor(QtCore.QObject):
         if geo_el in self.selected:
             self.selected.remove(geo_el)
 
-    def on_array_type_radio(self, val):
-        if val == 'linear':
-            self.ui.pad_axis_label.show()
-            self.ui.pad_axis_radio.show()
-            self.ui.pad_pitch_label.show()
-            self.ui.pad_pitch_entry.show()
-            self.ui.linear_angle_label.show()
-            self.ui.linear_angle_spinner.show()
-            self.ui.lin_separator_line.show()
-
-            self.ui.pad_direction_label.hide()
-            self.ui.pad_direction_radio.hide()
-            self.ui.pad_angle_label.hide()
-            self.ui.pad_angle_entry.hide()
-            self.ui.circ_separator_line.hide()
-        else:
-            self.delete_utility_geometry()
-
-            self.ui.pad_axis_label.hide()
-            self.ui.pad_axis_radio.hide()
-            self.ui.pad_pitch_label.hide()
-            self.ui.pad_pitch_entry.hide()
-            self.ui.linear_angle_label.hide()
-            self.ui.linear_angle_spinner.hide()
-            self.ui.lin_separator_line.hide()
-
-            self.ui.pad_direction_label.show()
-            self.ui.pad_direction_radio.show()
-            self.ui.pad_angle_label.show()
-            self.ui.pad_angle_entry.show()
-            self.ui.circ_separator_line.show()
-
-            self.app.inform.emit(_("Click on the circular array Center position"))
-
-    def on_linear_angle_radio(self, val):
-        if val == 'A':
-            self.ui.linear_angle_spinner.show()
-            self.ui.linear_angle_label.show()
-        else:
-            self.ui.linear_angle_spinner.hide()
-            self.ui.linear_angle_label.hide()
-
     def on_copy_button(self):
         self.select_tool('copy')
         return
@@ -5935,65 +6429,8 @@ class AppGerberEditor(QtCore.QObject):
     def on_add_semidisc(self):
         self.select_tool('semidisc')
 
-    def on_buffer(self):
-        buff_value = 0.01
-        self.app.log.debug("AppGerberEditor.on_buffer()")
-
-        try:
-            buff_value = float(self.ui.buffer_distance_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                buff_value = float(self.ui.buffer_distance_entry.get_value().replace(',', '.'))
-                self.ui.buffer_distance_entry.set_value(buff_value)
-            except ValueError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Buffer distance value is missing or wrong format. Add it and retry."))
-                return
-
-        # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
-        # I populated the combobox such that the index coincide with the join styles value (which is really an INT)
-        join_style = self.ui.buffer_corner_cb.currentIndex() + 1
-
-        def buffer_recursion(geom_el, selection):
-            if type(geom_el) == list:
-                geoms = []
-                for local_geom in geom_el:
-                    geoms.append(buffer_recursion(local_geom, selection=selection))
-                return geoms
-            else:
-                if geom_el in selection:
-                    geometric_data = geom_el.geo
-                    buffered_geom_el = {}
-                    if 'solid' in geometric_data:
-                        buffered_geom_el['solid'] = geometric_data['solid'].buffer(buff_value, join_style=join_style)
-                    if 'follow' in geometric_data:
-                        buffered_geom_el['follow'] = geometric_data['follow'].buffer(buff_value, join_style=join_style)
-                    if 'clear' in geometric_data:
-                        buffered_geom_el['clear'] = geometric_data['clear'].buffer(buff_value, join_style=join_style)
-                    return DrawToolShape(buffered_geom_el)
-                else:
-                    return geom_el
-
-        if not self.ui.apertures_table.selectedItems():
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("No aperture to buffer. Select at least one aperture and try again."))
-            return
-
-        for x in self.ui.apertures_table.selectedItems():
-            try:
-                apcode = self.ui.apertures_table.item(x.row(), 1).text()
-
-                temp_storage = deepcopy(buffer_recursion(self.storage_dict[apcode]['geometry'], self.selected))
-                self.storage_dict[apcode]['geometry'] = []
-                self.storage_dict[apcode]['geometry'] = temp_storage
-            except Exception as e:
-                self.app.log.error("AppGerberEditor.buffer() --> %s" % str(e))
-                self.app.inform.emit('[ERROR_NOTCL] %s\n%s' % (_("Failed."), str(traceback.print_exc())))
-                return
-
-        self.plot_all()
-        self.app.inform.emit('[success] %s' % _("Done."))
+    def on_simplification(self):
+        self.select_tool('simplify')
 
     def on_scale(self):
         scale_factor = 1.0
@@ -6022,15 +6459,15 @@ class AppGerberEditor(QtCore.QObject):
                     geometric_data = geom_el.geo
                     scaled_geom_el = {}
                     if 'solid' in geometric_data:
-                        scaled_geom_el['solid'] = affinity.scale(
+                        scaled_geom_el['solid'] = scale(
                             geometric_data['solid'], scale_factor, scale_factor, origin='center'
                         )
                     if 'follow' in geometric_data:
-                        scaled_geom_el['follow'] = affinity.scale(
+                        scaled_geom_el['follow'] = scale(
                             geometric_data['follow'], scale_factor, scale_factor, origin='center'
                         )
                     if 'clear' in geometric_data:
-                        scaled_geom_el['clear'] = affinity.scale(
+                        scaled_geom_el['clear'] = scale(
                             geometric_data['clear'], scale_factor, scale_factor, origin='center'
                         )
 
@@ -6120,8 +6557,6 @@ class AppGerberEditor(QtCore.QObject):
                 self.ui.apertures_frame.hide()
             if tool_name == 'select':
                 self.ui.apertures_frame.show()
-            if tool_name == 'buffer' or tool_name == 'all':
-                self.ui.buffer_tool_frame.hide()
             if tool_name == 'scale' or tool_name == 'all':
                 self.ui.scale_tool_frame.hide()
             if tool_name == 'markarea' or tool_name == 'all':
@@ -6180,6 +6615,7 @@ class AppGerberEditorUI:
         name_label = FCLabel(_("Name:"))
         self.name_box.addWidget(name_label)
         self.name_entry = FCEntry()
+        self.name_entry.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.name_box.addWidget(self.name_entry)
 
         # Box for custom widgets
@@ -6190,17 +6626,24 @@ class AppGerberEditorUI:
         # #############################################################################################################
         # #################################### Gerber Apertures Table #################################################
         # #############################################################################################################
-        self.apertures_table_label = FCLabel('%s:' % _('Apertures'), bold=True)
+        self.apertures_table_label = FCLabel('%s' % _('Apertures'), bold=True, color='orange')
         self.apertures_table_label.setToolTip(
             _("Apertures Table for the Gerber Object.")
         )
         self.custom_box.addWidget(self.apertures_table_label)
 
+        tw_frame = FCFrame()
+        self.custom_box.addWidget(tw_frame)
+
+        # Grid Layout
+        ap_grid = GLay(v_spacing=5, h_spacing=3)
+        tw_frame.setLayout(ap_grid)
+
         self.apertures_table = FCTable()
         # delegate = SpinBoxDelegate(units=self.units)
         # self.apertures_table.setItemDelegateForColumn(1, delegate)
 
-        self.custom_box.addWidget(self.apertures_table)
+        ap_grid.addWidget(self.apertures_table, 0, 0, 1, 2)
 
         self.apertures_table.setColumnCount(5)
         self.apertures_table.setHorizontalHeaderLabels(['#', _('Code'), _('Type'), _('Size'), _('Dim')])
@@ -6220,16 +6663,12 @@ class AppGerberEditorUI:
               " - (width, height) for R, O type.\n"
               " - (dia, nVertices) for P type"))
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.custom_box.addWidget(separator_line)
-
         # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Apertures widgets
         # this way I can hide/show the frame
         self.apertures_frame = QtWidgets.QFrame()
         self.apertures_frame.setContentsMargins(0, 0, 0, 0)
-        self.custom_box.addWidget(self.apertures_frame)
+        ap_grid.addWidget(self.apertures_frame, 2, 0, 1, 2)
+
         self.apertures_box = QtWidgets.QVBoxLayout()
         self.apertures_box.setContentsMargins(0, 0, 0, 0)
         self.apertures_frame.setLayout(self.apertures_box)
@@ -6302,23 +6741,18 @@ class AppGerberEditorUI:
         grid1.addWidget(self.apdim_lbl, 4, 0)
         grid1.addWidget(self.apdim_entry, 4, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid1.addWidget(separator_line, 5, 0, 1, 3)
-
         # Aperture Buttons
         vlay_buttons = QtWidgets.QVBoxLayout()
         grid1.addLayout(vlay_buttons, 1, 2, 4, 1)
 
-        self.addaperture_btn = FCButton(_('Add'))
+        self.addaperture_btn = QtWidgets.QToolButton()
         self.addaperture_btn.setSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         self.addaperture_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
         self.addaperture_btn.setToolTip(
             _("Add a new aperture to the aperture list.")
         )
 
-        self.delaperture_btn = FCButton(_('Delete'))
+        self.delaperture_btn = QtWidgets.QToolButton()
         # self.delaperture_btn.setSizePolicy(
         #     QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
 
@@ -6329,32 +6763,25 @@ class AppGerberEditorUI:
         vlay_buttons.addWidget(self.addaperture_btn)
         vlay_buttons.addWidget(self.delaperture_btn)
 
+        # Zoom Selection
+        self.geo_zoom = FCCheckBox(_("Zoom on selection"))
+        ap_grid.addWidget(self.geo_zoom, 4, 0, 1, 2)
+
         # #############################################################################################################
         # ############################################ Shape Properties ###############################################
         # #############################################################################################################
-        self.shape_frame = QtWidgets.QFrame()
-        self.shape_frame.setContentsMargins(0, 0, 0, 0)
+        self.shape_frame = FCFrame()
         self.custom_box.addWidget(self.shape_frame)
 
         self.shape_grid = GLay(v_spacing=5, h_spacing=3)
-        self.shape_grid.setContentsMargins(0, 0, 0, 0)
         self.shape_frame.setLayout(self.shape_grid)
 
-        # Zoom Selection
-        self.geo_zoom = FCCheckBox(_("Zoom on selection"))
-        self.shape_grid.addWidget(self.geo_zoom, 0, 0, 1, 3)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.shape_grid.addWidget(separator_line, 2, 0, 1, 3)
-
         # Parameters Title
-        param_title = FCLabel('%s' % _("Parameters"), bold=True)
+        param_title = FCLabel('%s' % _("Parameters"), bold=True, color='blue')
         param_title.setToolTip(
             _("Geometry parameters.")
         )
-        self.shape_grid.addWidget(param_title, 4, 0, 1, 3)
+        self.shape_grid.addWidget(param_title, 0, 0, 1, 3)
 
         p_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 0, 0, 1, 0])
 
@@ -6381,20 +6808,20 @@ class AppGerberEditorUI:
         p_grid.addWidget(self.area_entry, 0, 3)
         p_grid.addWidget(area_units_lbl, 0, 4)
 
-        self.shape_grid.addLayout(p_grid, 5, 0, 1, 3)
+        self.shape_grid.addLayout(p_grid, 2, 0, 1, 3)
 
         # Coordinates
         coords_lbl = FCLabel('%s:' % _("Coordinates"))
         coords_lbl.setToolTip(
             _("The coordinates of the selected geometry element.")
         )
-        self.shape_grid.addWidget(coords_lbl, 6, 0, 1, 3)
+        self.shape_grid.addWidget(coords_lbl, 4, 0, 1, 3)
 
         self.geo_coords_entry = FCTextEdit()
         self.geo_coords_entry.setPlaceholderText(
             _("The coordinates of the selected geometry element.")
         )
-        self.shape_grid.addWidget(self.geo_coords_entry, 8, 0, 1, 3)
+        self.shape_grid.addWidget(self.geo_coords_entry, 6, 0, 1, 3)
 
         # Vertex Points Number
         vertex_lbl = FCLabel('%s:' % _("Vertex Points"))
@@ -6404,102 +6831,8 @@ class AppGerberEditorUI:
         self.geo_vertex_entry = FCEntry(decimals=self.decimals)
         self.geo_vertex_entry.setReadOnly(True)
 
-        self.shape_grid.addWidget(vertex_lbl, 10, 0)
-        self.shape_grid.addWidget(self.geo_vertex_entry, 10, 1, 1, 2)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.shape_grid.addWidget(separator_line, 12, 0, 1, 3)
-
-        # Simplification Title
-        simplif_lbl = FCLabel('%s' % _("Simplification"), bold=True)
-        simplif_lbl.setToolTip(
-            _("Simplify a geometry by reducing its vertex points number.")
-        )
-        self.shape_grid.addWidget(simplif_lbl, 14, 0, 1, 3)
-
-        # Simplification Tolerance
-        simplification_tol_lbl = FCLabel('%s:' % _("Tolerance"))
-        simplification_tol_lbl.setToolTip(
-            _("All points in the simplified object will be\n"
-              "within the tolerance distance of the original geometry.")
-        )
-        self.geo_tol_entry = FCDoubleSpinner()
-        self.geo_tol_entry.set_precision(self.decimals)
-        self.geo_tol_entry.setSingleStep(10 ** -self.decimals)
-        self.geo_tol_entry.set_range(0.0000, 10000.0000)
-        self.geo_tol_entry.set_value(10 ** -self.decimals)
-
-        self.shape_grid.addWidget(simplification_tol_lbl, 16, 0)
-        self.shape_grid.addWidget(self.geo_tol_entry, 16, 1, 1, 2)
-
-        # Simplification button
-        self.simplification_btn = FCButton(_("Simplify"), bold=True)
-        self.simplification_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/simplify32.png'))
-        self.simplification_btn.setToolTip(
-            _("Simplify a geometry element by reducing its vertex points number.")
-        )
-
-        self.shape_grid.addWidget(self.simplification_btn, 18, 0, 1, 3)
-
-        # #############################################################################################################
-        # ############################################ BUFFER TOOL ####################################################
-        # #############################################################################################################
-        self.buffer_tool_frame = QtWidgets.QFrame()
-        self.buffer_tool_frame.setContentsMargins(0, 0, 0, 0)
-        self.custom_box.addWidget(self.buffer_tool_frame)
-        self.buffer_tools_box = QtWidgets.QVBoxLayout()
-        self.buffer_tools_box.setContentsMargins(0, 0, 0, 0)
-        self.buffer_tool_frame.setLayout(self.buffer_tools_box)
-        self.buffer_tool_frame.hide()
-
-        # Title
-        buf_title_lbl = FCLabel('%s:' % _('Buffer Aperture'), bold=True)
-        buf_title_lbl.setToolTip(
-            _("Buffer a aperture in the aperture list")
-        )
-        self.buffer_tools_box.addWidget(buf_title_lbl)
-
-        # Grid Layout
-        buff_grid = GLay(v_spacing=5, h_spacing=3)
-        self.buffer_tools_box.addLayout(buff_grid)
-
-        # Buffer distance
-        self.buffer_distance_entry = FCDoubleSpinner()
-        self.buffer_distance_entry.set_precision(self.decimals)
-        self.buffer_distance_entry.set_range(-10000.0000, 10000.0000)
-
-        buff_grid.addWidget(FCLabel('%s:' % _("Buffer distance")), 0, 0)
-        buff_grid.addWidget(self.buffer_distance_entry, 0, 1)
-
-        # Buffer Corner
-        self.buffer_corner_lbl = FCLabel('%s:' % _("Buffer corner"))
-        self.buffer_corner_lbl.setToolTip(
-            _("There are 3 types of corners:\n"
-              " - 'Round': the corner is rounded.\n"
-              " - 'Square': the corner is met in a sharp angle.\n"
-              " - 'Beveled': the corner is a line that directly connects the features meeting in the corner")
-        )
-        self.buffer_corner_cb = FCComboBox()
-        self.buffer_corner_cb.addItem(_("Round"))
-        self.buffer_corner_cb.addItem(_("Square"))
-        self.buffer_corner_cb.addItem(_("Beveled"))
-        buff_grid.addWidget(self.buffer_corner_lbl, 2, 0)
-        buff_grid.addWidget(self.buffer_corner_cb, 2, 1)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        buff_grid.addWidget(separator_line, 4, 0, 1, 2)
-
-        # Buttons
-        hlay_buf = QtWidgets.QHBoxLayout()
-        self.buffer_tools_box.addLayout(hlay_buf)
-
-        self.buffer_button = FCButton(_("Buffer"))
-        self.buffer_button.setIcon(QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'))
-        hlay_buf.addWidget(self.buffer_button)
+        self.shape_grid.addWidget(vertex_lbl, 8, 0)
+        self.shape_grid.addWidget(self.geo_vertex_entry, 8, 1, 1, 2)
 
         # #############################################################################################################
         # ########################################### SCALE TOOL ######################################################
@@ -6622,145 +6955,6 @@ class AppGerberEditorUI:
             _("Clear all the markings.")
         )
         hlay_ma.addWidget(self.ma_clear_button)
-
-        # #############################################################################################################
-        # ######################################### Add Pad Array #####################################################
-        # #############################################################################################################
-        self.array_frame = QtWidgets.QFrame()
-        self.array_frame.setContentsMargins(0, 0, 0, 0)
-        self.custom_box.addWidget(self.array_frame)
-        self.array_box = QtWidgets.QVBoxLayout()
-        self.array_box.setContentsMargins(0, 0, 0, 0)
-        self.array_frame.setLayout(self.array_box)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.array_box.addWidget(separator_line)
-
-        array_grid = GLay(v_spacing=5, h_spacing=3)
-        self.array_box.addLayout(array_grid)
-
-        # Title
-        self.padarray_label = FCLabel('%s' % _("Add Pad Array"), bold=True)
-        self.padarray_label.setToolTip(
-            _("Add an array of pads (linear or circular array)")
-        )
-        array_grid.addWidget(self.padarray_label, 0, 0, 1, 2)
-
-        # Array Type
-        array_type_lbl = FCLabel('%s:' % _("Type"))
-        array_type_lbl.setToolTip(
-            _("Select the type of pads array to create.\n"
-              "It can be Linear X(Y) or Circular")
-        )
-
-        self.array_type_radio = RadioSet([{'label': _('Linear'), 'value': 'linear'},
-                                          {'label': _('Circular'), 'value': 'circular'}])
-
-        array_grid.addWidget(array_type_lbl, 2, 0)
-        array_grid.addWidget(self.array_type_radio, 2, 1)
-
-        # Number of Pads in Array
-        pad_array_size_label = FCLabel('%s:' % _('Nr of pads'))
-        pad_array_size_label.setToolTip(
-            _("Specify how many pads to be in the array.")
-        )
-
-        self.pad_array_size_entry = FCSpinner()
-        self.pad_array_size_entry.set_range(1, 10000)
-
-        array_grid.addWidget(pad_array_size_label, 4, 0)
-        array_grid.addWidget(self.pad_array_size_entry, 4, 1)
-
-        # #############################################################################################################
-        # ############################ Linear Pad Array ###############################################################
-        # #############################################################################################################
-        self.lin_separator_line = QtWidgets.QFrame()
-        self.lin_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        self.lin_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        array_grid.addWidget(self.lin_separator_line, 6, 0, 1, 2)
-
-        # Linear Direction
-        self.pad_axis_label = FCLabel('%s:' % _('Direction'))
-        self.pad_axis_label.setToolTip(
-            _("Direction on which the linear array is oriented:\n"
-              "- 'X' - horizontal axis \n"
-              "- 'Y' - vertical axis or \n"
-              "- 'Angle' - a custom angle for the array inclination")
-        )
-
-        self.pad_axis_radio = RadioSet([{'label': _('X'), 'value': 'X'},
-                                        {'label': _('Y'), 'value': 'Y'},
-                                        {'label': _('Angle'), 'value': 'A'}])
-
-        array_grid.addWidget(self.pad_axis_label, 8, 0)
-        array_grid.addWidget(self.pad_axis_radio, 8, 1)
-
-        # Linear Pitch
-        self.pad_pitch_label = FCLabel('%s:' % _('Pitch'))
-        self.pad_pitch_label.setToolTip(
-            _("Pitch = Distance between elements of the array.")
-        )
-
-        self.pad_pitch_entry = FCDoubleSpinner()
-        self.pad_pitch_entry.set_precision(self.decimals)
-        self.pad_pitch_entry.set_range(0.0000, 10000.0000)
-        self.pad_pitch_entry.setSingleStep(0.1)
-
-        array_grid.addWidget(self.pad_pitch_label, 10, 0)
-        array_grid.addWidget(self.pad_pitch_entry, 10, 1)
-
-        # Linear Angle
-        self.linear_angle_label = FCLabel('%s:' % _('Angle'))
-        self.linear_angle_label.setToolTip(
-            _("Angle at which the linear array is placed.\n"
-              "The precision is of max 2 decimals.\n"
-              "Min value is: -360.00 degrees.\n"
-              "Max value is: 360.00 degrees.")
-        )
-
-        self.linear_angle_spinner = FCDoubleSpinner()
-        self.linear_angle_spinner.set_precision(self.decimals)
-        self.linear_angle_spinner.setRange(-360.00, 360.00)
-
-        array_grid.addWidget(self.linear_angle_label, 12, 0)
-        array_grid.addWidget(self.linear_angle_spinner, 12, 1)
-
-        # #############################################################################################################
-        # ################################### Circular Pad Array ######################################################
-        # #############################################################################################################
-        self.circ_separator_line = QtWidgets.QFrame()
-        self.circ_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        self.circ_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        array_grid.addWidget(self.circ_separator_line, 14, 0, 1, 2)
-
-        # Circular Direction
-        self.pad_direction_label = FCLabel('%s:' % _('Direction'))
-        self.pad_direction_label.setToolTip(
-            _("Direction for circular array.\n"
-              "Can be CW = clockwise or CCW = counter clockwise.")
-        )
-
-        self.pad_direction_radio = RadioSet([{'label': _('CW'), 'value': 'CW'},
-                                             {'label': _('CCW'), 'value': 'CCW'}])
-
-        array_grid.addWidget(self.pad_direction_label, 16, 0)
-        array_grid.addWidget(self.pad_direction_radio, 16, 1)
-
-        # Circular Angle
-        self.pad_angle_label = FCLabel('%s:' % _('Angle'))
-        self.pad_angle_label.setToolTip(
-            _("Angle at which each element in circular array is placed.")
-        )
-
-        self.pad_angle_entry = FCDoubleSpinner()
-        self.pad_angle_entry.set_precision(self.decimals)
-        self.pad_angle_entry.set_range(-360.00, 360.00)
-        self.pad_angle_entry.setSingleStep(0.1)
-
-        array_grid.addWidget(self.pad_angle_label, 18, 0)
-        array_grid.addWidget(self.pad_angle_entry, 18, 1)
 
         self.custom_box.addStretch()
         layout.addStretch()
@@ -7152,22 +7346,22 @@ class TransformEditorTool(AppTool):
         self.ref_combo.currentIndexChanged.connect(self.on_reference_changed)
         self.point_button.clicked.connect(self.on_add_coords)
 
-        self.rotate_button.clicked.connect(self.on_rotate)
+        self.rotate_button.clicked.connect(lambda: self.on_rotate())
 
-        self.skewx_button.clicked.connect(self.on_skewx)
-        self.skewy_button.clicked.connect(self.on_skewy)
+        self.skewx_button.clicked.connect(lambda: self.on_skewx())
+        self.skewy_button.clicked.connect(lambda: self.on_skewy)
 
-        self.scalex_button.clicked.connect(self.on_scalex)
-        self.scaley_button.clicked.connect(self.on_scaley)
+        self.scalex_button.clicked.connect(lambda: self.on_scalex())
+        self.scaley_button.clicked.connect(lambda: self.on_scaley())
 
-        self.offx_button.clicked.connect(self.on_offx)
-        self.offy_button.clicked.connect(self.on_offy)
+        self.offx_button.clicked.connect(lambda: self.on_offx())
+        self.offy_button.clicked.connect(lambda: self.on_offy())
 
-        self.flipx_button.clicked.connect(self.on_flipx)
-        self.flipy_button.clicked.connect(self.on_flipy)
+        self.flipx_button.clicked.connect(lambda: self.on_flipx())
+        self.flipy_button.clicked.connect(lambda: self.on_flipy())
 
-        self.buffer_button.clicked.connect(self.on_buffer_by_distance)
-        self.buffer_factor_button.clicked.connect(self.on_buffer_by_factor)
+        self.buffer_button.clicked.connect(lambda: self.on_buffer_by_distance())
+        self.buffer_factor_button.clicked.connect(lambda: self.on_buffer_by_factor())
 
         # self.rotate_entry.editingFinished.connect(self.on_rotate)
         # self.skewx_entry.editingFinished.connect(self.on_skewx)
@@ -7328,7 +7522,7 @@ class TransformEditorTool(AppTool):
         val = self.app.clipboard.text()
         self.point_entry.set_value(val)
 
-    def on_rotate(self, sig=None, val=None, ref=None):
+    def on_rotate(self, val=None, ref=None):
         value = float(self.rotate_entry.get_value()) if val is None else val
         if value == 0:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Rotate transformation can not be done for a value of 0."))
@@ -7338,21 +7532,21 @@ class TransformEditorTool(AppTool):
             return
         self.app.worker_task.emit({'fcn': self.on_rotate_action, 'params': [value, point]})
 
-    def on_flipx(self, signal=None, ref=None):
+    def on_flipx(self, ref=None):
         axis = 'Y'
         point = self.on_calculate_reference() if ref is None else self.on_calculate_reference(ref_index=ref)
         if point == 'fail':
             return
         self.app.worker_task.emit({'fcn': self.on_flip, 'params': [axis, point]})
 
-    def on_flipy(self, signal=None, ref=None):
+    def on_flipy(self, ref=None):
         axis = 'X'
         point = self.on_calculate_reference() if ref is None else self.on_calculate_reference(ref_index=ref)
         if point == 'fail':
             return
         self.app.worker_task.emit({'fcn': self.on_flip, 'params': [axis, point]})
 
-    def on_skewx(self, signal=None, val=None, ref=None):
+    def on_skewx(self, val=None, ref=None):
         xvalue = float(self.skewx_entry.get_value()) if val is None else val
 
         if xvalue == 0:
@@ -7370,7 +7564,7 @@ class TransformEditorTool(AppTool):
 
         self.app.worker_task.emit({'fcn': self.on_skew, 'params': [axis, xvalue, yvalue, point]})
 
-    def on_skewy(self, signal=None, val=None, ref=None):
+    def on_skewy(self, val=None, ref=None):
         xvalue = 0
         yvalue = float(self.skewy_entry.get_value()) if val is None else val
 
@@ -7384,7 +7578,7 @@ class TransformEditorTool(AppTool):
 
         self.app.worker_task.emit({'fcn': self.on_skew, 'params': [axis, xvalue, yvalue, point]})
 
-    def on_scalex(self, signal=None, val=None, ref=None):
+    def on_scalex(self, val=None, ref=None):
         xvalue = float(self.scalex_entry.get_value()) if val is None else val
 
         if xvalue == 0 or xvalue == 1:
@@ -7404,7 +7598,7 @@ class TransformEditorTool(AppTool):
 
         self.app.worker_task.emit({'fcn': self.on_scale, 'params': [axis, xvalue, yvalue, point]})
 
-    def on_scaley(self, signal=None, val=None, ref=None):
+    def on_scaley(self, val=None, ref=None):
         xvalue = 1
         yvalue = float(self.scaley_entry.get_value()) if val is None else val
 
@@ -7420,7 +7614,7 @@ class TransformEditorTool(AppTool):
 
         self.app.worker_task.emit({'fcn': self.on_scale, 'params': [axis, xvalue, yvalue, point]})
 
-    def on_offx(self, signal=None, val=None):
+    def on_offx(self, val=None):
         value = float(self.offx_entry.get_value()) if val is None else val
         if value == 0:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Offset transformation can not be done for a value of 0."))
@@ -7429,7 +7623,7 @@ class TransformEditorTool(AppTool):
 
         self.app.worker_task.emit({'fcn': self.on_offset, 'params': [axis, value]})
 
-    def on_offy(self, signal=None, val=None):
+    def on_offy(self, val=None):
         value = float(self.offy_entry.get_value()) if val is None else val
         if value == 0:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Offset transformation can not be done for a value of 0."))
@@ -7474,11 +7668,11 @@ class TransformEditorTool(AppTool):
                 for sel_el_shape in elem_list:
                     sel_el = sel_el_shape.geo
                     if 'solid' in sel_el:
-                        sel_el['solid'] = affinity.rotate(sel_el['solid'], angle=-val, origin=(px, py))
+                        sel_el['solid'] = rotate(sel_el['solid'], angle=-val, origin=(px, py))
                     if 'follow' in sel_el:
-                        sel_el['follow'] = affinity.rotate(sel_el['follow'], angle=-val, origin=(px, py))
+                        sel_el['follow'] = rotate(sel_el['follow'], angle=-val, origin=(px, py))
                     if 'clear' in sel_el:
-                        sel_el['clear'] = affinity.rotate(sel_el['clear'], angle=-val, origin=(px, py))
+                        sel_el['clear'] = rotate(sel_el['clear'], angle=-val, origin=(px, py))
                 self.draw_app.plot_all()
 
                 self.app.inform.emit('[success] %s' % _("Done."))
@@ -7509,19 +7703,19 @@ class TransformEditorTool(AppTool):
                     sel_el = sel_el_shape.geo
                     if axis == 'X':
                         if 'solid' in sel_el:
-                            sel_el['solid'] = affinity.scale(sel_el['solid'], xfact=1, yfact=-1, origin=(px, py))
+                            sel_el['solid'] = scale(sel_el['solid'], xfact=1, yfact=-1, origin=(px, py))
                         if 'follow' in sel_el:
-                            sel_el['follow'] = affinity.scale(sel_el['follow'], xfact=1, yfact=-1, origin=(px, py))
+                            sel_el['follow'] = scale(sel_el['follow'], xfact=1, yfact=-1, origin=(px, py))
                         if 'clear' in sel_el:
-                            sel_el['clear'] = affinity.scale(sel_el['clear'], xfact=1, yfact=-1, origin=(px, py))
+                            sel_el['clear'] = scale(sel_el['clear'], xfact=1, yfact=-1, origin=(px, py))
                         self.app.inform.emit('[success] %s...' % _('Flip on Y axis done'))
                     elif axis == 'Y':
                         if 'solid' in sel_el:
-                            sel_el['solid'] = affinity.scale(sel_el['solid'], xfact=-1, yfact=1, origin=(px, py))
+                            sel_el['solid'] = scale(sel_el['solid'], xfact=-1, yfact=1, origin=(px, py))
                         if 'follow' in sel_el:
-                            sel_el['follow'] = affinity.scale(sel_el['follow'], xfact=-1, yfact=1, origin=(px, py))
+                            sel_el['follow'] = scale(sel_el['follow'], xfact=-1, yfact=1, origin=(px, py))
                         if 'clear' in sel_el:
-                            sel_el['clear'] = affinity.scale(sel_el['clear'], xfact=-1, yfact=1, origin=(px, py))
+                            sel_el['clear'] = scale(sel_el['clear'], xfact=-1, yfact=1, origin=(px, py))
                         self.app.inform.emit('[success] %s...' % _('Flip on X axis done'))
                 self.draw_app.plot_all()
             except Exception as e:
@@ -7552,11 +7746,11 @@ class TransformEditorTool(AppTool):
                     sel_el = sel_el_shape.geo
 
                     if 'solid' in sel_el:
-                        sel_el['solid'] = affinity.skew(sel_el['solid'], xval, yval, origin=(px, py))
+                        sel_el['solid'] = skew(sel_el['solid'], xval, yval, origin=(px, py))
                     if 'follow' in sel_el:
-                        sel_el['follow'] = affinity.skew(sel_el['follow'], xval, yval, origin=(px, py))
+                        sel_el['follow'] = skew(sel_el['follow'], xval, yval, origin=(px, py))
                     if 'clear' in sel_el:
-                        sel_el['clear'] = affinity.skew(sel_el['clear'], xval, yval, origin=(px, py))
+                        sel_el['clear'] = skew(sel_el['clear'], xval, yval, origin=(px, py))
 
                 self.draw_app.plot_all()
 
@@ -7591,11 +7785,11 @@ class TransformEditorTool(AppTool):
                     for sel_el_shape in elem_list:
                         sel_el = sel_el_shape.geo
                         if 'solid' in sel_el:
-                            sel_el['solid'] = affinity.scale(sel_el['solid'], xfactor, yfactor, origin=(px, py))
+                            sel_el['solid'] = scale(sel_el['solid'], xfactor, yfactor, origin=(px, py))
                         if 'follow' in sel_el:
-                            sel_el['follow'] = affinity.scale(sel_el['follow'], xfactor, yfactor, origin=(px, py))
+                            sel_el['follow'] = scale(sel_el['follow'], xfactor, yfactor, origin=(px, py))
                         if 'clear' in sel_el:
-                            sel_el['clear'] = affinity.scale(sel_el['clear'], xfactor, yfactor, origin=(px, py))
+                            sel_el['clear'] = scale(sel_el['clear'], xfactor, yfactor, origin=(px, py))
                     self.draw_app.plot_all()
 
                     if str(axis) == 'X':
@@ -7628,18 +7822,18 @@ class TransformEditorTool(AppTool):
                     sel_el = sel_el_shape.geo
                     if axis == 'X':
                         if 'solid' in sel_el:
-                            sel_el['solid'] = affinity.translate(sel_el['solid'], num, 0)
+                            sel_el['solid'] = translate(sel_el['solid'], num, 0)
                         if 'follow' in sel_el:
-                            sel_el['follow'] = affinity.translate(sel_el['follow'], num, 0)
+                            sel_el['follow'] = translate(sel_el['follow'], num, 0)
                         if 'clear' in sel_el:
-                            sel_el['clear'] = affinity.translate(sel_el['clear'], num, 0)
+                            sel_el['clear'] = translate(sel_el['clear'], num, 0)
                     elif axis == 'Y':
                         if 'solid' in sel_el:
-                            sel_el['solid'] = affinity.translate(sel_el['solid'], 0, num)
+                            sel_el['solid'] = translate(sel_el['solid'], 0, num)
                         if 'follow' in sel_el:
-                            sel_el['follow'] = affinity.translate(sel_el['follow'], 0, num)
+                            sel_el['follow'] = translate(sel_el['follow'], 0, num)
                         if 'clear' in sel_el:
-                            sel_el['clear'] = affinity.translate(sel_el['clear'], 0, num)
+                            sel_el['clear'] = translate(sel_el['clear'], 0, num)
                     self.draw_app.plot_all()
 
                 if str(axis) == 'X':
@@ -7665,11 +7859,11 @@ class TransformEditorTool(AppTool):
 
                     if factor:
                         if 'solid' in sel_el:
-                            sel_el['solid'] = affinity.scale(sel_el['solid'], value, value, origin='center')
+                            sel_el['solid'] = scale(sel_el['solid'], value, value, origin='center')
                         if 'follow' in sel_el:
-                            sel_el['follow'] = affinity.scale(sel_el['solid'], value, value, origin='center')
+                            sel_el['follow'] = scale(sel_el['solid'], value, value, origin='center')
                         if 'clear' in sel_el:
-                            sel_el['clear'] = affinity.scale(sel_el['solid'], value, value, origin='center')
+                            sel_el['clear'] = scale(sel_el['solid'], value, value, origin='center')
                     else:
                         if 'solid' in sel_el:
                             sel_el['solid'] = sel_el['solid'].buffer(

@@ -5,8 +5,21 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
-from camlib import grace
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
+    FCEntry, FCTextArea, FCSpinner, OptionalHideInputSection
+from camlib import grace, flatten_shapely_geometry
+
+import logging
+import numpy as np
+
+from shapely import MultiPolygon
+from shapely.ops import nearest_points
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -240,15 +253,16 @@ class ToolOptimal(AppTool):
                     _("Optimal Tool. Creating a buffer for the object geometry."))
                 total_geo = MultiPolygon(total_geo)
                 total_geo = total_geo.buffer(0)
+                total_geo = flatten_shapely_geometry(total_geo)
 
-                if isinstance(total_geo, MultiPolygon):
-                    geo_len = len(total_geo.geoms)
-                    geo_len = (geo_len * (geo_len - 1)) / 2
-                else:
+                geo_len = len(total_geo)
+                if geo_len == 1:
                     app_obj.inform.emit('[ERROR_NOTCL] %s' %
                                         _("The Gerber object has one Polygon as geometry.\n"
                                           "There are no distances between geometry elements to be found."))
                     return 'fail'
+
+                geo_len = (geo_len * (geo_len - 1)) / 2
 
                 app_obj.inform.emit(
                     '%s: %s' % (_("Optimal Tool. Finding the distances between each two elements. Iterations"),
@@ -256,8 +270,8 @@ class ToolOptimal(AppTool):
 
                 plugin_instance.min_dict = {}
                 idx = 1
-                for geo in total_geo.geoms:
-                    for s_geo in total_geo.geoms[idx:]:
+                for geo in total_geo:
+                    for s_geo in total_geo[idx:]:
                         if app_obj.abort_flag:
                             # graceful abort requested by the user
                             raise grace
@@ -575,7 +589,7 @@ class OptimalUI:
         self.locations_textb.setStyleSheet(stylesheet)
         res_grid.addWidget(self.locations_textb, 6, 0, 1, 3)
 
-        # Jump button
+        # "Jump" button
         self.locate_button = FCButton(_("Jump to selected position"))
         self.locate_button.setToolTip(
             _("Select a position in the Locations text box and then\n"
@@ -660,7 +674,7 @@ class OptimalUI:
         self.locations_sec_textb.setStyleSheet(stylesheet)
         self.distances_box.addWidget(self.locations_sec_textb)
 
-        # Jump button
+        # "Jump" button
         self.locate_sec_button = FCButton(_("Jump to selected position"))
         self.locate_sec_button.setToolTip(
             _("Select a position in the Locations text box and then\n"

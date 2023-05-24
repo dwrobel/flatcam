@@ -10,12 +10,16 @@
 # File modified by: Marius Stanciu                         #
 # ##########################################################
 
+from PyQt6 import QtWidgets, QtCore
+from appGUI.GUIElements import FCCheckBox
+from appGUI.ObjectUI import GerberObjectUI
+from appParsers.ParseGerber import Gerber
+from appObjects.AppObjectTemplate import FlatCAMObj, ObjectDeleted, ValidationError
 
-from shapely.geometry import MultiLineString, LinearRing
 from camlib import flatten_shapely_geometry
 
-from appParsers.ParseGerber import Gerber
-from appObjects.AppObjectTemplate import *
+from shapely import MultiLineString, LinearRing, MultiPolygon, Polygon, LineString, Point
+from shapely.ops import unary_union
 
 import numpy as np
 from copy import deepcopy
@@ -903,7 +907,7 @@ class GerberObject(FlatCAMObj, Gerber):
 
         Gerber.convert_units(self, units)
 
-        # self.obj_options['isotooldia'] = float(self.obj_options['isotooldia']) * factor
+        # self.obj_options['isotd_list'] = float(self.obj_options['isotd_list']) * factor
         # self.obj_options['bboxmargin'] = float(self.obj_options['bboxmargin']) * factor
 
     def plot(self, kind=None, **kwargs):

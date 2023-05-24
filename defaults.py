@@ -42,7 +42,6 @@ class AppDefaults:
 
         "global_move_ref": 'abs',
 
-        "global_toolbar_view": 511,
         "global_gui_layout": 0,  # can be 0:"normal" or 1:"columnar"
 
         "global_background_timeout": 300000,  # Default value is 5 minutes
@@ -60,13 +59,6 @@ class AppDefaults:
         "global_last_folder": None,
         "global_last_save_folder": None,
 
-        # Default window geometry
-        "global_def_win_x": 100,
-        "global_def_win_y": 100,
-        "global_def_win_w": 1024,
-        "global_def_win_h": 650,
-        "global_def_notebook_width": 1,
-
         # Constants...
         "global_defaults_save_period_ms": 20000,  # Time between default saves.
         "global_shell_shape": [500, 300],  # Shape of the shell in pixels.
@@ -82,9 +74,9 @@ class AppDefaults:
         "global_tcl_path": '',
 
         # General APP Preferences
-        "decimals_inch": 4,
         "decimals_metric": 4,
         "global_graphic_engine": '3D',
+        "global_graphic_engine_3d_no_mp": False,
         "global_app_level": 'b',
 
         "global_log_verbose": 2,
@@ -99,6 +91,7 @@ class AppDefaults:
         "global_version_check": True,
         "global_send_stats": True,
         "global_worker_number": int((os.cpu_count()) / 2) if os.cpu_count() > 4 else 1,
+        "global_process_number": int((os.cpu_count()) / 4) if os.cpu_count() > 4 else 1,
         "global_tolerance": 0.005,
 
         "global_save_compressed": True,
@@ -236,7 +229,7 @@ class AppDefaults:
         "gerber_editor_newtype": 'C',
         "gerber_editor_newdim": "0.5, 0.5",
         "gerber_editor_array_size": 5,
-        "gerber_editor_lin_axis": 'X',
+        "gerber_editor_lin_dir": 'X',
         "gerber_editor_lin_pitch": 0.1,
         "gerber_editor_lin_angle": 0.0,
         "gerber_editor_circ_dir": 'CW',
@@ -322,6 +315,7 @@ class AppDefaults:
 
         # Geometry Export
         "geometry_dxf_format": 'R2010',
+        "geometry_paths_only": True,
 
         # Geometry Editor
         "geometry_editor_sel_limit": 30,
@@ -501,6 +495,8 @@ class AppDefaults:
         "tools_mill_search_time": 3,
 
         # Autolevelling Plugin
+        "tools_al_plot_points": False,
+        "tools_al_avoid_exc_holes": False,
         "tools_al_status": False,
         "tools_al_mode": 'grid',
         "tools_al_method": 'v',
@@ -947,18 +943,13 @@ class AppDefaults:
         except IOError:
             log.error("Could not load defaults file.")
             inform.emit('[ERROR] %s' % _("Could not load the file."))
-            # in case the defaults file can't be loaded, show all toolbars
-            self.defaults["global_toolbar_view"] = 511
             return
 
         # Parse the JSON
         try:
             defaults = simplejson.loads(options)
         except Exception:
-            # in case the defaults file can't be loaded, show all toolbars
-            self.defaults["global_toolbar_view"] = 511
-            e = sys.exc_info()[0]
-            log.error(str(e))
+            log.error(str(sys.exc_info()[0]))
             inform.emit('[ERROR] %s' % _("Failed to parse defaults file."))
             return
         if defaults is None:
@@ -1118,8 +1109,6 @@ class AppOptions:
         except IOError:
             log.error("Could not load defaults file.")
             inform.emit('[ERROR] %s' % _("Could not load the file."))
-            # in case the defaults file can't be loaded, show all toolbars
-            self.options["global_toolbar_view"] = 511
             return
 
         # Parse the JSON
@@ -1127,9 +1116,7 @@ class AppOptions:
             options = simplejson.loads(options)
         except Exception:
             # in case the defaults file can't be loaded, show all toolbars
-            self.defaults["global_toolbar_view"] = 511
-            e = sys.exc_info()[0]
-            log.error(str(e))
+            log.error(str(sys.exc_info()[0]))
             inform.emit('[ERROR] %s' % _("Failed to parse defaults file."))
             return
         if options is None:

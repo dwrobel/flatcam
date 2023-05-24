@@ -5,7 +5,24 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCFileSaveDialog, \
+    FCComboBox2, FCEntry, FCDoubleSpinner, FCSpinner, FCInputSpinner, FCTable
+
+import traceback
+from copy import deepcopy
+import re
+
+from shapely import LineString, MultiLineString, Polygon, MultiPolygon, Point
+from shapely.ops import unary_union
+
+from datetime import datetime as dt
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
+
 from appCommon.Common import LoudDict
 
 from camlib import distance
@@ -155,7 +172,7 @@ class SolderPaste(AppTool):
         sel_model = self.ui.tools_table.selectionModel()
         sel_indexes = sel_model.selectedIndexes()
 
-        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        # it will iterate over all indexes which means all items in all columns too, but I'm interested only on rows
         sel_rows = set()
         for idx in sel_indexes:
             sel_rows.add(idx.row())
@@ -326,6 +343,7 @@ class SolderPaste(AppTool):
     def update_ui(self, row=None):
         """
         Will update the UI form with the data from obj.tools
+
         :param row: the row (tool) from which to extract information's used to populate the form
         :return:
         """
@@ -380,7 +398,7 @@ class SolderPaste(AppTool):
         sel_model = self.ui.tools_table.selectionModel()
         sel_indexes = sel_model.selectedIndexes()
 
-        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        # it will iterate over all indexes which means all items in all columns too, but I'm interested only on rows
         sel_rows = set()
         for idx in sel_indexes:
             sel_rows.add(idx.row())
@@ -451,7 +469,7 @@ class SolderPaste(AppTool):
         try:
             obj_name = obj.obj_options['name']
         except AttributeError:
-            # this happen when the 'delete all' is emitted since in that case the obj is set to None and None has no
+            # this happens when the 'delete all' is emitted since in that case the obj is set to None and None has no
             # attribute named 'options'
             return
 
@@ -480,6 +498,7 @@ class SolderPaste(AppTool):
     def form_to_storage(self, tooluid=None):
         """
         Will read all the items in the UI form and set the self.tools data accordingly
+
         :param tooluid: the uid of the tool to be updated in the obj.tools
         :return:
         """
@@ -505,6 +524,7 @@ class SolderPaste(AppTool):
     def set_form_from_defaults(self):
         """
         Will read all the parameters of Solder Paste Tool from the app self.defaults and update the UI
+
         :return:
         """
         for key in self.form_fields:
@@ -646,7 +666,7 @@ class SolderPaste(AppTool):
         """
         Will delete tool(s) in the Tool Table
 
-        :param rows_to_delete:  tell which row (tool) to delete
+        :param rows_to_delete:  tell which row (tool) to be deleted
         :param all_tools:       to delete all tools at once
         :return:
         """
@@ -784,7 +804,7 @@ class SolderPaste(AppTool):
 
             Results are placed in flat_geometry
 
-            :param geometry: Shapely type or list or list of list of such.
+            :param geometry: Shapely type, list or list of lists of such.
             :param reset: Clears the contents of self.flat_geometry.
             :param pathonly: Expands polygons into linear elements from the exterior attribute.
             """
@@ -1090,7 +1110,7 @@ class SolderPaste(AppTool):
 
         :return:
         """
-        time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
+        time_str = "{:%A, %d %B %Y at %H:%M}".format(dt.now())
 
         name = self.ui.cnc_obj_combo.currentText()
         obj = self.app.collection.get_by_name(name)
@@ -1157,7 +1177,7 @@ class SolderPaste(AppTool):
 
         :return:
         """
-        time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
+        time_str = "{:%A, %d %B %Y at %H:%M}".format(dt.now())
         name = self.ui.cnc_obj_combo.currentText()
         obj = self.app.collection.get_by_name(name)
 

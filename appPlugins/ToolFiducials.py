@@ -5,9 +5,25 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
-import shapely.geometry
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
+    FCComboBox2, RadioSet, FCDoubleSpinner, EvalEntry, FCTable
 from appCommon.Common import LoudDict
+
+import logging
+from copy import deepcopy
+import math
+
+from shapely import LineString, Polygon, MultiPolygon, box, Point
+from shapely.geometry import base
+from shapely.ops import unary_union
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
+
+from camlib import flatten_shapely_geometry
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -70,7 +86,7 @@ class ToolFiducials(AppTool):
 
         self.handlers_connected = False
         # storage for temporary shapes when adding manual markers
-        self.temp_shapes = self.app.move_tool.sel_shapes
+        self.temp_shapes = self.app.sel_shapes
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolFiducials()")
@@ -388,6 +404,8 @@ class ToolFiducials(AppTool):
         """
         fid_size = self.ui.fid_size_entry.get_value() if fid_size is None else fid_size
         fid_type = 0 if fid_type is None else fid_type  # default is 'circular' <=> 0
+        if fid_type == "circular":
+            fid_type = 0
         line_thickness = self.ui.line_thickness_entry.get_value() if line_size is None else line_size
 
         radius = fid_size / 2.0
@@ -425,12 +443,10 @@ class ToolFiducials(AppTool):
                     new_apertures[new_apid]['geometry'].append(deepcopy(dict_el))
 
             s_list = []
-            if g_obj.solid_geometry:
-                try:
-                    for poly in g_obj.solid_geometry:
-                        s_list.append(poly)
-                except TypeError:
-                    s_list.append(g_obj.solid_geometry)
+            flat_geo = flatten_shapely_geometry(g_obj.solid_geometry)
+            if flat_geo:
+                for poly in flat_geo:
+                    s_list.append(poly)
 
             s_list += geo_list
         elif fid_type == 1:  # 'cross'
@@ -490,15 +506,14 @@ class ToolFiducials(AppTool):
                     new_apertures[new_apid]['geometry'].append(deepcopy(dict_el))
 
             s_list = []
-            if g_obj.solid_geometry:
-                try:
-                    for poly in g_obj.solid_geometry:
-                        s_list.append(poly)
-                except TypeError:
-                    s_list.append(g_obj.solid_geometry)
+            flat_geo = flatten_shapely_geometry(g_obj.solid_geometry)
+            if flat_geo:
+                for poly in flat_geo:
+                    s_list.append(poly)
 
             geo_buff_list = MultiPolygon(geo_buff_list)
             geo_buff_list = geo_buff_list.buffer(0)
+            geo_buff_list = flatten_shapely_geometry(geo_buff_list)
             for poly in geo_buff_list:
                 s_list.append(poly)
         else:
@@ -541,7 +556,7 @@ class ToolFiducials(AppTool):
             geo_buff_list = []
             if aperture_found:
                 for geo in geo_list:
-                    assert isinstance(geo, shapely.geometry.base.BaseGeometry)
+                    assert isinstance(geo, base.BaseGeometry)
                     geo_buff_list.append(geo)
 
                     dict_el = {'follow': geo.centroid, 'solid': geo}
@@ -562,19 +577,17 @@ class ToolFiducials(AppTool):
                 }
 
                 for geo in geo_list:
-                    assert isinstance(geo, shapely.geometry.base.BaseGeometry)
+                    assert isinstance(geo, base.BaseGeometry)
                     geo_buff_list.append(geo)
 
                     dict_el = {'follow': geo.centroid, 'solid': geo}
                     new_apertures[new_apid]['geometry'].append(deepcopy(dict_el))
 
             s_list = []
-            if g_obj.solid_geometry:
-                try:
-                    for poly in g_obj.solid_geometry:
-                        s_list.append(poly)
-                except TypeError:
-                    s_list.append(g_obj.solid_geometry)
+            flat_geo = flatten_shapely_geometry(g_obj.solid_geometry)
+            if flat_geo:
+                for poly in flat_geo:
+                    s_list.append(poly)
 
             for poly in geo_buff_list:
                 s_list.append(poly)

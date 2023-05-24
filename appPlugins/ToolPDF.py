@@ -5,10 +5,31 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtCore
+from appTool import AppTool
+
+import logging
+from copy import deepcopy
+import os
+import time
+import re
+import traceback
+
+from shapely import Point, MultiPolygon
+from shapely.ops import unary_union
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
+
 from appParsers.ParsePDF import PdfParser
-from pikepdf import Pdf, parse_content_stream
 from camlib import grace
+
+HAS_PIKE_MODULE = True
+try:
+    from pikepdf import Pdf, parse_content_stream
+except ModuleNotFoundError:
+    HAS_PIKE_MODULE = False
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -94,6 +115,11 @@ class ToolPDF(AppTool):
     def open_pdf(self, filename):
         if not os.path.exists(filename):
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
+            return
+
+        if HAS_PIKE_MODULE is False:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+            self.app.log.error("PikePDF module is not available.")
             return
 
         short_name = filename.split('/')[-1].split('\\')[-1]
@@ -356,7 +382,7 @@ class ToolPDF(AppTool):
 
     def periodic_check(self, check_period):
         """
-        This function starts an QTimer and it will periodically check if parsing was done
+        This function starts an QTimer, and it will periodically check if parsing was done
 
         :param check_period: time at which to check periodically if all plots finished to be plotted
         :return:
@@ -378,7 +404,7 @@ class ToolPDF(AppTool):
             pass
 
         self.check_thread.timeout.connect(self.periodic_check_handler)
-        self.check_thread.start(QtCore.QThread.Priority.HighPriority)
+        self.check_thread.start(QtCore.QThread.Priority.HighPriority)   # noqa
 
     def periodic_check_handler(self):
         """
@@ -417,7 +443,7 @@ class ToolPDF(AppTool):
                                 else:
                                     self.app.worker_task.emit({'fcn': self.layer_rendering_as_gerber,
                                                                'params': [filename, ap_dict, layer_nr]})
-                    # delete the object already processed so it will not be processed again for other objects
+                    # delete the object already processed, so it will not be processed again for other objects
                     # that were opened at the same time; like in drag & drop on appGUI
                     for obj_name in obj_to_delete:
                         if obj_name in self.pdf_parsed:

@@ -5,7 +5,22 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
+    FCComboBox2, RadioSet, FCDoubleSpinner, FCSpinner, FCFileSaveDialog, OptionalHideInputSection
+
+import logging
+from copy import deepcopy
+import math
+
+from shapely import LineString, MultiPolygon, Point, Polygon, LinearRing
+from shapely.affinity import scale, skew
+from shapely.ops import unary_union
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 from reportlab.graphics import renderPDF
 from reportlab.pdfgen import canvas
@@ -640,7 +655,8 @@ class Film(AppTool):
         color = obj.obj_options['tools_film_color']
         transparency_level = opacity_val
 
-        def make_negative_film(color, transparency_level, scale_factor_x, scale_factor_y, use_convex_hull, rounded_box):
+        def make_negative_film(color, transparency_level, scale_factor_x, scale_factor_y, use_convex_hull,
+                               rounded_box, scale_type):
             self.app.log.debug("FilmTool.export_negative_handler().make_negative_film()")
 
             self.screen_dpi = self.app.qapp.screens()[0].logicalDotsPerInch()
@@ -649,8 +665,13 @@ class Film(AppTool):
             dpi_rate = new_png_dpi / self.screen_dpi
 
             if dpi_rate != 1 and ftype == 'png':
-                scale_factor_x += dpi_rate
-                scale_factor_y += dpi_rate
+                if scale_factor_x is None:
+                    scale_factor_x = 1
+                if scale_factor_y is None:
+                    scale_factor_y = 1
+                scale_factor_x *= dpi_rate
+                scale_factor_y *= dpi_rate
+                scale_type = 1
 
             transformed_box_geo = self.transform_geometry(box_obj, scale_factor_x=scale_factor_x,
                                                           scale_factor_y=scale_factor_y,
@@ -674,10 +695,12 @@ class Film(AppTool):
             doc_final = self.create_negative_svg(svg_geo=exported_svg, box_bounds=bounds, r_box=rounded_box,
                                                  box_geo=transformed_box_geo, c_hull=use_convex_hull, margin=boundary,
                                                  color=color, opacity=transparency_level, svg_units=svg_units)
-
+            # with open("d://a.svg", 'w') as f:
+            #     f.write(doc_final)
             obj_bounds = obj.bounds()
             ret = self.write_output_file(content2save=doc_final, filename=filename, file_type=ftype, p_size=p_size,
-                                         orientation=orientation, source_bounds=obj_bounds, box_bounds=bounds)
+                                         orientation=orientation, source_bounds=obj_bounds, box_bounds=bounds,
+                                         dpi=self.screen_dpi)
 
             if ret == 'fail':
                 return 'fail'
@@ -693,7 +716,8 @@ class Film(AppTool):
                     try:
                         make_negative_film(color=color, transparency_level=transparency_level,
                                            scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
-                                           use_convex_hull=use_convex_hull, rounded_box=rounded_box)
+                                           use_convex_hull=use_convex_hull, rounded_box=rounded_box,
+                                           scale_type=scale_type)
                     except Exception as e:
                         self.app.log.error("export_negative_handler() process -> %s" % str(e))
                         return
@@ -701,14 +725,19 @@ class Film(AppTool):
             self.app.worker_task.emit({'fcn': job_thread_film, 'params': []})
         else:
             make_negative_film(scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
-                               use_convex_hull=use_convex_hull, rounded_box=rounded_box)
+                               use_convex_hull=use_convex_hull, rounded_box=rounded_box, scale_type=scale_type)
 
     def create_negative_svg(self, svg_geo, box_bounds, r_box, box_geo, c_hull, margin,  color, opacity, svg_units):
         # Change the attributes of the exported SVG
         # We don't need stroke-width - wrong, we do when we have lines with certain width
         # We set opacity to maximum
-        # We set the color to the inversed color
-        root = ET.fromstring(svg_geo)
+        # We set the color to the inverted color
+        try:
+            root = ET.fromstring(svg_geo)
+        except Exception:
+            self.app.log.debug("Film.create_negative_svg() getting XML root failed. Trying to use huge_tree option.")
+            root = ET.fromstring(svg_geo, parser=ET.XMLParser(huge_tree=True))
+
         for child in root:
             child.set('fill', self.get_complementary(color))
             child.set('opacity', str(opacity))
@@ -862,7 +891,7 @@ class Film(AppTool):
         color = obj.obj_options['tools_film_color']
         transparency_level = opacity_val
 
-        def make_positive_film(color, transparency_level, scale_factor_x, scale_factor_y):
+        def make_positive_film(color, transparency_level, scale_factor_x, scale_factor_y, scale_type):
             self.app.log.debug("FilmTool.export_positive_handler().make_positive_film()")
 
             self.screen_dpi = self.app.qapp.screens()[0].logicalDotsPerInch()
@@ -871,8 +900,13 @@ class Film(AppTool):
             dpi_rate = new_png_dpi / self.screen_dpi
 
             if dpi_rate != 1 and ftype == 'png':
-                scale_factor_x += dpi_rate
-                scale_factor_y += dpi_rate
+                if scale_factor_x is None:
+                    scale_factor_x = 1
+                if scale_factor_y is None:
+                    scale_factor_y = 1
+                scale_factor_x *= dpi_rate
+                scale_factor_y *= dpi_rate
+                scale_type = 1
 
             transformed_box_geo = self.transform_geometry(box_obj, scale_factor_x=scale_factor_x,
                                                           scale_factor_y=scale_factor_y,
@@ -900,7 +934,8 @@ class Film(AppTool):
 
             obj_bounds = obj.bounds()
             ret = self.write_output_file(content2save=doc_final, filename=filename, file_type=ftype, p_size=p_size,
-                                         orientation=orientation, source_bounds=obj_bounds, box_bounds=bounds)
+                                         orientation=orientation, source_bounds=obj_bounds, box_bounds=bounds,
+                                         dpi=self.screen_dpi)
 
             if ret == 'fail':
                 return 'fail'
@@ -915,7 +950,8 @@ class Film(AppTool):
                 with self.app.proc_container.new(_("Working...")):
                     try:
                         make_positive_film(color=color, transparency_level=transparency_level,
-                                           scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y)
+                                           scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
+                                           scale_type=scale_type)
                     except Exception as e:
                         self.app.log.error("export_positive_handler() process -> %s" % str(e))
                         return
@@ -923,15 +959,19 @@ class Film(AppTool):
             self.app.worker_task.emit({'fcn': job_thread_film, 'params': []})
         else:
             make_positive_film(color=color, transparency_level=transparency_level,
-                               scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y)
+                               scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y, scale_type=scale_type)
 
-    @staticmethod
-    def create_positive_svg(svg_geo, box_bounds, margin,  color, opacity, svg_units):
+    def create_positive_svg(self, svg_geo, box_bounds, margin,  color, opacity, svg_units):
         # Change the attributes of the exported SVG
         # We don't need stroke-width
         # We set opacity to maximum
         # We set the colour to WHITE
-        root = ET.fromstring(svg_geo)
+        try:
+            root = ET.fromstring(svg_geo)
+        except Exception:
+            self.app.log.debug("Film.create_positive_svg() getting XML root failed. Trying to use huge_tree option.")
+            root = ET.fromstring(svg_geo, parser=ET.XMLParser(huge_tree=True))
+
         for child in root:
             child.set('fill', str(color))
             child.set('opacity', str(opacity))
@@ -939,7 +979,7 @@ class Film(AppTool):
 
         exported_svg = ET.tostring(root)
 
-        # This contain the measure units
+        # This contains the measure units
         uom = svg_units
 
         # Convert everything to strings for use in the xml doc
@@ -969,7 +1009,8 @@ class Film(AppTool):
         doc = parse_xml_string(svg_elem)
         return doc.toprettyxml()
 
-    def write_output_file(self, content2save, filename, file_type, p_size, orientation, source_bounds, box_bounds):
+    def write_output_file(self, content2save, filename, file_type, p_size, orientation, source_bounds, box_bounds,
+                          dpi=72):
         p_msg = '[ERROR_NOTCL] %s' % _("Permission denied, saving not possible.\n"
                                        "Most likely another app is holding the file open and not accessible.")
         if file_type == 'svg':
@@ -983,7 +1024,7 @@ class Film(AppTool):
             try:
                 doc_final = StringIO(content2save)
                 drawing = svg2rlg(doc_final)
-                renderPM.drawToFile(drawing, filename, 'PNG')
+                renderPM.drawToFile(drawing, fn=filename, fmt='PNG', dpi=dpi)
             except PermissionError:
                 self.app.inform.emit(p_msg)
                 return 'fail'
@@ -1208,7 +1249,7 @@ class Film(AppTool):
         if scale_stroke_factor <= 0:
             scale_stroke_factor = 0.01
 
-        # Convert to a SVG
+        # Convert to a SVG file
         svg_elem = geom.svg(scale_factor=scale_stroke_factor)
         return svg_elem
 

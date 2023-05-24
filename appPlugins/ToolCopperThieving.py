@@ -5,11 +5,28 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtGui, QtCore
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, RadioSet, \
+    FCDoubleSpinner, FCComboBox2, FCEntry, FCCheckBox
+
 from appCommon.Common import LoudDict
 from appCommon.Common import GracefulException as grace
-from  camlib import flatten_shapely_geometry
+from camlib import flatten_shapely_geometry
+
+import logging
+from copy import deepcopy
+import numpy as np
+from typing import Iterable
+
 import shapely.geometry.base as base
+from shapely import Polygon, MultiPolygon, box, Point, LineString
+from shapely.ops import unary_union
+from shapely.affinity import translate
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -705,7 +722,7 @@ class ToolCopperThieving(AppTool):
             # #########################################################################################################
             # Generate solid filling geometry. Effectively it's a NEGATIVE of the source object
             # #########################################################################################################
-            tool_obj.thief_solid_geometry = bounding_box.difference(clearance_geometry)
+            tool_obj.thief_solid_geometry = flatten_shapely_geometry(bounding_box.difference(clearance_geometry))
 
             temp_geo = []
             try:
@@ -786,47 +803,31 @@ class ToolCopperThieving(AppTool):
 
                 # create a thick polygon-line that surrounds the copper features
                 outline_geometry = []
-                try:
-                    for pol in tool_obj.grb_object.solid_geometry:
-                        if tool_obj.app.abort_flag:
-                            # graceful abort requested by the user
-                            raise grace
+                gerb_geometry = flatten_shapely_geometry(tool_obj.grb_object.solid_geometry)
+                for pol in gerb_geometry:
+                    if tool_obj.app.abort_flag:
+                        # graceful abort requested by the user
+                        raise grace
 
-                        outline_geometry.append(
-                            pol.buffer(c_val+half_thick_line, int(int(tool_obj.geo_steps_per_circle) / 4))
-                        )
-
-                        pol_nr += 1
-                        disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
-
-                        if old_disp_number < disp_number <= 100:
-                            msg = ' %s ... %d%%' % (_("Buffering"), int(disp_number))
-                            tool_obj.app.proc_container.update_view_text(msg)
-                            old_disp_number = disp_number
-                except TypeError:
-                    # taking care of the case when the self.solid_geometry is just a single Polygon, not a list or a
-                    # MultiPolygon (not an iterable)
                     outline_geometry.append(
-                        tool_obj.grb_object.solid_geometry.buffer(
-                            c_val+half_thick_line,
-                            int(int(tool_obj.geo_steps_per_circle) / 4)
-                        )
+                        pol.buffer(c_val + half_thick_line, int(int(tool_obj.geo_steps_per_circle) / 4))
                     )
 
+                    pol_nr += 1
+                    disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
+
+                    if old_disp_number < disp_number <= 100:
+                        msg = ' %s ... %d%%' % (_("Buffering"), int(disp_number))
+                        tool_obj.app.proc_container.update_view_text(msg)
+                        old_disp_number = disp_number
+
                 tool_obj.app.proc_container.update_view_text(' %s' % _("Buffering"))
-                outline_geometry = unary_union(outline_geometry)
 
                 outline_line = []
-                try:
-                    for geo_o in outline_geometry:
-                        outline_line.append(
-                            geo_o.exterior.buffer(
-                                half_thick_line, resolution=int(int(tool_obj.geo_steps_per_circle) / 4)
-                            )
-                        )
-                except TypeError:
+                outline_geometry = flatten_shapely_geometry(unary_union(outline_geometry))
+                for geo_o in outline_geometry:
                     outline_line.append(
-                        outline_geometry.exterior.buffer(
+                        geo_o.exterior.buffer(
                             half_thick_line, resolution=int(int(tool_obj.geo_steps_per_circle) / 4)
                         )
                     )
@@ -871,9 +872,10 @@ class ToolCopperThieving(AppTool):
 
             tool_obj.app.proc_container.update_view_text(' %s' % _("Append geometry"))
             # create a list of the source geometry
-            geo_list = deepcopy(tool_obj.grb_object.solid_geometry)
-            if isinstance(tool_obj.grb_object.solid_geometry, MultiPolygon):
-                geo_list = list(geo_list.geoms)
+            # geo_list = deepcopy(tool_obj.grb_object.solid_geometry)
+            # if isinstance(tool_obj.grb_object.solid_geometry, MultiPolygon):
+            #     geo_list = list(geo_list.geoms)
+            geo_list = flatten_shapely_geometry(tool_obj.grb_object.solid_geometry)
 
             # create a new dictionary to hold the source object apertures allowing us to tamper with without altering
             # the original source object's apertures
@@ -886,20 +888,13 @@ class ToolCopperThieving(AppTool):
                 }
 
             # add the thieving geometry in the 0 aperture of the new_apertures dict
-            try:
-                for poly in tool_obj.thief_solid_geometry:
-                    # append to the new solid geometry
-                    geo_list.append(poly)
-
-                    # append into the 0 aperture
-                    geo_elem = {'solid': poly, 'follow': poly.exterior}
-                    new_apertures[0]['geometry'].append(deepcopy(geo_elem))
-            except TypeError:
+            t_geometry = flatten_shapely_geometry(tool_obj.thief_solid_geometry)
+            for poly in t_geometry:
                 # append to the new solid geometry
-                geo_list.append(tool_obj.thief_solid_geometry)
+                geo_list.append(poly)
 
                 # append into the 0 aperture
-                geo_elem = {'solid': tool_obj.thief_solid_geometry, 'follow': tool_obj.thief_solid_geometry.exterior}
+                geo_elem = {'solid': poly, 'follow': poly.exterior}
                 new_apertures[0]['geometry'].append(deepcopy(geo_elem))
 
             # prepare also the solid_geometry for the new object having the thieving geometry
@@ -917,7 +912,7 @@ class ToolCopperThieving(AppTool):
                 grb_obj.multigeo = False
                 grb_obj.follow = deepcopy(self.grb_object.follow)
                 grb_obj.tools = new_apertures
-                grb_obj.solid_geometry = deepcopy(new_solid_geo)
+                grb_obj.solid_geometry = deepcopy(flatten_shapely_geometry(new_solid_geo))
                 grb_obj.follow_geometry = deepcopy(self.grb_object.follow_geometry)
 
                 app_obj.proc_container.update_view_text(' %s' % _("Append source file"))
@@ -1022,12 +1017,12 @@ class ToolCopperThieving(AppTool):
         for geo in geo_list:
             plated_area += geo.area
 
-        thieving_solid_geo = deepcopy(self.thief_solid_geometry)
-        robber_solid_geo = deepcopy(self.robber_geo)
-        robber_line = deepcopy(self.robber_line)
+        thieving_solid_geo = deepcopy(flatten_shapely_geometry(self.thief_solid_geometry))
+        robber_solid_geo = deepcopy(flatten_shapely_geometry(self.robber_geo))
+        robber_line = deepcopy(flatten_shapely_geometry(self.robber_line))
 
         # store here the chosen follow geometry
-        new_follow_geo = deepcopy(self.sm_object.follow_geometry)
+        new_follow_geo = deepcopy(flatten_shapely_geometry(self.sm_object.follow_geometry))
 
         # if we have copper thieving geometry, add it
         if thieving_solid_geo and geo_choice in [0, 1]:     # ['b', 't']
@@ -1042,28 +1037,16 @@ class ToolCopperThieving(AppTool):
                     'geometry': []
                 }
 
-            try:
-                for poly in thieving_solid_geo:
-                    poly_b = poly.buffer(ppm_clearance)
+            for poly in thieving_solid_geo:
+                poly_b = poly.buffer(ppm_clearance)
 
-                    # append to the new solid geometry
-                    geo_list.append(poly_b)
-
-                    # append into the 0 aperture
-                    geo_elem = {
-                        'solid': poly_b,
-                        'follow': poly_b.exterior
-                    }
-                    new_apertures[0]['geometry'].append(deepcopy(geo_elem))
-            except TypeError:
                 # append to the new solid geometry
-                assert isinstance(thieving_solid_geo, Polygon)
-                geo_list.append(thieving_solid_geo.buffer(ppm_clearance))
+                geo_list.append(poly_b)
 
                 # append into the 0 aperture
                 geo_elem = {
-                    'solid': thieving_solid_geo.buffer(ppm_clearance),
-                    'follow': thieving_solid_geo.buffer(ppm_clearance).exterior
+                    'solid': poly_b,
+                    'follow': poly_b.exterior
                 }
                 new_apertures[0]['geometry'].append(deepcopy(geo_elem))
 
@@ -1126,7 +1109,7 @@ class ToolCopperThieving(AppTool):
             grb_obj.follow = False
             grb_obj.follow_geometry = deepcopy(new_follow_geo)
             grb_obj.tools = deepcopy(new_apertures)
-            grb_obj.solid_geometry = deepcopy(new_solid_geometry)
+            grb_obj.solid_geometry = deepcopy(flatten_shapely_geometry(new_solid_geometry))
 
             app_obj.proc_container.update_view_text(' %s' % _("Append source file"))
             # update the source file with the new geometry:

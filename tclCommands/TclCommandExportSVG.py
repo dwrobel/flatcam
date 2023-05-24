@@ -11,7 +11,7 @@ class TclCommandExportSVG(TclCommand):
         export_svg my_geometry filename
     """
 
-    # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
+    # List of all command aliases, to be able to use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['export_svg']
 
     description = '%s %s' % ("--", "Export a Geometry object as a SVG File.")

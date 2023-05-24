@@ -154,35 +154,35 @@ class EventSensitiveListView(QtWidgets.QTreeView):
                     if self.filename == "":
                         self.app.inform.emit(_("Cancelled."))
                     else:
-                        if self.filename.lower().rpartition('.')[-1] in self.app.grb_list:
+                        if self.filename.lower().rpartition('.')[-1] in self.app.regFK.grb_list:
                             self.app.worker_task.emit({'fcn': self.app.f_handlers.open_gerber,
                                                        'params': [self.filename]})
                         else:
                             event.ignore()
 
-                        if self.filename.lower().rpartition('.')[-1] in self.app.exc_list:
+                        if self.filename.lower().rpartition('.')[-1] in self.app.regFK.exc_list:
                             self.app.worker_task.emit({'fcn': self.app.f_handlers.open_excellon,
                                                        'params': [self.filename]})
                         else:
                             event.ignore()
 
-                        if self.filename.lower().rpartition('.')[-1] in self.app.gcode_list:
+                        if self.filename.lower().rpartition('.')[-1] in self.app.regFK.gcode_list:
                             self.app.worker_task.emit({'fcn': self.app.f_handlers.open_gcode,
                                                        'params': [self.filename]})
                         else:
                             event.ignore()
 
-                        if self.filename.lower().rpartition('.')[-1] in self.app.svg_list:
+                        if self.filename.lower().rpartition('.')[-1] in self.app.regFK.svg_list:
                             object_type = 'geometry'
                             self.app.worker_task.emit({'fcn': self.app.f_handlers.import_svg,
                                                        'params': [self.filename, object_type, None]})
 
-                        if self.filename.lower().rpartition('.')[-1] in self.app.dxf_list:
+                        if self.filename.lower().rpartition('.')[-1] in self.app.regFK.dxf_list:
                             object_type = 'geometry'
                             self.app.worker_task.emit({'fcn': self.app.f_handlers.import_dxf,
                                                        'params': [self.filename, object_type, None]})
 
-                        if self.filename.lower().rpartition('.')[-1] in self.app.prj_list:
+                        if self.filename.lower().rpartition('.')[-1] in self.app.regFK.prj_list:
                             # self.app.open_project() is not Thread Safe
                             self.app.f_handlers.open_project(self.filename)
                         else:
@@ -351,7 +351,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         # self.view.setAcceptDrops(True)
         # self.view.setDropIndicatorShown(True)
 
-        settings = QSettings("Open Source", "FlatCAM")
+        settings = QSettings("Open Source", "FlatCAM_EVO")
         if settings.contains("notebook_font_size"):
             fsize = settings.value('notebook_font_size', type=int)
         else:
@@ -363,7 +363,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         self.view.setFont(font)
 
         # ## GUI Events
-        self.view.selectionModel().selectionChanged.connect(self.on_list_selection_change)
+        self.view.selectionModel().selectionChanged.connect(self.on_list_selection_change)  # noqa
         # self.view.activated.connect(self.on_item_activated)
         self.view.keyPressed.connect(self.app.ui.keyPressEvent)
         self.view.mouseReleased.connect(self.on_list_click_release)
@@ -504,7 +504,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 return index.internalPointer().data(index.column())
 
         if role == Qt.ItemDataRole.ForegroundRole:
-            theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+            theme_settings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
             theme = theme_settings.value('theme', type=str)
 
             if theme == 'dark':
@@ -556,9 +556,9 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
                     # update the SHELL auto-completer model data
                     try:
-                        self.app.myKeywords.remove(old_name)
-                        self.app.myKeywords.append(new_name)
-                        self.app.shell._edit.set_model_data(self.app.myKeywords)
+                        self.app.regFK.remove_keyword(old_name, update=False)
+                        self.app.regFK.prepend_keyword(new_name)
+                        self.app.shell._edit.set_model_data(self.app.regFK.myKeywords)
                     except Exception as e:
                         self.app.log.error(
                             "setData() --> Could not remove the old object name from auto-completer model list. %s" %
@@ -567,7 +567,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                     msg = "%s: <b>%s</b> %s: <b>%s</b>" % (_("Object renamed from"), old_name, _("to"), new_name)
                     self.app.inform.emit(msg)
 
-            self.dataChanged.emit(index, index)
+            self.dataChanged.emit(index, index) # noqa
             return True
         else:
             return False
@@ -620,7 +620,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         # ############################################################################################################
         # update the KeyWords list with the name of the file
         # ############################################################################################################
-        self.app.myKeywords.append(name)
+        self.app.regFK.prepend_keyword(name)
 
         # ############################################################################################################
         # ############################# Set the Object UI (Properties Tab) ###########################################
@@ -737,15 +737,15 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         # some objects add a Tab on creation, close it here
         for idx in range(self.app.ui.plot_tab_area.count()):
             widget_name = self.app.ui.plot_tab_area.widget(idx).objectName()
-            if widget_name == active.obj.obj_options['name'] or widget_name == (active.obj.obj_options['name'] + "_editor_tab"):
+            if widget_name == active.obj.obj_options['name'] or \
+                    widget_name == (active.obj.obj_options['name'] + "_editor_tab"):
                 self.app.ui.plot_tab_area.removeTab(idx)
                 break
 
         # update the SHELL auto-completer model data
         name = active.obj.obj_options['name']
         try:
-            self.app.myKeywords.remove(name)
-            self.app.shell._edit.set_model_data(self.app.myKeywords)
+            self.app.regFK.remove_keyword(name)
             # this is not needed any more because now the code editor is created on demand
             # self.app.ui.code_editor.set_model_data(self.app.myKeywords)
         except Exception as e:
@@ -791,15 +791,15 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         # some objects add a Tab on creation, close it here
         for idx in range(self.app.ui.plot_tab_area.count()):
             wdg_name = self.app.ui.plot_tab_area.widget(idx).objectName()
-            if wdg_name == deleted.obj.obj_options['name'] or wdg_name == (deleted.obj.obj_options['name'] + "_editor_tab"):
+            if wdg_name == deleted.obj.obj_options['name'] or \
+                    wdg_name == (deleted.obj.obj_options['name'] + "_editor_tab"):
                 self.app.ui.plot_tab_area.removeTab(idx)
                 break
 
         # update the SHELL auto-completer model data
         name = deleted.obj.obj_options['name']
         try:
-            self.app.myKeywords.remove(name)
-            self.app.shell._edit.set_model_data(self.app.myKeywords)
+            self.app.regFK.remove_keyword(name)
             # this is not needed any more because now the code editor is created on demand
             # self.app.ui.code_editor.set_model_data(self.app.myKeywords)
         except Exception as e:
@@ -1080,7 +1080,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         return obj_list
 
     def update_view(self):
-        self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
+        self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())   # noqa
 
     def on_row_activated(self, index):
         if index.isValid():

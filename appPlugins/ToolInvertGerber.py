@@ -5,7 +5,20 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, RadioSet, \
+    FCDoubleSpinner
+
+import logging
+from copy import deepcopy
+
+from shapely import box
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
+
 from camlib import flatten_shapely_geometry
 
 fcTranslate.apply_language('strings')

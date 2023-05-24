@@ -10,7 +10,7 @@ from vispy.visuals import CompoundVisual, LineVisual, MeshVisual, TextVisual, Ma
 from vispy.scene.visuals import VisualNode, generate_docstring, visuals
 from vispy.gloo import set_state
 from vispy.color import Color
-from shapely.geometry import Polygon, LineString, LinearRing
+from shapely import Polygon, LineString, LinearRing
 import threading
 import numpy as np
 from appGUI.VisPyTesselators import GLUTess
@@ -230,7 +230,7 @@ class ShapeGroup(object):
 
 class ShapeCollectionVisual(CompoundVisual):
 
-    def __init__(self, linewidth=1, triangulation='vispy', layers=3, pool=None, **kwargs):
+    def __init__(self, linewidth=1, triangulation='vispy', layers=3, pool=None, fcoptions=None, **kwargs):
         """
         Represents collection of shapes to draw on VisPy scene
         :param linewidth: float
@@ -244,6 +244,8 @@ class ShapeCollectionVisual(CompoundVisual):
             Each layer adds 2 visuals on VisPy scene. Be careful: more layers cause less fps
         :param kwargs:
         """
+        self.fc_options = fcoptions
+
         self.data = {}
         self.last_key = -1
 
@@ -329,11 +331,14 @@ class ShapeCollectionVisual(CompoundVisual):
         if linewidth:
             self._line_width = linewidth
 
-        # Add data to process pool if pool exists
-        try:
-            self.results[key] = self.pool.map_async(_update_shape_buffers, [self.data[key]])
-        except Exception:
+        if self.fc_options and self.fc_options["global_graphic_engine_3d_no_mp"] is True:
             self.data[key] = _update_shape_buffers(self.data[key])
+        else:
+            # Add data to process pool if pool exists
+            try:
+                self.results[key] = self.pool.map_async(_update_shape_buffers, [self.data[key]])
+            except Exception:
+                self.data[key] = _update_shape_buffers(self.data[key])
 
         if update:
             self.redraw()   # redraw() waits for pool process end
@@ -355,7 +360,8 @@ class ShapeCollectionVisual(CompoundVisual):
         self.results_lock.release()
 
         # Remove data
-        del self.data[key]
+        if key in self.data:
+            del self.data[key]
 
         if update:
             self.__update()

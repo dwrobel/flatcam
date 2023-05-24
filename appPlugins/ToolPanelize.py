@@ -5,8 +5,23 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
+    RadioSet, FCDoubleSpinner, FCSpinner, OptionalInputSection
 from camlib import grace
+
+import logging
+from copy import deepcopy
+import numpy as np
+
+from shapely import LineString, MultiLineString, Polygon, MultiPolygon
+from shapely.ops import unary_union, linemerge, snap
+from shapely.affinity import translate
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -734,7 +749,7 @@ class Panelize(AppTool):
                                 if isinstance(geo, LineString):
                                     lines.append(geo)
                                 elif isinstance(geo, MultiLineString):
-                                    for line in geo:
+                                    for line in geo.geoms:
                                         lines.append(line)
                                 else:
                                     other_geo.append(geo)

@@ -6,27 +6,37 @@
 # MIT Licence                                                 #
 # ########################################################## ##
 
-
 from PyQt6 import QtWidgets
-from io import StringIO
 
-from numpy.linalg import solve, norm
+from appCommon.Common import GracefulException as grace
+
+# from scipy.spatial import KDTree, Delaunay
+# from scipy.spatial import Delaunay
+
+from appParsers.ParseSVG import svgparselength, svgparse_viewbox, getsvggeo, getsvgtext
+from appParsers.ParseDXF import getdxfgeo
+
+from numpy.linalg import solve
 
 import platform
-from copy import deepcopy
-
 import traceback
 from decimal import Decimal
+from copy import deepcopy
+from collections.abc import Iterable
+from copy import copy
 
 from rtree import index as rtindex
 from lxml import etree as ET
+from io import StringIO
+import ezdxf
 
 # See: http://toblerity.org/shapely/manual.html
-from shapely.geometry import Polygon, Point, LinearRing, MultiPoint
+from shapely import Polygon, Point, LinearRing, MultiPoint, MultiLineString, MultiPolygon, LineString
 
-from shapely.geometry import box as shply_box
+from shapely import box as shply_box
 from shapely.ops import unary_union, substring, linemerge
 import shapely.affinity as affinity
+from shapely.affinity import scale, translate
 from shapely.wkt import loads as sloads
 from shapely.wkt import dumps as sdumps
 from shapely.geometry.base import BaseGeometry
@@ -37,25 +47,13 @@ from shapely.geometry.base import BaseGeometry
 from descartes.patch import PolygonPatch
 # ---------------------------------------
 
-from collections.abc import Iterable
-
-import ezdxf
-
-from appCommon.Common import GracefulException as grace
-
-# from scipy.spatial import KDTree, Delaunay
-# from scipy.spatial import Delaunay
-
-from appParsers.ParseSVG import *
-from appParsers.ParseDXF import *
-
 import logging
+import re
+import numpy as np
 
 import gettext
 import appTranslation as fcTranslate
 import builtins
-
-import copy
 
 HAS_ORTOOLS = True
 
@@ -335,13 +333,29 @@ class ApertureMacro:
         """
 
         pol = mods[0]
-        n = mods[1]
-        points = [(0, 0)] * (n + 1)
 
-        for i in range(n + 1):
-            points[i] = mods[2 * i + 2:2 * i + 4]
+        # n = mods[1]
+        # points = [(0, 0)] * (n + 1)
+        #
+        # for i in range(n + 1):
+        #     points[i] = mods[2 * i + 2:2 * i + 4]
+        #
+        # angle = mods[2 * n + 4]
 
-        angle = mods[2 * n + 4]
+        # ---------------------------
+        # added to fix the issue on Allegro 17.2 Gerber's which have fewer points than declared
+        # discard first 2 values (exposure and vertex points number) and last one (rotation)
+        vertex_list = mods[2:-1]
+        # rotation is the last value
+        angle = mods[-1]
+        n = int(len(vertex_list) / 2)
+        points = [(0, 0)] * n
+
+        for i in range(n):
+            start = 2 * i
+            stop = (2 * i) + 2
+            points[i] = vertex_list[start:stop]
+        # ---------------------------
 
         poly = Polygon(points)
         poly_rotated = affinity.rotate(poly, angle, origin=(0, 0))
@@ -1432,10 +1446,8 @@ class Geometry(object):
         """
 
         # log.debug("camlib.clear_polygon()")
-        assert type(polygon) == Polygon or type(polygon) == MultiPolygon, \
-            "Expected a Polygon or MultiPolygon, got %s" % type(polygon)
 
-        # ## The toolpaths
+        # The toolpaths
         # Index first and last points in paths
         def get_pts(o):
             return [o.coords[0], o.coords[-1]]
@@ -1446,58 +1458,71 @@ class Geometry(object):
         # Can only result in a Polygon or MultiPolygon
         # NOTE: The resulting polygon can be "empty".
         current = polygon.buffer((-tooldia / 1.999999), int(steps_per_circle))
-        if current.area == 0:
-            # Otherwise, trying to to insert current.exterior == None
-            # into the FlatCAMStorage will fail.
-            # print("Area is None")
-            return None
+        current = flatten_shapely_geometry(current)
 
-        # current can be a MultiPolygon
-        try:
-            for p in current:
-                geoms.insert(p.exterior)
-                for i in p.interiors:
-                    geoms.insert(i)
+        # if current.area == 0:
+        #     # Otherwise, trying to insert current.exterior == None
+        #     # into the FlatCAMStorage will fail.
+        #     # print("Area is None")
+        #     return None
 
-        # Not a Multipolygon. Must be a Polygon
-        except TypeError:
-            geoms.insert(current.exterior)
-            for i in current.interiors:
+        for p in current:
+            geoms.insert(p.exterior)
+            for i in p.interiors:
                 geoms.insert(i)
 
-        while True:
-            if self.app.abort_flag:
-                # graceful abort requested by the user
-                raise grace
+        if self.app.abort_flag:
+            # graceful abort requested by the user
+            raise grace
 
-            # provide the app with a way to process the GUI events when in a blocking loop
-            QtWidgets.QApplication.processEvents()
+        # provide the app with a way to process the GUI events when in a blocking loop
+        QtWidgets.QApplication.processEvents()
 
-            # Can only result in a Polygon or MultiPolygon
-            current = current.buffer(-tooldia * (1 - overlap), int(steps_per_circle))
-            if current.area > 0:
+        for cl_pol in current:
+            while True:
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise grace
 
-                # current can be a MultiPolygon
-                try:
-                    for p in current.geoms:
-                        geoms.insert(p.exterior)
-                        for i in p.interiors:
+                # provide the app with a way to process the GUI events when in a blocking loop
+                QtWidgets.QApplication.processEvents()
+
+                cl_pol = cl_pol.buffer(-tooldia * (1 - overlap), int(steps_per_circle))
+                if isinstance(cl_pol, MultiPolygon):
+                    cl_pol = flatten_shapely_geometry(cl_pol)
+
+                    added_flag = False
+                    for tiny_pol in cl_pol:
+                        if tiny_pol.area > 0:
+                            added_flag = True
+                            geoms.insert(tiny_pol.exterior)
+                            if prog_plot:
+                                self.plot_temp_shapes(tiny_pol.exterior)
+
+                            for i in tiny_pol.interiors:
+                                geoms.insert(i)
+                                if prog_plot:
+                                    self.plot_temp_shapes(i)
+                    if added_flag is False:
+                        break
+
+                    cl_pol = MultiPolygon(cl_pol)
+                else:
+                    if cl_pol.area > 0:
+                        geoms.insert(cl_pol.exterior)
+                        if prog_plot:
+                            self.plot_temp_shapes(cl_pol.exterior)
+
+                        for i in cl_pol.interiors:
                             geoms.insert(i)
                             if prog_plot:
-                                self.plot_temp_shapes(p)
+                                self.plot_temp_shapes(i)
+                    else:
+                        break
 
-                # Not a Multipolygon. Must be a Polygon
-                except (TypeError, AttributeError):
-                    geoms.insert(current.exterior)
-                    if prog_plot:
-                        self.plot_temp_shapes(current.exterior)
-                    for i in current.interiors:
-                        geoms.insert(i)
-                        if prog_plot:
-                            self.plot_temp_shapes(i)
-            else:
-                self.app.log.debug("camlib.Geometry.clear_polygon() --> Current Area is zero")
-                break
+        if not geoms.objects:
+            self.app.log.debug("camlib.Geometry.clear_polygon() --> Current Area is zero")
+            return
 
         if prog_plot:
             self.temp_shapes.redraw()
@@ -2283,7 +2308,7 @@ class Geometry(object):
         # d = {}
         # for attr in self.ser_attrs:
         #     d[attr] = getattr(self, attr)
-        return {attr: copy.copy(getattr(self, attr)) for attr in self.ser_attrs}
+        return {attr: copy(getattr(self, attr)) for attr in self.ser_attrs}
 
     def from_dict(self, d):
         """
@@ -2326,12 +2351,13 @@ class Geometry(object):
             flat_geo = []
             if self.multigeo:
                 for tool in self.tools:
-                    flat_geo += self.flatten(self.tools[tool]['solid_geometry'])
+                    flat_geo += self.flatten(self.tools[tool]['solid_geometry'],
+                                             pathonly=self.app.options["geometry_paths_only"])
                 geom_svg = unary_union(flat_geo)
             else:
-                geom_svg = unary_union(self.flatten())
+                geom_svg = unary_union(self.flatten(pathonly=self.app.options["geometry_paths_only"]))
         else:
-            geom_svg = unary_union(self.flatten())
+            geom_svg = unary_union(self.flatten(pathonly=self.app.options["geometry_paths_only"]))
 
         xmin, ymin, xmax, ymax = geom_svg.bounds
 

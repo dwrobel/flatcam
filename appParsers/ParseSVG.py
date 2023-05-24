@@ -24,7 +24,7 @@ from svg.path import Line, Arc, CubicBezier, QuadraticBezier, parse_path
 # from svg.path.path import Move
 # from svg.path.path import Close
 import svg.path
-from shapely.geometry import LineString, MultiLineString, Point
+from shapely import LineString, MultiLineString, Point
 from shapely.affinity import skew, affine_transform, rotate
 import numpy as np
 

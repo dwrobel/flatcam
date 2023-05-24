@@ -11,11 +11,14 @@
 # Date: 3/10/2019                                          #
 # ##########################################################
 
+from PyQt6 import QtGui, QtCore, QtWidgets
+from PyQt6.QtCore import Qt
 # import inspect
 import math
 
 from camlib import distance, arc, three_point_circle, Geometry, AppRTreeStorage, flatten_shapely_geometry
-from appGUI.GUIElements import *
+from appGUI.GUIElements import FCLabel, GLay, FCDoubleSpinner, FCTree, FCButton, FCFrame, FCCheckBox, FCEntry, \
+    FCTextEdit
 from appGUI.VisPyVisuals import ShapeCollection
 
 from appEditors.geo_plugins.GeoBufferPlugin import BufferSelectionTool
@@ -30,7 +33,8 @@ from appEditors.geo_plugins.GeoCopyPlugin import CopyEditorTool
 
 from vispy.geometry import Rect
 
-from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point, box, base
+from shapely import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point, box
+from shapely.geometry import base
 from shapely.ops import unary_union, linemerge
 from shapely.affinity import translate, scale, skew, rotate
 from shapely.geometry.polygon import orient
@@ -44,6 +48,9 @@ from rtree import index as rtindex
 
 from copy import deepcopy
 # from vispy.io import read_png
+
+from typing import Union
+
 import gettext
 import appTranslation as fcTranslate
 import builtins
@@ -131,6 +138,10 @@ class DrawToolShape(object):
 
         # fixed issue of getting bounds only for one level lists of objects
         # now it can get bounds for nested lists of objects
+
+        if self.geo is None:
+            return 0, 0, 0, 0
+
         def bounds_rec(shape_el):
             if type(shape_el) is list:
                 minx = np.Inf
@@ -383,7 +394,7 @@ class DrawTool(object):
         self.points = []
         self.geometry = None  # DrawToolShape or None
 
-    def click(self, point):
+    def click(self, point: Union[list[float, float], tuple[float, float]]):
         """
         :param point: [x, y] Coordinate pair.
         """
@@ -461,6 +472,8 @@ class FCCircle(FCShapeTool):
         self.plugin_name = _("Circle")
         self.storage = self.draw_app.storage
         self.util_geo = None
+
+        self.cursor_data_control = True
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -588,6 +601,10 @@ class FCCircle(FCShapeTool):
         return None
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -598,7 +615,7 @@ class FCCircle(FCShapeTool):
             return
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -646,8 +663,8 @@ class FCCircle(FCShapeTool):
                         QtCore.Qt.Key.Key_Plus, QtCore.Qt.Key.Key_Comma, QtCore.Qt.Key.Key_Period,
                         QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
 
-            if self.draw_app.app.mouse[0] != self.points[-1][0] or (
-                    self.draw_app.app.mouse[1] != self.points[-1][1] and
+            if self.draw_app.app.mouse_pos[0] != self.points[-1][0] or (
+                    self.draw_app.app.mouse_pos[1] != self.points[-1][1] and
                     self.circle_tool.ui.radius_link_btn.isChecked()):
                 try:
                     # VisPy keys
@@ -662,8 +679,8 @@ class FCCircle(FCShapeTool):
                     else:
                         self.circle_tool.radius_x = str(self.circle_tool.radius_x) + chr(key)
 
-            if self.draw_app.app.mouse[1] != self.points[-1][1] or (
-                    self.draw_app.app.mouse[0] != self.points[-1][0] and
+            if self.draw_app.app.mouse_pos[1] != self.points[-1][1] or (
+                    self.draw_app.app.mouse_pos[0] != self.points[-1][0] and
                     self.circle_tool.ui.radius_link_btn.isChecked()):
                 try:
                     # VisPy keys
@@ -697,6 +714,9 @@ class FCCircle(FCShapeTool):
             self.draw_app.on_shape_complete()
             self.draw_app.select_tool("select")
             return "Done."
+
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
 
     def make(self):
         try:
@@ -992,6 +1012,8 @@ class FCRectangle(FCShapeTool):
 
         self.util_geo = None
 
+        self.cursor_data_control = True
+
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception:
@@ -1122,6 +1144,10 @@ class FCRectangle(FCShapeTool):
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -1132,7 +1158,7 @@ class FCRectangle(FCShapeTool):
             return
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -1169,6 +1195,9 @@ class FCRectangle(FCShapeTool):
                 self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
 
     def on_key(self, key):
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
+
         # Jump to coords
         if key == QtCore.Qt.Key.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
@@ -1180,7 +1209,7 @@ class FCRectangle(FCShapeTool):
                         QtCore.Qt.Key.Key_Plus, QtCore.Qt.Key.Key_Comma, QtCore.Qt.Key.Key_Period,
                         QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
 
-            if self.draw_app.app.mouse[0] != self.points[-1][0]:
+            if self.draw_app.app.mouse_pos[0] != self.points[-1][0]:
                 try:
                     # VisPy keys
                     if self.rect_tool.length == 0:
@@ -1193,7 +1222,7 @@ class FCRectangle(FCShapeTool):
                         self.rect_tool.length = chr(key)
                     else:
                         self.rect_tool.length = str(self.rect_tool.length) + chr(key)
-            if self.draw_app.app.mouse[1] != self.points[-1][1]:
+            if self.draw_app.app.mouse_pos[1] != self.points[-1][1]:
                 try:
                     # VisPy keys
                     if self.rect_tool.width == 0:
@@ -1276,6 +1305,8 @@ class FCPolygon(FCShapeTool):
         self.polygon_tool.run()
         self.new_segment = True
 
+        self.cursor_data_control = True
+
         self.app.ui.notebook.setTabText(2, self.plugin_name)
         if self.draw_app.app.ui.splitter.sizes()[0] == 0:
             self.draw_app.app.ui.splitter.setSizes([1, 1])
@@ -1331,6 +1362,10 @@ class FCPolygon(FCShapeTool):
             return None
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -1341,7 +1376,7 @@ class FCPolygon(FCShapeTool):
             return
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -1378,6 +1413,9 @@ class FCPolygon(FCShapeTool):
                 self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
 
     def on_key(self, key):
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
+
         # Jump to coords
         if key == QtCore.Qt.Key.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
@@ -1423,7 +1461,7 @@ class FCPolygon(FCShapeTool):
                     return _("Failed.")
 
                 first_pt = self.points[-1]
-                last_pt = self.draw_app.app.mouse
+                last_pt = self.draw_app.app.mouse_pos
 
                 seg_length = math.sqrt((last_pt[0] - first_pt[0])**2 + (last_pt[1] - first_pt[1])**2)
                 if seg_length == 0.0:
@@ -1471,6 +1509,9 @@ class FCPath(FCShapeTool):
         self.draw_app = draw_app
         self.name = 'path'
         self.app = self.draw_app.app
+
+        # show the cursor data
+        self.cursor_data_control = True
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -1529,13 +1570,79 @@ class FCPath(FCShapeTool):
 
     def utility_geometry(self, data=None):
         if len(self.points) > 0:
-            temp_points = [x for x in self.points]
-            temp_points.append(data)
+            modifier = QtWidgets.QApplication.keyboardModifiers()
+            if modifier == Qt.KeyboardModifier.ShiftModifier:
+                temp_points = [x for x in self.points]
+                if not temp_points:
+                    return DrawToolUtilityShape(None)
+
+                x_start = temp_points[-1][0]
+                y_start = temp_points[-1][1]
+                x_end = data[0]
+                y_end = data[1]
+                dx = x_end - x_start
+                dy = y_end - y_start
+                det_angle = self.update_angle(dx, dy)
+
+                new_x, new_y = data
+
+                if 0 <= det_angle <= 10:
+                    new_x = data[0]
+                    new_y = y_start
+
+                if 80 <= det_angle <= 90:
+                    new_x = x_start
+                    new_y = data[1]
+
+                if 35 <= det_angle <= 55:
+                    new_x, new_y = self.closest_point_to_45_degrees(origin=temp_points[-1], current=data)
+
+                temp_points.append([new_x, new_y])
+            else:
+                temp_points = [x for x in self.points]
+                temp_points.append(data)
+
             return DrawToolUtilityShape(LineString(temp_points))
 
         return None
 
+    @staticmethod
+    def closest_point_to_45_degrees(origin, current):
+        # Calculate vector from origin to current point
+        vector_x = current[0] - origin[0]
+        vector_y = current[1] - origin[1]
+
+        # Calculate the angle between the vector and the x-axis
+        angle = math.atan2(vector_y, vector_x)
+
+        # Calculate the angle of the 45-degree line
+        angle_45 = math.radians(45)
+
+        # Determine the angle to the closest point on the 45-degree line
+        closest_angle = round(angle / angle_45) * angle_45
+
+        # Calculate the coordinates of the closest point
+        closest_distance = math.sqrt(vector_x ** 2 + vector_y ** 2)
+        closest_point_x = origin[0] + closest_distance * math.cos(closest_angle)
+        closest_point_y = origin[1] + closest_distance * math.sin(closest_angle)
+
+        return closest_point_x, closest_point_y
+
+    def update_angle(self, dx, dy):
+        try:
+            angle = math.degrees(math.atan2(abs(dy), abs(dx)))
+            # if angle < 0:
+            #     angle += 360
+        except Exception as e:
+            self.app.log.error("FCPath.update_angle() -> %s" % str(e))
+            return None
+        return angle
+
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -1546,7 +1653,7 @@ class FCPath(FCShapeTool):
             return
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -1583,6 +1690,9 @@ class FCPath(FCShapeTool):
                 self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
 
     def on_key(self, key):
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
+
         # Jump to coords
         if key == QtCore.Qt.Key.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
@@ -1636,7 +1746,7 @@ class FCPath(FCShapeTool):
                     return _("Failed.")
 
                 first_pt = self.points[-1]
-                last_pt = self.draw_app.app.mouse
+                last_pt = self.draw_app.app.mouse_pos
 
                 seg_length = math.sqrt((last_pt[0] - first_pt[0])**2 + (last_pt[1] - first_pt[1])**2)
                 if seg_length == 0.0:
@@ -1894,6 +2004,8 @@ class FCMove(FCShapeTool):
         self.sel_limit = self.draw_app.app.options["geometry_editor_sel_limit"]
         self.selection_shape = self.selection_bbox()
 
+        self.cursor_data_control = True
+
         if len(self.draw_app.get_selected()) == 0:
             self.has_selection = False
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s %s' %
@@ -2094,6 +2206,10 @@ class FCMove(FCShapeTool):
             raise
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -2104,7 +2220,7 @@ class FCMove(FCShapeTool):
             return
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -2141,6 +2257,9 @@ class FCMove(FCShapeTool):
                 self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
 
     def on_key(self, key):
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
+
         # Jump to coords
         if key == QtCore.Qt.Key.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
@@ -2172,7 +2291,7 @@ class FCMove(FCShapeTool):
                     return _("Failed.")
 
                 first_pt = self.points[-1]
-                last_pt = self.draw_app.app.mouse
+                last_pt = self.draw_app.app.mouse_pos
 
                 seg_length = math.sqrt((last_pt[0] - first_pt[0])**2 + (last_pt[1] - first_pt[1])**2)
                 if seg_length == 0.0:
@@ -2231,6 +2350,8 @@ class FCCopy(FCShapeTool):
         self.util_geo = None
 
         self.clicked_postion = None
+
+        self.cursor_data_control = True
 
         if len(self.draw_app.get_selected()) == 0:
             self.has_selection = False
@@ -2610,6 +2731,10 @@ class FCCopy(FCShapeTool):
             raise
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -2620,7 +2745,7 @@ class FCCopy(FCShapeTool):
             return
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -2657,6 +2782,9 @@ class FCCopy(FCShapeTool):
                 self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
 
     def on_key(self, key):
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
+
         # Jump to coords
         if key == QtCore.Qt.Key.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
@@ -2688,7 +2816,7 @@ class FCCopy(FCShapeTool):
                     return _("Failed.")
 
                 first_pt = self.points[-1]
-                last_pt = self.draw_app.app.mouse
+                last_pt = self.draw_app.app.mouse_pos
 
                 seg_length = math.sqrt((last_pt[0] - first_pt[0])**2 + (last_pt[1] - first_pt[1])**2)
                 if seg_length == 0.0:
@@ -2847,7 +2975,7 @@ class FCBuffer(FCShapeTool):
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
         join_style = self.buff_tool.ui.buffer_corner_cb.currentIndex() + 1
-        ret_val = self.draw_app.buffer(buffer_distance, join_style)
+        ret_val = self.buff_tool.buffer(buffer_distance, join_style)
 
         self.deactivate()
         if ret_val == 'fail':
@@ -2873,7 +3001,7 @@ class FCBuffer(FCShapeTool):
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
         join_style = self.buff_tool.ui.buffer_corner_cb.currentIndex() + 1
-        ret_val = self.draw_app.buffer_int(buffer_distance, join_style)
+        ret_val = self.buff_tool.buffer_int(buffer_distance, join_style)
 
         self.deactivate()
         if ret_val == 'fail':
@@ -2899,7 +3027,7 @@ class FCBuffer(FCShapeTool):
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
         join_style = self.buff_tool.ui.buffer_corner_cb.currentIndex() + 1
-        ret_val = self.draw_app.buffer_ext(buffer_distance, join_style)
+        ret_val = self.buff_tool.buffer_ext(buffer_distance, join_style)
         # self.app.ui.notebook.setTabText(2, _("Tools"))
         # self.draw_app.app.ui.splitter.setSizes([0, 1])
 
@@ -4303,7 +4431,7 @@ class AppGeoEditor(QtCore.QObject):
 
         self.snap_x = x
         self.snap_y = y
-        self.app.mouse = [x, y]
+        self.app.mouse_pos = [x, y]
 
         if self.pos is None:
             self.pos = (0, 0)

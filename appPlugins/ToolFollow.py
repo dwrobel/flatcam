@@ -5,7 +5,21 @@
 # License:  MIT Licence                                    #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, RadioSet
+
+import logging
+from copy import deepcopy
+import numpy as np
+
+from shapely import Polygon
+from shapely.ops import unary_union
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
+
 from appParsers.ParseGerber import Gerber
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 from camlib import flatten_shapely_geometry
@@ -294,8 +308,8 @@ class ToolFollow(AppTool, Gerber):
 
             followed_obj.follow_geometry = flatten_shapely_geometry(followed_obj.follow_geometry)
             follow_geo = [
-                g for g in followed_obj.follow_geometry if g and not g.is_empty and g.is_valid and
-                                                           g.geom_type != 'Point'
+                g for g in followed_obj.follow_geometry
+                if g and not g.is_empty and g.is_valid and g.geom_type != 'Point'
             ]
 
             if not follow_geo:

@@ -5,11 +5,33 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
-from appParsers.ParseGerber import Gerber
-from camlib import Geometry, AppRTreeStorage, grace
+from PyQt6 import QtWidgets, QtCore, QtGui
+from PyQt6.QtCore import Qt
+
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
+    FCComboBox2, RadioSet, FCDoubleSpinner, FCInputDoubleSpinner, FCTable
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
+
+import logging
+from copy import deepcopy
+import numpy as np
+import simplejson as json
+import sys
+import traceback
+from numpy import Inf
+
+from shapely import LineString, Polygon, MultiLineString, MultiPolygon, Point, LinearRing
+from shapely.geometry import base
+from shapely.ops import unary_union, linemerge
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
+
+from appParsers.ParseGerber import Gerber
+from camlib import Geometry, AppRTreeStorage, grace
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -482,7 +504,7 @@ class ToolPaint(AppTool, Gerber):
         sel_model = self.ui.tools_table.selectionModel()
         sel_indexes = sel_model.selectedIndexes()
 
-        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        # it will iterate over all indexes which means all items in all columns, too but I'm interested only on rows
         sel_rows = set()
         for idx in sel_indexes:
             sel_rows.add(idx.row())
@@ -502,7 +524,7 @@ class ToolPaint(AppTool, Gerber):
         sel_model = self.ui.tools_table.selectionModel()
         sel_indexes = sel_model.selectedIndexes()
 
-        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        # it will iterate over all indexes which means all items in all columns too, but I'm interested only on rows
         sel_rows = set()
         for idx in sel_indexes:
             sel_rows.add(idx.row())
@@ -592,7 +614,7 @@ class ToolPaint(AppTool, Gerber):
 
     def form_to_storage(self):
         if self.ui.tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the GUI elements values to storage
+            # there is no tool in tool table, so we can't save the GUI elements values to storage
             return
 
         self.blockSignals(True)
@@ -620,7 +642,7 @@ class ToolPaint(AppTool, Gerber):
 
     def on_apply_param_to_all_clicked(self):
         if self.ui.tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the GUI elements values to storage
+            # there is no tool in tool table, so we can't save the GUI elements values to storage
             self.app.log.debug("NonCopperClear.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
             return
 
@@ -1900,7 +1922,7 @@ class ToolPaint(AppTool, Gerber):
                 self.app.inform.emit(msg)
                 self.app.proc_container.update_view_text(' %d%%' % 0)
 
-                # find the tooluid associated with the current tool_dia so we know what tool to use
+                # find the tooluid associated with the current tool_dia, so we know what tool to use
                 for k, v in tools_storage.items():
                     if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals, tool_dia)):
                         current_uid = int(k)
@@ -2088,7 +2110,7 @@ class ToolPaint(AppTool, Gerber):
                 self.app.inform.emit(msg)
                 self.app.proc_container.update_view_text(' %d%%' % 0)
 
-                # find the tooluid associated with the current tool_dia so we know what tool to use
+                # find the tooluid associated with the current tool_dia, so we know what tool to use
                 for k, v in tools_storage.items():
                     if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals, tool_dia)):
                         current_uid = int(k)
@@ -2421,7 +2443,7 @@ class ToolPaint(AppTool, Gerber):
             Creates a list of non-iterable linear geometry objects.
             Results are placed in self.flat_geometry
 
-            :param geometry: Shapely type or list or list of list of such.
+            :param geometry: Shapely type, list or list of lists of such.
             :param reset: Clears the contents of self.flat_geometry.
             """
             if self.app.abort_flag:
@@ -2500,7 +2522,7 @@ class ToolPaint(AppTool, Gerber):
             Creates a list of non-iterable linear geometry objects.
             Results are placed in self.flat_geometry
 
-            :param geometry: Shapely type or list or list of list of such.
+            :param geometry: Shapely type, list or list of lists of such.
             :param reset: Clears the contents of self.flat_geometry.
             """
             if self.app.abort_flag:
@@ -2611,7 +2633,7 @@ class ToolPaint(AppTool, Gerber):
         try:
             if isinstance(geo, MultiPolygon):
                 env_obj = geo.convex_hull
-            elif (isinstance(geo, MultiPolygon) and len(geo) == 1) or \
+            elif (isinstance(geo, MultiPolygon) and len(geo.geoms) == 1) or \
                     (isinstance(geo, list) and len(geo) == 1) and isinstance(geo[0], Polygon):
                 env_obj = unary_union(self.bound_obj.solid_geometry)
             else:
@@ -2811,7 +2833,7 @@ class ToolPaint(AppTool, Gerber):
 
     def on_paint_tool_from_db_inserted(self, tool):
         """
-        Called from the Tools DB object through a App method when adding a tool from Tools Database
+        Called from the Tools DB object through an App method when adding a tool from Tools Database
         :param tool: a dict with the tool data
         :return: None
         """

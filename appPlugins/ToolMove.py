@@ -5,8 +5,18 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
-from appGUI.VisPyVisuals import *
+from PyQt6 import QtWidgets, QtCore
+from appTool import AppTool
+from appGUI.VisPyVisuals import ShapeCollection
+
+import logging
+from copy import copy
+
+from shapely import Polygon
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -39,12 +49,7 @@ class ToolMove(AppTool):
         self.sel_rect = None
         self.old_coords = []
 
-        # VisPy visuals
-        if self.app.use_3d_engine:
-            self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1, pool=self.app.pool)
-        else:
-            from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
-            self.sel_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name="move")
+        self.sel_shapes = self.app.sel_shapes
 
         self.mm = None
         self.mp = None
@@ -87,7 +92,7 @@ class ToolMove(AppTool):
             return
         else:
             self.setVisible(True)
-            # signal that there is a command active and it is 'Move'
+            # signal that there is a command active, and it is 'Move'
             self.app.command_active = "Move"
 
             sel_obj_list = self.app.collection.get_selected()

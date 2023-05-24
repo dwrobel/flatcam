@@ -7,7 +7,9 @@
 
 from camlib import distance, arc, AppRTreeStorage
 
-from appEditors.exc_plugins.ExcDrillPlugin import *
+from PyQt6 import QtCore, QtWidgets, QtGui
+from PyQt6.QtCore import Qt
+from appEditors.exc_plugins.ExcDrillPlugin import ExcDrillEditorTool
 from appEditors.exc_plugins.ExcSlotPlugin import ExcSlotEditorTool
 from appEditors.exc_plugins.ExcDrillArrayPlugin import ExcDrillArrayEditorTool
 from appEditors.exc_plugins.ExcSlotArrayPlugin import ExcSlotArrayEditorTool
@@ -17,7 +19,7 @@ from appEditors.exc_plugins.ExcCopyPlugin import ExcCopyEditorTool
 from appGUI.GUIElements import FCEntry, FCTable, FCDoubleSpinner, FCButton, FCLabel, GLay
 from appEditors.AppGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, AppGeoEditor
 
-from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point
+from shapely import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point
 from shapely.geometry.base import BaseGeometry
 from shapely.affinity import scale, rotate, translate
 # from appCommon.Common import LoudDict
@@ -243,6 +245,8 @@ class DrillAdd(FCShapeTool):
         self.draw_app = draw_app
         self.app = self.draw_app.app
 
+        self.cursor_data_control = True
+
         self.selected_dia = None
         try:
             self.draw_app.app.inform.emit(_("Click to place ..."))
@@ -370,6 +374,10 @@ class DrillAdd(FCShapeTool):
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -383,7 +391,7 @@ class DrillAdd(FCShapeTool):
             self.points = self.draw_app.snap_x, self.draw_app.snap_y
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -467,6 +475,9 @@ class DrillAdd(FCShapeTool):
                     self.draw_app.app.on_jump_to(custom_location=(new_x, new_y), fit_center=False)
                     self.add_drill(drill_pos=(new_x, new_y))
 
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
+
     def add_drill(self, drill_pos):
         curr_pos = self.draw_app.app.geo_editor.snap(drill_pos[0], drill_pos[1])
         self.draw_app.snap_x = curr_pos[0]
@@ -531,6 +542,8 @@ class DrillArray(FCShapeTool):
 
         self.pt = []
 
+        self.cursor_data_control = True
+
         try:
             self.draw_app.app.inform.emit(_("Click to place ..."))
             self.selected_dia = self.draw_app.tool2tooldia[self.draw_app.last_tool_selected]
@@ -584,6 +597,10 @@ class DrillArray(FCShapeTool):
             pass
         self.ui.add_btn.clicked.connect(self.on_add_drill_array)
 
+        if self.ui.array_type_radio.get_value() == 'linear':
+            self.draw_app.app.inform.emit(_("Click on target location ..."))
+        else:
+            self.draw_app.app.inform.emit(_("Click on the circular array Center position"))
         # self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
     def set_plugin_ui(self):
@@ -830,6 +847,10 @@ class DrillArray(FCShapeTool):
             pass
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -843,7 +864,7 @@ class DrillArray(FCShapeTool):
             self.points = self.draw_app.snap_x, self.draw_app.snap_y
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -901,6 +922,9 @@ class DrillArray(FCShapeTool):
 
                 # ## Utility geometry (animated)
                 self.draw_app.update_utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+
+            if key == 'C' or key == QtCore.Qt.Key.Key_C:
+                self.cursor_data_control = not self.cursor_data_control
 
             # Jump to coords
             if key == QtCore.Qt.Key.Key_J or key == 'J':
@@ -966,6 +990,9 @@ class SlotAdd(FCShapeTool):
         self.half_width = 0.0
 
         self.selected_dia = None
+
+        self.cursor_data_control = True
+
         try:
             self.draw_app.app.inform.emit(_("Click to place ..."))
             self.selected_dia = self.draw_app.tool2tooldia[self.draw_app.last_tool_selected]
@@ -1168,6 +1195,10 @@ class SlotAdd(FCShapeTool):
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -1181,7 +1212,7 @@ class SlotAdd(FCShapeTool):
             self.points = self.draw_app.snap_x, self.draw_app.snap_y
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -1277,6 +1308,9 @@ class SlotAdd(FCShapeTool):
                     self.draw_app.app.on_jump_to(custom_location=(new_x, new_y), fit_center=False)
                     self.add_slot(slot_pos=(new_x, new_y))
 
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
+
     def add_slot(self, slot_pos):
         curr_pos = self.draw_app.app.geo_editor.snap(slot_pos[0], slot_pos[1])
         self.draw_app.snap_x = curr_pos[0]
@@ -1346,6 +1380,8 @@ class SlotArray(FCShapeTool):
         self.last_dy = 0
 
         self.pt = []
+
+        self.cursor_data_control = True
 
         try:
             self.draw_app.app.inform.emit(_("Click to place ..."))
@@ -1750,6 +1786,10 @@ class SlotArray(FCShapeTool):
             pass
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -1763,7 +1803,7 @@ class SlotArray(FCShapeTool):
             self.points = self.draw_app.snap_x, self.draw_app.snap_y
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -1822,6 +1862,9 @@ class SlotArray(FCShapeTool):
                 # ## Utility geometry (animated)
                 self.draw_app.update_utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
         elif mod_key is None:
+            if key == 'C' or key == QtCore.Qt.Key.Key_C:
+                self.cursor_data_control = not self.cursor_data_control
+
             # Jump to coords
             if key == QtCore.Qt.Key.Key_J or key == 'J':
                 self.draw_app.app.on_jump_to()
@@ -1834,6 +1877,7 @@ class SlotArray(FCShapeTool):
                     self.ui.slot_direction_radio.set_value('A')
                 elif self.ui.slot_direction_radio.get_value() == 'A':
                     self.ui.slot_direction_radio.set_value('X')
+
                 # ## Utility geometry (animated)
                 self.draw_app.update_utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
 
@@ -1906,6 +1950,8 @@ class ResizeEditorExc(FCShapeTool):
         self.current_storage = None
         self.geometry = []
         self.destination_storage = None
+
+        self.cursor_data_control = True
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -2177,6 +2223,10 @@ class ResizeEditorExc(FCShapeTool):
         self.clean_up()
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -2190,7 +2240,7 @@ class ResizeEditorExc(FCShapeTool):
             self.points = self.draw_app.snap_x, self.draw_app.snap_y
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -2225,6 +2275,10 @@ class ResizeEditorExc(FCShapeTool):
 
             if self.draw_app.app.plotcanvas.text_cursor.parent is None:
                 self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
+
+    def on_key(self, key):
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -2410,6 +2464,8 @@ class CopyEditorExc(FCShapeTool):
 
         self.current_storage = None
         self.geometry = []
+
+        self.cursor_data_control = True
 
         for index in self.draw_app.ui.tools_table_exc.selectedIndexes():
             row = index.row()
@@ -2764,6 +2820,10 @@ class CopyEditorExc(FCShapeTool):
         return circular_geo
 
     def draw_cursor_data(self, pos=None, delete=False):
+        if self.cursor_data_control is False:
+            self.draw_app.app.plotcanvas.text_cursor.text = ""
+            return
+
         if pos is None:
             pos = self.draw_app.snap_x, self.draw_app.snap_y
 
@@ -2774,7 +2834,7 @@ class CopyEditorExc(FCShapeTool):
             return
 
         # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("hud_font_size"):
             fsize = qsettings.value('hud_font_size', type=int)
         else:
@@ -2812,6 +2872,9 @@ class CopyEditorExc(FCShapeTool):
                 self.draw_app.app.plotcanvas.text_cursor.parent = self.draw_app.app.plotcanvas.view.scene
 
     def on_key(self, key):
+        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+            self.cursor_data_control = not self.cursor_data_control
+
         # Jump to coords
         if key == QtCore.Qt.Key.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
@@ -3064,7 +3127,7 @@ class AppExcEditor(QtCore.QObject):
         self.ui.deltool_btn.clicked.connect(self.on_tool_delete)
         # self.ui.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
         self.ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
-        self.ui.tools_table_exc.selectionModel().selectionChanged.connect(self.on_table_selection)
+        self.ui.tools_table_exc.selectionModel().selectionChanged.connect(self.on_table_selection)  # noqa
 
         self.app.ui.exc_add_array_drill_menuitem.triggered.connect(self.exc_add_drill_array)
         self.app.ui.exc_add_drill_menuitem.triggered.connect(self.exc_add_drill)
@@ -3098,7 +3161,7 @@ class AppExcEditor(QtCore.QObject):
 
         return f
 
-    def connect_exc_toolbar_signals(self):
+    def connect_exc_toolbar_signals(self) -> None:
         self.tools_exc.update({
             "drill_select":     {"button": self.app.ui.select_drill_btn,    "constructor": SelectEditorExc},
             "drill_add":        {"button": self.app.ui.add_drill_btn,       "constructor": DrillAdd},
@@ -4634,7 +4697,7 @@ class AppExcEditor(QtCore.QObject):
         self.app.plotcanvas.on_update_text_hud(self.app.dx, self.app.dy, x, y)
 
         # ## Utility geometry (animated)
-        self.update_utility_geometry(data=(x, y))
+        # self.update_utility_geometry(data=(x, y))
 
         self.update_utility_geometry(data=(x, y))
         if self.active_tool.name in [

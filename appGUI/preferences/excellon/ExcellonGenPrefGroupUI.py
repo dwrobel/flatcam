@@ -1,3 +1,4 @@
+
 import platform
 
 from PyQt6 import QtWidgets, QtCore, QtGui
@@ -5,6 +6,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 from appGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCSliderWithSpinner, FCColorEntry, FCLabel, \
     GLay, FCFrame, FCButton
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
+
 import gettext
 import appTranslation as fcTranslate
 import builtins

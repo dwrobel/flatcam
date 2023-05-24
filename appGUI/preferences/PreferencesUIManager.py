@@ -1,8 +1,10 @@
-import os
+
 from PyQt6 import QtGui, QtCore, QtWidgets
 from PyQt6.QtCore import QSettings
-from defaults import AppDefaults
 
+import os
+
+from defaults import AppDefaults
 from appGUI.GUIElements import FCMessageBox
 
 import gettext
@@ -53,10 +55,9 @@ class PreferencesUIManager(QtCore.QObject):
         # def app_obj.new_object(self, kind, name, initialize, active=True, fit=True, plot=True)
         self.defaults_form_fields = {
             # General App
-            "decimals_inch": self.ui.general_pref_form.general_app_group.precision_inch_entry,
             "decimals_metric": self.ui.general_pref_form.general_app_group.precision_metric_entry,
-            "units": self.ui.general_pref_form.general_app_group.units_radio,
             "global_graphic_engine": self.ui.general_pref_form.general_app_group.ge_radio,
+            "global_graphic_engine_3d_no_mp": self.ui.general_pref_form.general_app_group.ge_comp_cb,
             "global_app_level": self.ui.general_pref_form.general_app_group.app_level_radio,
             "global_log_verbose": self.ui.general_pref_form.general_app_group.verbose_combo,
             "global_portable": self.ui.general_pref_form.general_app_group.portability_cb,
@@ -70,6 +71,7 @@ class PreferencesUIManager(QtCore.QObject):
             "global_send_stats": self.ui.general_pref_form.general_app_group.send_stats_cb,
 
             "global_worker_number": self.ui.general_pref_form.general_app_group.worker_number_sb,
+            "global_process_number": self.ui.general_pref_form.general_app_group.process_number_sb,
             "global_tolerance": self.ui.general_pref_form.general_app_group.tol_entry,
 
             "global_compression_level": self.ui.general_pref_form.general_app_group.compress_spinner,
@@ -175,7 +177,7 @@ class PreferencesUIManager(QtCore.QObject):
             "gerber_editor_newtype": self.ui.gerber_pref_form.gerber_editor_group.addtype_combo,
             "gerber_editor_newdim": self.ui.gerber_pref_form.gerber_editor_group.adddim_entry,
             "gerber_editor_array_size": self.ui.gerber_pref_form.gerber_editor_group.grb_array_size_entry,
-            "gerber_editor_lin_axis": self.ui.gerber_pref_form.gerber_editor_group.grb_axis_radio,
+            "gerber_editor_lin_dir": self.ui.gerber_pref_form.gerber_editor_group.grb_axis_radio,
             "gerber_editor_lin_pitch": self.ui.gerber_pref_form.gerber_editor_group.grb_pitch_entry,
             "gerber_editor_lin_angle": self.ui.gerber_pref_form.gerber_editor_group.grb_angle_entry,
             "gerber_editor_circ_dir": self.ui.gerber_pref_form.gerber_editor_group.grb_circular_dir_radio,
@@ -267,6 +269,7 @@ class PreferencesUIManager(QtCore.QObject):
 
             # Geometry Export
             "geometry_dxf_format":      self.ui.geo_pref_form.geometry_exp_group.dxf_format_combo,
+            "geometry_paths_only":      self.ui.geo_pref_form.geometry_exp_group.svg_paths_only_cb,
 
             # Geometry Editor
             "geometry_editor_sel_limit":        self.ui.geo_pref_form.geometry_editor_group.sel_limit_entry,
@@ -1117,13 +1120,13 @@ class PreferencesUIManager(QtCore.QObject):
         self.ui.pref_apply_button.setStyleSheet("")
         self.ui.pref_apply_button.setIcon(QtGui.QIcon(self.ui.app.resource_location + '/apply32.png'))
 
-        self.inform.emit('%s' % _("Preferences applied."))
+        self.inform.emit('%s' % _("Preferences applied."))  # noqa
 
         # make sure we update the self.current_defaults dict used to undo changes to self.defaults
         self.defaults.current_defaults.update(self.defaults)
 
         # deal with appearance change
-        appearance_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        appearance_settings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if appearance_settings.contains("appearance"):
             appearance = appearance_settings.value('appearance', type=str)
         else:
@@ -1197,7 +1200,7 @@ class PreferencesUIManager(QtCore.QObject):
             saved_filename_path = os.path.join(self.data_path, 'current_defaults_%s.FlatConfig' % self.defaults.version)
             self.defaults.load(filename=saved_filename_path, inform=self.inform)
 
-        settgs = QSettings("Open Source", "FlatCAM")
+        settgs = QSettings("Open Source", "FlatCAM_EVO")
 
         # save the notebook font size
         fsize = self.ui.general_pref_form.general_app_set_group.notebook_font_size_spinner.get_value()
@@ -1262,9 +1265,6 @@ class PreferencesUIManager(QtCore.QObject):
 
         self.defaults.propagate_defaults()
 
-        if first_time is False:
-            self.save_toolbar_view()
-
         # Save the options to disk
         filename = os.path.join(data_path, "current_defaults_%s.FlatConfig" % self.defaults.version)
 
@@ -1280,44 +1280,6 @@ class PreferencesUIManager(QtCore.QObject):
 
         # update the autosave timer
         self.ui.app.save_project_auto_update()
-
-    def save_toolbar_view(self):
-        """
-        Will save the toolbar view state to the defaults
-
-        :return:            None
-        """
-
-        # Save the toolbar view
-        tb_status = 0
-        if self.ui.toolbarfile.isVisible():
-            tb_status += 1
-
-        if self.ui.toolbaredit.isVisible():
-            tb_status += 2
-
-        if self.ui.toolbarview.isVisible():
-            tb_status += 4
-
-        if self.ui.toolbarplugins.isVisible():
-            tb_status += 8
-
-        if self.ui.exc_edit_toolbar.isVisible():
-            tb_status += 16
-
-        if self.ui.geo_edit_toolbar.isVisible():
-            tb_status += 32
-
-        if self.ui.grb_edit_toolbar.isVisible():
-            tb_status += 64
-
-        if self.ui.status_toolbar.isVisible():
-            tb_status += 128
-
-        if self.ui.toolbarshell.isVisible():
-            tb_status += 256
-
-        self.defaults["global_toolbar_view"] = tb_status
 
     def on_preferences_edited(self):
         """

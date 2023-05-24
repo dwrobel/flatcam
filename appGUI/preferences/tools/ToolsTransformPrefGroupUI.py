@@ -1,3 +1,4 @@
+
 from PyQt6 import QtWidgets, QtGui
 
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry, FCComboBox, FCLabel, \

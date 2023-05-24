@@ -5,7 +5,21 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
+    FCComboBox2, RadioSet, FCDoubleSpinner, FCSpinner, FCMessageBox
+
+from copy import deepcopy
+import numpy as np
+import os
+
+from shapely import LineString, MultiLineString, Polygon, MultiPolygon, shape
+from shapely.affinity import scale, translate
+import gettext
+import appTranslation as fcTranslate
+import builtins
+
 from rasterio import open as rasterio_open
 from rasterio.features import shapes
 

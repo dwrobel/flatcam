@@ -14,7 +14,7 @@ from PyQt6.QtCore import pyqtSignal
 # Used for solid polygons in Matplotlib
 from descartes.patch import PolygonPatch
 
-from shapely.geometry import Polygon, LineString, LinearRing
+from shapely import Polygon, LineString, LinearRing
 
 from copy import deepcopy
 
@@ -82,7 +82,7 @@ class CanvasCache(QtCore.QObject):
         self.axes.set_xticks([])
         self.axes.set_yticks([])
 
-        settings = QtCore.QSettings("Open Source", "FlatCAM")
+        settings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
         if settings.contains("theme"):
             theme = settings.value('theme', type=str)
         else:
@@ -463,7 +463,7 @@ class PlotCanvasLegacy(QtCore.QObject):
             self.on_update_text_hud()
 
             # set font size
-            qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+            qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
             if qsettings.contains("hud_font_size"):
                 # I multiply with 2.5 because this seems to be the difference between the value taken by the VisPy (3D)
                 # and Matplotlib (Legacy2D FlatCAM graphic engine)

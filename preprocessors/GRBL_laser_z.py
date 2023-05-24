@@ -8,7 +8,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appPreProcessor import *
+from appPreProcessor import PreProc
 
 # This post processor is configured to output code that
 # is compatible with almost any version of Grbl.

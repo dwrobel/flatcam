@@ -1,5 +1,13 @@
 
-from appTool import *
+from PyQt6 import QtWidgets
+from appTool import AppToolEditor
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCDoubleSpinner, FCComboBox
+
+from shapely import Polygon
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -200,7 +208,7 @@ class BufferSelectionTool(AppToolEditor):
                 geo_editor.build_ui_sig.emit()
                 geo_editor.app.inform.emit('[success] %s' % _("Done."))
 
-        self.app.worker_task.emit({'fcn': work_task, 'params': [self]})
+        self.app.worker_task.emit({'fcn': work_task, 'params': [self.draw_app]})
 
     def buffer_int(self, buf_distance, join_style):
         def work_task(geo_editor):
@@ -238,6 +246,8 @@ class BufferSelectionTool(AppToolEditor):
                             for line in t.geo:
                                 if line.is_ring:
                                     b_geo = Polygon(line)
+                                else:
+                                    b_geo = line
                                 results.append(b_geo.buffer(
                                     -buf_distance + 1e-10,
                                     resolution=int(int(geo_editor.app.options["geometry_circle_steps"]) / 4),
@@ -246,6 +256,8 @@ class BufferSelectionTool(AppToolEditor):
                         elif t.geo.geom_type in ['LineString', 'LinearRing']:
                             if t.geo.is_ring:
                                 b_geo = Polygon(t.geo)
+                            else:
+                                b_geo = t.geo
                             results.append(b_geo.buffer(
                                 -buf_distance + 1e-10,
                                 resolution=int(int(geo_editor.app.options["geometry_circle_steps"]) / 4),
@@ -266,7 +278,7 @@ class BufferSelectionTool(AppToolEditor):
                 geo_editor.build_ui_sig.emit()
                 geo_editor.app.inform.emit('[success] %s' % _("Done."))
 
-        self.app.worker_task.emit({'fcn': work_task, 'params': [self]})
+        self.app.worker_task.emit({'fcn': work_task, 'params': [self.draw_app]})
 
     def buffer_ext(self, buf_distance, join_style):
         def work_task(geo_editor):
@@ -306,6 +318,8 @@ class BufferSelectionTool(AppToolEditor):
                             for line in t.geo:
                                 if line.is_ring:
                                     b_geo = Polygon(line)
+                                else:
+                                    b_geo = line
                                 results.append(b_geo.buffer(
                                     buf_distance - 1e-10,
                                     resolution=int(int(geo_editor.app.options["geometry_circle_steps"]) / 4),
@@ -314,6 +328,8 @@ class BufferSelectionTool(AppToolEditor):
                         elif t.geo.geom_type in ['LineString', 'LinearRing']:
                             if t.geo.is_ring:
                                 b_geo = Polygon(t.geo)
+                            else:
+                                b_geo = t.geo
                             results.append(b_geo.buffer(
                                 buf_distance - 1e-10,
                                 resolution=int(int(geo_editor.app.options["geometry_circle_steps"]) / 4),
@@ -334,7 +350,7 @@ class BufferSelectionTool(AppToolEditor):
                 geo_editor.build_ui_sig.emit()
                 geo_editor.app.inform.emit('[success] %s' % _("Done."))
 
-        self.app.worker_task.emit({'fcn': work_task, 'params': [self]})
+        self.app.worker_task.emit({'fcn': work_task, 'params': [self.draw_app]})
 
     def hide_tool(self):
         self.ui.buffer_tool_frame.hide()

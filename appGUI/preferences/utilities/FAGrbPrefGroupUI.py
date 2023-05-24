@@ -1,3 +1,4 @@
+
 from PyQt6 import QtWidgets, QtGui
 from PyQt6.QtCore import QSettings
 
@@ -40,7 +41,7 @@ class FAGrbPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.grb_list_label)
 
-        qsettings = QSettings("Open Source", "FlatCAM")
+        qsettings = QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("textbox_font_size"):
             tb_fsize = qsettings.value('textbox_font_size', type=int)
         else:

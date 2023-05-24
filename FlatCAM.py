@@ -1,3 +1,4 @@
+
 import sys
 import os
 import traceback
@@ -134,13 +135,19 @@ if __name__ == '__main__':
                 msgbox.setIcon(QtWidgets.QMessageBox.Icon.Critical)
 
                 bt_yes = msgbox.addButton("Quit", QtWidgets.QMessageBox.ButtonRole.YesRole)
+                bt_ret = msgbox.addButton("Return", QtWidgets.QMessageBox.ButtonRole.NoRole)
 
                 msgbox.setDefaultButton(bt_yes)
                 # msgbox.setTextFormat(Qt.TextFormat.RichText)
                 msgbox.exec()
+
+                response = msgbox.clickedButton()
+                if response == bt_ret:
+                    pass
             except Exception:
-                pass
-        QtWidgets.QApplication.quit()
+                QtWidgets.QApplication.quit()
+        else:
+            QtWidgets.QApplication.quit()
         # or QtWidgets.QApplication.exit(0)
 
     sys.excepthook = excepthook
@@ -148,7 +155,7 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
 
     # apply style
-    settings = QSettings("Open Source", "FlatCAM")
+    settings = QSettings("Open Source", "FlatCAM_EVO")
     if settings.contains("style"):
         style_index = settings.value('style', type=str)
         try:
@@ -157,6 +164,8 @@ if __name__ == '__main__':
             idx = 0
         style = QtWidgets.QStyleFactory.keys()[idx]
         app.setStyle(style)
+    else:
+        app.setStyle('windowsvista')
 
     fc = App(qapp=app)
 

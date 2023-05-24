@@ -5,10 +5,31 @@
 # License:  MIT Licence                                    #
 # ##########################################################
 
-from appTool import *
+from PyQt6 import QtWidgets, QtCore, QtGui
+from appTool import AppTool
+from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, FCCheckBox, \
+    FCComboBox2, RadioSet, FCDoubleSpinner, FCSpinner, FCInputDialogSpinnerButton, FCTable, \
+    OptionalInputSection
+
+import logging
+from copy import deepcopy
+from typing import Iterable
+
+import numpy as np
+import simplejson as json
+import sys
+import math
+
+from shapely import LineString, MultiLineString, Polygon, MultiPolygon, Point, LinearRing
+from shapely.ops import unary_union, nearest_points
+
+import gettext
+import appTranslation as fcTranslate
+import builtins
+
 from appParsers.ParseGerber import Gerber
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
-from camlib import grace
+from camlib import grace, flatten_shapely_geometry
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -1121,7 +1142,7 @@ class ToolIsolation(AppTool, Gerber):
 
         min_dict = {}
         idx = 1
-        w_geo = total_geo.geoms if isinstance(total_geo, (MultiLineString, MultiPolygon)) else total_geo
+        w_geo = flatten_shapely_geometry(total_geo)
         for geo in w_geo:
             for s_geo in w_geo[idx:]:
                 # minimize the number of distances by not taking into considerations
@@ -1250,15 +1271,16 @@ class ToolIsolation(AppTool, Gerber):
 
                     total_geo = MultiPolygon(total_geo)
                     total_geo = total_geo.buffer(0)
+                    total_geo = flatten_shapely_geometry(total_geo)
 
-                    if isinstance(total_geo, MultiPolygon):
-                        geo_len = len(total_geo.geoms)
-                        geo_len = (geo_len * (geo_len - 1)) / 2
-                    elif isinstance(total_geo, Polygon):
+                    geo_len = len(total_geo)
+                    if geo_len == 1:
                         msg = _("The Gerber object has one Polygon as geometry.\n"
                                 "There are no distances between geometry elements to be found.")
                         app_obj.inform.emit('[ERROR_NOTCL] %s' % msg)
                         return 'fail'
+
+                    geo_len = (geo_len * (geo_len - 1)) / 2
 
                     min_dict = {}
                     idx = 1
@@ -2397,7 +2419,7 @@ class ToolIsolation(AppTool, Gerber):
                         if new_geo and not new_geo.is_empty:
                             new_geometry.append(new_geo)
                 elif isinstance(geo_elem, MultiPolygon):
-                    for poly in geo_elem:
+                    for poly in geo_elem.geoms:
                         for ring in self.poly2rings(poly):
                             new_geo = ring.difference(sub_union)
                             if new_geo and not new_geo.is_empty:
@@ -2408,7 +2430,7 @@ class ToolIsolation(AppTool, Gerber):
                         if not new_geo.is_empty:
                             new_geometry.append(new_geo)
                 elif isinstance(geo_elem, MultiLineString):
-                    for line_elem in geo_elem:
+                    for line_elem in geo_elem.geoms:
                         new_geo = line_elem.difference(sub_union)
                         if new_geo and not new_geo.is_empty:
                             new_geometry.append(new_geo)
@@ -2424,7 +2446,7 @@ class ToolIsolation(AppTool, Gerber):
                 if new_geo and not new_geo.is_empty:
                     new_geometry.append(new_geo)
             elif isinstance(target_geo, MultiLineString):
-                for line_elem in target_geo:
+                for line_elem in target_geo.geoms:
                     new_geo = line_elem.difference(sub_union)
                     if new_geo and not new_geo.is_empty:
                         new_geometry.append(new_geo)
@@ -2451,7 +2473,7 @@ class ToolIsolation(AppTool, Gerber):
                         if new_geo and not new_geo.is_empty:
                             new_geometry.append(new_geo)
                 elif isinstance(geo_elem, MultiPolygon):
-                    for poly in geo_elem:
+                    for poly in geo_elem.geoms:
                         for ring in self.poly2rings(poly):
                             new_geo = ring.intersection(intersect_union)
                             if new_geo and not new_geo.is_empty:
@@ -2462,7 +2484,7 @@ class ToolIsolation(AppTool, Gerber):
                         if not new_geo.is_empty:
                             new_geometry.append(new_geo)
                 elif isinstance(geo_elem, MultiLineString):
-                    for line_elem in geo_elem:
+                    for line_elem in geo_elem.geoms:
                         new_geo = line_elem.intersection(intersect_union)
                         if new_geo and not new_geo.is_empty:
                             new_geometry.append(new_geo)
@@ -2478,7 +2500,7 @@ class ToolIsolation(AppTool, Gerber):
                 if new_geo and not new_geo.is_empty:
                     new_geometry.append(new_geo)
             elif isinstance(target_geo, MultiLineString):
-                for line_elem in target_geo:
+                for line_elem in target_geo.geoms:
                     new_geo = line_elem.intersection(intersect_union)
                     if new_geo and not new_geo.is_empty:
                         new_geometry.append(new_geo)
@@ -2518,7 +2540,7 @@ class ToolIsolation(AppTool, Gerber):
                 clicked_poly = self.find_polygon(point=(curr_pos[0], curr_pos[1]), geoset=self.grb_obj.solid_geometry)
 
             if self.app.selection_type is not None:
-                self.selection_area_handler(self.app.pos, curr_pos, self.app.selection_type)
+                self.selection_area_handler(self.app.mouse_pos, curr_pos, self.app.selection_type)
                 self.app.selection_type = None
             elif clicked_poly:
                 if clicked_poly not in self.poly_dict.values():
@@ -3964,6 +3986,9 @@ class IsoUI:
         # #############################################################################################################
         # Generate Geometry object
         # #############################################################################################################
+        gen_hlay = QtWidgets.QHBoxLayout()
+        self.tools_box.addLayout(gen_hlay)
+
         self.generate_iso_button = FCButton("%s" % _("Generate Geometry"), bold=True)
         self.generate_iso_button.setIcon(QtGui.QIcon(self.app.resource_location + '/geometry32.png'))
         self.generate_iso_button.setToolTip(
@@ -3977,7 +4002,15 @@ class IsoUI:
               "inside the actual Gerber feature, use a negative tool\n"
               "diameter above.")
         )
-        self.tools_box.addWidget(self.generate_iso_button)
+        gen_hlay.addWidget(self.generate_iso_button, stretch=1)
+
+        # Milling Plugin shortcut
+        self.milling_button = QtWidgets.QToolButton()
+        self.milling_button.setIcon(QtGui.QIcon(self.app.resource_location + '/milling_tool32.png'))
+        self.milling_button.setToolTip(
+            _("Generate a CNCJob by milling a Geometry.")
+        )
+        gen_hlay.addWidget(self.milling_button)
 
         self.create_buffer_button = FCButton(_('Buffer Solid Geometry'))
         self.create_buffer_button.setToolTip(
@@ -3999,6 +4032,8 @@ class IsoUI:
         self.tools_box.addWidget(self.reset_button)
         # ############################ FINSIHED GUI ###################################
         # #############################################################################
+
+        self.milling_button.clicked.connect(lambda: self.app.milling_tool.run())
 
     def confirmation_message(self, accepted, minval, maxval):
         if accepted is False:

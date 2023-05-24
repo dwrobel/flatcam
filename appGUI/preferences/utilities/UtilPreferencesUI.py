@@ -1,3 +1,4 @@
+
 from PyQt6 import QtWidgets
 import sys
 

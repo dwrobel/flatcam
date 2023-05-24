@@ -10,20 +10,20 @@
 # File modified by: Marius Stanciu                         #
 # ##########################################################
 
-# import inspect
+from PyQt6 import QtCore, QtGui
 
-from appGUI.ObjectUI import *
-
+from appGUI.ObjectUI import ObjectUI
 from appCommon.Common import LoudDict
 from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
 from appGUI.VisPyVisuals import ShapeCollection
 
 from shapely.ops import unary_union
-from shapely.geometry import Polygon, MultiPolygon, Point, LineString
+from shapely import Polygon, MultiPolygon, Point, LineString
 
-from copy import deepcopy
+from copy import deepcopy, copy
 import sys
 import math
+import inspect
 
 import gettext
 import appTranslation as fcTranslate
@@ -94,7 +94,8 @@ class FlatCAMObj(QtCore.QObject):
 
         if self.app.use_3d_engine:
             self.shapes = self.app.plotcanvas.new_shape_group()
-            self.mark_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1, pool=self.app.pool)
+            self.mark_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1, pool=self.app.pool,
+                                               fcoptions=self.app.options)
         else:
             self.shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=name)
             self.mark_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=name + "_mark_shapes")
@@ -210,12 +211,12 @@ class FlatCAMObj(QtCore.QObject):
 
     @property
     def visible(self):
-        '''
+        """
         This property is used by Editors to turn off plotting for the original object that is edited,
         such that when deleting certain elements there is no background plot in place to confuse things.
         :return:
         :rtype:
-        '''
+        """
         return self.shapes.visible
 
     @visible.setter
@@ -226,6 +227,7 @@ class FlatCAMObj(QtCore.QObject):
 
         current_visibility = self.shapes.visible
         self.shapes.visible = current_visibility   # maybe this is slower in VisPy? use enabled property?
+
         def task(visibility):
             if visibility is True:
                 if value is False:
@@ -331,10 +333,9 @@ class FlatCAMObj(QtCore.QObject):
         if new_name != old_name:
             # update the SHELL auto-completer model data
             try:
-                self.app.myKeywords.remove(old_name)
-                self.app.myKeywords.append(new_name)
-                self.app.shell._edit.set_model_data(self.app.myKeywords)
-                self.app.ui.code_editor.set_model_data(self.app.myKeywords)
+                self.app.regFK.remove_keyword(old_name, update=False)
+                self.app.regFK.prepend_keyword(new_name)
+                self.app.ui.code_editor.set_model_data(self.app.regFK.myKeywords)
             except Exception:
                 self.app.log.debug(
                     "on_name_activate() --> Could not remove the old object name from auto-completer model list")
@@ -666,7 +667,7 @@ class FlatCAMObj(QtCore.QObject):
                     if isinstance(geo, list) and geo[0] is not None:
                         if isinstance(geo, MultiPolygon):
                             env_obj = geo.convex_hull
-                        elif (isinstance(geo, MultiPolygon) and len(geo) == 1) or \
+                        elif (isinstance(geo, MultiPolygon) and len(geo.geoms) == 1) or \
                                 (isinstance(geo, list) and len(geo) == 1) and isinstance(geo[0], Polygon):
                             env_obj = unary_union(geo)
                             env_obj = env_obj.convex_hull

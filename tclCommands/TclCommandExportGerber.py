@@ -27,7 +27,7 @@ class TclCommandExportGerber(TclCommand):
     ])
 
     # array of mandatory options for current Tcl command: required = ['name','outname']
-    required = ['obj_name']
+    required = ['name']
 
     # structured help for current command, args needs to be ordered
     help = {

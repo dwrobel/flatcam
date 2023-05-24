@@ -6,7 +6,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appPreProcessor import *
+from appPreProcessor import PreProc
 
 
 # for Roland Preprocessors it is mandatory for the preprocessor name (python file and class name, both of them must be

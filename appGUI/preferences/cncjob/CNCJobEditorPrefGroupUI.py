@@ -1,3 +1,4 @@
+
 from PyQt6 import QtGui
 from PyQt6.QtCore import QSettings
 
@@ -31,7 +32,7 @@ class CNCJobEditorPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.param_label)
 
-        qsettings = QSettings("Open Source", "FlatCAM")
+        qsettings = QSettings("Open Source", "FlatCAM_EVO")
         if qsettings.contains("textbox_font_size"):
             tb_fsize = qsettings.value('textbox_font_size', type=int)
         else:

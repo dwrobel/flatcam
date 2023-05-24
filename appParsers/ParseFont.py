@@ -15,13 +15,14 @@ import os
 import sys
 import glob
 
-from shapely.geometry import Polygon, MultiPolygon
+from shapely import Polygon, MultiPolygon
 from shapely.affinity import translate, scale
 
 import freetype as ft
 from fontTools import ttLib
 
 import logging
+
 import gettext
 import appTranslation as fcTranslate
 import builtins
