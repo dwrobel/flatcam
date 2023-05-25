@@ -5103,12 +5103,20 @@ class AppGeoEditor(QtCore.QObject):
 
         def work_task(editor_self):
             with editor_self.app.proc_container.new(_("Working...")):
-                results = unary_union([t.geo for t in editor_self.get_selected()])
+                selected = editor_self.get_selected()
+
+                if len(selected) < 2:
+                    editor_self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                                _("A selection of minimum two items is required."))
+                    editor_self.select_tool('select')
+                    return
+
+                results = unary_union([t.geo for t in selected])
                 if results.geom_type == 'MultiLineString':
                     results = linemerge(results)
 
                 # Delete originals.
-                for_deletion = [s for s in editor_self.get_selected()]
+                for_deletion = [s for s in selected]
                 for shape in for_deletion:
                     editor_self.delete_shape(shape)
 
@@ -5137,7 +5145,7 @@ class AppGeoEditor(QtCore.QObject):
 
                 if len(selected) < 2:
                     editor_self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                                _("A selection of minimum two items is required to do Intersection."))
+                                                _("A selection of minimum two items is required."))
                     editor_self.select_tool('select')
                     return
 
@@ -5192,7 +5200,7 @@ class AppGeoEditor(QtCore.QObject):
 
                 if len(selected) < 2:
                     editor_self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                                _("A selection of minimum two items is required to do Intersection."))
+                                                _("A selection of minimum two items is required."))
                     editor_self.select_tool('select')
                     return
 
@@ -5242,6 +5250,12 @@ class AppGeoEditor(QtCore.QObject):
         def work_task(editor_self):
             with editor_self.app.proc_container.new(_("Working...")):
                 selected = editor_self.get_selected()
+                if len(selected) < 2:
+                    editor_self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                                _("A selection of minimum two items is required."))
+                    editor_self.select_tool('select')
+                    return
+
                 try:
                     target = deepcopy(selected[0].geo)
                     tools = selected[1:]
@@ -5270,6 +5284,12 @@ class AppGeoEditor(QtCore.QObject):
         def work_task(editor_self):
             with editor_self.app.proc_container.new(_("Working...")):
                 selected = editor_self.get_selected()
+                if len(selected) < 2:
+                    editor_self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                                _("A selection of minimum two items is required."))
+                    editor_self.select_tool('select')
+                    return
+
                 try:
                     target = deepcopy(selected[0].geo)
                     tools = selected[1:]
@@ -5295,6 +5315,12 @@ class AppGeoEditor(QtCore.QObject):
         def work_task(editor_self):
             with editor_self.app.proc_container.new(_("Working...")):
                 selected = editor_self.get_selected()
+                if len(selected) < 2:
+                    editor_self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                                _("A selection of minimum two items is required."))
+                    editor_self.select_tool('select')
+                    return
+
                 tools = selected[1:]
                 toolgeo = unary_union([shp.geo for shp in tools])
 
