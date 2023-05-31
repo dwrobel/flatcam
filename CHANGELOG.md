@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM Evo beta
 
 - Pdf Import plugin: fixed an issue with assigning a wrong property to a Qtimer
 - Extract Plugin and Punch gerber Plugin: fixed a wrong build of the UI triggered even those tools where not launched yet
+- Pdf import Plugin: made sure that the keys in tools are integers
+- Pdf Import Plugin: added the source code to the imported Gerber file
 
 25.05.2023
 

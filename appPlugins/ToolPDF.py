@@ -23,7 +23,7 @@ import appTranslation as fcTranslate
 import builtins
 
 from appParsers.ParsePDF import PdfParser
-from camlib import grace
+from camlib import grace, flatten_shapely_geometry
 
 HAS_PIKE_MODULE = True
 try:
@@ -366,8 +366,13 @@ class ToolPDF(AppTool):
             except ValueError:
                 pass
 
-            grb_obj.solid_geometry = deepcopy(poly_buff)
+            # make the apertures integers if they are not
+            grb_obj.tools = {int(key): value for key, value in grb_obj.tools.items()}
+
+            grb_obj.solid_geometry = flatten_shapely_geometry(poly_buff)
             grb_obj.follow_geometry = deepcopy(follow_buf)
+            grb_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
+                                                                   local_use=grb_obj, use_thread=False)
 
         with self.app.proc_container.new(_("Rendering PDF layer #%d ...") % int(layer_nr)):
 
