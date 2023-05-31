@@ -109,6 +109,8 @@ class ToolPunchGerber(AppTool, Gerber):
 
             self.old_name = grb_obj.obj_options['name']
 
+        self.build_tool_ui()
+
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolPunchGerber()")
 
@@ -209,7 +211,6 @@ class ToolPunchGerber(AppTool, Gerber):
         self.ui.rectangular_cb.stateChanged.connect(self.build_tool_ui)
         self.ui.other_cb.stateChanged.connect(self.build_tool_ui)
 
-        self.ui.gerber_object_combo.currentIndexChanged.connect(self.build_tool_ui)
         self.ui.gerber_object_combo.currentIndexChanged.connect(self.on_object_combo_changed)
 
         self.ui.punch_type_radio.activated_custom.connect(self.on_punch_type)

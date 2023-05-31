@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+31.05.2023
+
+- Pdf Import plugin: fixed an issue with assigning a wrong property to a Qtimer
+- Extract Plugin and Punch gerber Plugin: fixed a wrong build of the UI triggered even those tools where not launched yet
+
 25.05.2023
 
 - Geometry Editor: subtool Path: fixed issue of not registering the new click when using the Shift modifier

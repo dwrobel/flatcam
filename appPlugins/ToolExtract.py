@@ -79,6 +79,8 @@ class ToolExtract(AppTool):
 
             self.old_name = grb_obj.obj_options['name']
 
+        self.build_tool_ui()
+
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+I', **kwargs)
 
@@ -181,7 +183,6 @@ class ToolExtract(AppTool):
         self.ui.other_cb.stateChanged.connect(self.build_tool_ui)
 
         self.ui.gerber_object_combo.currentIndexChanged.connect(self.on_object_combo_changed)
-        self.ui.gerber_object_combo.currentIndexChanged.connect(self.build_tool_ui)
 
     def set_tool_ui(self):
         self.clear_ui(self.layout)
