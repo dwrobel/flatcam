@@ -167,6 +167,12 @@ if __name__ == '__main__':
     else:
         app.setStyle('windowsvista')
 
+    if settings.contains("font_size"):
+        font_size = int(settings.value("font_size", type=str))      # noqa
+        font = QtGui.QFont()
+        font.setPointSize(font_size)
+        app.setFont(font)
+
     fc = App(qapp=app)
 
     # interrupt the Qt loop such that Python events have a chance to be responsive

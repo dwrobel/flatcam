@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM Evo beta
 - updated the FCButton and FCLabel custom widgets
 - Paint Plugin: fixed issues caused by the latest changes in the Shapely module
 - NCC Plugin: some changes in the method used by the Tcl Command
+- in Preferences, added a control in the General -> GUI Settings to control the font size for the entire application; require an app restart
 
 31.05.2023
 

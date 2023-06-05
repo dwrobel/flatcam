@@ -3,8 +3,9 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtCore import QSettings
 
 from appGUI.GUIElements import RadioSet, FCCheckBox, FCComboBox, FCSliderWithSpinner, FCColorEntry, FCLabel, \
-    GLay, FCFrame, FCComboBox2
+    GLay, FCFrame, FCComboBox2, FCButton, FCSpinner
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
+from appTranslation import restart_program
 
 import gettext
 import appTranslation as fcTranslate
@@ -158,6 +159,24 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.gui_lay_combo.addItems([_("Normal"), _("Columnar")])
         grid0.addWidget(self.ui_lay_lbl, 14, 0)
         grid0.addWidget(self.gui_lay_combo, 14, 1, 1, 2)
+
+        # Font Size
+        self.font_size_lbl = FCLabel('%s:' % _("Font Size"))
+        self.font_size_lbl.setToolTip(
+            _("Setting the Font Size for the entire application.")
+        )
+        self.app_font_size_entry = FCSpinner()
+        self.app_font_size_entry.set_range(9, 18)
+
+        grid0.addWidget(self.font_size_lbl, 16, 0)
+        grid0.addWidget(self.app_font_size_entry, 16, 1)
+
+        # Apply UI parameters
+        self.apply_app_font_size_btn = FCButton(_("Apply and Restart"), bold=True)
+        self.apply_app_font_size_btn.setToolTip(
+            _("Setting the Font Size for the entire application.")
+        )
+        grid0.addWidget(self.apply_app_font_size_btn, 18, 0, 1, 2)
 
         # #############################################################################################################
         # Grid1 Frame
@@ -390,6 +409,24 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.proj_color_dis_dark_entry.editingFinished.connect(self.on_proj_color_dis_dark_entry)
 
         self.layout_combo.activated.connect(self.app.on_layout)
+
+        self.apply_app_font_size_btn.clicked.connect(
+            lambda: self.handle_font_size(self.app, self.app_font_size_entry.get_value()))
+
+        # Set UI
+        qsettings = QSettings("Open Source", "FlatCAM_EVO")
+        if qsettings.contains("font_size"):
+            font_size = int(qsettings.value("font_size", type=str))  # noqa
+            self.app_font_size_entry.set_value(font_size)
+
+    @staticmethod
+    def handle_font_size(app, val):
+        settings = QSettings("Open Source", "FlatCAM_EVO")
+        settings.setValue('font_size', str(val))
+        # This will write the setting to the platform specific storage.
+        del settings
+
+        restart_program(app=app)
 
     @staticmethod
     def handle_style(style):

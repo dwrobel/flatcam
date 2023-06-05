@@ -5,7 +5,8 @@
 # MIT Licence                                              #
 # ##########################################################
 
-import os, ctypes
+import os
+import ctypes
 import sys
 import logging
 from pathlib import Path
@@ -152,8 +153,7 @@ def apply_language(domain, lang=None):
             # This will write the setting to the platform specific storage.
             del settings
     else:
-        # TODO if lang is None we make a string from it?
-        name = str(lang)
+        name = str(lang)    # we make it a string: "None"
 
     for lang_code, lang_usable in load_languages().items():
         if lang_usable == name:
@@ -239,10 +239,10 @@ def restart_program(app, ask=None):
     try:
         python = sys.executable
         os.execl(python, python, *sys.argv)
-    except Exception as err:
+    except Exception:
         # app_run_as_admin = isAdmin()
         msgbox = FCMessageBox(parent=app.ui)
-        title = _("The language will be applied at the next application start.")
+        title = _("The setting will be applied at the next application start.")
         txt = _("The user does not have admin rights or UAC issues.")
         msgbox.setWindowTitle('%s ...' % _("Quit"))  # taskbar still shows it
         msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/app128.png'))
@@ -256,7 +256,7 @@ def restart_program(app, ask=None):
         msgbox.exec()
 
 
-# TODO Due of some circular imports issues which I currently can't fix I readd this class here
+# TODO Due of some circular imports issues which I currently can't fix I re-add this class here
 #  (mainly is located in appGUI.GUIElements) - required for a consistent look
 class FCMessageBox(QtWidgets.QMessageBox):
     """
