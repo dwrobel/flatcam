@@ -87,6 +87,9 @@ class ToolSub(AppTool):
         self.pool = self.app.pool
         self.results = []
 
+        # start the QTimer to check for promises with 0.5 seconds period check
+        self.check_interval = 500
+
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+W', **kwargs)
 
@@ -559,8 +562,7 @@ class ToolSub(AppTool):
 
         self.sub_union = unary_union(self.sub_geo_obj.solid_geometry)
 
-        # start the QTimer to check for promises with 0.5 seconds period check
-        self.periodic_check(500, reset=True)
+        self.periodic_check(self.check_interval, reset=True)
 
         if self.target_geo_obj.multigeo:
             for tool in self.target_geo_obj.tools:
@@ -718,7 +720,7 @@ class ToolSub(AppTool):
                 pass
 
         self.check_thread.timeout.connect(self.periodic_check_handler)
-        self.check_thread.start(QtCore.QThread.Priority.HighPriority)   # noqa
+        self.check_thread.start()
 
     def periodic_check_handler(self):
         """
