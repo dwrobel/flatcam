@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+5.06.2023
+
+- updated the FCButton and FCLabel custom widgets
+- Paint Plugin: fixed issues caused by the latest changes in the Shapely module
+- NCC Plugin: some changes in the method used by the Tcl Command
+
 31.05.2023
 
 - Pdf Import plugin: fixed an issue with assigning a wrong property to a Qtimer

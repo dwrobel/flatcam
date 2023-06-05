@@ -2935,18 +2935,14 @@ class NonCopperClear(AppTool, Gerber):
 
         bounding_box = None
         if ncc_select == 0:     # itself
-            geo_n = ncc_sel_obj.solid_geometry
+            geo_n = flatten_shapely_geometry(ncc_sel_obj.solid_geometry)
 
             try:
-                if isinstance(geo_n, MultiPolygon):
-                    env_obj = geo_n.convex_hull
-                elif (isinstance(geo_n, MultiPolygon) and len(geo_n.geoms) == 1) or \
-                        (isinstance(geo_n, list) and len(geo_n) == 1) and isinstance(geo_n[0], Polygon):
+                if len(geo_n) == 1:
                     env_obj = unary_union(geo_n)
                 else:
                     env_obj = unary_union(geo_n)
                     env_obj = env_obj.convex_hull
-
                 bounding_box = env_obj.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre)
             except Exception as e:
                 self.app.log.error("NonCopperClear.clear_copper() 'itself'  --> %s" % str(e))
@@ -3224,128 +3220,93 @@ class NonCopperClear(AppTool, Gerber):
                 except Exception:
                     continue
 
-                # Transform area to MultiPolygon
-                if type(area) is Polygon:
-                    area = MultiPolygon([area])
+                area = flatten_shapely_geometry(area)
 
                 # variables to display the percentage of work done
-                geo_len = len(area.geoms)
+                geo_len = len(area)
 
                 old_disp_number = 0
                 self.app.log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
 
                 if area.geoms:
-                    if len(area.geoms) > 0:
-                        pol_nr = 0
-                        for p in area.geoms:
-                            # provide the app with a way to process the GUI events when in a blocking loop
-                            QtWidgets.QApplication.processEvents()
+                    pol_nr = 0
+                    for p in area:
+                        # provide the app with a way to process the GUI events when in a blocking loop
+                        QtWidgets.QApplication.processEvents()
 
-                            if self.app.abort_flag:
-                                # graceful abort requested by the user
-                                raise grace
+                        if self.app.abort_flag:
+                            # graceful abort requested by the user
+                            raise grace
 
-                            # clean the polygon
-                            p = p.buffer(0)
+                        # clean the polygon
+                        p = p.buffer(0)
 
-                            if p is not None and p.is_valid:
-                                poly_processed = []
-                                try:
-                                    for pol in p:
-                                        if pol is not None and isinstance(pol, Polygon):
-                                            if ncc_method == 0:    # standard
-                                                cp = self.clear_polygon(pol, tool,
-                                                                        self.circle_steps,
-                                                                        overlap=overlap, contour=contour,
-                                                                        connect=connect,
-                                                                        prog_plot=False)
-                                            elif ncc_method == 1:  # seed
-                                                cp = self.clear_polygon2(pol, tool,
-                                                                         self.circle_steps,
-                                                                         overlap=overlap, contour=contour,
-                                                                         connect=connect,
-                                                                         prog_plot=False)
-                                            else:
-                                                cp = self.clear_polygon3(pol, tool,
-                                                                         self.circle_steps,
-                                                                         overlap=overlap, contour=contour,
-                                                                         connect=connect,
-                                                                         prog_plot=False)
-                                            if cp:
-                                                cleared_geo += list(cp.get_objects())
-                                                poly_processed.append(True)
-                                            else:
-                                                poly_processed.append(False)
-                                                self.app.log.warning("Polygon in MultiPolygon can not be cleared.")
-                                        else:
-                                            self.app.log.warning(
-                                                "Geo in Iterable can not be cleared because it is not Polygon. "
-                                                "It is: %s" % str(type(pol)))
-                                except TypeError:
-                                    if isinstance(p, Polygon):
-                                        if ncc_method == 0:    # standard
-                                            cp = self.clear_polygon(p, tool, self.circle_steps,
-                                                                    overlap=overlap, contour=contour, connect=connect,
-                                                                    prog_plot=False)
-                                        elif ncc_method == 1:   # seed
-                                            cp = self.clear_polygon2(p, tool, self.circle_steps,
-                                                                     overlap=overlap, contour=contour, connect=connect,
-                                                                     prog_plot=False)
-                                        else:
-                                            cp = self.clear_polygon3(p, tool, self.circle_steps,
-                                                                     overlap=overlap, contour=contour, connect=connect,
-                                                                     prog_plot=False)
-                                        if cp:
-                                            cleared_geo += list(cp.get_objects())
-                                            poly_processed.append(True)
-                                        else:
-                                            poly_processed.append(False)
-                                            self.app.log.warning("Polygon can not be cleared.")
-                                    else:
-                                        self.app.log.warning("Geo can not be cleared because it is: %s" % str(type(p)))
+                        if p and p.is_valid:
+                            poly_processed = []
+                            if isinstance(p, Polygon):
+                                if ncc_method == 0:  # standard
+                                    cp = self.clear_polygon(p, tool, self.circle_steps,
+                                                            overlap=overlap, contour=contour, connect=connect,
+                                                            prog_plot=False)
+                                elif ncc_method == 1:  # seed
+                                    cp = self.clear_polygon2(p, tool, self.circle_steps,
+                                                             overlap=overlap, contour=contour, connect=connect,
+                                                             prog_plot=False)
+                                else:
+                                    cp = self.clear_polygon3(p, tool, self.circle_steps,
+                                                             overlap=overlap, contour=contour, connect=connect,
+                                                             prog_plot=False)
+                                if cp:
+                                    cleared_geo += list(cp.get_objects())
+                                    poly_processed.append(True)
+                                else:
+                                    poly_processed.append(False)
+                                    self.app.log.warning("Polygon can not be cleared.")
+                            else:
+                                self.app.log.warning("Geo can not be cleared because it is: %s" % str(type(p)))
 
-                                p_cleared = poly_processed.count(True)
-                                p_not_cleared = poly_processed.count(False)
+                            p_cleared = poly_processed.count(True)
+                            p_not_cleared = poly_processed.count(False)
 
-                                if p_not_cleared:
-                                    app_obj.poly_not_cleared = True
+                            if p_not_cleared:
+                                app_obj.poly_not_cleared = True
 
-                                if p_cleared == 0:
-                                    continue
+                            if p_cleared == 0:
+                                continue
 
-                                pol_nr += 1
-                                disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
-                                # log.debug("Polygons cleared: %d" % pol_nr)
+                            pol_nr += 1
+                            disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
+                            # log.debug("Polygons cleared: %d" % pol_nr)
 
-                                if old_disp_number < disp_number <= 100:
-                                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
-                                    old_disp_number = disp_number
-                                    # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
+                            if old_disp_number < disp_number <= 100:
+                                self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                                old_disp_number = disp_number
+                                # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
 
-                            # check if there is a geometry at all in the cleared geometry
-                        if cleared_geo:
-                            # Overall cleared area
-                            cleared = empty.buffer(-offset_a * (1 + overlap)).buffer(-tool / 1.999999).buffer(
-                                tool / 1.999999)
+                        # check if there is a geometry at all in the cleared geometry
+                    if cleared_geo:
+                        # Overall cleared area
+                        cleared = empty.buffer(-offset_a * (1 + overlap)).buffer(-tool / 1.999999).buffer(
+                            tool / 1.999999)
 
-                            # clean-up cleared geo
-                            cleared = cleared.buffer(0)
+                        # clean-up cleared geo
+                        cleared = cleared.buffer(0)
 
-                            # find the tooluid associated with the current tool_dia so we know where to add the tool
-                            # solid_geometry
-                            for k, v in tools_storage.items():
-                                if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals,
-                                                                                                    tool)):
-                                    current_uid = int(k)
+                        # find the tooluid associated with the current tool_dia so we know where to add the tool
+                        # solid_geometry
+                        for k, v in tools_storage.items():
+                            if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals,
+                                                                                                tool)):
+                                current_uid = int(k)
 
-                                    # add the solid_geometry to the current too in self.paint_tools dictionary
-                                    # and then reset the temporary list that stored that solid_geometry
-                                    v['solid_geometry'] = deepcopy(cleared_geo)
-                                    v['data']['name'] = name
-                                    break
-                            geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
-                        else:
-                            app_obj.log.debug("There are no geometries in the cleared polygon.")
+                                # add the solid_geometry to the current too in self.paint_tools dictionary
+                                # and then reset the temporary list that stored that solid_geometry
+                                v['solid_geometry'] = flatten_shapely_geometry(cleared_geo)
+                                v['data']['name'] = name
+                                break
+                        geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
+                    else:
+                        app_obj.log.debug("There are no geometries in the cleared polygon.")
 
             # delete tools with empty geometry
             # look for keys in the tools_storage dict that have 'solid_geometry' values empty
@@ -3747,7 +3708,7 @@ class NonCopperClear(AppTool, Gerber):
 
                                     # add the solid_geometry to the current too in self.paint_tools dictionary
                                     # and then reset the temporary list that stored that solid_geometry
-                                    v['solid_geometry'] = deepcopy(cleared_area)
+                                    v['solid_geometry'] = flatten_shapely_geometry(cleared_area)
                                     v['data']['name'] = name
                                     cleared_area[:] = []
                                     break

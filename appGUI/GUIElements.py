@@ -3005,22 +3005,63 @@ class FCInputDialogSpinnerButton(QtWidgets.QDialog):
 
 
 class FCButton(QtWidgets.QPushButton):
-    def __init__(self, text=None, checkable=None, click_callback=None, bold=False, color=None, parent=None):
+    def __init__(self, text=None, checkable=None, click_callback=None, bold=False, font_size=None,
+                 color=None, back_color=None, border_color=None, parent=None):
         super(FCButton, self).__init__(text, parent)
 
-        self._bold = False
-        self._color = None
+        self._bold = bold
+        self._color = color
+        self._background_color = back_color
+        self._border_color = border_color
 
         self.bold = True if bold else False
+        font = QtGui.QFont()
+        if font_size:
+            font.setPointSize(font_size)
+        font.setBold(True) if bold else font.setBold(False)
+        self.setFont(font)
 
         if color:
             self.color = self.patching_text_color(color)
+            self.setStyleSheet(".CustomButton{color: %s;}" % color)
+
+        if back_color:
+            stylesheet_content = "background-color:%s;" % back_color
+            self.setStyleSheet(".FCButton{%s}" % stylesheet_content)
+
+        if border_color:
+            if self.styleSheet() != "":
+                self.setStyleSheet(
+                    self.styleSheet().replace('}', "border-radius:3px; border:1px solid %s;}" % border_color))
+            else:
+                stylesheet_content = "border-radius:3px; border:1px solid %s;" % border_color
+                self.setStyleSheet(".FCButton{%s}" % stylesheet_content)
 
         if checkable is not None:
             self.setCheckable(checkable)
 
         if click_callback is not None:
             self.clicked.connect(click_callback)
+
+        self.default_stylesheet = self.styleSheet()
+
+    def restore_stylesheet(self):
+        self.setStyleSheet(self.default_stylesheet)
+
+    def set_stylesheet(self):
+        self.default_stylesheet = self.styleSheet()
+
+    def setDisabled(self, arg__1):
+        if not self.isEnabled() and arg__1 is True:
+            return
+        if self.isEnabled() and arg__1 is False:
+            return
+        if arg__1 is False:
+            self.restore_stylesheet()
+        else:
+            self.set_stylesheet()
+            self.setStyleSheet("")
+        super().setDisabled(arg__1)
 
     @property
     def bold(self):
@@ -3040,7 +3081,38 @@ class FCButton(QtWidgets.QPushButton):
     @color.setter
     def color(self, color):
         self._color = color
-        self.setStyleSheet(".FCButton{color: %s;}" % color)
+        if self.styleSheet() != "":
+            self.setStyleSheet(self.styleSheet().replace('}', "color: %s;}" % color))
+        else:
+            self.setStyleSheet('.FCButton{"color: %s;}' % color)
+        self.set_stylesheet()
+
+    @property
+    def b_color(self):
+        return self._background_color
+
+    @b_color.setter
+    def b_color(self, color):
+        self._background_color = color
+        if self.styleSheet() != "":
+            self.setStyleSheet(self.styleSheet().replace('}', "background-color:%s;}" % color))
+        else:
+            self.setStyleSheet('.FCButton{"background-color:%s;}' % color)
+        self.set_stylesheet()
+
+    @property
+    def border_color(self):
+        return self._border_color
+
+    @border_color.setter
+    def border_color(self, color):
+        self._border_color = color
+        if self.styleSheet() != "":
+            self.setStyleSheet(self.styleSheet().replace('}', "border-radius:3px; border:1px solid %s;}" % color))
+        else:
+            stylesheet_content = "border-radius:3px; border:1px solid %s;" % color
+            self.setStyleSheet(".FCButton{%s}" % stylesheet_content)
+        self.set_stylesheet()
 
     def get_value(self):
         return self.isChecked()
@@ -3053,17 +3125,19 @@ class FCButton(QtWidgets.QPushButton):
 
 
 class FCLabel(QtWidgets.QLabel):
-    clicked = QtCore.pyqtSignal(bool)
-    right_clicked = QtCore.pyqtSignal(bool)
-    middle_clicked = QtCore.pyqtSignal(bool)
+    clicked = QtCore.Signal(bool)
+    right_clicked = QtCore.Signal(bool)
+    middle_clicked = QtCore.Signal(bool)
 
-    def __init__(self, title=None, color=None, bold=None, size=None, parent=None):
+    def __init__(self, title=None, color=None, b_color=None, bold=None, size=None, parent=None):
         """
 
         :param title:           the label's text
         :type title:            str
         :param color:           text color
         :type color:            str
+        :param b_color:         Label color
+        :type b_color:          str
         :param bold:            the text weight
         :type bold:             bool
         :param size:            Font Size in points
@@ -3074,23 +3148,18 @@ class FCLabel(QtWidgets.QLabel):
 
         super(FCLabel, self).__init__(parent)
 
-        self._color = None
-        self._bold = False
+        self._color = color
+        self._background_color = b_color
+        self._bold = bold
         self._title = title
-        self._font_size = None
+        self._font_size = size
+
+        self.original_color = self.palette().color(QtGui.QPalette.ColorRole.WindowText)
 
         if color:
             color = self.patching_text_color(color)
 
         if isinstance(title, str):
-            # if color and not bold:
-            #     self.setText('<span style="color:%s;">%s</span>' % (str(color), title))
-            # elif not color and bold:
-            #     self.setText('<b>%s</b>' % title)
-            # elif color and bold:
-            #     self.setText('<span style="color:%s;"><b>%s</b></span>' % (str(color), title))
-            # else:
-            #     self.setText(title)
             if color:
                 self.setText('<font color="%s">%s</font>' % (str(color), title))
             else:
@@ -3100,13 +3169,21 @@ class FCLabel(QtWidgets.QLabel):
             font.setBold(True) if bold else font.setBold(False)
             if size:
                 font.setPointSize(size)
-                # "<font size=4>%s</font>"
             self.setFont(font)
+
+        if b_color:
+            stylesheet_content = "background-color:%s;" % b_color
+            self.setStyleSheet(".CustomLabel{%s}" % stylesheet_content)
 
         # for the usage of this label as a clickable label, to know that current state
         self.clicked_state = False
         self.middle_clicked_state = False
         self.right_clicked_state = False
+
+        self.default_stylesheet = self.styleSheet()
+
+    def restore_stylesheet(self):
+        self.setStyleSheet(self.default_stylesheet)
 
     @property
     def color(self):
@@ -3118,11 +3195,20 @@ class FCLabel(QtWidgets.QLabel):
         self.setText('<font color="%s">%s</font>' % (str(color), self._title))
 
     @property
-    def bold(self):
+    def b_color(self):
+        return self._background_color
+
+    @b_color.setter
+    def b_color(self, color):
+        self._background_color = color
+        self.setStyleSheet(self.styleSheet().replace('}', "background-color:%s;}" % color))
+
+    @property
+    def bold(self) -> bool:
         return self._bold
 
     @bold.setter
-    def bold(self, bold):
+    def bold(self, bold: bool):
         self._bold = bold
         font = QtGui.QFont()
         font.setBold(True) if bold else font.setBold(False)

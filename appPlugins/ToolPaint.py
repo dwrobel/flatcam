@@ -31,7 +31,7 @@ import appTranslation as fcTranslate
 import builtins
 
 from appParsers.ParseGerber import Gerber
-from camlib import Geometry, AppRTreeStorage, grace
+from camlib import Geometry, AppRTreeStorage, grace, flatten_shapely_geometry
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -1938,7 +1938,7 @@ class ToolPaint(AppTool, Gerber):
                 paint_offset = float(tools_storage[current_uid]['data']['tools_paint_offset'])
 
                 poly_buf = []
-                for pol in geometry:
+                for pol in flatten_shapely_geometry(geometry):
                     buffered_pol = pol.buffer(-paint_offset)
                     if buffered_pol and not buffered_pol.is_empty:
                         poly_buf.append(buffered_pol)
@@ -1960,37 +1960,24 @@ class ToolPaint(AppTool, Gerber):
                 # -----------------------------
                 try:
                     cp = []
-                    try:
-                        for pp in poly_buf:
-                            # provide the app with a way to process the GUI events when in a blocking loop
-                            QtWidgets.QApplication.processEvents()
-                            if self.app.abort_flag:
-                                # graceful abort requested by the user
-                                raise grace
-                            geo_res = self.paint_polygon_worker(pp, tooldiameter=tool_dia, over=over, conn=conn,
-                                                                cont=cont, paint_method=paint_method, obj=obj,
-                                                                prog_plot=prog_plot)
-                            if geo_res:
-                                cp.append(geo_res)
-                            pol_nr += 1
-                            disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
-                            # log.debug("Polygons cleared: %d" % pol_nr)
-
-                            if old_disp_number < disp_number <= 100:
-                                self.app.proc_container.update_view_text(' %d%%' % disp_number)
-                                old_disp_number = disp_number
-                    except TypeError:
+                    for pp in poly_buf:
                         # provide the app with a way to process the GUI events when in a blocking loop
                         QtWidgets.QApplication.processEvents()
                         if self.app.abort_flag:
                             # graceful abort requested by the user
                             raise grace
-
-                        geo_res = self.paint_polygon_worker(poly_buf, tooldiameter=tool_dia, over=over, conn=conn,
+                        geo_res = self.paint_polygon_worker(pp, tooldiameter=tool_dia, over=over, conn=conn,
                                                             cont=cont, paint_method=paint_method, obj=obj,
                                                             prog_plot=prog_plot)
                         if geo_res:
                             cp.append(geo_res)
+                        pol_nr += 1
+                        disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
+                        # log.debug("Polygons cleared: %d" % pol_nr)
+
+                        if old_disp_number < disp_number <= 100:
+                            self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                            old_disp_number = disp_number
 
                     total_geometry = []
                     if cp:
@@ -2035,7 +2022,7 @@ class ToolPaint(AppTool, Gerber):
             geo_obj.tools.clear()
             geo_obj.tools = dict(tools_storage)
 
-            geo_obj.solid_geometry = unary_union(final_solid_geometry)
+            geo_obj.solid_geometry = flatten_shapely_geometry(unary_union(final_solid_geometry))
 
             try:
                 if isinstance(geo_obj.solid_geometry, list):
@@ -2090,6 +2077,7 @@ class ToolPaint(AppTool, Gerber):
                         poly_buf.append(buffered_pol)
 
             poly_buf = unary_union(poly_buf)
+            poly_buf = flatten_shapely_geometry(poly_buf)
 
             if not poly_buf:
                 self.app.inform.emit(
@@ -2136,47 +2124,7 @@ class ToolPaint(AppTool, Gerber):
                 # -----------------------------
                 try:
                     cleared_geo = []
-                    try:
-                        for pp in poly_buf:
-                            # provide the app with a way to process the GUI events when in a blocking loop
-                            QtWidgets.QApplication.processEvents()
-                            if self.app.abort_flag:
-                                # graceful abort requested by the user
-                                raise grace
-
-                            # speedup the clearing by not trying to clear polygons that is clear they can't be
-                            # cleared with the current tool. this tremendously reduce the clearing time
-                            check_dist = -tool_dia / 2.0
-                            check_buff = pp.buffer(check_dist)
-                            if not check_buff or check_buff.is_empty:
-                                continue
-
-                            geo_res = self.paint_polygon_worker(pp, tooldiameter=tool_dia, over=over, conn=conn,
-                                                                cont=cont, paint_method=paint_method, obj=obj,
-                                                                prog_plot=prog_plot)
-                            geo_elems = list(geo_res.get_objects())
-                            # See if the polygon was completely cleared
-                            pp_cleared = unary_union(geo_elems).buffer(tool_dia / 2.0)
-                            rest_geo = pp.difference(pp_cleared)
-                            if rest_geo and not rest_geo.is_empty:
-                                try:
-                                    for r in rest_geo:
-                                        if r.is_valid:
-                                            rest_list.append(r)
-                                except TypeError:
-                                    if rest_geo.is_valid:
-                                        rest_list.append(rest_geo)
-
-                            if geo_res:
-                                cleared_geo += geo_elems
-                            pol_nr += 1
-                            disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
-                            # log.debug("Polygons cleared: %d" % pol_nr)
-
-                            if old_disp_number < disp_number <= 100:
-                                self.app.proc_container.update_view_text(' %d%%' % disp_number)
-                                old_disp_number = disp_number
-                    except TypeError:
+                    for pp in poly_buf:
                         # provide the app with a way to process the GUI events when in a blocking loop
                         QtWidgets.QApplication.processEvents()
                         if self.app.abort_flag:
@@ -2186,30 +2134,32 @@ class ToolPaint(AppTool, Gerber):
                         # speedup the clearing by not trying to clear polygons that is clear they can't be
                         # cleared with the current tool. this tremendously reduce the clearing time
                         check_dist = -tool_dia / 2.0
-                        check_buff = poly_buf.buffer(check_dist)
+                        check_buff = pp.buffer(check_dist)
                         if not check_buff or check_buff.is_empty:
                             continue
 
-                        geo_res = self.paint_polygon_worker(poly_buf, tooldiameter=tool_dia, over=over, conn=conn,
+                        geo_res = self.paint_polygon_worker(pp, tooldiameter=tool_dia, over=over, conn=conn,
                                                             cont=cont, paint_method=paint_method, obj=obj,
                                                             prog_plot=prog_plot)
                         geo_elems = list(geo_res.get_objects())
-
                         # See if the polygon was completely cleared
                         pp_cleared = unary_union(geo_elems).buffer(tool_dia / 2.0)
-                        rest_geo = poly_buf.difference(pp_cleared)
-                        if rest_geo and not rest_geo.is_empty:
-                            try:
-                                for r in rest_geo:
-                                    if r.is_valid:
-                                        rest_list.append(r)
-                            except TypeError:
-                                if rest_geo.is_valid:
-                                    rest_list.append(rest_geo)
+                        rest_geo = pp.difference(pp_cleared)
+                        if rest_geo:
+                            rest_geo = flatten_shapely_geometry(rest_geo)
+                            for r in rest_geo:
+                                if r.is_valid and not r.is_empty:
+                                    rest_list.append(r)
 
                         if geo_res:
                             cleared_geo += geo_elems
+                        pol_nr += 1
+                        disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
+                        # log.debug("Polygons cleared: %d" % pol_nr)
 
+                        if old_disp_number < disp_number <= 100:
+                            self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                            old_disp_number = disp_number
                 except grace:
                     return "fail"
                 except Exception as e:
@@ -2235,26 +2185,23 @@ class ToolPaint(AppTool, Gerber):
 
                 buffered_cleared = unary_union(cleared_geo)
                 buffered_cleared = buffered_cleared.buffer(tool_dia / 2.0)
-                poly_buf = poly_buf.difference(buffered_cleared)
+                poly_buf = MultiPolygon(poly_buf).difference(buffered_cleared)
+                poly_buf = flatten_shapely_geometry(poly_buf)
 
                 tmp = []
-                try:
-                    for p in poly_buf:
-                        if p.is_valid:
-                            tmp.append(p)
-                except TypeError:
-                    if poly_buf.is_valid:
-                        tmp.append(poly_buf)
-
+                for p in poly_buf:
+                    if p.is_valid:
+                        tmp.append(p)
                 tmp += rest_list
 
+                print(tmp)
                 poly_buf = MultiPolygon(tmp)
                 if not poly_buf.is_valid:
                     poly_buf = unary_union(tmp)
-
                 if not poly_buf or poly_buf.is_empty or not poly_buf.is_valid:
                     app_obj.log.debug("Rest geometry empty. Breaking.")
                     break
+                poly_buf = flatten_shapely_geometry(poly_buf)
 
             geo_obj.multigeo = True
             geo_obj.obj_options["tools_mill_tooldia"] = '0.0'
@@ -2290,7 +2237,7 @@ class ToolPaint(AppTool, Gerber):
                           "Change the painting parameters and try again.")
                     )
                     return "fail"
-                geo_obj.solid_geometry = unary_union(final_solid_geometry)
+                geo_obj.solid_geometry = flatten_shapely_geometry(unary_union(final_solid_geometry))
             else:
                 return 'fail'
             try:
