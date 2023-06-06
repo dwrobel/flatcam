@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+7.06.2023
+
+- updated in GUI Elements for FCButton, FCFrame and FCLabel custom widgets adding an stylesheet optimization method
+
 5.06.2023
 
 - updated the FCButton and FCLabel custom widgets

@@ -2518,12 +2518,46 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
 
 class FCFrame(QtWidgets.QFrame):
     # a styled QFrame
-    def __init__(self, **kwargs):
+    def __init__(self, color: str = None, b_color: str = None, **kwargs):
         super().__init__(**kwargs)
+        self._color = color
+        self._b_color = b_color
 
         self.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
         # self.setContentsMargins(0, 0, 0, 0)
-        self.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        # self.setStyleSheet(f".CustomFrame {{border: 1px solid gray; border-radius: 5px;}}")
+
+        style_sheet = f'FCFrame {{border-width: 1px; border-style: solid; border-radius: 5px; ' \
+                      f'border-color: gray;}}'
+        self.setStyleSheet(style_sheet)
+
+        if color:
+            self.color = color
+
+        if b_color:
+            self.b_color = b_color
+
+    @property
+    def color(self):
+        return self._color
+
+    @color.setter
+    def color(self, color_val):
+        self._color = color_val
+        new_stylesheet = self.styleSheet().replace('}', ";background-color: %s;}" % self._color)
+        stylesheet = remove_duplicate_properties(new_stylesheet).replace(';;', ';')
+        self.setStyleSheet(stylesheet)
+
+    @property
+    def b_color(self):
+        return self._b_color
+
+    @b_color.setter
+    def b_color(self, color_val):
+        self._b_color = color_val
+        new_stylesheet = self.styleSheet().replace('}', ";border-color:%s;}" % self._b_color)
+        stylesheet = remove_duplicate_properties(new_stylesheet).replace(';;', ';')
+        self.setStyleSheet(stylesheet)
 
 
 class FCComboBox(QtWidgets.QComboBox):
@@ -3023,7 +3057,7 @@ class FCButton(QtWidgets.QPushButton):
 
         if color:
             self.color = self.patching_text_color(color)
-            self.setStyleSheet(".CustomButton{color: %s;}" % color)
+            self.setStyleSheet(".FCButton{color: %s;}" % color)
 
         if back_color:
             stylesheet_content = "background-color:%s;" % back_color
@@ -3031,8 +3065,10 @@ class FCButton(QtWidgets.QPushButton):
 
         if border_color:
             if self.styleSheet() != "":
-                self.setStyleSheet(
-                    self.styleSheet().replace('}', "border-radius:3px; border:1px solid %s;}" % border_color))
+                new_stylesheet = self.styleSheet().replace('}', ";border-radius:3px; border:1px solid %s;}"
+                                                           % border_color)
+                stylesheet = remove_duplicate_properties(new_stylesheet).replace(';;', ';')
+                self.setStyleSheet(stylesheet)
             else:
                 stylesheet_content = "border-radius:3px; border:1px solid %s;" % border_color
                 self.setStyleSheet(".FCButton{%s}" % stylesheet_content)
@@ -3056,12 +3092,26 @@ class FCButton(QtWidgets.QPushButton):
             return
         if self.isEnabled() and arg__1 is False:
             return
+
         if arg__1 is False:
             self.restore_stylesheet()
         else:
             self.set_stylesheet()
             self.setStyleSheet("")
         super().setDisabled(arg__1)
+
+    def setEnabled(self, arg__1):
+        if not self.isEnabled() and arg__1 is False:
+            return
+        if self.isEnabled() and arg__1 is True:
+            return
+
+        if arg__1 is True:
+            self.restore_stylesheet()
+        else:
+            self.set_stylesheet()
+            self.setStyleSheet("")
+        super().setEnabled(arg__1)
 
     @property
     def bold(self):
@@ -3082,10 +3132,12 @@ class FCButton(QtWidgets.QPushButton):
     def color(self, color):
         self._color = color
         if self.styleSheet() != "":
-            self.setStyleSheet(self.styleSheet().replace('}', "color: %s;}" % color))
+            new_stylesheet = self.styleSheet().replace('}', ";color: %s;}" % color)
+            stylesheet = remove_duplicate_properties(new_stylesheet).replace(';;', ';')
+            self.setStyleSheet(stylesheet)
         else:
-            self.setStyleSheet('.FCButton{"color: %s;}' % color)
-        self.set_stylesheet()
+            self.setStyleSheet('.FCButton{color: %s;}' % color)
+        # self.set_stylesheet()
 
     @property
     def b_color(self):
@@ -3095,10 +3147,12 @@ class FCButton(QtWidgets.QPushButton):
     def b_color(self, color):
         self._background_color = color
         if self.styleSheet() != "":
-            self.setStyleSheet(self.styleSheet().replace('}', "background-color:%s;}" % color))
+            new_stylesheet = self.styleSheet().replace('}', ";background-color:%s;}" % color)
+            stylesheet = remove_duplicate_properties(new_stylesheet).replace(';;', ';')
+            self.setStyleSheet(stylesheet)
         else:
-            self.setStyleSheet('.FCButton{"background-color:%s;}' % color)
-        self.set_stylesheet()
+            self.setStyleSheet('.FCButton{background-color:%s;}' % color)
+        # self.set_stylesheet()
 
     @property
     def border_color(self):
@@ -3108,7 +3162,9 @@ class FCButton(QtWidgets.QPushButton):
     def border_color(self, color):
         self._border_color = color
         if self.styleSheet() != "":
-            self.setStyleSheet(self.styleSheet().replace('}', "border-radius:3px; border:1px solid %s;}" % color))
+            new_stylesheet = self.styleSheet().replace('}', ";border-radius:3px; border:1px solid %s;}" % color)
+            stylesheet = remove_duplicate_properties(new_stylesheet).replace(';;', ';')
+            self.setStyleSheet(stylesheet)
         else:
             stylesheet_content = "border-radius:3px; border:1px solid %s;" % color
             self.setStyleSheet(".FCButton{%s}" % stylesheet_content)
@@ -3173,7 +3229,7 @@ class FCLabel(QtWidgets.QLabel):
 
         if b_color:
             stylesheet_content = "background-color:%s;" % b_color
-            self.setStyleSheet(".CustomLabel{%s}" % stylesheet_content)
+            self.setStyleSheet(".FCLabel{%s}" % stylesheet_content)
 
         # for the usage of this label as a clickable label, to know that current state
         self.clicked_state = False
@@ -3201,7 +3257,9 @@ class FCLabel(QtWidgets.QLabel):
     @b_color.setter
     def b_color(self, color):
         self._background_color = color
-        self.setStyleSheet(self.styleSheet().replace('}', "background-color:%s;}" % color))
+        new_stylesheet = self.styleSheet().replace('}', ";background-color:%s;}" % color)
+        stylesheet = remove_duplicate_properties(new_stylesheet).replace(';;', ';')
+        self.setStyleSheet(stylesheet)
 
     @property
     def bold(self) -> bool:
@@ -6150,3 +6208,23 @@ def rreplace(s, old, new, occurrence):
 
     li = s.rsplit(old, occurrence)
     return new.join(li)
+
+
+def remove_duplicate_properties(css_string):
+    rules = css_string.split("}")
+    unique_rules = []
+
+    for rule in rules:
+        if rule.strip() != "":
+            properties = rule.split("{", 1)[1].split(";")
+            unique_properties = {}
+            for prop in properties:
+                if ":" in prop:
+                    prop_name, prop_value = prop.split(":", 1)
+                    unique_properties[prop_name.strip()] = prop_value.strip()
+            unique_rule = rule.split("{")[0].strip() + " {"
+            unique_rule += ";".join([f"{name}: {value}" for name, value in unique_properties.items()])
+            unique_rule += "}"
+            unique_rules.append(unique_rule)
+
+    return "}".join(unique_rules)
