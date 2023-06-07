@@ -342,8 +342,21 @@ class Gerber(Geometry):
 
         with open(filename, 'r') as gfile:
 
+            read_gfile = gfile.read()
+
+            # clean KiCAD files of garbage
+            if '%TF.' in read_gfile or '%TO.' in read_gfile or '%TD' in read_gfile or '%TA' in read_gfile:
+                new_gfile = ""
+                for line in read_gfile.splitlines():
+                    if '%TF.' in line or '%TO.' in line or '%TD' in line or '%TA' in line:
+                        continue
+                    new_gfile += '%s\n' % line
+                split_lines = new_gfile.splitlines()
+            else:
+                split_lines = read_gfile.splitlines()
+
             def line_generator():
-                for line in gfile:
+                for line in split_lines:
                     line = line.strip(' \r\n')
                     while len(line) > 0:
 
@@ -770,10 +783,10 @@ class Gerber(Geometry):
                     # self.app.log.debug("Line %d: Aperture change to (%s)" % (line_num, current_aperture))
 
                     # If the aperture value is zero then make it something quite small but with a non-zero value
-                    # so it can be processed by FlatCAM.
+                    # such that it can be processed by FlatCAM.
                     # But first test to see if the aperture type is "aperture macro". In that case
                     # we should not test for "size" key as it does not exist in this case.
-                    if self.tools[current_aperture]["type"] != "AM":
+                    if current_aperture in self.tools and self.tools[current_aperture]["type"] != "AM":
                         if self.tools[current_aperture]["size"] == 0:
                             self.tools[current_aperture]["size"] = 10 ** -self.decimals
                     # self.app.log.debug(self.tools[current_aperture])
@@ -1363,6 +1376,7 @@ class Gerber(Geometry):
                         # --- BUFFERED ---
                         # Draw the flash
                         # this treats the case when we are storing geometry as paths
+
                         geo_dict = {}
                         geo_flash = Point([linear_x, linear_y])
                         prepare(geo_flash)
@@ -1780,6 +1794,7 @@ class Gerber(Geometry):
             # print traceback.format_exc()
 
             self.app.log.error("Gerber PARSING FAILED. Line %d: %s" % (line_num, gline))
+            self.app.log.error(str(traceback.format_exc()))
 
             loc = '%s #%d %s: %s\n' % (_("Gerber Line"), line_num, _("Gerber Line Content"), gline) + repr(err)
             self.app.inform.emit('[ERROR] %s\n%s:' % (_("Gerber Parser ERROR"), loc))

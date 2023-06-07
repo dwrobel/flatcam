@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+8.06.2023
+
+- Gerber Parser: minor changes, cleaning up the KiCAD junk lines if the Gerber file is made by KiCAD
+
 7.06.2023
 
 - updated in GUI Elements for FCButton, FCFrame and FCLabel custom widgets adding an stylesheet optimization method
