@@ -235,6 +235,9 @@ class Gerber(Geometry):
         # in a Gerber file (normal or obsolete ones)
         self.conversion_done = False
 
+        # Flag to detect if an aperture is used without definition
+        self.defective_aperture_detected = False
+
         self.use_buffer_for_union = self.app.options["gerber_use_buffer_for_union"]
 
         # Attributes to be included in serialization
@@ -383,6 +386,8 @@ class Gerber(Geometry):
 
             if ret_val == 'fail':
                 return 'fail'
+            elif ret_val == "defective":
+                return "defective"
             elif ret_val == 'drill':
                 return 'drill_gx2'
             else:
@@ -687,10 +692,11 @@ class Gerber(Geometry):
                     continue
 
                 # ################################################################
-                # Aperture Macros ################################################
+                # ######################## Aperture Macros #######################
                 # Having this at the beginning will slow things down
                 # but macros can have complicated statements than could
                 # be caught by other patterns.
+                # ################################################################
                 # ################################################################
                 if current_macro is None:  # No macro started yet
                     match = self.am1_re.search(gline)
@@ -733,7 +739,7 @@ class Gerber(Geometry):
                 # self.opcode_re = re.compile(r'^D0?([123])\*$')
                 # ################################################################
                 match = self.opcode_re.search(gline)
-                if match:
+                if match and current_aperture != "failure":
                     current_operation_code = int(match.group(1))
                     current_d = current_operation_code
 
@@ -775,6 +781,7 @@ class Gerber(Geometry):
                 # ################################################################
                 # ################  Tool/aperture change  ########################
                 # ################  Example: D12*         ########################
+                # self.tool_re = re.compile(r'^(?:G54)?D(\d\d+)\*$')
                 # ################################################################
                 match = self.tool_re.search(gline)
                 if match:
@@ -789,6 +796,12 @@ class Gerber(Geometry):
                     if current_aperture in self.tools and self.tools[current_aperture]["type"] != "AM":
                         if self.tools[current_aperture]["size"] == 0:
                             self.tools[current_aperture]["size"] = 10 ** -self.decimals
+
+                    # if the detected aperture is not detected already then it means that we have a
+                    if current_aperture not in self.tools:
+                        current_aperture = "failure"
+                        self.defective_aperture_detected = True
+
                     # self.app.log.debug(self.tools[current_aperture])
 
                     # Take care of the current path with the previous tool
@@ -835,7 +848,7 @@ class Gerber(Geometry):
                 # ################################################################
                 # ################  G36* - Begin region   ########################
                 # ################################################################
-                if self.regionon_re.search(gline):
+                if self.regionon_re.search(gline) and current_aperture != "failure":
                     try:
                         path_length = len(path)
                     except TypeError:
@@ -909,7 +922,7 @@ class Gerber(Geometry):
                 # ################################################################
                 # ################  G37* - End region     ########################
                 # ################################################################
-                if self.regionoff_re.search(gline):
+                if self.regionoff_re.search(gline) and current_aperture != "failure":
                     making_region = False
 
                     if 0 not in self.tools:
@@ -966,7 +979,7 @@ class Gerber(Geometry):
                         # path = [[current_x, current_y]]
                         continue
 
-                    # For regions we may ignore an aperture that is None
+                    # For Gerber regions, we may ignore an aperture that is None
 
                     # --- Buffered ---
                     geo_dict = {}
@@ -1075,7 +1088,7 @@ class Gerber(Geometry):
                 # REGEX: r'^(?:G0?(1))?(?:X(-?\d+))?(?:Y(-?\d+))?(?:D0([123]))?\*$'
                 # ################################################################
                 match = self.lin_re.search(gline)
-                if match:
+                if match and current_aperture != "failure":
                     # Dxx alone?
                     # if match.group(1) is None and match.group(2) is None and match.group(3) is None:
                     #     try:
@@ -1118,9 +1131,7 @@ class Gerber(Geometry):
 
                                 # treat the case when there is a flash inside a Gerber Region when the current_aperture
                                 # is None
-                                if current_aperture is None:
-                                    pass
-                                else:
+                                if current_aperture is not None:
                                     # --- BUFFERED ---
                                     # Draw the flash
                                     # this treats the case when we are storing geometry as paths
@@ -1192,7 +1203,9 @@ class Gerber(Geometry):
                                         self.tools[current_aperture]['geometry'].append(geo_dict)
                                 except Exception:
                                     pass
-                            last_path_aperture = current_aperture
+
+                            if current_aperture != "failure":
+                                last_path_aperture = current_aperture
                             # we do this for the case that a region is done without having defined any aperture
                             if last_path_aperture is None:
                                 if 0 not in self.tools:
@@ -1434,7 +1447,7 @@ class Gerber(Geometry):
                 # ######### X, Y coords are the coords of the End Point  #########
                 # ################################################################
                 match = self.circ_re.search(gline)
-                if match:
+                if match and current_aperture != "failure":
                     arcdir = [None, None, "cw", "ccw"]
 
                     mode, circular_x, circular_y, i, j, d = match.groups()
@@ -1788,6 +1801,9 @@ class Gerber(Geometry):
 
             # init this for the following operations
             self.conversion_done = False
+
+            if self.defective_aperture_detected:
+                return "defective"
         except Exception as err:
             ex_type, ex, tb = sys.exc_info()
             traceback.print_tb(tb)

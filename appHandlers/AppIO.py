@@ -2055,12 +2055,20 @@ class AppIO(QtCore.QObject):
 
             # # ## Object creation # ##
             ret_val = self.app.app_obj.new_object("gerber", name, obj_init, autoselected=False, plot=plot)
+            if ret_val == "defective":
+                message = '[ERROR] %s' % \
+                          _('The Gerber file is DAMAGED. We could open it but the file parsing PARTIALLY FAILED.\n'
+                            '!!! CHECK THE FILE !!! --- SOME copper features (pads, traces etc) ARE MISSING !!!\n'
+                            '!!! CHECK THE FILE !!! --- SOME copper features (pads, traces etc) ARE MISSING !!!\n'
+                            '!!! CHECK THE FILE !!! --- SOME copper features (pads, traces etc) ARE MISSING !!!\n')
+                self.inform.emit(message)
+                return
             if ret_val == 'fail':
                 if from_tcl:
                     filename = self.options['global_tcl_path'] + '/' + name
                     ret_val = self.app.app_obj.new_object("gerber", name, obj_init, autoselected=False, plot=plot)
                 if ret_val == 'fail':
-                    self.inform.emit('[ERROR_NOTCL]%s' % _('Open Gerber failed. Probable not a Gerber file.'))
+                    self.inform.emit('[ERROR_NOTCL] %s' % _('Open Gerber failed. Probable not a Gerber file.'))
                     return 'fail'
 
             # Register recent file

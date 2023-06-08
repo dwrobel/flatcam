@@ -225,6 +225,9 @@ class AppObject(QtCore.QObject):
                 callback_params = []
             self.object_created.emit(obj, obj_plot, obj_autoselected, callback, callback_params)
 
+        if return_value == "defective":
+            return "defective"
+
         return obj
 
     def on_object_created(self, obj, plot, auto_select, callback, callback_params):

@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM Evo beta
 8.06.2023
 
 - Gerber Parser: minor changes, cleaning up the KiCAD junk lines if the Gerber file is made by KiCAD
+- Allowed the opening of certain types of damaged Gerber files (apertures not defines but used) but WARNINGS
 
 7.06.2023
 
