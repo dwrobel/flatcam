@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM Evo beta
 
 - Gerber Parser: minor changes, cleaning up the KiCAD junk lines if the Gerber file is made by KiCAD
 - Allowed the opening of certain types of damaged Gerber files (apertures not defines but used) but WARNINGS
+- NCC Plugin - fixed a minor bug that crashed the NCC Tcl Command; reported by @Aldin Halilovic on bitbucket
 
 7.06.2023
 
