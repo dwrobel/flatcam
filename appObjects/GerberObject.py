@@ -585,8 +585,6 @@ class GerberObject(FlatCAMObj, Gerber):
                 geo_obj.tool_type = self.app.options["tools_iso_tool_shape"]
                 geo_obj.multigeo = True
 
-                geo_obj.solid_geometry = []
-
                 # store here the default data for Geometry Data
                 default_data = {}
                 for opt_key, opt_val in app_obj.options.items():
@@ -600,7 +598,7 @@ class GerberObject(FlatCAMObj, Gerber):
                     1: {
                         'tooldia':          dia,
                         'data':             default_data,
-                        'solid_geometry':   geo_obj.solid_geometry
+                        'solid_geometry':   []
                     }
                 }
 
@@ -616,24 +614,16 @@ class GerberObject(FlatCAMObj, Gerber):
                         if plot:
                             app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
                         return 'fail'
-                    geo_obj.solid_geometry.append(geom)
+                    geo_obj.solid_geometry = flatten_shapely_geometry(geom)
 
                     # update the geometry in the tools
                     geo_obj.tools[1]['solid_geometry'] = geo_obj.solid_geometry
 
-                # detect if solid_geometry is empty and this require list flattening which is "heavy"
-                # or just looking in the lists (they are one level depth) and if any is not empty
-                # proceed with object creation, if there are empty and the number of them is the length
-                # of the list then we have an empty solid_geometry which should raise a Custom Exception
+                # detect if solid_geometry is empty
                 empty_cnt = 0
-                if not isinstance(geo_obj.solid_geometry, list) and \
-                        not isinstance(geo_obj.solid_geometry, MultiPolygon):
-                    geo_obj.solid_geometry = [geo_obj.solid_geometry]
-
-                w_geo = geo_obj.solid_geometry.geoms \
-                    if isinstance(geo_obj.solid_geometry, (MultiPolygon, MultiLineString)) else geo_obj.solid_geometry
+                w_geo = geo_obj.solid_geometry
                 for g in w_geo:
-                    if g:
+                    if g or not g.is_empty:
                         break
                     else:
                         empty_cnt += 1
@@ -692,7 +682,7 @@ class GerberObject(FlatCAMObj, Gerber):
                             app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
                         return 'fail'
 
-                    geo_obj.solid_geometry = geom
+                    geo_obj.solid_geometry = flatten_shapely_geometry(geom)
 
                     # store here the default data for Geometry Data
                     default_data = {}
@@ -711,20 +701,11 @@ class GerberObject(FlatCAMObj, Gerber):
                         }
                     }
 
-                    # detect if solid_geometry is empty and this require list flattening which is "heavy"
-                    # or just looking in the lists (they are one level depth) and if any is not empty
-                    # proceed with object creation, if there are empty and the number of them is the length
-                    # of the list then we have an empty solid_geometry which should raise a Custom Exception
+                    # detect if solid_geometry is empty
                     empty_cnt = 0
-                    if not isinstance(geo_obj.solid_geometry, list) and \
-                            not isinstance(geo_obj.solid_geometry, (MultiPolygon, MultiLineString)):
-                        geo_obj.solid_geometry = [geo_obj.solid_geometry]
-
-                    w_geo = geo_obj.solid_geometry.geoms \
-                        if isinstance(geo_obj.solid_geometry,
-                                      (MultiPolygon, MultiLineString)) else geo_obj.solid_geometry
-                    for g in w_geo:
-                        if g:
+                    w_geo = geo_obj.solid_geometry
+                    for g in geo_obj.solid_geometry:
+                        if g or not g.is_empty:
                             break
                         else:
                             empty_cnt += 1

@@ -1801,11 +1801,11 @@ class ToolIsolation(AppTool, Gerber):
             for tool in sel_tools:
                 tool_data = tools_storage[tool]['data']
 
-                work_geo = geometry
+                work_geo = flatten_shapely_geometry(geometry)
                 if work_geo is None:
                     # we do isolation over all the geometry of the Gerber object
                     # because it is already fused together
-                    work_geo = isolated_obj.solid_geometry
+                    work_geo = flatten_shapely_geometry(isolated_obj.solid_geometry)
 
                 iso_t = {
                     'ext':  0,
@@ -1871,13 +1871,10 @@ class ToolIsolation(AppTool, Gerber):
                             pad_geo.append(unary_union(pad_pass_geo).difference(solid_geo_union))
 
                     total_geo = []
-                    try:
-                        for p in iso_geo.geoms:
-                            total_geo.append(p)
-                    except (AttributeError, TypeError):
-                        total_geo.append(iso_geo)
+                    for p in flatten_shapely_geometry(iso_geo):
+                        total_geo.append(p)
 
-                    for p in pad_geo:
+                    for p in flatten_shapely_geometry(pad_geo):
                         total_geo.append(p)
                     iso_geo = total_geo
 
@@ -1893,7 +1890,7 @@ class ToolIsolation(AppTool, Gerber):
                         iso_geo = self.area_intersection(iso_geo, intersection_geo=limited_area)
 
                     # make sure that no empty geometry element is in the solid_geometry
-                    new_solid_geo = self.flatten_list(iso_geo)
+                    new_solid_geo = flatten_shapely_geometry(iso_geo)
                     if use_simplification:
                         new_solid_geo = [
                             g.simplify(tolerance=simplification_tol) for g in new_solid_geo if not g.is_empty]
@@ -1907,7 +1904,7 @@ class ToolIsolation(AppTool, Gerber):
                         geo_obj.obj_options["tools_mill_tooldia"] = str(tool_dia)
                         tool_data["tools_mill_tooldia"] = float(tool_dia)
 
-                        geo_obj.solid_geometry = deepcopy(new_solid_geo)
+                        geo_obj.solid_geometry = flatten_shapely_geometry(new_solid_geo)
 
                         # ############################################################
                         # ########## AREA SUBTRACTION ################################
@@ -1924,14 +1921,8 @@ class ToolIsolation(AppTool, Gerber):
                             }
                         }
 
-                        # detect if solid_geometry is empty and this require list flattening which is "heavy"
-                        # or just looking in the lists (they are one level depth) and if any is not empty
-                        # proceed with object creation, if there are empty and the number of them is the length
-                        # of the list then we have an empty solid_geometry which should raise a Custom Exception
+                        # detect if solid_geometry is empty
                         empty_cnt = 0
-                        if not isinstance(geo_obj.solid_geometry, list):
-                            geo_obj.solid_geometry = [geo_obj.solid_geometry]
-
                         for g in geo_obj.solid_geometry:
                             if g:
                                 break

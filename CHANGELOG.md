@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+10.06.2023
+
+- Isolation Plugin and Isolate Tcl Command: optimized the isolation method
+
 8.06.2023
 
 - Gerber Parser: minor changes, cleaning up the KiCAD junk lines if the Gerber file is made by KiCAD
