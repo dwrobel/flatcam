@@ -260,7 +260,7 @@ class CutOut(AppTool):
         self.ui.gaps.set_value(tool_dict["tools_cutout_gaps_ff"])
 
         self.ui.cutz_entry.set_value(float(tool_dict["tools_cutout_z"]))
-        self.ui.mpass_cb.set_value(float(tool_dict["tools_cutout_mdepth"]))
+        self.ui.mpass_cb.set_value(bool(tool_dict["tools_cutout_mdepth"]))
         self.ui.maxdepth_entry.set_value(float(tool_dict["tools_cutout_depthperpass"]))
 
     def on_tool_add(self, custom_dia=None):
