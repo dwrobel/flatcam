@@ -4,6 +4,9 @@ from appTool import AppToolEditor
 from appGUI.GUIElements import VerticalScrollArea, GLay, FCLabel, FCButton, FCFrame, FCTextEdit, FCEntry, \
     FCDoubleSpinner
 
+# from camlib import  flatten_shapely_geometry
+from copy import deepcopy
+
 import gettext
 import appTranslation as fcTranslate
 import builtins
@@ -23,9 +26,9 @@ class SimplificationTool(AppToolEditor):
     def __init__(self, app, draw_app):
         AppToolEditor.__init__(self, app)
 
-        self.draw_app = draw_app
+        self.geo_editor = draw_app
         self.decimals = app.decimals
-        self.app = self.draw_app.app
+        self.app = self.geo_editor.app
 
         self.ui = SimplificationEditorUI(layout=self.layout, simp_class=self)
         self.plugin_name = self.ui.pluginName
@@ -75,89 +78,136 @@ class SimplificationTool(AppToolEditor):
 
     def set_tool_ui(self):
         # Init appGUI
-        self.ui.geo_tol_entry.set_value(0.01 if self.draw_app.units == 'MM' else 0.0004)
+        self.ui.geo_tol_entry.set_value(0.01 if self.geo_editor.units == 'MM' else 0.0004)
 
         selected_shapes_geos = []
-        selected_tree_items = self.draw_app.ui.tw.selectedItems()
+        selected_tree_items = self.geo_editor.ui.tw.selectedItems()
         for sel in selected_tree_items:
-            for obj_shape in self.draw_app.storage.get_objects():
+            for obj_shape in self.geo_editor.storage.get_objects():
                 try:
                     if id(obj_shape) == int(sel.text(0)):
                         selected_shapes_geos.append(obj_shape.geo)
-                except ValueError:
+                except (ValueError, AttributeError):
                     pass
         if selected_shapes_geos:
             # those are displayed by triggering the signal self.update_ui
-            self.calculate_coords_vertex(selected_shapes_geos[-1])
+            self.calculate_coords_vertex(selected_shapes_geos)
 
     def on_tab_close(self):
-        self.draw_app.select_tool("select")
+        self.geo_editor.select_tool("select")
         self.app.ui.notebook.callback_on_close = lambda: None
 
     def on_simplification_click(self):
         self.app.log.debug("FCSimplification.on_simplification_click()")
 
-        selected_shapes_geos = []
         tol = self.ui.geo_tol_entry.get_value()
 
-        def task_job(self_class):
-            with self_class.app.proc_container.new('%s...' % _("Simplify")):
-                selected_shapes = self_class.draw_app.get_selected()
-                self_class.draw_app.interdict_selection = True
-                for obj_shape in selected_shapes:
-                    selected_shapes_geos.append(obj_shape.geo.simplify(tolerance=tol))
+        def task_job(geo_editor):
+            with self.app.proc_container.new('%s...' % _("Simplifying")):
+                geo_editor.interdict_selection = True
 
-                if not selected_shapes:
-                    self_class.app.inform.emit('%s' % _("Failed."))
+                # Simplification
+                selected_shapes = geo_editor.selected
+                selected_shapes_geos = [
+                    deepcopy(obj_shape.geo.simplify(tolerance=tol)) for obj_shape in selected_shapes
+                ]
+
+                not_selected_geos = [
+                    obj_shape for obj_shape in geo_editor.storage.get_objects() if obj_shape not in selected_shapes
+                ]
+
+                if not selected_shapes or not selected_shapes_geos:
+                    self.app.inform.emit('%s' % _("Failed."))
                     return
 
-                for shape in selected_shapes:
-                    self_class.draw_app.delete_shape(shape=shape)
+                # reset the old storage
+                geo_editor.storage = geo_editor.make_storage()
+                geo_editor.ui.tw.blockSignals(True)
+                # add again the shapes (modified and non-modified
+                for geo in not_selected_geos + selected_shapes_geos:
+                    geo_editor.add_shape(geo, build_ui=False)
+                geo_editor.ui.tw.blockSignals(False)
 
-                for geo in selected_shapes_geos:
-                    self_class.draw_app.add_shape(geo, build_ui=False)
+                # # -----------------------------------------------------
+                # # Shape Deletion -> Shape Adding
+                # # geo_editor.ui.tw.blockSignals(True)
+                # geo_editor.delete_shape(selected_shapes)
+                #
+                # # while adding the shape also add it to selected
+                # for geo in selected_shapes_geos:
+                #     geo_editor.add_shape(geo, build_ui=False)
+                # # geo_editor.ui.tw.blockSignals(False)
+                # # -----------------------------------------------------
 
-                self_class.draw_app.selected = []
+                self.calculate_coords_vertex(selected_shapes_geos)
+                geo_editor.plot_all()
 
-                last_sel_geo = selected_shapes_geos[-1]
-                self_class.calculate_coords_vertex(last_sel_geo)
+                geo_editor.interdict_selection = False
+                geo_editor.build_ui_sig.emit()
+                self.app.inform.emit('%s' % _("Done."))
 
-                self_class.app.inform.emit('%s' % _("Done."))
+        self.app.worker_task.emit({'fcn': task_job, 'params': [self.geo_editor]})
 
-                self_class.draw_app.plot_all()
-                self_class.draw_app.interdict_selection = False
-                self_class.draw_app.build_ui_sig.emit()
+    def calculate_coords_vertex(self, selected_geos):
+        vertex_nr = 0
+        coords = ''
 
-        self.app.worker_task.emit({'fcn': task_job, 'params': [self]})
-
-    def calculate_coords_vertex(self, last_sel_geo):
-        if last_sel_geo:
-            if last_sel_geo.geom_type == 'MultiLineString':
-                coords = ''
-                vertex_nr = 0
-                for idx, line in enumerate(last_sel_geo.geoms):
+        for c_geo in selected_geos:
+            if c_geo.geom_type == 'MultiLineString':
+                for idx, line in enumerate(c_geo.geoms):
                     line_coords = list(line.coords)
                     vertex_nr += len(line_coords)
                     coords += 'Line %s\n' % str(idx)
                     coords += str(line_coords) + '\n'
-            elif last_sel_geo.geom_type == 'MultiPolygon':
-                coords = ''
-                vertex_nr = 0
-                for idx, poly in enumerate(last_sel_geo.geoms):
+            elif c_geo.geom_type == 'MultiPolygon':
+                for idx, poly in enumerate(c_geo.geoms):
                     poly_coords = list(poly.exterior.coords) + [list(i.coords) for i in poly.interiors]
                     vertex_nr += len(poly_coords)
 
                     coords += 'Polygon %s\n' % str(idx)
                     coords += str(poly_coords) + '\n'
-            elif last_sel_geo.geom_type in ['LinearRing', 'LineString']:
-                coords = list(last_sel_geo.coords)
-                vertex_nr = len(coords)
-            elif last_sel_geo.geom_type == 'Polygon':
-                coords = list(last_sel_geo.exterior.coords)
-                vertex_nr = len(coords)
+            elif c_geo.geom_type in ['LinearRing', 'LineString']:
+                line_coords = list(c_geo.coords)
+                coords += 'Line \n'
+                coords += str(line_coords) + '\n'
+
+                vertex_nr += len(line_coords)
+            elif c_geo.geom_type == 'Polygon':
+                line_coords = list(c_geo.exterior.coords)
+                coords += 'Line \n'
+                coords += str(line_coords) + '\n'
+
+                vertex_nr += len(line_coords)
             else:
-                coords = 'None'
-                vertex_nr = 0
+                coords += 'None\n'
+
+        # if last_sel_geo:
+        #     if last_sel_geo.geom_type == 'MultiLineString':
+        #         coords = ''
+        #         vertex_nr = 0
+        #         for idx, line in enumerate(last_sel_geo.geoms):
+        #             line_coords = list(line.coords)
+        #             vertex_nr += len(line_coords)
+        #             coords += 'Line %s\n' % str(idx)
+        #             coords += str(line_coords) + '\n'
+        #     elif last_sel_geo.geom_type == 'MultiPolygon':
+        #         coords = ''
+        #         vertex_nr = 0
+        #         for idx, poly in enumerate(last_sel_geo.geoms):
+        #             poly_coords = list(poly.exterior.coords) + [list(i.coords) for i in poly.interiors]
+        #             vertex_nr += len(poly_coords)
+        #
+        #             coords += 'Polygon %s\n' % str(idx)
+        #             coords += str(poly_coords) + '\n'
+        #     elif last_sel_geo.geom_type in ['LinearRing', 'LineString']:
+        #         coords = list(last_sel_geo.coords)
+        #         vertex_nr = len(coords)
+        #     elif last_sel_geo.geom_type == 'Polygon':
+        #         coords = list(last_sel_geo.exterior.coords)
+        #         vertex_nr = len(coords)
+        #     else:
+        #         coords = 'None'
+        #         vertex_nr = 0
 
             self.update_ui.emit(coords, vertex_nr)
 

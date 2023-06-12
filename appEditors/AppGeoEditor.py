@@ -1892,14 +1892,10 @@ class FCSelect(DrawTool):
         except Exception as e:
             log.error("[ERROR] AppGeoEditor.FCSelect.click_release() -> Something went bad. %s" % str(e))
 
-        # if selection is done on canvas update the Tree in Properties Tab with the selection
-        try:
-            self.draw_app.ui.tw.itemPressed.disconnect(self.draw_app.on_tree_geo_click)
-        except (AttributeError, TypeError):
-            pass
+        self.draw_app.ui.tw.blockSignals(True)
 
         self.draw_app.ui.tw.selectionModel().clearSelection()
-        for sel_shape in self.draw_app.selected:
+        for sel_shape in self.draw_app.get_selected():
             iterator = QtWidgets.QTreeWidgetItemIterator(self.draw_app.ui.tw)
             while iterator.value():
                 item = iterator.value()
@@ -1908,10 +1904,9 @@ class FCSelect(DrawTool):
                         item.setSelected(True)
                 except ValueError:
                     pass
-
                 iterator += 1
 
-        self.draw_app.ui.tw.itemPressed.connect(self.draw_app.on_tree_geo_click)
+        self.draw_app.ui.tw.blockSignals(False)
 
         # self.draw_app.ui.tw.itemClicked.emit(self.draw_app.ui.tw.currentItem(), 0)
         self.draw_app.update_ui()
@@ -3301,21 +3296,24 @@ class AppGeoEditor(QtCore.QObject):
         # # ## Data
         self.active_tool = None
 
-        self.storage = AppGeoEditor.make_storage()
+        self.storage = self.make_storage()
         self.utility = []
 
         # VisPy visuals
         self.fcgeometry = None
         if self.app.use_3d_engine:
             self.shapes = self.app.plotcanvas.new_shape_collection(layers=1)
+            self.sel_shapes = self.app.plotcanvas.new_shape_collection(layers=1)
             self.tool_shape = self.app.plotcanvas.new_shape_collection(layers=1)
         else:
             from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.shapes = ShapeCollectionLegacy(obj=self, app=self.app, name='shapes_geo_editor')
+            self.sel_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name='sel_shapes_geo_editor')
             self.tool_shape = ShapeCollectionLegacy(obj=self, app=self.app, name='tool_shapes_geo_editor')
 
         # Remove from scene
         self.shapes.enabled = False
+        self.sel_shapes.enabled = False
         self.tool_shape.enabled = False
 
         # List of selected shapes.
@@ -3478,6 +3476,7 @@ class AppGeoEditor(QtCore.QObject):
 
     def pool_recreated(self, pool):
         self.shapes.pool = pool
+        self.sel_shapes.pool = pool
         self.tool_shape.pool = pool
 
     def on_transform_complete(self):
@@ -3605,21 +3604,31 @@ class AppGeoEditor(QtCore.QObject):
     def on_geo_elem_selected(self):
         pass
 
-    def update_ui(self):
+    def update_ui(self, current_item: QtWidgets.QTreeWidgetItem = None):
         self.selected = []
         last_obj_shape = None
         last_id = None
 
-        selected_tree_items = self.ui.tw.selectedItems()
-        for sel in selected_tree_items:
+        if current_item:
+            last_id = current_item.text(0)
             for obj_shape in self.storage.get_objects():
                 try:
-                    if id(obj_shape) == int(sel.text(0)):
-                        self.selected.append(obj_shape)
+                    if id(obj_shape) == int(last_id):
+                        # self.selected.append(obj_shape)
                         last_obj_shape = obj_shape
-                        last_id = sel.text(0)
                 except ValueError:
                     pass
+        else:
+            selected_tree_items = self.ui.tw.selectedItems()
+            for sel in selected_tree_items:
+                for obj_shape in self.storage.get_objects():
+                    try:
+                        if id(obj_shape) == int(sel.text(0)):
+                            # self.selected.append(obj_shape)
+                            last_obj_shape = obj_shape
+                            last_id = sel.text(0)
+                    except ValueError:
+                        pass
 
         if last_obj_shape:
             last_sel_geo = last_obj_shape.geo
@@ -3693,6 +3702,9 @@ class AppGeoEditor(QtCore.QObject):
                     assert isinstance(self.shapes, ShapeCollection)
                     self.shapes.lock_updates()
 
+                    assert isinstance(self.sel_shapes, ShapeCollection)
+                    self.sel_shapes.lock_updates()
+
                     # adjust the view camera to be slightly bigger than the bounds so the shape collection can be
                     # seen clearly otherwise the shape collection boundary will have no border
                     dx = rect.right - rect.left
@@ -3707,6 +3719,7 @@ class AppGeoEditor(QtCore.QObject):
 
                     self.app.plotcanvas.view.camera.rect = rect
                     self.shapes.unlock_updates()
+                    self.sel_shapes.unlock_updates()
                 else:
                     width = xmax - xmin
                     height = ymax - ymin
@@ -3722,12 +3735,48 @@ class AppGeoEditor(QtCore.QObject):
 
             self.app.inform.emit('%s: %s' % (_("Last selected shape ID"), str(last_id)))
 
-    def on_tree_geo_click(self):
+    def on_tree_geo_click(self, current_item, prev_item):
         try:
-            self.update_ui()
-            self.plot_all()
+            self.update_ui(current_item=current_item)
+            # self.plot_all()
         except Exception as e:
             self.app.log.error("APpGeoEditor.on_tree_selection_change() -> %s" % str(e))
+
+    def on_tree_selection(self):
+        selected_items = self.ui.tw.selectedItems()
+
+        if len(selected_items) == 0:
+            self.ui.is_valid_entry.set_value("None")
+            self.ui.is_empty_entry.set_value("None")
+            self.ui.is_simple_entry.set_value("None")
+            self.ui.is_ring_entry.set_value("None")
+            self.ui.is_ccw_entry.set_value("None")
+            self.ui.geo_len_entry.set_value("None")
+            self.ui.geo_coords_entry.setText("None")
+            self.ui.geo_vertex_entry.set_value("")
+
+        if len(selected_items) >= 1:
+            total_selected_shapes = []
+
+            for sel in selected_items:
+                for obj_shape in self.storage.get_objects():
+                    try:
+                        if id(obj_shape) == int(sel.text(0)):
+                            total_selected_shapes.append(obj_shape)
+                    except ValueError:
+                        pass
+
+            self.selected = total_selected_shapes
+            self.plot_all()
+
+            total_geos = flatten_shapely_geometry([s.geo for s in total_selected_shapes])
+            total_vtx = 0
+            for geo in total_geos:
+                try:
+                    total_vtx += len(geo.coords)
+                except AttributeError:
+                    pass
+            self.ui.geo_all_vertex_entry.set_value(str(total_vtx))
 
     def on_change_orientation(self):
         self.app.log.debug("AppGeoEditor.on_change_orientation()")
@@ -3758,8 +3807,7 @@ class AppGeoEditor(QtCore.QObject):
                         except ValueError:
                             pass
 
-                for shape in processed_shapes:
-                    self.delete_shape(shape=shape)
+                self.delete_shape(processed_shapes)
 
                 for geo in new_shapes:
                     self.add_shape(DrawToolShape(geo), build_ui=False)
@@ -3798,11 +3846,12 @@ class AppGeoEditor(QtCore.QObject):
         self.connect_canvas_event_handlers()
 
         # initialize working objects
-        self.storage = AppGeoEditor.make_storage()
+        self.storage = self.make_storage()
         self.utility = []
         self.selected = []
 
         self.shapes.enabled = True
+        self.sel_shapes.enabled = True
         self.tool_shape.enabled = True
         self.app.app_cursor.enabled = True
 
@@ -3838,7 +3887,9 @@ class AppGeoEditor(QtCore.QObject):
         self.item_selected.connect(self.on_geo_elem_selected)
 
         # ## appGUI Events
-        self.ui.tw.itemPressed.connect(self.on_tree_geo_click)
+        self.ui.tw.currentItemChanged.connect(self.on_tree_geo_click)
+        self.ui.tw.itemSelectionChanged.connect(self.on_tree_selection)
+
         # self.ui.tw.keyPressed.connect(self.app.ui.keyPressEvent)
         # self.ui.tw.customContextMenuRequested.connect(self.on_menu_request)
 
@@ -3873,6 +3924,7 @@ class AppGeoEditor(QtCore.QObject):
 
         # Disable visuals
         self.shapes.enabled = False
+        self.sel_shapes.enabled = False
         self.tool_shape.enabled = False
 
         # disable text cursor (for FCPath)
@@ -3902,15 +3954,20 @@ class AppGeoEditor(QtCore.QObject):
 
         try:
             self.item_selected.disconnect()
-        except (AttributeError, TypeError):
+        except (AttributeError, TypeError, RuntimeError):
             pass
 
         try:
             # ## appGUI Events
-            self.ui.tw.itemPressed.disconnect(self.on_tree_geo_click)
+            self.ui.tw.currentItemChanged.disconnect(self.on_tree_geo_click)
             # self.ui.tw.keyPressed.connect(self.app.ui.keyPressEvent)
             # self.ui.tw.customContextMenuRequested.connect(self.on_menu_request)
-        except (AttributeError, TypeError):
+        except (AttributeError, TypeError, RuntimeError):
+            pass
+
+        try:
+            self.ui.tw.itemSelectionChanged.disconnect(self.on_tree_selection)
+        except (AttributeError, TypeError, RuntimeError):
             pass
 
         # try:
@@ -4218,6 +4275,7 @@ class AppGeoEditor(QtCore.QObject):
         # self.shape_buffer = []
         self.selected = []
         self.shapes.clear(update=True)
+        self.sel_shapes.clear(update=True)
         self.tool_shape.clear(update=True)
 
         # self.storage = AppGeoEditor.make_storage()
@@ -4554,7 +4612,7 @@ class AppGeoEditor(QtCore.QObject):
         # #########  if selection is done on canvas update the Tree in Selected Tab with the selection  ###############
         # #############################################################################################################
         try:
-            self.ui.tw.itemPressed.disconnect(self.on_tree_geo_click)
+            self.ui.tw.currentItemChanged.disconnect(self.on_tree_geo_click)
         except (AttributeError, TypeError):
             pass
 
@@ -4588,7 +4646,7 @@ class AppGeoEditor(QtCore.QObject):
 
         self.ui.geo_vertex_entry.set_value(vertex_nr)
 
-        self.ui.tw.itemPressed.connect(self.on_tree_geo_click)
+        self.ui.tw.currentItemChanged.connect(self.on_tree_geo_click)
 
         self.plot_all()
 
@@ -4663,15 +4721,24 @@ class AppGeoEditor(QtCore.QObject):
         self.build_ui()
         self.plot_all()
 
-    def delete_shape(self, shape):
+    def delete_shape(self, shapes):
+        """
+        Deletes shape(shapes) from the storage, selection and utility
+        """
+        w_shapes = [shapes] if not isinstance(shapes, list) else shapes
 
-        if shape in self.utility:
-            self.utility.remove(shape)
-            return
+        for shape in w_shapes:
+            # remove from Storage
+            self.storage.remove(shape)
 
-        self.storage.remove(shape)
-        if shape in self.selected:
-            self.selected.remove(shape)
+            # remove from Utility
+            if shape in self.utility:
+                self.utility.remove(shape)
+                return
+
+            # remove from Selection
+            if shape in self.selected:
+                self.selected.remove(shape)
 
     def on_move(self):
         # if not self.selected:
@@ -4711,7 +4778,7 @@ class AppGeoEditor(QtCore.QObject):
         # return [shape for shape in self.shape_buffer if shape["selected"]]
         return self.selected
 
-    def plot_shape(self, geometry=None, color='#000000FF', linewidth=1):
+    def plot_shape(self, storage, geometry=None, color='#000000FF', linewidth=1, layer=0):
         """
         Plots a geometric object or list of objects without rendering. Plotted objects
         are returned as a list. This allows for efficient/animated rendering.
@@ -4742,13 +4809,12 @@ class AppGeoEditor(QtCore.QObject):
             #     plot_elements += self.plot_shape(geometry=geometry.interiors, color=color, linewidth=linewidth)
 
             if isinstance(geometry, Polygon):
-                plot_elements.append(self.shapes.add(shape=geometry, color=color, face_color=color[:-2] + '50', layer=0,
-                                                     tolerance=self.fcgeometry.drawing_tolerance,
-                                                     linewidth=linewidth))
+                plot_elements.append(storage.add(shape=geometry, color=color, face_color=color[:-2] + '50',
+                                                 layer=layer, tolerance=self.fcgeometry.drawing_tolerance,
+                                                 linewidth=linewidth))
             if isinstance(geometry, (LineString, LinearRing)):
-                plot_elements.append(self.shapes.add(shape=geometry, color=color, layer=0,
-                                                     tolerance=self.fcgeometry.drawing_tolerance,
-                                                     linewidth=linewidth))
+                plot_elements.append(storage.add(shape=geometry, color=color, layer=layer,
+                                                 tolerance=self.fcgeometry.drawing_tolerance, linewidth=linewidth))
 
             if type(geometry) == Point:
                 pass
@@ -4764,24 +4830,37 @@ class AppGeoEditor(QtCore.QObject):
         """
         # self.app.log.debug(str(inspect.stack()[1][3]) + " --> AppGeoEditor.plot_all()")
 
-        self.shapes.clear(update=True)
-
         orig_draw_color = self.get_draw_color()
         draw_color = orig_draw_color[:-2] + "FF"
         orig_sel_color = self.get_sel_color()
         sel_color = orig_sel_color[:-2] + 'FF'
 
+        geo_drawn = []
+        geos_selected = []
+
         for shape in self.storage.get_objects():
             if shape.geo and not shape.geo.is_empty and shape.geo.is_valid:
-                if shape in self.selected:
-                    self.plot_shape(geometry=shape.geo, color=sel_color)
+                if shape in self.get_selected():
+                    geos_selected.append(shape.geo)
                 else:
-                    self.plot_shape(geometry=shape.geo, color=draw_color)
+                    geo_drawn.append(shape.geo)
 
-        for shape in self.utility:
-            self.plot_shape(geometry=shape.geo, linewidth=1)
+        if geo_drawn:
+            self.shapes.clear(update=True)
 
-        self.shapes.redraw()
+            for geo in geo_drawn:
+                self.plot_shape(storage=self.shapes, geometry=geo, color=draw_color, linewidth=1)
+
+            for shape in self.utility:
+                self.plot_shape(storage=self.shapes, geometry=shape.geo, linewidth=1)
+
+            self.shapes.redraw()
+
+        if geos_selected:
+            self.sel_shapes.clear(update=True)
+            for geo in geos_selected:
+                self.plot_shape(storage=self.sel_shapes, geometry=geo, color=sel_color, linewidth=3)
+            self.sel_shapes.redraw()
 
     def on_shape_complete(self):
         self.app.log.debug("on_shape_complete()")
@@ -5601,15 +5680,26 @@ class AppGeoEditorUI:
         self.tools_box.addLayout(v_grid)
 
         # Vertex Points Number
-        vertex_lbl = FCLabel('%s' % _("Vertex Points"), bold=True)
+        vertex_lbl = FCLabel('%s' % _("Last Vertexes"), bold=True)
         vertex_lbl.setToolTip(
-            _("The number of vertex points in the selected geometry element.")
+            _("The number of vertex points in the last selected geometry element.")
         )
         self.geo_vertex_entry = FCEntry(decimals=self.decimals)
         self.geo_vertex_entry.setReadOnly(True)
 
         v_grid.addWidget(vertex_lbl, 0, 0)
         v_grid.addWidget(self.geo_vertex_entry, 0, 1)
+
+        # All selected Vertex Points Number
+        vertex_all_lbl = FCLabel('%s' % _("Selected Vertexes"), bold=True)
+        vertex_all_lbl.setToolTip(
+            _("The number of vertex points in all selected geometry elements.")
+        )
+        self.geo_all_vertex_entry = FCEntry(decimals=self.decimals)
+        self.geo_all_vertex_entry.setReadOnly(True)
+
+        v_grid.addWidget(vertex_all_lbl, 2, 0)
+        v_grid.addWidget(self.geo_all_vertex_entry, 2, 1)
 
         GLay.set_common_column_size([grid0, v_grid, tw_grid, coords_grid, dia_grid, par_grid], 0)
 

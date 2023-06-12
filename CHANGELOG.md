@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+12.06.2023
+
+- Geometry Editor: fixed the selected shapes width issue; now the selected shapes are thicker
+- Geometry Editor: no longer matter the order (top-bottom or bottom-top) of selection, now the last selected shape has the data updated in the UI
+- Geometry Editor: fixed the simplification tool to work on a selection of shapes
+
 10.06.2023
 
 - Isolation Plugin and Isolate Tcl Command: optimized the isolation method
