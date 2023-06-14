@@ -1488,37 +1488,56 @@ class Geometry(object):
                 QtWidgets.QApplication.processEvents()
 
                 cl_pol = cl_pol.buffer(-tooldia * (1 - overlap), int(steps_per_circle))
-                if isinstance(cl_pol, MultiPolygon):
-                    cl_pol = flatten_shapely_geometry(cl_pol)
+                cl_pol_list = flatten_shapely_geometry(cl_pol)
 
-                    added_flag = False
-                    for tiny_pol in cl_pol:
-                        if tiny_pol.area > 0:
-                            added_flag = True
-                            geoms.insert(tiny_pol.exterior)
-                            if prog_plot:
-                                self.plot_temp_shapes(tiny_pol.exterior)
-
-                            for i in tiny_pol.interiors:
-                                geoms.insert(i)
-                                if prog_plot:
-                                    self.plot_temp_shapes(i)
-                    if added_flag is False:
-                        break
-
-                    cl_pol = MultiPolygon(cl_pol)
-                else:
-                    if cl_pol.area > 0:
-                        geoms.insert(cl_pol.exterior)
+                added_flag = False
+                for tiny_pol in cl_pol_list:
+                    if tiny_pol.area > 0:
+                        added_flag = True
+                        geoms.insert(tiny_pol.exterior)
                         if prog_plot:
-                            self.plot_temp_shapes(cl_pol.exterior)
+                            self.plot_temp_shapes(tiny_pol.exterior)
 
-                        for i in cl_pol.interiors:
+                        for i in tiny_pol.interiors:
                             geoms.insert(i)
                             if prog_plot:
                                 self.plot_temp_shapes(i)
-                    else:
-                        break
+                if added_flag is False:
+                    break
+
+                cl_pol = MultiPolygon(cl_pol_list)
+
+                # if isinstance(cl_pol, MultiPolygon):
+                #     cl_pol = flatten_shapely_geometry(cl_pol)
+                #
+                #     added_flag = False
+                #     for tiny_pol in cl_pol:
+                #         if tiny_pol.area > 0:
+                #             added_flag = True
+                #             geoms.insert(tiny_pol.exterior)
+                #             if prog_plot:
+                #                 self.plot_temp_shapes(tiny_pol.exterior)
+                #
+                #             for i in tiny_pol.interiors:
+                #                 geoms.insert(i)
+                #                 if prog_plot:
+                #                     self.plot_temp_shapes(i)
+                #     if added_flag is False:
+                #         break
+                #
+                #     cl_pol = MultiPolygon(cl_pol)
+                # else:
+                #     if cl_pol.area > 0:
+                #         geoms.insert(cl_pol.exterior)
+                #         if prog_plot:
+                #             self.plot_temp_shapes(cl_pol.exterior)
+                #
+                #         for i in cl_pol.interiors:
+                #             geoms.insert(i)
+                #             if prog_plot:
+                #                 self.plot_temp_shapes(i)
+                #     else:
+                #         break
 
         if not geoms.objects:
             self.app.log.debug("camlib.Geometry.clear_polygon() --> Current Area is zero")

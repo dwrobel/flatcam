@@ -162,3 +162,13 @@ class TclCommandMirror(TclCommandSignaled):
                 except Exception as e:
                     self.app.log.error("Operation failed: %s" % str(e))
                     return "fail"
+
+            try:
+                xmin, ymin, xmax, ymax = obj.bounds()
+                obj.obj_options['xmin'] = xmin
+                obj.obj_options['ymin'] = ymin
+                obj.obj_options['xmax'] = xmax
+                obj.obj_options['ymax'] = ymax
+            except Exception as e:
+                self.app.log.error("TclCommandMirror -> The object has no bounds properties. %s" % str(e))
+                return "fail"

@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+15.06.2023
+
+- a bit of optimization in camblib.clear_polygon() method
+- added the update of bounds for the TclCommands: Mirror, Scale, Offset, Skew, Buffer
+
 12.06.2023
 
 - Geometry Editor: fixed the selected shapes width issue; now the selected shapes are thicker

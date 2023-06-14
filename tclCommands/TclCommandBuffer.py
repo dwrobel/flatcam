@@ -110,3 +110,13 @@ class TclCommandBuffer(TclCommand):
         factor = bool(eval(str(args['factor']).capitalize())) if 'factor' in args else None
 
         obj_to_buff.buffer(distance, join, factor, only_exterior=True)
+
+        try:
+            xmin, ymin, xmax, ymax = obj_to_buff.bounds()
+            obj_to_buff.obj_options['xmin'] = xmin
+            obj_to_buff.obj_options['ymin'] = ymin
+            obj_to_buff.obj_options['xmax'] = xmax
+            obj_to_buff.obj_options['ymax'] = ymax
+        except Exception as e:
+            self.app.log.error("TclCommandBuffer -> The object has no bounds properties. %s" % str(e))
+            return "fail"

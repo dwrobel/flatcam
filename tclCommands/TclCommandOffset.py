@@ -72,3 +72,13 @@ class TclCommandOffset(TclCommand):
                 return "fail"
 
             obj.offset((x, y))
+
+            try:
+                xmin, ymin, xmax, ymax = obj.bounds()
+                obj.obj_options['xmin'] = xmin
+                obj.obj_options['ymin'] = ymin
+                obj.obj_options['xmax'] = xmax
+                obj.obj_options['ymax'] = ymax
+            except Exception as e:
+                self.app.log.error("TclCommandOffset -> The object has no bounds properties. %s" % str(e))
+                return "fail"

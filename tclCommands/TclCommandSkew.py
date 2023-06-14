@@ -202,3 +202,13 @@ class TclCommandSkew(TclCommand):
                 angle_y = math.degrees(math.atan(dist_y/width))
 
             obj_to_skew.skew(angle_x, angle_y, point=ref_point)
+
+            try:
+                xmin, ymin, xmax, ymax = obj_to_skew.bounds()
+                obj_to_skew.obj_options['xmin'] = xmin
+                obj_to_skew.obj_options['ymin'] = ymin
+                obj_to_skew.obj_options['xmax'] = xmax
+                obj_to_skew.obj_options['ymax'] = ymax
+            except Exception as e:
+                self.app.log.error("TclCommandSkew -> The object has no bounds properties. %s" % str(e))
+                return "fail"

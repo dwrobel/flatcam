@@ -155,3 +155,13 @@ class TclCommandScale(TclCommand):
                 f_x = float(args['x'])
                 f_y = float(args['y'])
                 obj_to_scale.scale(f_x, f_y, point=point)
+
+            try:
+                xmin, ymin, xmax, ymax = obj_to_scale.bounds()
+                obj_to_scale.obj_options['xmin'] = xmin
+                obj_to_scale.obj_options['ymin'] = ymin
+                obj_to_scale.obj_options['xmax'] = xmax
+                obj_to_scale.obj_options['ymax'] = ymax
+            except Exception as e:
+                self.app.log.error("TclCommandScale -> The object has no bounds properties. %s" % str(e))
+                return "fail"
