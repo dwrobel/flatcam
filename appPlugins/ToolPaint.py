@@ -1620,13 +1620,13 @@ class ToolPaint(AppTool, Gerber):
         if paint_method == 0:   # _("Standard")
             try:
                 # Type(cp) == AppRTreeStorage | None
-                cpoly = self.clear_polygon(polyg,
-                                           tooldia=tooldiameter,
-                                           steps_per_circle=self.circle_steps,
-                                           overlap=over,
-                                           contour=cont,
-                                           connect=conn,
-                                           prog_plot=prog_plot)
+                cpoly = self.clear_polygon_shrink(polyg,
+                                                  tooldia=tooldiameter,
+                                                  steps_per_circle=self.circle_steps,
+                                                  overlap=over,
+                                                  contour=cont,
+                                                  connect=conn,
+                                                  prog_plot=prog_plot)
             except grace:
                 return "fail"
             except Exception as ee:
@@ -1634,13 +1634,13 @@ class ToolPaint(AppTool, Gerber):
         elif paint_method == 1:  # _("Seed")
             try:
                 # Type(cp) == AppRTreeStorage | None
-                cpoly = self.clear_polygon2(polyg,
-                                            tooldia=tooldiameter,
-                                            steps_per_circle=self.circle_steps,
-                                            overlap=over,
-                                            contour=cont,
-                                            connect=conn,
-                                            prog_plot=prog_plot)
+                cpoly = self.clear_polygon_seed(polyg,
+                                                tooldia=tooldiameter,
+                                                steps_per_circle=self.circle_steps,
+                                                overlap=over,
+                                                contour=cont,
+                                                connect=conn,
+                                                prog_plot=prog_plot)
             except grace:
                 return "fail"
             except Exception as ee:
@@ -1648,13 +1648,13 @@ class ToolPaint(AppTool, Gerber):
         elif paint_method == 2:  # _("Lines")
             try:
                 # Type(cp) == AppRTreeStorage | None
-                cpoly = self.clear_polygon3(polyg,
-                                            tooldia=tooldiameter,
-                                            steps_per_circle=self.circle_steps,
-                                            overlap=over,
-                                            contour=cont,
-                                            connect=conn,
-                                            prog_plot=prog_plot)
+                cpoly = self.clear_polygon_lines(polyg,
+                                                 tooldia=tooldiameter,
+                                                 steps_per_circle=self.circle_steps,
+                                                 overlap=over,
+                                                 contour=cont,
+                                                 connect=conn,
+                                                 prog_plot=prog_plot)
             except grace:
                 return "fail"
             except Exception as ee:
@@ -1719,36 +1719,36 @@ class ToolPaint(AppTool, Gerber):
                     for elem in flash_el_dict[ap_type]:
                         if 'solid' in elem:
                             if ap_type == 'C':
-                                f_o = self.clear_polygon2(elem['solid'],
-                                                          tooldia=tooldiameter,
-                                                          steps_per_circle=self.app.options[
+                                f_o = self.clear_polygon_seed(elem['solid'],
+                                                              tooldia=tooldiameter,
+                                                              steps_per_circle=self.app.options[
                                                               "geometry_circle_steps"],
-                                                          overlap=over,
-                                                          contour=True,
-                                                          connect=conn,
-                                                          prog_plot=prog_plot)
+                                                              overlap=over,
+                                                              contour=True,
+                                                              connect=conn,
+                                                              prog_plot=prog_plot)
                                 pads_lines_list += [p for p in f_o.get_objects() if p]
                             # this is the same as above but I keep it in case I will modify something in the future
                             elif ap_type == 'O':
-                                f_o = self.clear_polygon2(elem['solid'],
-                                                          tooldia=tooldiameter,
-                                                          steps_per_circle=self.app.options[
+                                f_o = self.clear_polygon_seed(elem['solid'],
+                                                              tooldia=tooldiameter,
+                                                              steps_per_circle=self.app.options[
                                                               "geometry_circle_steps"],
-                                                          overlap=over,
-                                                          contour=True,
-                                                          connect=conn,
-                                                          prog_plot=prog_plot)
+                                                              overlap=over,
+                                                              contour=True,
+                                                              connect=conn,
+                                                              prog_plot=prog_plot)
                                 pads_lines_list += [p for p in f_o.get_objects() if p]
 
                             elif ap_type == 'R':
-                                f_o = self.clear_polygon3(elem['solid'],
-                                                          tooldia=tooldiameter,
-                                                          steps_per_circle=self.app.options[
+                                f_o = self.clear_polygon_lines(elem['solid'],
+                                                               tooldia=tooldiameter,
+                                                               steps_per_circle=self.app.options[
                                                               "geometry_circle_steps"],
-                                                          overlap=over,
-                                                          contour=True,
-                                                          connect=conn,
-                                                          prog_plot=prog_plot)
+                                                               overlap=over,
+                                                               contour=True,
+                                                               connect=conn,
+                                                               prog_plot=prog_plot)
 
                                 pads_lines_list += [p for p in f_o.get_objects() if p]
             except grace:
@@ -1801,36 +1801,36 @@ class ToolPaint(AppTool, Gerber):
         elif paint_method == 4:  # _("Combo")
             try:
                 self.app.inform.emit(_("Painting polygon with method: lines."))
-                cpoly = self.clear_polygon3(polyg,
-                                            tooldia=tooldiameter,
-                                            steps_per_circle=self.circle_steps,
-                                            overlap=over,
-                                            contour=cont,
-                                            connect=conn,
-                                            prog_plot=prog_plot)
+                cpoly = self.clear_polygon_lines(polyg,
+                                                 tooldia=tooldiameter,
+                                                 steps_per_circle=self.circle_steps,
+                                                 overlap=over,
+                                                 contour=cont,
+                                                 connect=conn,
+                                                 prog_plot=prog_plot)
 
                 if cpoly and cpoly.objects:
                     pass
                 else:
                     self.app.inform.emit(_("Failed. Painting polygon with method: seed."))
-                    cpoly = self.clear_polygon2(polyg,
-                                                tooldia=tooldiameter,
-                                                steps_per_circle=self.circle_steps,
-                                                overlap=over,
-                                                contour=cont,
-                                                connect=conn,
-                                                prog_plot=prog_plot)
+                    cpoly = self.clear_polygon_seed(polyg,
+                                                    tooldia=tooldiameter,
+                                                    steps_per_circle=self.circle_steps,
+                                                    overlap=over,
+                                                    contour=cont,
+                                                    connect=conn,
+                                                    prog_plot=prog_plot)
                     if cpoly and cpoly.objects:
                         pass
                     else:
                         self.app.inform.emit(_("Failed. Painting polygon with method: standard."))
-                        cpoly = self.clear_polygon(polyg,
-                                                   tooldia=tooldiameter,
-                                                   steps_per_circle=self.circle_steps,
-                                                   overlap=over,
-                                                   contour=cont,
-                                                   connect=conn,
-                                                   prog_plot=prog_plot)
+                        cpoly = self.clear_polygon_shrink(polyg,
+                                                          tooldia=tooldiameter,
+                                                          steps_per_circle=self.circle_steps,
+                                                          overlap=over,
+                                                          contour=cont,
+                                                          connect=conn,
+                                                          prog_plot=prog_plot)
             except grace:
                 return "fail"
             except Exception as ee:

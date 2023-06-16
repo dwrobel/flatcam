@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+16.06.2023
+
+- NCC Tool: made a small optimization by adding a simplification in the clearing geometry
+
 15.06.2023
 
 - a bit of optimization in camblib.clear_polygon() method

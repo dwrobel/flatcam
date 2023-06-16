@@ -188,17 +188,17 @@ class PaintOptionsTool(AppToolEditor):
                                 poly_buf = Polygon(geo_obj).buffer(-margin)
 
                             if method == _("Seed"):
-                                cp = Geometry.clear_polygon2(
+                                cp = Geometry.clear_polygon_seed(
                                     geo_editor, polygon_to_clear=poly_buf, tooldia=tooldia,
                                     steps_per_circle=geo_editor.app.options["geometry_circle_steps"],
                                     overlap=overlap, contour=contour, connect=connect)
                             elif method == _("Lines"):
-                                cp = Geometry.clear_polygon3(
+                                cp = Geometry.clear_polygon_lines(
                                     geo_editor, polygon=poly_buf, tooldia=tooldia,
                                     steps_per_circle=geo_editor.app.options["geometry_circle_steps"],
                                     overlap=overlap, contour=contour, connect=connect)
                             else:
-                                cp = Geometry.clear_polygon(
+                                cp = Geometry.clear_polygon_shrink(
                                     geo_editor, polygon=poly_buf, tooldia=tooldia,
                                     steps_per_circle=geo_editor.app.options["geometry_circle_steps"],
                                     overlap=overlap, contour=contour, connect=connect)

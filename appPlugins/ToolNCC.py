@@ -2176,39 +2176,41 @@ class NonCopperClear(AppTool, Gerber):
 
         return empty, warning_flag
 
-    def clear_polygon_worker(self, pol, tooldia, ncc_method, ncc_overlap, ncc_connect, ncc_contour, prog_plot):
+    def clear_polygon_worker(self, pol, tooldia, ncc_method, ncc_overlap, ncc_connect, ncc_contour, prog_plot,
+                             simplify_tol=0.0):
 
         cp = None
 
         if ncc_method == 0:     # standard
             try:
-                cp = self.clear_polygon(pol, tooldia,
-                                        steps_per_circle=self.circle_steps,
-                                        overlap=ncc_overlap, contour=ncc_contour,
-                                        connect=ncc_connect,
-                                        prog_plot=prog_plot)
+                cp = self.clear_polygon_shrink(pol, tooldia,
+                                               steps_per_circle=self.circle_steps,
+                                               overlap=ncc_overlap, contour=ncc_contour,
+                                               connect=ncc_connect,
+                                               simplify_tol=simplify_tol,
+                                               prog_plot=prog_plot)
             except grace:
                 return "fail"
             except Exception as ee:
                 self.app.log.error("NonCopperClear.clear_polygon_worker() Standard --> %s" % str(ee))
         elif ncc_method == 1:   # seed
             try:
-                cp = self.clear_polygon2(pol, tooldia,
-                                         steps_per_circle=self.circle_steps,
-                                         overlap=ncc_overlap, contour=ncc_contour,
-                                         connect=ncc_connect,
-                                         prog_plot=prog_plot)
+                cp = self.clear_polygon_seed(pol, tooldia,
+                                             steps_per_circle=self.circle_steps,
+                                             overlap=ncc_overlap, contour=ncc_contour,
+                                             connect=ncc_connect,
+                                             prog_plot=prog_plot)
             except grace:
                 return "fail"
             except Exception as ee:
                 self.app.log.error("NonCopperClear.clear_polygon_worker() Seed --> %s" % str(ee))
         elif ncc_method == 2:   # Lines
             try:
-                cp = self.clear_polygon3(pol, tooldia,
-                                         steps_per_circle=self.circle_steps,
-                                         overlap=ncc_overlap, contour=ncc_contour,
-                                         connect=ncc_connect,
-                                         prog_plot=prog_plot)
+                cp = self.clear_polygon_lines(pol, tooldia,
+                                              steps_per_circle=self.circle_steps,
+                                              overlap=ncc_overlap, contour=ncc_contour,
+                                              connect=ncc_connect,
+                                              prog_plot=prog_plot)
             except grace:
                 return "fail"
             except Exception as ee:
@@ -2216,37 +2218,38 @@ class NonCopperClear(AppTool, Gerber):
         elif ncc_method == 3:   # Combo
             try:
                 self.app.inform.emit(_("Clearing the polygon with the method: lines."))
-                cp = self.clear_polygon3(pol, tooldia,
-                                         steps_per_circle=self.circle_steps,
-                                         overlap=ncc_overlap, contour=ncc_contour,
-                                         connect=ncc_connect,
-                                         prog_plot=prog_plot)
+                cp = self.clear_polygon_lines(pol, tooldia,
+                                              steps_per_circle=self.circle_steps,
+                                              overlap=ncc_overlap, contour=ncc_contour,
+                                              connect=ncc_connect,
+                                              prog_plot=prog_plot)
 
                 if cp and cp.objects:
                     pass
                 else:
                     self.app.inform.emit(_("Failed. Clearing the polygon with the method: seed."))
-                    cp = self.clear_polygon2(pol, tooldia,
-                                             steps_per_circle=self.circle_steps,
-                                             overlap=ncc_overlap, contour=ncc_contour,
-                                             connect=ncc_connect,
-                                             prog_plot=prog_plot)
+                    cp = self.clear_polygon_seed(pol, tooldia,
+                                                 steps_per_circle=self.circle_steps,
+                                                 overlap=ncc_overlap, contour=ncc_contour,
+                                                 connect=ncc_connect,
+                                                 prog_plot=prog_plot)
                     if cp and cp.objects:
                         pass
                     else:
                         self.app.inform.emit(_("Failed. Clearing the polygon with the method: standard."))
-                        cp = self.clear_polygon(pol, tooldia,
-                                                steps_per_circle=self.circle_steps,
-                                                overlap=ncc_overlap, contour=ncc_contour,
-                                                connect=ncc_connect,
-                                                prog_plot=prog_plot)
+                        cp = self.clear_polygon_shrink(pol, tooldia,
+                                                       steps_per_circle=self.circle_steps,
+                                                       overlap=ncc_overlap, contour=ncc_contour,
+                                                       connect=ncc_connect,
+                                                       prog_plot=prog_plot)
             except grace:
                 return "fail"
             except Exception as ee:
                 self.app.log.error("NonCopperClear.clear_polygon_worker() Combo --> %s" % str(ee))
 
         if cp and cp.objects:
-            return list(cp.get_objects())
+            ret_val = list(cp.get_objects())
+            return ret_val
         else:
             pt = pol.representative_point()
             coords = (pt.x, pt.y)
@@ -2295,6 +2298,9 @@ class NonCopperClear(AppTool, Gerber):
         order = order if order else self.ui.ncc_order_combo.get_value()
         ncc_select = self.ui.select_combo.get_value()
         rest_machining_choice = self.ui.ncc_rest_cb.get_value()
+
+        # TODO this should be in preferences and in the UI
+        simplification_value = 0.02
 
         # determine if to use the progressive plotting
         prog_plot = True if self.app.options["tools_ncc_plotting"] == 'progressive' else False
@@ -2408,9 +2414,7 @@ class NonCopperClear(AppTool, Gerber):
                 old_disp_number = 0
                 self.app.log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
 
-                tool_empty_area = []
-                if area.geoms:
-                    tool_empty_area = flatten_shapely_geometry(area.geoms)
+                tool_empty_area = flatten_shapely_geometry(area.geoms)
 
                 if tool_empty_area:
                     pol_nr = 0
@@ -2425,7 +2429,7 @@ class NonCopperClear(AppTool, Gerber):
 
                         # clean the polygon
                         p = p.buffer(0.0000001)
-                        p = flatten_shapely_geometry(p)
+                        p = flatten_shapely_geometry(p, simplify_tolerance=simplification_value)
 
                         poly_failed = 0
                         for pol in p:
@@ -2438,6 +2442,7 @@ class NonCopperClear(AppTool, Gerber):
                                                                 ncc_overlap=ncc_overlap,
                                                                 ncc_connect=ncc_connect,
                                                                 ncc_contour=ncc_contour,
+                                                                simplify_tol=simplification_value,
                                                                 prog_plot=prog_plot)
                                 if res is not None:
                                     cleared_geo += res
@@ -2447,17 +2452,23 @@ class NonCopperClear(AppTool, Gerber):
                                 self.app.log.warning(
                                     "Expected geo is a Polygon. Instead got a %s" % str(type(pol)))
 
+                            pol_nr += 1
+                            disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
+                            # log.debug("Polygons cleared: %d" % pol_nr)
+
+                            if old_disp_number < disp_number <= 100:
+                                self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                                old_disp_number = disp_number
+                                # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
+
                         if poly_failed > 0:
                             app_obj.poly_not_cleared = True
 
-                        pol_nr += 1
-                        disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
-                        # log.debug("Polygons cleared: %d" % pol_nr)
-
-                        if old_disp_number < disp_number <= 100:
-                            self.app.proc_container.update_view_text(' %d%%' % disp_number)
-                            old_disp_number = disp_number
-                            # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
+                    l_coords = 0
+                    for i in range(len(cleared_geo)):
+                        l_coords += len(cleared_geo[i].coords)
+                    self.app.log.debug(
+                        "NCC Tool.clear_copper.gen_clear_area() -> Number of cleared geo coords: %s" % str(l_coords))
 
                     # check if there is a geometry at all in the cleared geometry
                     if cleared_geo:
@@ -2667,7 +2678,7 @@ class NonCopperClear(AppTool, Gerber):
                             # cleared with the current tool. this tremendously reduce the clearing time
                             check_dist = -tool / 2
                             check_buff = p.buffer(check_dist, self.circle_steps)
-                            check_buff = flatten_shapely_geometry(check_buff)
+                            check_buff = flatten_shapely_geometry(check_buff, simplify_tolerance=simplification_value)
                             if not check_buff:
                                 continue
 
@@ -2688,6 +2699,7 @@ class NonCopperClear(AppTool, Gerber):
                                                                 ncc_overlap=ncc_overlap,
                                                                 ncc_connect=ncc_connect,
                                                                 ncc_contour=ncc_contour,
+                                                                simplify_tol=simplification_value,
                                                                 prog_plot=prog_plot)
 
                                 if res is not None:
@@ -2724,6 +2736,12 @@ class NonCopperClear(AppTool, Gerber):
                 else:
                     app_obj.log.warning("The area to be cleared has no polygons.")
 
+                l_coords = 0
+                for i in range(len(cleared_geo)):
+                    l_coords += len(cleared_geo[i].coords)
+                self.app.log.debug(
+                    "NCC Tool.clear_copper.gen_clear_area_rest() -> Number of cleared geo coords: %s" % str(l_coords))
+
                 # # Area to clear next
                 # try:
                 #     # buffered_cleared = unary_union(cleared_geo).buffer(tool / 2.0)
@@ -2732,11 +2750,11 @@ class NonCopperClear(AppTool, Gerber):
                 # except Exception as e:
                 #     self.app.log.error("Creating new area failed due of: %s" % str(e))
 
-                new_area = MultiPolygon([line.buffer(tool / 1.9999999) for line in cleared_geo])
+                new_area = MultiPolygon([line.buffer(tool / 2) for line in cleared_geo])
                 new_area = new_area.buffer(0.0000001)
 
                 area = area.difference(new_area)
-                area = flatten_shapely_geometry(area)
+                area = flatten_shapely_geometry(area, simplify_tolerance=simplification_value)
 
                 new_area = [pol for pol in area if pol.is_valid and not pol.is_empty]
                 area = MultiPolygon(new_area)
@@ -2799,7 +2817,7 @@ class NonCopperClear(AppTool, Gerber):
                         except TypeError:
                             geo_obj.solid_geometry.append(geo_obj.tools[tool_uid]['solid_geometry'])
             else:
-                # I will use this variable for this purpose although it was meant for something else
+                # I will use this variable for this purpose, although it was meant for something else
                 # signal that we have no geo in the object therefore don't create it
                 app_obj.poly_not_cleared = False
                 return "fail"
@@ -3247,17 +3265,17 @@ class NonCopperClear(AppTool, Gerber):
                         poly_processed = []
                         if isinstance(p, Polygon):
                             if ncc_method == 0:  # standard
-                                cp = self.clear_polygon(p, tool, self.circle_steps,
-                                                        overlap=overlap, contour=contour, connect=connect,
-                                                        prog_plot=False)
+                                cp = self.clear_polygon_shrink(p, tool, self.circle_steps,
+                                                               overlap=overlap, contour=contour, connect=connect,
+                                                               prog_plot=False)
                             elif ncc_method == 1:  # seed
-                                cp = self.clear_polygon2(p, tool, self.circle_steps,
-                                                         overlap=overlap, contour=contour, connect=connect,
-                                                         prog_plot=False)
+                                cp = self.clear_polygon_seed(p, tool, self.circle_steps,
+                                                             overlap=overlap, contour=contour, connect=connect,
+                                                             prog_plot=False)
                             else:
-                                cp = self.clear_polygon3(p, tool, self.circle_steps,
-                                                         overlap=overlap, contour=contour, connect=connect,
-                                                         prog_plot=False)
+                                cp = self.clear_polygon_lines(p, tool, self.circle_steps,
+                                                              overlap=overlap, contour=contour, connect=connect,
+                                                              prog_plot=False)
                             if cp:
                                 cleared_geo += list(cp.get_objects())
                                 poly_processed.append(True)
@@ -3614,20 +3632,20 @@ class NonCopperClear(AppTool, Gerber):
                                 if isinstance(p, Polygon):
                                     try:
                                         if ncc_method == 0:     # standard
-                                            cp = self.clear_polygon(p, tool_used,
-                                                                    self.circle_steps,
-                                                                    overlap=overlap, contour=contour, connect=connect,
-                                                                    prog_plot=False)
+                                            cp = self.clear_polygon_shrink(p, tool_used,
+                                                                           self.circle_steps,
+                                                                           overlap=overlap, contour=contour, connect=connect,
+                                                                           prog_plot=False)
                                         elif ncc_method == 1:   # seed
-                                            cp = self.clear_polygon2(p, tool_used,
-                                                                     self.circle_steps,
-                                                                     overlap=overlap, contour=contour, connect=connect,
-                                                                     prog_plot=False)
+                                            cp = self.clear_polygon_seed(p, tool_used,
+                                                                         self.circle_steps,
+                                                                         overlap=overlap, contour=contour, connect=connect,
+                                                                         prog_plot=False)
                                         else:
-                                            cp = self.clear_polygon3(p, tool_used,
-                                                                     self.circle_steps,
-                                                                     overlap=overlap, contour=contour, connect=connect,
-                                                                     prog_plot=False)
+                                            cp = self.clear_polygon_lines(p, tool_used,
+                                                                          self.circle_steps,
+                                                                          overlap=overlap, contour=contour, connect=connect,
+                                                                          prog_plot=False)
                                         cleared_geo.append(list(cp.get_objects()))
                                     except Exception as ee:
                                         self.app.log.error("Polygon can't be cleared. %s" % str(ee))
@@ -3643,23 +3661,23 @@ class NonCopperClear(AppTool, Gerber):
 
                                             try:
                                                 if ncc_method == 0:     # 'standard'
-                                                    cp = self.clear_polygon(poly_p, tool_used,
-                                                                            self.circle_steps,
-                                                                            overlap=overlap, contour=contour,
-                                                                            connect=connect,
-                                                                            prog_plot=False)
+                                                    cp = self.clear_polygon_shrink(poly_p, tool_used,
+                                                                                   self.circle_steps,
+                                                                                   overlap=overlap, contour=contour,
+                                                                                   connect=connect,
+                                                                                   prog_plot=False)
                                                 elif ncc_method == 1:   # 'seed'
-                                                    cp = self.clear_polygon2(poly_p, tool_used,
-                                                                             self.circle_steps,
-                                                                             overlap=overlap, contour=contour,
-                                                                             connect=connect,
-                                                                             prog_plot=False)
+                                                    cp = self.clear_polygon_seed(poly_p, tool_used,
+                                                                                 self.circle_steps,
+                                                                                 overlap=overlap, contour=contour,
+                                                                                 connect=connect,
+                                                                                 prog_plot=False)
                                                 else:
-                                                    cp = self.clear_polygon3(poly_p, tool_used,
-                                                                             self.circle_steps,
-                                                                             overlap=overlap, contour=contour,
-                                                                             connect=connect,
-                                                                             prog_plot=False)
+                                                    cp = self.clear_polygon_lines(poly_p, tool_used,
+                                                                                  self.circle_steps,
+                                                                                  overlap=overlap, contour=contour,
+                                                                                  connect=connect,
+                                                                                  prog_plot=False)
                                                 cleared_geo.append(list(cp.get_objects()))
                                             except Exception as eee:
                                                 self.app.log.error("Polygon can't be cleared. %s" % str(eee))

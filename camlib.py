@@ -1424,8 +1424,8 @@ class Geometry(object):
             boundary = self.solid_geometry.envelope
         return boundary.difference(self.solid_geometry)
 
-    def clear_polygon(self, polygon, tooldia, steps_per_circle, overlap=0.15, connect=True, contour=True,
-                      prog_plot=False):
+    def clear_polygon_shrink(self, polygon, tooldia, steps_per_circle, overlap=0.15, connect=True, contour=True,
+                             simplify_tol=0.0, prog_plot=False):
         """
         Creates geometry inside a polygon for a tool to cover
         the whole area.
@@ -1445,7 +1445,7 @@ class Geometry(object):
         :return:
         """
 
-        # log.debug("camlib.clear_polygon()")
+        # log.debug("camlib.clear_polygon_shrink()")
 
         # The toolpaths
         # Index first and last points in paths
@@ -1457,38 +1457,24 @@ class Geometry(object):
 
         # Can only result in a Polygon or MultiPolygon
         # NOTE: The resulting polygon can be "empty".
-        current = polygon.buffer((-tooldia / 1.999999), int(steps_per_circle))
+        current = polygon.buffer((-tooldia / 2), int(steps_per_circle))
         current = flatten_shapely_geometry(current)
-
-        # if current.area == 0:
-        #     # Otherwise, trying to insert current.exterior == None
-        #     # into the FlatCAMStorage will fail.
-        #     # print("Area is None")
-        #     return None
 
         for p in current:
             geoms.insert(p.exterior)
             for i in p.interiors:
                 geoms.insert(i)
 
-        if self.app.abort_flag:
-            # graceful abort requested by the user
-            raise grace
-
-        # provide the app with a way to process the GUI events when in a blocking loop
-        QtWidgets.QApplication.processEvents()
-
         for cl_pol in current:
             while True:
                 if self.app.abort_flag:
                     # graceful abort requested by the user
                     raise grace
-
                 # provide the app with a way to process the GUI events when in a blocking loop
                 QtWidgets.QApplication.processEvents()
 
                 cl_pol = cl_pol.buffer(-tooldia * (1 - overlap), int(steps_per_circle))
-                cl_pol_list = flatten_shapely_geometry(cl_pol)
+                cl_pol_list = flatten_shapely_geometry(cl_pol, simplify_tolerance=simplify_tol)
 
                 added_flag = False
                 for tiny_pol in cl_pol_list:
@@ -1505,7 +1491,7 @@ class Geometry(object):
                 if added_flag is False:
                     break
 
-                cl_pol = MultiPolygon(cl_pol_list)
+                cl_pol = unary_union(cl_pol_list)
 
                 # if isinstance(cl_pol, MultiPolygon):
                 #     cl_pol = flatten_shapely_geometry(cl_pol)
@@ -1540,7 +1526,7 @@ class Geometry(object):
                 #         break
 
         if not geoms.objects:
-            self.app.log.debug("camlib.Geometry.clear_polygon() --> Current Area is zero")
+            self.app.log.debug("camlib.Geometry.clear_polygon_shrink() --> Current Area is zero")
             return
 
         if prog_plot:
@@ -1553,8 +1539,8 @@ class Geometry(object):
 
         return geoms
 
-    def clear_polygon2(self, polygon_to_clear, tooldia, steps_per_circle, seedpoint=None, overlap=0.15,
-                       connect=True, contour=True, prog_plot=False):
+    def clear_polygon_seed(self, polygon_to_clear, tooldia, steps_per_circle, seedpoint=None, overlap=0.15,
+                           connect=True, contour=True, simplify_tol=0.0, prog_plot=False):
         """
         Creates geometry inside a polygon for a tool to cover
         the whole area.
@@ -1576,7 +1562,7 @@ class Geometry(object):
         :rtype:                     AppRTreeStorage | None
         """
 
-        # log.debug("camlib.clear_polygon2()")
+        # log.debug("camlib.clear_polygon_seed()")
 
         # Current buffer radius
         radius = tooldia / 2 * (1 - overlap)
@@ -1591,6 +1577,8 @@ class Geometry(object):
 
         # Path margin
         path_margin = polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle))
+        path_margin = flatten_shapely_geometry(path_margin, simplify_tolerance=simplify_tol)
+        path_margin = MultiPolygon(path_margin)
 
         if path_margin.is_empty or path_margin is None:
             return None
@@ -1610,34 +1598,29 @@ class Geometry(object):
             QtWidgets.QApplication.processEvents()
 
             path = Point(seedpoint).buffer(radius, int(steps_per_circle)).exterior
+            path = path.simplify(simplify_tol)
             path = path.intersection(path_margin)
 
             # Touches polygon?
             if path.is_empty:
                 break
-            else:
-                # geom_elems.append(path)
-                # geom_elems.insert(path)
-                # path can be a collection of paths.
-                path_geometry = path.geoms if isinstance(path, MultiLineString) else path
-                try:
-                    for p in path_geometry:
-                        geom_elems.insert(p)
-                        if prog_plot:
-                            self.plot_temp_shapes(p)
-                except TypeError:
-                    geom_elems.insert(path_geometry)
-                    if prog_plot:
-                        self.plot_temp_shapes(path_geometry)
 
+            # path can be a collection of paths.
+            path_geometry = flatten_shapely_geometry(path, simplify_tolerance=simplify_tol)
+            for p in path_geometry:
+                geom_elems.insert(p)
                 if prog_plot:
-                    self.temp_shapes.redraw()
+                    self.plot_temp_shapes(p)
+
+            if prog_plot:
+                self.temp_shapes.redraw()
 
             radius += tooldia * (1 - overlap)
 
         # Clean inside edges (contours) of the original polygon
         if contour:
             buffered_poly = autolist(polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle)))
+            buffered_poly = [x.simplify(simplify_tol) for x in buffered_poly]
             outer_edges = [x.exterior for x in buffered_poly]
 
             inner_edges = []
@@ -1645,7 +1628,7 @@ class Geometry(object):
             for x in buffered_poly:
                 for y in x.interiors:  # Over interiors of each polygon
                     inner_edges.append(y)
-            # geom_elems += outer_edges + inner_edges
+
             for g in outer_edges + inner_edges:
                 if g and not g.is_empty:
                     geom_elems.insert(g)
@@ -1668,8 +1651,8 @@ class Geometry(object):
 
         return geom_elems
 
-    def clear_polygon3(self, polygon, tooldia, steps_per_circle, overlap=0.15, connect=True, contour=True,
-                       prog_plot=False):
+    def clear_polygon_lines(self, polygon, tooldia, steps_per_circle, overlap=0.15, connect=True, contour=True,
+                            simplify_tol=0.0, prog_plot=False):
         """
         Creates geometry inside a polygon for a tool to cover
         the whole area.
@@ -1687,12 +1670,12 @@ class Geometry(object):
         :return:
         """
 
-        # log.debug("camlib.clear_polygon3()")
+        # log.debug("camlib.clear_polygon_lines()")
         if not isinstance(polygon, Polygon):
-            self.app.log.debug("camlib.Geometry.clear_polygon3() --> Not a Polygon but %s" % str(type(polygon)))
+            self.app.log.debug("camlib.Geometry.clear_polygon_lines() --> Not a Polygon but %s" % str(type(polygon)))
             return None
 
-        # ## The toolpaths
+        # The toolpaths
         # Index first and last points in paths
         def get_pts(o):
             return [o.coords[0], o.coords[-1]]
@@ -1707,8 +1690,9 @@ class Geometry(object):
 
         try:
             margin_poly = polygon.buffer(-tooldia / 1.99999999, (int(steps_per_circle)))
+            margin_poly = margin_poly.simplify(simplify_tol)
         except Exception:
-            self.app.log.debug("camlib.Geometry.clear_polygon3() --> Could not buffer the Polygon")
+            self.app.log.debug("camlib.Geometry.clear_polygon_lines() --> Could not buffer the Polygon")
             return None
 
         # decide the direction of the lines
@@ -1726,7 +1710,8 @@ class Geometry(object):
 
                     line = LineString([(left, y), (right, y)])
                     line = line.intersection(margin_poly)
-                    lines_trimmed.append(line)
+                    line = flatten_shapely_geometry(line, simplify_tolerance=simplify_tol)
+                    lines_trimmed += line
                     y -= tooldia * (1 - overlap)
                     if prog_plot:
                         self.plot_temp_shapes(line)
@@ -1737,18 +1722,13 @@ class Geometry(object):
                 line = LineString([(left, y), (right, y)])
                 line = line.intersection(margin_poly)
 
-                lines_geometry = line.geoms if isinstance(line, MultiLineString) else line
-                try:
-                    for ll in lines_geometry:
-                        lines_trimmed.append(ll)
-                        if prog_plot:
-                            self.plot_temp_shapes(ll)
-                except TypeError:
-                    lines_trimmed.append(lines_geometry)
+                lines_geometry = flatten_shapely_geometry(line, simplify_tolerance=simplify_tol)
+                for ll in lines_geometry:
+                    lines_trimmed.append(ll)
                     if prog_plot:
-                        self.plot_temp_shapes(lines_geometry)
+                        self.plot_temp_shapes(ll)
             except Exception as e:
-                self.app.log.error('camlib.Geometry.clear_polygon3() Processing poly --> %s' % str(e))
+                self.app.log.error('camlib.Geometry.clear_polygon_lines() Processing poly --> %s' % str(e))
                 return None
         else:
             # First line
@@ -1764,7 +1744,8 @@ class Geometry(object):
 
                     line = LineString([(x, top), (x, bot)])
                     line = line.intersection(margin_poly)
-                    lines_trimmed.append(line)
+                    line = flatten_shapely_geometry(line, simplify_tolerance=simplify_tol)
+                    lines_trimmed += line
                     x += tooldia * (1 - overlap)
                     if prog_plot:
                         self.plot_temp_shapes(line)
@@ -1775,18 +1756,13 @@ class Geometry(object):
                 line = LineString([(x, top), (x, bot)])
                 line = line.intersection(margin_poly)
 
-                lines_geometry = line.geoms if isinstance(line, MultiLineString) else line
-                try:
-                    for ll in lines_geometry:
-                        lines_trimmed.append(ll)
-                        if prog_plot:
-                            self.plot_temp_shapes(ll)
-                except TypeError:
-                    lines_trimmed.append(lines_geometry)
+                lines_geometry = flatten_shapely_geometry(line, simplify_tolerance=simplify_tol)
+                for ll in lines_geometry:
+                    lines_trimmed.append(ll)
                     if prog_plot:
-                        self.plot_temp_shapes(lines_geometry)
+                        self.plot_temp_shapes(ll)
             except Exception as e:
-                self.app.log.error('camlib.Geometry.clear_polygon3() Processing poly --> %s' % str(e))
+                self.app.log.error('camlib.Geometry.clear_polygon_lines() Processing poly --> %s' % str(e))
                 return None
 
         if prog_plot:
@@ -1795,39 +1771,23 @@ class Geometry(object):
         lines_trimmed = unary_union(lines_trimmed)
 
         # Add lines to storage
-        try:
-            lines_t_geo = lines_trimmed.geoms if isinstance(lines_trimmed, MultiLineString) else lines_trimmed
-            for line in lines_t_geo:
-                if isinstance(line, LineString) or isinstance(line, LinearRing):
-                    if not line.is_empty:
-                        geoms.insert(line)
-                else:
-                    self.app.log.debug("camlib.Geometry.clear_polygon3(). Not a line: %s" % str(type(line)))
-        except TypeError:
-            # in case lines_trimmed are not iterable (Linestring, LinearRing)
-            if not lines_trimmed.is_empty:
-                geoms.insert(lines_trimmed)
+        lines_t_geo = flatten_shapely_geometry(lines_trimmed, simplify_tolerance=simplify_tol)
+        for line in lines_t_geo:
+            if isinstance(line, LineString) or isinstance(line, LinearRing):
+                if not line.is_empty:
+                    geoms.insert(line)
+            else:
+                self.app.log.debug("camlib.Geometry.clear_polygon_lines(). Not a line: %s" % str(type(line)))
 
         # Add margin (contour) to storage
         if contour:
-            try:
-                margin_poly_geo = margin_poly.geoms if isinstance(margin_poly, MultiPolygon) else margin_poly
-                for poly in margin_poly_geo:
-                    if isinstance(poly, Polygon) and not poly.is_empty:
-                        geoms.insert(poly.exterior)
-                        if prog_plot:
-                            self.plot_temp_shapes(poly.exterior)
-                        for ints in poly.interiors:
-                            geoms.insert(ints)
-                            if prog_plot:
-                                self.plot_temp_shapes(ints)
-            except TypeError:
-                if isinstance(margin_poly, Polygon) and not margin_poly.is_empty:
-                    marg_ext = margin_poly.exterior
-                    geoms.insert(marg_ext)
+            margin_poly_geo = flatten_shapely_geometry(margin_poly, simplify_tolerance=simplify_tol)
+            for poly in margin_poly_geo:
+                if isinstance(poly, Polygon) and not poly.is_empty:
+                    geoms.insert(poly.exterior)
                     if prog_plot:
-                        self.plot_temp_shapes(margin_poly.exterior)
-                    for ints in margin_poly.interiors:
+                        self.plot_temp_shapes(poly.exterior)
+                    for ints in poly.interiors:
                         geoms.insert(ints)
                         if prog_plot:
                             self.plot_temp_shapes(ints)
@@ -7825,11 +7785,13 @@ class CNCjob(Geometry):
         self.app.proc_container.new_text = ''
 
 
-def flatten_shapely_geometry(geometry):
+def flatten_shapely_geometry(geometry, simplify_tolerance=0.0):
     """
 
     :param geometry:
     :type geometry:
+    :param simplify_tolerance:  if non-zero then simplify the geometry
+    :type simplify_tolerance:   float
     :return:
     :rtype:
     """
@@ -7840,7 +7802,10 @@ def flatten_shapely_geometry(geometry):
             flat_list += flatten_shapely_geometry(geo)
     except TypeError:
         if geometry and not geometry.is_empty:
-            flat_list.append(geometry)
+            if simplify_tolerance > 0.0:
+                flat_list.append(geometry.simplify(simplify_tolerance))
+            else:
+                flat_list.append(geometry)
 
     return flat_list
 

@@ -2869,9 +2869,9 @@ class ToolMilling(AppTool, Excellon):
                 if self.app.abort_flag:
                     # graceful abort requested by the user
                     raise grace
-                geo_res = self.clear_polygon2(pp, seedpoint=pp.centroid, tooldia=mill_dia, overlap=over,
-                                              steps_per_circle=self.app.options['geometry_circle_steps'],
-                                              connect=conn, contour=cont, prog_plot=False)
+                geo_res = self.clear_polygon_seed(pp, seedpoint=pp.centroid, tooldia=mill_dia, overlap=over,
+                                                  steps_per_circle=self.app.options['geometry_circle_steps'],
+                                                  connect=conn, contour=cont, prog_plot=False)
                 if geo_res:
                     cp.append(geo_res)
                 pol_nr += 1
@@ -3293,29 +3293,29 @@ class ToolMilling(AppTool, Excellon):
                         # Type(cpoly) == AppRTreeStorage | None
                         cpoly = None
                         if paint_method == 0:  # Standard
-                            cpoly = self.clear_polygon(bbox,
-                                                       tooldia=tooldia_val,
-                                                       steps_per_circle=self.circle_steps,
-                                                       overlap=overlap,
-                                                       contour=True,
-                                                       connect=True,
-                                                       prog_plot=False)
+                            cpoly = self.clear_polygon_shrink(bbox,
+                                                              tooldia=tooldia_val,
+                                                              steps_per_circle=self.circle_steps,
+                                                              overlap=overlap,
+                                                              contour=True,
+                                                              connect=True,
+                                                              prog_plot=False)
                         elif paint_method == 1:  # Seed
-                            cpoly = self.clear_polygon2(bbox,
-                                                        tooldia=tooldia_val,
-                                                        steps_per_circle=self.circle_steps,
-                                                        overlap=overlap,
-                                                        contour=True,
-                                                        connect=True,
-                                                        prog_plot=False)
+                            cpoly = self.clear_polygon_seed(bbox,
+                                                            tooldia=tooldia_val,
+                                                            steps_per_circle=self.circle_steps,
+                                                            overlap=overlap,
+                                                            contour=True,
+                                                            connect=True,
+                                                            prog_plot=False)
                         elif paint_method == 2:  # Lines
-                            cpoly = self.clear_polygon3(bbox,
-                                                        tooldia=tooldia_val,
-                                                        steps_per_circle=self.circle_steps,
-                                                        overlap=overlap,
-                                                        contour=True,
-                                                        connect=True,
-                                                        prog_plot=False)
+                            cpoly = self.clear_polygon_lines(bbox,
+                                                             tooldia=tooldia_val,
+                                                             steps_per_circle=self.circle_steps,
+                                                             overlap=overlap,
+                                                             contour=True,
+                                                             connect=True,
+                                                             prog_plot=False)
 
                         if not cpoly or not cpoly.objects:
                             self.app.inform.emit('[ERROR_NOTCL] %s' % _('Geometry could not be painted completely'))
