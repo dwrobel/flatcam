@@ -1871,6 +1871,9 @@ class ToolPaint(AppTool, Gerber):
         tools_storage = self.paint_tools if tools_storage is None else tools_storage
         use_rest_strategy = rest if rest is not None else self.ui.rest_cb.get_value()
 
+        # TODO this should be in preferences and in the UI
+        simplification_value = 0.01
+
         sorted_tools = []
         if tooldia is not None:
             try:
@@ -1959,7 +1962,7 @@ class ToolPaint(AppTool, Gerber):
                 # effective polygon clearing job
                 # -----------------------------
                 try:
-                    cp = []
+                    cp_list = []
                     for pp in poly_buf:
                         # provide the app with a way to process the GUI events when in a blocking loop
                         QtWidgets.QApplication.processEvents()
@@ -1970,7 +1973,7 @@ class ToolPaint(AppTool, Gerber):
                                                             cont=cont, paint_method=paint_method, obj=obj,
                                                             prog_plot=prog_plot)
                         if geo_res:
-                            cp.append(geo_res)
+                            cp_list.append(geo_res)
                         pol_nr += 1
                         disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
                         # log.debug("Polygons cleared: %d" % pol_nr)
@@ -1980,9 +1983,12 @@ class ToolPaint(AppTool, Gerber):
                             old_disp_number = disp_number
 
                     total_geometry = []
-                    if cp:
-                        for x in cp:
-                            total_geometry += list(x.get_objects())
+                    if cp_list:
+                        for cp in cp_list:
+                            if simplification_value > 0.0:
+                                total_geometry += [x.simplify(simplification_value) for x in cp.get_objects()]
+                            else:
+                                total_geometry += [x for x in cp.get_objects()]
 
                         # clean the geometry
                         total_geometry = [g for g in total_geometry if g and not g.is_empty]
@@ -2141,7 +2147,12 @@ class ToolPaint(AppTool, Gerber):
                         geo_res = self.paint_polygon_worker(pp, tooldiameter=tool_dia, over=over, conn=conn,
                                                             cont=cont, paint_method=paint_method, obj=obj,
                                                             prog_plot=prog_plot)
-                        geo_elems = list(geo_res.get_objects())
+
+                        if simplification_value > 0.0:
+                            geo_elems = [x.simplify(simplification_value) for x in geo_res.get_objects()]
+                        else:
+                            geo_elems = [x for x in geo_res.get_objects()]
+
                         # See if the polygon was completely cleared
                         pp_cleared = unary_union(geo_elems).buffer(tool_dia / 2.0)
                         rest_geo = pp.difference(pp_cleared)
@@ -2153,6 +2164,7 @@ class ToolPaint(AppTool, Gerber):
 
                         if geo_res:
                             cleared_geo += geo_elems
+
                         pol_nr += 1
                         disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
                         # log.debug("Polygons cleared: %d" % pol_nr)

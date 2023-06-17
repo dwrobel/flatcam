@@ -7,9 +7,16 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+17.06.2023
+
+- NCC Plugin: modified the previous change and now the simplification action is much bigger reducing the number of coordinates by a factor of 20 (20 times less)
+- Paint Plugin: same as above
+- Ncc Plugin: added some more tooltips
+- Isolation Plugin: fixed some issues when using the Rest Machining option
+
 16.06.2023
 
-- NCC Tool: made a small optimization by adding a simplification in the clearing geometry
+- NCC Plugin: made a small optimization by adding a simplification in the clearing geometry
 
 15.06.2023
 

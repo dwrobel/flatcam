@@ -2074,13 +2074,13 @@ class ToolIsolation(AppTool, Gerber):
                         solid_geo = self.area_intersection(solid_geo, intersection_geo=lim_area)
 
                     # make sure that no empty geometry element is in the solid_geometry
-                    new_solid_geo = [geo for geo in solid_geo if not geo.is_empty]
+                    new_solid_geo = flatten_shapely_geometry(solid_geo)
 
                     tools_storage.update({
                         tool: {
                             'tooldia':          float(tool_dia),
                             'data':             tool_data,
-                            'solid_geometry':   deepcopy(new_solid_geo)
+                            'solid_geometry':   new_solid_geo
                         }
                     })
                     tools_storage[tool]['data']['tools_mill_tooldia'] = float(tool_dia)
@@ -2090,11 +2090,10 @@ class ToolIsolation(AppTool, Gerber):
                     if not work_geo:
                         break
 
-        total_solid_geometry = self.flatten_list(total_solid_geometry)
-        total_solid_geometry = [g for g in total_solid_geometry if not g.is_empty]
         if simp_en:
-            total_solid_geometry = [
-                g.simplify(tolerance=simp_tol) for g in total_solid_geometry if not g.is_empty]
+            total_solid_geometry = flatten_shapely_geometry(total_solid_geometry, simplify_tolerance=simp_tol)
+        else:
+            total_solid_geometry = flatten_shapely_geometry(total_solid_geometry)
 
         # clean the progressive plotted shapes if it was used
         if plot and self.app.options["tools_iso_plotting"] == 'progressive':
@@ -2169,7 +2168,7 @@ class ToolIsolation(AppTool, Gerber):
                 pt = geo.representative_point()
                 coords = '(%s, %s), ' % (str(pt.x), str(pt.y))
                 msg += coords
-            self.app.inform_shell.emit(msg=msg)
+            self.app.inform_shell.emit(msg)
 
     def combined_normal(self, iso_obj, iso2geo, tools_storage, lim_area, sel_tools, iso_except, extra_passes=None,
                         negative_dia=None, simp_en=False, simp_tol=0.001, plot=True, prog_plot=None):
@@ -3266,30 +3265,21 @@ class ToolIsolation(AppTool, Gerber):
             else:
                 not_isolated_geo.append(geo)
 
-        work_geo_shp = work_geo.geoms if isinstance(work_geo, MultiPolygon) else work_geo
+        work_geo_shp = flatten_shapely_geometry(work_geo)
         if invert:
             try:
                 pl = []
                 for p in work_geo_shp:
-                    if p is not None:
-                        if isinstance(p, Polygon):
-                            pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
-                        elif isinstance(p, LinearRing):
-                            pl.append(Polygon(p.coords[::-1]))
+                    if isinstance(p, Polygon):
+                        pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
+                    elif isinstance(p, LinearRing):
+                        pl.append(Polygon(p.coords[::-1]))
                 work_geo_shp = MultiPolygon(pl)
-            except TypeError:
-                if isinstance(work_geo_shp, Polygon) and work_geo_shp is not None:
-                    work_geo_shp = [Polygon(work_geo_shp.exterior.coords[::-1], work_geo_shp.interiors)]
-                elif isinstance(work_geo_shp, LinearRing) and work_geo_shp is not None:
-                    work_geo_shp = [Polygon(work_geo_shp.coords[::-1])]
-                else:
-                    self.app.log.debug(
-                        "ToolIsolation.generate_rest_geometry() Error --> Unexpected Geometry %s" % type(work_geo))
             except Exception as e:
                 self.app.log.error("ToolIsolation.generate_rest_geometry() Error --> %s" % str(e))
                 return 'fail', 'fail'
 
-        actual_geo = work_geo_shp.geoms if isinstance(work_geo, MultiPolygon) else work_geo_shp
+        actual_geo = flatten_shapely_geometry(work_geo_shp)
         if env_iso_type == 0:  # exterior
             for geo in actual_geo:
                 isolated_geo.append(geo.exterior)

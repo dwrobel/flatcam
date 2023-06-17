@@ -171,8 +171,11 @@ class FCVisibleProcessContainer(QtCore.QObject, FCProcessContainer):
         else:
             self.view.set_busy("%d %s" % (len(self.procs), _("processes running.")))
 
-    def update_view_text(self, new_text):
+    def update_view_text(self, new_text, clear=False):
         # this has to be called after the method 'new' inherited by this class is called with a string text as param
         self.new_text = new_text
         if len(self.procs) == 1:
-            self.view.set_busy(self.text_to_display_in_activity + self.new_text, no_movie=True)
+            if clear is False:
+                self.view.set_busy(self.text_to_display_in_activity + self.new_text, no_movie=True)
+            else:
+                self.view.set_busy(self.new_text, no_movie=True)

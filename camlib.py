@@ -1425,7 +1425,7 @@ class Geometry(object):
         return boundary.difference(self.solid_geometry)
 
     def clear_polygon_shrink(self, polygon, tooldia, steps_per_circle, overlap=0.15, connect=True, contour=True,
-                             simplify_tol=0.0, prog_plot=False):
+                             prog_plot=False):
         """
         Creates geometry inside a polygon for a tool to cover
         the whole area.
@@ -1474,7 +1474,7 @@ class Geometry(object):
                 QtWidgets.QApplication.processEvents()
 
                 cl_pol = cl_pol.buffer(-tooldia * (1 - overlap), int(steps_per_circle))
-                cl_pol_list = flatten_shapely_geometry(cl_pol, simplify_tolerance=simplify_tol)
+                cl_pol_list = flatten_shapely_geometry(cl_pol)
 
                 added_flag = False
                 for tiny_pol in cl_pol_list:
@@ -1535,6 +1535,8 @@ class Geometry(object):
         # Optimization: Reduce lifts
         if connect:
             # log.debug("Reducing tool lifts...")
+            self.app.inform.emit(_("Connect: reducing tool lifts. This may take a while, please wait..."))
+            self.app.proc_container.update_view_text(' %s' % _("Connecting..."), clear=True)
             geoms = Geometry.paint_connect(geoms, polygon, tooldia, int(steps_per_circle))
 
         return geoms
@@ -1645,6 +1647,8 @@ class Geometry(object):
         # Optimization: Reduce lifts
         if connect:
             # log.debug("Reducing tool lifts...")
+            self.app.inform.emit(_("Connect: reducing tool lifts. This may take a while, please wait..."))
+            self.app.proc_container.update_view_text(' %s' % _("Connecting..."), clear=True)
             geoms_conn = Geometry.paint_connect(geom_elems, polygon_to_clear, tooldia, steps_per_circle)
             if geoms_conn:
                 return geoms_conn
@@ -1798,6 +1802,8 @@ class Geometry(object):
         # Optimization: Reduce lifts
         if connect:
             # log.debug("Reducing tool lifts...")
+            self.app.inform.emit(_("Connect: reducing tool lifts. This may take a while, please wait..."))
+            self.app.proc_container.update_view_text(' %s' % _("Connecting..."), clear=True)
             geoms_conn = Geometry.paint_connect(geoms, polygon, tooldia, steps_per_circle)
             if geoms_conn:
                 return geoms_conn
@@ -1987,6 +1993,8 @@ class Geometry(object):
         # Optimization: Reduce lifts
         if connect:
             # log.debug("Reducing tool lifts...")
+            self.app.inform.emit(_("Connect: reducing tool lifts. This may take a while, please wait..."))
+            self.app.proc_container.update_view_text(' %s' % _("Connecting..."), clear=True)
             geoms_conn = Geometry.paint_connect(geoms, polygon, tooldia, steps_per_circle)
             if geoms_conn:
                 return geoms_conn
@@ -1995,7 +2003,7 @@ class Geometry(object):
 
     def scale(self, xfactor, yfactor, point=None):
         """
-        Scales all of the object's geometry by a given factor. Override
+        Scales all the object's geometry by a given factor. Override
         this method.
         :param xfactor: Number by which to scale on X axis.
         :type xfactor: float
