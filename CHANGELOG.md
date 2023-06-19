@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+19.06.2023
+
+- added a new signal allowing printing messages in statusbar without polluting the Tcl Shell; to be used in the future for low-ranking messages
+
 17.06.2023
 
 - NCC Plugin: modified the previous change and now the simplification action is much bigger reducing the number of coordinates by a factor of 20 (20 times less)

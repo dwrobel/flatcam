@@ -218,6 +218,7 @@ class App(QtCore.QObject):
     inform = QtCore.pyqtSignal([str], [str, bool])
     # Handled by: App.info_shell() --> Print on the shell
     inform_shell = QtCore.pyqtSignal([str], [str, bool])
+    inform_no_echo = QtCore.pyqtSignal(str)
 
     app_quit = QtCore.pyqtSignal()
 
@@ -1178,6 +1179,7 @@ class App(QtCore.QObject):
         # signal for displaying messages in status bar
         self.inform[str].connect(self.info)
         self.inform[str, bool].connect(self.info)
+        self.inform_no_echo[str].connect(lambda txt: self.info(msg=txt, shell_echo=False))  # noqa
 
         # signals for displaying messages in the Tcl Shell are now connected in the ToolShell class
 
