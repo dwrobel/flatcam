@@ -2776,7 +2776,12 @@ class NonCopperClear(AppTool, Gerber):
                 # except Exception as e:
                 #     self.app.log.error("Creating new area failed due of: %s" % str(e))
 
-                new_area = MultiPolygon([line.buffer(tool / 2) for line in cleared_geo])
+                if not cleared_geo:
+                    break
+                buffered_cleared_geo = [line.buffer(tool / 2) for line in cleared_geo]
+                if not buffered_cleared_geo:
+                    break
+                new_area = MultiPolygon(buffered_cleared_geo)
                 new_area = new_area.buffer(0.0000001)
 
                 area = area.difference(new_area)

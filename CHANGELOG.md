@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+29.06.2023
+
+- NCC Plugin: updates to fix a bug when doing copper clearing with Rest option
+
 19.06.2023
 
 - added a new signal allowing printing messages in statusbar without polluting the Tcl Shell; to be used in the future for low-ranking messages
