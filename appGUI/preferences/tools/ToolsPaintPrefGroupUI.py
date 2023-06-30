@@ -241,16 +241,13 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         gen_grid = GLay(v_spacing=5, h_spacing=3)
         gp_frame.setLayout(gen_grid)
 
-        self.rest_cb = FCCheckBox('%s' % _("Rest"))
-        self.rest_cb.setObjectName(_("Rest"))
+        self.rest_cb = FCCheckBox('%s' % _("Rest Machining"))
+        self.rest_cb.setObjectName("Rest")
         self.rest_cb.setToolTip(
             _("If checked, use 'rest machining'.\n"
-              "Basically it will process copper outside PCB features,\n"
-              "using the biggest tool and continue with the next tools,\n"
-              "from bigger to smaller, to process the copper features that\n"
-              "could not be processed by previous tool, until there is\n"
-              "nothing left to process or there are no more tools.\n\n"
-              "If not checked, use the standard algorithm.")
+              "Copper features will be processed starting with the biggest selected tool.\n"
+              "What cannot be processed will be passed to the next bigger tool and so on,\n"
+              "until either there are no longer selected tools or all the copper features are processed.")
         )
         gen_grid.addWidget(self.rest_cb, 0, 0, 1, 2)
 

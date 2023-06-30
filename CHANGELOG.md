@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+30.06.2023
+
+- NCC Plugin: fixed the Isolation operation mode
+- a number of methods were updated
+- modified some strings in regard to rest machining
+
 29.06.2023
 
 - NCC Plugin: updates to fix a bug when doing copper clearing with Rest option
@@ -5100,7 +5106,7 @@ RELEASE 8.993
 - whenever the user changes the Excellon format values for loading files, the Export Excellon Format values will be updated
 - made optional the behavior of Excellon Export values following the values in the Excellon Loading section
 - updated the translations (except RU) and the POT file
-- added to the NonCopperClear.clear_copper() a parameter to be able to run it non-threaded
+- added to the NonCopperClear.ncc_handler() a parameter to be able to run it non-threaded
 
 13.09.2019
 

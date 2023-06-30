@@ -917,15 +917,12 @@ class Geometry(object):
         if geometry is None:
             geometry = self.solid_geometry
 
-        # ## If iterable, expand recursively.
-        try:
-            for geo in geometry:
-                interiors.extend(self.get_interiors(geometry=geo))
-
-        # ## Not iterable, get the interiors if polygon.
-        except TypeError:
-            if type(geometry) == Polygon:
-                interiors.extend(geometry.interiors)
+        w_geo = flatten_shapely_geometry(geometry)
+        for geo in w_geo:
+            try:
+                interiors.append(geo.interiors)
+            except Exception:
+                continue
 
         return interiors
 
@@ -944,16 +941,12 @@ class Geometry(object):
         if geometry is None:
             geometry = self.solid_geometry
 
-        # ## If iterable, expand recursively.
-        try:
-            w_geo = geometry.geoms if isinstance(geometry, MultiPolygon) else geometry
-            for geo in w_geo:
-                exteriors.extend(self.get_exteriors(geometry=geo))
-
-        # ## Not iterable, get the exterior if polygon.
-        except TypeError:
-            if type(geometry) == Polygon:
-                exteriors.append(geometry.exterior)
+        w_geo = flatten_shapely_geometry(geometry)
+        for geo in w_geo:
+            try:
+                exteriors.append(geo.exterior)
+            except Exception:
+                continue
 
         return exteriors
 
@@ -1129,53 +1122,32 @@ class Geometry(object):
         else:
             working_geo = self.solid_geometry
 
-        try:
-            if isinstance(working_geo, (MultiPolygon, MultiLineString)):
-                geo_len = len(working_geo.geoms)
-            else:
-                geo_len = len(working_geo)
-        except TypeError:
-            geo_len = 1
+        working_geo_shp = flatten_shapely_geometry(working_geo)
+        geo_len = len(working_geo_shp)
 
         old_disp_number = 0
         pol_nr = 0
         # yet, it can be done by issuing an unary_union in the end, thus getting rid of the overlapping geo
-        try:
-            if isinstance(working_geo, (MultiPolygon, MultiLineString)):
-                working_geo_shp = working_geo.geoms
-            else:
-                working_geo_shp = working_geo
-            for pol in working_geo_shp:
-                if self.app.abort_flag:
-                    # graceful abort requested by the user
-                    raise grace
-                if offset == 0:
-                    temp_geo = pol
-                else:
-                    corner_type = 1 if corner is None else corner
-                    temp_geo = pol.buffer(offset, int(self.geo_steps_per_circle), join_style=corner_type)
-
-                geo_iso.append(temp_geo)
-
-                pol_nr += 1
-
-                # activity view update
-                disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
-
-                if old_disp_number < disp_number <= 100:
-                    self.app.proc_container.update_view_text(' %s %d: %d%%' %
-                                                             (_("Pass"), int(passes + 1), int(disp_number)))
-                    old_disp_number = disp_number
-        except TypeError:
-            # taking care of the case when the self.solid_geometry is just a single Polygon, not a list or a
-            # MultiPolygon (not an iterable)
+        for pol in working_geo_shp:
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise grace
             if offset == 0:
-                temp_geo = working_geo
+                temp_geo = pol
             else:
                 corner_type = 1 if corner is None else corner
-                temp_geo = working_geo.buffer(offset, int(self.geo_steps_per_circle), join_style=corner_type)
+                temp_geo = pol.buffer(offset, int(self.geo_steps_per_circle), join_style=corner_type)
 
             geo_iso.append(temp_geo)
+
+            pol_nr += 1
+
+            # activity view update
+            disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
+            if old_disp_number < disp_number <= 100:
+                self.app.proc_container.update_view_text(' %s %d: %d%%' %
+                                                         (_("Pass"), int(passes + 1), int(disp_number)))
+                old_disp_number = disp_number
 
         self.app.proc_container.update_view_text(' %s' % _("Buffering"))
         geo_iso = unary_union(geo_iso)
