@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+1.07.2023
+
+- NCC Plugin: fixed the determination of optimal tool
+- NCC Plugin: fixed a bug where when using the Rest Machining an error is issued due of trying to create a MultiPolygon having in the list another MultiPolygon; fixed by flattening the list
+
 30.06.2023
 
 - NCC Plugin: fixed the Isolation operation mode

@@ -1507,7 +1507,7 @@ class Geometry(object):
         # Optimization: Reduce lifts
         if connect:
             # log.debug("Reducing tool lifts...")
-            self.app.inform.emit(_("Connect: reducing tool lifts. This may take a while, please wait..."))
+            self.app.inform_no_echo.emit(_("Connect: reducing tool lifts. This may take a while, please wait..."))
             self.app.proc_container.update_view_text(' %s' % _("Connecting..."), clear=True)
             geoms = Geometry.paint_connect(geoms, polygon, tooldia, int(steps_per_circle))
 
@@ -1619,7 +1619,7 @@ class Geometry(object):
         # Optimization: Reduce lifts
         if connect:
             # log.debug("Reducing tool lifts...")
-            self.app.inform.emit(_("Connect: reducing tool lifts. This may take a while, please wait..."))
+            self.app.inform_no_echo.emit(_("Connect: reducing tool lifts. This may take a while, please wait..."))
             self.app.proc_container.update_view_text(' %s' % _("Connecting..."), clear=True)
             geoms_conn = Geometry.paint_connect(geom_elems, polygon_to_clear, tooldia, steps_per_circle)
             if geoms_conn:
@@ -1774,7 +1774,7 @@ class Geometry(object):
         # Optimization: Reduce lifts
         if connect:
             # log.debug("Reducing tool lifts...")
-            self.app.inform.emit(_("Connect: reducing tool lifts. This may take a while, please wait..."))
+            self.app.inform_no_echo.emit(_("Connect: reducing tool lifts. This may take a while, please wait..."))
             self.app.proc_container.update_view_text(' %s' % _("Connecting..."), clear=True)
             geoms_conn = Geometry.paint_connect(geoms, polygon, tooldia, steps_per_circle)
             if geoms_conn:
@@ -1965,7 +1965,7 @@ class Geometry(object):
         # Optimization: Reduce lifts
         if connect:
             # log.debug("Reducing tool lifts...")
-            self.app.inform.emit(_("Connect: reducing tool lifts. This may take a while, please wait..."))
+            self.app.inform_no_echo.emit(_("Connect: reducing tool lifts. This may take a while, please wait..."))
             self.app.proc_container.update_view_text(' %s' % _("Connecting..."), clear=True)
             geoms_conn = Geometry.paint_connect(geoms, polygon, tooldia, steps_per_circle)
             if geoms_conn:

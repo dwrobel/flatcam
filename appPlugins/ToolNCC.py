@@ -967,16 +967,15 @@ class NonCopperClear(AppTool, Gerber):
         for ap in list(aperture_storage.keys()):
             if 'geometry' in aperture_storage[ap]:
                 for geo_el in aperture_storage[ap]['geometry']:
-                    if 'solid' in geo_el and geo_el['solid'] is not None and geo_el['solid'].is_valid:
-                        total_geo.append(geo_el['solid'])
+                    if 'solid' in geo_el and geo_el['solid'] is not None:
+                        buff_geo = geo_el['solid'].buffer(0.0000001)
+                        if buff_geo.is_valid:
+                            total_geo.append(buff_geo)
 
-        total_geo = MultiPolygon(total_geo)
-        total_geo = total_geo.buffer(0)
         total_geo = flatten_shapely_geometry(total_geo)
 
-        if isinstance(total_geo, Polygon):
-            msg = ('[ERROR_NOTCL] %s' % _("The Gerber object has one Polygon as geometry.\n"
-                                          "There are no distances between geometry elements to be found."))
+        if len(total_geo) in [0, 1]:
+            msg = ('[ERROR_NOTCL] %s' % _("Too few polygons in the Gerber object to determine distances."))
             return msg, np.Inf
         min_dict = {}
         idx = 1
@@ -2759,9 +2758,17 @@ class NonCopperClear(AppTool, Gerber):
                 if not cleared_geo:
                     break
                 buffered_cleared_geo = [line.buffer(tool / 2) for line in cleared_geo]
+                buffered_cleared_geo = flatten_shapely_geometry(buffered_cleared_geo)
                 if not buffered_cleared_geo:
                     break
-                new_area = MultiPolygon(buffered_cleared_geo)
+                try:
+                    new_area = MultiPolygon(buffered_cleared_geo)
+                except Exception as err:
+                    self.app.log.error("NonCopperClear.ncc_handler.gen_clear_area_rest() Buffering -> %s" % str(err))
+                    self.app.log.debug(
+                        "NonCopperClear.ncc_handler.gen_clear_area_rest() Buffering -> %s" % str(traceback.format_exc())
+                    )
+                    return
                 new_area = new_area.buffer(0.0000001)
 
                 area = area.difference(new_area)
