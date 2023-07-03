@@ -2070,7 +2070,7 @@ class MainGUI(QtWidgets.QMainWindow):
         tb_lock_state = qsettings.value('toolbar_lock', "true")
         show_text_state = qsettings.value('menu_show_text', "true")
         win_geo = qsettings.value('window_geometry', (100, 100, 800, 400))
-        splitter_left = qsettings.value('splitter_left', 1)
+        splitter_left = int(qsettings.value('splitter_left', 1))
 
         if qsettings.contains("layout"):
             layout = qsettings.value('layout', type=str)

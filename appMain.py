@@ -3810,11 +3810,12 @@ class App(QtCore.QObject):
         # hide the UI so the user experiments a faster shutdown
         self.ui.hide()
 
-        self.new_launch.stop.emit()     # noqa
-        # https://forum.qt.io/topic/108777/stop-a-loop-in-object-that-has-been-moved-to-a-qthread/7
-        if self.listen_th.isRunning():
-            self.listen_th.requestInterruption()
-            self.log.debug("ArgThread QThread requested an interruption.")
+        if sys.platform == 'win32':
+            self.new_launch.stop.emit()     # noqa
+            # https://forum.qt.io/topic/108777/stop-a-loop-in-object-that-has-been-moved-to-a-qthread/7
+            if self.listen_th.isRunning():
+                self.listen_th.requestInterruption()
+                self.log.debug("ArgThread QThread requested an interruption.")
 
         # close editors before quiting the app, if they are open
         if self.call_source == 'geo_editor':
@@ -3829,7 +3830,7 @@ class App(QtCore.QObject):
         if self.call_source == 'exc_editor':
             self.exc_editor.deactivate()
             try:
-                self.grb_editor.disconnect()
+                self.exc_editor.disconnect()
             except TypeError:
                 pass
             if silent is False:
@@ -3838,11 +3839,11 @@ class App(QtCore.QObject):
         if self.call_source == 'grb_editor':
             self.grb_editor.deactivate_grb_editor()
             try:
-                self.exc_editor.disconnect()
+                self.grb_editor.disconnect()
             except TypeError:
                 pass
-                if silent is False:
-                    self.log.debug("App.quit_application() --> Gerber Editor deactivated.")
+            if silent is False:
+                self.log.debug("App.quit_application() --> Gerber Editor deactivated.")
 
         # disconnect the mouse events
         if self.use_3d_engine:

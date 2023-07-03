@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+4.07.2023
+
+- fixed a number of bugs reported in the issue #32 here: https://bitbucket.org/marius_stanciu/flatcam_beta/issues/32/crashes-on-close-random-crashes-that
+
 1.07.2023
 
 - NCC Plugin: fixed the determination of optimal tool
