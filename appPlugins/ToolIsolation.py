@@ -1917,7 +1917,7 @@ class ToolIsolation(AppTool, Gerber):
                             1: {
                                 'tooldia':          float(tool_dia),
                                 'data':             tool_data,
-                                'solid_geometry':   geo_obj.solid_geometry
+                                'solid_geometry':   flatten_shapely_geometry(geo_obj.solid_geometry)
                             }
                         }
 
@@ -2300,7 +2300,7 @@ class ToolIsolation(AppTool, Gerber):
                 solid_geo = self.area_intersection(solid_geo, intersection_geo=lim_area)
 
             # make sure that no empty geometry element is in the solid_geometry
-            new_solid_geo = [geo for geo in solid_geo if not geo.is_empty]
+            new_solid_geo = flatten_shapely_geometry(solid_geo)
 
             tools_storage.update({
                 tool: {
@@ -2309,7 +2309,7 @@ class ToolIsolation(AppTool, Gerber):
                     'offset_value':     tool_offset_value,
                     'tool_type':        tool_type,
                     'data':             tool_data,
-                    'solid_geometry':   deepcopy(new_solid_geo)
+                    'solid_geometry':   new_solid_geo
                 }
             })
             tools_storage[tool]['data']['tools_mill_tooldia'] = float(tool_dia)
@@ -2328,8 +2328,7 @@ class ToolIsolation(AppTool, Gerber):
             if not tool_dict['solid_geometry']:
                 tools_storage.pop(tool, None)
 
-        total_solid_geometry = self.flatten_list(total_solid_geometry)
-        total_solid_geometry = [g for g in total_solid_geometry if not g.is_empty]
+        total_solid_geometry = flatten_shapely_geometry(total_solid_geometry)
         if simp_en:
             total_solid_geometry = [
                 g.simplify(tolerance=simp_tol) for g in total_solid_geometry if not g.is_empty]
@@ -2392,7 +2391,7 @@ class ToolIsolation(AppTool, Gerber):
         :return:
         """
         new_geometry = []
-        target_geo = geo
+        target_geo = flatten_shapely_geometry(geo)
 
         if subtraction_geo:
             sub_union = unary_union(subtraction_geo)
@@ -2401,45 +2400,17 @@ class ToolIsolation(AppTool, Gerber):
             subtractor_obj = self.app.collection.get_by_name(name)
             sub_union = unary_union(subtractor_obj.solid_geometry)
 
-        try:
-            for geo_elem in target_geo:
-                if isinstance(geo_elem, Polygon):
-                    for ring in self.poly2rings(geo_elem):
-                        new_geo = ring.difference(sub_union)
-                        if new_geo and not new_geo.is_empty:
-                            new_geometry.append(new_geo)
-                elif isinstance(geo_elem, MultiPolygon):
-                    for poly in geo_elem.geoms:
-                        for ring in self.poly2rings(poly):
-                            new_geo = ring.difference(sub_union)
-                            if new_geo and not new_geo.is_empty:
-                                new_geometry.append(new_geo)
-                elif isinstance(geo_elem, LineString) or isinstance(geo_elem, LinearRing):
-                    new_geo = geo_elem.difference(sub_union)
-                    if new_geo:
-                        if not new_geo.is_empty:
-                            new_geometry.append(new_geo)
-                elif isinstance(geo_elem, MultiLineString):
-                    for line_elem in geo_elem.geoms:
-                        new_geo = line_elem.difference(sub_union)
-                        if new_geo and not new_geo.is_empty:
-                            new_geometry.append(new_geo)
-        except TypeError:
-            if isinstance(target_geo, Polygon):
-                for ring in self.poly2rings(target_geo):
+        for geo_elem in target_geo:
+            if isinstance(geo_elem, Polygon):
+                for ring in self.poly2rings(geo_elem):
                     new_geo = ring.difference(sub_union)
-                    if new_geo:
-                        if not new_geo.is_empty:
-                            new_geometry.append(new_geo)
-            elif isinstance(target_geo, LineString) or isinstance(target_geo, LinearRing):
-                new_geo = target_geo.difference(sub_union)
-                if new_geo and not new_geo.is_empty:
-                    new_geometry.append(new_geo)
-            elif isinstance(target_geo, MultiLineString):
-                for line_elem in target_geo.geoms:
-                    new_geo = line_elem.difference(sub_union)
                     if new_geo and not new_geo.is_empty:
                         new_geometry.append(new_geo)
+            elif isinstance(geo_elem, LineString) or isinstance(geo_elem, LinearRing):
+                new_geo = geo_elem.difference(sub_union)
+                if new_geo and not new_geo.is_empty:
+                    new_geometry.append(new_geo)
+
         return new_geometry
 
     def area_intersection(self, geo, intersection_geo=None):
@@ -2451,49 +2422,21 @@ class ToolIsolation(AppTool, Gerber):
         :return:
         """
         new_geometry = []
-        target_geo = geo
+        target_geo = flatten_shapely_geometry(geo)
 
         intersect_union = unary_union(intersection_geo)
 
-        try:
-            for geo_elem in target_geo:
-                if isinstance(geo_elem, Polygon):
-                    for ring in self.poly2rings(geo_elem):
-                        new_geo = ring.intersection(intersect_union)
-                        if new_geo and not new_geo.is_empty:
-                            new_geometry.append(new_geo)
-                elif isinstance(geo_elem, MultiPolygon):
-                    for poly in geo_elem.geoms:
-                        for ring in self.poly2rings(poly):
-                            new_geo = ring.intersection(intersect_union)
-                            if new_geo and not new_geo.is_empty:
-                                new_geometry.append(new_geo)
-                elif isinstance(geo_elem, LineString) or isinstance(geo_elem, LinearRing):
-                    new_geo = geo_elem.intersection(intersect_union)
-                    if new_geo:
-                        if not new_geo.is_empty:
-                            new_geometry.append(new_geo)
-                elif isinstance(geo_elem, MultiLineString):
-                    for line_elem in geo_elem.geoms:
-                        new_geo = line_elem.intersection(intersect_union)
-                        if new_geo and not new_geo.is_empty:
-                            new_geometry.append(new_geo)
-        except TypeError:
-            if isinstance(target_geo, Polygon):
-                for ring in self.poly2rings(target_geo):
+        for geo_elem in target_geo:
+            if isinstance(geo_elem, Polygon):
+                for ring in self.poly2rings(geo_elem):
                     new_geo = ring.intersection(intersect_union)
-                    if new_geo:
-                        if not new_geo.is_empty:
-                            new_geometry.append(new_geo)
-            elif isinstance(target_geo, LineString) or isinstance(target_geo, LinearRing):
-                new_geo = target_geo.intersection(intersect_union)
-                if new_geo and not new_geo.is_empty:
-                    new_geometry.append(new_geo)
-            elif isinstance(target_geo, MultiLineString):
-                for line_elem in target_geo.geoms:
-                    new_geo = line_elem.intersection(intersect_union)
                     if new_geo and not new_geo.is_empty:
                         new_geometry.append(new_geo)
+            elif isinstance(geo_elem, LineString) or isinstance(geo_elem, LinearRing):
+                new_geo = geo_elem.intersection(intersect_union)
+                if new_geo and not new_geo.is_empty:
+                    new_geometry.append(new_geo)
+
         return new_geometry
 
     def on_poly_mouse_click_release(self, event):
