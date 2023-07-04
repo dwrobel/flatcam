@@ -4542,7 +4542,7 @@ class AppGerberEditor(QtCore.QObject):
             except ValueError as e:
                 self.app.log.debug("AppGerberEditor.on_tool_edit() --> %s" % str(e))
                 # self.ui.apertures_table.setCurrentItem(None)
-                # we reactivate the signals after the after the tool editing
+                # we reactivate the signals after the tool editing
                 self.ui.apertures_table.itemChanged.connect(self.on_tool_edit)
                 return
         elif col_of_item_changed == 3:
@@ -4552,7 +4552,7 @@ class AppGerberEditor(QtCore.QObject):
             except ValueError as e:
                 self.app.log.debug("AppGerberEditor.on_tool_edit() --> %s" % str(e))
                 # self.ui.apertures_table.setCurrentItem(None)
-                # we reactivate the signals after the after the tool editing
+                # we reactivate the signals after the tool editing
                 self.ui.apertures_table.itemChanged.connect(self.on_tool_edit)
                 return
         elif col_of_item_changed == 4:
@@ -4563,7 +4563,7 @@ class AppGerberEditor(QtCore.QObject):
                 ]
             except ValueError as e:
                 self.app.log.debug("AppGerberEditor.on_tool_edit() --> %s" % str(e))
-                # we reactivate the signals after the after the tool editing
+                # we reactivate the signals after the tool editing
                 self.ui.apertures_table.itemChanged.connect(self.on_tool_edit)
                 return
 
@@ -4573,7 +4573,7 @@ class AppGerberEditor(QtCore.QObject):
                                            str(self.storage_dict[ap_code_new]['height']))
 
                 self.ui.apertures_table.currentItem().setText(old_dims_txt)
-                # we reactivate the signals after the after the tool editing
+                # we reactivate the signals after the tool editing
                 self.ui.apertures_table.itemChanged.connect(self.on_tool_edit)
                 return
             else:
@@ -4666,7 +4666,7 @@ class AppGerberEditor(QtCore.QObject):
                                 miny = y - (new_height / 2)
                                 maxx = x + (new_width / 2)
                                 maxy = y + (new_height / 2)
-                                geo = box(minx=minx, miny=miny, maxx=maxx, maxy=maxy)
+                                geo = box(xmin=minx, ymin=miny, xmax=maxx, ymax=maxy)
                                 new_geo_el['solid'] = deepcopy(geo)
                             else:
                                 new_geo_el['solid'] = deepcopy(g_data['solid'].buffer(buff_val_lines))
@@ -4681,7 +4681,7 @@ class AppGerberEditor(QtCore.QObject):
                                 miny = y - (new_height / 2)
                                 maxx = x + (new_width / 2)
                                 maxy = y + (new_height / 2)
-                                geo = box(minx=minx, miny=miny, maxx=maxx, maxy=maxy)
+                                geo = box(xmin=minx, ymin=miny, xmax=maxx, ymax=maxy)
                                 new_geo_el['clear'] = deepcopy(geo)
                             else:
                                 new_geo_el['clear'] = deepcopy(g_data['clear'].buffer(buff_val_lines, join_style=2))

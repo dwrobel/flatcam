@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM Evo beta
 
 - fixed a number of bugs reported in the issue #32 here: https://bitbucket.org/marius_stanciu/flatcam_beta/issues/32/crashes-on-close-random-crashes-that
 - Isolation Plugin: fixed some errors due of trying to get the is_empty property from a list (geometry that was flattened)
+- Gerber Editor: fixed issue with editing the rectangular aperture dimensions in the Tool Table (I used wrong parameter names to the Shapely box() method)
 
 1.07.2023
 
