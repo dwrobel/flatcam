@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM Evo beta
 5.07.2023
 
 - Excellon Editor: fixed crash when editing hole diameters in the Tool Table
+- Isolation Plugin: fixed some possible issues when using rest machining
 
 4.07.2023
 

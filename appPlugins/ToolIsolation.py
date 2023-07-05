@@ -3151,7 +3151,7 @@ class ToolIsolation(AppTool, Gerber):
                 if negative_dia:
                     iso_offset = -iso_offset
 
-                buf_chek = iso_offset * 2
+                buf_chek = iso_offset * 1.99999
                 check_geo = geo.buffer(buf_chek)
 
                 intersect_flag = False
@@ -3175,7 +3175,7 @@ class ToolIsolation(AppTool, Gerber):
                     # resulting isolated geometry (buffered) number of subgeo is the same as the exterior + interiors
                     # if not it means that the geo interiors most likely could not be isolated with this tool so we
                     # abandon the whole isolation for this geo and add this geo to the not_isolated_geo
-                    if nr_pass == 0 and forced_rest is True:
+                    if nr_pass == 0 and forced_rest is False:
                         if geo.interiors:
                             len_interiors = len(geo.interiors)
                             if len_interiors > 1:
