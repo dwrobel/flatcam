@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+5.07.2023
+
+- Excellon Editor: fixed crash when editing hole diameters in the Tool Table
+
 4.07.2023
 
 - fixed a number of bugs reported in the issue #32 here: https://bitbucket.org/marius_stanciu/flatcam_beta/issues/32/crashes-on-close-random-crashes-that

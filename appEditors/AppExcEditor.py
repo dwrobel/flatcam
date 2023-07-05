@@ -3734,7 +3734,7 @@ class AppExcEditor(QtCore.QObject):
                 else:
                     self.slot_points_edit[new_dia].append((0, 0))
 
-            self.add_exc_shape(shape=DrawToolShape(new_geo), storage=destination_storage)
+            self.add_exc_shape(shp=DrawToolShape(new_geo), storage=destination_storage)
 
         # update the UI and the CANVAS
         self.build_ui()
