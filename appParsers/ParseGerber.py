@@ -998,53 +998,32 @@ class Gerber(Geometry):
                             self.app.log.warning(
                                 "Found invalid Gerber geometry at line: %s. Fixing..." % str(line_num))
                             region_s = region_s.buffer(0.0000001, int(self.steps_per_circle))
+                            region_s = flatten_shapely_geometry(region_s)
 
-                            if not region_s.is_valid:
+                            if not region_s:
                                 self.app.log.warning(
                                     "Failed to fix the invalid Geometry found at line: %s" % str(line_num))
                             else:
-                                try:
-                                    for pol in region_s:
-                                        # is it possible that simplification creates an Empty Geometry ?????
-                                        if self.app.options['gerber_simplification']:
-                                            pol = pol.simplify(s_tol)
-
-                                        prepare(pol)
-                                        pol_f = pol.exterior
-                                        prepare(pol_f)
-                                        if not pol_f.is_empty:
-                                            follow_buffer.append(pol_f)
-                                            geo_dict['follow'] = pol
-
-                                        poly_buffer.append(pol)
-
-                                        if self.is_lpc is True:
-                                            geo_dict['clear'] = pol
-                                        else:
-                                            geo_dict['solid'] = pol
-
-                                        if not pol.is_empty:
-                                            self.tools[0]['geometry'].append(geo_dict)
-                                except TypeError:
+                                for pol in region_s:
                                     # is it possible that simplification creates an Empty Geometry ?????
                                     if self.app.options['gerber_simplification']:
-                                        region_s = region_s.simplify(s_tol)
+                                        pol = pol.simplify(s_tol)
 
-                                    region_f = region_s.exterior
-                                    if not region_f.is_empty:
-                                        prepare(region_f)
-                                        follow_buffer.append(region_f)
-                                        geo_dict['follow'] = region_f
+                                    prepare(pol)
+                                    pol_f = pol.exterior
+                                    prepare(pol_f)
+                                    if not pol_f.is_empty:
+                                        follow_buffer.append(pol_f)
+                                        geo_dict['follow'] = pol
 
-                                    prepare(region_s)
-                                    poly_buffer.append(region_s)
+                                    poly_buffer.append(pol)
 
                                     if self.is_lpc is True:
-                                        geo_dict['clear'] = region_s
+                                        geo_dict['clear'] = pol
                                     else:
-                                        geo_dict['solid'] = region_s
+                                        geo_dict['solid'] = pol
 
-                                    if not region_s.is_empty:
+                                    if not pol.is_empty:
                                         self.tools[0]['geometry'].append(geo_dict)
                         else:
                             # is it possible that simplification creates an Empty Geometry ?????

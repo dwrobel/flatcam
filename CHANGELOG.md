@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM Evo beta
 - Excellon Editor: fixed crash when editing hole diameters in the Tool Table
 - Isolation Plugin: fixed some possible issues when using rest machining
 - Drag and Drop files works now only in the Notebook and in the Plot Tab
+- Gerber Parser: fixed a bug where a region is a MultiPolygon and failed because of changes in Shapely starting with version 2.0
 
 4.07.2023
 

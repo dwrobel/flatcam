@@ -34,7 +34,7 @@ class VisPyCanvas(scene.SceneCanvas):
         if settings.contains("axis_font_size"):
             a_fsize = settings.value('axis_font_size', type=int)
         else:
-            a_fsize = 8
+            a_fsize = 6
 
         if settings.contains("theme"):
             theme = settings.value('theme', type=str)
