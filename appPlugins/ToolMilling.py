@@ -43,7 +43,7 @@ class HybridGeoExc:
 
         """
         self.tools = {}
-        This is a dictionary. Each dict key is associated with a tool used in geo_tools_table. The key is the 
+        This is a dictionary. Each dict key is associated with a tool used in tools_table_mill_geo. The key is the 
         tool_id of the tools and the value is another dict that will hold the data under the following form:
             {tooluid:   {
                         'tooldia': 1,
@@ -231,7 +231,7 @@ class ToolMilling(AppTool, Excellon):
         self.build_ui()
 
         # all the tools are selected by default
-        self.ui.tools_table.selectAll()
+        self.ui.tools_table_mill_exc.selectAll()
 
         self.app.ui.notebook.setTabText(2, _("Milling"))
 
@@ -258,7 +258,7 @@ class ToolMilling(AppTool, Excellon):
         self.ui.tipangle_entry.valueChanged.connect(lambda: self.on_update_cutz())
 
         self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
-        self.ui.tools_table.drag_drop_sig.connect(self.on_exc_rebuild_ui)
+        self.ui.tools_table_mill_exc.drag_drop_sig.connect(self.on_exc_rebuild_ui)
 
         # Exclusion areas signals
         self.ui.exclusion_table.horizontalHeader().sectionClicked.connect(self.exclusion_table_toggle_all)
@@ -270,8 +270,8 @@ class ToolMilling(AppTool, Excellon):
         self.ui.strategy_radio.activated_custom.connect(self.on_strategy)
 
         # Geo Tools Table signals
-        self.ui.geo_tools_table.drag_drop_sig.connect(self.on_geo_rebuild_ui)
-        self.ui.geo_tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
+        self.ui.tools_table_mill_geo.drag_drop_sig.connect(self.on_geo_rebuild_ui)
+        self.ui.tools_table_mill_geo.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
 
         # Generate CNCJob
         self.launch_job.connect(self.mtool_gen_cncjob)
@@ -343,7 +343,7 @@ class ToolMilling(AppTool, Excellon):
         except (TypeError, AttributeError):
             pass
         try:
-            self.ui.tools_table.drag_drop_sig.disconnect()
+            self.ui.tools_table_mill_exc.drag_drop_sig.disconnect()
         except (TypeError, AttributeError):
             pass
 
@@ -379,11 +379,11 @@ class ToolMilling(AppTool, Excellon):
 
         # Geo Tools Table signals
         try:
-            self.ui.geo_tools_table.drag_drop_sig.disconnect()
+            self.ui.tools_table_mill_geo.drag_drop_sig.disconnect()
         except (TypeError, AttributeError):
             pass
         try:
-            self.ui.geo_tools_table.horizontalHeader().sectionClicked.disconnect()
+            self.ui.tools_table_mill_geo.horizontalHeader().sectionClicked.disconnect()
         except (TypeError, AttributeError):
             pass
 
@@ -413,14 +413,14 @@ class ToolMilling(AppTool, Excellon):
         # #############################################################################################################
         # ############################### TOOLS TABLE context menu ####################################################
         # #############################################################################################################
-        self.ui.geo_tools_table.setupContextMenu()
-        self.ui.geo_tools_table.addContextMenu(
+        self.ui.tools_table_mill_geo.setupContextMenu()
+        self.ui.tools_table_mill_geo.addContextMenu(
             _("Pick from DB"), self.on_tool_add_from_db_clicked,
             icon=QtGui.QIcon(self.app.resource_location + "/plus16.png"))
-        self.ui.geo_tools_table.addContextMenu(
+        self.ui.tools_table_mill_geo.addContextMenu(
             _("Copy"), self.on_tool_copy,
             icon=QtGui.QIcon(self.app.resource_location + "/copy16.png"))
-        self.ui.geo_tools_table.addContextMenu(
+        self.ui.tools_table_mill_geo.addContextMenu(
             _("Delete"), lambda: self.on_tool_delete(all_tools=None),
             icon=QtGui.QIcon(self.app.resource_location + "/trash16.png"))
 
@@ -437,7 +437,7 @@ class ToolMilling(AppTool, Excellon):
         )
 
     def unset_context_menu(self):
-        self.ui.geo_tools_table.removeContextMenu()
+        self.ui.tools_table_mill_geo.removeContextMenu()
 
     def init_ui(self):
         self.ui = MillingUI(layout=self.layout, app=self.app, name=self.pluginName)
@@ -663,6 +663,8 @@ class ToolMilling(AppTool, Excellon):
         app_mode = self.app.options["global_app_level"]
         self.change_level(app_mode)
 
+        self.ui.tools_table_mill_geo.drag_drop = True
+
     def plot_cb_handler(self):
         # load the Milling object
         self.obj_name = self.ui.object_combo.currentText()
@@ -765,7 +767,7 @@ class ToolMilling(AppTool, Excellon):
             self.ui.apply_param_to_all.hide()
 
             # Context Menu section
-            self.ui.geo_tools_table.removeContextMenu()
+            self.ui.tools_table_mill_geo.removeContextMenu()
         else:
             self.ui.level.setText('%s' % _('Advanced'))
             self.ui.level.setStyleSheet("""
@@ -828,7 +830,7 @@ class ToolMilling(AppTool, Excellon):
             self.ui.apply_param_to_all.show()
 
             # Context Menu section
-            self.ui.geo_tools_table.setupContextMenu()
+            self.ui.tools_table_mill_geo.setupContextMenu()
 
         # update the changes in UI depending on the selected preprocessor in Preferences
         # after this moment all the changes in the Posprocessor combo will be handled by the activated signal of the
@@ -838,8 +840,8 @@ class ToolMilling(AppTool, Excellon):
     def on_exc_rebuild_ui(self):
         # read the table tools uid
         current_uid_list = []
-        for row in range(self.ui.tools_table.rowCount()):
-            uid = int(self.ui.tools_table.item(row, 3).text())
+        for row in range(self.ui.tools_table_mill_exc.rowCount()):
+            uid = int(self.ui.tools_table_mill_exc.item(row, 3).text())
             current_uid_list.append(uid)
 
         new_tools = {}
@@ -857,8 +859,8 @@ class ToolMilling(AppTool, Excellon):
     def on_geo_rebuild_ui(self):
         # read the table tools uid
         current_uid_list = []
-        for row in range(self.ui.geo_tools_table.rowCount()):
-            uid = int(self.ui.geo_tools_table.item(row, 3).text())
+        for row in range(self.ui.tools_table_mill_geo.rowCount()):
+            uid = int(self.ui.tools_table_mill_geo.item(row, 3).text())
             current_uid_list.append(uid)
 
         new_tools = {}
@@ -979,7 +981,7 @@ class ToolMilling(AppTool, Excellon):
 
         # set the text on tool_data_label after loading the object
         sel_rows = set()
-        sel_items = self.ui.tools_table.selectedItems()
+        sel_items = self.ui.tools_table_mill_exc.selectedItems()
         for it in sel_items:
             sel_rows.add(it.row())
         if len(sel_rows) > 1:
@@ -1001,19 +1003,19 @@ class ToolMilling(AppTool, Excellon):
         row_idx = 0
 
         n = len(tools_dict)
-        self.ui.geo_tools_table.setRowCount(n)
+        self.ui.tools_table_mill_geo.setRowCount(n)
 
         for tooluid_key, tooluid_value in tools_dict.items():
 
             # -------------------- ID ------------------------------------------ #
             tool_id = QtWidgets.QTableWidgetItem('%d' % int(row_idx + 1))
             tool_id.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
-            self.ui.geo_tools_table.setItem(row_idx, 0, tool_id)  # Tool name/id
+            self.ui.tools_table_mill_geo.setItem(row_idx, 0, tool_id)  # Tool name/id
 
             # -------------------- DIAMETER ------------------------------------- #
             dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooluid_value['tooldia'])))
             dia_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
-            self.ui.geo_tools_table.setItem(row_idx, 1, dia_item)  # Diameter
+            self.ui.tools_table_mill_geo.setItem(row_idx, 1, dia_item)  # Diameter
 
             # -------------------- TOOL TYPE ------------------------------------- #
             # tool_type_item = FCComboBox(policy=False)
@@ -1025,45 +1027,45 @@ class ToolMilling(AppTool, Excellon):
             #     tool_type_item.setCurrentIndex(0)
             # else:
             #     tool_type_item.setCurrentIndex(idx)
-            # self.ui.geo_tools_table.setCellWidget(row_idx, 2, tool_type_item)
+            # self.ui.tools_table_mill_geo.setCellWidget(row_idx, 2, tool_type_item)
 
             # -------------------- TOOL UID   ------------------------------------- #
             tool_uid_item = QtWidgets.QTableWidgetItem(str(tooluid_key))
             # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY ###
-            self.ui.geo_tools_table.setItem(row_idx, 3, tool_uid_item)  # Tool unique ID
+            self.ui.tools_table_mill_geo.setItem(row_idx, 3, tool_uid_item)  # Tool unique ID
 
             # -------------------- PLOT       ------------------------------------- #
             empty_plot_item = QtWidgets.QTableWidgetItem('')
             empty_plot_item.setFlags(~QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
-            self.ui.geo_tools_table.setItem(row_idx, 4, empty_plot_item)
+            self.ui.tools_table_mill_geo.setItem(row_idx, 4, empty_plot_item)
             plot_item = FCCheckBox()
             plot_item.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
             if self.ui.plot_cb.isChecked():
                 plot_item.setChecked(True)
-            self.ui.geo_tools_table.setCellWidget(row_idx, 4, plot_item)
+            self.ui.tools_table_mill_geo.setCellWidget(row_idx, 4, plot_item)
 
             row_idx += 1
 
         # make the diameter column editable
         for row in range(row_idx):
-            self.ui.geo_tools_table.item(row, 1).setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable |
+            self.ui.tools_table_mill_geo.item(row, 1).setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable |
                                                           QtCore.Qt.ItemFlag.ItemIsEditable |
                                                           QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         # sort the tool diameter column
-        # self.ui.geo_tools_table.sortItems(1)
+        # self.ui.tools_table_mill_geo.sortItems(1)
         # all the tools are selected by default
-        # self.ui.geo_tools_table.selectColumn(0)
+        # self.ui.tools_table_mill_geo.selectColumn(0)
 
-        self.ui.geo_tools_table.resizeColumnsToContents()
-        self.ui.geo_tools_table.resizeRowsToContents()
+        self.ui.tools_table_mill_geo.resizeColumnsToContents()
+        self.ui.tools_table_mill_geo.resizeRowsToContents()
 
-        vertical_header = self.ui.geo_tools_table.verticalHeader()
+        vertical_header = self.ui.tools_table_mill_geo.verticalHeader()
         # vertical_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
         vertical_header.hide()
-        self.ui.geo_tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.ui.tools_table_mill_geo.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
-        horizontal_header = self.ui.geo_tools_table.horizontalHeader()
+        horizontal_header = self.ui.tools_table_mill_geo.horizontalHeader()
         horizontal_header.setMinimumSectionSize(10)
         horizontal_header.setDefaultSectionSize(70)
         horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
@@ -1074,29 +1076,29 @@ class ToolMilling(AppTool, Excellon):
         horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeMode.Fixed)
         horizontal_header.resizeSection(4, 17)
         # horizontal_header.setStretchLastSection(True)
-        self.ui.geo_tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.ui.tools_table_mill_geo.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
-        self.ui.geo_tools_table.setColumnWidth(0, 20)
-        # self.ui.geo_tools_table.setColumnWidth(2, 40)
-        self.ui.geo_tools_table.setColumnWidth(4, 17)
+        self.ui.tools_table_mill_geo.setColumnWidth(0, 20)
+        # self.ui.tools_table_mill_geo.setColumnWidth(2, 40)
+        self.ui.tools_table_mill_geo.setColumnWidth(4, 17)
 
-        # self.ui.geo_tools_table.setSortingEnabled(True)
+        # self.ui.tools_table_mill_geo.setSortingEnabled(True)
 
-        self.ui.geo_tools_table.setMinimumHeight(self.ui.geo_tools_table.getHeight())
-        self.ui.geo_tools_table.setMaximumHeight(self.ui.geo_tools_table.getHeight())
+        self.ui.tools_table_mill_geo.setMinimumHeight(self.ui.tools_table_mill_geo.getHeight())
+        self.ui.tools_table_mill_geo.setMaximumHeight(self.ui.tools_table_mill_geo.getHeight())
 
         # disable the Plot column in Tool Table if the geometry is SingleGeo as it is not needed
         # and can create some problems
         if self.target_obj and self.target_obj.multigeo is True:
-            self.ui.geo_tools_table.setColumnHidden(4, False)
+            self.ui.tools_table_mill_geo.setColumnHidden(4, False)
         else:
-            self.ui.geo_tools_table.setColumnHidden(4, True)
+            self.ui.tools_table_mill_geo.setColumnHidden(4, True)
 
-        self.ui.geo_tools_table.selectAll()
+        self.ui.tools_table_mill_geo.selectAll()
 
         # set the text on tool_data_label after loading the object
         sel_rows = set()
-        sel_items = self.ui.geo_tools_table.selectedItems()
+        sel_items = self.ui.tools_table_mill_geo.selectedItems()
         for it in sel_items:
             sel_rows.add(it.row())
             it.setSelected(True)
@@ -1143,7 +1145,7 @@ class ToolMilling(AppTool, Excellon):
 
         n = len(tools)
         # we have (n+2) rows because there are 'n' tools, each a row, plus the last 2 rows for totals.
-        self.ui.tools_table.setRowCount(n + 2)
+        self.ui.tools_table_mill_exc.setRowCount(n + 2)
         self.tool_row = 0
 
         for tool_no in tools:
@@ -1167,29 +1169,29 @@ class ToolMilling(AppTool, Excellon):
             # Tool name/id
             exc_id_item = QtWidgets.QTableWidgetItem('%d' % int(tool_no))
             exc_id_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
-            self.ui.tools_table.setItem(self.tool_row, 0, exc_id_item)
+            self.ui.tools_table_mill_exc.setItem(self.tool_row, 0, exc_id_item)
 
             # Tool Diameter
             dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, self.target_obj.tools[tool_no]['tooldia']))
             dia_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
-            self.ui.tools_table.setItem(self.tool_row, 1, dia_item)
+            self.ui.tools_table_mill_exc.setItem(self.tool_row, 1, dia_item)
 
             # Number of drills per tool
             drill_count_item = QtWidgets.QTableWidgetItem('%d' % drill_cnt)
             drill_count_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
-            self.ui.tools_table.setItem(self.tool_row, 2, drill_count_item)
+            self.ui.tools_table_mill_exc.setItem(self.tool_row, 2, drill_count_item)
 
             # Tool unique ID
             tool_uid_item = QtWidgets.QTableWidgetItem(str(int(tool_no)))
             # ## REMEMBER: THIS COLUMN IS HIDDEN in UI
-            self.ui.tools_table.setItem(self.tool_row, 3, tool_uid_item)
+            self.ui.tools_table_mill_exc.setItem(self.tool_row, 3, tool_uid_item)
 
             # Number of slots per tool
             # if the slot number is zero is better to not clutter the GUI with zero's so we print a space
             slot_count_str = '%d' % slot_cnt if slot_cnt > 0 else ''
             slot_count_item = QtWidgets.QTableWidgetItem(slot_count_str)
             slot_count_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
-            self.ui.tools_table.setItem(self.tool_row, 4, slot_count_item)
+            self.ui.tools_table_mill_exc.setItem(self.tool_row, 4, slot_count_item)
 
             self.tool_row += 1
 
@@ -1205,18 +1207,18 @@ class ToolMilling(AppTool, Excellon):
         tot_drill_count = QtWidgets.QTableWidgetItem('%d' % self.tot_drill_cnt)
         tot_drill_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
-        self.ui.tools_table.setItem(self.tool_row, 0, empty_1)
-        self.ui.tools_table.setItem(self.tool_row, 1, label_tot_drill_count)
-        self.ui.tools_table.setItem(self.tool_row, 2, tot_drill_count)  # Total number of drills
-        self.ui.tools_table.setItem(self.tool_row, 4, empty_1_1)
+        self.ui.tools_table_mill_exc.setItem(self.tool_row, 0, empty_1)
+        self.ui.tools_table_mill_exc.setItem(self.tool_row, 1, label_tot_drill_count)
+        self.ui.tools_table_mill_exc.setItem(self.tool_row, 2, tot_drill_count)  # Total number of drills
+        self.ui.tools_table_mill_exc.setItem(self.tool_row, 4, empty_1_1)
 
         font = QtGui.QFont()
         font.setBold(True)
         # font.setWeight(75)
 
         for k in [1, 2]:
-            self.ui.tools_table.item(self.tool_row, k).setForeground(QtGui.QColor(127, 0, 255))
-            self.ui.tools_table.item(self.tool_row, k).setFont(font)
+            self.ui.tools_table_mill_exc.item(self.tool_row, k).setForeground(QtGui.QColor(127, 0, 255))
+            self.ui.tools_table_mill_exc.item(self.tool_row, k).setFont(font)
 
         self.tool_row += 1
 
@@ -1231,29 +1233,29 @@ class ToolMilling(AppTool, Excellon):
         label_tot_slot_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
         tot_slot_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
-        self.ui.tools_table.setItem(self.tool_row, 0, empty_2)
-        self.ui.tools_table.setItem(self.tool_row, 1, label_tot_slot_count)
-        self.ui.tools_table.setItem(self.tool_row, 2, empty_2_1)
-        self.ui.tools_table.setItem(self.tool_row, 4, tot_slot_count)  # Total number of slots
+        self.ui.tools_table_mill_exc.setItem(self.tool_row, 0, empty_2)
+        self.ui.tools_table_mill_exc.setItem(self.tool_row, 1, label_tot_slot_count)
+        self.ui.tools_table_mill_exc.setItem(self.tool_row, 2, empty_2_1)
+        self.ui.tools_table_mill_exc.setItem(self.tool_row, 4, tot_slot_count)  # Total number of slots
 
         for kl in [1, 2, 4]:
-            self.ui.tools_table.item(self.tool_row, kl).setFont(font)
-            self.ui.tools_table.item(self.tool_row, kl).setForeground(QtGui.QColor(0, 70, 255))
+            self.ui.tools_table_mill_exc.item(self.tool_row, kl).setFont(font)
+            self.ui.tools_table_mill_exc.item(self.tool_row, kl).setForeground(QtGui.QColor(0, 70, 255))
 
         # make the diameter column editable
-        for row in range(self.ui.tools_table.rowCount() - 2):
-            self.ui.tools_table.item(row, 1).setFlags(
+        for row in range(self.ui.tools_table_mill_exc.rowCount() - 2):
+            self.ui.tools_table_mill_exc.item(row, 1).setFlags(
                 QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
 
-        self.ui.tools_table.resizeColumnsToContents()
-        self.ui.tools_table.resizeRowsToContents()
+        self.ui.tools_table_mill_exc.resizeColumnsToContents()
+        self.ui.tools_table_mill_exc.resizeRowsToContents()
 
-        vertical_header = self.ui.tools_table.verticalHeader()
+        vertical_header = self.ui.tools_table_mill_exc.verticalHeader()
         vertical_header.hide()
-        self.ui.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.ui.tools_table_mill_exc.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
-        horizontal_header = self.ui.tools_table.horizontalHeader()
-        self.ui.tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        horizontal_header = self.ui.tools_table_mill_exc.horizontalHeader()
+        self.ui.tools_table_mill_exc.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         horizontal_header.setMinimumSectionSize(10)
         horizontal_header.setDefaultSectionSize(70)
@@ -1264,13 +1266,13 @@ class ToolMilling(AppTool, Excellon):
         horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
         horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
 
-        self.ui.tools_table.setSortingEnabled(False)
+        self.ui.tools_table_mill_exc.setSortingEnabled(False)
 
-        self.ui.tools_table.setMinimumHeight(self.ui.tools_table.getHeight())
-        self.ui.tools_table.setMaximumHeight(self.ui.tools_table.getHeight())
+        self.ui.tools_table_mill_exc.setMinimumHeight(self.ui.tools_table_mill_exc.getHeight())
+        self.ui.tools_table_mill_exc.setMaximumHeight(self.ui.tools_table_mill_exc.getHeight())
 
         # all the tools are selected by default
-        self.ui.tools_table.selectAll()
+        self.ui.tools_table_mill_exc.selectAll()
 
     def on_target_changed(self, val):
         # handle the Plot checkbox
@@ -1284,11 +1286,11 @@ class ToolMilling(AppTool, Excellon):
         }[val]
 
         if val == 'exc':
-            self.ui.tools_table.show()
+            self.ui.tools_table_mill_exc.show()
             self.ui.order_label.show()
             self.ui.order_combo.show()
 
-            self.ui.geo_tools_table.hide()
+            self.ui.tools_table_mill_geo.hide()
 
             self.ui.mill_type_label.show()
             self.ui.milling_type_radio.show()
@@ -1312,11 +1314,11 @@ class ToolMilling(AppTool, Excellon):
 
             self.ui.add_tool_frame.hide()
         else:
-            self.ui.tools_table.hide()
+            self.ui.tools_table_mill_exc.hide()
             self.ui.order_label.hide()
             self.ui.order_combo.hide()
 
-            self.ui.geo_tools_table.show()
+            self.ui.tools_table_mill_geo.show()
 
             self.ui.mill_type_label.hide()
             self.ui.milling_type_radio.hide()
@@ -1471,17 +1473,17 @@ class ToolMilling(AppTool, Excellon):
         self.app.exc_areas.e_shape_modified.connect(self.update_exclusion_table)
 
         # connect Tool Table Widgets
-        for row in range(self.ui.geo_tools_table.rowCount()):
-            self.ui.geo_tools_table.cellWidget(row, 4).clicked.connect(self.on_plot_cb_click_table)
+        for row in range(self.ui.tools_table_mill_geo.rowCount()):
+            self.ui.tools_table_mill_geo.cellWidget(row, 4).clicked.connect(self.on_plot_cb_click_table)
 
         # # Geo Tool Table - rows selected
-        self.ui.geo_tools_table.clicked.connect(self.on_row_selection_change)
-        self.ui.geo_tools_table.itemChanged.connect(self.on_tool_edit)
-        self.ui.geo_tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
+        self.ui.tools_table_mill_geo.clicked.connect(self.on_row_selection_change)
+        self.ui.tools_table_mill_geo.itemChanged.connect(self.on_tool_edit)
+        self.ui.tools_table_mill_geo.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
 
         # Excellon Tool Table - rows selected
-        self.ui.tools_table.clicked.connect(self.on_row_selection_change)
-        self.ui.tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
+        self.ui.tools_table_mill_exc.clicked.connect(self.on_row_selection_change)
+        self.ui.tools_table_mill_exc.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
 
         self.ui.tool_shape_combo.currentIndexChanged.connect(self.on_tt_change)
 
@@ -1529,32 +1531,32 @@ class ToolMilling(AppTool, Excellon):
 
         # Excellon Tool Table - rows selected
         try:
-            self.ui.tools_table.clicked.disconnect()
+            self.ui.tools_table_mill_exc.clicked.disconnect()
         except (TypeError, AttributeError):
             pass
         try:
-            self.ui.tools_table.horizontalHeader().sectionClicked.disconnect()
+            self.ui.tools_table_mill_exc.horizontalHeader().sectionClicked.disconnect()
         except (TypeError, AttributeError):
             pass
 
         # Geo Tool Table
         try:
-            self.ui.geo_tools_table.clicked.disconnect()
+            self.ui.tools_table_mill_geo.clicked.disconnect()
         except (TypeError, AttributeError):
             pass
         try:
-            self.ui.geo_tools_table.itemChanged.disconnect()
+            self.ui.tools_table_mill_geo.itemChanged.disconnect()
         except (TypeError, AttributeError):
             pass
         try:
-            self.ui.geo_tools_table.horizontalHeader().sectionClicked.disconnect()
+            self.ui.tools_table_mill_geo.horizontalHeader().sectionClicked.disconnect()
         except (TypeError, AttributeError):
             pass
 
         # Geometry Tool table widgets
-        for row in range(self.ui.geo_tools_table.rowCount()):
+        for row in range(self.ui.tools_table_mill_geo.rowCount()):
             try:
-                self.ui.geo_tools_table.cellWidget(row, 4).clicked.disconnect()
+                self.ui.tools_table_mill_geo.cellWidget(row, 4).clicked.disconnect()
             except (TypeError, AttributeError):
                 pass
 
@@ -1648,9 +1650,9 @@ class ToolMilling(AppTool, Excellon):
         self.ui_disconnect()
 
         if self.ui.target_radio.get_value() == 'exc':
-            plugin_table = self.ui.tools_table
+            plugin_table = self.ui.tools_table_mill_exc
         else:
-            plugin_table = self.ui.geo_tools_table
+            plugin_table = self.ui.tools_table_mill_geo
 
         # #########################################################################################################
         # Tool Table
@@ -1690,9 +1692,9 @@ class ToolMilling(AppTool, Excellon):
 
     def on_row_selection_change(self):
         if self.ui.target_radio.get_value() == 'exc':
-            plugin_table = self.ui.tools_table
+            plugin_table = self.ui.tools_table_mill_exc
         else:
-            plugin_table = self.ui.geo_tools_table
+            plugin_table = self.ui.tools_table_mill_geo
 
         self.update_ui()
 
@@ -1720,9 +1722,9 @@ class ToolMilling(AppTool, Excellon):
             return
 
         if self.ui.target_radio.get_value() == 'exc':
-            plugin_table = self.ui.tools_table
+            plugin_table = self.ui.tools_table_mill_exc
         else:
-            plugin_table = self.ui.geo_tools_table
+            plugin_table = self.ui.tools_table_mill_geo
 
         sel_model = plugin_table.selectionModel()
         sel_rows_index_list = sel_model.selectedRows()
@@ -1806,9 +1808,9 @@ class ToolMilling(AppTool, Excellon):
 
         # calculate self.currnet_row for the cellWidgets in the Tools Table
         if self.ui.target_radio.get_value() == 'geo':
-            t_table = self.ui.geo_tools_table
+            t_table = self.ui.tools_table_mill_geo
         else:
-            t_table = self.ui.tools_table
+            t_table = self.ui.tools_table_mill_exc
         self.current_row = t_table.currentRow()
 
         for k in list(self.form_fields.keys()) + list(self.general_form_fields.keys()):
@@ -1846,9 +1848,9 @@ class ToolMilling(AppTool, Excellon):
 
         # we get the current row in the (geo) tools table for the form fields found in the table
         if self.ui.target_radio.get_value() == 'geo':
-            t_table = self.ui.geo_tools_table
+            t_table = self.ui.tools_table_mill_geo
         else:
-            t_table = self.ui.tools_table
+            t_table = self.ui.tools_table_mill_exc
         self.current_row = t_table.currentRow()
 
         for storage_key in dict_storage:
@@ -1878,7 +1880,7 @@ class ToolMilling(AppTool, Excellon):
 
         # the Target Object is Excellon
         if self.ui.target_radio.get_value() == 'exc':
-            used_tools_table = self.ui.tools_table
+            used_tools_table = self.ui.tools_table_mill_exc
             if used_tools_table.rowCount() == 2:
                 # there is no tool in tool table so we can't save the GUI elements values to storage
                 # Excellon Tool Table has 2 rows by default
@@ -1886,7 +1888,7 @@ class ToolMilling(AppTool, Excellon):
 
         # the Target Object is Geometry
         else:
-            used_tools_table = self.ui.geo_tools_table
+            used_tools_table = self.ui.tools_table_mill_geo
             if used_tools_table.rowCount() == 0:
                 # there is no tool in tool table so we can't save the GUI elements values to storage
                 return
@@ -1983,13 +1985,13 @@ class ToolMilling(AppTool, Excellon):
         vdia = float(self.ui.tipdia_entry.get_value())
         half_vangle = float(self.ui.tipangle_entry.get_value()) / 2
 
-        row = self.ui.geo_tools_table.currentRow()
-        tool_uid_item = self.ui.geo_tools_table.item(row, 3)
+        row = self.ui.tools_table_mill_geo.currentRow()
+        tool_uid_item = self.ui.tools_table_mill_geo.item(row, 3)
         if tool_uid_item is None:
             return
         tool_uid = int(tool_uid_item.text())
 
-        tool_dia_item = self.ui.geo_tools_table.item(row, 1)
+        tool_dia_item = self.ui.tools_table_mill_geo.item(row, 1)
         if tool_dia_item is None:
             return
         tooldia = float(tool_dia_item.text())
@@ -2017,21 +2019,21 @@ class ToolMilling(AppTool, Excellon):
         :rtype:     list
         """
 
-        return [str(x.text()) for x in self.ui.tools_table.selectedItems()]
+        return [str(x.text()) for x in self.ui.tools_table_mill_exc.selectedItems()]
 
     def on_apply_param_to_all_clicked(self):
-        if self.ui.tools_table.rowCount() == 0:
+        if self.ui.tools_table_mill_exc.rowCount() == 0:
             # there is no tool in tool table so we can't save the GUI elements values to storage
             self.app.log.debug("ToolDrilling.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
             return
 
         self.ui_disconnect()
 
-        row = self.ui.tools_table.currentRow()
+        row = self.ui.tools_table_mill_exc.currentRow()
         if row < 0:
             row = 0
 
-        tooluid_item = int(self.ui.tools_table.item(row, 3).text())
+        tooluid_item = int(self.ui.tools_table_mill_exc.item(row, 3).text())
         temp_tool_data = {}
 
         for tooluid_key, tooluid_val in self.target_obj.tools.items():
@@ -2170,16 +2172,16 @@ class ToolMilling(AppTool, Excellon):
         self.target_obj.build_ui()
 
         # select the tool just added
-        for row in range(self.ui.geo_tools_table.rowCount()):
-            if int(self.ui.geo_tools_table.item(row, 3).text()) == tooluid:
-                self.ui.geo_tools_table.selectRow(row)
+        for row in range(self.ui.tools_table_mill_geo.rowCount()):
+            if int(self.ui.tools_table_mill_geo.item(row, 3).text()) == tooluid:
+                self.ui.tools_table_mill_geo.selectRow(row)
                 break
 
         # update the UI form
         self.update_ui()
 
         # if there is at least one tool left in the Tools Table, enable the parameters GUI
-        if self.ui.geo_tools_table.rowCount() != 0:
+        if self.ui.tools_table_mill_geo.rowCount() != 0:
             self.ui.param_frame.setDisabled(False)
 
         self.app.inform.emit('[success] %s' % _("New tool added to Tool Table from Tools Database."))
@@ -2247,7 +2249,7 @@ class ToolMilling(AppTool, Excellon):
         self.target_obj.build_ui()
 
         # if there is at least one tool left in the Tools Table, enable the parameters GUI
-        if self.ui.geo_tools_table.rowCount() != 0:
+        if self.ui.tools_table_mill_geo.rowCount() != 0:
             self.ui.param_frame.setDisabled(False)
 
     def on_tool_add_from_db_clicked(self):
@@ -2318,7 +2320,7 @@ class ToolMilling(AppTool, Excellon):
         self.build_ui()
 
         # if there is no tool left in the Tools Table, enable the parameters appGUI
-        if self.ui.geo_tools_table.rowCount() != 0:
+        if self.ui.tools_table_mill_geo.rowCount() != 0:
             self.ui.param_frame.setDisabled(False)
 
     def on_tool_edit(self, current_item):
@@ -2326,11 +2328,11 @@ class ToolMilling(AppTool, Excellon):
 
         current_row = current_item.row()
         try:
-            dia = float(self.ui.geo_tools_table.item(current_row, 1).text())
+            dia = float(self.ui.tools_table_mill_geo.item(current_row, 1).text())
         except ValueError:
             # try to convert comma to decimal point. if it's still not working error message and return
             try:
-                dia = float(self.ui.geo_tools_table.item(current_row, 1).text().replace(',', '.'))
+                dia = float(self.ui.tools_table_mill_geo.item(current_row, 1).text().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                 return
@@ -2339,7 +2341,7 @@ class ToolMilling(AppTool, Excellon):
             return
 
         tool_dia = self.app.dec_format(dia, self.decimals)
-        tooluid = int(self.ui.geo_tools_table.item(current_row, 3).text())
+        tooluid = int(self.ui.tools_table_mill_geo.item(current_row, 3).text())
 
         # update Tool dia
         self.target_obj.tools[tooluid]['tooldia'] = deepcopy(tool_dia)
@@ -2373,14 +2375,14 @@ class ToolMilling(AppTool, Excellon):
             max_uid = 0
 
         if all_tools is None:
-            if self.ui.geo_tools_table.selectedItems():
-                for current_row in self.ui.geo_tools_table.selectedItems():
+            if self.ui.tools_table_mill_geo.selectedItems():
+                for current_row in self.ui.tools_table_mill_geo.selectedItems():
                     # sometime the header get selected and it has row number -1
                     # we don't want to do anything with the header :)
                     if current_row.row() < 0:
                         continue
                     try:
-                        tooluid_copy = int(self.ui.geo_tools_table.item(current_row.row(), 3).text())
+                        tooluid_copy = int(self.ui.tools_table_mill_geo.item(current_row.row(), 3).text())
                         max_uid += 1
                         self.target_obj.tools[int(max_uid)] = deepcopy(self.target_obj.tools[tooluid_copy])
                     except AttributeError:
@@ -2391,14 +2393,14 @@ class ToolMilling(AppTool, Excellon):
                     except Exception as e:
                         self.app.log.error("on_tool_copy() --> " + str(e))
                 # deselect the table
-                # self.ui.geo_tools_table.clearSelection()
+                # self.ui.tools_table_mill_geo.clearSelection()
             else:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Failed. Select a tool to copy."))
                 self.ui_connect()
                 self.builduiSig.emit()
                 return
         else:
-            # we copy all tools in geo_tools_table
+            # we copy all tools in tools_table_mill_geo
             try:
                 temp_tools = deepcopy(self.target_obj.tools)
                 max_uid += 1
@@ -2423,14 +2425,14 @@ class ToolMilling(AppTool, Excellon):
         self.ui_disconnect()
 
         if all_tools is None:
-            if self.ui.geo_tools_table.selectedItems():
-                for current_row in self.ui.geo_tools_table.selectedItems():
+            if self.ui.tools_table_mill_geo.selectedItems():
+                for current_row in self.ui.tools_table_mill_geo.selectedItems():
                     # sometime the header get selected and it has row number -1
                     # we don't want to do anything with the header :)
                     if current_row.row() < 0:
                         continue
                     try:
-                        tooluid_del = int(self.ui.geo_tools_table.item(current_row.row(), 3).text())
+                        tooluid_del = int(self.ui.tools_table_mill_geo.item(current_row.row(), 3).text())
 
                         temp_tools = deepcopy(self.target_obj.tools)
                         for tooluid_key in self.target_obj.tools:
@@ -2452,14 +2454,14 @@ class ToolMilling(AppTool, Excellon):
                     except Exception as e:
                         self.app.log.error("on_tool_delete() --> " + str(e))
                 # deselect the table
-                # self.ui.geo_tools_table.clearSelection()
+                # self.ui.tools_table_mill_geo.clearSelection()
             else:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Failed. Select a tool to delete."))
                 self.ui_connect()
                 self.builduiSig.emit()
                 return
         else:
-            # we delete all tools in geo_tools_table
+            # we delete all tools in tools_table_mill_geo
             self.target_obj.tools.clear()
 
         self.app.plot_all()
@@ -2480,7 +2482,7 @@ class ToolMilling(AppTool, Excellon):
         obj_active = self.target_obj
         # if the object was MultiGeo and now it has no tool at all (therefore no geometry)
         # we make it back SingleGeo
-        if self.ui.geo_tools_table.rowCount() <= 0:
+        if self.ui.tools_table_mill_geo.rowCount() <= 0:
             obj_active.multigeo = False
             obj_active.obj_options['xmin'] = 0
             obj_active.obj_options['ymin'] = 0
@@ -2501,7 +2503,7 @@ class ToolMilling(AppTool, Excellon):
                 obj_active.obj_options['ymax'] = 0
 
         # if there is no tool left in the Tools Table, disable the parameters appGUI
-        if self.ui.geo_tools_table.rowCount() == 0:
+        if self.ui.tools_table_mill_geo.rowCount() == 0:
             self.ui.param_frame.setDisabled(True)
 
     def generate_milling_drills(self, tools=None, outname=None, tooldia=None, plot=False, use_thread=False):
@@ -2773,9 +2775,9 @@ class ToolMilling(AppTool, Excellon):
             pass
 
         # test to see if we have tools available in the tool table
-        if self.ui.tools_table.selectedItems():
-            for x in self.ui.tools_table.selectedItems():
-                tooluid = int(self.ui.tools_table.item(x.row(), 3).text())
+        if self.ui.tools_table_mill_exc.selectedItems():
+            for x in self.ui.tools_table_mill_exc.selectedItems():
+                tooluid = int(self.ui.tools_table_mill_exc.item(x.row(), 3).text())
 
                 for tooluid_key, tooluid_value in self.target_obj.tools.items():
                     if int(tooluid_key) == tooluid:
@@ -2785,8 +2787,8 @@ class ToolMilling(AppTool, Excellon):
 
             self.paint_excellon_cncjpb()
 
-        elif self.ui.geo_tools_table.rowCount() == 3:
-            tooluid = int(self.ui.tools_table.item(0, 3).text())
+        elif self.ui.tools_table_mill_geo.rowCount() == 3:
+            tooluid = int(self.ui.tools_table_mill_exc.item(0, 3).text())
 
             for tooluid_key, tooluid_value in self.target_obj.tools.items():
                 if int(tooluid_key) == tooluid:
@@ -2794,7 +2796,7 @@ class ToolMilling(AppTool, Excellon):
                         tooluid: deepcopy(tooluid_value)
                     })
             self.paint_excellon_cncjpb()
-            # self.ui.geo_tools_table.clearSelection()
+            # self.ui.tools_table_mill_geo.clearSelection()
         else:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No tool selected in the tool table ..."))
 
@@ -2947,9 +2949,9 @@ class ToolMilling(AppTool, Excellon):
             pass
 
         # test to see if we have tools available in the tool table
-        if self.ui.geo_tools_table.selectedItems():
-            for x in self.ui.geo_tools_table.selectedItems():
-                tooluid = int(self.ui.geo_tools_table.item(x.row(), 3).text())
+        if self.ui.tools_table_mill_geo.selectedItems():
+            for x in self.ui.tools_table_mill_geo.selectedItems():
+                tooluid = int(self.ui.tools_table_mill_geo.item(x.row(), 3).text())
 
                 for tooluid_key, tooluid_value in self.target_obj.tools.items():
                     if int(tooluid_key) == tooluid:
@@ -2958,10 +2960,10 @@ class ToolMilling(AppTool, Excellon):
                         })
 
             self.mtool_gen_cncjob()
-            # self.ui.geo_tools_table.clearSelection()
+            # self.ui.tools_table_mill_geo.clearSelection()
 
-        elif self.ui.geo_tools_table.rowCount() == 1:
-            tooluid = int(self.ui.geo_tools_table.item(0, 3).text())
+        elif self.ui.tools_table_mill_geo.rowCount() == 1:
+            tooluid = int(self.ui.tools_table_mill_geo.item(0, 3).text())
 
             for tooluid_key, tooluid_value in self.target_obj.tools.items():
                 if int(tooluid_key) == tooluid:
@@ -2969,7 +2971,7 @@ class ToolMilling(AppTool, Excellon):
                         tooluid: deepcopy(tooluid_value)
                     })
             self.mtool_gen_cncjob()
-            # self.ui.geo_tools_table.clearSelection()
+            # self.ui.tools_table_mill_geo.clearSelection()
         else:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No tool selected in the tool table ..."))
 
@@ -3006,7 +3008,7 @@ class ToolMilling(AppTool, Excellon):
 
         geo_obj = geo_obj if geo_obj is not None else self.target_obj
 
-        # use the name of the first tool selected in self.geo_tools_table which has the diameter passed as tool_dia
+        # use the name of the first tool selected in self.tools_table_mill_geo which has the diameter passed as tool_dia
         outname = "%s_%s" % (geo_obj.obj_options["name"], 'cnc') if outname is None else outname
 
         tools_dict = self.sel_tools if tools_dict is None else tools_dict
@@ -3656,8 +3658,8 @@ class ToolMilling(AppTool, Excellon):
 
         self.ui_disconnect()
         cb_flag = self.ui.plot_cb.isChecked()
-        for row in range(self.ui.geo_tools_table.rowCount()):
-            table_cb = self.ui.geo_tools_table.cellWidget(row, 4)
+        for row in range(self.ui.tools_table_mill_geo.rowCount()):
+            table_cb = self.ui.tools_table_mill_geo.cellWidget(row, 4)
             if cb_flag:
                 table_cb.setChecked(True)
             else:
@@ -3668,7 +3670,7 @@ class ToolMilling(AppTool, Excellon):
         # self.ui.cnc_tools_table.cellWidget(row, 2).widget().setCheckState(QtCore.Qt.Unchecked)
         self.ui_disconnect()
         # cw = self.sender()
-        # cw_index = self.ui.geo_tools_table.indexAt(cw.pos())
+        # cw_index = self.ui.tools_table_mill_geo.indexAt(cw.pos())
         # cw_row = cw_index.row()
         check_row = 0
 
@@ -3678,13 +3680,13 @@ class ToolMilling(AppTool, Excellon):
             solid_geometry = self.target_obj.tools[tooluid_key]['solid_geometry']
 
             # find the geo_plugin_table row associated with the tooluid_key
-            for row in range(self.ui.geo_tools_table.rowCount()):
-                tooluid_item = int(self.ui.geo_tools_table.item(row, 3).text())
+            for row in range(self.ui.tools_table_mill_geo.rowCount()):
+                tooluid_item = int(self.ui.tools_table_mill_geo.item(row, 3).text())
                 if tooluid_item == int(tooluid_key):
                     check_row = row
                     break
 
-            if self.ui.geo_tools_table.cellWidget(check_row, 4).isChecked():
+            if self.ui.tools_table_mill_geo.cellWidget(check_row, 4).isChecked():
                 try:
                     color = self.target_obj.tools[tooluid_key]['data']['override_color']
                     self.target_obj.plot_element(element=solid_geometry, visible=True, color=color)
@@ -3695,9 +3697,9 @@ class ToolMilling(AppTool, Excellon):
         # make sure that the general plot is disabled if one of the row plot's are disabled and
         # if all the row plot's are enabled also enable the general plot checkbox
         cb_cnt = 0
-        total_row = self.ui.geo_tools_table.rowCount()
+        total_row = self.ui.tools_table_mill_geo.rowCount()
         for row in range(total_row):
-            if self.ui.geo_tools_table.cellWidget(row, 4).isChecked():
+            if self.ui.tools_table_mill_geo.cellWidget(row, 4).isChecked():
                 cb_cnt += 1
             else:
                 cb_cnt -= 1
@@ -4046,27 +4048,27 @@ class MillingUI:
         # ################################################
         # ########## Excellon Tool Table #################
         # ################################################
-        self.tools_table = FCTable(drag_drop=True)
-        self.tools_table.setRowCount(2)
-        tool_grid.addWidget(self.tools_table, 0, 0, 1, 2)
+        self.tools_table_mill_exc = FCTable(drag_drop=True)
+        self.tools_table_mill_exc.setRowCount(2)
+        tool_grid.addWidget(self.tools_table_mill_exc, 0, 0, 1, 2)
 
-        self.tools_table.setColumnCount(5)
-        self.tools_table.setColumnHidden(3, True)
-        self.tools_table.setSortingEnabled(False)
+        self.tools_table_mill_exc.setColumnCount(5)
+        self.tools_table_mill_exc.setColumnHidden(3, True)
+        self.tools_table_mill_exc.setSortingEnabled(False)
 
-        self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), _('Drills'), '', _('Slots')])
-        self.tools_table.horizontalHeaderItem(0).setToolTip(
+        self.tools_table_mill_exc.setHorizontalHeaderLabels(['#', _('Diameter'), _('Drills'), '', _('Slots')])
+        self.tools_table_mill_exc.horizontalHeaderItem(0).setToolTip(
             _("This is the Tool Number.\n"
               "When ToolChange is checked, on toolchange event this value\n"
               "will be showed as a T1, T2 ... Tn in the Machine Code.\n\n"
               "Here the tools are selected for G-code generation."))
-        self.tools_table.horizontalHeaderItem(1).setToolTip(
+        self.tools_table_mill_exc.horizontalHeaderItem(1).setToolTip(
             _("Tool Diameter. Its value\n"
               "is the cut width into the material."))
-        self.tools_table.horizontalHeaderItem(2).setToolTip(
+        self.tools_table_mill_exc.horizontalHeaderItem(2).setToolTip(
             _("The number of Drill holes. Holes that are drilled with\n"
               "a drill bit."))
-        self.tools_table.horizontalHeaderItem(4).setToolTip(
+        self.tools_table_mill_exc.horizontalHeaderItem(4).setToolTip(
             _("The number of Slot holes. Holes that are created by\n"
               "milling them with an endmill bit."))
 
@@ -4085,17 +4087,17 @@ class MillingUI:
         tot_drill_count = QtWidgets.QTableWidgetItem('%d' % 0)
         tot_drill_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
-        self.tools_table.setItem(0, 0, empty_1)
-        self.tools_table.setItem(0, 1, label_tot_drill_count)
-        self.tools_table.setItem(0, 2, tot_drill_count)  # Total number of drills
-        self.tools_table.setItem(0, 4, empty_1_1)
+        self.tools_table_mill_exc.setItem(0, 0, empty_1)
+        self.tools_table_mill_exc.setItem(0, 1, label_tot_drill_count)
+        self.tools_table_mill_exc.setItem(0, 2, tot_drill_count)  # Total number of drills
+        self.tools_table_mill_exc.setItem(0, 4, empty_1_1)
 
         font = QtGui.QFont()
         font.setBold(True)
 
         for k in [1, 2]:
-            self.tools_table.item(0, k).setForeground(QtGui.QColor(127, 0, 255))
-            self.tools_table.item(0, k).setFont(font)
+            self.tools_table_mill_exc.item(0, k).setForeground(QtGui.QColor(127, 0, 255))
+            self.tools_table_mill_exc.item(0, k).setFont(font)
 
         # add a last row with the Total number of slots
         empty_2 = QtWidgets.QTableWidgetItem('')
@@ -4108,24 +4110,24 @@ class MillingUI:
         label_tot_slot_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
         tot_slot_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
-        self.tools_table.setItem(1, 0, empty_2)
-        self.tools_table.setItem(1, 1, label_tot_slot_count)
-        self.tools_table.setItem(1, 2, empty_2_1)
-        self.tools_table.setItem(1, 4, tot_slot_count)  # Total number of slots
+        self.tools_table_mill_exc.setItem(1, 0, empty_2)
+        self.tools_table_mill_exc.setItem(1, 1, label_tot_slot_count)
+        self.tools_table_mill_exc.setItem(1, 2, empty_2_1)
+        self.tools_table_mill_exc.setItem(1, 4, tot_slot_count)  # Total number of slots
 
         for kl in [1, 2, 4]:
-            self.tools_table.item(1, kl).setFont(font)
-            self.tools_table.item(1, kl).setForeground(QtGui.QColor(0, 70, 255))
+            self.tools_table_mill_exc.item(1, kl).setFont(font)
+            self.tools_table_mill_exc.item(1, kl).setForeground(QtGui.QColor(0, 70, 255))
 
-        self.tools_table.resizeColumnsToContents()
-        self.tools_table.resizeRowsToContents()
+        self.tools_table_mill_exc.resizeColumnsToContents()
+        self.tools_table_mill_exc.resizeRowsToContents()
 
-        vertical_header = self.tools_table.verticalHeader()
+        vertical_header = self.tools_table_mill_exc.verticalHeader()
         vertical_header.hide()
-        self.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.tools_table_mill_exc.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
-        horizontal_header = self.tools_table.horizontalHeader()
-        self.tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        horizontal_header = self.tools_table_mill_exc.horizontalHeader()
+        self.tools_table_mill_exc.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         horizontal_header.setMinimumSectionSize(10)
         horizontal_header.setDefaultSectionSize(70)
@@ -4136,10 +4138,10 @@ class MillingUI:
         horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
         horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
 
-        self.tools_table.setSortingEnabled(False)
+        self.tools_table_mill_exc.setSortingEnabled(False)
 
-        self.tools_table.setMinimumHeight(self.tools_table.getHeight())
-        self.tools_table.setMaximumHeight(self.tools_table.getHeight())
+        self.tools_table_mill_exc.setMinimumHeight(self.tools_table_mill_exc.getHeight())
+        self.tools_table_mill_exc.setMaximumHeight(self.tools_table_mill_exc.getHeight())
 
         # Tool order
         self.order_label = FCLabel('%s:' % _('Tool order'))
@@ -4159,30 +4161,30 @@ class MillingUI:
         # ************************************************************************
 
         # Tool Table for Geometry
-        self.geo_tools_table = FCTable(drag_drop=False)
-        self.geo_tools_table.setRowCount(0)
-        self.geo_tools_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
-        self.geo_tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.tools_table_mill_geo = FCTable(drag_drop=True)
+        self.tools_table_mill_geo.setRowCount(0)
+        self.tools_table_mill_geo.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
+        self.tools_table_mill_geo.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
 
-        tool_grid.addWidget(self.geo_tools_table, 4, 0, 1, 2)
+        tool_grid.addWidget(self.tools_table_mill_geo, 4, 0, 1, 2)
 
-        self.geo_tools_table.setColumnCount(5)
-        self.geo_tools_table.setColumnWidth(0, 20)
-        self.geo_tools_table.setHorizontalHeaderLabels(['#', _('Dia'), '', '', 'P'])
-        self.geo_tools_table.setColumnHidden(2, True)
-        self.geo_tools_table.setColumnHidden(3, True)
+        self.tools_table_mill_geo.setColumnCount(5)
+        self.tools_table_mill_geo.setColumnWidth(0, 20)
+        self.tools_table_mill_geo.setHorizontalHeaderLabels(['#', _('Dia'), '', '', 'P'])
+        self.tools_table_mill_geo.setColumnHidden(2, True)
+        self.tools_table_mill_geo.setColumnHidden(3, True)
 
-        self.geo_tools_table.horizontalHeaderItem(0).setToolTip(
+        self.tools_table_mill_geo.horizontalHeaderItem(0).setToolTip(
             _(
                 "This is the Tool Number.\n"
                 "When ToolChange is checked, on toolchange event this value\n"
                 "will be showed as a T1, T2 ... Tn")
         )
-        self.geo_tools_table.horizontalHeaderItem(1).setToolTip(
+        self.tools_table_mill_geo.horizontalHeaderItem(1).setToolTip(
             _("Tool Diameter. Its value\n"
               "is the cut width into the material."))
 
-        self.geo_tools_table.horizontalHeaderItem(4).setToolTip(
+        self.tools_table_mill_geo.horizontalHeaderItem(4).setToolTip(
             _(
                 "Plot column. It is visible only for MultiGeo geometries, meaning geometries that holds the geometry\n"
                 "data into the tools. For those geometries, deleting the tool will delete the geometry data also,\n"
@@ -4191,8 +4193,8 @@ class MillingUI:
             ))
 
         # Hide the Tools Table on start
-        self.tools_table.hide()
-        self.geo_tools_table.hide()
+        self.tools_table_mill_exc.hide()
+        self.tools_table_mill_geo.hide()
         self.order_label.hide()
         self.order_combo.hide()
 

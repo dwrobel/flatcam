@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM Evo beta
 
 - Excellon Editor: fixed crash when editing hole diameters in the Tool Table
 - Isolation Plugin: fixed some possible issues when using rest machining
+- Drag and Drop files works now only in the Notebook and in the Plot Tab
 
 4.07.2023
 

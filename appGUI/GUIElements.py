@@ -36,6 +36,83 @@ if '_' not in builtins.__dict__:
 EDIT_SIZE_HINT = 70
 
 
+class PlotTabWithDragDrop(QtWidgets.QWidget):
+
+    def __init__(self, app, parent=None):
+        super().__init__(parent=parent)
+
+        self.app = app
+        self.setAcceptDrops(True)
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls:
+            event.accept()
+        else:
+            event.ignore()
+
+    def dragMoveEvent(self, event):
+        if event.mimeData().hasUrls:
+            event.accept()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        if event.mimeData().hasUrls:
+            event.setDropAction(QtCore.Qt.DropAction.CopyAction)
+            event.accept()
+            for url in event.mimeData().urls():
+                filename = str(url.toLocalFile())
+
+                if filename == "":
+                    self.app.inform.emit("Cancelled.")
+                else:
+                    extension = filename.lower().rpartition('.')[-1]
+
+                    if extension in self.app.regFK.grb_list:
+                        self.app.worker_task.emit({'fcn': self.app.f_handlers.open_gerber,
+                                                   'params': [filename]})
+                    else:
+                        event.ignore()
+
+                    if extension in self.app.regFK.exc_list:
+                        self.app.worker_task.emit({'fcn': self.app.f_handlers.open_excellon,
+                                                   'params': [filename]})
+                    else:
+                        event.ignore()
+
+                    if extension in self.app.regFK.gcode_list:
+                        self.app.worker_task.emit({'fcn': self.app.f_handlers.open_gcode,
+                                                   'params': [filename]})
+                    else:
+                        event.ignore()
+
+                    if extension in self.app.regFK.svg_list:
+                        object_type = 'geometry'
+                        self.app.worker_task.emit({'fcn': self.app.f_handlers.import_svg,
+                                                   'params': [filename, object_type, None]})
+
+                    if extension in self.app.regFK.dxf_list:
+                        object_type = 'geometry'
+                        self.app.worker_task.emit({'fcn': self.app.f_handlers.import_dxf,
+                                                   'params': [filename, object_type, None]})
+
+                    if extension in self.app.regFK.pdf_list:
+                        self.app.pdf_tool.periodic_check(1000)
+                        self.app.worker_task.emit({'fcn': self.app.pdf_tool.open_pdf,
+                                                   'params': [filename]})
+
+                    if extension in self.app.regFK.prj_list:
+                        # self.app.open_project() is not Thread Safe
+                        self.app.f_handlers.open_project(filename)
+
+                    if extension in self.app.regFK.conf_list:
+                        self.app.f_handlers.open_config_file(filename)
+                    else:
+                        event.ignore()
+        else:
+            event.ignore()
+
+
 class RadioSet(QtWidgets.QWidget):
     activated_custom = QtCore.pyqtSignal(str)
 
@@ -4197,6 +4274,8 @@ class FCTable(QtWidgets.QTableWidget):
                          palette.color(QtGui.QPalette.ColorGroup.Active, QtGui.QPalette.ColorRole.HighlightedText))
         self.setPalette(palette)
 
+        self._is_drag_drop_enabled = drag_drop
+
         if drag_drop:
             self.setDragEnabled(True)
             self.setAcceptDrops(True)
@@ -4218,6 +4297,24 @@ class FCTable(QtWidgets.QTableWidget):
 
         self.rows_to_move = []
         self.rows_dragged = None
+
+    @property
+    def drag_drop(self):
+        return self._is_drag_drop_enabled
+
+    @drag_drop.setter
+    def drag_drop(self, val: bool):
+        self._is_drag_drop_enabled = val
+        if val:
+            self.setDragEnabled(True)
+            self.setAcceptDrops(True)
+            self.viewport().setAcceptDrops(True)
+            self.setDragDropOverwriteMode(False)
+            self.setDropIndicatorShown(True)
+
+            self.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
+            self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+            self.setDragDropMode(QtWidgets.QAbstractItemView.DragDropMode.InternalMove)
 
     def sizeHint(self):
         default_hint_size = super(FCTable, self).sizeHint()

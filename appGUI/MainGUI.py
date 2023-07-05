@@ -1540,7 +1540,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.right_lay.addWidget(self.plot_tab_area)
         self.plot_tab_area.setTabsClosable(True)
 
-        self.plot_tab = QtWidgets.QWidget()
+        self.plot_tab = PlotTabWithDragDrop(app=self.app)
         self.plot_tab.setObjectName("plotarea_tab")
         self.plot_tab_area.addTab(self.plot_tab, _("Plot Area"))
 
@@ -2015,7 +2015,8 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.filename = ""
         self.units = ""
-        self.setAcceptDrops(True)
+
+        # self.setAcceptDrops(True)
 
         # ########################################################################
         # ########################## Build GUI # #################################
