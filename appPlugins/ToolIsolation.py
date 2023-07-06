@@ -1841,7 +1841,7 @@ class ToolIsolation(AppTool, Gerber):
                             iso_name = outname + "_int_iso"
 
                     # if milling type is climb then the move is counter-clockwise around features
-                    mill_dir = 1 if milling_type == 'cl' else 0
+                    mill_dir = 0 if milling_type == 'cl' else 1
 
                     iso_geo = self.generate_envelope(isolated_obj, iso_offset, mill_dir, geometry=work_geo,
                                                      env_iso_type=iso_t, nr_passes=i, prog_plot=prog_plot)
@@ -2033,7 +2033,7 @@ class ToolIsolation(AppTool, Gerber):
 
                     milling_type = tool_data['tools_iso_milling_type']
                     # if milling type is climb then the move is counter-clockwise around features
-                    mill_dir = True if milling_type == 'cl' else False
+                    mill_dir = False if milling_type == 'cl' else True
                     iso_t = {
                         'ext': 0,
                         'int': 1,
@@ -2252,7 +2252,7 @@ class ToolIsolation(AppTool, Gerber):
                     iso_offset = -iso_offset
 
                 # if milling type is climb then the move is counter-clockwise around features
-                mill_dir = 1 if milling_type == 'cl' else 0
+                mill_dir = 0 if milling_type == 'cl' else 1
 
                 iso_geo = self.generate_envelope(iso_obj, iso_offset, mill_dir, geometry=work_geo, env_iso_type=iso_t,
                                                  nr_passes=nr_pass, prog_plot=prog_plot)

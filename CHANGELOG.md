@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+6.07.2023
+
+- Isolation Plugin: reversed the milling direction between the conventional and climbing milling types
+
 5.07.2023
 
 - Excellon Editor: fixed crash when editing hole diameters in the Tool Table
