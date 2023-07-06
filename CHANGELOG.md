@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM Evo beta
 6.07.2023
 
 - Isolation Plugin: reversed the milling direction between the conventional and climbing milling types
+- Isolation Plugin: code refactoring
 
 5.07.2023
 

@@ -3142,11 +3142,16 @@ class ToolIsolation(AppTool, Gerber):
 
         work_geo = []
 
+        geo_len = len(geometry)
         for idx, geo in enumerate(geometry):
             good_pass_iso = []
-            start_idx = idx + 1
+
+            geo_idx_list = list(range(geo_len))
+            # we don't want to test intersection with itself
+            del geo_idx_list[idx]
 
             for nr_pass in range(passes):
+
                 iso_offset = tooldia * ((2 * nr_pass + 1) / 2.0) - (nr_pass * overlap * tooldia)
                 if negative_dia:
                     iso_offset = -iso_offset
@@ -3155,17 +3160,11 @@ class ToolIsolation(AppTool, Gerber):
                 check_geo = geo.buffer(buf_chek)
 
                 intersect_flag = False
-                # find if current pass for current geo is valid (no intersection with other geos))
-                for geo_search_idx in range(idx):
+                # find if current pass for current geo is valid (no intersection with other geos)
+                for geo_search_idx in geo_idx_list:
                     if check_geo.intersects(geometry[geo_search_idx]):
                         intersect_flag = True
                         break
-
-                if intersect_flag is False:
-                    for geo_search_idx in range(start_idx, len(geometry)):
-                        if check_geo.intersects(geometry[geo_search_idx]):
-                            intersect_flag = True
-                            break
 
                 # if we had an intersection do nothing, else add the geo to the good pass isolation's
                 if intersect_flag is False:
