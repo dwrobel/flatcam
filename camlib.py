@@ -40,6 +40,7 @@ from shapely.affinity import scale, translate
 from shapely.wkt import loads as sloads
 from shapely.wkt import dumps as sdumps
 from shapely.geometry.base import BaseGeometry
+from shapely import union, difference
 
 # ---------------------------------------
 # NEEDED for Legacy mode
@@ -193,19 +194,28 @@ class ApertureMacro:
             if match:
                 # ## Replace all variables
                 for v in self.locvars:
-                    # replaced the following line with the next to fix Mentor custom apertures not parsed OK
-                    # part = re.sub(r'\$' + str(v) + r'(?![0-9a-zA-Z])', str(self.locvars[v]), part)
-                    part = part.replace('$' + str(v), str(self.locvars[v]))
+                    part = re.sub(r'\$' + str(v) + r'(?![0-9a-zA-Z])', str(self.locvars[v]), part)
+                    # Sometimes the 'X' char is used instead of * for multiplication
+                    part = re.sub(r'[Xx]', "*", part)
 
                 # Make all others 0
                 part = re.sub(r'\$[0-9a-zA-Z](?![0-9a-zA-Z])', "0", part)
+                self.primitives.append([eval(x) for x in part.split(",")])
 
-                # Change x with *
-                part = re.sub(r'[xX]', "*", part)
+                # for v in self.locvars:
+                #     # replaced the following line with the next to fix Mentor custom apertures not parsed OK
+                #     # part = re.sub(r'\$' + str(v) + r'(?![0-9a-zA-Z])', str(self.locvars[v]), part)
+                #     part = part.replace('$' + str(v), str(self.locvars[v]))
 
-                # ## Store
-                elements = part.split(",")
-                self.primitives.append([eval(x) for x in elements])
+                # # Make all others 0
+                # part = re.sub(r'\$[0-9a-zA-Z](?![0-9a-zA-Z])', "0", part)
+                #
+                # # Change x with *
+                # part = re.sub(r'[xX]', "*", part)
+                #
+                # # ## Store
+                # elements = part.split(",")
+                # self.primitives.append([eval(x) for x in elements])
                 continue
 
             log.warning("Unknown syntax of aperture macro part: %s" % str(part))
@@ -348,6 +358,8 @@ class ApertureMacro:
         vertex_list = mods[2:-1]
         # rotation is the last value
         angle = mods[-1]
+        # vertex points number is second value
+        vtx_nr = mods[1]
         n = int(len(vertex_list) / 2)
         points = [(0, 0)] * n
 
@@ -355,6 +367,11 @@ class ApertureMacro:
             start = 2 * i
             stop = (2 * i) + 2
             points[i] = vertex_list[start:stop]
+
+        # Fix for KiCAD 7.0.7 who is too lazy to respect the Gerber specification which says
+        # that the last point should always be the first
+        if len(points) < vtx_nr:
+            points.append(points[0])
         # ---------------------------
 
         poly = Polygon(points)
@@ -467,7 +484,7 @@ class ApertureMacro:
 
         return {"pol": 1, "geometry": thermal}
 
-    def make_geometry(self, modifiers):
+    def make_geometry(self, modifiers: list):
         """
         Runs the macro for the given modifiers and generates
         the corresponding geometry.
@@ -513,12 +530,14 @@ class ApertureMacro:
             #     self.geometry = prim_geo['geometry']
             #     continue
             if prim_geo['pol'] == 1:
-                self.geometry = self.geometry.union(prim_geo['geometry'])
+                if self.geometry.is_empty:
+                    self.geometry = prim_geo['geometry']
+                    continue
+                self.geometry = union(self.geometry, prim_geo['geometry'])
                 continue
             if prim_geo['pol'] == 0:
-                self.geometry = self.geometry.difference(prim_geo['geometry'])
+                self.geometry = difference(self.geometry, prim_geo['geometry'])
                 continue
-
         return self.geometry
 
 

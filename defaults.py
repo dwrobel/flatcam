@@ -24,7 +24,6 @@ class AppDefaults:
 
     factory_defaults = {
         # Global
-        "units": "MM",
         "version": 8.992,  # defaults format version, not necessarily equal to app version
         "first_run": True,
         "root_folder_path": '',
@@ -74,7 +73,8 @@ class AppDefaults:
         "global_tcl_path": '',
 
         # General APP Preferences
-        "decimals_metric": 4,
+        "units": "MM",
+        "units_precision": 4,
         "global_graphic_engine": '3D',
         "global_graphic_engine_3d_no_mp": False,
         "global_app_level": 'b',

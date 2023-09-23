@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+23.09.2023
+
+- fixed aperture macros parse for Gerber files generated from KiCAD 7.0.7
+
 6.07.2023
 
 - Isolation Plugin: reversed the milling direction between the conventional and climbing milling types
