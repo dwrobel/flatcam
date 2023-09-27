@@ -181,18 +181,21 @@ class Gerber(Geometry):
 
         # G01... - Linear interpolation plus flashes with coordinates
         # Operation code (D0x) missing is deprecated... oh well I will support it.
-        self.lin_re = re.compile(r'^(?:G0?(1))?(?=.*X([\+-]?\d+))?(?=.*Y([\+-]?\d+))?[XY][^DIJ]*(?:D0?([123]))?\*$')
+        self.lin_re = re.compile(r'^(?:G0?(1))?(?=.*X([+-]?\d+))?(?=.*Y([+-]?\d+))?[XY][^DIJ]*(?:D0?([123]))?\*$')
 
         # Operation code alone, usually just D03 (Flash)
-        self.opcode_re = re.compile(r'^D0?([123])\*$')
+        # May begin with G55 but that is deprecated
+        self.opcode_re = re.compile(r'^(?:G55)?D0?([123])\*$')
 
         # G02/3... - Circular interpolation with coordinates
         # 2-clockwise, 3-counterclockwise
         # Operation code (D0x) missing is deprecated... oh well I will support it.
         # Optional start with G02 or G03, optional end with D01 or D02 with
         # optional coordinates but at least one in any order.
-        self.circ_re = re.compile(r'^(?:G0?([23]))?(?=.*X([\+-]?\d+))?(?=.*Y([\+-]?\d+))' +
-                                  '?(?=.*I([\+-]?\d+))?(?=.*J([\+-]?\d+))?[XYIJ][^D]*(?:D0([12]))?\*$')
+        self.circ_re = re.compile(
+            r'^(?:G0?([23]))?(?=.*X([+-]?\d+))?(?=.*Y([+-]?\d+))' +
+            '?(?=.*I([+-]?\d+))?(?=.*J([+-]?\d+))?[XYIJ][^D]*(?:D0([12]))?\*$'
+        )
 
         # G01/2/3 Occurring without coordinates
         self.interp_re = re.compile(r'^(?:G0?([123]))\*')

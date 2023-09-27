@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+27.09.2023
+
+- Gerber parser: added support for obsoleted G55 command before a D03 (flash)
+
 23.09.2023
 
 - fixed aperture macros parse for Gerber files generated from KiCAD 7.0.7
