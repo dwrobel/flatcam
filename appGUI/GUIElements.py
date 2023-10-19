@@ -999,7 +999,7 @@ class NumericalEvalEntry(FCEntry):
     def __init__(self, border_color=None):
         super().__init__(border_color=border_color)
 
-        regex = QtCore.QRegularExpression("[0-9\/\*\+\-\%\.\,\s]*")
+        regex = QtCore.QRegularExpression(r"[0-9\/\*\+\-\%\.\,\s]*")
         validator = QtGui.QRegularExpressionValidator(regex, self)
         self.setValidator(validator)
 
@@ -1023,7 +1023,7 @@ class NumericalEvalTupleEntry(EvalEntry):
     def __init__(self, border_color=None):
         super().__init__(border_color=border_color)
 
-        regex = QtCore.QRegularExpression("[0-9\/\*\+\-\%\.\s\,\[\]\(\)]*")
+        regex = QtCore.QRegularExpression(r"[0-9\/\*\+\-\%\.\s\,\[\]\(\)]*")
         validator = QtGui.QRegularExpressionValidator(regex, self)
         self.setValidator(validator)
 
@@ -1053,7 +1053,7 @@ class FCColorEntry(QtWidgets.QFrame):
         super().__init__(**kwargs)
 
         self.entry = FCEntry()
-        regex = QtCore.QRegularExpression("[#A-Fa-f0-9]*")
+        regex = QtCore.QRegularExpression(r"[#A-Fa-f0-9]*")
         validator = QtGui.QRegularExpressionValidator(regex, self.entry)
         self.entry.setValidator(validator)
 
@@ -1453,7 +1453,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         # by default don't allow the minus sign to be entered as the default for QDoubleSpinBox is the positive range
         # between 0.00 and 99.00 (2 decimals)
         validator = QtGui.QRegularExpressionValidator(
-            QtCore.QRegularExpression("\+?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self)
+            QtCore.QRegularExpression(r"\+?[0-9]*[.,]?[0-9]" + "{%d}" % self.decimals()), self)
         self.lineEdit().setValidator(validator)
 
         if suffix:
@@ -1664,17 +1664,17 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         if self.minimum() < 0 or self.maximum() <= 0:
             self.lineEdit().setValidator(
                 QtGui.QRegularExpressionValidator(
-                    QtCore.QRegularExpression("-?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
+                    QtCore.QRegularExpression(r"-?[0-9]*[.,]?[0-9]" + "{%d}" % self.decimals()), self))
         else:
             self.lineEdit().setValidator(
                 QtGui.QRegularExpressionValidator(
-                    QtCore.QRegularExpression("\+?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
+                    QtCore.QRegularExpression(r"\+?[0-9]*[.,]?[0-9]" + "{%d}" % self.decimals()), self))
 
     def set_range(self, min_val, max_val):
         if min_val < 0 or max_val <= 0:
             self.lineEdit().setValidator(
                 QtGui.QRegularExpressionValidator(
-                    QtCore.QRegularExpression("-?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
+                    QtCore.QRegularExpression(r"-?[0-9]*[.,]?[0-9]" + "{%d}" % self.decimals()), self))
 
         self.setRange(min_val, max_val)
 
@@ -5202,7 +5202,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     # comment
                     color = self.get_custom_color(QtGui.QColor(Qt.GlobalColor.gray))
                     brush = QtGui.QBrush(color, Qt.BrushStyle.SolidPattern)
-                    pattern = QtCore.QRegularExpression("\(.*\)")
+                    pattern = QtCore.QRegularExpression(r"\(.*\)")
                     comment.setForeground(brush)
                     rule = (pattern, comment)
                     self.highlightingRules.append(rule)
@@ -5210,7 +5210,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     # Marlin comment
                     color = self.get_custom_color(QtGui.QColor(Qt.GlobalColor.gray))
                     brush = QtGui.QBrush(color, Qt.BrushStyle.SolidPattern)
-                    pattern = QtCore.QRegularExpression("^;\s*.*$")
+                    pattern = QtCore.QRegularExpression(r"^;\s*.*$")
                     comment.setForeground(brush)
                     rule = (pattern, comment)
                     self.highlightingRules.append(rule)
@@ -5218,7 +5218,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     # Python comment
                     color = self.get_custom_color(QtGui.QColor(Qt.GlobalColor.gray))
                     brush = QtGui.QBrush(color, Qt.BrushStyle.SolidPattern)
-                    pattern = QtCore.QRegularExpression("^\#\s*.*$")
+                    pattern = QtCore.QRegularExpression(r"^\#\s*.*$")
                     comment.setForeground(brush)
                     rule = (pattern, comment)
                     self.highlightingRules.append(rule)
@@ -5226,7 +5226,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     # string
                     color = self.get_custom_color(QtGui.QColor("tomato"))
                     brush = QtGui.QBrush(color, Qt.BrushStyle.SolidPattern)
-                    pattern = QtCore.QRegularExpression("\".*\"")
+                    pattern = QtCore.QRegularExpression(r"\".*\"")
                     # pattern.setMinimal
                     pattern.setPatternOptions(QtCore.QRegularExpression.PatternOption.InvertedGreedinessOption)
                     string.setForeground(brush)
@@ -5234,7 +5234,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     self.highlightingRules.append(rule)
 
                     # singleQuotedString
-                    pattern = QtCore.QRegularExpression("\'.*\'")
+                    pattern = QtCore.QRegularExpression(r"\'.*\'")
                     # pattern.setMinimal(True)
                     pattern.setPatternOptions(QtCore.QRegularExpression.PatternOption.InvertedGreedinessOption)
 
@@ -5251,7 +5251,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     keywords = ["G", "T"]
                     for word in keywords:
                         # pattern = QtCore.QRegularExpression("\\b" + word + "\\b")
-                        pattern = QtCore.QRegularExpression("\\b" + word + "\d+(\.\d*)?\s?" + "\\b")
+                        pattern = QtCore.QRegularExpression(r"\\b" + word + r"\d+(\.\d*)?\s?" + r"\\b")
                         rule = (pattern, keyword)
                         self.highlightingRules.append(rule)
 
@@ -5264,7 +5264,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     keywords = ["F"]
                     for word in keywords:
                         # pattern = QtCore.QRegularExpression("\\b" + word + "\\b")
-                        pattern = QtCore.QRegularExpression("\\b" + word + "\d+(\.\d*)?\s?" + "\\b")
+                        pattern = QtCore.QRegularExpression(r"\\b" + word + r"\d+(\.\d*)?\s?" + r"\\b")
                         rule = (pattern, keyword1)
                         self.highlightingRules.append(rule)
 
@@ -5278,7 +5278,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     keywords = ["M"]
                     for word in keywords:
                         # pattern = QtCore.QRegularExpression("\\b" + word + "\\b")
-                        pattern = QtCore.QRegularExpression("\\b" + word + "\d+(\.\d*)?\s?" + "\\b")
+                        pattern = QtCore.QRegularExpression(r"\\b" + word + r"\d+(\.\d*)?\s?" + r"\\b")
                         rule = (pattern, keyword2)
                         self.highlightingRules.append(rule)
 
@@ -5292,7 +5292,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     keywords = ["Z"]
                     for word in keywords:
                         # pattern = QtCore.QRegularExpression("\\b" + word + "\\b")
-                        pattern = QtCore.QRegularExpression("\\b" + word + "[\-|\+]?\d+(\.\d*)?\s?" + "\\b")
+                        pattern = QtCore.QRegularExpression(r"\\b" + word + r"[\-|\+]?\d+(\.\d*)?\s?" + r"\\b")
                         rule = (pattern, keyword3)
                         self.highlightingRules.append(rule)
 
@@ -5305,7 +5305,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     keywords = ["LPC", "LPD"]
                     for word in keywords:
                         # pattern = QtCore.QRegularExpression("\\b" + word + "\\b")
-                        pattern = QtCore.QRegularExpression("\%" + "\\b" + word + "\*\%")
+                        pattern = QtCore.QRegularExpression(r"\%" + r"\\b" + word + r"\*\%")
                         rule = (pattern, keyword4)
                         self.highlightingRules.append(rule)
 
@@ -5319,7 +5319,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     keywords = ["D"]
                     for word in keywords:
                         # pattern = QtCore.QRegularExpression("\\b" + word + "\\b")
-                        pattern = QtCore.QRegularExpression("\\b" + word + "\d+\s?")
+                        pattern = QtCore.QRegularExpression(r"\\b" + word + r"\d+\s?")
                         rule = (pattern, keyword5)
                         self.highlightingRules.append(rule)
 
@@ -5332,21 +5332,21 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                         "elif", "else", "in", "while", "do"
                     ]
                     for word in keywords:
-                        pattern = QtCore.QRegularExpression("\\b" + word + "\\b")
+                        pattern = QtCore.QRegularExpression(r"\\b" + word + r"\\b")
                         rule = (pattern, reservedClasses)
                         self.highlightingRules.append(rule)
 
                     # parameter
                     color = self.get_custom_color(QtGui.QColor(Qt.GlobalColor.darkBlue))
                     brush = QtGui.QBrush(color, Qt.BrushStyle.SolidPattern)
-                    pattern = QtCore.QRegularExpression("\-[0-9a-zA-Z_]*\s")
+                    pattern = QtCore.QRegularExpression(r"\-[0-9a-zA-Z_]*\s")
                     parameterOperator.setForeground(brush)
                     parameterOperator.setFontWeight(QtGui.QFont.Weight.Bold)
                     rule = (pattern, parameterOperator)
                     self.highlightingRules.append(rule)
 
                     # delimiter
-                    pattern = QtCore.QRegularExpression("[\)\(]+|[\{\}]+|[][]+")
+                    pattern = QtCore.QRegularExpression(r"[\)\(]+|[\{\}]+|[][]+")
                     delimiter.setForeground(brush)
                     delimiter.setFontWeight(QtGui.QFont.Weight.Bold)
                     rule = (pattern, delimiter)
@@ -5358,7 +5358,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     specialConstant.setForeground(brush)
                     keywords = ["Inf", "NA", "NaN", "NULL"]
                     for word in keywords:
-                        pattern = QtCore.QRegularExpression("\\b" + word + "\\b")
+                        pattern = QtCore.QRegularExpression(r"\\b" + word + r"\\b")
                         rule = (pattern, specialConstant)
                         self.highlightingRules.append(rule)
 
@@ -5366,7 +5366,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     boolean.setForeground(brush)
                     keywords = ["TRUE", "True", "FALSE", "False"]
                     for word in keywords:
-                        pattern = QtCore.QRegularExpression("\\b" + word + "\\b")
+                        pattern = QtCore.QRegularExpression(r"\\b" + word + r"\\b")
                         rule = (pattern, boolean)
                         self.highlightingRules.append(rule)
 

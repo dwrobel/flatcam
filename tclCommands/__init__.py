@@ -1,4 +1,6 @@
+
 import pkgutil
+import importlib
 import sys
 
 # allowed command modules (please append them alphabetically ordered)
@@ -79,8 +81,12 @@ import tclCommands.TclCommandWriteGCode
 
 __all__ = []
 
+# for loader, name, is_pkg in pkgutil.walk_packages(__path__):
+#     module = loader.find_module(name).load_module(name)
+#     __all__.append(name)
+
 for loader, name, is_pkg in pkgutil.walk_packages(__path__):
-    module = loader.find_module(name).load_module(name)
+    module = importlib.import_module(f"{__name__}.{name}")
     __all__.append(name)
 
 

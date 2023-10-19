@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM Evo beta
 - fixed preprocessors issue where the start GCode was not added due of trying to access an object that did not exist (because its name was not changed to reflect the changes in other parts on the app)
 - updated the requirements.txt file
 - added qdarktheme package into the code
+- upgraded code so the app will work with Python 3.12
 
 27.09.2023
 
