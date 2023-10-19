@@ -12,8 +12,6 @@ from appGUI import VisPyPatches
 from appGUI.GUIElements import FCMessageBox
 
 from multiprocessing import freeze_support
-# import copyreg
-# import types
 
 MIN_VERSION_MAJOR = 3
 MIN_VERSION_MINOR = 6

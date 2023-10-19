@@ -47,9 +47,9 @@ import socket
 
 import tkinter as tk
 
-import qdarktheme
-import qdarktheme.themes.dark.stylesheet as qdarksheet
-import qdarktheme.themes.light.stylesheet as qlightsheet
+import libs.qdarktheme
+import libs.qdarktheme.themes.dark.stylesheet as qdarksheet
+import libs.qdarktheme.themes.light.stylesheet as qlightsheet
 
 from typing import Union
 
@@ -628,11 +628,11 @@ class App(QtCore.QObject):
         elif self.options["global_theme"] == 'light':
             self.resource_location = 'assets/resources'
             qlightsheet.STYLE_SHEET = light_style_sheet.L_STYLE_SHEET
-            self.qapp.setStyleSheet(qdarktheme.load_stylesheet('light'))
+            self.qapp.setStyleSheet(libs.qdarktheme.load_stylesheet('light'))
         else:
             self.resource_location = 'assets/resources/dark_resources'
             qdarksheet.STYLE_SHEET = dark_style_sheet.D_STYLE_SHEET
-            self.qapp.setStyleSheet(qdarktheme.load_stylesheet())
+            self.qapp.setStyleSheet(libs.qdarktheme.load_stylesheet())
 
         # ############################################################################################################
         # ################################### Set LOG verbosity ######################################################
@@ -801,7 +801,6 @@ class App(QtCore.QObject):
         self.ui = MainGUI(self)
         # ########################
 
-
         # decide if to show or hide the Notebook side of the screen at startup
         if self.options["global_project_at_startup"] is True:
             self.ui.splitter.setSizes([1, 1])
@@ -956,7 +955,7 @@ class App(QtCore.QObject):
             self.hover_shapes = ShapeCollectionLegacy(obj=self, app=self, name='hover')
 
             # Storage for Selection shapes
-            self.sel_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name="selection")
+            self.sel_shapes = ShapeCollectionLegacy(obj=self, app=self, name="selection")
         # #############################################################################################################
 
         end_plot_time = time.time()
@@ -4142,9 +4141,9 @@ class App(QtCore.QObject):
         """
         Called for converting a Geometry object from single-geo to multi-geo.
         Single-geo Geometry objects store their geometry data into self.solid_geometry.
-        Multi-geo Geometry objects store their geometry data into the self.tools dictionary, each key (a tool actually)
-        having as a value another dictionary. This value dictionary has one of its keys 'solid_geometry' which holds
-        the solid-geometry of that tool.
+        Multi-geo Geometry objects store their geometry data into the `self.tools` dictionary, each key
+        (a tool actually) having as a value another dictionary. This value dictionary has
+        one of its keys 'solid_geometry' which holds the solid-geometry of that tool.
 
         :return: None
         """
@@ -4833,7 +4832,7 @@ class App(QtCore.QObject):
             except Exception:
                 pass
 
-            if type(dia_box_location) == tuple:
+            if isinstance(dia_box_location, tuple):
                 dia_box_location = str(dia_box_location)
             else:
                 dia_box_location = None
@@ -5296,7 +5295,7 @@ class App(QtCore.QObject):
             else:
                 default_data[opt_key] = self.options[opt_key]
 
-        if type(self.options["tools_mill_tooldia"]) == float:
+        if isinstance(self.options["tools_mill_tooldia"], float):
             tools_diameters = [self.options["tools_mill_tooldia"]]
         else:
             try:
@@ -7240,7 +7239,7 @@ class App(QtCore.QObject):
                 outline = self.options['global_sel_line'][:-2] + str(hex(int(1.0 * 255)))[2:]
 
         self.sel_objects_list.append(
-            self.sel_shapes.add(b_sel_rect,color=outline, face_color=face, update=True, layer=0, tolerance=None)
+            self.sel_shapes.add(b_sel_rect, color=outline, face_color=face, update=True, layer=0, tolerance=None)
         )
         if self.use_3d_engine is False:
             self.sel_shapes.redraw()
@@ -7350,17 +7349,17 @@ class App(QtCore.QObject):
                 return
 
         obj = self.collection.get_active()
-        if type(obj) == GeometryObject:
+        if isinstance(obj, GeometryObject):
             self.f_handlers.on_file_exportdxf()
-        elif type(obj) == ExcellonObject:
+        elif isinstance(obj, ExcellonObject):
             self.f_handlers.on_file_saveexcellon()
-        elif type(obj) == CNCJobObject:
+        elif isinstance(obj, CNCJobObject):
             obj.on_exportgcode_button_click()
-        elif type(obj) == GerberObject:
+        elif isinstance(obj, GerberObject):
             self.f_handlers.on_file_savegerber()
-        elif type(obj) == ScriptObject:
+        elif isinstance(obj, ScriptObject):
             self.f_handlers.on_file_savescript()
-        elif type(obj) == DocumentObject:
+        elif isinstance(obj, DocumentObject):
             self.f_handlers.on_file_savedocument()
 
     def obj_move(self):
