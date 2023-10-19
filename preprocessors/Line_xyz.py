@@ -58,7 +58,7 @@ class Line_xyz(PreProc):
                 gcode += '(Tool: %s -> ' % str(tool) + 'Z_Cut: %s' % str(val['data']["tools_drill_cutz"]) + ')\n'
 
             gcode += '\n(Tools Offset: )\n'
-            for tool, val in p['exc_cnc_tools'].items():
+            for tool, val in p['tools'].items():
                 gcode += '(Tool: %s -> ' % str(tool) + 'Offset Z: %s' % \
                          str(val['data']["tools_drill_offset"]) + ')\n'
 
