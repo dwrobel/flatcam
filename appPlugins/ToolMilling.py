@@ -731,7 +731,7 @@ class ToolMilling(AppTool, Excellon):
 
                         # we made the decision here what to do with the hidden parameters
                         # some will disable some of the hidden features but other are set by
-                        # other plugins so we hide them but we do not disable (like the `multidepth`)
+                        # other plugins so, we hide them, but we do not disable (like the `multidepth`)
                         # tool_data['tools_mill_multidepth'] = False
                         tool_data['tools_mill_extracut'] = self.app.options["tools_mill_extracut"]
                         tool_data['tools_mill_dwell'] = self.app.options["tools_mill_dwell"]
@@ -793,7 +793,7 @@ class ToolMilling(AppTool, Excellon):
 
                         # we made the decision here what to do with the hidden parameters
                         # some will disable some of the hidden features but other are set by
-                        # other plugins so we hide them but we do not disable (like the `multidepth`)
+                        # other plugins so, we hide them but, we do not disable (like the `multidepth`)
                         # tool_data['tools_mill_multidepth'] = app_defaults['tools_mill_multidepth']
                         tool_data['tools_mill_extracut'] = app_defaults['tools_mill_extracut']
                         tool_data['tools_mill_dwell'] = app_defaults['tools_mill_dwell']
@@ -1049,8 +1049,8 @@ class ToolMilling(AppTool, Excellon):
         # make the diameter column editable
         for row in range(row_idx):
             self.ui.tools_table_mill_geo.item(row, 1).setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable |
-                                                          QtCore.Qt.ItemFlag.ItemIsEditable |
-                                                          QtCore.Qt.ItemFlag.ItemIsEnabled)
+                                                               QtCore.Qt.ItemFlag.ItemIsEditable |
+                                                               QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         # sort the tool diameter column
         # self.ui.tools_table_mill_geo.sortItems(1)
@@ -1187,7 +1187,7 @@ class ToolMilling(AppTool, Excellon):
             self.ui.tools_table_mill_exc.setItem(self.tool_row, 3, tool_uid_item)
 
             # Number of slots per tool
-            # if the slot number is zero is better to not clutter the GUI with zero's so we print a space
+            # if the slot number is zero is better to not clutter the GUI with zero's so, we print a space
             slot_count_str = '%d' % slot_cnt if slot_cnt > 0 else ''
             slot_count_item = QtWidgets.QTableWidgetItem(slot_count_str)
             slot_count_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
@@ -1838,7 +1838,7 @@ class ToolMilling(AppTool, Excellon):
 
     def storage_to_form(self, dict_storage):
         """
-        Will update the GUI with data from the "storage" in this case the dict self.tools
+        Will update the GUI with data from the "storage" in this case the dict "self.tools"
 
         :param dict_storage:    A dictionary holding the data relevant for generating Gcode
         :type dict_storage:     dict
@@ -1869,7 +1869,7 @@ class ToolMilling(AppTool, Excellon):
 
     def form_to_storage(self):
         """
-        Will update the 'storage' attribute which is the dict self.tools with data collected from GUI
+        Will update the 'storage' attribute which is the dict "self.tools" with data collected from GUI
 
         :return:    None
         :rtype:
@@ -1882,7 +1882,7 @@ class ToolMilling(AppTool, Excellon):
         if self.ui.target_radio.get_value() == 'exc':
             used_tools_table = self.ui.tools_table_mill_exc
             if used_tools_table.rowCount() == 2:
-                # there is no tool in tool table so we can't save the GUI elements values to storage
+                # there is no tool in tool table so, we can't save the GUI elements values to storage
                 # Excellon Tool Table has 2 rows by default
                 return
 
@@ -1890,7 +1890,7 @@ class ToolMilling(AppTool, Excellon):
         else:
             used_tools_table = self.ui.tools_table_mill_geo
             if used_tools_table.rowCount() == 0:
-                # there is no tool in tool table so we can't save the GUI elements values to storage
+                # there is no tool in tool table so, we can't save the GUI elements values to storage
                 return
 
         self.ui_disconnect()
@@ -2012,7 +2012,7 @@ class ToolMilling(AppTool, Excellon):
 
     def get_selected_tools_list(self):
         """
-        Returns the keys to the self.tools dictionary corresponding
+        Returns the keys to the "self.tools" dictionary corresponding
         to the selections on the tool list in the appGUI.
 
         :return:    List of tools.
@@ -2023,7 +2023,7 @@ class ToolMilling(AppTool, Excellon):
 
     def on_apply_param_to_all_clicked(self):
         if self.ui.tools_table_mill_exc.rowCount() == 0:
-            # there is no tool in tool table so we can't save the GUI elements values to storage
+            # there is no tool in tool table so, we can't save the GUI elements values to storage
             self.app.log.debug("ToolDrilling.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
             return
 
@@ -2050,7 +2050,7 @@ class ToolMilling(AppTool, Excellon):
         self.ui_connect()
 
     def on_order_changed(self, order):
-        if order != 0:  # "default"
+        if order != 0:  # "default" choice
             self.build_ui()
 
     def on_tool_add(self, dia=None, new_geo=None):
@@ -2119,7 +2119,7 @@ class ToolMilling(AppTool, Excellon):
             if db_tool_val['data']['tool_target'] != 1:     # _('Milling')
                 continue
 
-            # if we find a tool with the same diameter in the Tools DB just update it's data
+            # if we find a tool with the same diameter in the Tools DB just update its data
             if truncated_tooldia == db_tooldia:
                 tool_found += 1
                 for d in db_tool_val['data']:
@@ -2274,7 +2274,7 @@ class ToolMilling(AppTool, Excellon):
 
     def on_tool_from_db_inserted(self, tool):
         """
-        Called from the Tools DB object through a App method when adding a tool from Tools Database
+        Called from the Tools DB object through an App method when adding a tool from Tools Database
         :param tool: a dict with the tool data
         :return: None
         """
@@ -2377,7 +2377,7 @@ class ToolMilling(AppTool, Excellon):
         if all_tools is None:
             if self.ui.tools_table_mill_geo.selectedItems():
                 for current_row in self.ui.tools_table_mill_geo.selectedItems():
-                    # sometime the header get selected and it has row number -1
+                    # sometimes the header get selected, and it has row number -1
                     # we don't want to do anything with the header :)
                     if current_row.row() < 0:
                         continue
@@ -2427,7 +2427,7 @@ class ToolMilling(AppTool, Excellon):
         if all_tools is None:
             if self.ui.tools_table_mill_geo.selectedItems():
                 for current_row in self.ui.tools_table_mill_geo.selectedItems():
-                    # sometime the header get selected and it has row number -1
+                    # sometimes the header get selected, and it has row number -1
                     # we don't want to do anything with the header :)
                     if current_row.row() < 0:
                         continue
@@ -2437,8 +2437,8 @@ class ToolMilling(AppTool, Excellon):
                         temp_tools = deepcopy(self.target_obj.tools)
                         for tooluid_key in self.target_obj.tools:
                             if int(tooluid_key) == tooluid_del:
-                                # if the self.tools has only one tool and we delete it then we move the solid_geometry
-                                # as a property of the object otherwise there will be nothing to hold it
+                                # if the "self.tools" has only one tool, and we delete it then we move the
+                                # solid_geometry as a property of the object otherwise there will be nothing to hold it
                                 if len(self.target_obj.tools) == 1:
                                     self.target_obj.solid_geometry = deepcopy(
                                         self.target_obj.tools[tooluid_key]['solid_geometry']
@@ -2480,7 +2480,7 @@ class ToolMilling(AppTool, Excellon):
         self.app.inform.emit('[success] %s' % _("Tool was deleted in Tool Table."))
 
         obj_active = self.target_obj
-        # if the object was MultiGeo and now it has no tool at all (therefore no geometry)
+        # if the object was MultiGeo, and now it has no tool at all (therefore no geometry)
         # we make it back SingleGeo
         if self.ui.tools_table_mill_geo.rowCount() <= 0:
             obj_active.multigeo = False
@@ -2508,10 +2508,10 @@ class ToolMilling(AppTool, Excellon):
 
     def generate_milling_drills(self, tools=None, outname=None, tooldia=None, plot=False, use_thread=False):
         """
-        Will generate an Geometry Object allowing to cut a drill hole instead of drilling it.
+        Will generate a Geometry Object allowing to cut a drill hole instead of drilling it.
 
         Note: This method is a good template for generic operations as
-        it takes it's options from parameters or otherwise from the
+        it takes its options from parameters or otherwise from the
         object's options and returns a (success, msg) tuple as feedback
         for shell operations.
 
@@ -2613,10 +2613,10 @@ class ToolMilling(AppTool, Excellon):
 
     def generate_milling_slots(self, tools=None, outname=None, tooldia=None, plot=False, use_thread=False):
         """
-        Will generate an Geometry Object allowing to cut/mill a slot hole.
+        Will generate a Geometry Object allowing to cut/mill a slot hole.
 
         Note: This method is a good template for generic operations as
-        it takes it's options from parameters or otherwise from the
+        it takes its options from parameters or otherwise from the
         object's options and returns a (success, msg) tuple as feedback
         for shell operations.
 
@@ -3156,7 +3156,7 @@ class ToolMilling(AppTool, Excellon):
                 pp_geometry_name = tools_dict[tooluid_key]['data']["tools_mill_ppname_g"]
 
                 spindledir = self.app.options['tools_mill_spindledir']
-                tool_solid_geometry = self.solid_geometry
+                tool_solid_geometry = geo_obj.solid_geometry
 
                 new_cncjob_obj.coords_decimals = self.app.options["cncjob_coords_decimals"]
                 new_cncjob_obj.fr_decimals = self.app.options["cncjob_fr_decimals"]
@@ -3169,7 +3169,7 @@ class ToolMilling(AppTool, Excellon):
                 tool_lst = list(tools_dict.keys())
                 is_first = True if tooluid_key == tool_lst[0] else False
 
-                # it seems that the tolerance needs to be a lot lower value than 0.01 and it was hardcoded initially
+                # it seems that the tolerance needs to be a lot lower value than 0.01, and it was hardcoded initially
                 # to a value of 0.0005 which is 20 times less than 0.01
                 glob_tol = float(self.app.options['global_tolerance'])
                 tol = glob_tol / 20 if self.units.lower() == 'in' else glob_tol
@@ -3461,7 +3461,7 @@ class ToolMilling(AppTool, Excellon):
                 new_cncjob_obj.obj_options['type'] = 'Geometry'
                 new_cncjob_obj.obj_options['tool_dia'] = tooldia_val
 
-                # it seems that the tolerance needs to be a lot lower value than 0.01 and it was hardcoded initially
+                # it seems that the tolerance needs to be a lot lower value than 0.01, and it was hardcoded initially
                 # to a value of 0.0005 which is 20 times less than 0.01
                 glob_tol = float(self.app.options['global_tolerance'])
                 tol = glob_tol / 20 if self.units.lower() == 'in' else glob_tol
@@ -3694,8 +3694,8 @@ class ToolMilling(AppTool, Excellon):
                     self.target_obj.plot_element(element=solid_geometry, visible=True)
         self.target_obj.shapes.redraw()
 
-        # make sure that the general plot is disabled if one of the row plot's are disabled and
-        # if all the row plot's are enabled also enable the general plot checkbox
+        # make sure that the general plot is disabled if one of the row plots are disabled and
+        # if all the row plots are enabled also enable the general plot checkbox
         cb_cnt = 0
         total_row = self.ui.tools_table_mill_geo.rowCount()
         for row in range(total_row):
@@ -3714,10 +3714,10 @@ class ToolMilling(AppTool, Excellon):
         # matplotlib_key_flag = False
 
         # events out of the self.app.collection view (it's about Project Tab) are of type int
-        if type(event) is int:
+        if isinstance(event, int):
             key = event
         # events from the GUI are of type QKeyEvent
-        elif type(event) == QtGui.QKeyEvent:
+        elif isinstance(event, QtGui.QKeyEvent):
             key = event.key()
         elif isinstance(event, mpl_key_event):  # MatPlotLib key events are trickier to interpret than the rest
             # matplotlib_key_flag = True
@@ -3777,7 +3777,7 @@ class ToolMilling(AppTool, Excellon):
         sel_model = self.ui.exclusion_table.selectionModel()
         sel_indexes = sel_model.selectedIndexes()
 
-        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        # it will iterate over all indexes which means all items in all columns too, but I'm interested only on rows
         # so the duplicate rows will not be added
         sel_rows = set()
         for idx in sel_indexes:
@@ -3794,7 +3794,7 @@ class ToolMilling(AppTool, Excellon):
         sel_model = self.ui.exclusion_table.selectionModel()
         sel_indexes = sel_model.selectedIndexes()
 
-        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        # it will iterate over all indexes which means all items in all columns too, but I'm interested only on rows
         # so the duplicate rows will not be added
         sel_rows = set()
         for idx in sel_indexes:
@@ -3815,7 +3815,7 @@ class ToolMilling(AppTool, Excellon):
         sel_model = self.ui.exclusion_table.selectionModel()
         sel_indexes = sel_model.selectedIndexes()
 
-        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        # it will iterate over all indexes which means all items in all columns too, but I'm interested only on rows
         sel_rows = set()
         for idx in sel_indexes:
             sel_rows.add(idx.row())
@@ -3865,7 +3865,7 @@ class ToolMilling(AppTool, Excellon):
         sel_model = self.ui.exclusion_table.selectionModel()
         sel_indexes = sel_model.selectedIndexes()
 
-        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        # it will iterate over all indexes which means all items in all columns too, but I'm interested only on rows
         sel_rows = set()
         for idx in sel_indexes:
             sel_rows.add(idx.row())

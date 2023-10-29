@@ -161,7 +161,7 @@ class AppObject(QtCore.QObject):
 
         # Initialize as per user request
         # User must take care to implement initialize
-        # in a thread-safe way as is is likely that we
+        # in a thread-safe way as is likely that we
         # have been invoked in a separate thread.
         t1 = time.time()
         self.app.log.debug("%f seconds before initialize()." % (t1 - t0))

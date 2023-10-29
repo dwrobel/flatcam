@@ -7,6 +7,13 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+29.10.2023
+
+- when failing to save a project make sure that we can still close the app correctly
+- Milling Tool: when generating CNCJob's from a single_geometry type fixed an issue getting bad bounds values (Inf) which did not allow saving the project that included such a CNCJob object due of failing to serialize such an object
+- fixed some redundancy in some RegEx expressions
+- minor fixes
+
 19.10.2023
 
 - fixed preprocessors issue where the start GCode was not added due of trying to access an object that did not exist (because its name was not changed to reflect the changes in other parts on the app)

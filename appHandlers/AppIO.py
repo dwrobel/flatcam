@@ -1,6 +1,6 @@
 
 from PyQt6 import QtCore, QtGui, QtWidgets
-from PyQt6.QtCore import Qt, QSettings
+from PyQt6.QtCore import Qt
 
 from appEditors.AppExcEditor import AppExcEditor
 from appEditors.AppGeoEditor import AppGeoEditor
@@ -378,7 +378,7 @@ class AppIO(QtCore.QObject):
             return
         else:
             if self.app.use_3d_engine:
-                write_png(filename, data)
+                write_png(filename, data)   # noqa
             else:
                 self.app.plotcanvas.figure.savefig(filename)
 
@@ -2198,16 +2198,17 @@ class AppIO(QtCore.QObject):
             if match:
                 detected_preprocessor = match.group(1)
             # determine if there is any tool data
-            match = re.findall(r'^.*Tool:\s*(\d*)\s*->\s*Dia:\s*(\d*\.?\d*)', gcode, re.MULTILINE)
-            if match:
+            match_list = re.findall(r'^.*Tool:\s*(\d*)\s*->\s*Dia:\s*(\d*\.?\d*)', gcode, re.MULTILINE)
+            if match_list:
                 job_obj.tools = {}
-                for m in match:
+                for match in match_list:
+                    tool = int(match[0])
                     if 'excellon' in gcode_origin.lower():
-                        job_obj.tools[int(m[0])] = {
-                            'tooldia': float(m[1]),
+                        job_obj.tools[tool] = {
+                            'tooldia': float(match[1]),
                             'nr_drills': 0,
                             'nr_slots': 0,
-                            'offset_z': 0,
+                            'offset_z': 0.0,
                             'data': {'tools_drill_ppname_e': detected_preprocessor}
                         }
                     # if 'geometry' in gcode_origin.lower():
@@ -2223,13 +2224,14 @@ class AppIO(QtCore.QObject):
                     #     }
                 job_obj.used_tools = list(job_obj.tools.keys())
             # determine if there is any Cut Z data
-            match = re.findall(r'^.*Tool:\s*(\d*)\s*->\s*Z_Cut:\s*([\-|+]?\d*\.?\d*)', gcode, re.MULTILINE)
-            if match:
-                for m in match:
+            match_list = re.findall(r'^.*Tool:\s*(\d*)\s*->\s*Z_Cut:\s*([\-|+]?\d*\.?\d*)', gcode, re.MULTILINE)
+            if match_list:
+                for match in match_list:
+                    tool = int(match[0])
                     if 'excellon' in gcode_origin.lower():
-                        if int(m[0]) in job_obj.tools:
-                            job_obj.tools[int(m[0])]['offset_z'] = 0.0
-                            job_obj.tools[int(m[0])]['data']['tools_drill_cutz'] = float(m[1])
+                        if tool in job_obj.tools:
+                            job_obj.tools[tool]['offset_z'] = 0.0
+                            job_obj.tools[tool]['data']['tools_drill_cutz'] = float(match[1])
                     # if 'geometry' in gcode_origin.lower():
                     #     if int(m[0]) in job_obj.tools:
                     #         job_obj.tools[int(m[0])]['data']['tools_mill_cutz'] = float(m[1])
@@ -2777,6 +2779,7 @@ class AppIO(QtCore.QObject):
                     self.log.error(
                         "Failed to serialize file before compression: %s because: %s" % (str(filename), str(e)))
                     self.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                    self.app.save_in_progress = False
                     return
 
                 try:
@@ -2791,6 +2794,7 @@ class AppIO(QtCore.QObject):
                 except Exception as errrr:
                     self.log.error("Failed to save compressed file: %s because: %s" % (str(filename), str(errrr)))
                     self.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                    self.app.save_in_progress = False
                     return
 
                 if project_zipped != b'':
@@ -2801,6 +2805,7 @@ class AppIO(QtCore.QObject):
                 else:
                     self.log.error("Failed to save file: %s. Empty binary file.", str(filename))
                     self.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                    self.app.save_in_progress = False
                     return
             else:
                 # Open file
@@ -2809,6 +2814,7 @@ class AppIO(QtCore.QObject):
                 except IOError:
                     self.log.error("Failed to open file for saving: %s", str(filename))
                     self.inform.emit('[ERROR_NOTCL] %s' % _("The object is used by another application."))
+                    self.app.save_in_progress = False
                     return
 
                 # Write
@@ -2818,6 +2824,7 @@ class AppIO(QtCore.QObject):
                     self.log.error(
                         "Failed to serialize file: %s because: %s" % (str(filename), str(e)))
                     self.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                    self.app.save_in_progress = False
                     return
                 f.close()
 
@@ -2829,6 +2836,7 @@ class AppIO(QtCore.QObject):
                     if silent is False:
                         self.inform.emit('[ERROR_NOTCL] %s: %s %s' %
                                          (_("Failed to verify project file"), str(filename), _("Retry to save it.")))
+                        self.app.save_in_progress = False
                     return
 
                 try:
@@ -2839,6 +2847,7 @@ class AppIO(QtCore.QObject):
                                           str(filename),
                                           _("Retry to save it.")))  # noqa
                         f.close()
+                        self.app.save_in_progress = False
                         return
                 except Exception:
                     if silent is False:
@@ -2847,6 +2856,7 @@ class AppIO(QtCore.QObject):
                                           str(filename),
                                           _("Retry to save it.")))  # noqa
                     f.close()
+                    self.app.save_in_progress = False
                     return
 
                 saved_f.close()
