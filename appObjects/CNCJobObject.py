@@ -545,7 +545,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.review_gcode_button.clicked.connect(self.on_review_code_click)
 
         # Editor Signal
-        self.ui.editor_button.clicked.connect(lambda: self.app.object2editor())
+        self.ui.editor_button.clicked.connect(lambda: self.app.on_editing_start())
 
         # Properties
         self.ui.info_button.toggled.connect(self.on_properties)

@@ -5715,7 +5715,7 @@ class AppGeoEditorUI:
 
         # Signals
         self.level.toggled.connect(self.on_level_changed)
-        self.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
+        self.exit_editor_button.clicked.connect(lambda: self.app.on_editing_finished())
 
     def on_param_click(self):
         if self.param_button.get_value():

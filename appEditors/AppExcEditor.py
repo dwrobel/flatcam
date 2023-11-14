@@ -3140,7 +3140,7 @@ class AppExcEditor(QtCore.QObject):
         self.app.ui.exc_delete_drill_menuitem.triggered.connect(self.on_delete_btn)
 
         self.app.ui.exc_move_drill_menuitem.triggered.connect(self.exc_move_drills)
-        self.ui.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
+        self.ui.exit_editor_button.clicked.connect(lambda: self.app.on_editing_finished())
 
         # #############################################################################################################
         # ############################### TOOLS TABLE context menu ####################################################

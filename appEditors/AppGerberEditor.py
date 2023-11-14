@@ -292,7 +292,7 @@ class PadEditorGrb(ShapeToolEditorGrb):
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def draw_cursor_data(self, pos=None, delete=False):
-        if self.cursor_data_control is False:
+        if not self.cursor_data_control:
             self.draw_app.app.plotcanvas.text_cursor.text = ""
             return
 
@@ -307,16 +307,12 @@ class PadEditorGrb(ShapeToolEditorGrb):
 
         # font size
         qsettings = QtCore.QSettings("Open Source", "FlatCAM_EVO")
-        if qsettings.contains("hud_font_size"):
-            fsize = qsettings.value('hud_font_size', type=int)
-        else:
-            fsize = 8
+        fsize = qsettings.value('hud_font_size', type=int, defaultValue=8)
 
         old_x = self.ui.x_entry.get_value()
         old_y = self.ui.y_entry.get_value()
 
-        x = pos[0]
-        y = pos[1]
+        x, y = pos
         try:
             length = abs(np.sqrt((x - old_x) ** 2 + (y - old_y) ** 2))
         except IndexError:
@@ -347,15 +343,14 @@ class PadEditorGrb(ShapeToolEditorGrb):
 
     def on_key(self, key):
         # Jump to coords
-        if key == QtCore.Qt.Key.Key_J or key == 'J':
+        if key in [QtCore.Qt.Key.Key_J, 'J']:
             self.draw_app.app.on_jump_to()
 
-        if key in [str(i) for i in range(10)] + ['.', ',', '+', '-', '/', '*'] or \
-                key in [QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_0, QtCore.Qt.Key.Key_1, QtCore.Qt.Key.Key_2,
-                        QtCore.Qt.Key.Key_3, QtCore.Qt.Key.Key_4, QtCore.Qt.Key.Key_5, QtCore.Qt.Key.Key_6,
-                        QtCore.Qt.Key.Key_7, QtCore.Qt.Key.Key_8, QtCore.Qt.Key.Key_9, QtCore.Qt.Key.Key_Minus,
-                        QtCore.Qt.Key.Key_Plus, QtCore.Qt.Key.Key_Comma, QtCore.Qt.Key.Key_Period,
-                        QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]:
+        valid_keys = [str(i) for i in range(10)] + ['.', ',', '+', '-', '/', '*']
+        valid_keys += [getattr(QtCore.Qt.Key, "Key_%d" % i) for i in range(10)]
+        valid_keys += [QtCore.Qt.Key.Key_Minus, QtCore.Qt.Key.Key_Plus, QtCore.Qt.Key.Key_Comma,
+                       QtCore.Qt.Key.Key_Period, QtCore.Qt.Key.Key_Slash, QtCore.Qt.Key.Key_Asterisk]
+        if key in valid_keys:
             try:
                 # VisPy keys
                 if self.pad_tool.length == self.draw_app.last_length:
@@ -369,7 +364,7 @@ class PadEditorGrb(ShapeToolEditorGrb):
                 else:
                     self.pad_tool.length = str(self.pad_tool.length) + chr(key)
 
-        if key == 'Enter' or key == QtCore.Qt.Key.Key_Return or key == QtCore.Qt.Key.Key_Enter:
+        if key in ['Enter', QtCore.Qt.Key.Key_Return, QtCore.Qt.Key.Key_Enter]:
             if self.pad_tool.length != 0:
                 target_length = self.pad_tool.length
                 if target_length is None:
@@ -399,7 +394,7 @@ class PadEditorGrb(ShapeToolEditorGrb):
                         self.draw_app.app.inform.emit(msg)
                         # self.interpolate_length = ''
                         # return "Click on next point or hit ENTER to complete ..."
-        if key == 'C' or key == QtCore.Qt.Key.Key_C:
+        if key in ['C', QtCore.Qt.Key.Key_C]:
             self.cursor_data_control = not self.cursor_data_control
 
     def clean_up(self):
@@ -2085,7 +2080,7 @@ class DiscEditorGrb(ShapeToolEditorGrb):
         except KeyError:
             size_ap = 0.0
             # self.draw_app.app.inform.emit(
-            #     '[ERROR_NOTCL] %s' % _("You need to preselect a aperture in the Aperture Table that has a size."))
+            #     '[ERROR_NOTCL] %s' % _("You need to preselect an aperture in the Aperture Table that has a size."))
             # try:
             #     QtGui.QGuiApplication.restoreOverrideCursor()
             # except Exception:
@@ -2360,7 +2355,7 @@ class DiscSemiEditorGrb(ShapeToolEditorGrb):
                 t = distance(data, a)
 
                 # Which side? Cross product with c.
-                # cross(M-A, B-A), where line is AB and M is test point.
+                # cross(M-A, B-A), where line is AB and M is a test point.
                 side = (data[0] - p1[0]) * c[1] - (data[1] - p1[1]) * c[0]
                 t *= np.sign(side)
 
@@ -2433,7 +2428,7 @@ class DiscSemiEditorGrb(ShapeToolEditorGrb):
             t = distance(pc, a)
 
             # Which side? Cross product with c.
-            # cross(M-A, B-A), where line is AB and M is test point.
+            # cross(M-A, B-A), where line is AB and M is a test point.
             side = (pc[0] - p1[0]) * c[1] - (pc[1] - p1[1]) * c[0]
             t *= np.sign(side)
 
@@ -3083,7 +3078,7 @@ class EraserEditorGrb(ShapeToolEditorGrb):
 
         # all shapes that are `cut` will be stored in the 0 aperture
         intersection_geo_list = []
-        # if at least one of the apertures have zero geometry left then we delete it so we need to rebuild UI
+        # if at least one of the apertures have zero geometry left then we delete it, so we need to rebuild UI
         should_build = False
         # populate intersection list
         for storage in list(self.draw_app.storage_dict.keys()):
@@ -3706,7 +3701,6 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
         :param selection_type:  True if selection is left-to-tight mouse drag, False if right-to-left mouse drag
         :type selection_type:
         :return:                None
-        :rtype:                 None
         """
 
         poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
@@ -4095,7 +4089,7 @@ class AppGerberEditor(QtCore.QObject):
         self.ui.apertures_table.cellPressed.connect(self.on_row_selected)
         self.ui.apertures_table.selectionModel().selectionChanged.connect(self.on_table_selection)  # noqa
 
-        self.ui.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
+        self.ui.exit_editor_button.clicked.connect(lambda: self.app.on_editing_finished())
 
         self.conversion_factor = 1
 
@@ -4349,7 +4343,7 @@ class AppGerberEditor(QtCore.QObject):
         # Switch notebook to Properties page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
-        # we reactivate the signals after the after the tool adding as we don't need to see the tool been populated
+        # we reactivate the signals after the tool adding as we don't need to see the tool been populated
         self.ui.apertures_table.itemChanged.connect(self.on_tool_edit)
         self.ui.apertures_table.cellPressed.connect(self.on_row_selected)
 
@@ -4357,7 +4351,7 @@ class AppGerberEditor(QtCore.QObject):
         try:
             self.ui.apcode_entry.set_value(max(self.tid2apcode.values()) + 1)
         except ValueError:
-            # this means that the edited object has no apertures so we start with 10 (Gerber specifications)
+            # this means that the edited object has no apertures, so we start with 10 (Gerber specifications)
             self.ui.apcode_entry.set_value(self.app.options["gerber_editor_newcode"])
 
     def on_aperture_add(self, apcode=None):
@@ -4408,8 +4402,8 @@ class AppGerberEditor(QtCore.QObject):
                         }
 
                         self.ui.apsize_entry.set_value(size_val)
-                        # self.oldapcode_newapcode dict keeps the evidence on current aperture codes as keys and gets
-                        # updated on values  each time a aperture code is edited or added
+                        # 'self.oldapcode_newapcode' dict keeps the evidence on current aperture codes as keys and gets
+                        # updated on values  each time an aperture code is edited or added
                         self.oldapcode_newapcode[ap_code] = ap_code
                     except Exception as e:
                         self.app.log.error("AppGerberEditor.on_aperture_add() --> "
@@ -4427,13 +4421,13 @@ class AppGerberEditor(QtCore.QObject):
                     }
 
                     # self.oldapcode_newapcode dict keeps the evidence on current aperture codes as keys and gets
-                    # updated on values  each time a aperture code is edited or added
+                    # updated on values  each time an aperture code is edited or added
                     self.oldapcode_newapcode[ap_code] = ap_code
             else:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Aperture already in the aperture table."))
                 return
 
-        # since we add a new tool, we update also the initial state of the plugin_table through it's dictionary
+        # since we add a new tool, we update also the initial state of the plugin_table through its dictionary
         # we add a new entry in the tid2apcode dict
         self.tid2apcode[len(self.oldapcode_newapcode)] = int(ap_code)
 
@@ -4444,7 +4438,7 @@ class AppGerberEditor(QtCore.QObject):
         self.last_aperture_selected = ap_code
 
         if ap_code != 0:
-            # make a quick sort through the tid2apcode dict so we find which row to select
+            # make a quick sort through the tid2apcode dict, so we find which row to select
             row_to_be_selected = None
             for key in sorted(self.tid2apcode):
                 if self.tid2apcode[key] == int(ap_code):
@@ -4529,7 +4523,7 @@ class AppGerberEditor(QtCore.QObject):
         row_of_item_changed = self.ui.apertures_table.currentRow()
         col_of_item_changed = self.ui.apertures_table.currentColumn()
 
-        # rows start with 0, tools start with 1 so we adjust the value by 1
+        # rows start with 0, tools start with 1, so we adjust the value by 1
         key_in_tid2apcode = row_of_item_changed + 1
         ap_code_old = self.tid2apcode[key_in_tid2apcode]
 
@@ -4582,7 +4576,7 @@ class AppGerberEditor(QtCore.QObject):
         # In case we edited the Aperture Code therefore the val_edited holds a new Aperture Code
         # TODO Edit of the Aperture Code is not active yet
         if col_of_item_changed == 1:
-            # aperture code is not used so we create a new Aperture with the desired Aperture Code
+            # aperture code is not used, so we create a new Aperture with the desired Aperture Code
             if val_edited not in self.oldapcode_newapcode.values():
                 # update the dict that holds as keys old Aperture Codes and as values the new Aperture Codes
                 self.oldapcode_newapcode[ap_code_old] = val_edited
@@ -4593,7 +4587,7 @@ class AppGerberEditor(QtCore.QObject):
                 self.storage_dict[val_edited] = old_aperture_val
 
             else:
-                # aperture code is already in use so we move the pads from the prior tool to the new tool
+                # aperture code is already in use so, we move the pads from the prior tool to the new tool
                 # but only if they are of the same type
 
                 if self.storage_dict[ap_code_old]['type'] == self.storage_dict[ap_code_new]['type']:
@@ -4692,7 +4686,7 @@ class AppGerberEditor(QtCore.QObject):
 
         self.plot_all()
 
-        # we reactivate the signals after the after the tool editing
+        # we reactivate the signals after the tool editing
         self.ui.apertures_table.itemChanged.connect(self.on_tool_edit)
         # self.ui.apertures_table.cellPressed.connect(self.on_row_selected)
 
@@ -4903,7 +4897,7 @@ class AppGerberEditor(QtCore.QObject):
         self.app.ui.corner_snap_btn.setVisible(False)
         self.app.ui.snap_magnet.setVisible(False)
 
-        # set the Editor Toolbar visibility to what was before entering in the Editor
+        # set the Editor Toolbar visibility to what it was before entering the Editor
         self.app.ui.grb_edit_toolbar.setVisible(False) if self.toolbar_old_state is False \
             else self.app.ui.grb_edit_toolbar.setVisible(True)
 
@@ -5104,7 +5098,7 @@ class AppGerberEditor(QtCore.QObject):
 
     def edit_fcgerber(self, orig_grb_obj):
         """
-        Imports the geometry found in self.tools from the given FlatCAM Gerber object
+        Imports the geometry found in "self.tools" from the given FlatCAM Gerber object
         into the editor.
 
         :param orig_grb_obj: ExcellonObject
@@ -5259,7 +5253,7 @@ class AppGerberEditor(QtCore.QObject):
                             global_clear_geo = [global_clear_geo]
 
                     # we subtract the big "negative" (clear) geometry from each solid polygon but only the part of
-                    # clear geometry that fits inside the solid. otherwise we may loose the solid
+                    # clear geometry that fits inside the solid. otherwise we may lose the solid
                     for ap_code in app_obj.gerber_obj.tools:
                         temp_solid_geometry = []
                         if 'geometry' in app_obj.gerber_obj.tools[ap_code]:
@@ -6152,7 +6146,6 @@ class AppGerberEditor(QtCore.QObject):
         Plots all shapes in the editor.
 
         :return: None
-        :rtype: None
         """
         with self.app.proc_container.new('%s ...' % _("Plotting")):
             self.shapes.clear(update=True)
@@ -6194,7 +6187,7 @@ class AppGerberEditor(QtCore.QObject):
         Plots a geometric object or list of objects without rendering. Plotted objects
         are returned as a list. This allows for efficient/animated rendering.
 
-        :param geometry:    Geometry to be plotted (Any Shapely.geom kind or list of such)
+        :param geometry:    Geometry to be plotted (Any "Shapely.geom" kind or list of such)
         :param color:       Shape color
         :param linewidth:   Width of lines in # of pixels.
         :return:            List of plotted elements.
@@ -6206,7 +6199,7 @@ class AppGerberEditor(QtCore.QObject):
         try:
             self.shapes.add(shape=geometry.geo, color=color, face_color=color, layer=0, tolerance=self.tolerance)
         except AttributeError:
-            if type(geometry) == Point:
+            if isinstance(geometry, Point):
                 return
             if len(color) == 9:
                 color = color[:7] + 'AF'
@@ -6249,7 +6242,7 @@ class AppGerberEditor(QtCore.QObject):
 
     # def start_delayed_plot(self, check_period):
     #     """
-    #     This function starts an QTImer and it will periodically check if all the workers finish the plotting functions
+    #     This function starts an QTImer, and it will periodically check if all the workers finish the plotting functions
     #
     #     :param check_period: time at which to check periodically if all plots finished to be plotted
     #     :return:
@@ -6449,7 +6442,7 @@ class AppGerberEditor(QtCore.QObject):
                 return
 
         def scale_recursion(geom_el, selection):
-            if type(geom_el) == list:
+            if isinstance(geom_el, list):
                 geoms = []
                 for local_geom in geom_el:
                     geoms.append(scale_recursion(local_geom, selection=selection))
@@ -6545,7 +6538,7 @@ class AppGerberEditor(QtCore.QObject):
         self.select_tool('eraser')
 
     def on_transform(self):
-        if type(self.active_tool) == TransformEditorGrb:
+        if isinstance(self.active_tool, TransformEditorGrb):
             self.select_tool('select')
         else:
             self.select_tool('transform')
@@ -7726,7 +7719,7 @@ class TransformEditorTool(AppTool):
         """
         Skew geometry
 
-        :param axis:    Axis on which to deform, skew
+        :param axis:    Axis on which to deform (or skew)
         :param xval:    Skew value on X axis
         :param yval:    Skew value on Y axis
         :param point:   Point of reference for deformation: tuple
@@ -7988,7 +7981,7 @@ class TransformEditorTool(AppTool):
                         maxy = max(maxy, maxy_)
                 return minx, miny, maxx, maxy
             except TypeError:
-                # it's an object, return it's bounds
+                # it's an object, return its bounds
                 return lst.bounds
 
         return bounds_rec(shapelist)

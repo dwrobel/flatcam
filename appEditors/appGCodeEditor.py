@@ -53,7 +53,7 @@ class AppGCodeEditor(QtCore.QObject):
         self.ui.name_entry.returnPressed.connect(self.on_name_activate)
         self.ui.update_gcode_button.clicked.connect(self.insert_code_snippet_1)
         self.ui.update_gcode_sec_button.clicked.connect(self.insert_code_snippet_2)
-        self.ui.exit_editor_button.clicked.connect(lambda: self.app.editor2object(force_cancel=True))
+        self.ui.exit_editor_button.clicked.connect(lambda: self.app.on_editing_finished(force_cancel=True))
 
         self.app.log.debug("Initialization of the GCode Editor is finished ...")
 
@@ -77,7 +77,7 @@ class AppGCodeEditor(QtCore.QObject):
         self.edit_area.add_action_to_context_menu(text=_("Exit Editor"),
                                                   shortcut=_("Ctrl+S"),
                                                   icon=QtGui.QIcon(self.app.resource_location + '/power16.png'),
-                                                  callback=self.app.editor2object,
+                                                  callback=self.app.on_editing_finished,
                                                   separator='before')
 
         # add the tab if it was closed

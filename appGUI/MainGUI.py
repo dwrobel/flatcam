@@ -3336,7 +3336,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Copy Object Name
                 if key == QtCore.Qt.Key.Key_E:
-                    self.app.object2editor()
+                    self.app.on_editing_start()
 
                 # Grid toggle
                 if key == QtCore.Qt.Key.Key_G:
@@ -3421,7 +3421,7 @@ class MainGUI(QtWidgets.QMainWindow):
             if modifiers == QtCore.Qt.KeyboardModifier.ControlModifier:
                 # save (update) the current geometry and return to the App
                 if key == QtCore.Qt.Key.Key_S or key == 'S':
-                    self.app.editor2object()
+                    self.app.on_editing_finished()
                     return
 
                 # toggle the measurement tool
@@ -3740,7 +3740,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # save (update) the current geometry and return to the App
                 if key == QtCore.Qt.Key.Key_S or key == 'S':
-                    self.app.editor2object()
+                    self.app.on_editing_finished()
                     return
 
                 # toggle the measurement tool
@@ -3976,7 +3976,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # save (update) the current geometry and return to the App
                 if key == QtCore.Qt.Key.Key_S or key == 'S':
-                    self.app.editor2object()
+                    self.app.on_editing_finished()
                     return
 
                 # toggle the measurement tool
@@ -4243,7 +4243,7 @@ class MainGUI(QtWidgets.QMainWindow):
             if modifiers == QtCore.Qt.KeyboardModifier.ControlModifier:
                 # save (update) the current geometry and return to the App
                 if key == QtCore.Qt.Key.Key_S or key == 'S':
-                    self.app.editor2object(force_cancel=True)
+                    self.app.on_editing_finished(force_cancel=True)
                     return
             # SHIFT
             elif modifiers == QtCore.Qt.KeyboardModifier.ShiftModifier:

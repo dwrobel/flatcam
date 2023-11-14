@@ -815,7 +815,7 @@ class AppIO(QtCore.QObject):
 
         # close any editor that might be open
         if self.app.call_source != 'app':
-            self.app.editor2object(cleanup=True)
+            self.app.on_editing_finished(cleanup=True)
             # ## EDITOR section
             self.app.geo_editor = AppGeoEditor(self.app)
             self.app.exc_editor = AppExcEditor(self.app)

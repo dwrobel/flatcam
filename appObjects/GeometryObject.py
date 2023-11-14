@@ -389,7 +389,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
 
         # Editor Signal
-        self.ui.editor_button.clicked.connect(self.app.object2editor)
+        self.ui.editor_button.clicked.connect(self.app.on_editing_start)
 
         # Properties
         self.ui.info_button.toggled.connect(self.on_properties)
@@ -1060,7 +1060,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         endxy = endxy if endxy else self.obj_options["tools_mill_endxy"]
         if isinstance(endxy, str):
-            endxy = re.sub('[()\[\]]', '', endxy)
+            endxy = re.sub(r'[()\[\]]', '', endxy)
             if endxy and endxy != '':
                 endxy = [float(eval(a)) for a in endxy.split(",")]
 
@@ -1068,7 +1068,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         toolchangexy = toolchangexy if toolchangexy else self.obj_options["tools_mill_toolchangexy"]
         if isinstance(toolchangexy, str):
-            toolchangexy = re.sub('[()\[\]]', '', toolchangexy)
+            toolchangexy = re.sub(r'[()\[\]]', '', toolchangexy)
             if toolchangexy and toolchangexy != '':
                 toolchangexy = [float(eval(a)) for a in toolchangexy.split(",")]
 

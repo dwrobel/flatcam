@@ -156,7 +156,7 @@ class GerberObject(FlatCAMObj, Gerber):
         self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
 
         # Editor
-        self.ui.editor_button.clicked.connect(lambda: self.app.object2editor())
+        self.ui.editor_button.clicked.connect(lambda: self.app.on_editing_start())
 
         # Properties
         self.ui.info_button.toggled.connect(self.on_properties)

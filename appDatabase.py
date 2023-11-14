@@ -2010,7 +2010,7 @@ class ToolsDB2(QtWidgets.QWidget):
             new_name = "new_tool_1"
 
         dict_elem = {'name': new_name}
-        if type(self.app.options["tools_mill_tooldia"]) == float:
+        if isinstance(self.app.options["tools_mill_tooldia"], float):
             dict_elem['tooldia'] = self.app.options["tools_mill_tooldia"]
         else:
             try:

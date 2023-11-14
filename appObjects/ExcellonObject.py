@@ -164,7 +164,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.ui.autoload_db_cb.stateChanged.connect(self.on_autoload_db_toggled)
 
         # Editor
-        self.ui.editor_button.clicked.connect(lambda: self.app.object2editor())
+        self.ui.editor_button.clicked.connect(lambda: self.app.on_editing_start())
 
         # Properties
         self.ui.info_button.toggled.connect(self.on_properties)

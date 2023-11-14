@@ -9,7 +9,7 @@
 
 from PyQt6 import QtGui, QtWidgets
 from PyQt6.QtCore import QSettings, pyqtSlot
-from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtCore import Qt, pyqtSignal, QMetaObject
 from PyQt6.QtGui import QAction, QTextCursor
 
 import os.path
@@ -276,6 +276,8 @@ class App(QtCore.QObject):
     restore_project = pyqtSignal(object, str, bool, bool, bool, bool)
     # used when loading a project and restoring objects
     restore_project_objects_sig = pyqtSignal(object, str, bool, bool)
+    # post-Edit actions
+    post_edit_sig = pyqtSignal()
 
     def __init__(self, qapp, user_defaults=True):
         """
@@ -1199,6 +1201,9 @@ class App(QtCore.QObject):
         # when the options dictionary values change
         self.options.set_change_callback(callback=self.on_options_value_changed)
 
+        # post_edit signal
+        self.post_edit_sig.connect(self.on_editing_final_action, type=Qt.ConnectionType.QueuedConnection)
+
         # ###########################################################################################################
         # ########################################## Standard signals ###############################################
         # ###########################################################################################################
@@ -1892,8 +1897,8 @@ class App(QtCore.QObject):
     def connect_editmenu_signals(self):
         self.ui.menufile_exit.triggered.connect(self.final_save)
 
-        self.ui.menueditedit.triggered.connect(lambda: self.object2editor())
-        self.ui.menueditok.triggered.connect(lambda: self.editor2object())
+        self.ui.menueditedit.triggered.connect(lambda: self.on_editing_start())
+        self.ui.menueditok.triggered.connect(lambda: self.on_editing_finished())
 
         self.ui.menuedit_join2geo.triggered.connect(self.on_edit_join)
         self.ui.menuedit_join_exc2exc.triggered.connect(self.on_edit_join_exc)
@@ -1981,7 +1986,7 @@ class App(QtCore.QObject):
         self.ui.menuprojectviewsource.triggered.connect(self.on_view_source)
 
         self.ui.menuprojectcopy.triggered.connect(self.on_copy_command)
-        self.ui.menuprojectedit.triggered.connect(self.object2editor)
+        self.ui.menuprojectedit.triggered.connect(self.on_editing_start)
 
         self.ui.menuprojectdelete.triggered.connect(self.on_delete)
         self.ui.menuprojectsave.triggered.connect(self.on_project_context_save)
@@ -2012,8 +2017,8 @@ class App(QtCore.QObject):
 
         self.ui.popmenu_copy.triggered.connect(self.on_copy_command)
         self.ui.popmenu_delete.triggered.connect(self.on_delete)
-        self.ui.popmenu_edit.triggered.connect(self.object2editor)
-        self.ui.popmenu_save.triggered.connect(lambda: self.editor2object())
+        self.ui.popmenu_edit.triggered.connect(self.on_editing_start)
+        self.ui.popmenu_save.triggered.connect(lambda: self.on_editing_finished())
         self.ui.popmenu_numeric_move.triggered.connect(lambda: self.on_numeric_move())
         self.ui.popmenu_move.triggered.connect(self.obj_move)
         self.ui.popmenu_move2origin.triggered.connect(self.on_move2origin)
@@ -2094,8 +2099,8 @@ class App(QtCore.QObject):
         self.ui.zoom_out_btn.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
 
         # Edit Toolbar Signals
-        self.ui.editor_start_btn.triggered.connect(self.object2editor)
-        self.ui.editor_exit_btn.clicked.connect(lambda: self.editor2object(force_cancel=True))
+        self.ui.editor_start_btn.triggered.connect(self.on_editing_start)
+        self.ui.editor_exit_btn.clicked.connect(lambda: self.on_editing_finished(force_cancel=True))
         self.ui.copy_btn.triggered.connect(self.on_copy_command)
         self.ui.delete_btn.triggered.connect(self.on_delete)
 
@@ -2284,13 +2289,13 @@ class App(QtCore.QObject):
         self.ui.snap_max_dist_entry.setText(str(self.options["global_snap_max"]))
         self.ui.grid_gap_link_cb.setChecked(True)
 
-    def object2editor(self):
+    def on_editing_start(self):
         """
-        Send the current Geometry, Gerber, Excellon object or CNCJob (if any) its editor.
+        Send the current Geometry, Gerber, "Excellon" object or CNCJob (if any) its editor.
 
         :return: None
         """
-        self.defaults.report_usage("object2editor()")
+        self.defaults.report_usage("on_editing_start()")
 
         edited_object = self.collection.get_active()
         if edited_object is None:
@@ -2435,17 +2440,17 @@ class App(QtCore.QObject):
 
         self.should_we_save = True
 
-    def editor2object(self, cleanup=None, force_cancel=None):
+    def on_editing_finished(self, cleanup=None, force_cancel=None):
         """
-        Transfers the Geometry or Excellon from its editor to the current object.
+        Transfers the Geometry or an "Excellon", from its editor to the current object.
 
         :param cleanup:         if True then we closed the app when the editor was open, so we close first the editor
         :param force_cancel:    if True always add Cancel button
         :return:                None
         """
-        self.defaults.report_usage("editor2object()")
+        self.defaults.report_usage("on_editing_finished()")
 
-        # do not update a Geometry/Excellon/Gerber/GCode object unless it comes out of an editor
+        # do not update a Geometry/"Excellon"/Gerber/GCode object unless it comes out of an editor
         if self.call_source == 'app':
             return
 
@@ -2516,7 +2521,7 @@ class App(QtCore.QObject):
                         edited_obj.obj_options['ymax'] = ymax
                     except (AttributeError, ValueError) as e:
                         self.inform.emit('[WARNING] %s' % _("Object empty after edit."))
-                        self.log.debug("App.editor2object() --> Geometry --> %s" % str(e))
+                        self.log.debug("App.on_editing_finished() --> Geometry --> %s" % str(e))
 
                     edited_obj.build_ui()
                     edited_obj.plot()
@@ -2669,10 +2674,17 @@ class App(QtCore.QObject):
                                  _("Select a Gerber, Geometry, Excellon or CNCJob object to update."))
                 return
 
+        self.post_edit_sig.emit()
+
+    def on_editing_final_action(self):
+        self.log.debug("######################### Closing the EDITOR ################################")
+        self.call_source = 'app'
+
         # if notebook is hidden we show it
         if self.ui.splitter.sizes()[0] == 0:
             self.ui.splitter.setSizes([1, 1])
 
+        # change back the tab name
         for idx in range(self.ui.notebook.count()):
             # restore the Properties Tab text and color
             if self.ui.notebook.tabText(idx) == _("Editor"):
@@ -2683,24 +2695,20 @@ class App(QtCore.QObject):
             if self.ui.notebook.tabText(idx) == _("Project"):
                 self.ui.notebook.tabBar.setTabEnabled(idx, True)
 
+        self.ui.plot_tab_area.setTabText(0, _("Plot Area"))
+        self.ui.plot_tab_area.protectTab(0)
+
+        # make sure that we re-enable the selection on Project Tab after returning from Editor Mode:
+        self.ui.project_frame.setDisabled(False)
+
+        QMetaObject.invokeMethod(self, "modify_menu_items", Qt.ConnectionType.QueuedConnection)
+
+    @QtCore.pyqtSlot()
+    def modify_menu_items(self):
         # re-enable the objects menu that was disabled on entry in Editor mode
         self.ui.menuobjects.setDisabled(False)
         # re-enable the tool menu that was disabled on entry in Editor mode
         self.ui.menu_plugins.setDisabled(False)
-
-        # restore the call_source to app
-        self.call_source = 'app'
-        self.log.debug("######################### Closing the EDITOR ################################")
-
-        # edited_obj.plot()
-        self.ui.plot_tab_area.setTabText(0, _("Plot Area"))
-        self.ui.plot_tab_area.protectTab(0)
-
-        # restore the notebook tab close method to the app
-        # self.ui.notebook.callback_on_close = self.on_close_notebook_tab
-
-        # make sure that we reenable the selection on Project Tab after returning from Editor Mode:
-        self.ui.project_frame.setDisabled(False)
 
     def get_last_folder(self):
         """
@@ -6022,7 +6030,7 @@ class App(QtCore.QObject):
             self.area_3d_tab.deleteLater()
             self.area_3d_tab = QtWidgets.QWidget()
         elif tab_obj_name == "gcode_editor_tab":
-            self.editor2object()
+            self.on_editing_finished()
         else:
             pass
 
