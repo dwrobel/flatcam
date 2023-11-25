@@ -400,11 +400,13 @@ class PreferencesUIManager(QtCore.QObject):
             "tools_mill_milling_connect": self.ui.plugin_pref_form.tools_mill_group.connect_cb,
 
             # Autolevelling Tool
+            "tools_al_avoid_exc_holes_size": self.ui.plugin_eng_pref_form.tools_level_group.avoid_exc_holes_size_entry,
             "tools_al_mode":             self.ui.plugin_eng_pref_form.tools_level_group.al_mode_radio,
             "tools_al_method":           self.ui.plugin_eng_pref_form.tools_level_group.al_method_radio,
             "tools_al_rows":             self.ui.plugin_eng_pref_form.tools_level_group.al_rows_entry,
             "tools_al_columns":          self.ui.plugin_eng_pref_form.tools_level_group.al_columns_entry,
-            "tools_al_travelz":          self.ui.plugin_eng_pref_form.tools_level_group.ptravelz_entry,
+            "tools_al_travel_z":         self.ui.plugin_eng_pref_form.tools_level_group.ptravelz_entry,
+            "tools_al_probe_tip_dia":    self.ui.plugin_eng_pref_form.tools_level_group.probe_tip_dia_entry,
             "tools_al_probe_depth":      self.ui.plugin_eng_pref_form.tools_level_group.pdepth_entry,
             "tools_al_probe_fr":         self.ui.plugin_eng_pref_form.tools_level_group.feedrate_probe_entry,
             "tools_al_controller":       self.ui.plugin_eng_pref_form.tools_level_group.al_controller_combo,

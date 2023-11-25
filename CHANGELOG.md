@@ -12,6 +12,8 @@ CHANGELOG for FlatCAM Evo beta
 - some names are updated
 - made sure that when a new project is created that the levelling grid shapes are deleted
 - some code optimization and code refactoring
+- Levelling Tool: added parameter (in Preferences too) to control the probe tip diameter which is reflected in the probing location mark diameter
+- Levelling Tool: when adding a Grid probing and the avoidance of Excellon is used, now the probing locations will be offset enough so the probing is not done in the Excellon holes
 
 14.11.2023
 

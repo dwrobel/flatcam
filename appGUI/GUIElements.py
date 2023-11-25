@@ -22,6 +22,7 @@ import logging
 import html
 import sys
 import inspect
+from typing import Callable
 
 import gettext
 import appTranslation as fcTranslate
@@ -1434,11 +1435,12 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
     def __init__(self, suffix=None, alignment=None, parent=None, callback=None, policy=True):
         """
 
-        :param suffix:      a char added to the end of the value in the LineEdit; like a '%' or '$' etc
-        :param alignment:   the value is aligned to left or right
-        :param parent:
-        :param callback:    called when the entered value is outside limits; the min and max value will be passed to it
-        :param policy:      by default the widget will not compact as much as possible on horizontal
+        :param suffix:      str, a char added to the end of the value in the LineEdit; like a '%' or '$' etc.
+        :param alignment:   str, 'left' or 'right', defines if the value is aligned to left or right
+        :param parent:      QWidget, parent widget
+        :param callback:    Callable, called when the entered value is outside limits;
+                            the min and max value will be passed to it
+        :param policy:      QtGui.QSizePolicy, by default the widget will not compact as much as possible on horizontal
         """
         super(FCDoubleSpinner, self).__init__(parent)
         self.cursor_pos = None

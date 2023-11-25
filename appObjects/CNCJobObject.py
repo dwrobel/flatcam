@@ -87,7 +87,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             # "toolchange_macro": '',
             # "toolchange_macro_enable": False
-            "tools_al_travelz": self.app.options["tools_al_travelz"],
+            "tools_al_travel_z": self.app.options["tools_al_travel_z"],
             "tools_al_probe_depth": self.app.options["tools_al_probe_depth"],
             "tools_al_probe_fr": self.app.options["tools_al_probe_fr"],
             "tools_al_controller": self.app.options["tools_al_controller"],

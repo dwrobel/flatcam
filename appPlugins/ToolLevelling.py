@@ -195,6 +195,8 @@ class ToolLevelling(AppTool, CNCjob):
         self.build_al_table_sig.connect(self.build_al_table)
         self.ui.level.toggled.connect(self.on_level_changed)
 
+        self.ui.avoid_exc_holes_cb.toggled.connect(self.on_avoid_exc_holes)
+
         self.ui.al_mode_radio.activated_custom.connect(self.on_mode_radio)
         self.ui.al_method_radio.activated_custom.connect(self.on_method_radio)
         self.ui.al_controller_combo.currentIndexChanged.connect(self.on_controller_change)
@@ -273,16 +275,18 @@ class ToolLevelling(AppTool, CNCjob):
             self.probing_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=name + "_probing_shapes")
 
         self.form_fields.update({
-            "tools_al_travelz":       self.ui.ptravelz_entry,
-            "tools_al_probe_depth":   self.ui.pdepth_entry,
-            "tools_al_probe_fr":      self.ui.feedrate_probe_entry,
-            "tools_al_controller":    self.ui.al_controller_combo,
-            "tools_al_method":        self.ui.al_method_radio,
-            "tools_al_mode":          self.ui.al_mode_radio,
-            "tools_al_rows":          self.ui.al_rows_entry,
-            "tools_al_columns":       self.ui.al_columns_entry,
-            "tools_al_grbl_jog_step": self.ui.jog_step_entry,
-            "tools_al_grbl_jog_fr":   self.ui.jog_fr_entry,
+            "tools_al_probe_tip_dia":           self.ui.probe_tip_dia_entry,
+            "tools_al_travel_z":                self.ui.ptravelz_entry,
+            "tools_al_probe_depth":             self.ui.pdepth_entry,
+            "tools_al_probe_fr":                self.ui.feedrate_probe_entry,
+            "tools_al_controller":              self.ui.al_controller_combo,
+            "tools_al_method":                  self.ui.al_method_radio,
+            "tools_al_mode":                    self.ui.al_mode_radio,
+            "tools_al_avoid_exc_holes_size":    self.ui.avoid_exc_holes_size_entry,
+            "tools_al_rows":                    self.ui.al_rows_entry,
+            "tools_al_columns":                 self.ui.al_columns_entry,
+            "tools_al_grbl_jog_step":           self.ui.jog_step_entry,
+            "tools_al_grbl_jog_fr":             self.ui.jog_fr_entry,
         })
 
         # Fill Form fields
@@ -340,6 +344,8 @@ class ToolLevelling(AppTool, CNCjob):
             self.on_method_radio(val=loaded_obj.obj_options['tools_al_method'])
         else:
             self.ui.al_frame.setDisabled(True)
+
+        self.on_avoid_exc_holes(self.app.options["tools_al_avoid_exc_holes"])
 
     def on_object_changed(self):
 
@@ -536,7 +542,24 @@ class ToolLevelling(AppTool, CNCjob):
         else:
             self.on_add_manual_points()
 
+    def check_point_over_excellon(self, pol: Polygon, check: bool) -> MultiPolygon:
+        if not check:
+            return MultiPolygon()
+
+        fused_geometries = [
+            exc_geo
+            for obj_in_collection in self.app.collection.get_list()
+            if obj_in_collection.kind == 'excellon' and obj_in_collection.obj_options['plot']
+            for exc_geo in MultiPolygon(obj_in_collection.solid_geometry).geoms
+            if isinstance(exc_geo, Polygon) and pol.intersects(exc_geo)
+        ]
+        return unary_union(fused_geometries)
+
     def on_add_grid_points(self):
+        check_overlap = self.ui.avoid_exc_holes_cb.get_value()
+        avoid_step = self.ui.avoid_exc_holes_size_entry.get_value()
+        radius = self.ui.probe_tip_dia_entry.get_value() / 2
+
         xmin, ymin, xmax, ymax = self.solid_geo.bounds
 
         width = abs(xmax - xmin)
@@ -556,9 +579,51 @@ class ToolLevelling(AppTool, CNCjob):
                     self.app.dec_format(new_x, self.app.decimals),
                     self.app.dec_format(new_y, self.app.decimals)
                 )
-                # do not add the point if is already added
-                if formatted_point not in points:
-                    points.append(formatted_point)
+
+                point_buffered = Point(formatted_point).buffer(radius)
+                if self.check_point_over_excellon(pol=point_buffered, check=check_overlap).is_empty:
+                    # do not add the point if is already added
+                    if formatted_point not in points:
+                        points.append(formatted_point)
+                        new_x += dx
+                        continue
+
+                box_poly: Polygon = box(
+                    new_x - dx if (new_x - dx) > xmin else xmin,
+                    new_y - dy if (new_y - dy) > ymin else ymin,
+                    new_x + dx if (new_x + dx) < xmax else xmax,
+                    new_y + dy if (new_y + dy) < ymax else ymax
+                )
+
+                increments = [
+                    (avoid_step, 0),
+                    (avoid_step * -1, 0),
+                    (0, avoid_step),
+                    (0, avoid_step * -1)
+                ]
+
+                for increment in increments:
+                    break_for_loop = False
+                    while True:
+                        # check if the point is within the box
+                        formatted_point = (
+                            formatted_point[0] + increment[0],
+                            formatted_point[1] + increment[1]
+                        )
+                        point_buffered = Point(formatted_point).buffer(radius)
+
+                        if not box_poly.contains(point_buffered):
+                            break
+
+                        # check if the point overlaps an excellon hole
+                        if self.check_point_over_excellon(pol=point_buffered, check=check_overlap).is_empty:
+                            # do not add the point if it is already added
+                            if formatted_point not in points:
+                                points.append(formatted_point)
+                                break_for_loop = True
+                                break
+                    if break_for_loop:
+                        break
                 new_x += dx
             new_y += dy
 
@@ -610,7 +675,7 @@ class ToolLevelling(AppTool, CNCjob):
         }
         self.al_voronoi_geo_storage[new_id] = deepcopy(new_dict)
 
-        radius = 0.3 if self.units == 'MM' else 0.012
+        radius = self.ui.probe_tip_dia_entry.get_value() / 2
         fprobe_pt_buff = f_probe_pt.buffer(radius)
 
         self.app.inform.emit(_("Click on canvas to add a Probe Point..."))
@@ -649,11 +714,11 @@ class ToolLevelling(AppTool, CNCjob):
         poly_geo = []
 
         al_method = self.ui.al_method_radio.get_value()
+        radius = self.ui.probe_tip_dia_entry.get_value() / 2
 
         # voronoi diagram
         if al_method == 'v':
             # create the geometry
-            radius = 0.1 if self.units == 'MM' else 0.004
             for pt in self.al_voronoi_geo_storage:
                 if not self.al_voronoi_geo_storage[pt]['geo']:
                     continue
@@ -671,7 +736,6 @@ class ToolLevelling(AppTool, CNCjob):
             self.plot_probing_geo(geometry=poly_geo, visibility=state)
         # bilinear interpolation
         elif al_method == 'b':
-            radius = 0.1 if self.units == 'MM' else 0.004
             for pt in self.al_bilinear_geo_storage:
 
                 x_pt = pt[0]
@@ -909,7 +973,7 @@ class ToolLevelling(AppTool, CNCjob):
             # rebuild the al table
             self.build_al_table_sig.emit()
 
-            radius = 0.3 if self.units == 'MM' else 0.012
+            radius = self.ui.probe_tip_dia_entry.get_value() / 2
             probe_pt_buff = probe_pt.buffer(radius)
 
             self.plot_probing_geo(geometry=probe_pt_buff, visibility=True, custom_color="#0000FFFA")
@@ -1064,7 +1128,7 @@ class ToolLevelling(AppTool, CNCjob):
             self.ui.al_columns_label.setDisabled(True)
             self.ui.al_method_lbl.setDisabled(True)
             self.ui.al_method_radio.setDisabled(True)
-            self.ui.avoid_exc_holes_cb.setDisabled(False)
+            # self.ui.avoid_exc_holes_cb.setDisabled(False)
         else:
             self.ui.al_rows_entry.setDisabled(False)
             self.ui.al_rows_label.setDisabled(False)
@@ -1073,7 +1137,11 @@ class ToolLevelling(AppTool, CNCjob):
             self.ui.al_method_lbl.setDisabled(False)
             self.ui.al_method_radio.setDisabled(False)
             self.ui.al_method_radio.set_value(self.app.options['tools_al_method'])
-            self.ui.avoid_exc_holes_cb.setDisabled(True)
+            # self.ui.avoid_exc_holes_cb.setDisabled(True)
+
+    def on_avoid_exc_holes(self, state):
+        self.ui.avoid_exc_holes_size_label.show() if state else self.ui.avoid_exc_holes_size_label.hide()
+        self.ui.avoid_exc_holes_size_entry.show() if state else self.ui.avoid_exc_holes_size_entry.hide()
 
     def on_method_radio(self, val):
         if val == 'b':
@@ -1880,7 +1948,7 @@ class LevelUI:
         self.al_box.addWidget(tt_frame)
 
         # Grid Layout
-        tool_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
+        tool_grid = GLay(v_spacing=5, h_spacing=3, c_stretch=[0, 1])
         tt_frame.setLayout(tool_grid)
 
         # Probe Points table
@@ -1907,6 +1975,19 @@ class LevelUI:
         )
         tool_grid.addWidget(self.avoid_exc_holes_cb, 4, 0, 1, 2)
 
+        # Avoid Excellon holes Size
+        self.avoid_exc_holes_size_label = FCLabel('%s:' % _("Avoid Step"))
+        self.avoid_exc_holes_size_label.setToolTip(
+            _("The incremental size to move to the side, to avoid an Excellon hole.")
+        )
+
+        self.avoid_exc_holes_size_entry = FCDoubleSpinner()
+        self.avoid_exc_holes_size_entry.set_precision(self.decimals)
+        self.avoid_exc_holes_size_entry.set_range(0.0000, 99999.0000)
+
+        tool_grid.addWidget(self.avoid_exc_holes_size_label, 6, 0)
+        tool_grid.addWidget(self.avoid_exc_holes_size_entry, 6, 1, 1, 1)
+
         # #############################################################################################################
         # ############### Probe GCode Generation ######################################################################
         # #############################################################################################################
@@ -1925,6 +2006,18 @@ class LevelUI:
         param_grid = GLay(v_spacing=5, h_spacing=3)
         tp_frame.setLayout(param_grid)
 
+        # Probe Diameter
+        self.probe_tip_dia_label = FCLabel('%s:' % _("Probe Tip Dia"))
+        self.probe_tip_dia_label.setToolTip(
+            _("The probe tip diameter.")
+        )
+        self.probe_tip_dia_entry = FCDoubleSpinner()
+        self.probe_tip_dia_entry.set_precision(self.decimals)
+        self.probe_tip_dia_entry.set_range(0.0000, 10.0000)
+
+        param_grid.addWidget(self.probe_tip_dia_label, 0, 0)
+        param_grid.addWidget(self.probe_tip_dia_entry, 0, 1)
+
         # Travel Z Probe
         self.ptravelz_label = FCLabel('%s:' % _("Probe Z travel"))
         self.ptravelz_label.setToolTip(
@@ -1934,8 +2027,8 @@ class LevelUI:
         self.ptravelz_entry.set_precision(self.decimals)
         self.ptravelz_entry.set_range(0.0000, 10000.0000)
 
-        param_grid.addWidget(self.ptravelz_label, 0, 0)
-        param_grid.addWidget(self.ptravelz_entry, 0, 1)
+        param_grid.addWidget(self.ptravelz_label, 2, 0)
+        param_grid.addWidget(self.ptravelz_entry, 2, 1)
 
         # Probe depth
         self.pdepth_label = FCLabel('%s:' % _("Probe Z depth"))
@@ -1947,8 +2040,8 @@ class LevelUI:
         self.pdepth_entry.set_precision(self.decimals)
         self.pdepth_entry.set_range(-910000.0000, 0.0000)
 
-        param_grid.addWidget(self.pdepth_label, 2, 0)
-        param_grid.addWidget(self.pdepth_entry, 2, 1)
+        param_grid.addWidget(self.pdepth_label, 4, 0)
+        param_grid.addWidget(self.pdepth_entry, 4, 1)
 
         # Probe feedrate
         self.feedrate_probe_label = FCLabel('%s:' % _("Probe Feedrate"))
@@ -1959,13 +2052,13 @@ class LevelUI:
         self.feedrate_probe_entry.set_precision(self.decimals)
         self.feedrate_probe_entry.set_range(0, 910000.0000)
 
-        param_grid.addWidget(self.feedrate_probe_label, 4, 0)
-        param_grid.addWidget(self.feedrate_probe_entry, 4, 1)
+        param_grid.addWidget(self.feedrate_probe_label, 6, 0)
+        param_grid.addWidget(self.feedrate_probe_entry, 6, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        param_grid.addWidget(separator_line, 6, 0, 1, 2)
+        param_grid.addWidget(separator_line, 8, 0, 1, 2)
 
         # AUTOLEVELL MODE
         al_mode_lbl = FCLabel('%s' % _("Mode"), bold=True)
@@ -1978,8 +2071,8 @@ class LevelUI:
                 {'label': _('Manual'), 'value': 'manual'},
                 {'label': _('Grid'), 'value': 'grid'}
             ])
-        param_grid.addWidget(al_mode_lbl, 8, 0)
-        param_grid.addWidget(self.al_mode_radio, 8, 1)
+        param_grid.addWidget(al_mode_lbl, 10, 0)
+        param_grid.addWidget(self.al_mode_radio, 10, 1)
 
         # AUTOLEVELL METHOD
         self.al_method_lbl = FCLabel('%s:' % _("Method"))
@@ -1996,8 +2089,8 @@ class LevelUI:
         self.al_method_radio.setDisabled(True)
         self.al_method_radio.set_value('v')
 
-        param_grid.addWidget(self.al_method_lbl, 10, 0)
-        param_grid.addWidget(self.al_method_radio, 10, 1)
+        param_grid.addWidget(self.al_method_lbl, 12, 0)
+        param_grid.addWidget(self.al_method_radio, 12, 1)
 
         # ## Columns
         self.al_columns_entry = FCSpinner()
@@ -2007,8 +2100,8 @@ class LevelUI:
         self.al_columns_label.setToolTip(
             _("The number of grid columns.")
         )
-        param_grid.addWidget(self.al_columns_label, 12, 0)
-        param_grid.addWidget(self.al_columns_entry, 12, 1)
+        param_grid.addWidget(self.al_columns_label, 14, 0)
+        param_grid.addWidget(self.al_columns_entry, 14, 1)
 
         # ## Rows
         self.al_rows_entry = FCSpinner()
@@ -2018,8 +2111,8 @@ class LevelUI:
         self.al_rows_label.setToolTip(
             _("The number of grid rows.")
         )
-        param_grid.addWidget(self.al_rows_label, 14, 0)
-        param_grid.addWidget(self.al_rows_entry, 14, 1)
+        param_grid.addWidget(self.al_rows_label, 16, 0)
+        param_grid.addWidget(self.al_rows_entry, 16, 1)
 
         self.al_add_button = FCButton(_("Add Probe Points"))
         self.al_box.addWidget(self.al_add_button)
@@ -2408,6 +2501,8 @@ class LevelUI:
         self.tools_box.addWidget(self.reset_button)
         # ############################ FINISHED GUI ###################################
         # #############################################################################
+
+        GLay.set_common_column_size([tool_grid, param_grid], 0)
 
         self.plot_probing_pts_cb.stateChanged.connect(self.on_plot_points_changed)
         self.avoid_exc_holes_cb.stateChanged.connect(self.on_avoid_exc_holes_changed)

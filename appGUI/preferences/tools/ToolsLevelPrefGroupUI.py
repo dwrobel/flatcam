@@ -49,8 +49,8 @@ class ToolsLevelPrefGroupUI(OptionsGroupUI):
                 {'label': _('Manual'), 'value': 'manual'},
                 {'label': _('Grid'), 'value': 'grid'}
             ])
-        par_grid.addWidget(al_mode_lbl, 8, 0)
-        par_grid.addWidget(self.al_mode_radio, 8, 1)
+        par_grid.addWidget(al_mode_lbl, 0, 0)
+        par_grid.addWidget(self.al_mode_radio, 0, 1)
 
         # AUTOLEVELL METHOD
         self.al_method_lbl = FCLabel('%s:' % _("Method"))
@@ -63,8 +63,21 @@ class ToolsLevelPrefGroupUI(OptionsGroupUI):
                 {'label': _('Voronoi'), 'value': 'v'},
                 {'label': _('Bilinear'), 'value': 'b'}
             ])
-        par_grid.addWidget(self.al_method_lbl, 9, 0)
-        par_grid.addWidget(self.al_method_radio, 9, 1)
+        par_grid.addWidget(self.al_method_lbl, 2, 0)
+        par_grid.addWidget(self.al_method_radio, 2, 1)
+
+        # Avoid Excellon holes Size
+        self.avoid_exc_holes_size_label = FCLabel('%s:' % _("Avoid Step"))
+        self.avoid_exc_holes_size_label.setToolTip(
+            _("The incremental size to move to the side, to avoid an Excellon hole.")
+        )
+
+        self.avoid_exc_holes_size_entry = FCDoubleSpinner()
+        self.avoid_exc_holes_size_entry.set_precision(self.decimals)
+        self.avoid_exc_holes_size_entry.set_range(0.0000, 99999.0000)
+
+        par_grid.addWidget(self.avoid_exc_holes_size_label, 4, 0)
+        par_grid.addWidget(self.avoid_exc_holes_size_entry, 4, 1)
 
         # ## Columns
         self.al_columns_entry = FCSpinner()
@@ -73,8 +86,8 @@ class ToolsLevelPrefGroupUI(OptionsGroupUI):
         self.al_columns_label.setToolTip(
             _("The number of grid columns.")
         )
-        par_grid.addWidget(self.al_columns_label, 10, 0)
-        par_grid.addWidget(self.al_columns_entry, 10, 1)
+        par_grid.addWidget(self.al_columns_label, 6, 0)
+        par_grid.addWidget(self.al_columns_entry, 6, 1)
 
         # ## Rows
         self.al_rows_entry = FCSpinner()
@@ -83,8 +96,20 @@ class ToolsLevelPrefGroupUI(OptionsGroupUI):
         self.al_rows_label.setToolTip(
             _("The number of grid rows.")
         )
-        par_grid.addWidget(self.al_rows_label, 12, 0)
-        par_grid.addWidget(self.al_rows_entry, 12, 1)
+        par_grid.addWidget(self.al_rows_label, 8, 0)
+        par_grid.addWidget(self.al_rows_entry, 8, 1)
+
+        # Probe Diameter
+        self.probe_tip_dia_label = FCLabel('%s:' % _("Probe Tip Dia"))
+        self.probe_tip_dia_label.setToolTip(
+            _("The probe tip diameter.")
+        )
+        self.probe_tip_dia_entry = FCDoubleSpinner()
+        self.probe_tip_dia_entry.set_precision(self.decimals)
+        self.probe_tip_dia_entry.set_range(0.0000, 10.0000)
+
+        par_grid.addWidget(self.probe_tip_dia_label, 10, 0)
+        par_grid.addWidget(self.probe_tip_dia_entry, 10, 1)
 
         # Travel Z Probe
         self.ptravelz_label = FCLabel('%s:' % _("Probe Z travel"))
