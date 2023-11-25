@@ -25887,8 +25887,8 @@ msgstr ""
 #~ msgid "ToolSolderPaste.on_view_gcode()"
 #~ msgstr "ToolSolderPaste.on_view_gcode()"
 
-#~ msgid "App.on_fileopenscript() -->"
-#~ msgstr "App.on_fileopenscript() -->"
+#~ msgid "App.on_file_open_script() -->"
+#~ msgstr "App.on_file_open_script() -->"
 
 #, fuzzy
 #~| msgid "<span style=\"color:green;\"><b>Basic</b></span>"

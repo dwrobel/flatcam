@@ -2950,7 +2950,7 @@ class MainGUI(QtWidgets.QMainWindow):
             # CTRL + SHIFT
             if modifiers == QtCore.Qt.KeyboardModifier.ControlModifier | QtCore.Qt.KeyboardModifier.ShiftModifier:
                 if key == QtCore.Qt.Key.Key_S:
-                    self.app.f_handlers.on_file_saveprojectas()
+                    self.app.f_handlers.on_file_save_project_as()
                     return
             # CTRL
             elif modifiers == QtCore.Qt.KeyboardModifier.ControlModifier:
@@ -2975,7 +2975,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Open Excellon file
                 if key == QtCore.Qt.Key.Key_E:
-                    self.app.f_handlers.on_fileopenexcellon()
+                    self.app.f_handlers.on_file_open_excellon()
 
                 # Open Gerber file
                 if key == QtCore.Qt.Key.Key_G:
@@ -2983,7 +2983,7 @@ class MainGUI(QtWidgets.QMainWindow):
                     if 'editor' in widget_name.lower():
                         self.app.goto_text_line()
                     else:
-                        self.app.f_handlers.on_fileopengerber()
+                        self.app.f_handlers.on_file_open_gerber()
 
                 # Distance Tool
                 if key == QtCore.Qt.Key.Key_M:
@@ -2995,7 +2995,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Open Project
                 if key == QtCore.Qt.Key.Key_O:
-                    self.app.f_handlers.on_file_openproject()
+                    self.app.f_handlers.on_file_open_project()
 
                 # Open Project
                 if key == QtCore.Qt.Key.Key_P:
@@ -3019,7 +3019,7 @@ class MainGUI(QtWidgets.QMainWindow):
                         self.app.tools_db_tab.on_save_tools_db()
                         return
 
-                    self.app.f_handlers.on_file_saveproject()
+                    self.app.f_handlers.on_file_save_project()
 
                 # Toggle Plot Area
                 if key == QtCore.Qt.Key.Key_F10 or key == 'F10':
@@ -3070,7 +3070,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Run a Script
                 if key == QtCore.Qt.Key.Key_S:
-                    self.app.f_handlers.on_filerunscript()
+                    self.app.f_handlers.on_file_run_cript()
                     return
 
                 # Toggle Workspace

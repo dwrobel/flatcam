@@ -6101,10 +6101,10 @@ class AppSystemTray(QtWidgets.QSystemTrayIcon):
 
             self.menu_open.addSeparator()
 
-            menu_openproject.triggered.connect(lambda: self.app.f_handlers.on_file_openproject())
-            menu_opengerber.triggered.connect(lambda: self.app.f_handlers.on_fileopengerber())
-            menu_openexcellon.triggered.connect(lambda: self.app.f_handlers.on_fileopenexcellon())
-            menu_opengcode.triggered.connect(lambda: self.app.f_handlers.on_fileopengcode())
+            menu_openproject.triggered.connect(lambda: self.app.f_handlers.on_file_open_project())
+            menu_opengerber.triggered.connect(lambda: self.app.f_handlers.on_file_open_gerber())
+            menu_openexcellon.triggered.connect(lambda: self.app.f_handlers.on_file_open_excellon())
+            menu_opengcode.triggered.connect(lambda: self.app.f_handlers.on_file_open_gcode())
 
         exitAction = menu.addAction(_("Exit"))
         exitAction.setIcon(QtGui.QIcon(self.app.resource_location + '/power16.png'))
@@ -6112,7 +6112,7 @@ class AppSystemTray(QtWidgets.QSystemTrayIcon):
 
         menu_toggle_gui.triggered.connect(self.app.ui.on_toggle_gui)
 
-        menu_runscript.triggered.connect(lambda: self.app.on_filerunscript(
+        menu_runscript.triggered.connect(lambda: self.app.on_file_run_cript(
             silent=True if self.app.cmd_line_headless == 1 else False))
 
         exitAction.triggered.connect(self.app.final_save)

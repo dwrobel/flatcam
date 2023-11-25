@@ -25818,8 +25818,8 @@ msgstr ""
 #~ msgid "FlatCAMObj.GeometryObject.mtool_gen_cncjob() -->"
 #~ msgstr "FlatCAMObj.GeometryObject.mtool_gen_cncjob() -->"
 
-#~ msgid "App.on_fileopenscript() -->"
-#~ msgstr "App.on_fileopenscript() -->"
+#~ msgid "App.on_file_open_script() -->"
+#~ msgstr "App.on_file_open_script() -->"
 
 #~ msgid "%s/Project_%s"
 #~ msgstr "%s/Project_%s"

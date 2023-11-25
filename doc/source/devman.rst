@@ -6,7 +6,7 @@ Options
 
 There are **Application Defaults**, **Project Options** and **Object Options** in FlatCAM.
 
-**Application Defaults** are stored in ``app.defaults``. This gets populated (updated) from the ``current_defaults.FlatConfig`` file upon startup. These can be edited from the Options tab, where each widget calls ``app.on_options_update()`` if a change is detected. This function iterates over the keys of ``app.defaults`` and reads the GUI elements whose name is ``type + "_app_" key``. Therefore, for an option to be recognized, it must be added to ``defaults.json`` in the first place. When saving, done in ``app.on_file_savedefaults()``, the file is updated, not overwritten.
+**Application Defaults** are stored in ``app.defaults``. This gets populated (updated) from the ``current_defaults.FlatConfig`` file upon startup. These can be edited from the Options tab, where each widget calls ``app.on_options_update()`` if a change is detected. This function iterates over the keys of ``app.defaults`` and reads the GUI elements whose name is ``type + "_app_" key``. Therefore, for an option to be recognized, it must be added to ``defaults.json`` in the first place. When saving, done in ``app.on_file_save_defaults()``, the file is updated, not overwritten.
 
 **Project Options** inherit all options from Application Defaults upon startup. They can be changed thereafter from the UI or by opening a project, which contain previously saved Project Options. These are store in ``app.options`` and can be written and read from the Options tab in the same way as with Application defaults.
 

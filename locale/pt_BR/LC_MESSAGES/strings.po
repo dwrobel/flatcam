@@ -23841,8 +23841,8 @@ msgstr "Nenhum nome de geometria nos argumentos. Altere e tente novamente."
 #~ msgid "ToolSolderPaste.on_view_gcode()"
 #~ msgstr "ToolSolderPaste.on_view_gcode()"
 
-#~ msgid "App.on_fileopenscript() -->"
-#~ msgstr "App.on_fileopenscript() -->"
+#~ msgid "App.on_file_open_script() -->"
+#~ msgstr "App.on_file_open_script() -->"
 
 #~ msgid "<span style=\"color:green;\"><b>%s</b></span>"
 #~ msgstr "<span style=\"color:green;\"><b>%s</b></span>"

@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+25.11.2023
+
+- some names are updated
+- made sure that when a new project is created that the levelling grid shapes are deleted
+- some code optimization and code refactoring
+
 14.11.2023
 
 - trying to solve an idiosyncrasy of MacOS which do not allow modifying the main menu in a non-main thread which is done after editing an object

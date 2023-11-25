@@ -1,5 +1,5 @@
 # ##########################################################
-# FlatCAM: 2D Post-processing for Manufacturing            #
+# FlatCAM Evo: 2D Post-processing for Manufacturing        #
 # File by:  Marius Adrian Stanciu (c)                      #
 # Date:     11/12/2020                                     #
 # License:  MIT Licence                                    #
@@ -75,13 +75,6 @@ class ToolLevelling(AppTool, CNCjob):
         AppTool.__init__(self, app)
         CNCjob.__init__(self, steps_per_circle=self.app.options["cncjob_steps_per_circle"])
 
-        # #############################################################################
-        # ######################### Tool GUI ##########################################
-        # #############################################################################
-        self.ui = LevelUI(layout=self.layout, app=self.app)
-        self.pluginName = self.ui.pluginName
-        self.connect_signals_at_init()
-
         # updated in the self.set_tool_ui()
         self.form_fields = {}
 
@@ -131,6 +124,14 @@ class ToolLevelling(AppTool, CNCjob):
 
         # store the current selection shape status to be restored after manual adding test points
         self.old_selection_state = self.app.options['global_selection_shape']
+
+        # #############################################################################
+        # ######################### Tool GUI ##########################################
+        # #############################################################################
+        self.ui = LevelUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+
+        self.connect_signals_at_init()
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='', **kwargs)
@@ -963,10 +964,10 @@ class ToolLevelling(AppTool, CNCjob):
 
     def on_key_press(self, event):
         # events out of the self.app.collection view (it's about Project Tab) are of type int
-        if type(event) is int:
+        if isinstance(event, int):
             key = event
         # events from the GUI are of type QKeyEvent
-        elif type(event) == QtGui.QKeyEvent:
+        elif isinstance(event, QtGui.QKeyEvent):
             key = event.key()
         elif isinstance(event, mpl_key_event):  # MatPlotLib key events are trickier to interpret than the rest
             key = event.key
@@ -1086,7 +1087,7 @@ class ToolLevelling(AppTool, CNCjob):
         self.on_controller_change_alter_ui()
 
         # if the is empty then there is a chance that we've added probe points but the GRBL controller was selected
-        # therefore no Probing GCode was genrated (it is different for GRBL on how it gets it's Probing GCode
+        # therefore no Probing GCode was generated (it is different for GRBL on how it gets it's Probing GCode
         target_obj = self.app.collection.get_by_name(self.ui.object_combo.get_value())
         if (not self.probing_gcode_text or self.probing_gcode_text == '') and target_obj is not None:
             # generate Probing GCode
@@ -1168,7 +1169,7 @@ class ToolLevelling(AppTool, CNCjob):
                                                        xonxoff=False,
                                                        rtscts=False)
 
-            # Toggle DTR to reset the controller loaded with GRBL (Arduino, ESP32, etc)
+            # Toggle DTR to reset the controller loaded with GRBL (Arduino, ESP32, etc.)
             try:
                 self.grbl_ser_port.dtr = False
             except IOError:
@@ -1712,7 +1713,7 @@ class ToolLevelling(AppTool, CNCjob):
                 self.send_grbl_command(command=cmd)
                 self.app.inform.emit('%s' % _("Finished probing. Doing the autolevelling."))
 
-                # apply autolevel here
+                # apply autolevelling here
                 self.on_grbl_apply_autolevel()
 
         self.app.inform.emit('%s' % _("Sending probing GCode to the GRBL controller."))
@@ -1830,7 +1831,7 @@ class LevelUI:
         self.tools_box.addWidget(self.obj_combo_label)
 
         # #############################################################################################################
-        # ################################ The object to be Autolevelled ##############################################
+        # ################################ The object to be Auto-levelled ##############################################
         # #############################################################################################################
         self.object_combo = FCComboBox()
         self.object_combo.setModel(self.app.collection)
@@ -2132,8 +2133,8 @@ class LevelUI:
         )
 
         self.baudrates_list_combo = FCComboBox()
-        cbmodel = QtCore.QStringListModel()
-        self.baudrates_list_combo.setModel(cbmodel)
+        cb_model = QtCore.QStringListModel()
+        self.baudrates_list_combo.setModel(cb_model)
         self.baudrates_list_combo.addItems(
             ['9600', '19200', '38400', '57600', '115200', '230400', '460800', '500000', '576000', '921600', '1000000',
              '1152000', '1500000', '2000000'])
@@ -2162,13 +2163,13 @@ class LevelUI:
         self.del_bd_button = FCButton(_("Delete selected baudrate"))
         grbl_conn_grid.addWidget(self.del_bd_button, 8, 0, 1, 3)
 
-        ctrl_hlay = QtWidgets.QHBoxLayout()
+        ctrl_h_lay = QtWidgets.QHBoxLayout()
         self.controller_reset_button = FCButton(_("Reset"))
         self.controller_reset_button.setToolTip(
             _("Software reset of the controller.")
         )
         self.controller_reset_button.setDisabled(True)
-        ctrl_hlay.addWidget(self.controller_reset_button)
+        ctrl_h_lay.addWidget(self.controller_reset_button)
 
         self.com_connect_button = FCButton()
         self.com_connect_button.setText(_("Disconnected"))
@@ -2176,11 +2177,11 @@ class LevelUI:
             _("Connect to the selected port with the selected baud rate.")
         )
         self.com_connect_button.setStyleSheet("QPushButton {background-color: red;}")
-        ctrl_hlay.addWidget(self.com_connect_button)
+        ctrl_h_lay.addWidget(self.com_connect_button)
 
         grbl_conn_grid.addWidget(FCLabel(""), 9, 0, 1, 3)
         grbl_conn_grid.setRowStretch(9, 1)
-        grbl_conn_grid.addLayout(ctrl_hlay, 10, 0, 1, 3)
+        grbl_conn_grid.addLayout(ctrl_h_lay, 10, 0, 1, 3)
 
         # #############################################################################################################
         # GRBL CONTROL
@@ -2247,11 +2248,11 @@ class LevelUI:
         pause_frame = QtWidgets.QFrame()
         pause_frame.setContentsMargins(0, 0, 0, 0)
         pause_frame.setSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.Expanding)
-        pause_hlay = QtWidgets.QHBoxLayout()
-        pause_hlay.setContentsMargins(0, 0, 0, 0)
+        pause_h_lay = QtWidgets.QHBoxLayout()
+        pause_h_lay.setContentsMargins(0, 0, 0, 0)
 
-        pause_hlay.addWidget(self.pause_resume_button)
-        pause_frame.setLayout(pause_hlay)
+        pause_h_lay.addWidget(self.pause_resume_button)
+        pause_frame.setLayout(pause_h_lay)
         grbl_ctrl_grid.addWidget(pause_frame, 2, 1)
 
         # JOG Step

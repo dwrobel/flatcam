@@ -25785,8 +25785,8 @@ msgstr "Нет имени геометрии в аргументах. Укажи
 #~ msgid "Not available with the current Graphic Engine Legacy(2D)."
 #~ msgstr "Недоступно с текущим графическим движком Legacy (2D)."
 
-#~ msgid "App.on_fileopenscript() -->"
-#~ msgstr "App.on_fileopenscript() -->"
+#~ msgid "App.on_file_open_script() -->"
+#~ msgstr "App.on_file_open_script() -->"
 
 #~ msgid "<span style=\"color:green;\"><b>%s</b></span>"
 #~ msgstr "<span style=\"color:green;\"><b>%s</b></span>"

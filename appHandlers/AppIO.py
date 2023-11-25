@@ -73,7 +73,7 @@ class AppIO(QtCore.QObject):
 
         self.app.new_project_signal.connect(self.on_new_project_house_keeping)
 
-    def on_fileopengerber(self, name=None):
+    def on_file_open_gerber(self, name=None):
         """
         File menu callback for opening a Gerber.
 
@@ -81,7 +81,7 @@ class AppIO(QtCore.QObject):
         :return: None
         """
 
-        self.log.debug("on_fileopengerber()")
+        self.log.debug("on_file_open_gerber()")
 
         _filter_ = "Gerber Files (*.gbr *.ger *.gtl *.gbl *.gts *.gbs *.gtp *.gbp *.gto *.gbo *.gm1 *.gml *.gm3 " \
                    "*.gko *.cmp *.sol *.stc *.sts *.plc *.pls *.crc *.crs *.tsm *.bsm *.ly2 *.ly15 *.dim *.mil *.grb " \
@@ -122,7 +122,7 @@ class AppIO(QtCore.QObject):
                 if filename != '':
                     self.worker_task.emit({'fcn': self.open_gerber, 'params': [filename]})
 
-    def on_fileopenexcellon(self, name=None):
+    def on_file_open_excellon(self, name=None):
         """
         File menu callback for opening an Excellon file.
 
@@ -130,7 +130,7 @@ class AppIO(QtCore.QObject):
         :return: None
         """
 
-        self.log.debug("on_fileopenexcellon()")
+        self.log.debug("on_file_open_excellon()")
 
         _filter_ = "Excellon Files (*.drl *.txt *.xln *.drd *.tap *.exc *.ncd);;" \
                    "All Files (*.*)"
@@ -160,7 +160,7 @@ class AppIO(QtCore.QObject):
                 if filename != '':
                     self.worker_task.emit({'fcn': self.open_excellon, 'params': [filename]})
 
-    def on_fileopengcode(self, name=None):
+    def on_file_open_gcode(self, name=None):
         """
 
         File menu call back for opening gcode.
@@ -169,7 +169,7 @@ class AppIO(QtCore.QObject):
         :return:
         """
 
-        self.log.debug("on_fileopengcode()")
+        self.log.debug("on_file_open_gcode()")
 
         # https://bobcadsupport.com/helpdesk/index.php?/Knowledgebase/Article/View/13/5/known-g-code-file-extensions
         _filter_ = "G-Code Files (*.txt *.nc *.ncc *.tap *.gcode *.cnc *.ecs *.fnc *.dnc *.ncg *.gc *.fan *.fgc" \
@@ -203,14 +203,14 @@ class AppIO(QtCore.QObject):
                 if filename != '':
                     self.worker_task.emit({'fcn': self.open_gcode, 'params': [filename, None, True]})
 
-    def on_file_openproject(self):
+    def on_file_open_project(self):
         """
         File menu callback for opening a project.
 
         :return: None
         """
 
-        self.log.debug("on_file_openproject()")
+        self.log.debug("on_file_open_project()")
 
         _filter_ = "FlatCAM Project (*.FlatPrj);;All Files (*.*)"
         try:
@@ -230,14 +230,14 @@ class AppIO(QtCore.QObject):
             # thread safe. The new_project()
             self.open_project(filename)
 
-    def on_fileopenhpgl2(self, name=None):
+    def on_file_open_hpgl2(self, name=None):
         """
         File menu callback for opening a HPGL2.
 
         :param name:
         :return:        None
         """
-        self.log.debug("on_fileopenhpgl2()")
+        self.log.debug("on_file_open_hpgl2()")
 
         _filter_ = "HPGL2 Files (*.plt);;" \
                    "All Files (*.*)"
@@ -267,14 +267,14 @@ class AppIO(QtCore.QObject):
                 if filename != '':
                     self.worker_task.emit({'fcn': self.open_hpgl2, 'params': [filename]})
 
-    def on_file_openconfig(self):
+    def on_file_open_config(self):
         """
         File menu callback for opening a config file.
 
         :return:        None
         """
 
-        self.log.debug("on_file_openconfig()")
+        self.log.debug("on_file_open_config()")
 
         _filter_ = "FlatCAM Config (*.FlatConfig);;FlatCAM Config (*.json);;All Files (*.*)"
         try:
@@ -289,13 +289,13 @@ class AppIO(QtCore.QObject):
         else:
             self.open_config_file(filename)
 
-    def on_file_exportsvg(self):
+    def on_file_export_svg(self):
         """
         Callback for menu item File->Export SVG.
 
         :return: None
         """
-        self.log.debug("on_file_exportsvg()")
+        self.log.debug("on_file_export_svg()")
 
         obj = self.app.collection.get_active()
         if obj is None:
@@ -344,9 +344,9 @@ class AppIO(QtCore.QObject):
                 self.app.file_opened.emit("SVG", filename)
             self.app.file_saved.emit("SVG", filename)
 
-    def on_file_exportpng(self):
+    def on_file_export_png(self):
 
-        self.log.debug("on_file_exportpng()")
+        self.log.debug("on_file_export_png()")
 
         date = str(datetime.today()).rpartition('.')[0]
         date = ''.join(c for c in date if c not in ':-')
@@ -386,13 +386,13 @@ class AppIO(QtCore.QObject):
                 self.app.file_opened.emit("png", filename)
             self.app.file_saved.emit("png", filename)
 
-    def on_file_savegerber(self):
+    def on_file_save_gerber(self):
         """
         Callback for menu item in Project context menu.
 
         :return: None
         """
-        self.log.debug("on_file_savegerber()")
+        self.log.debug("on_file_save_gerber()")
 
         obj = self.app.collection.get_active()
         if obj is None:
@@ -428,13 +428,13 @@ class AppIO(QtCore.QObject):
                 self.app.file_opened.emit("Gerber", filename)
             self.app.file_saved.emit("Gerber", filename)
 
-    def on_file_savescript(self):
+    def on_file_save_script(self):
         """
         Callback for menu item in Project context menu.
 
         :return: None
         """
-        self.log.debug("on_file_savescript()")
+        self.log.debug("on_file_save_script()")
 
         obj = self.app.collection.get_active()
         if obj is None:
@@ -470,13 +470,13 @@ class AppIO(QtCore.QObject):
                 self.app.file_opened.emit("Script", filename)
             self.app.file_saved.emit("Script", filename)
 
-    def on_file_savedocument(self):
+    def on_file_save_document(self):
         """
         Callback for menu item in Project context menu.
 
         :return: None
         """
-        self.log.debug("on_file_savedocument()")
+        self.log.debug("on_file_save_document()")
 
         obj = self.app.collection.get_active()
         if obj is None:
@@ -512,13 +512,13 @@ class AppIO(QtCore.QObject):
                 self.app.file_opened.emit("Document", filename)
             self.app.file_saved.emit("Document", filename)
 
-    def on_file_saveexcellon(self):
+    def on_file_save_excellon(self):
         """
         Callback for menu item in project context menu.
 
         :return: None
         """
-        self.log.debug("on_file_saveexcellon()")
+        self.log.debug("on_file_save_excellon()")
 
         obj = self.app.collection.get_active()
         if obj is None:
@@ -553,13 +553,13 @@ class AppIO(QtCore.QObject):
                 self.app.file_opened.emit("Excellon", filename)
             self.app.file_saved.emit("Excellon", filename)
 
-    def on_file_exportexcellon(self):
+    def on_file_export_excellon(self):
         """
         Callback for menu item File->Export->Excellon.
 
         :return: None
         """
-        self.log.debug("on_file_exportexcellon()")
+        self.log.debug("on_file_export_excellon()")
 
         obj = self.app.collection.get_active()
         if obj is None:
@@ -598,13 +598,13 @@ class AppIO(QtCore.QObject):
                 self.app.file_opened.emit("Excellon", filename)
             self.app.file_saved.emit("Excellon", filename)
 
-    def on_file_exportgerber(self):
+    def on_file_export_gerber(self):
         """
         Callback for menu item File->Export->Gerber.
 
         :return: None
         """
-        self.log.debug("on_file_exportgerber()")
+        self.log.debug("on_file_export_gerber()")
 
         obj = self.app.collection.get_active()
         if obj is None:
@@ -643,13 +643,13 @@ class AppIO(QtCore.QObject):
                 self.app.file_opened.emit("Gerber", filename)
             self.app.file_saved.emit("Gerber", filename)
 
-    def on_file_exportdxf(self):
+    def on_file_export_dxf(self):
         """
                 Callback for menu item File->Export DXF.
 
                 :return: None
                 """
-        self.log.debug("on_file_exportdxf()")
+        self.log.debug("on_file_export_dxf()")
 
         obj = self.app.collection.get_active()
         if obj is None:
@@ -698,14 +698,14 @@ class AppIO(QtCore.QObject):
                 self.app.file_opened.emit("DXF", filename)
             self.app.file_saved.emit("DXF", filename)
 
-    def on_file_importsvg(self, type_of_obj):
+    def on_file_import_svg(self, type_of_obj):
         """
         Callback for menu item File->Import SVG.
         :param type_of_obj: to import the SVG as Geometry or as Gerber
         :type type_of_obj: str
         :return: None
         """
-        self.log.debug("on_file_importsvg()")
+        self.log.debug("on_file_import_svg()")
 
         _filter_ = "SVG File .svg (*.svg);;All Files (*.*)"
         try:
@@ -728,14 +728,14 @@ class AppIO(QtCore.QObject):
                 if filename != '':
                     self.worker_task.emit({'fcn': self.import_svg, 'params': [filename, type_of_obj]})
 
-    def on_file_importdxf(self, type_of_obj):
+    def on_file_import_dxf(self, type_of_obj):
         """
         Callback for menu item File->Import DXF.
         :param type_of_obj: to import the DXF as Geometry or as Gerber
         :type type_of_obj: str
         :return: None
         """
-        self.log.debug("on_file_importdxf()")
+        self.log.debug("on_file_import_dxf()")
 
         _filter_ = "DXF File .dxf (*.DXF);;All Files (*.*)"
         try:
@@ -788,15 +788,15 @@ class AppIO(QtCore.QObject):
             response = msgbox.clickedButton()
 
             if response == bt_yes:
-                self.on_file_saveprojectas(use_thread=True)
+                self.on_file_save_project_as(use_thread=True)
             elif response == bt_cancel:
                 return
             elif response == bt_no:
-                self.on_file_new_project(use_thread=True, silenced=True)
+                self.on_file_new_project(use_thread=True)
         else:
-            self.on_file_new_project(use_thread=True, silenced=True)
+            self.on_file_new_project(use_thread=True)
 
-    def on_file_new_project(self, cli=None, reset_tcl=True, use_thread=None, silenced=None, keep_scripts=True):
+    def on_file_new_project(self, cli=None, reset_tcl=True, use_thread=None, keep_scripts=True):
         """
         Returns the application to its startup state. This method is thread-safe.
 
@@ -804,7 +804,6 @@ class AppIO(QtCore.QObject):
         :param reset_tcl:   Boolean. If False, on new project creation the Tcl instance is not recreated, therefore it
                             will remember all the previous variables. If True then the Tcl is re-instantiated.
         :param use_thread:  Bool. If True some part of the initialization are done threaded
-        :param silenced:    Bool or None. If True then the app will not ask to save the current parameters.
         :param keep_scripts: Bool. If True the Script objects are not deleted when creating a new project
         :return:            None
         """
@@ -841,11 +840,29 @@ class AppIO(QtCore.QObject):
                 except AttributeError:
                     pass
 
+        # clear the possible drawn probing shapes for Levelling Tool
+        try:
+            self.app.levelling_tool.probing_shapes.clear(update=True)
+        except AttributeError:
+            pass
+
+        # clean possible tool shapes for Isolation, NCC, Paint, Punch Gerber Plugins
+        try:
+            self.app.tool_shapes.clear(update=True)
+        except AttributeError:
+            pass
+
         # delete the exclusion areas
         self.app.exc_areas.clear_shapes()
 
         # delete any selection shape on canvas
         self.app.delete_selection_shape()
+
+        # delete any hover shapes on canvas
+        try:
+            self.app.hover_shapes.clear(update=True)
+        except AttributeError:
+            pass
 
         # delete all App objects
         if keep_scripts is True:
@@ -893,7 +910,7 @@ class AppIO(QtCore.QObject):
         if cli is None:
             # we need to go in reverse because once we remove a tab then the index changes
             # meaning that removing the first tab (idx = 0) then the tab at former idx = 1 will assume idx = 0
-            # and so on. Therefore the deletion should be done in reverse
+            # and so on. Therefore, the deletion should be done in reverse
             wdg_count = self.app.ui.plot_tab_area.tabBar.count() - 1
             for index in range(wdg_count, -1, -1):
                 try:
@@ -931,14 +948,14 @@ class AppIO(QtCore.QObject):
         self.app.init_tools(init_tcl=True)
         self.log.debug('%s: %s %s.' % ("Initiated the MP pool and plugins in: ", str(time.time() - t0), _("seconds")))
 
-    def on_filenewscript(self, silent=False):
+    def on_file_new_script(self, silent=False):
         """
         Will create a new script file and open it in the Code Editor
 
         :param silent:  if True will not display status messages
         :return:        None
         """
-        self.log.debug("on_filenewscript()")
+        self.log.debug("on_file_new_script()")
 
         if silent is False:
             self.inform.emit('[success] %s' % _("New TCL script file created in Code Editor."))
@@ -949,7 +966,7 @@ class AppIO(QtCore.QObject):
 
         self.app.app_obj.new_script_object()
 
-    def on_fileopenscript(self, name=None, silent=False):
+    def on_file_open_script(self, name=None, silent=False):
         """
         Will open a Tcl script file into the Code Editor
 
@@ -958,7 +975,7 @@ class AppIO(QtCore.QObject):
         :return:        None
         """
 
-        self.log.debug("on_fileopenscript()")
+        self.log.debug("on_file_open_script()")
 
         _filter_ = "TCL script .FlatScript (*.FlatScript);;TCL script .tcl (*.TCL);;TCL script .txt (*.TXT);;" \
                    "All Files (*.*)"
@@ -980,7 +997,7 @@ class AppIO(QtCore.QObject):
                 if filename != '':
                     self.worker_task.emit({'fcn': self.open_script, 'params': [filename]})
 
-    def on_fileopenscript_example(self, name=None, silent=False):
+    def on_file_open_script_example(self, name=None, silent=False):
         """
         Will open a Tcl script file into the Code Editor
 
@@ -989,7 +1006,7 @@ class AppIO(QtCore.QObject):
         :return:
         """
 
-        self.log.debug("on_fileopenscript_example()")
+        self.log.debug("on_file_open_script_example()")
 
         _filter_ = "TCL script .FlatScript (*.FlatScript);;TCL script .tcl (*.TCL);;TCL script .txt (*.TXT);;" \
                    "All Files (*.*)"
@@ -1017,7 +1034,7 @@ class AppIO(QtCore.QObject):
                 if filename != '':
                     self.worker_task.emit({'fcn': self.open_script, 'params': [filename]})
 
-    def on_filerunscript(self, name=None, silent=False):
+    def on_file_run_cript(self, name=None, silent=False):
         """
         File menu callback for loading and running a TCL script.
 
@@ -1062,31 +1079,31 @@ class AppIO(QtCore.QObject):
 
             try:
                 with open(filename, "r") as tcl_script:
-                    cmd_line_shellfile_content = tcl_script.read()
+                    cmd_line_shell_file_content = tcl_script.read()
                     if self.app.cmd_line_headless != 1:
-                        self.app.shell.exec_command(cmd_line_shellfile_content)
+                        self.app.shell.exec_command(cmd_line_shell_file_content)
                     else:
-                        self.app.shell.exec_command(cmd_line_shellfile_content, no_echo=True)
+                        self.app.shell.exec_command(cmd_line_shell_file_content, no_echo=True)
 
                 if silent is False:
                     self.inform.emit('[success] %s' % _("TCL script file opened in Code Editor and executed."))
             except Exception as e:
-                self.app.error("App.on_filerunscript() -> %s" % str(e))
+                self.app.error("App.on_file_run_cript() -> %s" % str(e))
                 sys.exit(2)
 
-    def on_file_saveproject(self, silent=False):
+    def on_file_save_project(self, silent=False):
         """
         Callback for menu item File->Save Project. Saves the project to
-        ``self.project_filename`` or calls ``self.on_file_saveprojectas()``
+        ``self.project_filename`` or calls ``self.on_file_save_project_as()``
         if set to None. The project is saved by calling ``self.save_project()``.
 
         :param silent: if True will not display status messages
         :return: None
         """
-        self.log.debug("on_file_saveproject()")
+        self.log.debug("on_file_save_project()")
 
         if self.app.project_filename is None:
-            self.on_file_saveprojectas()
+            self.on_file_save_project_as()
         else:
             self.worker_task.emit({'fcn': self.save_project, 'params': [self.app.project_filename, silent]})
             if self.options["global_open_style"] is False:
@@ -1097,18 +1114,15 @@ class AppIO(QtCore.QObject):
 
         self.app.should_we_save = False
 
-    def on_file_saveprojectas(self, make_copy=False, use_thread=True, quit_action=False):
+    def on_file_save_project_as(self, make_copy=False, use_thread=True, quit_action=False):
         """
-        Callback for menu item File->Save Project As... Opens a file
-        chooser and saves the project to the given file via
-        ``self.save_project()``.
+        Save the project to a given file by opening a file chooser via self.save_project().
 
-        :param make_copy if to be create a copy of the project; boolean
-        :param use_thread: if to be run in a separate thread; boolean
-        :param quit_action: if to be followed by quiting the application; boolean
-        :return: None
-        """
-        self.log.debug("on_file_saveprojectas()")
+        :param make_copy: boolean, whether to make a copy of the project
+        :param use_thread: boolean, whether to run in a separate thread
+        :param quit_action: boolean, whether to quit the application after
+        :return: None """
+        self.log.debug("on_file_save_project_as()")
 
         date = str(datetime.today()).rpartition('.')[0]
         date = ''.join(c for c in date if c not in ':-')
@@ -1264,7 +1278,7 @@ class AppIO(QtCore.QObject):
             }
         )
 
-        # make sure that the Excellon objeacts are drawn on top of everything
+        # make sure that the Excellon objects are drawn on top of everything
         excellon_objs = [obj for obj in obj_selection if obj.kind == 'excellon']
         cncjob_objs = [obj for obj in obj_selection if obj.kind == 'cncjob']
         # reverse the object order such that the first selected is on top
@@ -1308,11 +1322,11 @@ class AppIO(QtCore.QObject):
 
         for obj in obj_selection:
             try:
-                gxmin, gymin, gxmax, gymax = obj.bounds()
-                xmin = min([xmin, gxmin])
-                ymin = min([ymin, gymin])
-                xmax = max([xmax, gxmax])
-                ymax = max([ymax, gymax])
+                g_xmin, g_ymin, g_xmax, g_ymax = obj.bounds()
+                xmin = min([xmin, g_xmin])
+                ymin = min([ymin, g_ymin])
+                xmax = max([xmax, g_xmax])
+                ymax = max([ymax, g_ymax])
             except Exception as e:
                 self.log.error("Tried to get bounds of empty geometry in App.save_pdf(). %s" % str(e))
 
@@ -1320,7 +1334,7 @@ class AppIO(QtCore.QObject):
         bounds = [xmin, ymin, xmax, ymax]
         size = bounds[2] - bounds[0], bounds[3] - bounds[1]
 
-        # This contain the measure units
+        # This contains the measure units
         uom = obj_selection[0].units.lower()
 
         # Define a boundary around SVG of about 1.0mm (~39mils)
@@ -1335,7 +1349,7 @@ class AppIO(QtCore.QObject):
         minx = str(bounds[0] - boundary)
         miny = str(bounds[1] + boundary + size[1])
 
-        # Add a SVG Header and footer to the svg output from shapely
+        # Add an SVG Header and footer to the svg output from shapely
         # The transform flips the Y Axis so that everything renders
         # properly within svg apps such as inkscape
         svg_header = '<svg xmlns="http://www.w3.org/2000/svg" ' \
@@ -1412,32 +1426,32 @@ class AppIO(QtCore.QObject):
             size = obj.size()
 
             # Convert everything to strings for use in the xml doc
-            svgwidth = str(size[0])
-            svgheight = str(size[1])
+            svg_width = str(size[0])
+            svg_height = str(size[1])
             minx = str(bounds[0])
             miny = str(bounds[1] - size[1])
             uom = obj.units.lower()
 
-            # Add a SVG Header and footer to the svg output from shapely
+            # Add an SVG Header and footer to the svg output from shapely
             # The transform flips the Y Axis so that everything renders
             # properly within svg apps such as inkscape
             svg_header = '<svg xmlns="http://www.w3.org/2000/svg" ' \
                          'version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" '
-            svg_header += 'width="' + svgwidth + uom + '" '
-            svg_header += 'height="' + svgheight + uom + '" '
-            svg_header += 'viewBox="' + minx + ' ' + miny + ' ' + svgwidth + ' ' + svgheight + '">'
+            svg_header += 'width="' + svg_width + uom + '" '
+            svg_header += 'height="' + svg_height + uom + '" '
+            svg_header += 'viewBox="' + minx + ' ' + miny + ' ' + svg_width + ' ' + svg_height + '">'
             svg_header += '<g transform="scale(1,-1)">'
             svg_footer = '</g> </svg>'
             svg_elem = svg_header + exported_svg + svg_footer
 
             # Parse the xml through a xml parser just to add line feeds
             # and to make it look more pretty for the output
-            svgcode = parse_xml_string(svg_elem)
-            svgcode = svgcode.toprettyxml()
+            svg_code = parse_xml_string(svg_elem)
+            svg_code = svg_code.toprettyxml()
 
             try:
                 with open(filename, 'w') as fp:
-                    fp.write(svgcode)
+                    fp.write(svg_code)
             except PermissionError:
                 self.inform.emit('[WARNING] %s' %
                                  _("Permission denied, saving not possible.\n"
@@ -1526,7 +1540,7 @@ class AppIO(QtCore.QObject):
 
     def export_excellon(self, obj_name, filename, local_use=None, use_thread=True):
         """
-        Exports a Excellon Object to an Excellon file.
+        Exports an Excellon Object to an Excellon file.
 
         :param obj_name: the name of the FlatCAM object to be saved as Excellon
         :param filename: Path to the Excellon file to save to.
@@ -1561,18 +1575,18 @@ class AppIO(QtCore.QObject):
             return
 
         # updated units
-        eunits = self.options["excellon_exp_units"]
-        ewhole = self.options["excellon_exp_integer"]
-        efract = self.options["excellon_exp_decimals"]
-        ezeros = self.options["excellon_exp_zeros"]
-        eformat = self.options["excellon_exp_format"]
+        e_units = self.options["excellon_exp_units"]
+        e_whole = self.options["excellon_exp_integer"]
+        e_fract = self.options["excellon_exp_decimals"]
+        e_zeros = self.options["excellon_exp_zeros"]
+        e_format = self.options["excellon_exp_format"]
         slot_type = self.options["excellon_exp_slot_type"]
 
         fc_units = self.app_units.upper()
         if fc_units == 'MM':
-            factor = 1 if eunits == 'METRIC' else 0.03937
+            factor = 1 if e_units == 'METRIC' else 0.03937
         else:
-            factor = 25.4 if eunits == 'METRIC' else 1
+            factor = 25.4 if e_units == 'METRIC' else 1
 
         def make_excellon():
             try:
@@ -1585,12 +1599,12 @@ class AppIO(QtCore.QObject):
                 header += ';Filename: %s' % str(obj_name) + '\n'
                 header += ';Created on : %s' % time_str + '\n'
 
-                if eformat == 'dec':
-                    has_slots, excellon_code = obj.export_excellon(ewhole, efract, factor=factor, slot_type=slot_type)
-                    header += eunits + '\n'
+                if e_format == 'dec':
+                    has_slots, excellon_code = obj.export_excellon(e_whole, e_fract, factor=factor, slot_type=slot_type)
+                    header += e_units + '\n'
 
                     for tool in obj.tools:
-                        if eunits == 'METRIC':
+                        if e_units == 'METRIC':
                             header += "T{tool}F00S00C{:.{dec}f}\n".format(float(obj.tools[tool]['tooldia']) * factor,
                                                                           tool=str(tool),
                                                                           dec=2)
@@ -1599,15 +1613,15 @@ class AppIO(QtCore.QObject):
                                                                           tool=str(tool),
                                                                           dec=4)
                 else:
-                    if ezeros == 'LZ':
-                        has_slots, excellon_code = obj.export_excellon(ewhole, efract,
+                    if e_zeros == 'LZ':
+                        has_slots, excellon_code = obj.export_excellon(e_whole, e_fract,
                                                                        form='ndec', e_zeros='LZ', factor=factor,
                                                                        slot_type=slot_type)
-                        header += '%s,%s\n' % (eunits, 'LZ')
+                        header += '%s,%s\n' % (e_units, 'LZ')
                         header += format_exc
 
                         for tool in obj.tools:
-                            if eunits == 'METRIC':
+                            if e_units == 'METRIC':
                                 header += "T{tool}F00S00C{:.{dec}f}\n".format(
                                     float(obj.tools[tool]['tooldia']) * factor,
                                     tool=str(tool),
@@ -1618,14 +1632,14 @@ class AppIO(QtCore.QObject):
                                     tool=str(tool),
                                     dec=4)
                     else:
-                        has_slots, excellon_code = obj.export_excellon(ewhole, efract,
+                        has_slots, excellon_code = obj.export_excellon(e_whole, e_fract,
                                                                        form='ndec', e_zeros='TZ', factor=factor,
                                                                        slot_type=slot_type)
-                        header += '%s,%s\n' % (eunits, 'TZ')
+                        header += '%s,%s\n' % (e_units, 'TZ')
                         header += format_exc
 
                         for tool in obj.tools:
-                            if eunits == 'METRIC':
+                            if e_units == 'METRIC':
                                 header += "T{tool}F00S00C{:.{dec}f}\n".format(
                                     float(obj.tools[tool]['tooldia']) * factor,
                                     tool=str(tool),
@@ -1674,16 +1688,16 @@ class AppIO(QtCore.QObject):
 
                 self.worker_task.emit({'fcn': job_thread_exc, 'params': [self]})
         else:
-            eret = make_excellon()
-            if eret == 'fail':
+            ret_val = make_excellon()
+            if ret_val == 'fail':
                 self.inform.emit('[ERROR_NOTCL] %s' % _('Could not export.'))
                 return 'fail'
             if local_use is not None:
-                return eret
+                return ret_val
 
     def export_gerber(self, obj_name, filename, local_use=None, use_thread=True):
         """
-        Exports a Gerber Object to an Gerber file.
+        Exports a Gerber Object to a Gerber file.
 
         :param obj_name:    the name of the FlatCAM object to be saved as Gerber
         :param filename:    Path to the Gerber file to save to.
@@ -1708,16 +1722,16 @@ class AppIO(QtCore.QObject):
             obj = local_use
 
         # updated units
-        gunits = self.options["gerber_exp_units"]
-        gwhole = self.options["gerber_exp_integer"]
-        gfract = self.options["gerber_exp_decimals"]
-        gzeros = self.options["gerber_exp_zeros"]
+        g_units = self.options["gerber_exp_units"]
+        g_whole = self.options["gerber_exp_integer"]
+        g_fract = self.options["gerber_exp_decimals"]
+        g_zeros = self.options["gerber_exp_zeros"]
 
         fc_units = self.app_units.upper()
         if fc_units == 'MM':
-            factor = 1 if gunits == 'MM' else 0.03937
+            factor = 1 if g_units == 'MM' else 0.03937
         else:
-            factor = 25.4 if gunits == 'MM' else 1
+            factor = 25.4 if g_units == 'MM' else 1
 
         def make_gerber():
             try:
@@ -1729,8 +1743,8 @@ class AppIO(QtCore.QObject):
 
                 header += 'G04 Filename: %s*' % str(obj_name) + '\n'
                 header += 'G04 Created on : %s*' % time_str + '\n'
-                header += '%%FS%sAX%s%sY%s%s*%%\n' % (gzeros, gwhole, gfract, gwhole, gfract)
-                header += "%MO{units}*%\n".format(units=gunits)
+                header += '%%FS%sAX%s%sY%s%s*%%\n' % (g_zeros, g_whole, g_fract, g_whole, g_fract)
+                header += "%MO{units}*%\n".format(units=g_units)
 
                 for apid in obj.tools:
                     if obj.tools[apid]['type'] == 'C':
@@ -1757,7 +1771,7 @@ class AppIO(QtCore.QObject):
                 header += '\n'
 
                 # obsolete units but some software may need it
-                if gunits == 'IN':
+                if g_units == 'IN':
                     header += 'G70*\n'
                 else:
                     header += 'G71*\n'
@@ -1771,7 +1785,7 @@ class AppIO(QtCore.QObject):
 
                 footer = 'M02*\n'
 
-                gerber_code = obj.export_gerber(gwhole, gfract, g_zeros=gzeros, factor=factor)
+                gerber_code = obj.export_gerber(g_whole, g_fract, g_zeros=g_zeros, factor=factor)
 
                 exported_gerber = header
                 exported_gerber += gerber_code
@@ -2154,7 +2168,7 @@ class AppIO(QtCore.QObject):
         :param filename:        G-code file filename
         :param outname:         Name of the resulting object. None causes the name to be that of the file.
         :param force_parsing:
-        :param plot:            If True plot the object on canvas
+        :param plot:            If True, then plot the object on canvas
         :param from_tcl:        True if run from Tcl Shell
         :return:                None
         """
@@ -2406,7 +2420,7 @@ class AppIO(QtCore.QObject):
         Loads a config file from the specified file.
 
         :param filename:        Name of the file from which to load.
-        :param run_from_arg:    if True the FlatConfig file will be open as an command line argument
+        :param run_from_arg:    if True the FlatConfig file will be open as a command line argument
         :return:                None
         """
         self.log.debug("Opening config file: " + filename)
@@ -2460,7 +2474,7 @@ class AppIO(QtCore.QObject):
         :param run_from_arg:    True if run for arguments
         :param plot:            If True plot all objects in the project
         :param cli:             Run from command line
-        :param from_tcl:        True if run from Tcl Sehll
+        :param from_tcl:        True if run from Tcl Shell
         :return:                None
         """
 
@@ -2471,7 +2485,7 @@ class AppIO(QtCore.QObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
             return
 
-        # block autosaving while a project is loaded
+        # block auto-saving while a project is loaded
         self.app.block_autosave = True
 
         # for some reason, setting ui_title does not work when this method is called from Tcl Shell
@@ -2616,37 +2630,35 @@ class AppIO(QtCore.QObject):
 
         def worker_task():
             with self.app.proc_container.new('%s' % _("Loading...")):
-                # Re create objects
+                # Re-create objects
                 self.log.debug(" **************** Started PROEJCT loading... **************** ")
                 for obj in proj_dict['objs']:
                     try:
-                        msg = "Recreating from opened project an %s object: %s" % \
-                              (obj['kind'].capitalize(), obj['obj_options']['name'])
+                        obj_name = obj['obj_options']['name']
                     except KeyError:
                         # allowance for older projects
-                        msg = "Recreating from opened project an %s object: %s" % \
-                              (obj['kind'].capitalize(), obj['options']['name'])
-                    self.app.log.debug(msg)
+                        obj_name = obj['options']['name']
+                    self.app.log.debug(
+                        f"Recreating from opened project an {obj['kind'].capitalize()} object: {obj_name}")
 
                     def obj_init(new_obj, app_inst):
                         try:
                             new_obj.from_dict(obj)
-                        except Exception as erro:
-                            app_inst.log.error('AppIO.open_project() --> ' + str(erro))
+                        except Exception as except_error:
+                            app_inst.log.error('AppIO.open_project() --> ' + str(except_error))
                             return 'fail'
 
                         # make the 'obj_options' dict a LoudDict
+                        new_obj_options = LoudDict()
                         try:
-                            new_obj_options = LoudDict()
                             new_obj_options.update(new_obj.obj_options)
-                            new_obj.obj_options = new_obj_options
                         except AttributeError:
-                            new_obj_options = LoudDict()
                             new_obj_options.update(new_obj.options)
-                            new_obj.obj_options = new_obj_options
-                        except Exception as erro:
-                            app_inst.log.error('AppIO.open_project() make a LoudDict--> ' + str(erro))
+                        except Exception as except_error:
+                            app_inst.log.error('AppIO.open_project() make a LoudDict--> ' + str(except_error))
                             return 'fail'
+
+                        new_obj.obj_options = new_obj_options
 
                         # #############################################################################################
                         # for older projects loading try to convert the 'apertures' or 'cnc_tools' or 'exc_cnc_tools'
@@ -2657,10 +2669,6 @@ class AppIO(QtCore.QObject):
                             new_obj.tools = obj['apertures']
                         if 'cnc_tools' in obj and obj['cnc_tools']:
                             new_obj.tools = obj['cnc_tools']
-                            # new_obj.used_tools = [int(k) for k in new_obj.tools.keys()]
-                            # first_key = list(obj['cnc_tools'].keys())[0]
-                            # used_preprocessor = obj['cnc_tools'][first_key]['data']['ppname_g']
-                            # new_obj.gc_start = new_obj.doformat(self.app.preprocessors[used_preprocessor].start_code)
                         if 'exc_cnc_tools' in obj and obj['exc_cnc_tools']:
                             new_obj.tools = obj['exc_cnc_tools']
                             # add the used_tools (all of them will be used)
@@ -2683,8 +2691,8 @@ class AppIO(QtCore.QObject):
                             new_obj.tools = {
                                 float(tool): tool_dict for tool, tool_dict in list(new_obj.tools.items())
                             }
-                        except Exception as erro:
-                            app_inst.log.error('AppIO.open_project() keys to int--> ' + str(erro))
+                        except Exception as other_error_msg:
+                            app_inst.log.error('AppIO.open_project() keys to int--> ' + str(other_error_msg))
                             return 'fail'
 
                         # #############################################################################################
@@ -2697,7 +2705,7 @@ class AppIO(QtCore.QObject):
                         # #############################################################################################
 
                         if new_obj.kind == 'cncjob':
-                            # some attributes are serialized so we need t otake this into consideration in
+                            # some attributes are serialized, so we need to take this into consideration in
                             # CNCJob.set_ui()
                             new_obj.is_loaded_from_project = True
 
@@ -2706,16 +2714,16 @@ class AppIO(QtCore.QObject):
                     try:
                         if cli is None:
                             self.app.ui.set_ui_title(name="{} {}: {}".format(
-                                _("Loading Project ... restoring"), obj['kind'].upper(), obj['obj_options']['name']))
+                                _("Loading Project ... restoring"), obj['kind'].upper(), obj_name))
 
                         ret = self.app.app_obj.new_object(obj['kind'], obj['obj_options']['name'], obj_init, plot=plot)
                     except KeyError:
                         # allowance for older projects
                         if cli is None:
                             self.app.ui.set_ui_title(name="{} {}: {}".format(
-                                _("Loading Project ... restoring"), obj['kind'].upper(), obj['options']['name']))
+                                _("Loading Project ... restoring"), obj['kind'].upper(), obj_name))
                         try:
-                            ret = self.app.app_obj.new_object(obj['kind'], obj['options']['name'], obj_init, plot=plot)
+                            ret = self.app.app_obj.new_object(obj['kind'], obj_name, obj_init, plot=plot)
                         except Exception:
                             continue
                     if ret == 'fail':
@@ -2726,7 +2734,7 @@ class AppIO(QtCore.QObject):
                 self.app.should_we_save = False
                 self.app.file_opened.emit("project", filename)
 
-                # restore autosaving after a project was loaded
+                # restore auto-saving after a project was loaded
                 self.app.block_autosave = False
 
                 # for some reason, setting ui_title does not work when this method is called from Tcl Shell
@@ -2791,8 +2799,8 @@ class AppIO(QtCore.QObject):
                     out1 = compressor_obj.compress(project_as_json)
                     out2 = compressor_obj.flush()
                     project_zipped = b"".join([out1, out2])
-                except Exception as errrr:
-                    self.log.error("Failed to save compressed file: %s because: %s" % (str(filename), str(errrr)))
+                except Exception as error_msg:
+                    self.log.error("Failed to save compressed file: %s because: %s" % (str(filename), str(error_msg)))
                     self.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                     self.app.save_in_progress = False
                     return
@@ -2877,46 +2885,42 @@ class AppIO(QtCore.QObject):
 
     def save_source_file(self, obj_name, filename):
         """
-        Exports a FlatCAM Object to an Gerber/Excellon file.
+        Exports a FlatCAM Object to a Gerber/Excellon file.
 
-        :param obj_name: the name of the FlatCAM object for which to save it's embedded source file
+        :param obj_name: the name of the FlatCAM object for which to save its embedded source file
         :param filename: Path to the Gerber file to save to.
         :return:
         """
 
         if filename is None:
-            filename = self.app.options["global_last_save_folder"] if \
-                self.app.options["global_last_save_folder"] is not None else self.app.options["global_last_folder"]
+            filename = self.app.options["global_last_save_folder"] or self.app.options["global_last_folder"]
 
         self.log.debug("save_source_file()")
 
         obj = self.app.collection.get_by_name(obj_name)
 
-        file_string = StringIO(obj.source_file)
-        time_string = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
-
-        if file_string.getvalue() == '':
+        if not obj.source_file:
             msg = _("Save cancelled because source file is empty. Try to export the file.")
             self.inform.emit('[ERROR_NOTCL] %s' % msg)  # noqa
             return 'fail'
 
+        time_string = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
+
         try:
             with open(filename, 'w') as file:
-                file.writelines('G04*\n')
-                file.writelines('G04 %s (RE)GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s*\n' %
-                                (obj.kind.upper(), str(self.app.version), str(self.app.version_date)))
-                file.writelines('G04 Filename: %s*\n' % str(obj_name))
-                file.writelines('G04 Created on : %s*\n' % time_string)
-
-                for line in file_string:
-                    file.writelines(line)
+                file.write('G04*\n')
+                file.write('G04 %s (RE)GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s*\n' %
+                           (obj.kind.upper(), str(self.app.version), str(self.app.version_date)))
+                file.write('G04 Filename: %s*\n' % str(obj_name))
+                file.write('G04 Created on : %s*\n' % time_string)
+                file.write(obj.source_file)
         except PermissionError:
             self.inform.emit('[WARNING] %s' %
                              _("Permission denied, saving not possible.\n"
                                "Most likely another app is holding the file open and not accessible."))  # noqa
             return 'fail'
 
-    def on_file_savedefaults(self):
+    def on_file_save_defaults(self):
         """
         Callback for menu item File->Save Defaults. Saves application default options
         ``self.options`` to current_defaults.FlatConfig.

@@ -1480,9 +1480,9 @@ class App(QtCore.QObject):
                             self.inform.emit(_("Open Script file failed."))
                     else:
                         if silent is False:
-                            self.f_handlers.on_fileopenscript(name=file_name)
+                            self.f_handlers.on_file_open_script(name=file_name)
                             self.ui.plot_tab_area.setCurrentWidget(self.ui.plot_tab)
-                        self.f_handlers.on_filerunscript(name=file_name)
+                        self.f_handlers.on_file_run_cript(name=file_name)
                 except Exception as e:
                     self.log.error("Could not open FlatCAM Script file as App parameter due: %s" % str(e))
 
@@ -1506,7 +1506,7 @@ class App(QtCore.QObject):
                             if silent is False:
                                 self.inform.emit(_("Open Excellon file failed."))
                         else:
-                            self.f_handlers.on_fileopenexcellon(name=file_name)
+                            self.f_handlers.on_file_open_excellon(name=file_name)
                             return
 
                 gco_list = self.ui.util_pref_form.fa_gcode_group.gco_list_text.get_value().split(',')
@@ -1519,7 +1519,7 @@ class App(QtCore.QObject):
                             if silent is False:
                                 self.inform.emit(_("Open GCode file failed."))
                         else:
-                            self.f_handlers.on_fileopengcode(name=file_name)
+                            self.f_handlers.on_file_open_gcode(name=file_name)
                             return
 
                 grb_list = self.ui.util_pref_form.fa_gerber_group.grb_list_text.get_value().split(',')
@@ -1532,7 +1532,7 @@ class App(QtCore.QObject):
                             if silent is False:
                                 self.inform.emit(_("Open Gerber file failed."))
                         else:
-                            self.f_handlers.on_fileopengerber(name=file_name)
+                            self.f_handlers.on_file_open_gerber(name=file_name)
                             return
 
         # if it reached here without already returning then the app was registered with a file that it does not
@@ -1859,37 +1859,37 @@ class App(QtCore.QObject):
         self.ui.menufilenewexc.triggered.connect(lambda: self.app_obj.new_excellon_object())
         self.ui.menufilenewdoc.triggered.connect(lambda: self.app_obj.new_document_object())
 
-        self.ui.menufileopengerber.triggered.connect(lambda: self.f_handlers.on_fileopengerber())
-        self.ui.menufileopenexcellon.triggered.connect(lambda: self.f_handlers.on_fileopenexcellon())
-        self.ui.menufileopengcode.triggered.connect(lambda: self.f_handlers.on_fileopengcode())
-        self.ui.menufileopenproject.triggered.connect(lambda: self.f_handlers.on_file_openproject())
-        self.ui.menufileopenconfig.triggered.connect(lambda: self.f_handlers.on_file_openconfig())
+        self.ui.menufileopengerber.triggered.connect(lambda: self.f_handlers.on_file_open_gerber())
+        self.ui.menufileopenexcellon.triggered.connect(lambda: self.f_handlers.on_file_open_excellon())
+        self.ui.menufileopengcode.triggered.connect(lambda: self.f_handlers.on_file_open_gcode())
+        self.ui.menufileopenproject.triggered.connect(lambda: self.f_handlers.on_file_open_project())
+        self.ui.menufileopenconfig.triggered.connect(lambda: self.f_handlers.on_file_open_config())
 
-        self.ui.menufilenewscript.triggered.connect(self.f_handlers.on_filenewscript)
-        self.ui.menufileopenscript.triggered.connect(self.f_handlers.on_fileopenscript)
-        self.ui.menufileopenscriptexample.triggered.connect(self.f_handlers.on_fileopenscript_example)
+        self.ui.menufilenewscript.triggered.connect(self.f_handlers.on_file_new_script)
+        self.ui.menufileopenscript.triggered.connect(self.f_handlers.on_file_open_script)
+        self.ui.menufileopenscriptexample.triggered.connect(self.f_handlers.on_file_open_script_example)
 
-        self.ui.menufilerunscript.triggered.connect(self.f_handlers.on_filerunscript)
+        self.ui.menufilerunscript.triggered.connect(self.f_handlers.on_file_run_cript)
 
-        self.ui.menufileimportsvg.triggered.connect(lambda: self.f_handlers.on_file_importsvg("geometry"))
-        self.ui.menufileimportsvg_as_gerber.triggered.connect(lambda: self.f_handlers.on_file_importsvg("gerber"))
+        self.ui.menufileimportsvg.triggered.connect(lambda: self.f_handlers.on_file_import_svg("geometry"))
+        self.ui.menufileimportsvg_as_gerber.triggered.connect(lambda: self.f_handlers.on_file_import_svg("gerber"))
 
-        self.ui.menufileimportdxf.triggered.connect(lambda: self.f_handlers.on_file_importdxf("geometry"))
-        self.ui.menufileimportdxf_as_gerber.triggered.connect(lambda: self.f_handlers.on_file_importdxf("gerber"))
-        self.ui.menufileimport_hpgl2_as_geo.triggered.connect(lambda: self.f_handlers.on_fileopenhpgl2())
-        self.ui.menufileexportsvg.triggered.connect(self.f_handlers.on_file_exportsvg)
-        self.ui.menufileexportpng.triggered.connect(self.f_handlers.on_file_exportpng)
-        self.ui.menufileexportexcellon.triggered.connect(self.f_handlers.on_file_exportexcellon)
-        self.ui.menufileexportgerber.triggered.connect(self.f_handlers.on_file_exportgerber)
+        self.ui.menufileimportdxf.triggered.connect(lambda: self.f_handlers.on_file_import_dxf("geometry"))
+        self.ui.menufileimportdxf_as_gerber.triggered.connect(lambda: self.f_handlers.on_file_import_dxf("gerber"))
+        self.ui.menufileimport_hpgl2_as_geo.triggered.connect(lambda: self.f_handlers.on_file_open_hpgl2())
+        self.ui.menufileexportsvg.triggered.connect(self.f_handlers.on_file_export_svg)
+        self.ui.menufileexportpng.triggered.connect(self.f_handlers.on_file_export_png)
+        self.ui.menufileexportexcellon.triggered.connect(self.f_handlers.on_file_export_excellon)
+        self.ui.menufileexportgerber.triggered.connect(self.f_handlers.on_file_export_gerber)
 
-        self.ui.menufileexportdxf.triggered.connect(self.f_handlers.on_file_exportdxf)
+        self.ui.menufileexportdxf.triggered.connect(self.f_handlers.on_file_export_dxf)
 
         self.ui.menufile_print.triggered.connect(lambda: self.f_handlers.on_file_save_objects_pdf(use_thread=True))
 
-        self.ui.menufilesaveproject.triggered.connect(self.f_handlers.on_file_saveproject)
-        self.ui.menufilesaveprojectas.triggered.connect(self.f_handlers.on_file_saveprojectas)
-        # self.ui.menufilesaveprojectcopy.triggered.connect(lambda: self.on_file_saveprojectas(make_copy=True))
-        self.ui.menufilesavedefaults.triggered.connect(self.f_handlers.on_file_savedefaults)
+        self.ui.menufilesaveproject.triggered.connect(self.f_handlers.on_file_save_project)
+        self.ui.menufilesaveprojectas.triggered.connect(self.f_handlers.on_file_save_project_as)
+        # self.ui.menufilesaveprojectcopy.triggered.connect(lambda: self.on_file_save_project_as(make_copy=True))
+        self.ui.menufilesavedefaults.triggered.connect(self.f_handlers.on_file_save_defaults)
 
         self.ui.menufileexportpref.triggered.connect(self.f_handlers.on_export_preferences)
         self.ui.menufileimportpref.triggered.connect(self.f_handlers.on_import_preferences)
@@ -2004,7 +2004,7 @@ class App(QtCore.QObject):
         self.ui.popmenu_new_geo.triggered.connect(lambda: self.app_obj.new_geometry_object())
         self.ui.popmenu_new_grb.triggered.connect(lambda: self.app_obj.new_gerber_object())
         self.ui.popmenu_new_exc.triggered.connect(lambda: self.app_obj.new_excellon_object())
-        self.ui.popmenu_new_prj.triggered.connect(lambda: self.f_handlers.on_file_new_project(silenced=True))
+        self.ui.popmenu_new_prj.triggered.connect(lambda: self.f_handlers.on_file_new_project())
 
         # View
         self.ui.zoomfit.triggered.connect(self.on_zoom_fit)
@@ -2086,10 +2086,10 @@ class App(QtCore.QObject):
 
         # File Toolbar Signals
         # ui.file_new_btn.triggered.connect(self.on_file_new_project)
-        self.ui.file_open_btn.triggered.connect(lambda: self.f_handlers.on_file_openproject())
-        self.ui.file_save_btn.triggered.connect(lambda: self.f_handlers.on_file_saveproject())
-        self.ui.file_open_gerber_btn.triggered.connect(lambda: self.f_handlers.on_fileopengerber())
-        self.ui.file_open_excellon_btn.triggered.connect(lambda: self.f_handlers.on_fileopenexcellon())
+        self.ui.file_open_btn.triggered.connect(lambda: self.f_handlers.on_file_open_project())
+        self.ui.file_save_btn.triggered.connect(lambda: self.f_handlers.on_file_save_project())
+        self.ui.file_open_gerber_btn.triggered.connect(lambda: self.f_handlers.on_file_open_gerber())
+        self.ui.file_open_excellon_btn.triggered.connect(lambda: self.f_handlers.on_file_open_excellon())
 
         # View Toolbar Signals
         self.ui.clear_plot_btn.triggered.connect(self.clear_plots)
@@ -2115,9 +2115,9 @@ class App(QtCore.QObject):
 
         # Scripting Toolbar Signals
         self.ui.shell_btn.triggered.connect(self.ui.toggle_shell_ui)
-        self.ui.new_script_btn.triggered.connect(self.f_handlers.on_filenewscript)
-        self.ui.open_script_btn.triggered.connect(self.f_handlers.on_fileopenscript)
-        self.ui.run_script_btn.triggered.connect(self.f_handlers.on_filerunscript)
+        self.ui.new_script_btn.triggered.connect(self.f_handlers.on_file_new_script)
+        self.ui.open_script_btn.triggered.connect(self.f_handlers.on_file_open_script)
+        self.ui.run_script_btn.triggered.connect(self.f_handlers.on_file_run_cript)
 
         # Tools Toolbar Signals
         try:
@@ -3782,7 +3782,7 @@ class App(QtCore.QObject):
                     self.trayIcon.hide()
                 except Exception:
                     pass
-                self.f_handlers.on_file_saveprojectas(use_thread=True, quit_action=True)
+                self.f_handlers.on_file_save_project_as(use_thread=True, quit_action=True)
             elif response == bt_no:
                 try:
                     self.trayIcon.hide()
@@ -7358,17 +7358,17 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if isinstance(obj, GeometryObject):
-            self.f_handlers.on_file_exportdxf()
+            self.f_handlers.on_file_export_dxf()
         elif isinstance(obj, ExcellonObject):
-            self.f_handlers.on_file_saveexcellon()
+            self.f_handlers.on_file_save_excellon()
         elif isinstance(obj, CNCJobObject):
             obj.on_exportgcode_button_click()
         elif isinstance(obj, GerberObject):
-            self.f_handlers.on_file_savegerber()
+            self.f_handlers.on_file_save_gerber()
         elif isinstance(obj, ScriptObject):
-            self.f_handlers.on_file_savescript()
+            self.f_handlers.on_file_save_script()
         elif isinstance(obj, DocumentObject):
-            self.f_handlers.on_file_savedocument()
+            self.f_handlers.on_file_save_document()
 
     def obj_move(self):
         """
@@ -8488,7 +8488,7 @@ class App(QtCore.QObject):
         """
 
         if self.block_autosave is False and self.should_we_save is True and self.save_in_progress is False:
-            self.f_handlers.on_file_saveproject()
+            self.f_handlers.on_file_save_project()
 
     def save_project_auto_update(self):
         """

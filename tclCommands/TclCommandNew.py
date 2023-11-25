@@ -65,4 +65,4 @@ class TclCommandNew(TclCommand):
                     if args['keep_scripts'].lower() == 'true':
                         keep_scripts = True
 
-        self.app.f_handlers.on_file_new_project(cli=True, reset_tcl=reset_tcl, silenced=True, keep_scripts=keep_scripts)
+        self.app.f_handlers.on_file_new_project(cli=True, reset_tcl=reset_tcl, keep_scripts=keep_scripts)
