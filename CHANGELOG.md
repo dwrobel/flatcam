@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+6.12.2023
+
+- Paint Tool: fixed the calculation of object bounds
+- camlib: updated the method used to calculate the extrapolated lines for the laser_lines method: camlib.fill_with_lines()
+
 25.11.2023
 
 - some names are updated

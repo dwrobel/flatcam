@@ -901,7 +901,7 @@ class ToolPaint(AppTool, Gerber):
                 if db_tool_val['data']['tool_target'] != _('Paint'):
                     continue
 
-                # if we find a tool with the same diameter in the Tools DB just update it's data
+                # if we find a tool with the same diameter in the Tools DB just update its data
                 if truncated_tooldia == db_tooldia:
                     tool_found += 1
                     for d in db_tool_val['data']:
@@ -1529,10 +1529,10 @@ class ToolPaint(AppTool, Gerber):
         # matplotlib_key_flag = False
 
         # events out of the self.app.collection view (it's about Project Tab) are of type int
-        if type(event) is int:
+        if isinstance(event, int):
             key = event
         # events from the GUI are of type QKeyEvent
-        elif type(event) == QtGui.QKeyEvent:
+        elif isinstance(event, QtGui.QKeyEvent):
             key = event.key()
         elif isinstance(event, mpl_key_event):  # MatPlotLib key events are trickier to interpret than the rest
             # matplotlib_key_flag = True
@@ -1791,12 +1791,13 @@ class ToolPaint(AppTool, Gerber):
             # add the lines from copper features to storage but first try to make as few lines as possible
             # by trying to fuse them
             lines_union = linemerge(unary_union(copper_lines_list))
+            lines_geoms = lines_union.geoms if isinstance(lines_union, MultiLineString) else [lines_union]
             try:
-                for lin in lines_union:
+                for lin in lines_geoms:
                     if lin:
                         cpoly.insert(lin)
             except TypeError:
-                cpoly.insert(lines_union)
+                cpoly.insert(lines_geoms)
 
         elif paint_method == 4:  # _("Combo")
             try:
@@ -2032,7 +2033,7 @@ class ToolPaint(AppTool, Gerber):
 
             try:
                 if isinstance(geo_obj.solid_geometry, list):
-                    a, b, c, d = MultiPolygon(geo_obj.solid_geometry).bounds
+                    a, b, c, d = unary_union(geo_obj.solid_geometry).bounds
                 else:
                     a, b, c, d = geo_obj.solid_geometry.bounds
 
@@ -2254,7 +2255,7 @@ class ToolPaint(AppTool, Gerber):
                 return 'fail'
             try:
                 if isinstance(geo_obj.solid_geometry, list):
-                    a, b, c, d = MultiPolygon(geo_obj.solid_geometry).bounds
+                    a, b, c, d = unary_union(geo_obj.solid_geometry).bounds
                 else:
                     a, b, c, d = geo_obj.solid_geometry.bounds
 
@@ -2614,6 +2615,7 @@ class ToolPaint(AppTool, Gerber):
                              plot=plot,
                              run_threaded=run_threaded)
 
+    # noinspection PyUnresolvedReferences
     def ui_connect(self):
         self.ui.tools_table.itemChanged.connect(self.on_tool_edit)
 
@@ -2750,7 +2752,7 @@ class ToolPaint(AppTool, Gerber):
                     maxy = max(maxy, maxy_)
                 return minx, miny, maxx, maxy
             else:
-                # it's a Shapely object, return it's bounds
+                # it's a Shapely object, return its bounds
                 return o.bounds
 
         return bounds_rec(geometry)
@@ -3331,7 +3333,7 @@ class PaintUI:
         )
         self.tools_box.addWidget(self.reset_button)
 
-        # #################################### FINSIHED GUI ###########################
+        # #################################### FINISHED GUI ###########################
         # #############################################################################
     
     def on_rest_machining_check(self, state):

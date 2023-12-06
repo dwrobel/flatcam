@@ -30,6 +30,8 @@ from lxml import etree as ET
 from io import StringIO
 import ezdxf
 
+import math
+
 # See: http://toblerity.org/shapely/manual.html
 from shapely import Polygon, Point, LinearRing, MultiPoint, MultiLineString, MultiPolygon, LineString
 
@@ -45,7 +47,7 @@ from shapely import union, difference
 # ---------------------------------------
 # NEEDED for Legacy mode
 # Used for solid polygons in Matplotlib
-from descartes.patch import PolygonPatch
+from descartes.patch import PolygonPatch    # noqa
 # ---------------------------------------
 
 import logging
@@ -60,8 +62,8 @@ HAS_ORTOOLS = True
 
 if platform.architecture()[0] == '64bit':
     try:
-        from ortools.constraint_solver import pywrapcp
-        from ortools.constraint_solver import routing_enums_pb2
+        from ortools.constraint_solver import pywrapcp      # noqa
+        from ortools.constraint_solver import routing_enums_pb2     # noqa
     except ModuleNotFoundError:
         HAS_ORTOOLS = False
 
@@ -98,9 +100,9 @@ class ApertureMacro:
     # ## Regular expressions
     am1_re = re.compile(r'^%AM([^\*]+)\*(.+)?(%)?$')
     am2_re = re.compile(r'(.*)%$')
-    amcomm_re = re.compile(r'^0(.*)')
-    amprim_re = re.compile(r'^[1-9].*')
-    amvar_re = re.compile(r'^\$([0-9a-zA-z]+)=(.*)')
+    am_comm_re = re.compile(r'^0(.*)')
+    am_prim_re = re.compile(r'^[1-9].*')
+    am_var_re = re.compile(r'^\$([0-9a-zA-z]+)=(.*)')
 
     def __init__(self, name=None):
         self.name = name
@@ -109,7 +111,7 @@ class ApertureMacro:
         # ## These below are recomputed for every aperture
         # ## definition, in other words, are temporary variables.
         self.primitives = []
-        self.locvars = {}
+        self.loc_vars = {}
         self.geometry = None
 
     def to_dict(self):
@@ -156,7 +158,7 @@ class ApertureMacro:
         # ### Every part in the macro ####
         for part in parts:
             # ## Comments. Ignored.
-            match = ApertureMacro.amcomm_re.search(part)
+            match = ApertureMacro.am_comm_re.search(part)
             if match:
                 continue
 
@@ -165,16 +167,16 @@ class ApertureMacro:
             # numerical constant or defined in terms of previously define
             # variables, which can be defined locally or in an aperture
             # definition. All replacements occur here.
-            match = ApertureMacro.amvar_re.search(part)
+            match = ApertureMacro.am_var_re.search(part)
             if match:
                 var = match.group(1)
                 val = match.group(2)
 
                 # Replace variables in value
-                for v in self.locvars:
+                for v in self.loc_vars:
                     # replaced the following line with the next to fix Mentor custom apertures not parsed OK
                     # val = re.sub((r'\$'+str(v)+r'(?![0-9a-zA-Z])'), str(self.locvars[v]), val)
-                    val = val.replace('$' + str(v), str(self.locvars[v]))
+                    val = val.replace('$' + str(v), str(self.loc_vars[v]))
 
                 # Make all others 0
                 val = re.sub(r'\$[0-9a-zA-Z](?![0-9a-zA-Z])', "0", val)
@@ -182,7 +184,7 @@ class ApertureMacro:
                 val = re.sub(r'[xX]', "*", val)
 
                 # Eval() and store.
-                self.locvars[var] = eval(val)
+                self.loc_vars[var] = eval(val)
                 continue
 
             # ## Primitives
@@ -190,11 +192,11 @@ class ApertureMacro:
             # rest depend on the primitive. All are strings representing a
             # number and may contain variable definition. The values of these
             # variables are defined in an aperture definition.
-            match = ApertureMacro.amprim_re.search(part)
+            match = ApertureMacro.am_prim_re.search(part)
             if match:
                 # ## Replace all variables
-                for v in self.locvars:
-                    part = re.sub(r'\$' + str(v) + r'(?![0-9a-zA-Z])', str(self.locvars[v]), part)
+                for v in self.loc_vars:
+                    part = re.sub(r'\$' + str(v) + r'(?![0-9a-zA-Z])', str(self.loc_vars[v]), part)
                     # Sometimes the 'X' char is used instead of * for multiplication
                     part = re.sub(r'[Xx]', "*", part)
 
@@ -202,20 +204,6 @@ class ApertureMacro:
                 part = re.sub(r'\$[0-9a-zA-Z](?![0-9a-zA-Z])', "0", part)
                 self.primitives.append([eval(x) for x in part.split(",")])
 
-                # for v in self.locvars:
-                #     # replaced the following line with the next to fix Mentor custom apertures not parsed OK
-                #     # part = re.sub(r'\$' + str(v) + r'(?![0-9a-zA-Z])', str(self.locvars[v]), part)
-                #     part = part.replace('$' + str(v), str(self.locvars[v]))
-
-                # # Make all others 0
-                # part = re.sub(r'\$[0-9a-zA-Z](?![0-9a-zA-Z])', "0", part)
-                #
-                # # Change x with *
-                # part = re.sub(r'[xX]', "*", part)
-                #
-                # # ## Store
-                # elements = part.split(",")
-                # self.primitives.append([eval(x) for x in elements])
                 continue
 
             log.warning("Unknown syntax of aperture macro part: %s" % str(part))
@@ -265,7 +253,7 @@ class ApertureMacro:
         return {"pol": int(pol), "geometry": Point(x, y).buffer(dia / 2)}
 
     @staticmethod
-    def make_vectorline(mods):
+    def make_vector_line(mods):
         """
 
         :param mods: (Exposure 0/1, Line width >= 0, X-start, Y-start, X-end, Y-end,
@@ -289,7 +277,7 @@ class ApertureMacro:
         return {"pol": int(pol), "geometry": box_rotated}
 
     @staticmethod
-    def make_centerline(mods):
+    def make_center_line(mods):
         """
 
         :param mods: (Exposure 0/1, width >=0, height >=0, x-center, y-center,
@@ -312,7 +300,7 @@ class ApertureMacro:
         return {"pol": int(pol), "geometry": box_rotated}
 
     @staticmethod
-    def make_lowerleftline(mods):
+    def make_lower_left_line(mods):
         """
 
         :param mods: (exposure 0/1, width >=0, height >=0, x-lowerleft, y-lowerleft,
@@ -498,10 +486,10 @@ class ApertureMacro:
         # ## Primitive makers
         makers = {
             "1": ApertureMacro.make_circle,
-            "2": ApertureMacro.make_vectorline,
-            "20": ApertureMacro.make_vectorline,
-            "21": ApertureMacro.make_centerline,
-            "22": ApertureMacro.make_lowerleftline,
+            "2": ApertureMacro.make_vector_line,
+            "20": ApertureMacro.make_vector_line,
+            "21": ApertureMacro.make_center_line,
+            "22": ApertureMacro.make_lower_left_line,
             "4": ApertureMacro.make_outline,
             "5": ApertureMacro.make_polygon,
             "6": ApertureMacro.make_moire,
@@ -511,9 +499,9 @@ class ApertureMacro:
         # ## Store modifiers as local variables
         modifiers = modifiers or []
         modifiers = [float(m) for m in modifiers]
-        self.locvars = {}
+        self.loc_vars = {}
         for i in range(0, len(modifiers)):
-            self.locvars[str(i + 1)] = modifiers[i]
+            self.loc_vars[str(i + 1)] = modifiers[i]
 
         # ## Parse
         self.primitives = []  # Cleanup
@@ -998,7 +986,7 @@ class Geometry(object):
 
         # ## Not iterable, do the actual indexing and add.
         except TypeError:
-            if pathonly and type(geometry) == Polygon:
+            if pathonly and isinstance(geometry, Polygon):
                 ext_geo = geometry.exterior
                 ints_geo = geometry.interiors
                 if ext_geo is not None and not ext_geo.is_empty:
@@ -1034,7 +1022,7 @@ class Geometry(object):
                     flat_geo_ints += ints
         # ## Not iterable, do the actual indexing and add.
         except TypeError:
-            if type(geometry) == Polygon:
+            if isinstance(geometry, Polygon):
                 ext_geo = geometry.exterior
                 ints_geo = geometry.interiors
                 if ext_geo is not None and not ext_geo.is_empty:
@@ -1827,18 +1815,38 @@ class Geometry(object):
                 "camlib.Geometry.fill_with_lines() --> Not a LineString/MultiLineString but %s" % str(type(line)))
             return None
 
-        # ## The toolpaths
+        # The toolpaths
         # Index first and last points in paths
         def get_pts(o):
             return [o.coords[0], o.coords[-1]]
 
-        # get a line that extends the 'line' LineString toward ourside
-        def getExtrapoledLine(p1, p2):
-            'Creates a line extrapoled in p1->p2 direction'
-            EXTRAPOL_RATIO = 10
+        def get_extrapolated_line(p1, p2):
+            """
+            Creates a line extrapolated in p1->p2 direction.
+            Get a line that extends the 'line' LineString toward our side.
+            """
+            EXTRAPOLATION_RATIO = 10
             a = p1
-            b = (p1[0] + EXTRAPOL_RATIO * (p2[0] - p1[0]), p1[1] + EXTRAPOL_RATIO * (p2[1] - p1[1]))
+            b = (p1[0] + EXTRAPOLATION_RATIO * (p2[0] - p1[0]), p1[1] + EXTRAPOLATION_RATIO * (p2[1] - p1[1]))
             return [a, b]
+
+        def extend_line(p1: tuple, p2: tuple, extension_distance: float) -> list:
+            # Compute the vector represented by the line
+            vector = (p2[0] - p1[0], p2[1] - p1[1])
+
+            # Compute the length of the vector
+            length = math.sqrt(vector[0] ** 2 + vector[1] ** 2)
+
+            # Normalize the vector
+            normalized_vector = (vector[0] / length, vector[1] / length)
+
+            # Compute extended points
+            extended_point1 = (
+            p1[0] - extension_distance * normalized_vector[0], p1[1] - extension_distance * normalized_vector[1])
+            extended_point2 = (
+            p2[0] + extension_distance * normalized_vector[0], p2[1] + extension_distance * normalized_vector[1])
+
+            return [extended_point1, extended_point2]
 
         geoms = AppRTreeStorage()
         geoms.get_points = get_pts
@@ -1846,32 +1854,43 @@ class Geometry(object):
         lines_trimmed = []
 
         polygon = line.buffer(aperture_size / 2.0, int(steps_per_circle))
-        line_coords = list(line.coords)
+        if isinstance(line, LineString):
+            line_coords = list(line.coords)
+        else:
+            line_coords = []
+            for l in line.geoms:
+                line_coords += list(l.coords)
 
-        # #### the line (as parameter) needs to be extended by half of tool diameter such that the cleared area will
-        # include also the rounded part of the trace if the trace diameter is much higher than the clearing diameter
-        first_line_coords = getExtrapoledLine(line_coords[1], line_coords[0])
-        second_line_coords = getExtrapoledLine(line_coords[-2], line_coords[-1])
+        # # #### the line (as parameter) needs to be extended by half of tool diameter such that the cleared area will
+        # # include also the rounded part of the trace if the trace diameter is much higher than the clearing diameter
+        # first_line_coords = get_extrapolated_line(line_coords[1], line_coords[0])
+        # second_line_coords = get_extrapolated_line(line_coords[-2], line_coords[-1])
+        #
+        # sum_coords = first_line_coords + line_coords + second_line_coords
+        # sum_set = set(tuple(x) for x in sum_coords)
+        # simplified_coords = [x for x in sum_set]
+        # combo_line = LineString(simplified_coords)
+        # prepared_line = combo_line.intersection(polygon)
+        # if isinstance(prepared_line, MultiLineString):
+        #     prepared_line = linemerge(prepared_line)
+        #     if isinstance(prepared_line, MultiLineString):
+        #         prepared_line = unary_union(prepared_line).simplify(0)
+        #         if isinstance(prepared_line, MultiLineString):
+        #             t_coords = []
+        #             for m_l in prepared_line.geoms:
+        #                 t_coords += list(m_l.coords)
+        #             sum_set = set(tuple(x) for x in t_coords)
+        #             simplified_coords = [x for x in sum_set]
+        #             try:
+        #                 prepared_line = LineString(simplified_coords)
+        #             except Exception as err:
+        #                 print(str(err))
 
-        sum_coords = first_line_coords + line_coords + second_line_coords
-        sum_set = set(tuple(x) for x in sum_coords)
-        simplified_coords = [x for x in sum_set]
-        combo_line = LineString(simplified_coords)
-        prepared_line = combo_line.intersection(polygon)
-        if isinstance(prepared_line, MultiLineString):
-            prepared_line = linemerge(prepared_line)
-            if isinstance(prepared_line, MultiLineString):
-                prepared_line = unary_union(prepared_line).simplify(0)
-                if isinstance(prepared_line, MultiLineString):
-                    t_coords = []
-                    for m_l in prepared_line.geoms:
-                        t_coords += list(m_l.coords)
-                    sum_set = set(tuple(x) for x in t_coords)
-                    simplified_coords = [x for x in sum_set]
-                    try:
-                        prepared_line = LineString(simplified_coords)
-                    except Exception as err:
-                        print(str(err))
+        prepared_line_coords = extend_line(line_coords[0], line_coords[-1], extension_distance=1.5 * tooldia)
+        prepared_line = LineString(prepared_line_coords)
+
+        if isinstance(prepared_line, LineString):
+            prepared_line = prepared_line.simplify(0)
         # ##########################################################################
         try:
             margin_poly = polygon.buffer(-tooldia / 2.0, int(steps_per_circle))
@@ -1893,11 +1912,16 @@ class Geometry(object):
 
                 new_line = prepared_line.parallel_offset(distance=delta, side='left', resolution=int(steps_per_circle))
                 new_line = new_line.intersection(margin_poly)
-                lines_trimmed.append(new_line)
+                lines_trimmed.append(new_line) if not new_line.is_empty else None
+
+                delta += tooldia * (1 - overlap)
+                if prog_plot:
+                    self.plot_temp_shapes(new_line)
+                    self.temp_shapes.redraw()
 
                 new_line = prepared_line.parallel_offset(distance=delta, side='right', resolution=int(steps_per_circle))
                 new_line = new_line.intersection(margin_poly)
-                lines_trimmed.append(new_line)
+                lines_trimmed.append(new_line) if not new_line.is_empty else None
 
                 delta += tooldia * (1 - overlap)
                 if prog_plot:
@@ -1913,38 +1937,41 @@ class Geometry(object):
             self.app.log.error('camlib.Geometry.fill_with_lines() Processing poly --> %s' % str(e))
             return None
 
-        lines_geometry = new_line.geoms if isinstance(new_line, MultiLineString) else new_line
-        try:
-            for ll in lines_geometry:
-                lines_trimmed.append(ll)
+        if new_line and not new_line.is_empty:
+            lines_geometry = new_line.geoms if isinstance(new_line, MultiLineString) else new_line
+            try:
+                for ll in lines_geometry:
+                    lines_trimmed.append(ll)
+                    if prog_plot:
+                        self.plot_temp_shapes(ll)
+            except TypeError:
+                lines_trimmed.append(lines_geometry)
                 if prog_plot:
-                    self.plot_temp_shapes(ll)
-        except TypeError:
-            lines_trimmed.append(lines_geometry)
-            if prog_plot:
-                self.plot_temp_shapes(lines_geometry)
+                    self.plot_temp_shapes(lines_geometry)
 
         new_line = prepared_line.parallel_offset(distance=delta, side='right', resolution=int(steps_per_circle))
         new_line = new_line.intersection(margin_poly)
 
-        lines_geometry = new_line.geoms if isinstance(new_line, MultiLineString) else new_line
-        try:
-            for ll in lines_geometry:
-                lines_trimmed.append(ll)
+        if new_line and not new_line.is_empty:
+            lines_geometry = new_line.geoms if isinstance(new_line, MultiLineString) else new_line
+            try:
+                for ll in lines_geometry:
+                    lines_trimmed.append(ll)
+                    if prog_plot:
+                        self.plot_temp_shapes(ll)
+            except TypeError:
+                lines_trimmed.append(lines_geometry)
                 if prog_plot:
-                    self.plot_temp_shapes(ll)
-        except TypeError:
-            lines_trimmed.append(lines_geometry)
-            if prog_plot:
-                self.plot_temp_shapes(lines_geometry)
+                    self.plot_temp_shapes(lines_geometry)
 
-        if prog_plot:
-            self.temp_shapes.redraw()
+            if prog_plot:
+                self.temp_shapes.redraw()
 
         lines_trimmed = unary_union(lines_trimmed)
 
         # Add lines to storage
         lines_geometry = lines_trimmed.geoms if isinstance(lines_trimmed, MultiLineString) else lines_trimmed
+
         try:
             for line_g in lines_geometry:
                 if isinstance(line_g, LineString) or isinstance(line_g, LinearRing):
@@ -1953,7 +1980,7 @@ class Geometry(object):
                     self.app.log.debug("camlib.Geometry.fill_with_lines(). Not a line: %s" % str(type(line_g)))
         except TypeError:
             # in case lines_trimmed are not iterable (Linestring, LinearRing)
-            geoms.insert(lines_geometry)
+            geoms.insert(lines_geometry) if lines_geometry and not lines_geometry.is_empty else None
 
         # Add margin (contour) to storage
         if contour:
@@ -2039,7 +2066,7 @@ class Geometry(object):
         # 10 times the tool diameter
         max_walk = max_walk or 10 * tooldia
 
-        # Assuming geolist is a flat list of flat elements
+        # Assuming geo list is a flat list of flat elements
 
         # ## Index first and last points in paths
         def get_pts(o):
@@ -2167,7 +2194,7 @@ class Geometry(object):
 
                 # If left touches geo, remove left from original
                 # storage and append to geo.
-                if type(left) == LineString:
+                if isinstance(left, LineString):
                     if left.coords[0] == geo.coords[0]:
                         storage.remove(left)
                         # geo.coords = list(geo.coords)[::-1] + list(left.coords)   # Shapely 2.0
@@ -2196,7 +2223,7 @@ class Geometry(object):
 
                 # If right touches geo, remove left from original
                 # storage and append to geo.
-                if type(right) == LineString:
+                if isinstance(right, LineString):
                     if right.coords[0] == geo.coords[-1]:
                         storage.remove(right)
                         # geo.coords = list(geo.coords) + list(right.coords)  # Shapely 2.0
@@ -2226,7 +2253,7 @@ class Geometry(object):
                 # with right as geo.
                 storage.remove(right)
 
-                if type(right) == LinearRing:
+                if isinstance(right, LinearRing):
                     optimized_geometry.insert(right)
                 else:
                     # Cannot extend geo any further. Put it away.
@@ -4813,7 +4840,6 @@ class CNCjob(Geometry):
                 # just a hack because I am lazy and I don't want to fix the Tcl command drillcncjob which needs this
                 self.tools[str(one_tool)]['gcode'] = gcode
 
-
             # add the end_gcode
             end_gcode = self.doformat(p.spindle_stop_code)
             end_gcode += self.doformat(p.end_code, x=0, y=0)
@@ -4845,7 +4871,7 @@ class CNCjob(Geometry):
         # #############################################################################################################
         measured_distance += abs(distance_euclidian(self.oldx, self.oldy, 0, 0))
         self.app.log.debug("The total travel distance including travel to end position is: %s" %
-                  str(measured_distance) + '\n')
+                           str(measured_distance) + '\n')
         self.travel_distance = measured_distance
 
         # I use the value of self.feedrate_rapid for the feadrate in case of the measure_lift_distance and for
@@ -5784,7 +5810,7 @@ class CNCjob(Geometry):
             first_x = path[0][0] - old_point[0]
             first_y = path[0][1] - old_point[1]
 
-        if type(geometry) == LineString or type(geometry) == LinearRing:
+        if isinstance(geometry, LineString) or isinstance(geometry, LinearRing):
             # Move fast to 1st point
             gcode += self.doformat(p.rapid_code, x=first_x, y=first_y)  # Move to first point
 
@@ -5821,7 +5847,7 @@ class CNCjob(Geometry):
             gcode += self.doformat(p.dwell_rev_code)
             gcode += self.doformat(p.z_feedrate_code)
             gcode += self.doformat(p.lift_code)
-        elif type(geometry) == Point:
+        elif isinstance(geometry, Point):
             gcode += self.doformat(p.linear_code, x=first_x, y=first_y)  # Move to first point
 
             gcode += self.doformat(p.feedrate_z_dispense_code)
@@ -5862,7 +5888,7 @@ class CNCjob(Geometry):
         """
         # p = postproc
 
-        if type(geometry) == LineString or type(geometry) == LinearRing:
+        if isinstance(geometry, LineString) or isinstance(geometry, LinearRing):
             if extracut is False or not geometry.is_ring:
                 gcode_single_pass = self.linear2gcode(geometry, cdia, z_move=z_move, tolerance=tolerance,
                                                       old_point=old_point)
@@ -5870,7 +5896,7 @@ class CNCjob(Geometry):
                 gcode_single_pass = self.linear2gcode_extra(geometry, cdia, extracut_length, tolerance=tolerance,
                                                             z_move=z_move, old_point=old_point)
 
-        elif type(geometry) == Point:
+        elif isinstance(geometry, Point):
             gcode_single_pass = self.point2gcode(geometry, cdia, z_move=z_move, old_point=old_point)
         else:
             self.app.log.warning("G-code generation not implemented for %s" % (str(type(geometry))))
@@ -5928,7 +5954,7 @@ class CNCjob(Geometry):
             # Note: linear2gcode() will use G00 to move to the first point in the path, but it should be already
             # at the first point if the tool is down (in the material).  So, an extra G00 should show up but
             # is inconsequential.
-            if type(geometry) == LineString or type(geometry) == LinearRing:
+            if isinstance(geometry, LineString) or isinstance(geometry, LinearRing):
                 if extracut is False or not geometry.is_ring:
                     gcode_multi_pass += self.linear2gcode(geometry, cdia, tolerance=tolerance, z_cut=depth, up=False,
                                                           z_move=z_move, old_point=old_point)
@@ -5938,20 +5964,20 @@ class CNCjob(Geometry):
                                                                 old_point=old_point)
 
             # Ignore multi-pass for points.
-            elif type(geometry) == Point:
+            elif isinstance(geometry, Point):
                 gcode_multi_pass += self.point2gcode(geometry, cdia, z_move=z_move, old_point=old_point)
                 break  # Ignoring ...
             else:
                 self.app.log.warning("G-code generation not implemented for %s" % (str(type(geometry))))
 
-            # Reverse coordinates if not a loop so we can continue cutting without returning to the beginning.
-            if type(geometry) == LineString:
+            # Reverse coordinates if not a loop, so we can continue cutting without returning to the beginning.
+            if isinstance(geometry, LineString):
                 geometry = LineString(list(geometry.coords)[::-1])
                 reverse = True
 
         # If geometry is reversed, revert.
         if reverse:
-            if type(geometry) == LineString:
+            if isinstance(geometry, LineString):
                 geometry = LineString(list(geometry.coords)[::-1])
 
         # Lift the tool
@@ -5999,7 +6025,7 @@ class CNCjob(Geometry):
 
         elif 'laser' in self.pp_excellon_name.lower() or 'laser' in self.pp_geometry_name.lower() or \
                 (self.pp_solderpaste_name is not None and 'paste' in self.pp_solderpaste_name.lower()):
-            match_lsr = re.search(r"X([\+-]?\d+.[\+-]?\d+)\s*Y([\+-]?\d+.[\+-]?\d+)", gline)
+            match_lsr = re.search(r"X([+-]?\d+.[+-]?\d+)\s*Y([+-]?\d+.[+-]?\d+)", gline)
             if match_lsr:
                 command['X'] = float(match_lsr.group(1).replace(" ", ""))
                 command['Y'] = float(match_lsr.group(2).replace(" ", ""))
@@ -7061,12 +7087,6 @@ class CNCjob(Geometry):
             extra_line = substring(target_linear, 0, (extracut_length * 0.5))
             extra_path = list(extra_line.coords)
 
-            # start cutting the extra line
-            last_pt = extra_path[0]
-            for pt in extra_path[1:]:
-                gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1])
-                last_pt = pt
-
             # ---------------------------------------------
             # back to original start point, cutting
             # ---------------------------------------------
@@ -7078,24 +7098,6 @@ class CNCjob(Geometry):
             for pt in extra_path[1:]:
                 gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1])
                 last_pt = pt
-
-        # if extracut_length == 0.0:
-        #     gcode += self.doformat(p.linear_code, x=path[1][0], y=path[1][1])
-        #     last_pt = path[1]
-        # else:
-        #     if abs(distance(path[1], path[0])) > extracut_length:
-        #         i_point = LineString([path[0], path[1]]).interpolate(extracut_length)
-        #         gcode += self.doformat(p.linear_code, x=i_point.x, y=i_point.y)
-        #         last_pt = (i_point.x, i_point.y)
-        #     else:
-        #         last_pt = path[0]
-        #         for pt in path[1:]:
-        #             extracut_distance = abs(distance(pt, last_pt))
-        #             if extracut_distance <= extracut_length:
-        #                 gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1])
-        #                 last_pt = pt
-        #             else:
-        #                 break
 
         # Up to travelling height.
         if up:
@@ -8304,7 +8306,7 @@ def three_point_circle(p1, p2, p3):
     # Params
     try:
         T = solve(np.transpose(np.array([-b1, b2])), a1 - a2)
-    except Exception as e:
+    except Exception:
         # log.error("camlib.three_point_circle() --> %s" % str(e))
         return
 
