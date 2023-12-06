@@ -387,6 +387,19 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         adv_grid.addWidget(self.las_min_pwr_label, 14, 0)
         adv_grid.addWidget(self.las_min_pwr_entry, 14, 1)
 
+        # Laser Turn ON Code
+        self.laser_turn_on_lbl = FCLabel('%s:' % _('Turn ON Code'))
+        self.laser_turn_on_lbl.setToolTip(
+            _("The Gode that will be executed to turn the laser on.")
+        )
+
+        self.laser_turn_on_combo = FCComboBox()
+        self.laser_turn_on_combo.addItems(["M3", "M4"])
+        self.laser_turn_on_combo.setObjectName("e_laser_turn_on")
+
+        adv_grid.addWidget(self.laser_turn_on_lbl, 16, 0)
+        adv_grid.addWidget(self.laser_turn_on_combo, 16, 1)
+
         # Fast Plunge
         self.fplunge_cb = FCCheckBox('%s' % _('Fast Plunge'))
         self.fplunge_cb.setToolTip(
@@ -395,7 +408,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
               "meaning the fastest speed available.\n"
               "WARNING: the move is done at Toolchange X,Y coords.")
         )
-        adv_grid.addWidget(self.fplunge_cb, 16, 0)
+        adv_grid.addWidget(self.fplunge_cb, 18, 0)
 
         # Fast retract
         self.fretract_cb = FCCheckBox('%s' % _('Fast Retract'))
@@ -408,7 +421,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
               "(travel height) is done as fast as possible (G0) in one move.")
         )
 
-        adv_grid.addWidget(self.fretract_cb, 16, 1, 1, 2)
+        adv_grid.addWidget(self.fretract_cb, 18, 1, 1, 2)
 
         # separator_line = QtWidgets.QFrame()
         # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)

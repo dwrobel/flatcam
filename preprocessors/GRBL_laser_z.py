@@ -80,15 +80,15 @@ class GRBL_laser_z(PreProc):
     def lift_code(self, p):
         if float(p.laser_min_power) > 0.0:
             # the formatted text: laser OFF must always be like this else the plotting will not be done correctly
-            return 'M3 S%s (laser OFF)\n' % str(p.laser_min_power)
+            return '%s S%s (laser OFF)\n' % (str(p.laser_on_code), str(p.laser_min_power))
         else:
             return 'M5'
 
     def down_code(self, p):
         if p.spindlespeed:
-            return '%s S%s' % ('M3', str(p.spindlespeed))
+            return '%s S%s' % (str(p.laser_on_code), str(p.spindlespeed))
         else:
-            return 'M3'
+            return str(p.laser_on_code)
 
     def toolchange_code(self, p):
         return 'G0 Z' + self.coordinate_format % (p.coords_decimals, p.z_move)
@@ -135,9 +135,9 @@ class GRBL_laser_z(PreProc):
 
     def spindle_code(self, p):
         if p.spindlespeed:
-            return '%s S%s' % ('M3', str(p.spindlespeed))
+            return '%s S%s' % (str(p.laser_on_code), str(p.spindlespeed))
         else:
-            return 'M3'
+            return str(p.laser_on_code)
 
     def dwell_code(self, p):
         return ''

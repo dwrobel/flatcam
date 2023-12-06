@@ -2745,12 +2745,12 @@ class CNCjob(Geometry):
                  z_cut=-0.002, z_move=0.1,
                  feedrate=3.0, feedrate_z=3.0, feedrate_rapid=3.0, feedrate_probe=3.0,
                  pp_geometry_name='default', pp_excellon_name='default',
-                 depthpercut=0.1, z_pdepth=-0.02,
+                 depthpercut=0.1, z_p_depth=-0.02,
                  spindlespeed=None, spindledir='CW', dwell=True, dwelltime=1000,
                  toolchangez=0.787402, toolchange_xy='0.0,0.0',
                  endz=2.0, endxy='',
-                 segx=None,
-                 segy=None,
+                 seg_x=None,
+                 seg_y=None,
                  steps_per_circle=None):
 
         self.decimals = self.app.decimals
@@ -2820,7 +2820,7 @@ class CNCjob(Geometry):
         self.f_retract = None
 
         # how much depth the probe can probe before error
-        self.z_pdepth = z_pdepth if z_pdepth else None
+        self.z_p_depth = z_p_depth if z_p_depth else None
 
         # the feedrate(speed) with which the probel travel while probing
         self.feedrate_probe = feedrate_probe if feedrate_probe else None
@@ -2830,10 +2830,11 @@ class CNCjob(Geometry):
         self.dwell = dwell
         self.dwelltime = dwelltime
         self.laser_min_power = 0.0
+        self.laser_on_code = "M03"
 
         # For Autolevelling
-        self.segx = float(segx) if segx is not None else 0.0
-        self.segy = float(segy) if segy is not None else 0.0
+        self.seg_x = float(seg_x) if seg_x is not None else 0.0
+        self.seg_y = float(seg_y) if seg_y is not None else 0.0
         # tells if the generated Gcode is segmented for autolevelling
         self.is_segmented_gcode = False
 
@@ -3316,7 +3317,7 @@ class CNCjob(Geometry):
         # detect if GCode is segmented for autolevelling or not
         # it does not matter for the Excellon codes because we are not going to autolevel GCode out of Excellon
         # but it is here for uniformity between the Geometry and Excellon objects
-        if self.segx > 0 and self.segy > 0 and self.is_segmented_gcode is False:
+        if self.seg_x > 0 and self.seg_y > 0 and self.is_segmented_gcode is False:
             self.is_segmented_gcode = True
 
         self.exc_tools = deepcopy(tools)
@@ -3387,6 +3388,7 @@ class CNCjob(Geometry):
         self.spindledir = tool_dict['tools_drill_spindledir']
 
         self.laser_min_power = tool_dict['tools_drill_min_power']
+        self.laser_on_code = tool_dict['tools_drill_laser_on']
 
         self.tooldia = tools[tool]["tooldia"]
         self.postdata['toolC'] = tools[tool]["tooldia"]
@@ -3441,7 +3443,7 @@ class CNCjob(Geometry):
             self.xy_end = [0, 0]
 
         # Probe parameters
-        self.z_pdepth = tool_dict["tools_drill_z_pdepth"]
+        self.z_p_depth = tool_dict["tools_drill_z_p_depth"]
         self.feedrate_probe = tool_dict["tools_drill_feedrate_probe"]
         # #########################################################################################################
         # #########################################################################################################
@@ -3536,7 +3538,7 @@ class CNCjob(Geometry):
 
         self.coordinates_type = self.app.options["cncjob_coords_type"]
         if self.coordinates_type == "G90":
-            # Drillling! for Absolute coordinates type G90
+            # Drilling! for Absolute coordinates type G90
             # variables to display the percentage of work done
             geo_len = len(optimized_path)
 
@@ -3859,6 +3861,8 @@ class CNCjob(Geometry):
         except KeyError:
             self.laser_min_power = 0.0
 
+        self.laser_on_code = tool_dict['tools_mill_laser_on']
+
         try:
             self.spindlespeed = float(tool_dict['tools_mill_spindlespeed'])
         except TypeError:
@@ -3926,7 +3930,7 @@ class CNCjob(Geometry):
         self.extracut_length = tool_dict['tools_mill_extracut_length']
 
         # Probe parameters
-        # self.z_pdepth = tool_dict["tools_drill_z_pdepth"]
+        # self.z_p_depth = tool_dict["tools_drill_z_p_depth"]
         # self.feedrate_probe = tool_dict["tools_drill_feedrate_probe"]
 
         # #########################################################################################################
@@ -5225,7 +5229,9 @@ class CNCjob(Geometry):
 
     def generate_from_geometry_2(self, geo_obj, append=True, tooldia=None, offset=0.0, tolerance=0, z_cut=None,
                                  z_move=None, feedrate=None, feedrate_z=None, feedrate_rapid=None, spindlespeed=None,
-                                 spindledir='CW', dwell=False, dwelltime=None, laser_min_power=0.0,
+                                 spindledir='CW', dwell=False, dwelltime=None,
+                                 laser_min_power=0.0,
+                                 laser_on_code="M03",
                                  multidepth=False, depthpercut=None,
                                  toolchange=False, toolchangez=None, toolchangexy="0.0, 0.0", extracut=False,
                                  extracut_length=None, startz=None, endz=None, endxy='', pp_geometry_name=None,
@@ -5394,6 +5400,7 @@ class CNCjob(Geometry):
         self.dwelltime = float(dwelltime) if dwelltime is not None else self.app.options["tools_mill_dwelltime"]
 
         self.laser_min_power = int(laser_min_power)
+        self.laser_on_code = str(laser_on_code)
 
         self.startz = float(startz) if startz is not None and startz != '' else self.app.options["tools_mill_startz"]
 
@@ -5672,7 +5679,7 @@ class CNCjob(Geometry):
 
         return self.gcode, start_gcode
 
-    def generate_gcode_from_solderpaste_geo(self, is_first=False, **kwargs):
+    def generate_gcode_from_solder_paste_geo(self, is_first=False, **kwargs):
         """
                Algorithm to generate from multitool Geometry.
 
@@ -6662,7 +6669,7 @@ class CNCjob(Geometry):
 
         if len(coords) < 2:
             return list(coords)
-        if self.segx <= 0 and self.segy <= 0:
+        if self.seg_x <= 0 and self.seg_y <= 0:
             return list(coords)
 
         # flag that the generated gcode was segmented for autolevelling
@@ -6695,11 +6702,11 @@ class CNCjob(Geometry):
         # recursively breaks down a given line until it is within the
         # required step size
         def linebreak(line):
-            pt_new = linebreak_single(line, 0, self.segx)
+            pt_new = linebreak_single(line, 0, self.seg_x)
             if pt_new is None:
-                pt_new2 = linebreak_single(line, 1, self.segy)
+                pt_new2 = linebreak_single(line, 1, self.seg_y)
             else:
-                pt_new2 = linebreak_single((line[0], pt_new), 1, self.segy)
+                pt_new2 = linebreak_single((line[0], pt_new), 1, self.seg_y)
             if pt_new2 is not None:
                 pt_new = pt_new2[::-1]
 

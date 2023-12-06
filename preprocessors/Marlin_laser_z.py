@@ -22,6 +22,7 @@ class Marlin_laser_z(PreProc):
         end_coords_xy = p['xy_end']
         gcode = ';This preprocessor is used with a motion controller loaded with MARLIN firmware.\n'
         gcode += ';It is for the case when it is used together with a LASER connected on the SPINDLE connector.\n' \
+                 ';The laser is started with M3 or M4 command and stopped with the M5 command.\n\n' \
                  ';On toolchange event the laser will move to a defined Z height to change the laser dot size.\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['obj_options']['xmin'])
@@ -100,7 +101,7 @@ class Marlin_laser_z(PreProc):
     def lift_code(self, p):
         if float(p.laser_min_power) > 0.0:
             # the formatted text: laser OFF must always be like this else the plotting will not be done correctly
-            return 'M3 S%s ;laser OFF\n' % str(p.laser_min_power)
+            return '%s S%s ;laser OFF\n' % (str(p.laser_on_code).replace("0", ""), str(p.laser_min_power))
         else:
             gcode = 'M400\n'
             gcode += 'M5'
@@ -108,9 +109,9 @@ class Marlin_laser_z(PreProc):
 
     def down_code(self, p):
         if p.spindlespeed:
-            return '%s S%s' % ('M3', str(p.spindlespeed))
+            return '%s S%s' % (str(p.laser_on_code).replace("0", ""), str(p.spindlespeed))
         else:
-            return 'M3'
+            return str(p.laser_on_code).replace("0", "")
 
     def toolchange_code(self, p):
         return 'G0 Z' + self.coordinate_format % (p.coords_decimals, p.z_move)
@@ -168,9 +169,9 @@ class Marlin_laser_z(PreProc):
 
     def spindle_code(self, p):
         if p.spindlespeed:
-            return '%s S%s' % ('M3', str(p.spindlespeed))
+            return '%s S%s' % (str(p.laser_on_code).replace("0", ""), str(p.spindlespeed))
         else:
-            return 'M3'
+            return str(p.laser_on_code).replace("0", "")
 
     def dwell_code(self, p):
         return ''

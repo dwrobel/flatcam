@@ -190,8 +190,8 @@ class TclCommandPaint(TclCommand):
             "tools_paint_connect":      connect,
             "tools_paint_contour":      contour,
             "tools_paint_overlap":      overlap,
-            "segx": self.app.options["geometry_segx"],
-            "segy": self.app.options["geometry_segy"]
+            "seg_x": self.app.options["geometry_seg_x"],
+            "seg_y": self.app.options["geometry_seg_y"]
         })
 
         # create a `tools` dict

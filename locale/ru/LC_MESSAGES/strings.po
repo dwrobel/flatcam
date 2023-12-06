@@ -25057,11 +25057,11 @@ msgstr "Нет имени геометрии в аргументах. Укажи
 #~ msgstr "Импорт FlatCAM БД отменен."
 
 #~ msgid ""
-#~ "Wrong value format for self.defaults[\"z_pdepth\"] or self."
-#~ "options[\"z_pdepth\"]"
+#~ "Wrong value format for self.defaults[\"z_p_depth\"] or self."
+#~ "options[\"z_p_depth\"]"
 #~ msgstr ""
-#~ "Неправильный формат значения для self.defaults[\"z_pdepth\"] или self."
-#~ "options[\"z_pdepth\"]"
+#~ "Неправильный формат значения для self.defaults[\"z_p_depth\"] или self."
+#~ "options[\"z_p_depth\"]"
 
 #~ msgid ""
 #~ "Wrong value format for self.defaults[\"feedrate_probe\"] or self."

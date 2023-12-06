@@ -23,7 +23,7 @@ class Marlin_laser_FAN_pin(PreProc):
         gcode += ';It is for the case when it is used together with a LASER connected on one of the FAN pins.\n'\
                  ';This preprocessor makes no moves on the Z axis it will only move horizontally.\n' \
                  ';It assumes a manually focused laser.\n' \
-                 ';The laser is started with M3 command and stopped with the M5 command.\n\n'
+                 ';The laser is started and stopped with M106 command.\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['obj_options']['xmin'])
         xmax = '%.*f' % (p.coords_decimals, p['obj_options']['xmax'])

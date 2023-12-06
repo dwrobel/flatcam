@@ -30,6 +30,7 @@ class grbl_laser_eleks_drd(PreProc):
         gcode += '(which helps for centering the drill bit for manual drilling)\n'
         gcode += '(The GRBL Controller has to support G2 commands)\n'
         gcode += '(The moves are only on horizontal plane X-Y. There are no Z moves.)\n'
+        gcode += '(The moves are only on horizontal plane X-Y. There are no Z moves.)\n'
         gcode += '(Assumes manual laser focussing.)\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['obj_options']['xmin'])
@@ -55,10 +56,7 @@ class grbl_laser_eleks_drd(PreProc):
         # gcode += 'G94;Feedrate per minute\n'
         gcode += 'G00 F' + str(self.feedrate_format % (p.fr_decimals, p.feedrate_rapid)) + '\n'
         gcode += 'G01 F' + str(self.feedrate_format % (p.fr_decimals, p.feedrate)) + '\n'  # Is Z-Feedrate for Excellon
-        if p.spindledir == 'CCW':
-            gcode += 'M04'
-        else:
-            gcode += 'M03'
+        gcode += p.laser_on_code
         if p.spindlespeed:
             gcode += ' ' + 'S%d' % p.spindlespeed
         gcode += ';' + p.spindledir
@@ -71,10 +69,7 @@ class grbl_laser_eleks_drd(PreProc):
         return 'M05;lift'
 
     def down_code(self, p):
-        if p.spindledir == 'CCW':
-            gcode = 'M04'
-        else:
-            gcode = 'M03'
+        gcode = p.laser_on_code
         gcode += ';down'
         if str(p['obj_options']['type']) == 'Excellon' or str(p['obj_options']['type']) == 'Excellon Geometry':
             gcode += '\n'

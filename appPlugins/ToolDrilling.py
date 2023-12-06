@@ -205,7 +205,7 @@ class ToolDrilling(AppTool, Excellon):
         self.ui.search_load_db_btn.clicked.connect(self.on_tool_db_load)
 
         self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
-        self.ui.generate_cnc_button.clicked.connect(self.on_cnc_button_click)
+        self.ui.generate_cnc_button.clicked.connect(self.on_generate_cnc_job)
         self.ui.tools_table.drag_drop_sig.connect(self.rebuild_ui)
 
         # Exclusion areas signals
@@ -353,7 +353,7 @@ class ToolDrilling(AppTool, Excellon):
 
             "tools_drill_spindlespeed": self.ui.spindlespeed_entry,
             "tools_drill_min_power": self.ui.las_min_pwr_entry,
-
+            "tools_drill_laser_on": self.ui.laser_turn_on_combo,
             "tools_drill_dwell": self.ui.dwell_cb,
             "tools_drill_dwelltime": self.ui.dwelltime_entry,
 
@@ -373,7 +373,7 @@ class ToolDrilling(AppTool, Excellon):
             "tools_drill_endz": self.ui.endz_entry,
             "tools_drill_endxy": self.ui.endxy_entry,
 
-            "tools_drill_z_pdepth": self.ui.pdepth_entry,
+            "tools_drill_z_p_depth": self.ui.pdepth_entry,
             "tools_drill_feedrate_probe": self.ui.feedrate_probe_entry,
 
             "tools_drill_ppname_e": self.ui.pp_excellon_name_cb,
@@ -394,6 +394,7 @@ class ToolDrilling(AppTool, Excellon):
 
             "e_spindlespeed": "tools_drill_spindlespeed",
             "e_minpower": "tools_drill_min_power",
+            "e_laser_turn_on": "tools_drill_laser_on",
             "e_dwell": "tools_drill_dwell",
             "e_dwelltime": "tools_drill_dwelltime",
 
@@ -413,7 +414,7 @@ class ToolDrilling(AppTool, Excellon):
             "e_endz": "tools_drill_endz",
             "e_endxy": "tools_drill_endxy",
 
-            "e_depth_probe": "tools_drill_z_pdepth",
+            "e_depth_probe": "tools_drill_z_p_depth",
             "e_fr_probe": "tools_drill_feedrate_probe",
 
             "e_pp": "tools_drill_ppname_e",
@@ -1577,6 +1578,9 @@ class ToolDrilling(AppTool, Excellon):
             self.ui.las_min_pwr_label.show()
             self.ui.las_min_pwr_entry.show()
 
+            self.ui.laser_turn_on_lbl.show()
+            self.ui.laser_turn_on_combo.show()
+
             try:
                 self.ui.tool_offset_label.hide()
                 self.ui.offset_entry.hide()
@@ -1620,6 +1624,9 @@ class ToolDrilling(AppTool, Excellon):
 
             self.ui.las_min_pwr_label.hide()
             self.ui.las_min_pwr_entry.hide()
+
+            self.ui.laser_turn_on_lbl.hide()
+            self.ui.laser_turn_on_combo.hide()
 
             # if in Advanced Mode
             if self.ui.level.isChecked():
@@ -1957,7 +1964,7 @@ class ToolDrilling(AppTool, Excellon):
                         return True
         return False
 
-    def on_cnc_button_click(self):
+    def on_generate_cnc_job(self):
         obj_name = self.ui.object_combo.currentText()
         # toolchange = self.ui.toolchange_cb.get_value()
         # determine if we have toolchange event or not
@@ -2200,8 +2207,8 @@ class ToolDrilling(AppTool, Excellon):
 
             # it does not matter for the Excellon codes because we are not going to autolevel GCode out of Excellon
             # but it is here for uniformity between the Geometry and Excellon objects
-            cnc_job_obj.segx = self.app.options["geometry_segx"]
-            cnc_job_obj.segy = self.app.options["geometry_segy"]
+            cnc_job_obj.seg_x = self.app.options["geometry_seg_x"]
+            cnc_job_obj.seg_y = self.app.options["geometry_seg_y"]
 
             # first drill point
             # I can read the toolchange x,y point from any tool since it is the same for all, so I read it
@@ -2667,13 +2674,28 @@ class DrillingUI:
 
         self.las_min_pwr_entry = FCSpinner(callback=self.confirmation_message_int)
         self.las_min_pwr_entry.set_range(0, 1000000)
-        self.las_min_pwr_entry.set_step(100)
+        self.las_min_pwr_entry.set_step(1)
         self.las_min_pwr_entry.setObjectName("e_minpower")
 
         param_grid.addWidget(self.las_min_pwr_label, 20, 0)
         param_grid.addWidget(self.las_min_pwr_entry, 20, 1)
         self.las_min_pwr_label.hide()
         self.las_min_pwr_entry.hide()
+
+        # Laser Turn ON Code
+        self.laser_turn_on_lbl = FCLabel('%s:' % _('Turn ON Code'))
+        self.laser_turn_on_lbl.setToolTip(
+            _("The Gode that will be executed to turn the laser on.")
+        )
+
+        self.laser_turn_on_combo = FCComboBox()
+        self.laser_turn_on_combo.addItems(["M3", "M4"])
+        self.laser_turn_on_combo.setObjectName("e_laser_turn_on")
+
+        param_grid.addWidget(self.laser_turn_on_lbl, 22, 0)
+        param_grid.addWidget(self.laser_turn_on_combo, 22, 1)
+        self.laser_turn_on_lbl.hide()
+        self.laser_turn_on_combo.hide()
 
         # Dwell
         self.dwell_cb = FCCheckBox('%s:' % _('Dwell'))
@@ -2694,8 +2716,8 @@ class DrillingUI:
         )
         self.dwelltime_entry.setObjectName("e_dwelltime")
 
-        param_grid.addWidget(self.dwell_cb, 22, 0)
-        param_grid.addWidget(self.dwelltime_entry, 22, 1)
+        param_grid.addWidget(self.dwell_cb, 24, 0)
+        param_grid.addWidget(self.dwelltime_entry, 24, 1)
 
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
@@ -2712,8 +2734,8 @@ class DrillingUI:
         self.offset_entry.set_range(-10000.0000, 10000.0000)
         self.offset_entry.setObjectName("e_offset")
 
-        param_grid.addWidget(self.tool_offset_label, 25, 0)
-        param_grid.addWidget(self.offset_entry, 25, 1)
+        param_grid.addWidget(self.tool_offset_label, 26, 0)
+        param_grid.addWidget(self.offset_entry, 26, 1)
 
         # Drill slots
         self.drill_slots_cb = FCCheckBox('%s' % _('Drill slots'))
@@ -2721,7 +2743,7 @@ class DrillingUI:
             _("If the selected tool has slots then they will be drilled.")
         )
         self.drill_slots_cb.setObjectName("e_drill_slots")
-        param_grid.addWidget(self.drill_slots_cb, 27, 0, 1, 2)
+        param_grid.addWidget(self.drill_slots_cb, 28, 0, 1, 2)
 
         # Drill Overlap
         self.drill_overlap_label = FCLabel('%s:' % _('Overlap'))
@@ -2736,8 +2758,8 @@ class DrillingUI:
 
         self.drill_overlap_entry.setObjectName("e_drill_slots_overlap")
 
-        param_grid.addWidget(self.drill_overlap_label, 28, 0)
-        param_grid.addWidget(self.drill_overlap_entry, 28, 1)
+        param_grid.addWidget(self.drill_overlap_label, 30, 0)
+        param_grid.addWidget(self.drill_overlap_entry, 30, 1)
 
         # Last drill in slot
         self.last_drill_cb = FCCheckBox('%s' % _('Last drill'))
@@ -2746,7 +2768,7 @@ class DrillingUI:
               "add a drill hole on the slot end point.")
         )
         self.last_drill_cb.setObjectName("e_drill_last_drill")
-        param_grid.addWidget(self.last_drill_cb, 30, 0, 1, 2)
+        param_grid.addWidget(self.last_drill_cb, 32, 0, 1, 2)
 
         self.drill_overlap_label.hide()
         self.drill_overlap_entry.hide()

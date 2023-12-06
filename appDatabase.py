@@ -1929,15 +1929,15 @@ class ToolsDB2(QtWidgets.QWidget):
             "tools_mill_endz":             float(self.app.options["tools_mill_endz"]),
             "tools_mill_endxy":            self.app.options["tools_mill_endxy"],
             "tools_mill_search_time":      int(self.app.options["tools_mill_search_time"]),
-            "tools_mill_z_pdepth":         float(self.app.options["tools_mill_z_pdepth"]),
+            "tools_mill_z_p_depth":         float(self.app.options["tools_mill_z_p_depth"]),
             "tools_mill_f_plunge":         float(self.app.options["tools_mill_f_plunge"]),
 
             "tools_mill_spindledir":               self.app.options["tools_mill_spindledir"],
             "tools_mill_optimization_type":        self.app.options["tools_mill_optimization_type"],
             "tools_mill_feedrate_probe":           self.app.options["tools_mill_feedrate_probe"],
 
-            "segx":             self.app.options["geometry_segx"],
-            "segy":             self.app.options["geometry_segy"],
+            "seg_x":             self.app.options["geometry_seg_x"],
+            "seg_y":             self.app.options["geometry_seg_y"],
             "tools_mill_area_exclusion":   self.app.options["tools_mill_area_exclusion"],
             "tools_mill_area_shape":       self.app.options["tools_mill_area_shape"],
             "tools_mill_area_strategy":    self.app.options["tools_mill_area_strategy"],

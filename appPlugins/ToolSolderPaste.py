@@ -1063,7 +1063,7 @@ class SolderPaste(AppTool):
 
                 # ## CREATE GCODE # ##
                 is_first = True if tooluid_key == list(new_obj.tools.keys())[0] else False
-                res = new_obj.generate_gcode_from_solderpaste_geo(is_first=is_first, **tooluid_value)
+                res = new_obj.generate_gcode_from_solder_paste_geo(is_first=is_first, **tooluid_value)
 
                 if res == 'fail':
                     app_obj.log.debug("SolderPaste.on_create_gcode() --> generate_gcode_from_solderpaste_geo() failed")

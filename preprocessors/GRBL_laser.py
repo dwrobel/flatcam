@@ -26,7 +26,7 @@ class GRBL_laser(PreProc):
                  '(This preprocessor makes no moves on the Z axis it will only move horizontally.)\n' \
                  '(The horizontal move is done with G0 - highest possible speed set in the GRBL controller.)\n' \
                  '(It assumes a manually focused laser.)\n' \
-                 '(The laser is started with M3 command and stopped with the M5 command.)\n\n'
+                 '(The laser is started with M3 or M4 command and stopped with the M5 command.)\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['obj_options']['xmin'])
         xmax = '%.*f' % (p.coords_decimals, p['obj_options']['xmax'])
@@ -60,15 +60,15 @@ class GRBL_laser(PreProc):
     def lift_code(self, p):
         if float(p.laser_min_power) > 0.0:
             # the formatted text: laser OFF must always be like this else the plotting will not be done correctly
-            return 'M3 S%s (laser OFF)\n' % str(p.laser_min_power)
+            return '%s S%s (laser OFF)\n' % (str(p.laser_on_code), str(p.laser_min_power))
         else:
             return 'M5'
 
     def down_code(self, p):
         if p.spindlespeed:
-            return '%s S%s' % ('M3', str(p.spindlespeed))
+            return '%s S%s' % (str(p.laser_on_code), str(p.spindlespeed))
         else:
-            return 'M3'
+            return str(p.laser_on_code)
 
     def toolchange_code(self, p):
         return ''
@@ -115,9 +115,9 @@ class GRBL_laser(PreProc):
 
     def spindle_code(self, p):
         if p.spindlespeed:
-            return '%s S%s' % ('M3', str(p.spindlespeed))
+            return '%s S%s' % (str(p.laser_on_code), str(p.spindlespeed))
         else:
-            return 'M3'
+            return str(p.laser_on_code)
 
     def dwell_code(self, p):
         return ''

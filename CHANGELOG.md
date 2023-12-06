@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM Evo beta
 
 - Paint Tool: fixed the calculation of object bounds
 - camlib: updated the method used to calculate the extrapolated lines for the laser_lines method: camlib.fill_with_lines()
+- Drilling and Milling Tools: added support to choose the GCode for turning On the laser
 
 25.11.2023
 
@@ -826,7 +827,7 @@ CHANGELOG for FlatCAM Evo beta
 
 - refactored the Isolation Plugin class
 - some more work on the Isolation plugin
-- fixed more issues in the `ncc` and `paint` Tcl commands (missing `segx` and `segy` keys)
+- fixed more issues in the `ncc` and `paint` Tcl commands (missing `seg_x` and `seg_y` keys)
 - fixed not adding the feedrate code in `drillcncjob` Tcl command
 - fixed crash when trying to do a `select all` and there are app Scripts present
 - updated the `drillcncjob` Tcl command to make a script exit in case of an error

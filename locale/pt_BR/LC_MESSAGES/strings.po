@@ -23145,9 +23145,9 @@ msgstr "Nenhum nome de geometria nos argumentos. Altere e tente novamente."
 #~ msgid "FlatCAM Tools DB import cancelled."
 #~ msgstr "Importação de BD do FlatCAM cancelada."
 
-#~ msgid "Wrong value format for self.defaults[\"z_pdepth\"] or self.options[\"z_pdepth\"]"
+#~ msgid "Wrong value format for self.defaults[\"z_p_depth\"] or self.options[\"z_p_depth\"]"
 #~ msgstr ""
-#~ "Valor com formato incorreto para self.defaults[\"z_pdepth\"] ou self.options[\"z_pdepth"
+#~ "Valor com formato incorreto para self.defaults[\"z_p_depth\"] ou self.options[\"z_p_depth"
 #~ "\"]"
 
 #~ msgid ""

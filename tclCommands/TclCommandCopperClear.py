@@ -202,8 +202,8 @@ class TclCommandCopperClear(TclCommand):
             "tools_ncc_contour":            contour,
             "tools_ncc_overlap":            overlap,
 
-            "segx":                         self.app.options["geometry_segx"],
-            "segy":                         self.app.options["geometry_segy"]
+            "seg_x":                         self.app.options["geometry_seg_x"],
+            "seg_y":                         self.app.options["geometry_seg_y"]
         })
         ncc_tools = {}
 

@@ -89,7 +89,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             "tools_mill_toolchangez": 1.0,
             "tools_mill_toolchangexy": "0.0, 0.0",
             "tools_mill_ppname_g": 'default',
-            "tools_mill_z_pdepth": -0.02,
+            "tools_mill_z_p_depth": -0.02,
             "tools_mill_feedrate_probe": 3.0,
         })
 
@@ -631,7 +631,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         return dwg
 
-    def mtool_gen_cncjob(self, outname=None, tools_dict=None, segx=None, segy=None,
+    def mtool_gen_cncjob(self, outname=None, tools_dict=None, seg_x=None, seg_y=None,
                          plot=True, use_thread=True):
         """
         Creates a multi-tool CNCJob out of this Geometry object.
@@ -641,8 +641,8 @@ class GeometryObject(FlatCAMObj, Geometry):
         :param outname:
         :param tools_dict:      a dictionary that holds the whole data needed to create the Gcode
                                 (including the solid_geometry)
-        :param segx:            number of segments on the X axis, for auto-levelling
-        :param segy:            number of segments on the Y axis, for auto-levelling
+        :param seg_x:            number of segments on the X axis, for auto-levelling
+        :param seg_y:            number of segments on the Y axis, for auto-levelling
         :param plot:            if True the generated object will be plotted; if False will not be plotted
         :param use_thread:      if True use threading
         :return:                None
@@ -652,8 +652,8 @@ class GeometryObject(FlatCAMObj, Geometry):
         outname = "%s_%s" % (self.obj_options["name"], 'cnc') if outname is None else outname
 
         tools_dict = self.sel_tools if tools_dict is None else tools_dict
-        segx = segx if segx is not None else float(self.app.options['geometry_segx'])
-        segy = segy if segy is not None else float(self.app.options['geometry_segy'])
+        seg_x = seg_x if seg_x is not None else float(self.app.options['geometry_seg_x'])
+        seg_y = seg_y if seg_y is not None else float(self.app.options['geometry_seg_y'])
 
         try:
             xmin = self.obj_options['xmin']
@@ -693,10 +693,10 @@ class GeometryObject(FlatCAMObj, Geometry):
             job_obj.multigeo = False
             job_obj.tools.clear()
 
-            job_obj.segx = segx if segx else float(self.app.options["geometry_segx"])
-            job_obj.segy = segy if segy else float(self.app.options["geometry_segy"])
+            job_obj.seg_x = seg_x if seg_x else float(self.app.options["geometry_seg_x"])
+            job_obj.seg_y = seg_y if seg_y else float(self.app.options["geometry_seg_y"])
 
-            job_obj.z_pdepth = float(self.app.options["tools_mill_z_pdepth"])
+            job_obj.z_p_depth = float(self.app.options["tools_mill_z_p_depth"])
             job_obj.feedrate_probe = float(self.app.options["tools_mill_feedrate_probe"])
 
             total_gcode = ''
@@ -835,10 +835,10 @@ class GeometryObject(FlatCAMObj, Geometry):
             job_obj.multigeo = True
             job_obj.tools.clear()
 
-            job_obj.segx = segx if segx else float(self.app.options["geometry_segx"])
-            job_obj.segy = segy if segy else float(self.app.options["geometry_segy"])
+            job_obj.seg_x = seg_x if seg_x else float(self.app.options["geometry_seg_x"])
+            job_obj.seg_y = seg_y if seg_y else float(self.app.options["geometry_seg_y"])
 
-            job_obj.z_pdepth = float(self.app.options["tools_mill_z_pdepth"])
+            job_obj.z_p_depth = float(self.app.options["tools_mill_z_p_depth"])
             job_obj.feedrate_probe = float(self.app.options["tools_mill_feedrate_probe"])
 
             # make sure that trying to make a CNCJob from an empty file is not creating an app crash
@@ -993,7 +993,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                        las_min_pwr=0.0,
                        multidepth=None, dpp=None, toolchange=None, toolchangez=None, toolchangexy=None,
                        extracut=None, extracut_length=None, startz=None, endz=None, endxy=None, pp=None,
-                       segx=None, segy=None, use_thread=True, plot=True, **args):
+                       seg_x=None, seg_y=None, use_thread=True, plot=True, **args):
         """
         Only used by the TCL Command Cncjob.
         Creates a CNCJob out of this Geometry object. The actual
@@ -1025,8 +1025,8 @@ class GeometryObject(FlatCAMObj, Geometry):
         :param endxy:           A sequence ox X,Y coordinates: a 2-length tuple or a string.
                                 Coordinates in X, Y plane for the last move after ending the job.
         :param pp:              Name of the preprocessor
-        :param segx:
-        :param segy:
+        :param seg_x:
+        :param seg_y:
         :param use_thread:
         :param plot:
         :return: None
@@ -1048,8 +1048,8 @@ class GeometryObject(FlatCAMObj, Geometry):
         multidepth = multidepth if multidepth is not None else self.obj_options["tools_mill_multidepth"]
         depthperpass = dpp if dpp is not None else float(self.obj_options["tools_mill_depthperpass"])
 
-        segx = segx if segx is not None else float(self.app.options['geometry_segx'])
-        segy = segy if segy is not None else float(self.app.options['geometry_segy'])
+        seg_x = seg_x if seg_x is not None else float(self.app.options['geometry_seg_x'])
+        seg_y = seg_y if seg_y is not None else float(self.app.options['geometry_seg_y'])
 
         extracut = extracut if extracut is not None else float(self.obj_options["tools_mill_extracut"])
         extracut_length = extracut_length if extracut_length is not None else float(self.obj_options[
@@ -1099,10 +1099,10 @@ class GeometryObject(FlatCAMObj, Geometry):
             job_obj.obj_options['type'] = 'Geometry'
             job_obj.obj_options['tool_dia'] = tooldia
 
-            job_obj.segx = segx
-            job_obj.segy = segy
+            job_obj.seg_x = seg_x
+            job_obj.seg_y = seg_y
 
-            job_obj.z_pdepth = float(self.obj_options["tools_mill_z_pdepth"])
+            job_obj.z_p_depth = float(self.obj_options["tools_mill_z_p_depth"])
             job_obj.feedrate_probe = float(self.obj_options["tools_mill_feedrate_probe"])
 
             job_obj.obj_options['xmin'] = self.obj_options['xmin']

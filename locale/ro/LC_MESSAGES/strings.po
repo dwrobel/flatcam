@@ -24362,10 +24362,10 @@ msgstr ""
 #~ msgstr "Importul DB Unelte a fost anulat."
 
 #~ msgid ""
-#~ "Wrong value format for self.defaults[\"z_pdepth\"] or self."
-#~ "options[\"z_pdepth\"]"
+#~ "Wrong value format for self.defaults[\"z_p_depth\"] or self."
+#~ "options[\"z_p_depth\"]"
 #~ msgstr ""
-#~ "Valoare gresita pt self.defaults[\"z_pdepth\"] sau self.options[\"z_pdepth"
+#~ "Valoare gresita pt self.defaults[\"z_p_depth\"] sau self.options[\"z_p_depth"
 #~ "\"]"
 
 #~ msgid ""

@@ -256,8 +256,8 @@ class TclCommandCncjob(TclCommandSignaled):
 
             for tool_uid in list(local_tools_dict.keys()):
                 if 'data' in local_tools_dict[tool_uid]:
-                    local_tools_dict[tool_uid]['data']['segx'] = self.app.options['geometry_segx']
-                    local_tools_dict[tool_uid]['data']['segy'] = self.app.options['geometry_segx']
+                    local_tools_dict[tool_uid]['data']['seg_x'] = self.app.options['geometry_seg_x']
+                    local_tools_dict[tool_uid]['data']['seg_y'] = self.app.options['geometry_seg_x']
                     local_tools_dict[tool_uid]['data']['tools_mill_tooldia'] = args["dia"]
                     local_tools_dict[tool_uid]['data']['tools_mill_cutz'] = args["z_cut"]
                     local_tools_dict[tool_uid]['data']['tools_mill_travelz'] = args["z_move"]
@@ -285,7 +285,7 @@ class TclCommandCncjob(TclCommandSignaled):
                     local_tools_dict[tool_uid]['data']['tools_mill_min_power'] = args['las_min_pwr']
                     local_tools_dict[tool_uid]['data']['tools_mill_ppname_g'] = args["pp"]
 
-            self.app.milling_tool.mtool_gen_cncjob(
+            self.app.milling_tool.generate_cnc_job_handler(
                 geo_obj=obj,
                 outname=args['outname'],
                 tools_dict=local_tools_dict,

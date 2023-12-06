@@ -430,6 +430,18 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         )
         adv_grid.addWidget(self.fplunge_cb, 16, 0, 1, 2)
 
+        # Laser Turn ON Code
+        self.laser_turn_on_lbl = FCLabel('%s:' % _('Turn ON Code'))
+        self.laser_turn_on_lbl.setToolTip(
+            _("The Gode that will be executed to turn the laser on.")
+        )
+
+        self.laser_turn_on_combo = FCComboBox()
+        self.laser_turn_on_combo.addItems(["M3", "M4"])
+
+        adv_grid.addWidget(self.laser_turn_on_lbl, 18, 0)
+        adv_grid.addWidget(self.laser_turn_on_combo, 18, 1)
+
         # separator_line = QtWidgets.QFrame()
         # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)

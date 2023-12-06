@@ -274,7 +274,7 @@ class ToolMilling(AppTool, Excellon):
         self.ui.tools_table_mill_geo.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
 
         # Generate CNCJob
-        self.launch_job.connect(self.mtool_gen_cncjob)
+        self.launch_job.connect(self.generate_cnc_job_handler)
         self.ui.generate_cnc_button.clicked.connect(self.on_generate_cncjob_click)
 
         # Reset Tool
@@ -521,6 +521,7 @@ class ToolMilling(AppTool, Excellon):
             "tools_mill_dwell": self.ui.dwell_cb,
             "tools_mill_dwelltime": self.ui.dwelltime_entry,
             "tools_mill_min_power": self.ui.las_min_pwr_entry,
+            "tools_mill_laser_on": self.ui.laser_turn_on_combo
         }
 
         self.general_form_fields = {
@@ -531,11 +532,11 @@ class ToolMilling(AppTool, Excellon):
             "tools_mill_endz": self.ui.endz_entry,
             "tools_mill_endxy": self.ui.endxy_entry,
 
-            "tools_mill_z_pdepth": self.ui.pdepth_entry,
+            "tools_mill_z_p_depth": self.ui.pdepth_entry,
             "tools_mill_feedrate_probe": self.ui.feedrate_probe_entry,
             "tools_mill_ppname_g": self.ui.pp_geo_name_cb,
-            "segx":    self.ui.segx_entry,
-            "segy":    self.ui.segy_entry,
+            "seg_x":    self.ui.seg_x_entry,
+            "seg_y":    self.ui.seg_y_entry,
 
             # "gcode_type": self.ui.excellon_gcode_type_radio,
             "tools_mill_area_exclusion": self.ui.exclusion_cb,
@@ -579,6 +580,7 @@ class ToolMilling(AppTool, Excellon):
             "mill_dwell": "tools_mill_dwell",
             "mill_dwelltime": "tools_mill_dwelltime",
             "mill_minpower": "tools_mill_min_power",
+            "mill_laser_turn_on": "tools_mill_laser_on",
 
             # General Parameters
             "mill_toolchange": "tools_mill_toolchange",
@@ -588,11 +590,11 @@ class ToolMilling(AppTool, Excellon):
             "mill_endz": "tools_mill_endz",
             "mill_endxy": "tools_mill_endxy",
 
-            "mill_depth_probe": "tools_mill_z_pdepth",
+            "mill_depth_probe": "tools_mill_z_p_depth",
             "mill_fr_probe": "tools_mill_feedrate_probe",
             "mill_ppname_g": "tools_mill_ppname_g",
-            "mill_segx":    "segx",
-            "mill_segy":    "segy",
+            "mill_seg_x":    "seg_x",
+            "mill_seg_y":    "seg_y",
 
             "mill_exclusion": "tools_mill_area_exclusion",
             "mill_area_shape": "tools_mill_area_shape",
@@ -2739,7 +2741,7 @@ class ToolMilling(AppTool, Excellon):
             return
 
         if self.target_obj.kind == 'geometry':
-            self.on_generatecnc_from_geo()
+            self.on_generate_cnc_from_geo()
         elif self.target_obj.kind == 'excellon':
             self.on_generatecnc_from_exc()
 
@@ -2904,8 +2906,8 @@ class ToolMilling(AppTool, Excellon):
                 'solid_geometry':   deepcopy(total_geometry)
             }
             new_obj.tools[tool]['data']['tools_mill_tooldia'] = mill_dia
-            new_obj.tools[tool]['data']['segx'] = self.app.options['geometry_segx']
-            new_obj.tools[tool]['data']['segy'] = self.app.options['geometry_segy']
+            new_obj.tools[tool]['data']['seg_x'] = self.app.options['geometry_seg_x']
+            new_obj.tools[tool]['data']['seg_y'] = self.app.options['geometry_seg_y']
 
         # if not total_tool_geo:
         #     self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Nothing to mill ..."))
@@ -2915,9 +2917,9 @@ class ToolMilling(AppTool, Excellon):
         # a milled geometry (either drills or slots or both) not a total sum.
         # painting the polygons
 
-        self.mtool_gen_cncjob(geo_obj=new_obj, tools_dict=new_obj.tools, disable_offset=True)
+        self.generate_cnc_job_handler(geo_obj=new_obj, tools_dict=new_obj.tools, disable_offset=True)
 
-    def on_generatecnc_from_geo(self):
+    def on_generate_cnc_from_geo(self):
         self.app.log.debug("Generating CNCJob from Geometry ...")
 
         self.sel_tools.clear()
@@ -2959,7 +2961,7 @@ class ToolMilling(AppTool, Excellon):
                             tooluid: deepcopy(tooluid_value)
                         })
 
-            self.mtool_gen_cncjob()
+            self.generate_cnc_job_handler()
             # self.ui.tools_table_mill_geo.clearSelection()
 
         elif self.ui.tools_table_mill_geo.rowCount() == 1:
@@ -2970,7 +2972,7 @@ class ToolMilling(AppTool, Excellon):
                     self.sel_tools.update({
                         tooluid: deepcopy(tooluid_value)
                     })
-            self.mtool_gen_cncjob()
+            self.generate_cnc_job_handler()
             # self.ui.tools_table_mill_geo.clearSelection()
         else:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No tool selected in the tool table ..."))
@@ -2981,8 +2983,9 @@ class ToolMilling(AppTool, Excellon):
         #         float(self.sel_tools[tooluid_key]['data']['tools_mill_tooldia']), self.decimals)
         #     print(tooldia_val)
 
-    def mtool_gen_cncjob(self, geo_obj=None, outname=None, tools_dict=None, tools_in_use=None, segx=None, segy=None,
-                         toolchange=None, plot=True, use_thread=True, disable_offset=False, from_tcl=False):
+    def generate_cnc_job_handler(self, geo_obj=None, outname=None, tools_dict=None, tools_in_use=None,
+                                 seg_x=None, seg_y=None, toolchange=None, plot=True, use_thread=True,
+                                 disable_offset=False, from_tcl=False):
         """
         Creates a multi-tool CNCJob out of this Geometry object.
         The actual work is done by the target CNCJobObject object's
@@ -2995,8 +2998,8 @@ class ToolMilling(AppTool, Excellon):
                                 (including the solid_geometry)
         :param tools_in_use:    the tools that are used, needed by some preprocessors
         :type  tools_in_use     list of lists, each list in the list is made out of row elements of tools table from GUI
-        :param segx:            number of segments on the X axis, for auto-levelling
-        :param segy:            number of segments on the Y axis, for auto-levelling
+        :param seg_x:            number of segments on the X axis, for auto-levelling
+        :param seg_y:            number of segments on the Y axis, for auto-levelling
         :param plot:            if True the generated object will be plotted; if False will not be plotted
         :param use_thread:      if True use threading
         :param disable_offset:  If True then the set offset for each tool will not be used
@@ -3004,7 +3007,7 @@ class ToolMilling(AppTool, Excellon):
         :return:                None
         """
 
-        self.app.log.debug("ToolMilling.mtool_gen_cncjob()")
+        self.app.log.debug("ToolMilling.generate_cnc_job_handler()")
 
         geo_obj = geo_obj if geo_obj is not None else self.target_obj
 
@@ -3014,33 +3017,33 @@ class ToolMilling(AppTool, Excellon):
         tools_dict = self.sel_tools if tools_dict is None else tools_dict
 
         if not geo_obj.tools:
-            segx = segx if segx is not None else float(geo_obj.obj_options['segx'])
-            segy = segy if segy is not None else float(geo_obj.obj_options['segy'])
+            seg_x = seg_x if seg_x is not None else float(geo_obj.obj_options['seg_x'])
+            seg_y = seg_y if seg_y is not None else float(geo_obj.obj_options['seg_y'])
         else:
             tools_list = list(geo_obj.tools.keys())
-            # the segx and segy values are the same for all tools os we just take the values from the first tool
+            # the seg_x and seg_y values are the same for all tools os we just take the values from the first tool
             sel_tool = tools_list[0]
             data_dict = geo_obj.tools[sel_tool]['data']
             try:
-                segx = data_dict['segx']
+                seg_x = data_dict['seg_x']
             except KeyError:
                 try:
-                    segx = data_dict['geometry_segx']
+                    seg_x = data_dict['geometry_seg_x']
                 except KeyError:
                     try:
-                        segx = geo_obj.obj_options['segx']
+                        seg_x = geo_obj.obj_options['seg_x']
                     except KeyError:
-                        segx = self.app.options['geometry_segx']
+                        seg_x = self.app.options['geometry_seg_x']
             try:
-                segy = data_dict['segy']
+                seg_y = data_dict['seg_y']
             except KeyError:
                 try:
-                    segy = data_dict['geometry_segy']
+                    seg_y = data_dict['geometry_seg_y']
                 except KeyError:
                     try:
-                        segy = geo_obj.obj_options['segy']
+                        seg_y = geo_obj.obj_options['seg_y']
                     except KeyError:
-                        segy = self.app.options['geometry_segy']
+                        seg_y = self.app.options['geometry_seg_y']
 
         try:
             xmin = geo_obj.obj_options['xmin']
@@ -3082,10 +3085,10 @@ class ToolMilling(AppTool, Excellon):
             new_cncjob_obj.multigeo = False
             new_cncjob_obj.tools.clear()
 
-            new_cncjob_obj.segx = segx
-            new_cncjob_obj.segy = segy
+            new_cncjob_obj.seg_x = seg_x
+            new_cncjob_obj.seg_y = seg_y
 
-            new_cncjob_obj.z_pdepth = float(geo_obj.obj_options["tools_mill_z_pdepth"])
+            new_cncjob_obj.z_p_depth = float(geo_obj.obj_options["tools_mill_z_p_depth"])
             new_cncjob_obj.feedrate_probe = float(geo_obj.obj_options["tools_mill_feedrate_probe"])
 
             used_tools = list(tools_dict.keys())
@@ -3153,6 +3156,7 @@ class ToolMilling(AppTool, Excellon):
                 dwell = tools_dict[tooluid_key]['data']["tools_mill_dwell"]
                 dwelltime = tools_dict[tooluid_key]['data']["tools_mill_dwelltime"]
                 laser_min_power = tools_dict[tooluid_key]['data']["tools_mill_min_power"]
+                laser_on_code = tools_dict[tooluid_key]['data']["tools_mill_laser_on"]
                 pp_geometry_name = tools_dict[tooluid_key]['data']["tools_mill_ppname_g"]
 
                 spindledir = self.app.options['tools_mill_spindledir']
@@ -3180,6 +3184,7 @@ class ToolMilling(AppTool, Excellon):
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
                     spindlespeed=spindlespeed, spindledir=spindledir, dwell=dwell, dwelltime=dwelltime,
                     laser_min_power=laser_min_power,
+                    laser_on_code=laser_on_code,
                     multidepth=multidepth, depthpercut=depthpercut,
                     extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz, endxy=endxy,
                     toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
@@ -3237,10 +3242,10 @@ class ToolMilling(AppTool, Excellon):
             new_cncjob_obj.multigeo = True
             new_cncjob_obj.tools.clear()
 
-            new_cncjob_obj.segx = segx
-            new_cncjob_obj.segy = segy
+            new_cncjob_obj.seg_x = seg_x
+            new_cncjob_obj.seg_y = seg_y
 
-            new_cncjob_obj.z_pdepth = float(geo_obj.obj_options["tools_mill_z_pdepth"])
+            new_cncjob_obj.z_p_depth = float(geo_obj.obj_options["tools_mill_z_p_depth"])
             new_cncjob_obj.feedrate_probe = float(geo_obj.obj_options["tools_mill_feedrate_probe"])
 
             # make sure that trying to make a CNCJob from an empty file is not creating an app crash
@@ -3371,9 +3376,9 @@ class ToolMilling(AppTool, Excellon):
                 # Probe Z
                 try:
                     if not from_tcl:
-                        tools_dict[tooluid_key]['data']['tools_mill_z_pdepth'] = self.ui.pdepth_entry.get_value()
+                        tools_dict[tooluid_key]['data']['tools_mill_z_p_depth'] = self.ui.pdepth_entry.get_value()
                 except AttributeError:
-                    tools_dict[tooluid_key]['data']['tools_mill_z_pdepth'] = self.app.options['tools_mill_z_pdepth']
+                    tools_dict[tooluid_key]['data']['tools_mill_z_p_depth'] = self.app.options['tools_mill_z_p_depth']
                 # Probe FR
                 try:
                     if not from_tcl:
@@ -3609,6 +3614,9 @@ class ToolMilling(AppTool, Excellon):
 
             self.ui.las_min_pwr_label.show()
             self.ui.las_min_pwr_entry.show()
+
+            self.ui.laser_turn_on_lbl.show()
+            self.ui.laser_turn_on_combo.show()
         else:
             self.ui.cutzlabel.show()
             self.ui.cutz_entry.show()
@@ -3647,6 +3655,9 @@ class ToolMilling(AppTool, Excellon):
 
             self.ui.las_min_pwr_label.hide()
             self.ui.las_min_pwr_entry.hide()
+
+            self.ui.laser_turn_on_lbl.hide()
+            self.ui.laser_turn_on_combo.hide()
 
             # if in Advanced Mode
             if self.ui.level.isChecked():
@@ -4741,13 +4752,28 @@ class MillingUI:
 
         self.las_min_pwr_entry = FCSpinner(callback=self.confirmation_message_int)
         self.las_min_pwr_entry.set_range(0, 1000000)
-        self.las_min_pwr_entry.set_step(100)
+        self.las_min_pwr_entry.set_step(1)
         self.las_min_pwr_entry.setObjectName("mill_minpower")
 
-        param_grid.addWidget(self.las_min_pwr_label, 45, 0)
-        param_grid.addWidget(self.las_min_pwr_entry, 45, 1)
+        param_grid.addWidget(self.las_min_pwr_label, 46, 0)
+        param_grid.addWidget(self.las_min_pwr_entry, 46, 1)
         self.las_min_pwr_label.hide()
         self.las_min_pwr_entry.hide()
+
+        # Laser Turn ON Code
+        self.laser_turn_on_lbl = FCLabel('%s:' % _('Turn ON Code'))
+        self.laser_turn_on_lbl.setToolTip(
+            _("The Gode that will be executed to turn the laser on.")
+        )
+
+        self.laser_turn_on_combo = FCComboBox()
+        self.laser_turn_on_combo.addItems(["M3", "M4"])
+        self.laser_turn_on_combo.setObjectName("mill_laser_turn_on")
+
+        param_grid.addWidget(self.laser_turn_on_lbl, 48, 0)
+        param_grid.addWidget(self.laser_turn_on_combo, 48, 1)
+        self.laser_turn_on_lbl.hide()
+        self.laser_turn_on_combo.hide()
 
         # Dwell
         self.dwell_cb = FCCheckBox('%s:' % _('Dwell'))
@@ -4767,8 +4793,8 @@ class MillingUI:
         )
         self.dwelltime_entry.setObjectName("mill_dwelltime")
 
-        param_grid.addWidget(self.dwell_cb, 46, 0)
-        param_grid.addWidget(self.dwelltime_entry, 46, 1)
+        param_grid.addWidget(self.dwell_cb, 50, 0)
+        param_grid.addWidget(self.dwelltime_entry, 50, 1)
 
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
@@ -4929,41 +4955,41 @@ class MillingUI:
         gen_grid.addWidget(self.allow_level_cb, 14, 0, 1, 2)
 
         # Size of trace segment on X axis
-        segx_label = FCLabel('%s:' % _("Segment X size"))
-        segx_label.setToolTip(
+        seg_x_label = FCLabel('%s:' % _("Segment X size"))
+        seg_x_label.setToolTip(
             _("The size of the trace segment on the X axis.\n"
               "Useful for auto-leveling.\n"
               "A value of 0 means no segmentation on the X axis.")
         )
-        self.segx_entry = FCDoubleSpinner()
-        self.segx_entry.set_range(0, 99999)
-        self.segx_entry.set_precision(self.decimals)
-        self.segx_entry.setSingleStep(0.1)
-        self.segx_entry.setWrapping(True)
-        self.segx_entry.setObjectName("mill_segx")
+        self.seg_x_entry = FCDoubleSpinner()
+        self.seg_x_entry.set_range(0, 99999)
+        self.seg_x_entry.set_precision(self.decimals)
+        self.seg_x_entry.setSingleStep(0.1)
+        self.seg_x_entry.setWrapping(True)
+        self.seg_x_entry.setObjectName("mill_seg_x")
 
-        gen_grid.addWidget(segx_label, 16, 0)
-        gen_grid.addWidget(self.segx_entry, 16, 1)
+        gen_grid.addWidget(seg_x_label, 16, 0)
+        gen_grid.addWidget(self.seg_x_entry, 16, 1)
 
         # Size of trace segment on Y axis
-        segy_label = FCLabel('%s:' % _("Segment Y size"))
-        segy_label.setToolTip(
+        seg_y_label = FCLabel('%s:' % _("Segment Y size"))
+        seg_y_label.setToolTip(
             _("The size of the trace segment on the Y axis.\n"
               "Useful for auto-leveling.\n"
               "A value of 0 means no segmentation on the Y axis.")
         )
-        self.segy_entry = FCDoubleSpinner()
-        self.segy_entry.set_range(0, 99999)
-        self.segy_entry.set_precision(self.decimals)
-        self.segy_entry.setSingleStep(0.1)
-        self.segy_entry.setWrapping(True)
-        self.segy_entry.setObjectName("mill_segy")
+        self.seg_y_entry = FCDoubleSpinner()
+        self.seg_y_entry.set_range(0, 99999)
+        self.seg_y_entry.set_precision(self.decimals)
+        self.seg_y_entry.setSingleStep(0.1)
+        self.seg_y_entry.setWrapping(True)
+        self.seg_y_entry.setObjectName("mill_seg_y")
 
-        gen_grid.addWidget(segy_label, 18, 0)
-        gen_grid.addWidget(self.segy_entry, 18, 1)
+        gen_grid.addWidget(seg_y_label, 18, 0)
+        gen_grid.addWidget(self.seg_y_entry, 18, 1)
 
         self.oih = OptionalHideInputSection(self.allow_level_cb,
-                                            [segx_label, self.segx_entry, segy_label, self.segy_entry])
+                                            [seg_x_label, self.seg_x_entry, seg_y_label, self.seg_y_entry])
 
         # ------------------------------------------------------------------------------------------------------------
         # ------------------------- EXCLUSION AREAS ------------------------------------------------------------------

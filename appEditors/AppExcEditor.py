@@ -4031,7 +4031,7 @@ class AppExcEditor(QtCore.QObject):
             "tools_drill_dwell":            self.app.options["tools_drill_dwell"],
             "tools_drill_dwelltime":        self.app.options["tools_drill_dwelltime"],
             "tools_drill_ppname_e":         self.app.options["tools_drill_ppname_e"],
-            "tools_drill_z_pdepth":         self.app.options["tools_drill_z_pdepth"],
+            "tools_drill_z_p_depth":         self.app.options["tools_drill_z_p_depth"],
             "tools_drill_feedrate_probe":   self.app.options["tools_drill_feedrate_probe"],
             "tools_drill_spindledir":       self.app.options["tools_drill_spindledir"],
             "tools_drill_f_plunge":         self.app.options["tools_drill_f_plunge"],

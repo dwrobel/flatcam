@@ -23960,11 +23960,11 @@ msgstr "Değişkenlerde Şekil ismi yok. Lütfen bir isim girin ve tekrar deneyi
 #~ msgstr "FlatCAM Tools DB import cancelled."
 
 #~ msgid ""
-#~ "Wrong value format for self.defaults[\"z_pdepth\"] or self."
-#~ "options[\"z_pdepth\"]"
+#~ "Wrong value format for self.defaults[\"z_p_depth\"] or self."
+#~ "options[\"z_p_depth\"]"
 #~ msgstr ""
-#~ "Wrong value format for self.defaults[\"z_pdepth\"] or self."
-#~ "options[\"z_pdepth\"]"
+#~ "Wrong value format for self.defaults[\"z_p_depth\"] or self."
+#~ "options[\"z_p_depth\"]"
 
 #~ msgid ""
 #~ "Wrong value format for self.defaults[\"feedrate_probe\"] or self."

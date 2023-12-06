@@ -310,8 +310,8 @@ class AppDefaults:
         "geometry_plot_line": "#FF0000",
 
         # Geometry Options
-        "geometry_segx": 0.0,
-        "geometry_segy": 0.0,
+        "geometry_seg_x": 0.0,
+        "geometry_seg_y": 0.0,
 
         # Geometry Export
         "geometry_dxf_format": 'R2010',
@@ -409,7 +409,10 @@ class AppDefaults:
         "tools_drill_spindlespeed": 0,
         "tools_drill_dwell": False,
         "tools_drill_dwelltime": 1,
-        "tools_drill_min_power":    0.0,
+        # Laser parameters
+        "tools_drill_min_power": 0.0,
+        "tools_drill_laser_on": "M3",
+
         "tools_drill_toolchange": False,
         "tools_drill_toolchangez": 15,
         "tools_drill_preprocessor_list": ['default'],
@@ -424,7 +427,7 @@ class AppDefaults:
         "tools_drill_toolchangexy": "0.0, 0.0",
         "tools_drill_startz": None,
         "tools_drill_feedrate_rapid": 1500,
-        "tools_drill_z_pdepth": -0.02,
+        "tools_drill_z_p_depth": -0.02,
         "tools_drill_feedrate_probe": 75,
         "tools_drill_spindledir": 'CW',
         "tools_drill_f_plunge": False,
@@ -456,7 +459,10 @@ class AppDefaults:
 
         "tools_mill_feedrate": 120,
         "tools_mill_feedrate_z": 60,
+        # Laser parameters
         "tools_mill_min_power": 0.0,
+        "tools_mill_laser_on": "M3",
+
         "tools_mill_spindlespeed": 0,
         "tools_mill_dwell": False,
         "tools_mill_dwelltime": 1,
@@ -469,7 +475,7 @@ class AppDefaults:
         "tools_mill_feedrate_rapid": 1500,
         "tools_mill_extracut": False,
         "tools_mill_extracut_length": 0.1,
-        "tools_mill_z_pdepth": -0.02,
+        "tools_mill_z_p_depth": -0.02,
         "tools_mill_feedrate_probe": 75,
         "tools_mill_f_plunge": False,
         "tools_mill_spindledir": 'CW',

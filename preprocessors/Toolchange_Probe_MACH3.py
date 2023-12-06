@@ -152,11 +152,11 @@ G00 X{x_toolchange} Y{y_toolchange}
 (MSG, Change to Tool Dia = {toolC} ||| CONNECT THE PROBE ||| Drills for this tool = {t_drills})
 M0
 F{feedrate_probe}
-G31 Z{z_pdepth}
+G31 Z{z_p_depth}
 G92 Z0
 G00 Z{z_in_between}
 F{feedrate_probe_slow}
-G31 Z{z_pdepth}
+G31 Z{z_p_depth}
 G92 Z0
 G00 Z{z_move}
 (MSG, Remove any clips or other devices used for probing. CNC work is resuming ...)
@@ -168,7 +168,7 @@ M0
            z_in_between=self.coordinate_format % (p.coords_decimals, p.z_move / 2),
            feedrate_probe=str(self.feedrate_format % (p.fr_decimals, p.feedrate_probe)),
            feedrate_probe_slow=str(self.feedrate_format % (p.fr_decimals, (p.feedrate_probe / 2))),
-           z_pdepth=self.coordinate_format % (p.coords_decimals, p.z_pdepth),
+           z_p_depth=self.coordinate_format % (p.coords_decimals, p.z_p_depth),
            tool=int(p.tool),
            t_drills=no_drills,
            toolC=toolC_formatted)
@@ -181,11 +181,11 @@ G00 Z{z_toolchange}
 (MSG, Change to Tool Dia = {toolC} ||| CONNECT THE PROBE ||| Drills for this tool = {t_drills})
 M0
 F{feedrate_probe}
-G31 Z{z_pdepth}
+G31 Z{z_p_depth}
 G92 Z0
 G00 Z{z_in_between}
 F{feedrate_probe_slow}
-G31 Z{z_pdepth}
+G31 Z{z_p_depth}
 G92 Z0
 G00 Z{z_move}
 (MSG, Remove any clips or other devices used for probing. CNC work is resuming ...)
@@ -195,7 +195,7 @@ M0
            z_in_between=self.coordinate_format % (p.coords_decimals, p.z_move / 2),
            feedrate_probe=str(self.feedrate_format % (p.fr_decimals, p.feedrate_probe)),
            feedrate_probe_slow=str(self.feedrate_format % (p.fr_decimals, (p.feedrate_probe / 2))),
-           z_pdepth=self.coordinate_format % (p.coords_decimals, p.z_pdepth),
+           z_p_depth=self.coordinate_format % (p.coords_decimals, p.z_p_depth),
            tool=int(p.tool),
            t_drills=no_drills,
            toolC=toolC_formatted)
@@ -215,11 +215,11 @@ G00 X{x_toolchange} Y{y_toolchange}
 (MSG, Change to Tool Dia = {toolC} ||| CONNECT THE PROBE)
 M0
 F{feedrate_probe}
-G31 Z{z_pdepth}
+G31 Z{z_p_depth}
 G92 Z0
 G00 Z{z_in_between}
 F{feedrate_probe_slow}
-G31 Z{z_pdepth}
+G31 Z{z_p_depth}
 G92 Z0
 G00 Z{z_move}
 (MSG, Remove any clips or other devices used for probing. CNC work is resuming ...)
@@ -231,7 +231,7 @@ M0
            z_in_between=self.coordinate_format % (p.coords_decimals, p.z_move / 2),
            feedrate_probe=str(self.feedrate_format % (p.fr_decimals, p.feedrate_probe)),
            feedrate_probe_slow=str(self.feedrate_format % (p.fr_decimals, (p.feedrate_probe / 2))),
-           z_pdepth=self.coordinate_format % (p.coords_decimals, p.z_pdepth),
+           z_p_depth=self.coordinate_format % (p.coords_decimals, p.z_p_depth),
            tool=int(p.tool),
            toolC=toolC_formatted)
             else:
@@ -243,11 +243,11 @@ G00 Z{z_toolchange}
 (MSG, Change to Tool Dia = {toolC} ||| CONNECT THE PROBE)
 M0
 F{feedrate_probe}
-G31 Z{z_pdepth}
+G31 Z{z_p_depth}
 G92 Z0
 G00 Z{z_in_between}
 F{feedrate_probe_slow}
-G31 Z{z_pdepth}
+G31 Z{z_p_depth}
 G92 Z0
 G00 Z{z_move}
 (MSG, Remove any clips or other devices used for probing. CNC work is resuming ...)
@@ -257,7 +257,7 @@ M0
            z_in_between=self.coordinate_format % (p.coords_decimals, p.z_move / 2),
            feedrate_probe=str(self.feedrate_format % (p.fr_decimals, p.feedrate_probe)),
            feedrate_probe_slow=str(self.feedrate_format % (p.fr_decimals, (p.feedrate_probe / 2))),
-           z_pdepth=self.coordinate_format % (p.coords_decimals, p.z_pdepth),
+           z_p_depth=self.coordinate_format % (p.coords_decimals, p.z_p_depth),
            tool=int(p.tool),
            toolC=toolC_formatted)
 

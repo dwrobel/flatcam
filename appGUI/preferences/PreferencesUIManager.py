@@ -264,8 +264,8 @@ class PreferencesUIManager(QtCore.QObject):
             "geometry_plot_line":           self.ui.geo_pref_form.geometry_gen_group.line_color_entry,
 
             # Geometry Options
-            "geometry_segx":            self.ui.geo_pref_form.geometry_adv_opt_group.segx_entry,
-            "geometry_segy":            self.ui.geo_pref_form.geometry_adv_opt_group.segy_entry,
+            "geometry_seg_x":            self.ui.geo_pref_form.geometry_adv_opt_group.seg_x_entry,
+            "geometry_seg_y":            self.ui.geo_pref_form.geometry_adv_opt_group.seg_y_entry,
 
             # Geometry Export
             "geometry_dxf_format":      self.ui.geo_pref_form.geometry_exp_group.dxf_format_combo,
@@ -374,10 +374,13 @@ class PreferencesUIManager(QtCore.QObject):
             "tools_mill_feedrate_rapid": self.ui.plugin_pref_form.tools_mill_group.feedrate_rapid_entry,
             "tools_mill_extracut": self.ui.plugin_pref_form.tools_mill_group.extracut_cb,
             "tools_mill_extracut_length": self.ui.plugin_pref_form.tools_mill_group.e_cut_entry,
-            "tools_mill_z_pdepth": self.ui.plugin_pref_form.tools_mill_group.pdepth_entry,
+            "tools_mill_z_p_depth": self.ui.plugin_pref_form.tools_mill_group.pdepth_entry,
             "tools_mill_feedrate_probe": self.ui.plugin_pref_form.tools_mill_group.feedrate_probe_entry,
             "tools_mill_spindledir": self.ui.plugin_pref_form.tools_mill_group.spindledir_radio,
+
             "tools_mill_min_power": self.ui.plugin_pref_form.tools_mill_group.las_min_pwr_entry,
+            "tools_mill_laser_on": self.ui.plugin_pref_form.tools_mill_group.laser_turn_on_combo,
+
             "tools_mill_f_plunge": self.ui.plugin_pref_form.tools_mill_group.fplunge_cb,
 
             "tools_mill_area_exclusion": self.ui.plugin_pref_form.tools_mill_group.exclusion_cb,
@@ -440,10 +443,13 @@ class PreferencesUIManager(QtCore.QObject):
             "tools_drill_toolchangexy":     self.ui.plugin_pref_form.tools_drill_group.toolchangexy_entry,
             "tools_drill_startz":           self.ui.plugin_pref_form.tools_drill_group.estartz_entry,
             "tools_drill_feedrate_rapid":   self.ui.plugin_pref_form.tools_drill_group.feedrate_rapid_entry,
-            "tools_drill_z_pdepth":         self.ui.plugin_pref_form.tools_drill_group.pdepth_entry,
+            "tools_drill_z_p_depth":         self.ui.plugin_pref_form.tools_drill_group.pdepth_entry,
             "tools_drill_feedrate_probe":   self.ui.plugin_pref_form.tools_drill_group.feedrate_probe_entry,
             "tools_drill_spindledir":       self.ui.plugin_pref_form.tools_drill_group.spindledir_radio,
+
             "tools_drill_min_power":        self.ui.plugin_pref_form.tools_drill_group.las_min_pwr_entry,
+            "tools_drill_laser_on":         self.ui.plugin_pref_form.tools_drill_group.laser_turn_on_combo,
+
             "tools_drill_f_plunge":         self.ui.plugin_pref_form.tools_drill_group.fplunge_cb,
             "tools_drill_f_retract":        self.ui.plugin_pref_form.tools_drill_group.fretract_cb,
 

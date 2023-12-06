@@ -23,7 +23,7 @@ class Marlin_laser_Spindle_pin(PreProc):
         gcode += ';It is for the case when it is used together with a LASER connected on the SPINDLE connector.\n'\
                  ';This preprocessor makes no moves on the Z axis it will only move horizontally.\n' \
                  ';It assumes a manually focused laser.\n' \
-                 ';The laser is started with M3 command and stopped with the M5 command.\n\n'
+                 ';The laser is started with M3 or M4 command and stopped with the M5 command.\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['obj_options']['xmin'])
         xmax = '%.*f' % (p.coords_decimals, p['obj_options']['xmax'])
@@ -64,7 +64,7 @@ class Marlin_laser_Spindle_pin(PreProc):
     def lift_code(self, p):
         if float(p.laser_min_power) > 0.0:
             # the formatted text: laser OFF must always be like this else the plotting will not be done correctly
-            return 'M3 S%s ;laser OFF\n' % str(p.laser_min_power)
+            return '%s S%s ;laser OFF\n' % (str(p.laser_on_code).replace("0", ""), str(p.laser_min_power))
         else:
             gcode = 'M400\n'
             gcode += 'M5'
@@ -72,9 +72,9 @@ class Marlin_laser_Spindle_pin(PreProc):
 
     def down_code(self, p):
         if p.spindlespeed:
-            return 'M3 S%s' % str(p.spindlespeed)
+            return '%s S%s' % (str(p.laser_on_code).replace("0", ""), str(p.spindlespeed))
         else:
-            return 'M3'
+            return str(p.laser_on_code)
 
     def toolchange_code(self, p):
         return ''
@@ -125,11 +125,10 @@ class Marlin_laser_Spindle_pin(PreProc):
         return 'F' + self.feedrate_rapid_format % (p.fr_decimals, p.feedrate_rapid)
 
     def spindle_code(self, p):
-        sdir = {'CW': 'M3', 'CCW': 'M4'}[p.spindledir]
         if p.spindlespeed:
-            return '%s S%s' % (sdir, str(p.spindlespeed))
+            return '%s S%s' % (str(p.laser_on_code).replace("0", ""), str(p.spindlespeed))
         else:
-            return sdir
+            return str(p.laser_on_code).replace("0", "")
 
     def dwell_code(self, p):
         return ''
