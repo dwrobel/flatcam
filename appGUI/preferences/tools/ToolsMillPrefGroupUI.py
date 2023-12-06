@@ -437,7 +437,7 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         )
 
         self.laser_turn_on_combo = FCComboBox()
-        self.laser_turn_on_combo.addItems(["M3", "M4"])
+        self.laser_turn_on_combo.addItems(["M03", "M04"])
 
         adv_grid.addWidget(self.laser_turn_on_lbl, 18, 0)
         adv_grid.addWidget(self.laser_turn_on_combo, 18, 1)

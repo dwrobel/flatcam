@@ -2689,7 +2689,7 @@ class DrillingUI:
         )
 
         self.laser_turn_on_combo = FCComboBox()
-        self.laser_turn_on_combo.addItems(["M3", "M4"])
+        self.laser_turn_on_combo.addItems(["M03", "M04"])
         self.laser_turn_on_combo.setObjectName("e_laser_turn_on")
 
         param_grid.addWidget(self.laser_turn_on_lbl, 22, 0)
