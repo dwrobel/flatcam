@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+16.12.2023
+
+- when tabs are set as not detachable, double_clicking the Plot_Area tab will toggle the notebook area visibility
+- fixed the Full Screen issue with not remembering the toolbar's state before full screen event
+
 6.12.2023
 
 - Paint Tool: fixed the calculation of object bounds

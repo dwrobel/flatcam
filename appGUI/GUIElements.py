@@ -3489,10 +3489,10 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         if val is True:
             self.tabBar.onDetachTabSignal.connect(self.detachTab)
             # the tab can be moved around
-            self.tabBar.can_be_dragged = True
+            self.tabBar.detachable = True
         else:
             # the detached tab can't be moved
-            self.tabBar.can_be_dragged = False
+            self.tabBar.detachable = False
 
         return val
 
@@ -3918,7 +3918,10 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             """
 
             event.accept()
-            self.onDetachTabSignal.emit(self.tabAt(event.position().toPoint()), self.mouseCursor.pos())
+            if self.detachable:
+                self.onDetachTabSignal.emit(self.tabAt(event.position().toPoint()), self.mouseCursor.pos())
+            else:
+                super().mouseDoubleClickEvent(event)
 
         def mousePressEvent(self, event):
             """
@@ -3974,7 +3977,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                 self.dragInitiated = True
 
             # If the current movement is a drag initiated by the left button
-            if (event.buttons() & QtCore.Qt.MouseButton.LeftButton) and self.dragInitiated and self.can_be_dragged:
+            if (event.buttons() & QtCore.Qt.MouseButton.LeftButton) and self.dragInitiated and self.detachable:
                 # Stop the move event
                 finishMoveEvent = QtGui.QMouseEvent(
                     QtCore.QEvent.Type.MouseMove, event.position(), QtCore.Qt.MouseButton.NoButton,
@@ -4064,6 +4067,14 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             index = self.tabAt(tabDropPos)
 
             self.detachedTabDropSignal.emit(name, index, dropPos)
+
+        @property
+        def detachable(self) -> bool:
+            return self.can_be_dragged
+
+        @detachable.setter
+        def detachable(self, val: bool):
+            self.can_be_dragged = val
 
 
 class FCDetachableTab2(FCDetachableTab):

@@ -102,6 +102,10 @@ class MainGUI(QtWidgets.QMainWindow):
 
         # Divine icon pack by Ipapun @ finicons.com
 
+        # Store the hidden toolbars here for fullScreen action
+        self.hidden_toolbars = []
+        self.original_window_flags = self.windowFlags()
+
         # #######################################################################
         # ############ BUILDING THE GUI IS EXECUTED HERE ########################
         # #######################################################################
@@ -1964,14 +1968,14 @@ class MainGUI(QtWidgets.QMainWindow):
         self.infobar.addWidget(self.fcinfo, stretch=1)
 
         self.infobar.addWidget(self.delta_coords_toolbar)
-        self.delta_coords_toolbar.setVisible(self.app.defaults["global_delta_coordsbar_show"])
+        self.delta_coords_toolbar.setVisible(self.app.defaults["global_delta_coords_bar_show"])
 
         self.infobar.addWidget(self.coords_toolbar)
-        self.coords_toolbar.setVisible(self.app.defaults["global_coordsbar_show"])
+        self.coords_toolbar.setVisible(self.app.defaults["global_coords_bar_show"])
 
         self.grid_toolbar.setMaximumHeight(24)
         self.infobar.addWidget(self.grid_toolbar)
-        self.grid_toolbar.setVisible(self.app.defaults["global_gridbar_show"])
+        self.grid_toolbar.setVisible(self.app.defaults["global_grid_bar_show"])
 
         self.status_toolbar.setMaximumHeight(24)
         self.infobar.addWidget(self.status_toolbar)
@@ -2124,7 +2128,7 @@ class MainGUI(QtWidgets.QMainWindow):
         # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         # Variable to store the status of the fullscreen event
-        self.toggle_fscreen = False
+        self.toggle_f_screen = False
         self.x_pos = None
         self.y_pos = None
         self.width = None
@@ -2275,7 +2279,7 @@ class MainGUI(QtWidgets.QMainWindow):
         delta_coords_action = QtGui.QAction(self)
         delta_coords_action.setCheckable(True)
         delta_coords_action.setText(delta_coords_action_name)
-        delta_coords_action.setChecked(self.app.defaults["global_delta_coordsbar_show"])
+        delta_coords_action.setChecked(self.app.defaults["global_delta_coords_bar_show"])
         self.infobar.addAction(delta_coords_action)
         delta_coords_action.triggered.connect(self.toggle_delta_coords)
 
@@ -2283,7 +2287,7 @@ class MainGUI(QtWidgets.QMainWindow):
         coords_action = QtGui.QAction(self)
         coords_action.setCheckable(True)
         coords_action.setText(coords_action_name)
-        coords_action.setChecked(self.app.defaults["global_coordsbar_show"])
+        coords_action.setChecked(self.app.defaults["global_coords_bar_show"])
         self.infobar.addAction(coords_action)
         coords_action.triggered.connect(self.toggle_coords)
 
@@ -2291,7 +2295,7 @@ class MainGUI(QtWidgets.QMainWindow):
         grid_action = QtGui.QAction(self)
         grid_action.setCheckable(True)
         grid_action.setText(grid_action_name)
-        grid_action.setChecked(self.app.defaults["global_gridbar_show"])
+        grid_action.setChecked(self.app.defaults["global_grid_bar_show"])
         self.infobar.addAction(grid_action)
         grid_action.triggered.connect(self.toggle_gridbar)
 
@@ -2304,15 +2308,15 @@ class MainGUI(QtWidgets.QMainWindow):
         status_action.triggered.connect(self.toggle_statusbar)
 
     def toggle_coords(self, checked):
-        self.app.options["global_coordsbar_show"] = checked
+        self.app.options["global_coords_bar_show"] = checked
         self.coords_toolbar.setVisible(checked)
 
     def toggle_delta_coords(self, checked):
-        self.app.options["global_delta_coordsbar_show"] = checked
+        self.app.options["global_delta_coords_bar_show"] = checked
         self.delta_coords_toolbar.setVisible(checked)
 
     def toggle_gridbar(self, checked):
-        self.app.options["global_gridbar_show"] = checked
+        self.app.options["global_grid_bar_show"] = checked
         self.grid_toolbar.setVisible(checked)
 
     def toggle_statusbar(self, checked):
@@ -2771,65 +2775,101 @@ class MainGUI(QtWidgets.QMainWindow):
         # This will write the setting to the platform specific storage.
         del qsettings
 
-    def on_fullscreen(self, disable=False):
+    # def on_full_screen_toggled(self, disable=False):
+    #     """
+    #     Toggles the full screen mode of the window.
+    #
+    #     :param disable: Whether to disable full screen mode. Defaults to False.
+    #     """
+    #     flags = self.windowFlags()
+    #     if self.toggle_f_screen is False and disable is False:
+    #         # self.ui.showFullScreen()
+    #         self.setWindowFlags(flags | Qt.WindowType.FramelessWindowHint)
+    #         a = self.geometry()
+    #         self.x_pos = a.x()
+    #         self.y_pos = a.y()
+    #         self.width = a.width()
+    #         self.height = a.height()
+    #         self.titlebar_height = self.app.qapp.style().pixelMetric(QtWidgets.QStyle.PixelMetric.PM_TitleBarHeight)
+    #
+    #         self.app.ui.showFullScreen()
+    #
+    #         # hide all Toolbars
+    #         for tb in self.findChildren(QtWidgets.QToolBar):
+    #             if isinstance(tb, QtWidgets.QToolBar):
+    #                 tb.setVisible(False)
+    #
+    #         self.coords_toolbar.setVisible(self.app.defaults["global_coords_bar_show"])
+    #         self.delta_coords_toolbar.setVisible(self.app.defaults["global_delta_coords_bar_show"])
+    #         self.grid_toolbar.setVisible(self.app.defaults["global_grid_bar_show"])
+    #         self.status_toolbar.setVisible(self.app.defaults["global_statusbar_show"])
+    #
+    #         self.splitter.setSizes([0, 1])
+    #         self.toggle_f_screen = True
+    #     elif self.toggle_f_screen is True or disable is True:
+    #         self.setWindowFlags(flags & ~Qt.WindowType.FramelessWindowHint)
+    #         # the additions are made to account for the pixels we subtracted/added above in the (x, y, h, w)
+    #         # self.setGeometry(self.x_pos+1, self.y_pos+self.titlebar_height+4, self.width, self.height)
+    #         self.setGeometry(self.x_pos+1, self.y_pos+self.titlebar_height+13, self.width, self.height)
+    #
+    #         self.showNormal()
+    #         self.toggle_f_screen = False
+
+    def on_full_screen_toggled(self, disable=False):
+        """
+        Toggles the full screen mode of the window.
+
+        :param disable: Whether to disable full screen mode. Defaults to False.
         """
 
-        :param disable:
-        :return:
-        """
-        flags = self.windowFlags()
-        if self.toggle_fscreen is False and disable is False:
-            # self.ui.showFullScreen()
-            self.setWindowFlags(flags | Qt.WindowType.FramelessWindowHint)
-            a = self.geometry()
-            self.x_pos = a.x()
-            self.y_pos = a.y()
-            self.width = a.width()
-            self.height = a.height()
-            self.titlebar_height = self.app.qapp.style().pixelMetric(QtWidgets.QStyle.PixelMetric.PM_TitleBarHeight)
+        if self.isFullScreen() or disable:
+            self.setWindowFlags(self.original_window_flags)
 
-            # set new geometry to full desktop rect
-            # Subtracting and adding the pixels below it's hack to bypass a bug in Qt5 and OpenGL that made that a
-            # window drawn with OpenGL in fullscreen will not show any other windows on top which means that menus and
-            # everything else will not work without this hack. This happen in Windows.
-            # https://bugreports.qt.io/browse/QTBUG-41309
-            # desktop = self.app.qapp.desktop()
-            # screen = desktop.screenNumber(QtGui.QCursor.pos())
+            # Restore visibility of all toolbars
+            for toolbar in self.hidden_toolbars:
+                toolbar.setVisible(True)
+            # Clear the list
+            self.hidden_toolbars = []
 
-            # rec = desktop.screenGeometry(screen)
+            # the additions are made to correct the restoration of the geometry of the window
+            self.setGeometry(
+                self.x_pos,
+                self.y_pos + self.titlebar_height,
+                self.width,
+                self.height
+            )
 
-            # x = rec.x() - 1
-            # y = rec.y() - 1
-            # h = rec.height() + 2
-            # w = rec.width() + 2
-            #
-            # self.setGeometry(x, y, w, h)
-            # self.show()
-
-            self.app.ui.showFullScreen()
-
-            # hide all Toolbars
-            for tb in self.findChildren(QtWidgets.QToolBar):
-                if isinstance(tb, QtWidgets.QToolBar):
-                    tb.setVisible(False)
-
-            self.coords_toolbar.setVisible(self.app.defaults["global_coordsbar_show"])
-            self.delta_coords_toolbar.setVisible(self.app.defaults["global_delta_coordsbar_show"])
-            self.grid_toolbar.setVisible(self.app.defaults["global_gridbar_show"])
-            self.status_toolbar.setVisible(self.app.defaults["global_statusbar_show"])
-
-            self.splitter.setSizes([0, 1])
-            self.toggle_fscreen = True
-        elif self.toggle_fscreen is True or disable is True:
-            self.setWindowFlags(flags & ~Qt.WindowType.FramelessWindowHint)
-            # the additions are made to account for the pixels we subtracted/added above in the (x, y, h, w)
-            # self.setGeometry(self.x_pos+1, self.y_pos+self.titlebar_height+4, self.width, self.height)
-            self.setGeometry(self.x_pos+1, self.y_pos+self.titlebar_height+13, self.width, self.height)
-
+            # exit FullScreen mode
             self.showNormal()
-            self.restore_toolbar_view()
-            self.toggle_fscreen = False
 
+            return
+
+        # Save and hide all visible toolbars
+        self.hidden_toolbars = []
+        for toolbar in self.findChildren(QtWidgets.QToolBar):
+            if toolbar.isVisible():
+                self.hidden_toolbars.append(toolbar)
+                toolbar.setVisible(False)
+
+        self.original_window_flags = self.windowFlags()
+        self.setWindowFlags(self.windowFlags() | Qt.WindowType.FramelessWindowHint)      # noqa
+
+        # save the current geometry
+        current_geometry = self.geometry()
+        self.x_pos = current_geometry.x()
+        self.y_pos = current_geometry.y()
+        self.width = current_geometry.width()
+        self.height = current_geometry.height()
+        self.titlebar_height = self.app.qapp.style().pixelMetric(QtWidgets.QStyle.PixelMetric.PM_TitleBarHeight)
+
+        # activate FullScreen
+        self.app.ui.showFullScreen()
+
+        self.coords_toolbar.setVisible(self.app.defaults["global_coords_bar_show"])
+        self.delta_coords_toolbar.setVisible(self.app.defaults["global_delta_coords_bar_show"])
+        self.grid_toolbar.setVisible(self.app.defaults["global_grid_bar_show"])
+        self.status_toolbar.setVisible(self.app.defaults["global_statusbar_show"])
+        
     def on_toggle_plotarea(self):
         """
 
@@ -3217,7 +3257,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Toggle Fullscreen
                 if key == QtCore.Qt.Key.Key_F10 or key == 'F10':
-                    self.on_fullscreen()
+                    self.on_full_screen_toggled()
                     return
             # NO MODIFIER
             elif modifiers == QtCore.Qt.KeyboardModifier.NoModifier:
@@ -3278,8 +3318,8 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.app.on_deselect_all()
 
                     # if in full screen, exit to normal view
-                    if self.toggle_fscreen is True:
-                        self.on_fullscreen(disable=True)
+                    if self.toggle_f_screen is True:
+                        self.on_full_screen_toggled(disable=True)
 
                     # try to disconnect the slot from Set Origin
                     try:

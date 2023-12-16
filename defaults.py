@@ -32,8 +32,8 @@ class AppDefaults:
         "global_stats": dict(),
         "global_tabs_detachable": False,
 
-        "global_coordsbar_show": True,
-        "global_delta_coordsbar_show": False,
+        "global_coords_bar_show": True,
+        "global_delta_coords_bar_show": False,
         "global_statusbar_show": True,
 
         "global_jump_ref": 'abs',
@@ -130,7 +130,7 @@ class AppDefaults:
         "global_project_autohide": True,
 
         # General App Settings
-        "global_gridbar_show": True,
+        "global_grid_bar_show": True,
         "global_gridx": 1.0,
         "global_gridy": 1.0,
         "global_snap_max": 0.05,
@@ -894,7 +894,7 @@ class AppDefaults:
         """
         Class that holds the default parameters used throughout the app.
 
-        :param callback:    A method called each time that one of the values are changed in the self.defaults LouDict
+        :param callback:    A method called each time that one of the values are changed in the "self.defaults" LouDict
         """
         self.defaults = LoudDict()
 
@@ -988,7 +988,7 @@ class AppDefaults:
         # log.debug("App defaults loaded from: %s" % filename)
 
     def __is_old_defaults(self, defaults: dict) -> bool:
-        """Takes a defaults dict and determines whether or not migration is necessary."""
+        """Takes a defaults dict and determines whether migration is necessary."""
         return 'version' not in defaults or defaults['version'] != self.factory_defaults['version']
 
     def __migrate_old_defaults(self, defaults: dict) -> dict:
@@ -996,7 +996,7 @@ class AppDefaults:
         migrated = {}
         for k, v in defaults.items():
             if k in self.factory_defaults and k != 'version':
-                # check if the types are the same. Because some types (tuple, float, int etc)
+                # check if the types are the same. Because some types (tuple, float, int etc.)
                 # may be stored as strings we check their types.
                 try:
                     target = eval(self.defaults[k])
@@ -1057,7 +1057,7 @@ class AppDefaults:
     def report_usage(self, resource):
         """
         Increments usage counter for the given resource
-        in self.defaults['global_stats'].
+        in "self.defaults['global_stats']".
 
         :param resource: Name of the resource.
         :return: None

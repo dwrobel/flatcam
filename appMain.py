@@ -1241,6 +1241,9 @@ class App(QtCore.QObject):
 
         # self.ui.notebook.callback_on_close = self.on_close_notebook_tab
 
+        # Plot Area double clicking
+        self.ui.plot_tab_area.tabBarDoubleClicked.connect(self.on_plot_area_tab_double_clicked)
+
         # ###########################################################################################################
         # #################################### GUI PREFERENCES SIGNALS ##############################################
         # ###########################################################################################################
@@ -1957,7 +1960,7 @@ class App(QtCore.QObject):
         self.ui.menuview_replot.triggered.connect(self.plot_all)
 
         self.ui.menuview_toggle_code_editor.triggered.connect(self.on_toggle_code_editor)
-        self.ui.menuview_toggle_fscreen.triggered.connect(self.ui.on_fullscreen)
+        self.ui.menuview_toggle_fscreen.triggered.connect(self.ui.on_full_screen_toggled)
         self.ui.menuview_toggle_parea.triggered.connect(self.ui.on_toggle_plotarea)
         self.ui.menuview_toggle_notebook.triggered.connect(self.ui.on_toggle_notebook)
         self.ui.menu_toggle_nb.triggered.connect(self.ui.on_toggle_notebook)
@@ -6035,8 +6038,13 @@ class App(QtCore.QObject):
             pass
 
         # restore the coords toolbars
-        self.ui.toggle_coords(checked=self.options["global_coordsbar_show"])
-        self.ui.toggle_delta_coords(checked=self.options["global_delta_coordsbar_show"])
+        self.ui.toggle_coords(checked=self.options["global_coords_bar_show"])
+        self.ui.toggle_delta_coords(checked=self.options["global_delta_coords_bar_show"])
+
+    def on_plot_area_tab_double_clicked(self, index: int):
+        # tab_obj_name = self.ui.plot_tab_area.widget(index).objectName()
+        # print(tab_obj_name)
+        self.ui.on_toggle_notebook()
 
     def on_notebook_closed(self):
 
