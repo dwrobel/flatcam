@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+3.01.2024
+
+- Geo Editor -> Simplification Sub-tool: fixed an issue when calculating vertexes number
+
 16.12.2023
 
 - when tabs are set as not detachable, double_clicking the Plot_Area tab will toggle the notebook area visibility

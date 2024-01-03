@@ -3094,7 +3094,7 @@ class FCSimplification(FCShapeTool):
         self.draw_app.plot_all()
 
         last_sel_geo = self.draw_app.selected[-1].geo
-        self.simp_tool.calculate_coords_vertex(last_sel_geo)
+        self.simp_tool.calculate_coordinates_vertex(last_sel_geo)
 
     def clean_up(self):
         self.draw_app.selected = []

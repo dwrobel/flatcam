@@ -91,7 +91,7 @@ class SimplificationTool(AppToolEditor):
                     pass
         if selected_shapes_geos:
             # those are displayed by triggering the signal self.update_ui
-            self.calculate_coords_vertex(selected_shapes_geos)
+            self.calculate_coordinates_vertex(selected_shapes_geos)
 
     def on_tab_close(self):
         self.geo_editor.select_tool("select")
@@ -139,7 +139,7 @@ class SimplificationTool(AppToolEditor):
                 # # geo_editor.ui.tw.blockSignals(False)
                 # # -----------------------------------------------------
 
-                self.calculate_coords_vertex(selected_shapes_geos)
+                self.calculate_coordinates_vertex(selected_shapes_geos)
                 geo_editor.plot_all()
 
                 geo_editor.interdict_selection = False
@@ -148,68 +148,70 @@ class SimplificationTool(AppToolEditor):
 
         self.app.worker_task.emit({'fcn': task_job, 'params': [self.geo_editor]})
 
-    def calculate_coords_vertex(self, selected_geos):
+    def calculate_coordinates_vertex(self, selected_geos):
         vertex_nr = 0
-        coords = ''
+        coordinates = ''
 
+        if not isinstance(selected_geos, list):
+            selected_geos = [selected_geos]
         for c_geo in selected_geos:
             if c_geo.geom_type == 'MultiLineString':
                 for idx, line in enumerate(c_geo.geoms):
                     line_coords = list(line.coords)
                     vertex_nr += len(line_coords)
-                    coords += 'Line %s\n' % str(idx)
-                    coords += str(line_coords) + '\n'
+                    coordinates += 'Line %s\n' % str(idx)
+                    coordinates += str(line_coords) + '\n'
             elif c_geo.geom_type == 'MultiPolygon':
                 for idx, poly in enumerate(c_geo.geoms):
                     poly_coords = list(poly.exterior.coords) + [list(i.coords) for i in poly.interiors]
                     vertex_nr += len(poly_coords)
 
-                    coords += 'Polygon %s\n' % str(idx)
-                    coords += str(poly_coords) + '\n'
+                    coordinates += 'Polygon %s\n' % str(idx)
+                    coordinates += str(poly_coords) + '\n'
             elif c_geo.geom_type in ['LinearRing', 'LineString']:
                 line_coords = list(c_geo.coords)
-                coords += 'Line \n'
-                coords += str(line_coords) + '\n'
+                coordinates += 'Line \n'
+                coordinates += str(line_coords) + '\n'
 
                 vertex_nr += len(line_coords)
             elif c_geo.geom_type == 'Polygon':
                 line_coords = list(c_geo.exterior.coords)
-                coords += 'Line \n'
-                coords += str(line_coords) + '\n'
+                coordinates += 'Line \n'
+                coordinates += str(line_coords) + '\n'
 
                 vertex_nr += len(line_coords)
             else:
-                coords += 'None\n'
+                coordinates += 'None\n'
 
         # if last_sel_geo:
         #     if last_sel_geo.geom_type == 'MultiLineString':
-        #         coords = ''
+        #         coordinates = ''
         #         vertex_nr = 0
         #         for idx, line in enumerate(last_sel_geo.geoms):
-        #             line_coords = list(line.coords)
+        #             line_coords = list(line.coordinates)
         #             vertex_nr += len(line_coords)
-        #             coords += 'Line %s\n' % str(idx)
-        #             coords += str(line_coords) + '\n'
+        #             coordinates += 'Line %s\n' % str(idx)
+        #             coordinates += str(line_coords) + '\n'
         #     elif last_sel_geo.geom_type == 'MultiPolygon':
-        #         coords = ''
+        #         coordinates = ''
         #         vertex_nr = 0
         #         for idx, poly in enumerate(last_sel_geo.geoms):
-        #             poly_coords = list(poly.exterior.coords) + [list(i.coords) for i in poly.interiors]
+        #             poly_coords = list(poly.exterior.coordinates) + [list(i.coordinates) for i in poly.interiors]
         #             vertex_nr += len(poly_coords)
         #
-        #             coords += 'Polygon %s\n' % str(idx)
-        #             coords += str(poly_coords) + '\n'
+        #             coordinates += 'Polygon %s\n' % str(idx)
+        #             coordinates += str(poly_coords) + '\n'
         #     elif last_sel_geo.geom_type in ['LinearRing', 'LineString']:
-        #         coords = list(last_sel_geo.coords)
-        #         vertex_nr = len(coords)
+        #         coordinates = list(last_sel_geo.coordinates)
+        #         vertex_nr = len(coordinates)
         #     elif last_sel_geo.geom_type == 'Polygon':
-        #         coords = list(last_sel_geo.exterior.coords)
-        #         vertex_nr = len(coords)
+        #         coordinates = list(last_sel_geo.exterior.coordinates)
+        #         vertex_nr = len(coordinates)
         #     else:
-        #         coords = 'None'
+        #         coordinates = 'None'
         #         vertex_nr = 0
 
-            self.update_ui.emit(coords, vertex_nr)
+            self.update_ui.emit(coordinates, vertex_nr)
 
     def on_update_ui(self, coords, vertex_nr):
         self.ui.geo_coords_entry.set_value(str(coords))
