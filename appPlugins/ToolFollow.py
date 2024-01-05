@@ -7,13 +7,14 @@
 
 from PyQt6 import QtWidgets, QtCore, QtGui
 from appTool import AppTool
-from appGUI.GUIElements import VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, RadioSet
+from appGUI.GUIElements import (VerticalScrollArea, FCLabel, FCButton, FCFrame, GLay, FCComboBox, RadioSet,
+                                FCDoubleSpinner, FCCheckBox, OptionalInputSection)
 
 import logging
 from copy import deepcopy
 import numpy as np
 
-from shapely import Polygon
+from shapely import Polygon, line_merge, MultiLineString, Point, simplify
 from shapely.ops import unary_union
 
 import gettext
@@ -129,7 +130,7 @@ class ToolFollow(AppTool, Gerber):
 
     def connect_signals_at_init(self):
         self.ui.level.toggled.connect(self.on_level_changed)
-        self.ui.selectmethod_radio.activated_custom.connect(self.ui.on_selection)
+        self.ui.select_method_radio.activated_custom.connect(self.ui.on_selection)
         self.ui.generate_geometry_button.clicked.connect(self.on_generate_geometry_click)
 
     def set_tool_ui(self):
@@ -140,7 +141,7 @@ class ToolFollow(AppTool, Gerber):
         self.pluginName = self.ui.pluginName
         self.connect_signals_at_init()
 
-        self.ui.selectmethod_radio.set_value('all')     # _("All")
+        self.ui.select_method_radio.set_value('all')     # _("All")
         self.ui.area_shape_radio.set_value('square')
 
         self.sel_rect[:] = []
@@ -154,9 +155,28 @@ class ToolFollow(AppTool, Gerber):
             obj_name = obj.obj_options['name']
             self.ui.object_combo.set_value(obj_name)
 
+        # Set UI
+        self.ui.simplify_cb.set_value(self.app.options["tools_follow_simplification"])
+        self.ui.tol_entry.set_value(self.app.options["tools_follow_tolerance"])
+        self.ui.union_cb.set_value(self.app.options["tools_follow_union"])
+
         # Show/Hide Advanced Options
         app_mode = self.app.options["global_app_level"]
         self.change_level(app_mode)
+
+        # SIGNALS
+        self.ui.simplify_cb.stateChanged.connect(self.on_simplify_changed)
+        self.ui.tol_entry.valueChanged.connect(self.on_tolerance_changed)
+        self.ui.union_cb.stateChanged.connect(self.on_union_changed)
+
+    def on_simplify_changed(self, checked):
+        self.app.options["tools_follow_simplification"] = checked
+
+    def on_tolerance_changed(self, value):
+        self.app.options["tools_follow_tolerance"] = value
+
+    def on_union_changed(self, checked):
+        self.app.options["tools_follow_union"] = checked
 
     def change_level(self, level):
         """
@@ -217,7 +237,7 @@ class ToolFollow(AppTool, Gerber):
             formatted_name = obj_name
         outname = '%s_follow' % formatted_name
 
-        select_method = self.ui.selectmethod_radio.get_value()
+        select_method = self.ui.select_method_radio.get_value()
         if select_method == 'all':  # _("All")
             self.follow_all(obj, outname)
         else:
@@ -259,7 +279,7 @@ class ToolFollow(AppTool, Gerber):
             return "Could not retrieve object: %s with error: %s" % (obj_name, str(e))
 
         if obj is None:
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(self.obj_name)))
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(obj_name)))
             return
 
         formatted_name = obj_name.rpartition('.')[0]
@@ -282,6 +302,10 @@ class ToolFollow(AppTool, Gerber):
         :type outname:          str
         :return: None
         """
+
+        should_union = self.ui.union_cb.get_value()
+        should_simplify = self.ui.simplify_cb.get_value()
+        simplify_tol = self.ui.tol_entry.get_value()
 
         def follow_init(new_obj, app_obj):
             if type(app_obj.defaults["tools_mill_tooldia"]) == float:
@@ -306,11 +330,27 @@ class ToolFollow(AppTool, Gerber):
                 if opt_key.find('tools_') == 0:
                     new_data[opt_key] = app_obj.options[opt_key]
 
-            followed_obj.follow_geometry = flatten_shapely_geometry(followed_obj.follow_geometry)
+            flattened_follow_geometry = flatten_shapely_geometry(followed_obj.follow_geometry)
+            cleaned_flat_follow_geometry = [
+                f for f in flattened_follow_geometry if not isinstance(f, Point) and not f.is_empty
+            ]
+
+            merged_geo = line_merge(MultiLineString(cleaned_flat_follow_geometry))
+            if merged_geo and not merged_geo.is_empty:
+                flattened_follow_geometry = flatten_shapely_geometry(merged_geo)
+
+            followed_obj.follow_geometry = flattened_follow_geometry
+
+            # Filter out empty geometries
             follow_geo = [
                 g for g in followed_obj.follow_geometry
                 if g and not g.is_empty and g.is_valid and g.geom_type != 'Point'
             ]
+
+            if should_simplify and simplify_tol > 0.0:
+                follow_geo = [simplify(f, tolerance=simplify_tol) for f in follow_geo]
+            if should_union:
+                follow_geo = unary_union(follow_geo)
 
             if not follow_geo:
                 self.app.log.warning("ToolFollow.follow_geo() -> Empty Follow Geometry")
@@ -345,6 +385,9 @@ class ToolFollow(AppTool, Gerber):
         :type outname:          str
         :return: None
         """
+        should_union = self.ui.union_cb.get_value()
+        should_simplify = self.ui.simplify_cb.get_value()
+        simplify_tol = self.ui.tol_entry.get_value()
 
         def follow_init(new_obj, app_obj):
             new_obj.multigeo = True
@@ -381,7 +424,20 @@ class ToolFollow(AppTool, Gerber):
             self.points = []
 
             area_follow = flatten_shapely_geometry(area_follow)
+            cleaned_flat_follow_area = [
+                f for f in area_follow if not isinstance(f, Point) and not f.is_empty
+            ]
+
+            merged_geo = line_merge(MultiLineString(cleaned_flat_follow_area))
+            if merged_geo and not merged_geo.is_empty:
+                area_follow = flatten_shapely_geometry(merged_geo)
+
             cleaned_area_follow = [g for g in area_follow if not g.is_empty and g.is_valid and g.geom_type != 'Point']
+
+            if should_simplify and simplify_tol > 0.0:
+                cleaned_area_follow = [simplify(f, tolerance=simplify_tol) for f in cleaned_area_follow]
+            if should_union:
+                cleaned_area_follow = unary_union(cleaned_area_follow)
 
             new_obj.multigeo = True
             new_obj.solid_geometry = deepcopy(cleaned_area_follow)
@@ -730,6 +786,34 @@ class FollowUI:
         grid0 = GLay(v_spacing=5, h_spacing=3)
         self.gp_frame.setLayout(grid0)
 
+        # Simplification
+        self.simplify_cb = FCCheckBox(_("Simplify"))
+        self.simplify_cb.setToolTip(
+            _("If checked, the toolpaths will be simplified with the given tolerance.")
+        )
+        self.tol_label = FCLabel('%s:' % _('Tolerance'))
+        self.tol_label.setToolTip(
+            _("The tolerance of the simplification.")
+        )
+        self.tol_entry = FCDoubleSpinner()
+        self.tol_entry.set_range(0.0, 10000.0)
+        self.tol_entry.set_precision(self.decimals)
+        self.tol_entry.setSingleStep(0.01)
+
+        self.simp_optional = OptionalInputSection(self.simplify_cb, [self.tol_label, self.tol_entry])
+
+        grid0.addWidget(self.simplify_cb, 0, 0, 1, 2)
+        grid0.addWidget(self.tol_label, 2, 0)
+        grid0.addWidget(self.tol_entry, 2, 1)
+
+        # UNION
+        self.union_cb = FCCheckBox(_("Union"))
+        self.union_cb.setToolTip(
+            _("If checked, the toolpaths will be joined into a Union.")
+        )
+
+        grid0.addWidget(self.union_cb, 4, 0, 1, 2)
+
         # Polygon selection
         self.select_label = FCLabel('%s:' % _('Selection'))
         self.select_label.setToolTip(
@@ -738,11 +822,11 @@ class FollowUI:
               "- 'Area Selection' - left mouse click to start selection of the area to be processed.")
         )
 
-        self.selectmethod_radio = RadioSet([{'label': _("All"), 'value': 'all'},
-                                            {'label': _("Area Selection"), 'value': 'area'}])
+        self.select_method_radio = RadioSet([{'label': _("All"), 'value': 'all'},
+                                             {'label': _("Area Selection"), 'value': 'area'}])
 
-        grid0.addWidget(self.select_label, 0, 0)
-        grid0.addWidget(self.selectmethod_radio, 0, 1)
+        grid0.addWidget(self.select_label, 6, 0)
+        grid0.addWidget(self.select_method_radio, 6, 1)
 
         # Area Selection shape
         self.area_shape_label = FCLabel('%s:' % _("Shape"))
@@ -753,8 +837,8 @@ class FollowUI:
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
                                           {'label': _("Polygon"), 'value': 'polygon'}])
 
-        grid0.addWidget(self.area_shape_label, 2, 0)
-        grid0.addWidget(self.area_shape_radio, 2, 1)
+        grid0.addWidget(self.area_shape_label, 8, 0)
+        grid0.addWidget(self.area_shape_radio, 8, 1)
 
         self.area_shape_label.hide()
         self.area_shape_radio.hide()

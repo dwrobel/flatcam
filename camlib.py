@@ -7793,7 +7793,7 @@ class CNCjob(Geometry):
         self.app.proc_container.new_text = ''
 
 
-def flatten_shapely_geometry(geometry, simplify_tolerance=0.0):
+def flatten_shapely_geometry(geometry, simplify_tolerance: float = 0.0) -> list:
     """
 
     :param geometry:
@@ -7818,7 +7818,7 @@ def flatten_shapely_geometry(geometry, simplify_tolerance=0.0):
     return flat_list
 
 
-def get_bounds(geometry_list):
+def get_bounds(geometry_list: list) -> list:
     """
     Will return limit values for a list of geometries
 

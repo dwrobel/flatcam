@@ -367,6 +367,11 @@ class AppDefaults:
         "cncjob_prepend": "",
         "cncjob_append": "",
 
+        # Follow Tool
+        "tools_follow_simplification": False,
+        "tools_follow_tolerance": 0.01,
+        "tools_follow_union": False,
+
         # Isolation Routing Plugin
         "tools_iso_tooldia": "0.1",
         "tools_iso_order": 2,   # Reverse

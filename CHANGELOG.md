@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+5.01.2024
+
+- Follow Tool: added more parameters: simplification and union
+- Follow Tool: the resulting LineString geometries are now merged together to minimize the number of lines
+
 3.01.2024
 
 - Geo Editor -> Simplification Sub-tool: fixed an issue when calculating vertexes number
