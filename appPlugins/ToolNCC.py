@@ -2517,6 +2517,10 @@ class NonCopperClear(AppTool, Gerber):
             geo_obj.multigeo = True
             geo_obj.tools = dict(tools_storage)
 
+            # make sure to use the default tool cut depth from the NCC parameters as milling tool cut depth
+            for k, v in geo_obj.tools.items():
+                v["data"]["tools_mill_cutz"] = app_obj.options["tools_ncc_cutz"]
+
             # -------------------------------------------------------------------------------------------------
             # test if at least one tool has solid_geometry. If no tool has solid_geometry we raise an Exception
             # -------------------------------------------------------------------------------------------------
@@ -2809,6 +2813,10 @@ class NonCopperClear(AppTool, Gerber):
 
             geo_obj.multigeo = True
             geo_obj.obj_options["tools_mill_tooldia"] = '0.0'
+
+            # make sure to use the default tool cut depth from the NCC parameters as milling tool cut depth
+            for k, v in geo_obj.tools.items():
+                v["data"]["tools_mill_cutz"] = app_obj.options["tools_ncc_cutz"]
 
             # clean the progressive plotted shapes if it was used
             if self.app.options["tools_ncc_plotting"] == 'progressive':

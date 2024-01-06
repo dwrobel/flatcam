@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+6.01.2024
+
+- NCC Tool: make sure to use the CutZ value set in Preferences NCC Tool section
+
 5.01.2024
 
 - Follow Tool: added more parameters: simplification and union
