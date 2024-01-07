@@ -644,7 +644,10 @@ class ToolMilling(AppTool, Excellon):
         # #######3 TEMP SETTINGS #################
         # ########################################
 
-        self.ui.addtool_entry.set_value(self.app.options["tools_mill_tooldia"])
+        try:
+            self.ui.addtool_entry.set_value(selected_obj.obj_options["tools_mill_tooldia"])
+        except AttributeError:
+            self.ui.addtool_entry.set_value(self.app.options["tools_mill_tooldia"])
 
         self.on_object_changed()
         if self.target_obj:

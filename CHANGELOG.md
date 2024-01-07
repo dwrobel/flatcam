@@ -7,14 +7,18 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+7.01.2024
+
+- Milling Plugin: when an object has a "tools_mill_tooldia" property set as an object option it is used to set the Tool Dia field
+
 6.01.2024
 
-- NCC Tool: make sure to use the CutZ value set in Preferences NCC Tool section
+- NCC Plugin: make sure to use the CutZ value set in Preferences NCC Tool section
 
 5.01.2024
 
-- Follow Tool: added more parameters: simplification and union
-- Follow Tool: the resulting LineString geometries are now merged together to minimize the number of lines
+- Follow Plugin: added more parameters: simplification and union
+- Follow Plugin: the resulting LineString geometries are now merged together to minimize the number of lines
 
 3.01.2024
 
