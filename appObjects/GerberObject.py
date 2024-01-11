@@ -101,7 +101,7 @@ class GerberObject(FlatCAMObj, Gerber):
         self.outline_color = self.app.options['gerber_plot_line']
         self.alpha_level = 'bf'
 
-        # keep track if the UI is built so we don't have to build it every time
+        # keep track if the UI is built, so we don't have to build it every time
         self.ui_build = False
 
         # aperture marking storage
@@ -173,7 +173,7 @@ class GerberObject(FlatCAMObj, Gerber):
 
         # Utilities
         self.ui.generate_bb_button.clicked.connect(self.on_generatebb_button_click)
-        self.ui.generate_noncopper_button.clicked.connect(self.on_generatenoncopper_button_click)
+        self.ui.generate_noncopper_button.clicked.connect(self.on_generate_non_copper_button_click)
         self.ui.util_button.clicked.connect(lambda st: self.ui.util_frame.show() if st else self.ui.util_frame.hide())
 
         self.ui.aperture_table_visibility_cb.stateChanged.connect(self.on_aperture_table_visibility_change)
@@ -367,7 +367,7 @@ class GerberObject(FlatCAMObj, Gerber):
             self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
             self.ui.apertures_table.setMaximumHeight(self.ui.apertures_table.getHeight())
 
-            # update the 'mark' checkboxes state according with what is stored in the self.marked_rows list
+            # update the 'mark' checkboxes state according to what is stored in the self.marked_rows list
             if self.marked_rows:
                 for row in range(self.ui.apertures_table.rowCount()):
                     try:
@@ -444,8 +444,8 @@ class GerberObject(FlatCAMObj, Gerber):
 
         return new_geo
 
-    def on_generatenoncopper_button_click(self, *args):
-        self.app.defaults.report_usage("gerber_on_generatenoncopper_button")
+    def on_generate_non_copper_button_click(self, *args):
+        self.app.defaults.report_usage("GerberObject.on_generate_non_copper_button_click")
 
         self.read_form()
         name = self.obj_options["name"] + "_noncopper"
@@ -462,13 +462,14 @@ class GerberObject(FlatCAMObj, Gerber):
             bounding_box = self.solid_geometry.envelope.buffer(float(self.obj_options["noncoppermargin"]))
             if not self.obj_options["noncopperrounded"]:
                 bounding_box = bounding_box.envelope
-            non_copper = bounding_box.difference(self.solid_geometry)
-            non_copper = flatten_shapely_geometry(non_copper)
+            non_copper_diff = bounding_box.difference(self.solid_geometry)
+            flattened_non_copper = flatten_shapely_geometry(non_copper_diff)
 
-            if non_copper is None or (not isinstance(non_copper, list) and non_copper.is_empty):
+            if (flattened_non_copper is None or
+                    (not isinstance(flattened_non_copper, list) and flattened_non_copper.is_empty)):
                 app_obj.inform.emit("[ERROR_NOTCL] %s" % _("Operation could not be done."))
                 return "fail"
-            geo_obj.solid_geometry = non_copper
+            geo_obj.solid_geometry = flattened_non_copper
 
         self.app.app_obj.new_object("geometry", name, geo_init)
 
@@ -518,8 +519,8 @@ class GerberObject(FlatCAMObj, Gerber):
                 app_obj.inform.emit("[ERROR_NOTCL] %s" % _("Operation could not be done."))
                 return "fail"
 
-            bounding_box = flatten_shapely_geometry(bounding_box)
-            geo_obj.solid_geometry = bounding_box
+            bounding_box_flattened = flatten_shapely_geometry(bounding_box)
+            geo_obj.solid_geometry = bounding_box_flattened
 
         self.app.app_obj.new_object("geometry", name, geo_init)
 
@@ -729,9 +730,9 @@ class GerberObject(FlatCAMObj, Gerber):
         # isolation_geometry produces an envelope that is going on the left of the geometry
         # (the copper features). To leave the least amount of burrs on the features
         # the tool needs to travel on the right side of the features (this is called conventional milling)
-        # the first pass is the one cutting all of the features, so it needs to be reversed
-        # the other passes overlap preceding ones and cut the left over copper. It is better for them
-        # to cut on the right side of the left over copper i.e on the left side of the features.
+        # the first pass is the one cutting all the features, so it needs to be reversed
+        # the other passes overlap preceding ones and cut the leftover copper. It is better for them
+        # to cut on the right side of the leftover copper i.e. on the left side of the features.
 
         try:
             geom = self.isolation_geometry(offset, geometry=geometry, iso_type=env_iso_type, passes=nr_passes)
@@ -875,7 +876,6 @@ class GerberObject(FlatCAMObj, Gerber):
         :param units: Units to which to convert the object: "IN" or "MM".
         :type units: str
         :return: None
-        :rtype: None
         """
 
         # units conversion to get a conversion should be done only once even if we found multiple

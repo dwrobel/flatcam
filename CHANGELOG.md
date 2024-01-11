@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM Evo beta
 
 =================================================
 
+11.01.2024
+
+- Paint Plugin: fixed an issue where a Gerber object cannot be painted using the Single Polygon selection correctly because it painted the whole geometry
+
 7.01.2024
 
 - Milling Plugin: when an object has a "tools_mill_tooldia" property set as an object option it is used to set the Tool Dia field

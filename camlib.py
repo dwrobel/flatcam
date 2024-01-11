@@ -5,7 +5,7 @@
 # Date: 2/5/2014                                              #
 # MIT Licence                                                 #
 # ########################################################## ##
-
+import shapely
 from PyQt6 import QtWidgets
 
 from appCommon.Common import GracefulException as grace
@@ -887,7 +887,7 @@ class Geometry(object):
         # else:
         #     return self.solid_geometry.bounds
 
-    def find_polygon(self, point, geoset=None):
+    def find_polygon(self, point, geoset=None) -> shapely.Polygon | None:
         """
         Find an object that object.contains(Point(point)) in
         poly, which can can be iterable, contain iterable of, or

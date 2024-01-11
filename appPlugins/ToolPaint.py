@@ -1270,7 +1270,14 @@ class ToolPaint(AppTool, Gerber):
 
         # do paint single only for left mouse clicks
         if event.button == 1:
-            clicked_poly = self.find_polygon(point=(curr_pos[0], curr_pos[1]), geoset=self.paint_obj.solid_geometry)
+            if isinstance(self.paint_obj, Geometry):
+                paint_geo = self.paint_obj.solid_geometry
+            elif isinstance(self.paint_obj, Gerber):
+                paint_geo = flatten_shapely_geometry(self.paint_obj.solid_geometry)
+            else:
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("The selected object is not a Gerber or Geometry object."))
+                return None
+            clicked_poly = self.find_polygon(point=(curr_pos[0], curr_pos[1]), geoset=paint_geo)
 
             if clicked_poly:
                 if clicked_poly not in self.poly_dict.values():

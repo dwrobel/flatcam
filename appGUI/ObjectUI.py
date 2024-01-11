@@ -458,15 +458,15 @@ class GerberObjectUI(ObjectUI):
         # Non-Copper Regions Frame
         # #############################################################################################################
         # ## Non-copper regions
-        self.noncopper_label = FCLabel('%s' % _("Non-copper regions"), bold=True)
-        self.noncopper_label.setToolTip(
+        self.non_copper_label = FCLabel('%s' % _("Non-copper regions"), bold=True)
+        self.non_copper_label.setToolTip(
             _("Create polygons covering the\n"
               "areas without copper on the PCB.\n"
               "Equivalent to the inverse of this\n"
               "object. Can be used to remove all\n"
               "copper from a specified region.")
         )
-        self.util_box.addWidget(self.noncopper_label)
+        self.util_box.addWidget(self.non_copper_label)
 
         ncc_frame = FCFrame()
         self.util_box.addWidget(ncc_frame)
@@ -475,8 +475,8 @@ class GerberObjectUI(ObjectUI):
         ncc_frame.setLayout(grid_ncc)
 
         # Margin
-        bmlabel = FCLabel('%s:' % _('Boundary Margin'))
-        bmlabel.setToolTip(
+        bm_label = FCLabel('%s:' % _('Boundary Margin'))
+        bm_label.setToolTip(
             _("Specify the edge of the PCB\n"
               "by drawing a box around all\n"
               "objects with this minimum\n"
@@ -488,7 +488,7 @@ class GerberObjectUI(ObjectUI):
         self.noncopper_margin_entry.set_precision(self.decimals)
         self.noncopper_margin_entry.setSingleStep(0.1)
 
-        grid_ncc.addWidget(bmlabel, 2, 0)
+        grid_ncc.addWidget(bm_label, 2, 0)
         grid_ncc.addWidget(self.noncopper_margin_entry, 2, 1, 1, 2)
 
         # Rounded corners
