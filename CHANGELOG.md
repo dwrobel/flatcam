@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM Evo beta
 11.01.2024
 
 - Paint Plugin: fixed an issue where a Gerber object cannot be painted using the Single Polygon selection correctly because it painted the whole geometry
+- Geo Editor: improving the selection and deletion - work in progress
 
 7.01.2024
 

@@ -2351,10 +2351,10 @@ class App(QtCore.QObject):
 
                 multi_tool = sel_id
                 self.log.debug("Editing MultiGeo Geometry with tool diameter: %s" % str(multi_tool))
-                self.geo_editor.edit_fcgeometry(edited_object, multigeo_tool=multi_tool)
+                self.geo_editor.edit_geometry(edited_object, multigeo_tool=multi_tool)
             else:
                 self.log.debug("Editing SingleGeo Geometry with tool diameter.")
-                self.geo_editor.edit_fcgeometry(edited_object)
+                self.geo_editor.edit_geometry(edited_object)
 
             # set call source to the Editor we go into
             self.call_source = 'geo_editor'
@@ -2508,7 +2508,7 @@ class App(QtCore.QObject):
 
                 if edited_obj.kind == 'geometry':
                     obj_type = "Geometry"
-                    self.geo_editor.update_fcgeometry(edited_obj)
+                    self.geo_editor.update_editor_geometry(edited_obj)
                     # self.geo_editor.update_options(edited_obj)
 
                     # restore GUI to the Selected TAB

@@ -125,7 +125,7 @@ class SelectEditorExc(FCShapeTool):
             return ""
 
         if pos[0] < xmin or pos[0] > xmax or pos[1] < ymin or pos[1] > ymax:
-            self.draw_app.selected = []
+            self.draw_app.selected.clear()
         else:
             modifiers = QtWidgets.QApplication.keyboardModifiers()
 
@@ -142,7 +142,7 @@ class SelectEditorExc(FCShapeTool):
                 else:
                     self.draw_app.selected.append(closest_shape)
             else:
-                self.draw_app.selected = []
+                self.draw_app.selected.clear()
                 self.draw_app.selected.append(closest_shape)
 
             # select the diameter of the selected shape in the tool table
@@ -496,7 +496,7 @@ class DrillAdd(FCShapeTool):
         self.add_drill(drill_pos=(x, y))
 
     def clean_up(self):
-        self.draw_app.selected = []
+        self.draw_app.selected.clear()
         self.draw_app.ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -961,7 +961,7 @@ class DrillArray(FCShapeTool):
         self.add_drill_array(array_pos=(x, y))
 
     def clean_up(self):
-        self.draw_app.selected = []
+        self.draw_app.selected.clear()
         self.draw_app.ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -1329,7 +1329,7 @@ class SlotAdd(FCShapeTool):
         self.add_slot(slot_pos=(x, y))
 
     def clean_up(self):
-        self.draw_app.selected = []
+        self.draw_app.selected.clear()
         self.draw_app.ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -1920,7 +1920,7 @@ class SlotArray(FCShapeTool):
         self.add_slot_array(array_pos=(x, y))
 
     def clean_up(self):
-        self.draw_app.selected = []
+        self.draw_app.selected.clear()
         self.draw_app.ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -2281,7 +2281,7 @@ class ResizeEditorExc(FCShapeTool):
             self.cursor_data_control = not self.cursor_data_control
 
     def clean_up(self):
-        self.draw_app.selected = []
+        self.draw_app.selected.clear()
         self.draw_app.ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -2427,7 +2427,7 @@ class MoveEditorExc(FCShapeTool):
                     geo_list.append(translate(geom.geo, xoff=dx, yoff=dy))
             except AttributeError:
                 self.draw_app.select_tool('drill_select')
-                self.draw_app.selected = []
+                self.draw_app.selected.clear()
                 return
             return DrawToolUtilityShape(geo_list)
         else:
@@ -2438,7 +2438,7 @@ class MoveEditorExc(FCShapeTool):
             return DrawToolUtilityShape(ss_el)
 
     def clean_up(self):
-        self.draw_app.selected = []
+        self.draw_app.selected.clear()
         self.draw_app.ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -2630,7 +2630,7 @@ class CopyEditorExc(FCShapeTool):
                         geo_list.append(translate(geom.geo, xoff=dx, yoff=dy))
                 except AttributeError:
                     self.draw_app.select_tool('drill_select')
-                    self.draw_app.selected = []
+                    self.draw_app.selected.clear()
                     return
                 self.util_geo = DrawToolUtilityShape(geo_list)
             else:
@@ -2929,7 +2929,7 @@ class CopyEditorExc(FCShapeTool):
                     return "Done."
 
     def clean_up(self):
-        self.draw_app.selected = []
+        self.draw_app.selected.clear()
         self.draw_app.ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -3958,7 +3958,7 @@ class AppExcEditor(QtCore.QObject):
     def clear(self):
         self.active_tool = None
         # self.shape_buffer = []
-        self.selected = []
+        self.selected.clear()
 
         self.points_edit = {}
         self.new_tools = {}
@@ -4440,7 +4440,7 @@ class AppExcEditor(QtCore.QObject):
         if key_modifier == modifier_to_use:
             pass
         else:
-            self.selected = []
+            self.selected.clear()
 
         try:
             self.last_tool_selected = int(row) + 1
@@ -4856,7 +4856,7 @@ class AppExcEditor(QtCore.QObject):
                             self.selected.append(obj)
         else:
             # clear the selection shapes storage
-            self.selected = []
+            self.selected.clear()
             # then add to the selection shapes storage the shapes that are included (touched) by the selection rectangle
             for storage in self.storage_dict:
                 for obj in self.storage_dict[storage].get_objects():
@@ -5061,7 +5061,7 @@ class AppExcEditor(QtCore.QObject):
         for shape_sel in temp_ref:
             self.delete_shape(shape_sel)
 
-        self.selected = []
+        self.selected.clear()
         self.build_ui()
         self.app.inform.emit('[success] %s' % _("Done."))
 
