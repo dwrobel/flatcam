@@ -3466,7 +3466,7 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.app.on_flipy()
 
                 # Zoom In
-                if key == QtCore.Qt.Key.Key_Equal:
+                if key == QtCore.Qt.Key.Key_Equal or key == QtCore.Qt.Key.Key_Plus:
                     self.app.plotcanvas.zoom(1 / self.app.defaults['global_zoom_ratio'], self.app.mouse_pos)
 
                 # Zoom Out
@@ -3627,7 +3627,7 @@ class MainGUI(QtWidgets.QMainWindow):
                                              [self.app.geo_editor.snap_x, self.app.geo_editor.snap_y])
 
                 # Zoom In
-                if key == QtCore.Qt.Key.Key_Equal or key == '=':
+                if key == QtCore.Qt.Key.Key_Equal or key == QtCore.Qt.Key.Key_Plus or key == '=' or key == '+':
                     self.app.plotcanvas.zoom(self.app.defaults['global_zoom_ratio'],
                                              [self.app.geo_editor.snap_x, self.app.geo_editor.snap_y])
 
@@ -3867,7 +3867,7 @@ class MainGUI(QtWidgets.QMainWindow):
                                              [self.app.grb_editor.snap_x, self.app.grb_editor.snap_y])
                     return
 
-                if key == QtCore.Qt.Key.Key_Equal or key == '=':
+                if key == QtCore.Qt.Key.Key_Equal or key == QtCore.Qt.Key.Key_Plus or key == '=' or key == '+':
                     self.app.grb_editor.launched_from_shortcuts = True
                     self.app.plotcanvas.zoom(self.app.defaults['global_zoom_ratio'],
                                              [self.app.grb_editor.snap_x, self.app.grb_editor.snap_y])
@@ -4128,7 +4128,7 @@ class MainGUI(QtWidgets.QMainWindow):
                                              [self.app.exc_editor.snap_x, self.app.exc_editor.snap_y])
                     return
 
-                if key == QtCore.Qt.Key.Key_Equal or key == '=':
+                if key == QtCore.Qt.Key.Key_Equal or key == QtCore.Qt.Key.Key_Plus or key == '=' or key == '+':
                     self.app.exc_editor.launched_from_shortcuts = True
                     self.app.plotcanvas.zoom(self.app.defaults['global_zoom_ratio'],
                                              [self.app.exc_editor.snap_x, self.app.exc_editor.snap_y])
