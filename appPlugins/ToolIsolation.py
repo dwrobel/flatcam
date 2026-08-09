@@ -3102,14 +3102,22 @@ class ToolIsolation(Gerber, AppTool):
             return 'fail'
 
         if isinstance(geom_shp, (MultiPolygon, MultiLineString)):
-            geom = geom_shp.geoms
+            geom_iter = geom_shp.geoms
+        else:
+            geom_iter = geom_shp
+
+        if isinstance(geom_shp, list):
+            # isolation_geometry() (and get_exteriors()/get_interiors()) return a plain
+            # list of BaseGeometry, not a Shapely Multi* geometry; wrap it into a single
+            # geometry object since the rest of this method (and its callers) expect one.
+            geom = unary_union(geom_shp)
         else:
             geom = geom_shp
 
         if invert:
             try:
                 pl = []
-                for p in geom:
+                for p in geom_iter:
                     if p is not None:
                         if isinstance(p, Polygon):
                             pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
@@ -3117,12 +3125,12 @@ class ToolIsolation(Gerber, AppTool):
                             pl.append(Polygon(p.coords[::-1]))
                 geom = MultiPolygon(pl)
             except TypeError:
-                if isinstance(geom, Polygon) and geom is not None:
-                    geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
-                elif isinstance(geom, LinearRing) and geom is not None:
-                    geom = Polygon(geom.coords[::-1])
+                if isinstance(geom_iter, Polygon) and geom_iter is not None:
+                    geom = Polygon(geom_iter.exterior.coords[::-1], geom_iter.interiors)
+                elif isinstance(geom_iter, LinearRing) and geom_iter is not None:
+                    geom = Polygon(geom_iter.coords[::-1])
                 else:
-                    msg = "ToolIsolation.generate_envelope() Error --> Unexpected Geometry %s" % type(geom)
+                    msg = "ToolIsolation.generate_envelope() Error --> Unexpected Geometry %s" % type(geom_iter)
                     self.app.log.debug(msg)
             except Exception as e:
                 self.app.log.error("ToolIsolation.generate_envelope() Error --> %s" % str(e))
